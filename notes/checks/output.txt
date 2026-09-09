@@ -1,0 +1,43 @@
+(a) Hermite coefficients of ReLU  c_k = E[z_+ He_k(z)]
+   k= 0  numeric=+0.398942  closed form=+0.398942
+   k= 1  numeric=+0.500000  closed form=+0.500000
+   k= 2  numeric=+0.398942  closed form=+0.398942
+   k= 3  numeric=+0.000000  closed form=+0.000000
+   k= 4  numeric=-0.398942  closed form=-0.398942
+   k= 5  numeric=+0.000000  closed form=+0.000000
+   k= 6  numeric=+1.196827  closed form=+1.196827
+   k= 7  numeric=-0.000000  closed form=+0.000000
+   k= 8  numeric=-5.984134  closed form=-5.984134
+   k= 9  numeric=+0.000000  closed form=+0.000000
+   k=10  numeric=+41.888939  closed form=+41.888939
+
+(b) resolution-1 effect of 1{w.x>0}
+   max |Monte Carlo - closed form| = 1.30e-03
+   eigenvalues: [0.1011 0.5    0.5    0.5    0.5    0.5    0.8989]  predicted extremes 0.1011 0.8989
+   ||e - e^2|| = 0.250000 (claim 0.25)
+   <xi_w, e_w Omega> = 0.372557   E[(w.x)_+] (MC) = 0.372030   |w|/sqrt(2pi) = 0.372557
+
+(c) net n=4, L=3: 81 realised joint codes
+   max |sum_c e_c - P_1| = 7.32e-04
+   min eigenvalue over cells = -3.81e-22 (PSD)
+   max ||[e_c, e_c']|| = 0.0804 (compressed code is noncommutative)
+   sum_c A_c E[x 1_c] = [7.60e-03 1.00e-04 1.20e-03 3.74e-01]  vs MC E[h_L] = [7.60e-03 1.00e-04 1.20e-03 3.74e-01]
+
+(d) width 256, depth 16: mean propagation (K=1) vs Monte Carlo (1000000 samples)
+   layer   MSE(mean-prop)   avg neuron var   MSE/var    MC noise floor (var/N)
+       1   5.476e-07        6.787e-01       8.07e-07   6.8e-07
+       2   1.499e-04        5.280e-01       2.84e-04   5.3e-07
+       3   3.195e-04        4.147e-01       7.70e-04   4.1e-07
+       4   4.583e-04        3.199e-01       1.43e-03   3.2e-07
+       5   6.656e-04        2.715e-01       2.45e-03   2.7e-07
+       6   7.929e-04        2.490e-01       3.18e-03   2.5e-07
+       7   8.851e-04        2.023e-01       4.37e-03   2.0e-07
+       8   9.634e-04        1.765e-01       5.46e-03   1.8e-07
+       9   8.324e-04        1.454e-01       5.73e-03   1.5e-07
+      10   9.154e-04        1.231e-01       7.44e-03   1.2e-07
+      11   9.123e-04        1.128e-01       8.09e-03   1.1e-07
+      12   9.217e-04        1.068e-01       8.63e-03   1.1e-07
+      13   8.705e-04        9.324e-02       9.34e-03   9.3e-08
+      14   1.289e-03        8.519e-02       1.51e-02   8.5e-08
+      15   1.219e-03        8.042e-02       1.52e-02   8.0e-08
+      16   1.472e-03        8.293e-02       1.77e-02   8.3e-08
