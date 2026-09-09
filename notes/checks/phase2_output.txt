@@ -1,0 +1,41 @@
+Recorded output of phase2_mean_propagation_check.py (shard data/mini-00000-of-00007.parquet,
+revision v2-phase2, 16 networks, 1024 wide x 16 deep), run 2026-09-09 in a remote sandbox.
+"layer-1 regen check" is the max over 1024 neurons of |exact layer-1 mean - shipped ground truth|
+(the 1e9-sample Monte Carlo floor at layer 1 is about 2.6e-5 per neuron); "rows" is the wrong
+weight-orientation control, shown for the first network only in the original run.
+
+mlp  0 logan-fitzgerald       seed=6319981554997072999  layer-1 regen check: max|diff| cols=9.3e-05 rows=6.3e-02 | final MSE=2.134e-04 var=7.868e-02 MSE/var=2.71e-03 = 178x budget-MC
+mlp  1 william-graves         seed=2392109381927064353  layer-1 regen check: max|diff| cols=7.7e-05 rows=5.7e-02 | final MSE=2.828e-04 var=8.599e-02 MSE/var=3.29e-03 = 216x budget-MC
+mlp  2 raymond-barnes         seed=4030325997523501402  layer-1 regen check: max|diff| cols=8.8e-05 rows=6.4e-02 | final MSE=3.286e-04 var=9.647e-02 MSE/var=3.41e-03 = 223x budget-MC
+mlp  3 steven-rice            seed=6959524404880716684  layer-1 regen check: max|diff| cols=8.7e-05 rows=5.2e-02 | final MSE=2.877e-04 var=8.699e-02 MSE/var=3.31e-03 = 217x budget-MC
+mlp  4 sarah-kelley           seed=3958198382245770826  layer-1 regen check: max|diff| cols=8.0e-05 rows=5.6e-02 | final MSE=2.897e-04 var=7.185e-02 MSE/var=4.03e-03 = 264x budget-MC
+mlp  5 christopher-morales    seed=7846555140217393207  layer-1 regen check: max|diff| cols=8.9e-05 rows=6.3e-02 | final MSE=2.470e-04 var=7.329e-02 MSE/var=3.37e-03 = 221x budget-MC
+mlp  6 cheryl-graham          seed=6455969887580159404  layer-1 regen check: max|diff| cols=8.0e-05 rows=6.5e-02 | final MSE=2.435e-04 var=6.149e-02 MSE/var=3.96e-03 = 260x budget-MC
+mlp  7 renee-park             seed=3642947882172421415  layer-1 regen check: max|diff| cols=9.8e-05 rows=6.9e-02 | final MSE=2.439e-04 var=7.840e-02 MSE/var=3.11e-03 = 204x budget-MC
+mlp  8 justin-johnson         seed=1231855977102813932  layer-1 regen check: max|diff| cols=7.3e-05 rows=5.2e-02 | final MSE=1.962e-04 var=7.003e-02 MSE/var=2.80e-03 = 184x budget-MC
+mlp  9 christina-lopez        seed=2704129700552098135  layer-1 regen check: max|diff| cols=8.3e-05 rows=5.7e-02 | final MSE=2.442e-04 var=8.656e-02 MSE/var=2.82e-03 = 185x budget-MC
+mlp 10 randy-murray           seed=2106691863424732350  layer-1 regen check: max|diff| cols=9.5e-05 rows=6.6e-02 | final MSE=2.931e-04 var=7.489e-02 MSE/var=3.91e-03 = 256x budget-MC
+mlp 11 john-koch              seed=7223822770173254400  layer-1 regen check: max|diff| cols=9.4e-05 rows=5.9e-02 | final MSE=3.799e-04 var=9.344e-02 MSE/var=4.07e-03 = 266x budget-MC
+mlp 12 susan-butler           seed=996126425053749872   layer-1 regen check: max|diff| cols=8.5e-05 rows=5.9e-02 | final MSE=2.505e-04 var=6.831e-02 MSE/var=3.67e-03 = 240x budget-MC
+mlp 13 crystal-gonzales       seed=8412308475179182746  layer-1 regen check: max|diff| cols=1.2e-04 rows=6.3e-02 | final MSE=2.895e-04 var=7.774e-02 MSE/var=3.72e-03 = 244x budget-MC
+mlp 14 troy-richardson        seed=3448660450172082933  layer-1 regen check: max|diff| cols=8.5e-05 rows=5.9e-02 | final MSE=2.680e-04 var=7.128e-02 MSE/var=3.76e-03 = 246x budget-MC
+mlp 15 sharon-whitehead       seed=944045338291930753   layer-1 regen check: max|diff| cols=1.1e-04 rows=6.5e-02 | final MSE=2.873e-04 var=7.719e-02 MSE/var=3.72e-03 = 244x budget-MC
+
+per-layer, averaged over 16 Phase-2 networks: mean propagation K=1
+  layer  1: MSE=6.849e-10  MSE/mean^2=2.15e-09
+  layer  2: MSE=4.078e-05  MSE/mean^2=8.27e-05
+  layer  3: MSE=9.132e-05  MSE/mean^2=1.53e-04
+  layer  4: MSE=1.347e-04  MSE/mean^2=2.02e-04
+  layer  5: MSE=1.693e-04  MSE/mean^2=2.29e-04
+  layer  6: MSE=1.937e-04  MSE/mean^2=2.50e-04
+  layer  7: MSE=2.137e-04  MSE/mean^2=2.61e-04
+  layer  8: MSE=2.337e-04  MSE/mean^2=2.77e-04
+  layer  9: MSE=2.453e-04  MSE/mean^2=2.84e-04
+  layer 10: MSE=2.482e-04  MSE/mean^2=2.82e-04
+  layer 11: MSE=2.567e-04  MSE/mean^2=2.90e-04
+  layer 12: MSE=2.557e-04  MSE/mean^2=2.74e-04
+  layer 13: MSE=2.562e-04  MSE/mean^2=2.77e-04
+  layer 14: MSE=2.597e-04  MSE/mean^2=2.82e-04
+  layer 15: MSE=2.659e-04  MSE/mean^2=2.94e-04
+  layer 16: MSE=2.716e-04  MSE/mean^2=2.96e-04
+total s 8.9
