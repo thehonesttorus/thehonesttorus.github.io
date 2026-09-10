@@ -1,9 +1,9 @@
-# The network as a groupoid convolution algebra, and which truncations are admissible
+# The network as a groupoid convolution algebra, and why its cumulant expansion resists truncation
 
-*A neuron is a unit, not an edge. Then matrix multiplication is groupoid convolution, the activation is
-a Cartan projection, the 0/1 code is the Cartan projection lattice, and the cumulant expansion is a path
-sum with diagonal sources. This last identification rules out the obvious finite-resolution truncation,
-and the ruling-out is measured.*
+*A neuron is a unit, not an edge. Then matrix multiplication is groupoid convolution, the activation is a
+state-dependent Cartan projection, the 0/1 code is the Cartan projection lattice, and the cumulant expansion
+is a path sum with diagonal sources. That last identification makes the obvious finite-resolution truncation
+testable — and it fails, for a measured reason that is about conditioning rather than resolution.*
 
 Companion to [`finite-resolution-question-algebra.md`](finite-resolution-question-algebra.md), 10 September 2026.
 Measurements are on WhestBench Phase 2 networks (width 1024, depth 16) against the shipped `1e9`-sample
@@ -31,12 +31,15 @@ and the weights as a function on the edges of the C\*-algebra.*
    arrows and state-dependent Cartan projections against a Gaussian state.
 4. **The cumulant expansion is a groupoid path sum with Cartan-supported sources**, graded by path length.
    That grading is what my estimator computes, so the picture is descriptive of working code, not decorative.
-5. **It makes a falsifiable prediction, and the prediction is false.** Connes–van Suijlekom spectral
-   truncation says: truncate the transport to its top spectral modes. Measured, that loses more than
-   depth gains — rank 128 is 2.4× worse than exact, and rank 16 is no worse than rank 64, so it is a bias,
-   not a resolution effect. The groupoid picture explains the failure: a spectral projection of the
-   convolution part does not commute with `C_0(X)`, so it does not preserve the Cartan pair that the
-   sources live in.
+5. **It makes a falsifiable prediction, the prediction is false, and the first explanation for the
+   failure is false too.** Connes–van Suijlekom spectral truncation says: truncate the transport to its
+   top spectral modes. Measured, that loses more than depth gains — rank 128 is 2.4× worse than exact, and
+   rank 16 is no worse than rank 64. The natural reading was that the truncation breaks the Cartan pair the
+   sources live in, so a Cartan-compatible truncation (restricting the unit space) should do better.
+   It does not: it does slightly *worse*. The measured reason is neither: the path sum is a **cancelling**
+   sum. Its terms carry random signs (agreement 50.6%, chance is 50%) and the total is about 10% of the sum
+   of their magnitudes, so any term-wise approximation is amplified roughly tenfold. This is a conditioning
+   obstruction, not a resolution one, and it predicts that every compression of this object fails.
 6. **The measurement that does support the framework**: the correction that matters is the *off-diagonal*
    two-point cumulant, not the per-neuron diagonal. Restricting the two-point channel to the nearest
    source costs 3.1× in final-layer MSE; restricting the diagonal channel the same way costs 6%.
@@ -147,7 +150,7 @@ with `S^{(l)}` the freshly generated Cartan-supported source; the factorised for
 precisely *because* the source is diagonal, one set of factors per source layer. That is why the cost is
 `O(K)` matmuls per layer for `K` retained source layers, and it is the reason a compression is wanted.
 
-## 5. The prediction, and the measurement that kills it
+## 5. The prediction, the measurement that kills it, and the explanation that also fails
 
 The companion note's finite-resolution machinery is Connes–van Suijlekom spectral truncation: replace `a`
 by `PaP` for a spectral projection `P`. Applied here the prescription is unambiguous — truncate the far
@@ -155,32 +158,59 @@ transports to their top spectral modes, keeping the near ones sharp. The transpo
 contracting (the map from layer 8 to layer 15 needs 23 singular directions for half its energy, 85 for 90%),
 so this looks like it should be nearly free.
 
-Measured on two networks, keeping the newest 2 source layers exact and truncating the rest, final-layer MSE:
+Measured on three networks, keeping the newest 2 source layers exact and truncating the rest, mean
+final-layer MSE:
 
-| source depth | transport rank | net 0 | net 1 |
-|---|---|---|---|
-| 1 | exact | 9.52e-7 | 9.35e-7 |
-| 8 | exact | 2.19e-7 | 1.56e-7 |
-| 8 | 128 | 5.54e-7 | 4.82e-7 |
-| 8 | 64 | 5.92e-7 | 6.21e-7 |
-| 8 | 32 | 6.23e-7 | 6.85e-7 |
-| 8 | 16 (K₀=3) | 4.57e-7 | 5.12e-7 |
+| source depth | truncation of far transports | mean final MSE |
+|---|---|---|
+| 8 | none (exact) | 2.32e-7 |
+| 4 | none (exact) | 3.95e-7 |
+| 8 | spectral, rank 128 | 5.46e-7 |
+| 8 | unit space, top 50% | 6.32e-7 |
+| 8 | unit space, top 25% | 6.77e-7 |
+| 8 | unit space, top 12.5% | 6.87e-7 |
 
-Truncation costs 2.4–3.1× against exact, and rank 16 is *not* worse than rank 64 — the damage is a bias
-that does not decrease as resolution is added. So this is not a resolution trade-off at all.
+**First explanation, and why it is wrong.** The sources are diagonal, so the natural reading was that a
+spectral projection of the convolution part fails because it does not commute with `C_0(X)` — it is not a
+conditional expectation onto a subalgebra containing the diagonal, so it destroys the Cartan support the
+sources live in. That reading predicts that a *Cartan-compatible* truncation should do better. The corner
+`1_Y A 1_Y` for a sub-unit-space `Y ⊂ X` — keeping only the units carrying the largest source weight — is
+exactly such a truncation, and it does slightly worse than the spectral one at every setting. Ranking the
+units by importance barely matters either: weighting by `|p_β|·‖U_β‖³` scores 6.77e-7 and by `|p_β|` alone
+6.84e-7. So the failure is not about which subalgebra the truncation respects.
 
-**Why, in the framework's own terms.** The sources are supported on the unit space and weighted diagonally.
-A spectral projection `P` of the convolution part does not commute with `C_0(X)`, so `a ↦ PaP` is not a
-conditional expectation onto a subalgebra containing the diagonal: it mixes the unit index and destroys
-exactly the Cartan support the sources live in. The truncation is inadmissible for this algebra, and the
-error it makes is structural rather than small.
+**What is actually going on.** Decompose `κ_3(z_16)` into its per-source-unit terms and look at them:
 
-The admissible finite-resolution moves here are the ones compatible with the Cartan pair — conditional
-expectations onto intermediate subalgebras containing `C_0(X)`, corners `1_Y A 1_Y` for a sub-unit-space
-`Y ⊂ X`, or coarse-grainings of the units (groupoid quotients). Note this does not contradict the
-companion note: **the two truncations live on different algebras.** Chaos truncation on the *question*
-algebra retains the vacuum and is exact on the target (companion note §4.1); spectral truncation on the
-*neuron* algebra breaks a Cartan pair. Conflating them is what the framework is for avoiding.
+| source layer | layers back | share of Σ\|term\| in top 1% / 10% / 25% / 50% of units | sign agreement | ‖Σ terms‖ / Σ‖term‖ |
+|---|---|---|---|---|
+| 14 | 1 | 0.05 / 0.34 / 0.69 / 0.96 | 0.506 | 0.089 |
+| 12 | 3 | 0.04 / 0.31 / 0.65 / 0.94 | 0.508 | 0.096 |
+| 10 | 5 | 0.04 / 0.27 / 0.57 / 0.89 | 0.508 | 0.092 |
+| 7  | 8 | 0.04 / 0.26 / 0.53 / 0.85 | 0.508 | 0.090 |
+
+Two facts. The sum is **unconcentrated** — the top 10% of units hold only about a third of the total
+magnitude — and it is **incoherent**: term signs agree with the total's sign 50.6% of the time, which is
+chance, and the total is about 10% of the sum of magnitudes. The answer is a small signed residual of a
+large cancelling sum.
+
+That fixes the conditioning. Dropping a fraction `f` of the terms does not remove `f` of the answer; it
+removes terms that were cancelling against the ones kept, introducing an error of order `√(fn)` typical
+terms against an answer of order `0.1·n` typical terms. At `f = 1/2`, `n = 1024`, that is about 22% error
+per source layer, compounding over eight source layers and sixteen propagation steps. The same argument
+covers spectral truncation, which perturbs every term a little rather than removing some outright, and it
+explains the signature both share: a bias that appears immediately and is then flat in the truncation
+parameter, because the first cut already spends the cancellation budget.
+
+So the obstruction here is **conditioning, not resolution**, and it is a different obstruction from the
+companion note's Lemma 1 (which is about exactness — finite-resolution states not transporting through a
+ReLU layer). The groupoid carrier is what let the question be posed precisely; it did not supply the answer,
+and the answer it seemed to supply was wrong.
+
+This also predicts, correctly, the field's published negative results on compressing the same object: a
+64-regime late-state atlas that missed its error budget by ~7,800×, with the diagnosis "common late states
+were easy to describe; the tiny signed differences between them still controlled the final mean", and a
+basis-reweighting oracle whose lawful analytic direction had cosine 0.018 to the target-aware one. Those are
+the same cancelling residual seen from two other directions.
 
 ## 6. What the framework got right: noncommutativity is where the error is
 
@@ -221,8 +251,8 @@ frontier and the picture in this note has not closed that gap.
 
 What the note does not claim: that the groupoid carrier produces a faster estimator. It does not, so far.
 Its contributions are one correction (the unit/edge swap), one structural identification (activation as a
-state-dependent Cartan projection, code as the Cartan projection lattice), one falsified prediction with a
-principled explanation (spectral truncation is inadmissible on this algebra), and one confirmed one
-(the off-diagonal channel dominates). Under the challenge's score, `MSE × max(0.1, C/B)`, the path-sum
+state-dependent Cartan projection, code as the Cartan projection lattice), one falsified prediction whose
+first explanation was *also* falsified before the measured one replaced it (§5), and one confirmed
+prediction (the off-diagonal channel dominates, §6). Under the challenge's score, `MSE × max(0.1, C/B)`, the path-sum
 depth that the picture organises is bought at a linear price in compute, and the optimum sits at 4–6
 source layers — worth about 1.6× over the standing number, not the 34× that would matter.

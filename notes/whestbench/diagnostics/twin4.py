@@ -4,7 +4,7 @@ import sys, time, numpy as np
 from scipy.special import ndtr
 import twin2 as T
 n=1024; L=16; INV=T.INV; pdf=T.pdf
-def predict(W, N_MC=4000, K=3, T_ACT=3.0, KH=8, seed=0, rank=16, k21_model=True, k21_mc=True, k21_mu=False, k3_mu=False, trank=0, K0=2, K21_K=99, shrink_k3='auto', k4mode='mean', var_corr=True, oracle_cov=None, oracle_mean=None, k3_fit=True):
+def predict(W, N_MC=4000, K=3, T_ACT=3.0, KH=8, seed=0, rank=16, k21_model=True, k21_mc=True, k21_mu=False, k3_mu=False, trank=0, K0=2, K21_K=99, site_frac=1.0, site_pow=3.0, shrink_k3='auto', k4mode='mean', var_corr=True, oracle_cov=None, oracle_mean=None, k3_fit=True):
     rng=np.random.default_rng(seed); Zs=None
     if N_MC>0:
         X=rng.standard_normal((N_MC,n)).astype(np.float32); Zs=[]; h=X
@@ -26,7 +26,13 @@ def predict(W, N_MC=4000, K=3, T_ACT=3.0, KH=8, seed=0, rank=16, k21_model=True,
             for src in range(l-1,s_lo-1,-1):
                 if trank>0 and age>=K0:
                     Uu,sv,Vt=np.linalg.svd(U,full_matrices=False); U=(Uu[:,:trank]*sv[:trank])@Vt[:trank]
-                Ms,ps,qs,k3hs,d1s=sources[src]; Nt=Ms.T@U; UN=U*Nt
+                Ms,ps,qs,k3hs,d1s=sources[src]
+                if site_frac<1.0 and age>=K0:
+                    # Cartan-compatible truncation: restrict to a sub-unit-space Y (corner 1_Y A 1_Y).
+                    imp=np.abs(ps)*np.linalg.norm(U,axis=1)**site_pow
+                    q=max(1,int(site_frac*n)); keep=np.argpartition(-imp,q-1)[:q]
+                    mask=np.zeros(n); mask[keep]=1.0; U=U*mask[:,None]
+                Nt=Ms.T@U; UN=U*Nt
                 k3+=((ps[:,None]*3)*UN*Nt+(qs[:,None]*3)*UN*U+k3hs[:,None]*(U*U*U)).sum(0)
                 if k21_model and age<K21_K:
                     K21m+=2*(UN*ps[:,None]).T@Nt+((Nt*Nt)*ps[:,None]).T@U+((U*U)*qs[:,None]).T@Nt+2*(UN*qs[:,None]).T@U+((U*U)*k3hs[:,None]).T@U
