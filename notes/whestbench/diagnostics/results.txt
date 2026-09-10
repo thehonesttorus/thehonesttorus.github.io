@@ -1,0 +1,86 @@
+Measurements quoted in ../../groupoid-carrier-and-cartan-truncation.md.
+WhestBench Phase 2 public shard (mini, v2-phase2), width 1024, depth 16, scored against the shipped
+1e9-sample ground truth.  Networks 0/1/2 are logan-fitzgerald / william-graves / raymond-barnes.
+
+--------------------------------------------------------------------------------
+1. Spectral truncation of the far transport (twin4.py, k21_mc=False, k21_mu=True, N_MC=2400)
+   K = source depth, trank = rank kept for transports older than K0 layers, K0 = 2 unless noted.
+   Final-layer MSE.
+
+   source depth   transport rank    net 0       net 1
+   1              exact             9.517e-07   9.349e-07
+   8              exact             2.190e-07   1.555e-07
+   8              128               5.544e-07   4.817e-07
+   8              64                5.917e-07   6.209e-07
+   8              32                6.229e-07   6.846e-07
+   8              64  (K0=3)        4.729e-07   3.970e-07
+   8              16  (K0=3)        4.567e-07   5.115e-07
+
+   Truncation costs 2.4-3.1x against exact and does not improve monotonically with rank: the damage is a
+   bias, not a resolution effect.
+
+--------------------------------------------------------------------------------
+2. Diagonal vs two-point channel depth (twin4.py, k21_mc=False, k21_mu=True, N_MC=2400)
+   K = depth of the per-neuron (diagonal) third-cumulant channel.
+   K21_K = depth of the two-point channel kappa(z_a, z_a, z_b).
+   Final-layer MSE per network, and the mean over the three.
+
+   K   K21_K    net 0       net 1       net 2       mean
+   4   1        7.220e-07   7.278e-07   8.807e-07   7.769e-07
+   4   2        4.855e-07   5.752e-07   6.096e-07   5.568e-07
+   4   full     3.516e-07   3.750e-07   4.595e-07   3.954e-07
+   6   1        6.942e-07   6.974e-07   8.537e-07   7.484e-07
+   6   2        4.271e-07   5.395e-07   6.062e-07   5.243e-07
+   8   1        6.615e-07   6.661e-07   8.590e-07   7.289e-07
+   8   2        4.104e-07   4.979e-07   5.991e-07   5.025e-07
+   8   full     2.190e-07   1.555e-07   3.203e-07   2.316e-07
+
+   Deepening the diagonal channel 4 -> 8 with the two-point channel shallow buys 6% (7.769 -> 7.289e-07).
+   Deepening it with the two-point channel at full depth buys 41% (3.954 -> 2.316e-07).
+   Restricting the two-point channel to the nearest source at fixed diagonal depth 8 costs 3.1x.
+
+--------------------------------------------------------------------------------
+3. Source depth alone (twin4.py, k21_mc=False, k21_mu=True, N_MC=4000, two-point at full depth)
+   Final-layer MSE; the path sum saturates at K = 8 and reverses slightly beyond.
+
+   K     net 0       net 1
+   1     8.527e-07   8.390e-07
+   2     5.132e-07   6.337e-07
+   3     3.783e-07   4.496e-07
+   4     2.743e-07   3.189e-07
+   6     1.917e-07   1.899e-07
+   8     1.614e-07   1.372e-07
+   11    1.659e-07   1.428e-07
+   15    1.756e-07   1.581e-07
+
+--------------------------------------------------------------------------------
+4. Rank structure of the two-point cumulant tensor K21_ab = kappa(z_a, z_a, z_b)
+   (network 0, 4.0e5 samples; see the k21 rank block of analyze/offdiag)
+
+   layer   energy in top 1 / 5 / 20 singular components   |corr(right singular vector, mu)|
+   2       0.24  0.27  0.36                               0.918
+   4       0.61  0.63  0.70                               0.960
+   7       0.74  0.77  0.84                               0.971
+   10      0.80  0.83  0.89                               0.974
+   13      0.86  0.89  0.94                               0.980
+   15      0.87  0.90  0.95                               0.976
+
+--------------------------------------------------------------------------------
+5. Linear-response transport spectrum (network 0), singular directions needed for a share of energy
+
+   transport            50%   90%   99%
+   h_14 -> z_15  ( 2 layers)   91   283   472
+   h_12 -> z_15  ( 4 layers)   46   159   301
+   h_10 -> z_15  ( 6 layers)   31   111   221
+   h_8  -> z_15  ( 8 layers)   23    85   175
+   h_4  -> z_15  (12 layers)   15    58   123
+   h_1  -> z_15  (15 layers)   12    47   102
+
+--------------------------------------------------------------------------------
+6. Standing harness result for estimator.py (16-network shard, official runner)
+
+   adjusted final-layer score   9.610e-08
+   raw final-layer MSE          9.610e-07
+   all-layers MSE               4.696e-07
+   compute utilisation          9.79%
+   failed MLPs                  0 of 16

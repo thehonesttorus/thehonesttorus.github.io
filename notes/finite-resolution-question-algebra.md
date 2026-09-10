@@ -17,6 +17,8 @@ The position to explore was: *an input is not a state on the questions labelled 
 
 Section 6 lists what this suggests, as directions rather than results.
 
+A companion note, [The network as a groupoid convolution algebra](groupoid-carrier-and-cartan-truncation.md), carries the same analysis on the *neuron* algebra rather than the question algebra: there the 0/1 code is the projection lattice of a Cartan subalgebra, and the spectral truncation used in §4.1 turns out to be inadmissible, for a reason that picture supplies.
+
 ---
 
 ## 1. The challenge in the framework's vocabulary
