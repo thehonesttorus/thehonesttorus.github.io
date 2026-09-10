@@ -380,3 +380,51 @@ WhestBench Phase 2 public shard (mini, v2-phase2), width 1024, depth 16, scored 
     Note on the twin: the numpy twin used for configuration sweeps (ladder.py) omits the modelled
     two-point source tensor that the deployed estimator carries, and scores 1.130e-06 on the same
     bank.  Sweep results from the twin are therefore comparative, not absolute.
+
+--------------------------------------------------------------------------------
+19. The same reduction applied to the two-point channel.  The diagonal channel's deep tail turned out to
+    be rank one in {sigma^3, t sigma^3} with a universal depth schedule, which made it shippable at zero
+    cost.  The two-point channel at depth is worth 3.7x but costs ~49% of budget, so ask the same
+    question of it.  Oracle inputs (1e9-sample truth means, high-sample covariances), network 0.
+    K21_far = the two-point tensor accumulated from source ages 2..8; u_far = K21_far @ muhat.
+
+    layer   ||K21_far||/||K21_all||   rank-1 share of      R2 of u_far on sigma^3 * {1, t, t^2, t^3}
+                                      the far tail's       {s3}   {s3,ts3}  {+t2s3}  {+t3s3}
+                                      induced variance
+      6            0.744                  0.495            0.989   0.989     0.990    0.990
+      8            0.779                  0.579            0.986   0.986     0.986    0.986
+     12            0.836                  0.691            0.982   0.982     0.982    0.982
+     16            0.884                  0.730            0.974   0.974     0.978    0.978
+
+    The deep tail is 74-88% of the two-point tensor, and its mean-direction coefficient vector is
+    97-99% explained by sigma^3 ALONE -- adding t*sigma^3 or higher powers adds nothing, and their
+    fitted coefficients are ~0.  Note the complementarity: the diagonal kernel is a_l * t * sigma^3 with
+    a zero sigma^3 coefficient; the two-point kernel is c_l * sigma^3 with a zero t*sigma^3 coefficient.
+    Orthogonal directions in the same two-dimensional basis.
+
+    The caveat is the middle column: projecting K21_far onto the rank-one mean-direction form captures
+    only 50-73% of its induced next-layer variance.  So the aggregate is analytic but the rank-one
+    tensor reduction is lossy.
+
+    Universality, fitted from the pipeline's own Monte-Carlo residual rather than oracle inputs:
+
+    layer   c across 8 networks: mean     sd     sd/|mean|   c across 4 seeds on net 0: sd
+      8            +0.45643            0.02226    0.049                0.03137
+     11            +0.70963            0.06312    0.089                0.06238
+     16            +1.18779            0.14499    0.122                0.10461
+
+    As with the diagonal kernel, the across-network spread is at or below the across-seed spread, so
+    the coefficient is a function of relative depth.
+
+    Held-out networks 8-15, final-layer MSE, varying only the mean-direction coefficient:
+
+      none (modelled two-point only)          2.144e-06
+      Monte-Carlo residual (previous)         9.117e-07
+      shipped c_l * sigma^3                   8.889e-07
+      blend 0.25 shipped / 0.75 sampled       8.941e-07
+      blend 0.50 / 0.50                       8.844e-07
+      blend 0.75 shipped / 0.25 sampled       8.827e-07
+
+    Deployed at blend 0.75.  Official harness, 16-network shard:
+      adjusted 8.703e-08 (was 9.055e-08), raw 8.703e-07, compute 9.79%, 0 of 16 failed.
+    The added cost is an outer product and a scalar multiply per layer, under 0.01% of budget.

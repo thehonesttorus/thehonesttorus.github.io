@@ -63,12 +63,19 @@ class FiniteResolutionCumulantEstimator(BaseEstimator):
     # with the layer's mean excess kurtosis alongside.  Fitted offline on public networks 0-7 of the
     # mini shard (24 fits, three Monte-Carlo seeds each); see notes/whestbench/diagnostics/shipped.py.
     # Indexed by relative depth so a different (width, depth) shape cannot fall off the end.
+    # Each entry is (a, g4, c2p): the diagonal self-energy coefficient on t*sigma^3, the layer's mean
+    # excess kurtosis, and the two-point self-energy coefficient on sigma^3 along the propagated mean
+    # direction.  The two-point tail's mean-direction coefficient is 97-99% explained by sigma^3 alone
+    # (measured with oracle inputs), and like the diagonal one its across-network spread is at or below
+    # the spread from changing the Monte-Carlo seed, so it is a function of relative depth.
     KERNEL = (
-        (0.00094, 0.00715), (0.00783, 0.01340), (0.01134, 0.01947), (0.01406, 0.02302),
-        (0.01658, 0.02679), (0.01853, 0.03065), (0.02040, 0.03478), (0.02217, 0.03824),
-        (0.02331, 0.04162), (0.02464, 0.04615), (0.02555, 0.04940), (0.02684, 0.05096),
-        (0.02781, 0.05280), (0.02838, 0.05462), (0.02940, 0.05873),
+        (0.00094, 0.00715, 0.00396), (0.00783, 0.01340, 0.07819), (0.01134, 0.01947, 0.14538),
+        (0.01406, 0.02302, 0.22329), (0.01658, 0.02679, 0.30105), (0.01853, 0.03065, 0.38174),
+        (0.02040, 0.03478, 0.45643), (0.02217, 0.03824, 0.55252), (0.02331, 0.04162, 0.63162),
+        (0.02464, 0.04615, 0.70963), (0.02555, 0.04940, 0.80605), (0.02684, 0.05096, 0.92641),
+        (0.02781, 0.05280, 1.00444), (0.02838, 0.05462, 1.09326), (0.02940, 0.05873, 1.18779),
     )
+    W2P = 0.75              # weight on the shipped two-point coefficient against the sampled one
 
     def kernel_at(self, l, depth):
         """Schedule entry for layer l of a depth-`depth` network, by relative depth."""
@@ -214,7 +221,7 @@ class FiniteResolutionCumulantEstimator(BaseEstimator):
                 # aligned third cumulant: (k3s - k3_source)/s^3 ~ a t + b
                 base = k3 if k3 is not None else F32(0.0)
                 if self.USE_KERNEL:
-                    ak, g4k = self.kernel_at(l, L)
+                    ak, g4k, c2pk = self.kernel_at(l, L)
                     k3 = base + (t * s3) * F32(ak)
                 else:
                     r = (k3s - base) / s3
@@ -235,9 +242,10 @@ class FiniteResolutionCumulantEstimator(BaseEstimator):
                 u = xp.matmul(xp.transpose(zc2), Aproj) * invN
                 if K21 is not None:
                     u = u - xp.matmul(K21, muh)
-                    K21 = K21 + xp.outer(u, muh)
-                else:
-                    K21 = xp.outer(u, muh)
+                if self.USE_KERNEL:
+                    # blend the sampled mean-direction coefficient with the shipped analytic one
+                    u = (s3 * F32(c2pk)) * F32(self.W2P) + u * F32(1.0 - self.W2P)
+                K21 = xp.outer(u, muh) if K21 is None else K21 + xp.outer(u, muh)
                 K21 = K21 - xp.diag(xp.diag(K21))
             # ---- Edgeworth readout -------------------------------------------------------------
             m_next = Psi
