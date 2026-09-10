@@ -428,3 +428,55 @@ WhestBench Phase 2 public shard (mini, v2-phase2), width 1024, depth 16, scored 
     Deployed at blend 0.75.  Official harness, 16-network shard:
       adjusted 8.703e-08 (was 9.055e-08), raw 8.703e-07, compute 9.79%, 0 of 16 failed.
     The added cost is an outer product and a scalar multiply per layer, under 0.01% of budget.
+
+--------------------------------------------------------------------------------
+20. ARC's power-cumulant closed form for the two-point channel, verified and priced.
+    The literature study's completeness critic identified arXiv:2605.05179 section 4.1 footnote 17 as
+    giving our dominant channel in closed form, and argued it would dissolve the "deliver the deep
+    two-point channel under 37% of budget" problem at 0.006% of budget.  Both halves checked.
+
+    The identity is elementary and correct.  With A = phi(Z_a), B = phi(Z_b), a = E[A]:
+      kappa(A, A, B) = E[(A-a)^2 (B-b)] = Cov(A^2, B) - 2 a Cov(A, B)
+    and for Gaussian Z both covariances are Hadamard power series in the correlation,
+      Cov(f(Z_a), g(Z_b)) = sum_{k>=1} rho^k bf_k(t_a) bg_k(t_b) / k!
+    with bf the Hermite coefficients of f.  Verified against 4e6-sample Monte Carlo on five bivariate
+    Gaussians, all three quantities agreeing to about 0.3%, which is the sampling error:
+
+      t_a    t_b   rho  | Cov(A,B) series/MC   | Cov(A^2,B) series/MC | kappa(A,A,B) series/MC
+      +0.4  -0.3  0.30  | +0.08141 / +0.08134  | +0.16745 / +0.16703  | +0.064802 / +0.064518
+      +1.0  +0.5  0.50  | +0.30248 / +0.30305  | +0.82170 / +0.82348  | +0.166346 / +0.167022
+      +1.5  -1.0  0.45  | +0.06908 / +0.06883  | +0.26502 / +0.26374  | +0.053735 / +0.053268
+
+    But it buys nothing.  Our source construction is the leading-order diagram truncation, one power of
+    rho per edge; the closed form is the full series.  Compared on real layers of network 0 against a
+    6e5-sample truth, with both given the true mean and covariance of the pre-activations:
+
+    layer   ||K21_true||   leading-order diagrams   power-cumulant closed form   corr with truth
+      4        7.6121        rel err 0.2641           rel err 0.2648             0.9705 / 0.9701
+      8        3.4423        rel err 0.4639           rel err 0.4643             0.8981 / 0.8976
+     12        2.2422        rel err 0.6869           rel err 0.6873             0.7476 / 0.7472
+
+    The two agree to three decimal places, because the correlations are small (rms |rho| 0.04 to 0.13,
+    section 10) so the k=1 term already dominates the series.  Our leading-order truncation was never
+    the lossy step.
+
+    What the 26 to 69% residual actually is: both constructions assume the pre-activation is Gaussian,
+    and by layer 12 that assumption alone costs 69%.  The missing quantity is the INHERITED
+    non-Gaussianity of z, which is exactly what the transported source channel and the Monte Carlo
+    channel supply, and exactly why source depth pays 3.1x (section 2).  So the deep two-point channel
+    is still needed and the closed form does not deliver it cheaply.
+
+    Still open from the same critique, and untested: a fully factorized K=3 in ARC's sense costs
+    L^2 n^3 = 2.75e11 = 12.5% of 2^41, which sits at the leader's 14.7% operating point.  The reference
+    implementation is real, at github.com/alignment-research-center/mlp_cumulant_propagation (PyTorch;
+    the critic's URL, .../mlp_kprop, is wrong -- that is the package path inside the repo).
+
+--------------------------------------------------------------------------------
+21. Full 100-network bank with both shipped kernels (diagonal and two-point).
+
+    configuration                        mean        median      held-out(8-99)
+    no kernels                           8.9702e-07  8.8395e-07  8.9404e-07
+    both shipped kernels                 8.3524e-07  8.2415e-07  8.3358e-07
+
+    The two kernels together are worth 6.9% on the full bank, at essentially zero FLOPs.
+    Adjusted score approximately 8.35e-08 at the 0.1 multiplier floor.
