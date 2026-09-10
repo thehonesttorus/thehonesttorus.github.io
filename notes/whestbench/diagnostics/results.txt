@@ -138,3 +138,66 @@ WhestBench Phase 2 public shard (mini, v2-phase2), width 1024, depth 16, scored 
    all-layers MSE               4.696e-07
    compute utilisation          9.79%
    failed MLPs                  0 of 16
+
+--------------------------------------------------------------------------------
+7. Operator-system programme, level 1: is the propagated state positive?
+   Network 0, K=3.  lam_min / trace of the propagated post-activation covariance.
+
+   layer   full state    Hermite part + exact diag   Hermite part alone   max|rho| offdiag   #neg eigs
+     4     -1.852e-05    +1.072e-08                  +1.269e-08           0.271              1
+     8     -1.108e-04    +1.508e-10                  +7.124e-12           0.373              1
+    12     -1.011e-04    +2.581e-14                  -4.090e-19           0.513              1
+    16     -1.001e-04    -4.892e-06                  -8.623e-06           0.597              2
+
+   The Hermite covariance closure is Schur-positive by construction (a sum of Hadamard powers of a PSD
+   correlation matrix against rank-one PSD factors), so the positivity violation is entirely due to the
+   two-point cumulant correction: it produces exactly one negative eigenvalue at ~1e-4 of the trace.
+
+   Projecting the state back into the positive cone (eigenvalue floor as a fraction of lam_max):
+
+   floor      net 0       net 1       net 2       mean
+   0 (none)   4.579e-07   5.224e-07   5.746e-07   5.183e-07
+   1e-12      4.211e-07   5.200e-07   5.864e-07   5.092e-07
+   1e-06      4.207e-07   5.201e-07   5.877e-07   5.095e-07
+   1e-04      5.664e-07   7.329e-07   1.262e-06   8.538e-07
+
+   Positivity is genuinely violated but is a weak constraint here: enforcing it buys about 2%.
+
+--------------------------------------------------------------------------------
+8. Feshbach / leave-and-return: does a fitted low-parameter correction renormalize the omitted sector?
+   Network 0, oracle inputs (true layer means, sampled covariances).
+   tail = (exact sources to depth 8) - (exact sources to depth 3), i.e. the sector being integrated out.
+   F    = the 2-parameter aligned correction (a*t + b)*sigma^3 fitted to the Monte-Carlo residual of the
+          depth-3 model, which is what the estimator actually computes.
+
+   layer  corr(F, tail)  |F|/|tail|  R2 of an oracle aligned model on tail  |tail|/|k3_depth8|
+     5      +0.610          2.54       0.375                                 0.221
+     8      +0.851          2.17       0.728                                 0.427
+    12      +0.865          2.14       0.748                                 0.522
+    16      +0.879          2.47       0.773                                 0.644
+
+   The omitted sector is 64% of the full third cumulant by layer 16, and a two-parameter renormalization
+   recovers ~80% of it.  This is the Feshbach picture: integrating out the omitted sources renormalizes
+   the retained propagation, and the renormalization is low-dimensional even though the omitted sector
+   is not.  It also explains why the exact path sum reverses beyond depth 8 (section 3): adding exact
+   terms without re-fitting the renormalization double-counts.
+
+   Relative sizes of the two levers, network 0, final-layer MSE:
+     pure source model, depth 3, no fit          1.59e-06
+     + Monte-Carlo fitted renormalization        3.78e-07   (4.2x)
+     + source depth 3 -> 8                       1.61e-07   (2.3x further)
+
+--------------------------------------------------------------------------------
+9. Extension ambiguity of the polynomial filtration at the readout (from analyze_output.txt).
+   True layer-15 mean, sampled covariance, sampled pre-activation cumulants; one propagation step.
+   Final-layer MSE of the rectified-mean readout given the state restricted to S_K:
+
+   S_2  (mean, covariance)          1.8e-07
+   S_3  (+ third cumulants)         2.2e-08
+   S_4  (+ fourth cumulants)        1.9e-09
+
+   The marginal operator system S_4 determines the target to 1.9e-09, below the leaderboard frontier
+   (leader raw final-layer MSE 1.93e-08).  The deployed pipeline is at 9.61e-07.  So at the readout the
+   representation defect is ~500x smaller than the total error: the binding constraint is propagation,
+   not the retained observable system.  Note this is MARGINAL sufficiency; the published oracle for
+   perfect marginals at every layer is 7.07e-07, so the ambiguity that matters lives in the joint.
