@@ -256,3 +256,41 @@ first explanation was *also* falsified before the measured one replaced it (§5)
 prediction (the off-diagonal channel dominates, §6). Under the challenge's score, `MSE × max(0.1, C/B)`, the path-sum
 depth that the picture organises is bought at a linear price in compute, and the optimum sits at 4–6
 source layers — worth about 1.6× over the standing number, not the 34× that would matter.
+
+## 8. A literature check, and where the relevant literature actually is
+
+A literature search returned a bibliography of noncommutative-geometry work on state approximation, framed
+as though several papers "directly critique and advance beyond" the methods of arXiv:2605.05179, with the
+2026 Latremoliere fuzzy-torus paper named as the closest such critique. That framing is false, and it was
+reported at "very high confidence".
+
+arXiv:2605.05179 is *Estimating the expected output of wide random MLPs more efficiently than sampling*,
+by Wu, Lecomte, Winer, Robinson, Hilton and Christiano at the Alignment Research Center. It is a machine
+learning paper on cumulant propagation through ReLU networks, using Hermite expansions and a diagram
+summation formula. No paper on quantum tori, fuzzy spaces or spectral triples critiques it. The likely
+mechanism is that the identifier was never resolved and an arXiv number in the 2605 range was assumed to
+be a noncommutative-geometry preprint.
+
+The bibliography itself is largely real, and largely not about our problem. The fuzzy-space and quantum
+Gromov-Hausdorff cluster (Latremoliere, Rieffel, Kerr and Li, Barrett, Steinacker) concerns approximating
+a *fixed* noncommutative space by finite-dimensional ones, in a metric on state spaces, with the content
+in the limiting behaviour. Our algebra is already finite dimensional; nothing is being approximated in an
+`N` to infinity sense. What we face is a *dynamical closure* problem: propagating a state through sixteen
+steps under a compute budget.
+
+Two clusters do bear on it:
+
+- **Closure of dynamical systems in operator algebras.** *Quantum Mechanics for Closure of Dynamical
+  Systems* (Dartmouth, arXiv:2208.03390) is data-driven parameterisation of the *unresolved* dimensions of
+  a dynamical system in Koopman and operator-algebraic language, which is exactly the omitted-sector
+  problem of section 4 and the memory kernel that the reduced rank-one kernel realises. Giannakis and
+  Montgomery, *Koopman and transfer operator techniques from the perspective of quantum theory*
+  (arXiv:2603.20102, 2026) surveys the same area with attention to positivity and spectral regularisation.
+- **Noncommutative moment problems.** The NPA-hierarchy line (Navascues and collaborators; Araujo, Garner
+  and Navascues 2024) is the rigorous form of the positivity-projection idea. Worth knowing before
+  investing: measured here, the propagated state's positivity violation is a single eigenvalue at about
+  1e-4 of the trace, and enforcing positivity buys about 2% (section 7 of the diagnostics). The constraint
+  those hierarchies enforce is real but not binding for this problem.
+
+Connes and van Suijlekom's spectral truncations paper is already the basis of section 5, where its
+prescription is measured to fail here. That citation is not new information for this line of work.
