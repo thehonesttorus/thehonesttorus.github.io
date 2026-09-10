@@ -527,3 +527,59 @@ WhestBench Phase 2 public shard (mini, v2-phase2), width 1024, depth 16, scored 
     remaining 98.5% to 99.8% is the trace-free harmonic sector, which is the same off-diagonal, joint
     object that dominates the error (section 2) and that all four compressions failed on (section 1).
     The identity is most useful as a place NOT to spend effort.
+
+--------------------------------------------------------------------------------
+23. Closure-induced return from a provably null sector.  A confirmed defect in our estimator.
+
+    The prediction.  Write the state in radial coordinates X = R*Theta.  For degree-p homogeneous
+    observables only the radius-weighted angular measure eta_p(A) = E[R^p 1{Theta in A}] matters, and it
+    composes exactly under homogeneous maps: eta_p^+ = (tau_F)_*(a_F^p eta_p).  At a CENTERED Gaussian
+    reference the covariance-matched trace-cubic perturbation has Hermite score
+        (1/6) R(w,I):H_3(y) = (1/2)(w.y)(||y||^2 - (n+2)),
+    whose contribution to eta_1 carries the radial factor E[R^2(R^2-(n+2))] = 0 for R ~ chi_n.  So that
+    sector is EXACTLY invisible to every degree-one homogeneous observable, hence to every bias-free
+    ReLU suffix mean.  But it is visible to intermediate SECOND moments (degree two), where the
+    equivalent mean tangent is v/2 rather than 0.  A closure that keeps the second-moment change and
+    drops the compensating structure can therefore manufacture a mean response out of nothing.
+
+    The test.  Network 0, synthetic centered reference at layer 8 with the real ridged Sigma_8, suffix
+    to layer 16, one fixed random unit direction v.  kappa_3(z) = R(W^T v, W^T Sigma W) transports
+    covariantly, giving diagonal 3*vt_a*sz2_a and two-point 2*vt_a*Sz_ab + vt_b*sz2_a.
+
+      truth,   mixed finite differences, common random numbers, 2e5 samples:
+        s=t=0.05 : ||delta_R M|| = 9.2374e-05    relative to ||M|| = 7.09e-06
+        s=t=0.10 : ||delta_R M|| = 1.3397e-04                        1.03e-05
+        s=t=0.20 : ||delta_R M|| = 1.9204e-04                        1.47e-05
+      (growing with the step, so this is finite-difference truncation, not signal)
+
+      our closure, same injection:
+        eps=1e-3 : ||response||/eps = 8.5086e-02  relative to ||M|| = 6.53e-03
+        eps=3e-3 :                    8.5085e-02
+        eps=1e-2 :                    8.5083e-02
+      (identical to four significant figures across a decade, so cleanly first order)
+
+    The closure's response is 921x the true one, in a sector where the truth is provably zero.
+
+    Sizing.  Closure response per unit injection norm, trace sector against a norm-matched generic
+    (non-trace) k3/K21 pair, three draws:
+        trace sector R(v,Sigma)        8.5086e-02
+        norm-matched generic           1.0359e-01, 9.8754e-02, 1.0148e-01   mean 1.0127e-01
+        ratio                          0.840
+    So the closure treats the null sector as 84% as consequential as a legitimate one.  Combined with
+    section 22's measurement that the trace sector carries 0.2% to 1.5% of the cumulant energy, i.e.
+    4.5% to 12% of its amplitude, roughly 4% to 10% of our cubic channel's response is spurious.
+
+    The fix, not yet implemented.  Extract the covariance-metric trace of the generated cubic source,
+        b_i = sum_jk (Sigma^-1)_jk kappa_3(z)_ijk,   w = b/(n+2),
+    and replace its cubic treatment by the exact tangent it is equivalent to: zero at a centered
+    reference, and D_Sigma[-(w m^T + m w^T)/2] at our actual non-centered operating point.  Reserve the
+    cubic machinery for the trace-free remainder.  Note for a structured source K = R(v,G) the trace is
+    b = tr(Sigma^-1 G) v + 2 G Sigma^-1 v, so it is NOT simply a rescaled v: the second term is nonzero
+    even when G is Sigma-traceless.  Cost is one Sigma^-1 contraction per layer, n^3/3 = 0.016% of
+    budget, but Sigma_z inherits the rank deficiency of Sigma_h (effective rank 879 to 1024, section 22)
+    so it needs a ridge and the numerics want care.
+
+    Also worth keeping: the observable-degree label must travel with the response.  The equivalent mean
+    tangent of R(v,Sigma) is (p-1)v/2, so 0 for the final activation mean, v/2 for a raw second moment,
+    v for a raw third.  No single mean-covariance perturbation reproduces all pairings at once, which is
+    why this reduction cannot be installed as a physical covariance update.
