@@ -21,18 +21,17 @@ corrected at each layer by the leading non-Gaussian structure of the pre-activat
   direction.
 - **Readout.** Edgeworth-corrected rectified mean through third and fourth cumulants, with the matching
   correction to the closure variance.
+- **Shipped memory kernel.** The self-energy of the source layers that are *not* retained, reduced to
+  rank one in the basis `t·σ³` with a coefficient that is a universal function of relative depth.
+  Fifteen shipped numbers, one multiply per layer, zero matmuls. On its own it matches a depth-three
+  factorised third-cumulant channel. Indexed by relative depth so a different shape cannot fall off
+  the end of the table.
 - **Covariance closure.** Hermite series in the pre-activation correlations with exact ReLU Hermite
   coefficients `d_1 = Φ(t)`, `d_k = φ(t) He_{k-2}(−t)`; exact diagonal; two-point cumulant correction added
   to the off-diagonal.
 
 All arithmetic is float32 through `flopscope`. The normal CDF is an Abramowitz–Stegun 7.1.26 evaluation at
 40 FLOPs/element rather than `flops.stats.norm.cdf`, which costs 96 and silently promotes to float64.
-
-- **Shipped memory kernel.** The self-energy of the source layers that are *not* retained, reduced to
-  rank one in the basis `t·σ³` with a coefficient that is a universal function of relative depth.
-  Fifteen shipped numbers, one multiply per layer, zero matmuls. On its own it matches a depth-three
-  factorised third-cumulant channel. Indexed by relative depth so a different shape cannot fall off
-  the end of the table.
 
 ### Measured
 
