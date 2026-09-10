@@ -480,3 +480,50 @@ WhestBench Phase 2 public shard (mini, v2-phase2), width 1024, depth 16, scored 
 
     The two kernels together are worth 6.9% on the full bank, at essentially zero FLOPs.
     Adjusted score approximately 8.35e-08 at the 0.1 multiplier floor.
+
+--------------------------------------------------------------------------------
+22. The Gaussian mixed-jet identity and its homogeneity corollary: confirmed, then priced.
+
+    Claim under test.  For f positively homogeneous of degree p (every coordinate of a bias-free ReLU
+    suffix has p = 1), scaling M(cm, c^2 Sigma) = c^p M(m,Sigma) and differentiating twice gives
+        D_m[v] D_Sigma[Sigma] M  =  ((p-1)/2) D_m[v] M  -  (1/2) D^2_m[v,m] M
+    so at p = 1 the covariance-matched trace-cubic response equals a rank-<=2 covariance tangent,
+        delta_{R(v,Sigma)} M  =  D_Sigma[ -(1/2)(v m^T + m v^T) ] M,
+    and vanishes identically at a centered reference m = 0.
+
+    (a) The identity holds through a real eight-layer ReLU suffix.  Central finite differences on
+    2e5 Monte-Carlo samples with common random numbers, float64, suffix h_8 -> h_16 of network 0,
+    ridged reference covariance, s = t = 0.05:
+
+      D_m[v]D_Sig[Sig]M  vs  -(1/2) D^2_m[v,m]M          rel diff 0.0248   corr 0.99970
+      D_m[v]D_Sig[Sig]M  vs  D_Sig[-(v m^T + m v^T)/2]M  rel diff 0.1116   corr 0.99388
+
+    Residuals are finite-difference truncation and Monte-Carlo noise; the second comparison is looser
+    because a rank-two covariance step at t = 0.05 is a coarser difference.  The nonsmoothness of ReLU
+    does not obstruct it, as expected: the object differentiated is the Gaussian-smoothed expectation,
+    not a pointwise path.
+
+    The centered corollary is confirmed sharply.  At m = 0 the mixed derivative is 9.62e-05 against a
+    scale ||M(0,Sigma)|| = 13.03, a ratio of 7.4e-06, versus 6.3e-03 at m != 0.  A suppression of about
+    850x, at the finite-difference floor.
+
+    (b) But the sector it reduces is nearly empty here.  In whitened coordinates w = Sigma^{-1/2}(h-mu),
+    the metric trace is b_i = E[w_i ||w||^2] and ||kappa_3||^2 = E[(w.w')^3] for independent pairs, so
+    the trace sector's share of the cumulant energy is 3||b||^2 / ((r+2) ||kappa_3||^2).  Network 0,
+    6e4 samples, r = effective rank of Sigma:
+
+      layer:      2      4      6      8     10     12     14     15
+      eff rank: 1024   1023   1007    984    975    920    879    881
+      share:  0.0124 0.0020 0.0028 0.0044 0.0063 0.0149 0.0057 0.0083
+
+    So 0.2% to 1.5% of the third cumulant's energy, i.e. essentially all of kappa_3 is trace-free.
+    For scale: an isotropic random symmetric 3-tensor would put 6/((n+1)(n+2)) = 5.7e-06 in that
+    sector, so ours is enriched by roughly 350x to 2600x over isotropy -- there IS real trace
+    structure -- and it is still about one percent of the object.
+
+    Verdict.  The mathematics is correct and now verified in our setting, including through the
+    nonsmooth activation.  It reduces a genuine sector to a rank-two covariance tangent for free.  It
+    is not the unlock, because that sector carries about one percent of the cumulant energy.  The
+    remaining 98.5% to 99.8% is the trace-free harmonic sector, which is the same off-diagonal, joint
+    object that dominates the error (section 2) and that all four compressions failed on (section 1).
+    The identity is most useful as a place NOT to spend effort.
