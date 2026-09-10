@@ -583,3 +583,69 @@ WhestBench Phase 2 public shard (mini, v2-phase2), width 1024, depth 16, scored 
     tangent of R(v,Sigma) is (p-1)v/2, so 0 for the final activation mean, v/2 for a raw second moment,
     v for a raw third.  No single mean-covariance perturbation reproduces all pairings at once, which is
     why this reduction cannot be installed as a physical covariance update.
+
+--------------------------------------------------------------------------------
+24. The three-way identity audit, and why the mathematically correct fix is not implementable here.
+
+    Defect A, homogeneity.  E_p = D_m[m]Mhat + 2 D_Sigma[Sigma]Mhat - p Mhat for p = 1, equivalently
+    whether the closure is exactly scale-equivariant under (m, Sigma) -> (c m, c^2 Sigma).
+
+      c        relative deviation of ||Mhat(c m, c^2 Sigma)|| from c ||Mhat(m, Sigma)||
+      0.50     +0.000e+00      (max elementwise 0.000e+00)
+      0.80     +2.220e-16      (max elementwise 1.126e-13)
+      1.25     -2.220e-16      (max elementwise 1.052e-13)
+      2.00     +0.000e+00
+      4.00     +0.000e+00
+
+    Exactly zero to machine precision.  Every ingredient is degree-correct by construction: t = mu/sz is
+    scale-invariant, the Hermite coefficients depend only on t, the source coefficients carry
+    p ~ c^-1, q ~ c, k3h ~ c^3, and the shipped kernels a_l*t*sigma^3 and c_l*sigma^3 both scale as c^3.
+    So the closure satisfies the homogeneity relation identically, and section 23's nonzero centered
+    response localizes cleanly to defect C: the separately implemented cubic channel and the derivative
+    of the Gaussian-reference calculation implement incompatible versions of the same relation.
+
+    The fix, implemented and measured.  Extract b_a = sum_jk (Sz^+)_jk kappa_3(z)_ajk from the
+    factorised source (b = U^T c1 + Nt^T c2 with c1 = p*alpha + 2q*beta + k3h*gamma,
+    c2 = 2p*beta + q*gamma, alpha = rowsum(Nt P . Nt), beta = rowsum(U P . Nt), gamma = rowsum(U P . U)),
+    set w = b/(r+2), subtract R(w,Sz) from the cubic channels and add dSz = -(w mu^T + mu w^T)/2 to Sz.
+
+    It fails, and two measurements say why.  Network 8, trace computed but NOT applied, so these are the
+    unperturbed quantities:
+
+      layer   cond(Sz)    ||w||     ||dSz|| / ||Sz||     (pseudo-inverse, threshold 1e-8)
+        2     6.69e+07   6.33e-02      2.34e-02
+        8     1.02e+12   3.37e-01      4.00e-01
+       12     9.57e+16   7.38e-01      1.20e+00
+       16     5.55e+16   9.17e-01      1.75e+00
+
+    First, the prescribed tangent is not a tangent.  By layer 12 the perturbation dSz that the identity
+    says is equivalent to the trace-cubic source is LARGER IN NORM THAN Sz ITSELF, reaching 1.75x by
+    layer 16.  The identity is a first-order statement and our trace sector is not a small perturbation,
+    so the linearisation is invalid at the amplitude we actually have.
+
+    Second, Sigma^-1 does not exist numerically.  cond(Sz) reaches 5.6e16 by layer 16, at float64's
+    limit.  This is not a closure artifact: the true post-activation covariance is genuinely
+    rank-deficient (dead neurons), measured effective rank 879 to 1024 in section 22.  Any ridge large
+    enough to stabilise the inverse changes the metric, and then the extracted vector is not the
+    Sigma-metric trace, so the rank-two identity no longer applies to it.
+
+    Held-out networks 8-15, final-layer MSE.  Every variant is worse than deployed:
+
+      deployed, no trace fix                 8.827e-07
+      trace fix, ridge 0.1 x mean diag       1.202e-06     (36% worse)
+      trace fix, ridge 0.01 x mean diag      5.596e-03     (catastrophic)
+      trace fix at half strength, ridge 0.1  8.870e-07     (0.5% worse)
+      trace fix, pseudo-inverse              diverges to NaN
+
+    Verdict.  The defect of section 23 is real and confirmed; the normal-form fix for it is correct
+    mathematics that our pipeline cannot carry, because the object it needs (Sigma^-1 against a
+    numerically singular Sigma) does not exist here and the perturbation it prescribes is not small.
+    No change to the estimator; it stays at 8.3524e-07 raw on the full bank.
+
+    What this selects.  The failure is specifically a failure of the INFINITESIMAL branch: a first-order
+    tangent identity applied at an amplitude where first order does not hold.  The finite positive
+    extension is the other branch, and it preserves the observable quotient EXACTLY at finite amplitude
+    rather than to first order -- the radial construction with E[R h(R)] = 0 leaves eta_1 unchanged for
+    the whole admissible interval of epsilon, not just its derivative at zero.  So this measurement is
+    evidence for choosing the exact-quotient-preserving completion over the jet, which was posed as an
+    open design choice rather than settled.
