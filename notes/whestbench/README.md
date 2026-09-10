@@ -47,6 +47,11 @@ Official harness, 16-network public shard, `whest run --dataset … --split mini
 The kernel schedule was fitted on networks 0-7 of this shard. Networks 8-15 are held out and improve
 by 6.4%, against 5.1% for the fitted half.
 
+Over the **full 100-network mini split** (92 of them held out from the schedule fit), the same estimator
+scores 8.675e-7 raw, so roughly 8.67e-8 adjusted at the 0.1 multiplier floor. The shipped kernel is worth
+3.3% there; the 5.8% on the 16-network shard was a favourable draw. Held-out networks score better than
+fitted ones. Ground-truth noise is 7.5e-11, so these differences resolve about a thousandfold over.
+
 For reference the Phase 2 leader is 2.8e-9 adjusted (1.93e-8 raw at 14.7% compute), and bundled covariance
 propagation is 4.05e-6.
 
