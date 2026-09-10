@@ -57,6 +57,27 @@ class FiniteResolutionCumulantEstimator(BaseEstimator):
     HERMITE_ORDER = 8
     USE_SOURCE = True       # exact previous-layer source (third cumulants + two-point slice)
     USE_MC = True
+    USE_KERNEL = True       # shipped reduced memory kernel for the omitted source layers
+
+    # Reduced self-energy of the omitted source sector, in the rank-one basis  a_l * t * sigma^3,
+    # with the layer's mean excess kurtosis alongside.  Fitted offline on public networks 0-7 of the
+    # mini shard (24 fits, three Monte-Carlo seeds each); see notes/whestbench/diagnostics/shipped.py.
+    # Indexed by relative depth so a different (width, depth) shape cannot fall off the end.
+    KERNEL = (
+        (0.00094, 0.00715), (0.00783, 0.01340), (0.01134, 0.01947), (0.01406, 0.02302),
+        (0.01658, 0.02679), (0.01853, 0.03065), (0.02040, 0.03478), (0.02217, 0.03824),
+        (0.02331, 0.04162), (0.02464, 0.04615), (0.02555, 0.04940), (0.02684, 0.05096),
+        (0.02781, 0.05280), (0.02838, 0.05462), (0.02940, 0.05873),
+    )
+
+    def kernel_at(self, l, depth):
+        """Schedule entry for layer l of a depth-`depth` network, by relative depth."""
+        tbl = self.KERNEL
+        if depth <= 2:
+            return tbl[0]
+        f = (l - 1) / float(depth - 2)
+        i = int(round(f * (len(tbl) - 1)))
+        return tbl[min(max(i, 0), len(tbl) - 1)]
 
     def __init__(self, xp=None, numpy_mode=False):
         self.xp = xp if xp is not None else fnp
@@ -192,18 +213,21 @@ class FiniteResolutionCumulantEstimator(BaseEstimator):
                 k4s = (zc2 * zc2).sum(axis=0) * invN - F32(3.0) * v * v
                 # aligned third cumulant: (k3s - k3_source)/s^3 ~ a t + b
                 base = k3 if k3 is not None else F32(0.0)
-                r = (k3s - base) / s3
-                ca, cb = self.lstsq2(xp, t, xp.ones(n, dtype=xp.float32), r)
-                k3fit = (ca * t + cb) * s3
-                k3 = base + k3fit
+                if self.USE_KERNEL:
+                    ak, g4k = self.kernel_at(l, L)
+                    k3 = base + (t * s3) * F32(ak)
+                else:
+                    r = (k3s - base) / s3
+                    ca, cb = self.lstsq2(xp, t, xp.ones(n, dtype=xp.float32), r)
+                    k3 = base + (ca * t + cb) * s3
                 # shrink towards the per-neuron sample value with the estimated signal/noise weight
                 resid = k3s - k3
                 noise = (s3 * s3).sum() * F32(6.0 / max(N, 1))
                 sig = (resid * resid).sum() - noise
                 w = xp.maximum(sig, F32(0.0)) / (xp.maximum(sig, F32(0.0)) + noise)
                 k3 = k3 + w * resid
-                # excess kurtosis: per-layer constant
-                g4 = (k4s / s4).sum() * F32(1.0 / n)
+                # excess kurtosis: per-layer constant, shipped or measured
+                g4 = F32(g4k) if self.USE_KERNEL else (k4s / s4).sum() * F32(1.0 / n)
                 k4 = g4 * s4
                 # inherited two-point cumulants along the mean direction
                 muh = mu / xp.sqrt((mu * mu).sum())

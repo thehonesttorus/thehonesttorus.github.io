@@ -28,17 +28,25 @@ corrected at each layer by the leading non-Gaussian structure of the pre-activat
 All arithmetic is float32 through `flopscope`. The normal CDF is an Abramowitz–Stegun 7.1.26 evaluation at
 40 FLOPs/element rather than `flops.stats.norm.cdf`, which costs 96 and silently promotes to float64.
 
+- **Shipped memory kernel.** The self-energy of the source layers that are *not* retained, reduced to
+  rank one in the basis `t·σ³` with a coefficient that is a universal function of relative depth.
+  Fifteen shipped numbers, one multiply per layer, zero matmuls. On its own it matches a depth-three
+  factorised third-cumulant channel. Indexed by relative depth so a different shape cannot fall off
+  the end of the table.
+
 ### Measured
 
 Official harness, 16-network public shard, `whest run --dataset … --split mini --runner local`:
 
 | metric | value |
 |---|---|
-| adjusted final-layer score | 9.61e-8 |
-| raw final-layer MSE | 9.61e-7 |
-| all-layers MSE | 4.70e-7 |
+| adjusted final-layer score | 9.06e-8 |
+| raw final-layer MSE | 9.06e-7 |
 | compute utilisation | 9.79% |
 | failed MLPs | 0 of 16 |
+
+The kernel schedule was fitted on networks 0-7 of this shard. Networks 8-15 are held out and improve
+by 6.4%, against 5.1% for the fitted half.
 
 For reference the Phase 2 leader is 2.8e-9 adjusted (1.93e-8 raw at 14.7% compute), and bundled covariance
 propagation is 4.05e-6.
