@@ -292,3 +292,69 @@ WhestBench Phase 2 public shard (mini, v2-phase2), width 1024, depth 16, scored 
       fitted   0-7 :  9.426e-07 -> 8.941e-07   (-5.1%)
       held out 8-15:  9.794e-07 -> 9.170e-07   (-6.4%)
     The held-out half improves more than the fitted half, so the schedule is not overfitted.
+
+--------------------------------------------------------------------------------
+15. Official bundled baseline, same 16-network shard, official runner.
+    whest run --estimator baseline.py --class CovariancePropagationEstimator
+
+    adjusted final-layer score   4.393e-07
+    raw final-layer MSE          4.393e-06
+    compute utilisation          6.25%
+    failed MLPs                  0 of 16
+
+    (The kit documents 4.05e-06 on the full 100-network mini split; 4.393e-06 is this shard.)
+    The deployed estimator is 4.85x better on both raw and adjusted.
+
+--------------------------------------------------------------------------------
+16. FLOP accounting under the competition rules, measured with flopscope, width 1024 depth 16.
+
+    component                                        x16 layers    % of 2^41
+    covariance sandwich W^T C W (symmetric einsum)    5.153e+10       2.34%
+    source channel, age-1, 4 dense matmuls            1.374e+11       6.25%
+    Monte-Carlo forward pass, 2400 rows               8.053e+10       3.66%
+    Monte-Carlo forward pass, 4800 rows               1.611e+11       7.32%
+    memory transport/readout W^T V, R=32              1.073e+09       0.05%
+    memory transport/readout W^T V, R=256             8.586e+09       0.39%
+    memory transport/readout W^T V, R=512             1.717e+10       0.78%
+    cube and weighted sum, R=256                      1.676e+07       0.00%
+    Monte-Carlo sampling itself (16 FLOPs/element)    3.932e+07       0.00%
+
+    2^41 = 2.199e12.  The score multiplier is max(0.1, C/B), so compute below 10% of budget earns NO
+    further discount: 2.7% and 9.9% score identically.  The 10% figure is a floor to spend up to, not
+    a ceiling to stay under.  The deployed estimator sits at 9.79% for exactly this reason.
+
+--------------------------------------------------------------------------------
+17. OQCP explicit memory channel: carry the long-lived cubic sector as R symmetric rank-one modes,
+    T ~ sum_r lambda_r v_r^(x)3, readout k3_mem,j = sum_r lambda_r (W^T v_r)_j^3, transport shared
+    with the readout (U = W^T V for the readout, V <- Phi * U for the transport).
+    Held-out networks 8-15; the memory replaces the shipped rank-1 kernel.
+
+    configuration                                  mean final MSE
+    deployed: age-1 exact + shipped rank-1 kernel   1.167e-06
+    memory R=64,   B=256    (diagonal modes)        2.101e-06
+    memory R=128,  B=256                            2.096e-06
+    memory R=256,  B=512                            2.080e-06
+    memory R=512,  B=1024                           2.063e-06
+    polarized memory R=128,  B=1024                 2.117e-06
+    polarized memory R=256,  B=2048                 2.106e-06
+    polarized memory R=512,  B=4096                 2.073e-06
+    polarized memory R=1024, B=4096                 2.018e-06
+
+    The first block carries only the diagonal diagram, which is the only one natively of the form
+    lambda*v^(x)3.  That diagram is a small share of the source:
+
+    source age    ||tree||    ||two-point||   ||diag||   diag share
+       1          2.968e-02   2.058e-02       4.383e-03    0.114
+       4          2.356e-02   1.971e-02       4.384e-03    0.124
+       8          1.368e-02   1.217e-02       4.412e-03    0.195
+
+    The second block polarizes the tree and two-point diagrams into symmetric rank-one modes
+    (3 sym(e,b,b) = [(e+b)^3 + (e-b)^3]/2 - e^3, and similarly for sym(e,e,b)), so all three diagrams
+    are represented.  It is still worse than the free rank-one kernel, and still nearly flat in R:
+    an eightfold rank increase buys 5%.
+
+    This is the fourth compression of this object to fail with the same signature (after spectral
+    truncation of the transport, unit-space corner restriction, and the diagonal-mode memory).  The
+    distinction that survives all four: approximating the SUM works, approximating the TERMS does not.
+    The rank-one kernel is fitted against the aggregate and wins at zero cost; mode selection keeps R
+    terms exactly and discards the rest, which the cancellation (coherence ~0.09) punishes.

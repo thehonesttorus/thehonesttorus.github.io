@@ -1,0 +1,2 @@
+from whestbench.estimators import CovariancePropagationEstimator
+Estimator = CovariancePropagationEstimator
