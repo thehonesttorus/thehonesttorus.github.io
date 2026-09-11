@@ -116,3 +116,34 @@ The steelman (Connes' trace theorem as an alternative representation of E_gamma[
 | Second quantization for classical nonlinear dynamics (2025), arXiv:2501.07419 | closure | not-relevant | All three prongs die on our own measurements, and prong 1 dies on the sharpest one.
 
 PRONG 1 fails on obstruction 4, and fatally. The paper's entire m-grading apparatus (Thm. 6, sec. 6, the 4.6M moment coefficients) is a REPRESENTATION theorem for the observable at readout. Obstruction 4 measures ou |
+
+## Read directly, 2026-09-11
+
+**D'Andrea, Lizzi, Martinetti, *Spectral geometry with a cut-off* (arXiv:1305.2605).**
+Proposition 5.4: for ANY self-adjoint finite-rank `D_Λ`, the spectral distance between two distinct
+pure states is *infinite*, `d_{A,D_Λ}(δ_x, δ_y) = ∞`. Lemma 5.3 is the mechanism: for a rank-one
+projection `P₀` with unit vector `ψ₀`, `‖[P₀, f]‖² = ⟨fψ₀, fψ₀⟩ − |⟨ψ₀, fψ₀⟩|²` — the Lipschitz
+seminorm a rank-one truncation induces is exactly a *standard deviation*.
+
+This is the first statement in this literature that explains a result we measured rather than
+restating one. Five independent compressions failed here — spectral truncation of the transport,
+Cartan-compatible corner restriction, symmetric and polarised rank-R memory, and the trace fix — and
+in every case the failure was that the compression resolved aggregates but not individual terms.
+Proposition 5.4 says that is not bad luck in the choice of compression: *no* finite-rank truncation
+separates pure states. Our "terms" are pure states on the unit space (delta functions on individual
+neurons); our "aggregates" are mixed states. The theorem says the first are unreachable and the
+second are not.
+
+Proposition 5.7 is the constructive half and it also matches: the truncated states obtained by
+flowing ONE smoothed state along the dynamics keep their distances *exactly*, at any truncation
+level (`d(Ψ_x, Ψ_y) = |x − y|` for every Λ). On the circle these smoothed states are Fejér
+distributions — the same Fejér–Riesz side of the propagation-number dichotomy in
+`cluster-spectral-truncation.md`. The design it recommends is one transported aggregate rather than a
+rank-R reduction, which is what the shipped memory kernels are.
+
+**Rieffel, *Metrics on states from actions of compact groups*.** Theorem 1.9: the state metric agrees
+with the weak-* topology iff `𝓑₁ = {a : L(a) ≤ 1, ‖a‖ ≤ 1}` is totally bounded. Comparison Lemma
+1.10 runs the wrong way for us — `M ≥ L` gives `ρ_M ≤ ρ_L`, so a cheap seminorm dominating an
+expensive one bounds the cheap metric by the expensive one, not the reverse, and we need the reverse
+to certify a surrogate. And the criterion is qualitative (topology agreement) where our problem is a
+rate. No lever here; recorded so it is not re-examined.
