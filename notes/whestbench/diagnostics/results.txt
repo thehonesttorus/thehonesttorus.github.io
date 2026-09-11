@@ -785,3 +785,85 @@ WhestBench Phase 2 public shard (mini, v2-phase2), width 1024, depth 16, scored 
     The live follow-up: depth 2 at late layers is worth 13% and costs 3.1% of budget.  A shipped kernel
     calibrated specifically to the depth-2 contribution at late layers would make it free, and that is
     aggregate-fitting, the one method that has worked here.
+
+--------------------------------------------------------------------------------
+30. The source depth series: the terms are incoherent, the SUM is analytic.
+    The live lead from section 29 was a kernel calibrated to the depth-2 source contribution.
+    Measuring it first (depth2_basis.py, networks 0-7) killed that form and replaced it with
+    something better.  The depth-2 increment is not small and not analytic:
+
+      layer  ||dk3||/||k3_depth1||   R2(dk3 | t*sigma^3)   R2(dk3 | t,1,t^2,t^3,phi)
+        2           0.775                  0.370                   0.373
+        8           0.865                  0.312                   0.316
+       12           0.940                  0.267                   0.273
+       15           0.930                  0.228                   0.237
+
+    Adding polynomial orders in t buys nothing: the increment is 75% site-specific.  So no kernel
+    can carry it, and the section 29 lead is dead as stated.
+
+    The whole series (depth_series.py, layer 15, networks 0-3) says why, and says something better:
+
+      j (source = layer l-j)    1     2     4     6     8    10    12    15
+      ||term_j|| / ||term_1||  1.00  0.94  0.79  0.64  0.55  0.47  0.29  0.15
+      ||sum_1..j|| / ||term_1||1.00  1.50  2.30  3.06  3.81  4.52  5.02  5.55
+      coherence of the sum     1.00  0.78  0.65  0.62  0.62  0.63  0.64  0.66
+      R2(term_j  | t*sigma^3)  0.19  0.25  0.31  0.38  0.41  0.62  0.64  0.76
+      R2(sum_1..j| t*sigma^3)  0.19  0.36  0.57  0.71  0.79  0.84  0.87  0.895
+
+    Three facts, none of which we had:
+    (i)  The series does NOT decay geometrically.  Term 8 is still 55% of term 1 and the partial sum
+         reaches 5.55x the depth-1 term.  The depth-1 exact channel we ship is 18% of the object it
+         is meant to represent.
+    (ii) The source series is COHERENT -- 0.65, against 0.09 for the diagram terms inside one source
+         layer (section 5).  These terms add up; they do not cancel.  The cancellation obstruction is
+         a statement about the three diagrams at fixed depth, not about depth.
+    (iii)The individual terms are NOT analytic (R2 0.19 to 0.76 on one direction) but their SUM is
+         (0.895 on the SAME one direction).  This is the aggregate-versus-terms principle again, now
+         measured inside the source channel, and it is why a one-number-per-layer kernel works at all.
+
+    Against the measured third cumulant (renorm.py, 60000 samples, networks 0-3), with every
+    coefficient fitted where a fit is indicated:
+
+      layer   exact depth1   a*t*s3   depth1 + shipped kernel   gamma*depth1   full sum   full sum + a*t*s3
+        2        0.467       0.513            0.643                0.524        0.675          0.710
+        4        0.365       0.745            0.823                0.481        0.806          0.891
+        8        0.222       0.862            0.900                0.353        0.874          0.963
+       12        0.165       0.908            0.926                0.332        0.917          0.978
+       15        0.127       0.920            0.931                0.270        0.931          0.980
+
+    Readings.  The exact depth-1 channel ALONE explains 13% of the true third cumulant at layer 15
+    while one fitted number explains 92%.  On top of the kernel the exact channel is worth 1 point at
+    layer 15 and 13 points at layer 2, so the exact channel earns its cost early and almost nothing
+    late -- the opposite of where the error lives (section 28).  Pure renormalisation gamma*depth1 is
+    rejected (0.27 to 0.52): the series is coherent but its terms are not proportional.  And full
+    depth plus a kernel reaches 0.980, cutting the third-cumulant residual variance 3.5x against the
+    deployed 0.931.  Full depth costs L^2/2 * 4 = 512 matmuls = 50% of budget, so it is not
+    purchasable as such; what it does is price the depth profile.
+
+--------------------------------------------------------------------------------
+31. The readout is not the wall.  For ReLU the Hermite integral is exact:
+        int_{-t}^{inf} (x+t) phi(x) He_k(x) dx = phi(t) He_{k-2}(-t),
+    so  E[relu(z)] = Psi(mu,sigma) + sigma * sum_{k>=3} c_k phi(t) He_{k-2}(-t)  with c_k = E[He_k]/k!
+    EXACTLY, for any distribution -- this is the same identity that gives the closure's d_k, applied
+    on the readout side.  Our estimator truncates at k=6 (kappa_3, kappa_4, kappa_3^2).  Estimating
+    every c_k from 120000 samples at the SAME sample moments, so the O(1/sqrt N) error in mu cancels
+    between the two sides (readout_wall.py):
+
+      || r - series_K || / || r ||,  r = mean(relu z) - Psi(mu_hat, sigma_hat)
+      net layer   ||r||     K=3     K=4    K=6(ours)  K=8    K=10    K=12
+       0    4   1.95e-02  0.4399  0.2255   0.1661   0.1343  0.1096  0.0928
+       0    8   1.69e-02  0.3860  0.1529   0.1140   0.0939  0.0795  0.0666
+       0   12   1.55e-02  0.3662  0.1252   0.0891   0.0739  0.0592  0.0474
+       0   15   1.39e-02  0.3654  0.1043   0.0795   0.0740  0.0545  0.0469
+       1   15   1.43e-02  0.3577  0.1071   0.0848   0.0667  0.0563  0.0570
+
+    At the final layer the whole non-Gaussian correction has rms 4.35e-04 per neuron, so the Gaussian
+    readout error is (4.35e-04)^2 = 1.9e-07 -- and indeed substituting the series drops the measured
+    layer-15 MSE from 7.78e-07 to 5.78e-07, the floor being Monte-Carlo noise in mu_hat, identical in
+    every column.  Our truncation leaves 8% of that correction in norm, i.e. 0.08^2 * 1.9e-07 =
+    1.2e-09 of MSE.  Against our 8.7e-07 that is 0.14%, and it is still 16x below the leader's
+    1.93e-08 raw.  Going to k=12 would take it to 0.05^2 * 1.9e-07 = 4.8e-10.
+
+    So the Edgeworth order is not what separates us from the leaderboard.  Combined with section 28
+    (exact mean and covariance one step from the end still leaves 6% = 5.2e-08), the residue is
+    entirely our MODEL of kappa_3 and kappa_4, not the way we read them out.
