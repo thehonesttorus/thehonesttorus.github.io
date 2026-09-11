@@ -29,6 +29,11 @@ corrected at each layer by the leading non-Gaussian structure of the pre-activat
 - **Covariance closure.** Hermite series in the pre-activation correlations with exact ReLU Hermite
   coefficients `d_1 = Φ(t)`, `d_k = φ(t) He_{k-2}(−t)`; exact diagonal; two-point cumulant correction added
   to the off-diagonal.
+- **Rank-one fourth-cumulant term.** The `(a,a,b,b)` pattern in the cumulant expansion of
+  `E[relu(z_a) relu(z_b)]` contributes `¼ κ_aabb φ(t_a)φ(t_b)/(σ_aσ_b)`, since `relu'' = δ`. The measured
+  joint fourth cumulant is not suppressed by the correlation, so this collapses to
+  `(g₄/4)·(σφ)_a (σφ)_b` — one positive semidefinite outer product per layer, `n²` flops, 0.002% of the
+  budget. Worth 4.7% of the score.
 
 All arithmetic is float32 through `flopscope`. The normal CDF is an Abramowitz–Stegun 7.1.26 evaluation at
 40 FLOPs/element rather than `flops.stats.norm.cdf`, which costs 96 and silently promotes to float64.
@@ -39,18 +44,29 @@ Official harness, 16-network public shard, `whest run --dataset … --split mini
 
 | metric | value |
 |---|---|
-| adjusted final-layer score | 9.06e-8 |
-| raw final-layer MSE | 9.06e-7 |
+| adjusted final-layer score | 8.29e-8 |
+| raw final-layer MSE | 8.29e-7 |
 | compute utilisation | 9.79% |
 | failed MLPs | 0 of 16 |
+
+Successive harness runs: 9.610e-8 (before the diagonal kernel), 9.055e-8 (diagonal kernel),
+8.703e-8 (two-point kernel), 8.293e-8 (rank-one fourth-cumulant term).
 
 The kernel schedule was fitted on networks 0-7 of this shard. Networks 8-15 are held out and improve
 by 6.4%, against 5.1% for the fitted half.
 
-Over the **full 100-network mini split** (92 of them held out from the schedule fit), the same estimator
-scores 8.675e-7 raw, so roughly 8.67e-8 adjusted at the 0.1 multiplier floor. The shipped kernel is worth
-3.3% there; the 5.8% on the 16-network shard was a favourable draw. Held-out networks score better than
-fitted ones. Ground-truth noise is 7.5e-11, so these differences resolve about a thousandfold over.
+Over the **full 100-network mini split** (92 of them held out from every fit), the estimator scores
+8.107e-7 raw against 8.407e-7 without the fourth-cumulant term — 3.6% overall and 3.5% on the held-out
+92. Ground-truth noise is 7.5e-11, so these differences resolve about a thousandfold over.
+
+**Where the remaining error is** (`diagnostics/results.txt`, sections 33-36). A perfect third-cumulant
+channel would be worth 39% and a perfect fourth another 2%; the Edgeworth readout truncation costs
+1.2e-9, 0.1% of the total. Essentially all of the error is the propagated standard deviation, whose
+per-neuron relative error is zero at layer 1 (where the covariance is the exact arcsine formula) and
+grows linearly at 3.3e-4 per layer. The final mean amplifies a coherent relative σ error 3.57× and an
+incoherent one 0.36×; the measured error is incoherent. To reach the Phase 2 leader's 1.93e-8 raw the
+per-neuron σ accuracy would have to be 3.9e-4 at every layer — about 6× better than ours late in the
+network. Nothing else on the board matters by comparison.
 
 For reference the Phase 2 leader is 2.8e-9 adjusted (1.93e-8 raw at 14.7% compute), and bundled covariance
 propagation is 4.05e-6.

@@ -1068,3 +1068,48 @@ WhestBench Phase 2 public shard (mini, v2-phase2), width 1024, depth 16, scored 
     A 4.7% improvement for 0.002% of the budget, and it is the first change in this programme that
     came from the covariance side rather than the cumulant side -- which is where section 35 says all
     the remaining error is.
+
+--------------------------------------------------------------------------------
+37. The rest of the fourth-order family, and why the coefficient stays a constant.
+    Greedy forward selection over every other free term the same expansion offers (cov_terms.py),
+    with the shipped (a,a,b,b) term in place.  Fit on networks 0/2/4/6, best coefficient per term:
+
+      term                                                          origin                fit ratio
+      sym[(s t phi) x (s Phi)]           (a,a,a,b), mult 4           kappa_aaab             1.0587
+      (s t phi) x (s t phi)              (a,a,a,b,b,b) at 6th order  kappa_aaabbb           0.9979
+      sym[(s phi) x (s Phi)]             --                                                 1.0187
+      (K21 . K21^T) x (t phi/s^2)(t phi/s^2)   second order in kappa_3                      0.9995
+      (Sz . Sz) x (F2 F2)                rho^2 ansatz for kappa_aabb                        1.0099
+      Sz . [(s phi) x (s phi)]           --                                                 0.9958
+
+    Only the last improves the fit at all (0.4%), and held out it is 8.3929e-07 against the shipped
+    term's 8.3918e-07 -- no gain.  Everything else is neutral or harmful, and the two INDEFINITE
+    rank-two terms (the two sym[...] rows) are the worst.  The correction that works is exactly the
+    positive semidefinite one, which is the positivity constraint the programme kept proposing,
+    arriving as a measurement rather than an assumption.  The sixth-order term being neutral says the
+    expansion has converged at fourth order.
+
+    Is the coefficient universal?  No.  Per-network optima (a4_spread.py) span 0.0008 to beyond
+    0.0034, with networks 0 and 15 wanting the low end and 5, 9, 11, 13 the high end; network 5 alone
+    would gain 10% from its own value.  So estimate it from the Monte-Carlo sample we already pay for:
+    for centred variables Cov(z_a^2,z_b^2) = kappa_aabb + 2 Cov(z_a,z_b)^2, so with s_i = sum_a v_a
+    zc_{i,a}^2 and v = sigma phi,
+        g4_est = [ Var(s) - 2 v^T (Sz . Sz) v ] / (v . sigma^2)^2,
+    at 2 N n + 3 n^2 flops per layer.  Measured (a4_mc.py), it rises smoothly with depth --
+    0.0009, 0.0015, 0.0021, ..., 0.0057 for network 0 -- and blending any of it in LOSES, monotonically
+    in the blend weight (1.0016 at w=0.25 up to 1.0108 at w=1).  It also gets the per-network ordering
+    backwards: network 5, which wants the largest coefficient, measures smaller than network 0.
+
+    This is the third time the same thing has happened (the sigma calibration in section 35, the
+    g4-proportional schedule in section 36, and now this): the directly measured value of a quantity
+    is not what the closure wants, because the closure is calibrated around its own errors and the
+    measured value breaks a cancellation.  Only end-to-end fits of aggregates survive.
+
+    Full 100-network mini split, 1e9-sample ground truth (bank_cov4.py):
+
+      configuration            mean       median     fitted(0,2,4,6)  held out (8-99)
+      deployed              8.4069e-07   8.4155e-07    8.2855e-07       8.4102e-07
+      with A4 = 0.0020      8.1066e-07   8.1405e-07    8.0501e-07       8.1133e-07
+
+    3.6% overall and 3.5% on the 92 held-out networks, against 4.7% on the harness's 16-network
+    shard.  The gain is real and general, not a favourable draw.
