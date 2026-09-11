@@ -76,6 +76,18 @@ class FiniteResolutionCumulantEstimator(BaseEstimator):
         (0.02781, 0.05280, 1.00444), (0.02838, 0.05462, 1.09326), (0.02940, 0.05873, 1.18779),
     )
     W2P = 0.75              # weight on the shipped two-point coefficient against the sampled one
+    # Rank-one fourth-cumulant correction to the off-diagonal covariance closure.  The cumulant
+    # expansion of E[relu(z_a) relu(z_b)] has, at fourth order, the index pattern (a,a,b,b) with
+    # multiplicity 4!/(2!2!) = 6, so
+    #     dCov(h_a,h_b) = (1/4) kappa(z_a,z_a,z_b,z_b) E[relu''(z_a)] E[relu''(z_b)]
+    #                   = (1/4) kappa_aabb phi(t_a) phi(t_b) / (sigma_a sigma_b)
+    # because relu'' is a delta.  Measured, kappa_aabb is NOT suppressed by rho^2 -- it is comparable
+    # to the marginal fourth cumulant, which is what a shared generating source gives -- so
+    # kappa_aabb = g4 sigma_a^2 sigma_b^2 and the correction is (g4/4) (sigma phi)_a (sigma phi)_b:
+    # rank one, positive semidefinite, and one outer product per layer.  The coefficient fitted
+    # end to end on networks 0/2/4/6 is 0.0020, inside the range g4/4 = 0.0018 to 0.0147 that the
+    # shipped kurtosis schedule predicts.
+    A4 = 0.0020
 
     def kernel_at(self, l, depth):
         """Schedule entry for layer l of a depth-`depth` network, by relative depth."""
@@ -280,6 +292,9 @@ class FiniteResolutionCumulantEstimator(BaseEstimator):
             if K21 is not None:
                 F2 = ph / sz
                 C = C + (K21 * xp.outer(F2, Ph) + xp.transpose(K21) * xp.outer(Ph, F2)) * F32(0.5)
+            if self.A4:
+                v4 = sz * ph
+                C = C + xp.outer(v4, v4) * F32(self.A4)
             var = m2 - Psi * Psi if dE2 is None else (m2 + dE2) - m_next * m_next
             C = C - xp.diag(xp.diag(C)) + xp.diag(var)
             # ---- source state for the next layer -----------------------------------------------

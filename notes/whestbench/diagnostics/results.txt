@@ -955,3 +955,116 @@ WhestBench Phase 2 public shard (mini, v2-phase2), width 1024, depth 16, scored 
     it is sqrt(6/N) = 0.0071 -- 24% noise -- and the noise it injects into the readout,
     mean[(sigma t phi/6)^2 * 6/N] + mean[(sigma (t^2-1) phi/24)^2 * 24/N], is of the same order as
     the residual being measured.  Section 34 redoes it at N = 1e6.
+
+--------------------------------------------------------------------------------
+34. The oracle redone at N = 1e6, and the per-layer error profile.
+    lambda_3 = kappa_3/sigma^3 is only about 0.010 for these networks (measured), so at N = 120000 the
+    Monte-Carlo error sqrt(6/N) = 0.0071 is most of it.  Redone at N = 1e6 (cum_hi.py), networks 0,1:
+
+      configuration                        MSE        / deployed
+      deployed                           8.564e-07      1.000
+      exact k3, every layer              5.200e-07      0.607
+      exact mean, every layer            1.441e-07      0.168
+      exact mean + k3, every layer       9.341e-08      0.109
+      exact mean + k3 + k4, every layer  9.161e-08      0.107
+
+    A PERFECT cubic channel is worth 39%, not a factor.  The conclusions of section 33 survive.
+
+    Per-layer single-step readout MSE with exact means (step_profile.py).  Layer 1 is the control:
+    there Sigma_0 is the closed-form arcsine covariance, so the closure's sigma is EXACT.
+
+      layer        1      2      4      6      8     10     12     14     15
+      Gaussian  1.54e-7 2.53e-7 3.57e-7 3.92e-7 3.56e-7 3.49e-7 2.89e-7 2.99e-7 2.60e-7
+      ours      1.01e-8 2.75e-8 8.20e-8 1.23e-7 1.34e-7 1.45e-7 1.37e-7 1.52e-7 1.44e-7
+      exact k3,k4 1.13e-8 9.70e-9 4.92e-8 7.03e-8 7.54e-8 9.11e-8 8.81e-8 9.73e-8 9.26e-8
+
+    At layer 1 our own cumulant model is already as good as the oracle, and the residue there is
+    1.0e-08 -- the Gram-Charlier truncation, nothing else.  Confirmed independently (layer1.py) by
+    building the series with coefficients measured at the EXACT (mu, sigma) at N=1e6: Gaussian
+    1.51e-07, +kappa_3 2.30e-08, +kappa_4 1.09e-08, and higher orders do not improve on that because
+    lambda_k is swamped by its own sqrt(k!/N) noise past k=4.  So the single-step error GROWS 14x from
+    layer 1 to layer 15, and the growth is entirely the propagated covariance.
+
+--------------------------------------------------------------------------------
+35. The whole error is the propagated sigma, and how violently it is amplified.
+    Perturb Sz <- Sz(1+2 epsilon) with epsilon = 7e-4 (a 0.07% relative change in sigma) at one layer
+    at a time, and read the excess final MSE (sensitivity.py, networks 0-3).  'amplification' is the
+    resulting rms error in the final mean divided by epsilon.
+
+      perturbed at   1    2    3    4    5    6    7    8    9   10   11   12   13   14   15   all
+      coherent    0.83 0.66 0.56 0.50 0.45 0.39 0.35 0.30 0.25 0.23 0.17 0.14 0.10 0.12 0.05 3.57
+      incoherent  0.00  --   --   --  0.04  --   --   --   --  0.13  --   --   --   --  0.08 0.36
+
+    A COHERENT (uniform) relative sigma error is amplified 3.57x into the final mean; per-neuron
+    RANDOM error of the same rms only 0.36x, ten times less, and with the opposite depth profile
+    (coherent errors matter most early and survive; incoherent ones are mixed away).  The coherent
+    contributions add at 70% of their arithmetic sum (3.57 against 5.10), so they are nearly in phase.
+
+    Measured error in the propagated sigma along the deployed trajectory, against sigma from 1e6
+    samples (bias_spread.py).  The Monte-Carlo floor on a per-neuron sd is 1/sqrt(2N) = 7.07e-04, so
+    subtract it in quadrature:
+
+      layer         1     2     3     5     8    10    12    14    15
+      mean       -5.9e-5 -9.9e-5 -8.7e-5 -1.6e-4 -8.4e-5 -3.3e-4 -5.5e-4 -9.0e-4 -9.9e-4
+      rms (raw)   6.9e-4  7.5e-4  1.0e-3  1.5e-3  2.4e-3  3.1e-3  3.6e-3  4.5e-3  4.8e-3
+      rms (net)   ~0      2.6e-4  7.3e-4  1.4e-3  2.3e-3  3.0e-3  3.6e-3  4.4e-3  4.7e-3
+      coherent share of the variance:  0.7% to 4.2%
+
+    Layer 1 nets to zero, exactly as it must since the closure is exact there -- which validates both
+    the measurement and its noise floor.  After that the rms sigma error is LINEAR in depth, about
+    3.3e-04 per layer, so each layer's covariance closure injects a 0.033% per-neuron error and they
+    accumulate in phase rather than as a random walk.
+
+    The budget then closes.  Incoherent: mean rms sigma error over layers ~2.5e-03 times the 0.36
+    all-layer amplification = 9.0e-04.  Coherent: sum_l |mean bias_l| x amplification_l = 9.3e-04,
+    times the 0.70 phase factor = 6.5e-04.  In quadrature 1.11e-03, against our actual final rms
+    error of 9.3e-04.  Within 20%, using linear response and two-digit amplifications.
+
+    So: ESSENTIALLY ALL OF OUR ERROR IS THE PROPAGATED SIGMA, and it is dominated by the incoherent
+    per-neuron part.  Two consequences, both measured.
+    (i)  No shipped table can fix it.  Correcting the measured mean bias with its own sign makes the
+         score 64% worse (varcal.py), and a free-sign, free-shape fit (varfit.py) returns zero: every
+         nonzero calibration, either sign, any depth shape, loses, and a uniform 0.035% change in
+         sigma costs a factor 2.5 in MSE.  The closure sits at the bottom of an extremely narrow
+         well, with its sigma deficit cancelling against something else.
+    (ii) The target is now quantitative.  To reach the leader's 1.93e-08 raw (rms 1.39e-04) the
+         per-neuron sigma accuracy must be 1.39e-04/0.36 = 3.9e-04 at every layer, against our
+         current 0 to 4.7e-03.  That is a 6x improvement in the late-layer covariance closure, and
+         nothing else on the board matters by comparison.
+
+--------------------------------------------------------------------------------
+36. A free rank-one fourth-cumulant term in the covariance closure.  SHIPPED.
+    The cumulant expansion  E[F(z)] = E_G[F] + sum_k (1/k!) sum kappa_{i1..ik} E_G[d_{i1}..d_{ik} F]
+    applied to F = relu(z_a) relu(z_b) has, at fourth order, the index pattern (a,a,b,b) with
+    multiplicity 4!/(2!2!) = 6, so
+        dCov(h_a,h_b) = (1/4) kappa(z_a,z_a,z_b,z_b) E[relu''(z_a)] E[relu''(z_b)]
+                      = (1/4) kappa_aabb phi(t_a) phi(t_b) / (sigma_a sigma_b),
+    since relu'' is a delta.  Three ansatze for kappa_aabb were fitted end to end (cov4.py):
+
+      kappa_aabb ~ g4 s_a^2 s_b^2 rho^2   best fit 0.9900 of deployed
+      kappa_aabb ~ g4 s_a^2 s_b^2 |rho|   best fit 0.9786
+      kappa_aabb ~ g4 s_a^2 s_b^2         best fit 0.9716
+
+    The joint fourth cumulant is NOT suppressed by rho -- it is comparable to the marginal one, which
+    is what a shared generating source (the previous layer's kinks) gives.  With that ansatz the
+    correction collapses to
+        dCov = (g4/4) (sigma phi)_a (sigma phi)_b,
+    rank one, positive semidefinite, one outer product per layer, n^2 flops, 0.0014% of budget.
+    Fitted end to end on networks 0/2/4/6 the coefficient is 0.00200, and the shipped kurtosis
+    schedule predicts g4/4 in 0.0018 to 0.0147 -- the fit lands at the bottom of the predicted range
+    and a constant beats every g4-proportional or (l/15)^q schedule tried.
+
+      fit (0,2,4,6)      8.2855e-07 -> 8.0501e-07
+      held out (8-15)    8.8264e-07 -> 8.3918e-07   (4.9%, and the held-out gain exceeds the fitted one)
+
+    Official harness, 16-network mini shard, whest run --runner local:
+
+      run   adjusted     raw MSE    compute   failed
+      16    9.610e-08   9.610e-07   9.786%     0/16     (before the diagonal kernel)
+      17    9.055e-08   9.055e-07   9.787%     0/16     (diagonal kernel)
+      18    8.703e-08   8.703e-07   9.786%     0/16     (two-point kernel)
+      19    8.293e-08   8.293e-07   9.788%     0/16     (this term)
+
+    A 4.7% improvement for 0.002% of the budget, and it is the first change in this programme that
+    came from the covariance side rather than the cumulant side -- which is where section 35 says all
+    the remaining error is.
