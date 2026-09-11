@@ -649,3 +649,53 @@ WhestBench Phase 2 public shard (mini, v2-phase2), width 1024, depth 16, scored 
     the whole admissible interval of epsilon, not just its derivative at zero.  So this measurement is
     evidence for choosing the exact-quotient-preserving completion over the jet, which was posed as an
     open design choice rather than settled.
+
+--------------------------------------------------------------------------------
+25. Correction to the literature study, from reading two of the papers directly.
+
+    The study returned 49 of 49 "not relevant" at the reading stage, with zero changed by the
+    adversarial stage.  Forty-nine independent agents across eight subfields, unanimous, with no
+    movement under a stage built to argue the opposite, is a prior rather than a measurement, and the
+    prompt installed it: readers were told "not relevant is the expected answer", handed six measured
+    obstructions framed as hurdles a method must clear, warned about a fabricated citation, and given
+    an actionability bar of "implementable this week".  Nothing pushed the other way.
+
+    "0 actionable" stands.  "0 conceptually useful" does not.  Read directly, two papers carry the same
+    distinction, and it is one we collapse.
+
+    (a) Connes and van Suijlekom, arXiv:2004.14115, sections 4.1 and 4.2.  Two truncations of the same
+    circle, dual to each other:
+        Toeplitz  C(S^1)^(n) = P_n C(S^1) P_n     truncation on the STATE side       prop = 2
+        Fejer-Riesz  C*(Z)^(n), finite Fourier support   truncation on the OBSERVABLE side  prop = infinity
+    prop(E) is the least number of products of retained elements needed to generate the C*-envelope.
+    On the state side two products already give all of M_n(C), the "non-informative full matrix
+    algebra", INDEPENDENTLY OF n.  On the observable side no finite number ever does.  Both converge to
+    the circle; one keeps the S^1 symmetry and a rich pure state space, the other (circulant
+    discretisation) reduces it to a discrete group.  Their section 6: convergence in Gromov-Hausdorff
+    distance does not imply retention of the structure the remaining dynamics acts through.
+
+    Every truncation we have implemented is on the state side: the covariance, the cumulant tensor, the
+    transport, the unit space, the memory modes.  And we do multiply retained objects, repeatedly --
+    the covariance closure is a Hermite power series in the retained correlation to order 8, plus
+    m2 - Psi^2, plus source terms quadratic in the transported quantities.  Degeneration after two
+    products, flat in the truncation parameter, is obstruction 1's measured signature exactly.
+
+    (b) Giannakis and Montgomery, arXiv:2603.20102, sections 4.2 and 4.3.  The same defect from the
+    dynamics side, with a name and a repair.  Finite-dimensional approximations of a generator are
+    dynamically consistent yet "generally fail to satisfy a Leibniz rule": products of approximate
+    eigenfunctions are not approximate eigenfunctions.  The repair is Fock amplification -- lift the
+    generator to the tensor algebra by the derivation rule
+        W~(f_1 (x) ... (x) f_n) = (W f_1) (x) ... + ... + f_1 (x) ... (x) (W f_n)
+    so that Leibniz holds by construction and exp(t W~) acts multiplicatively on tensor products.
+
+    This names our confirmed bug.  Section 23's closure-induced return is a Leibniz failure: degree two
+    is the product of two degree-one observables, and our closure treats them with separately fitted
+    approximations that nothing forces to satisfy the product rule relating them.  The graded law
+    T^(p) h . T^(q) g = T^(p+q)(hg) is precisely the multiplicativity a truncation must respect.
+
+    The design consequence, untested.  Our estimator fits three objects at three degrees independently:
+    a_l t sigma^3 for the third cumulant, a scalar g4 for the fourth, c_l sigma^3 for the two-point.
+    Nothing makes them the derivation-extension of a single degree-one map.  A Leibniz-coherent closure
+    would induce the higher-degree corrections from the degree-one one rather than fitting them
+    separately.  That is a different architecture from anything tried here, and it is the first
+    candidate this literature has produced that addresses a defect we actually measured.
