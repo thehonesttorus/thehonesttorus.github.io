@@ -867,3 +867,91 @@ WhestBench Phase 2 public shard (mini, v2-phase2), width 1024, depth 16, scored 
     So the Edgeworth order is not what separates us from the leaderboard.  Combined with section 28
     (exact mean and covariance one step from the end still leaves 6% = 5.2e-08), the residue is
     entirely our MODEL of kappa_3 and kappa_4, not the way we read them out.
+
+--------------------------------------------------------------------------------
+32. Budget reallocation with an honest refit, and why the deployed split is the optimum.
+    Section 29's reallocations kept the SHIPPED kernel schedule, which was fitted for the deployed
+    configuration; that is not a fair test.  ablate.py refits three scalars (alpha, gamma, delta
+    multiplying the a, c2p and g4 schedules) on networks 0/3/6 for every configuration, then scores
+    held-out networks 8-15.  Cost in units of n^3 (budget 2^41 = 2048 n^3), from a model validated
+    against the harness: MC = N*2*L/n, covariance sandwich 3.0/layer, source Nt 2.0/level/layer,
+    transport 2.0/extra level/layer, source K21 3.2/level/layer.  Deployed = 198 n^3 = 9.67%,
+    against the harness's measured 9.79%.
+
+      configuration                      cost   C/B     alpha  held MSE    adjusted
+      A deployed                         198.0  9.67%   1.00   8.827e-07   8.827e-08
+      B no exact K21                     150.0  7.32%   1.00   1.245e-06   1.245e-07
+      C no K21, depth2 from 8            182.0  8.89%   1.00   1.125e-06   1.125e-07
+      D no K21, depth2 all               210.0 10.25%   0.75   1.194e-06   1.224e-07
+      E no K21, no MC, depth2 all        135.0  6.59%   0.75   1.183e-06   1.183e-07
+      F no K21, MC1200, depth3 all       232.5 11.35%   0.75   1.064e-06   1.208e-07
+      G deployed + depth2 from 12        226.8 11.07%   1.00   8.249e-07   9.135e-08
+      H no K21, depth3 from 6            230.0 11.23%   0.75   1.079e-06   1.212e-07
+      I deployed, MC 4800                273.0 13.33%   1.00   8.268e-07   1.102e-07
+      J no K21, no MC, depth3 all        195.0  9.52%   0.75   1.078e-06   1.078e-07
+
+    On the deployed configuration the refit returns alpha=gamma=delta=1.00 exactly, so the shipped
+    schedule is already at its own optimum and the method is honest.  Every alternative loses.
+    Three readings:
+    (i)  The EXACT two-point channel is the load-bearing part of the source, not the diagonal depth.
+         Dropping it costs 41% and no amount of diagonal depth (2 or 3, everywhere) buys it back.
+         Its cost is 48 n^3; it is the best-value 2.3% of the budget we spend.
+    (ii) Doubling the Monte-Carlo sample improves raw MSE by only 6.3% for 3.7% more budget.  The
+         per-neuron k3 shrinkage weight is sig/(sig+noise) with noise = 6 sigma^6/N, and at N=2400
+         that weight is a few percent: the Monte-Carlo third-cumulant channel is almost entirely
+         shrunk away.  What the sample actually buys is the two-point coefficient and nothing else.
+    (iii)Depth 2 on the late layers does improve raw MSE (8.25e-07, 6.5%) but at 11.07% compute, and
+         the multiplier takes it straight back.  We sit at 9.67% against a 10% floor: 0.33% of the
+         budget, about 3 matmuls per network, is the entire free allowance.  Any real gain from here
+         has to be free.
+
+--------------------------------------------------------------------------------
+33. Where the error actually is.  Two oracles, one of them noise-free.
+
+    (a) Self-consistent source correction (selfconsist.py).  The exact Hermite integral
+            int_{-t}^{inf} (x+t)^m phi(x) He_k(x) dx = m! phi(t) He_{k-m-1}(-t),   J_3^3 = 6 Phi(t)
+        gives the first-order response of the ReLU moments to the input's own third cumulant:
+        dE[h] = -k3 t phi/(6 s^2), dE[h^2] = k3 phi/(3 s), dE[h^3] = k3 Phi -- the first two are
+        already our readout and variance corrections, so the third closes the loop:
+            d kappa_3(h) = k3 [ Phi - phi Psi/s + m2 t phi/(2 s^2) - Psi^2 t phi/s^2 ].
+        Adding it to the source makes the depth-1 channel carry inherited non-Gaussianity
+        recursively at O(n) cost.  Measured, held out: 8.826e-07 -> 8.817e-07 at the theory value
+        beta=1, 8.814e-07 at beta=2.  0.1%.  The diagonal diagram is the smallest of the three, so
+        correcting it cannot matter; the same correction applied to the source MATRIX (the tree
+        diagram) with the wrong functional form makes things worse.
+
+    (b) The noise-free mean oracle (mean_oracle.py).  mu_l = E[z_l] = Y_{l-1} W_l exactly, and Y_l is
+        ground truth to 7.5e-11, so substituting the true layer mean at every step injects no
+        Monte-Carlo noise at all.  Networks 0 and 1:
+
+          configuration                          mean MSE     / deployed
+          deployed                               8.564e-07      1.000
+          exact mean, every layer                1.441e-07      0.168
+          exact mean, layers >= 8 only           1.440e-07      0.168
+          exact k3, every layer                  5.932e-07      0.693
+          exact mean + k3, every layer           9.897e-08      0.116
+          exact mean + k3 + k4, every layer      9.870e-08      0.115
+
+        83% of our error is ACCUMULATED mean error, and every bit of the accumulation happens in
+        layers 8-15 -- substituting the mean only from layer 8 on is indistinguishable from
+        substituting it everywhere.  The single-step error, given an exact mean input, is 1.44e-07,
+        of which our cubic model accounts for 32% and everything else for 68%.
+
+    (c) The single-step residual is flat in depth and orthogonal to the shipped basis
+        (sigma_resid.py).  R_l = Y_l - Psi(mu_exact, sigma_model) - dE1(exact k3, k4):
+
+          layer      1     2     4     6     8    10    12    14    15
+          MSE_l   9.3e-8 7.1e-8 8.9e-8 8.8e-8 8.8e-8 9.9e-8 9.5e-8 1.0e-7 9.9e-8
+          R2 on phi(t)sigma (a pure sigma rescale)   0.001 to 0.017
+          R2 on phi(t)sigma * {1,t,t^2}              0.003 to 0.020
+          R2 on phi(t)sigma * (free 12-bin g(t))     0.008 to 0.027
+
+        The per-step readout error is the SAME at layer 1, where our covariance is the exact arcsine
+        formula, as at layer 15.  And no function of (t, sigma) explains more than 3% of it, so
+        nothing a shipped kernel can express will remove it.  That is the wall, and it is flat.
+
+    CAVEAT recorded at the time of writing: the "exact k3" in (b) uses lambda_3 = kappa_3/sigma^3
+    measured from 120000 samples.  For these networks lambda_3 ~ 0.03 while the Monte-Carlo error on
+    it is sqrt(6/N) = 0.0071 -- 24% noise -- and the noise it injects into the readout,
+    mean[(sigma t phi/6)^2 * 6/N] + mean[(sigma (t^2-1) phi/24)^2 * 24/N], is of the same order as
+    the residual being measured.  Section 34 redoes it at N = 1e6.
