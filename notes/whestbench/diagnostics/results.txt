@@ -699,3 +699,89 @@ WhestBench Phase 2 public shard (mini, v2-phase2), width 1024, depth 16, scored 
     would induce the higher-degree corrections from the degree-one one rather than fitting them
     separately.  That is a different architecture from anything tried here, and it is the first
     candidate this literature has produced that addresses a defect we actually measured.
+
+--------------------------------------------------------------------------------
+26. Defect B, the Price relation, completing the three-way audit.
+    For the true functional Price's theorem gives exactly  D_Sigma[v v^T] M = (1/2) D^2_m[v,v] M.
+    This is the relation linking a DEGREE-TWO perturbation to a product of two DEGREE-ONE derivatives,
+    i.e. the Leibniz relation across the grading.  Central finite differences, network 0.
+
+      start layer | closure ||P_v||/||M|| | truth (control, exact 0) | closure error ||M-truth||/||M||
+          4       |      3.49e-05         |        1.93e-04         |          1.11e-03
+          8       |      3.84e-05         |        2.68e-04         |          8.71e-04
+         11       |      3.17e-05         |        4.76e-04         |          7.18e-04
+         13       |      1.44e-05         |        3.81e-04         |          6.97e-04
+
+    The closure's Price defect is BELOW the measurement floor and 20 to 50 times smaller than its own
+    error.  So the audit now reads: defect A exactly zero, defect B below measurement, defect C 921x.
+    The Gaussian core is internally coherent on both relations; the incoherence is entirely between
+    that core and the separately bolted-on cubic channel.  That is a sharper diagnosis than "Leibniz
+    is broken".
+
+--------------------------------------------------------------------------------
+27. What a single coherent positive extension predicts, and the data's answer.
+    A binary extension X|T ~ N(m+Tu, Sigma-uu^T+TB) with B aligned to the pre-activation covariance
+    (B = beta Sz) and u proportional to muhat reproduces our diagonal kernel's form a*t*sigma^3
+    exactly, and then PREDICTS the two-point kernel must go as sigma^2 with an extra 2 muhat_a Sz_ab
+    term.  We fitted sigma^3 with no such term.  Tested against the measured deep tail, network 0:
+
+      layer | R2 on s^2 | R2 on s^3 | R2 on s^4 | best free power | R2 coherent 2-term
+        8   |  0.9818   |  0.9860   |  0.9832   |      3.10       |      0.9831
+       12   |  0.9755   |  0.9817   |  0.9756   |      3.00       |      0.9779
+       16   |  0.9715   |  0.9739   |  0.9543   |      2.60       |      0.9716
+
+    The free power fits at 2.6 to 3.2, clustering on 3, and sigma^3 beats both sigma^2 and the coherent
+    two-term basis at every layer.  So the simplest coherent parameterisation is rejected by the data.
+    A coherent form would need B_aa proportional to sigma^3, i.e. B = diag(sqrt(sigma)) Sz
+    diag(sqrt(sigma)), which is admissible but not the natural choice.
+
+--------------------------------------------------------------------------------
+28. The oracle-substitution error budget.  Run the closure to layer l, substitute the TRUE component
+    there, continue, and record the final MSE.  Network 0, baseline 8.3611e-07.  Fractions of baseline:
+
+      substitute at layer :   2     4     6     8    10    12    14    16
+      mean only           : 1.00  0.99  0.98  0.93  0.78  0.59  0.43  0.17
+      covariance only     : 1.03  1.05  0.95  0.90  0.85  0.89  0.90  0.93
+      both                : 1.03  1.03  0.93  0.82  0.66  0.45  0.26  0.06
+
+    Three readings, none of which we had before.
+    (i) The SECOND-ORDER STATE at early layers is irrelevant.  Handing the closure the exact mean and
+        covariance at layer 2, 4 or 6 changes nothing, occasionally slightly hurting.  Error born there
+        does not survive to the output, consistent with the transport needing only 12 singular
+        directions for half its energy over 15 layers (section 5).
+    (ii) The COVARIANCE is not the carrier.  Exact covariance at ANY layer, including layer 16, leaves
+        85 to 93% of the error.  The mean is the carrier.
+    (iii) Even an exact second-order state one step from the end leaves 6%.  That is the irreducible
+        single-step readout error of our closure given perfect second-order input.
+
+--------------------------------------------------------------------------------
+29. The reallocation that (ii) and (i) seem to license, and why it fails.
+    If early state error is forgotten, spend nothing early and more late.  Held-out networks 8-15,
+    cost counted in source-channel matmuls (deployed = 60):
+
+      configuration                        cost   mean MSE
+      uniform depth 1 (deployed)            60    8.827e-07
+      none before 7, depth 1 from 7         36    1.120e-06     27% WORSE
+      none before 7, depth 2 from 10        66    9.862e-07
+      none before 5, depth 2 from 10        74    9.030e-07
+      depth 1 all, depth 2 from 10          90    7.683e-07     13% better, 50% more cost
+      none before 7, depth 3 from 11        86    9.429e-07
+      uniform depth 2                      130    6.369e-07     28% better, 117% more cost
+
+    Stripping the early source channel hurts badly.  The two measurements are not in conflict, and
+    together they say something sharper than either alone:
+
+      the SECOND-ORDER STATE born early is forgotten, but the CUMULANT SOURCES born early survive.
+
+    Section 28 substitutes mean and covariance, which does not supply the higher cumulants; the source
+    channel at early layers is what generates the non-Gaussianity that then propagates.  This is why
+    the shipped memory kernel works at all: it stands in for early-born sources, which is the component
+    that survives composition, rather than for the state, which does not.  It also explains why depth
+    pays in the source channel while depth in the state does not.
+
+    None of the reallocations wins under the score multiplier.  Uniform depth 2 raises total compute
+    from 9.79% to about 17%, so 6.369e-07 x 0.17 = 1.08e-07 against the deployed 8.83e-07 x 0.1 =
+    8.83e-08.  Depth 2 from layer 10 lands at 9.9e-08.  Deployed stays optimal.
+    The live follow-up: depth 2 at late layers is worth 13% and costs 3.1% of budget.  A shipped kernel
+    calibrated specifically to the depth-2 contribution at late layers would make it free, and that is
+    aggregate-fitting, the one method that has worked here.
