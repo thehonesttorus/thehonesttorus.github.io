@@ -43,14 +43,19 @@ All arithmetic is float32 through `flopscope`. The normal CDF is an Abramowitz�
 
 ### Measured
 
-Official harness, 16-network public shard, `whest run --dataset … --split mini --runner local`:
+Official harness, **all 100 MLPs of the public mini split**, `whest run --dataset … --split mini --runner local`.
+The local download was shard 0 of 7 (16 MLPs), so the other 84 were rebuilt locally from `mlp_seed`,
+which reproduces the stored weights bit-exactly; rebuilding shard 0 reproduces its genuine score to
+the last digit. See `diagnostics/results.txt` section 39 for the audit.
 
 | metric | value |
 |---|---|
-| adjusted final-layer score | 8.10e-8 |
-| raw final-layer MSE | 8.10e-7 |
-| compute utilisation | 9.79% |
-| failed MLPs | 0 of 16 |
+| adjusted final-layer score | 7.96e-8 |
+| raw final-layer MSE | 7.96e-7 |
+| compute utilisation | 9.80% |
+| failed MLPs | 0 of 100 |
+| max per-MLP utilisation | 9.92% (none above the 10% floor) |
+| max residual wall time | 0.17 s (cap 0.4 s) |
 
 Successive harness runs: 9.610e-8 (before the diagonal kernel), 9.055e-8 (diagonal kernel),
 8.703e-8 (two-point kernel), 8.293e-8 (rank-one fourth-cumulant term), 8.099e-8 (next order in ρ).
@@ -72,7 +77,9 @@ per-neuron σ accuracy would have to be 3.9e-4 at every layer — about 6× bett
 network. Nothing else on the board matters by comparison.
 
 For reference the Phase 2 leader is 2.8e-9 adjusted (1.93e-8 raw at 14.7% compute), and bundled covariance
-propagation is 4.05e-6.
+propagation is 4.05e-6. **Those are holdout-split numbers and these are not**: the leaderboard grades a
+private holdout split, while everything here is the public mini split. The comparison shows the direction
+of the gap, not a like-for-like margin.
 
 ## Diagnostics
 

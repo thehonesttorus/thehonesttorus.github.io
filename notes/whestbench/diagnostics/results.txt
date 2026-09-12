@@ -1172,3 +1172,69 @@ WhestBench Phase 2 public shard (mini, v2-phase2), width 1024, depth 16, scored 
 
     5.5% overall for the session, 5.4% on the 92 networks held out from every fit, 6.9% on the
     harness shard.  Both terms cost n^2 flops; compute utilisation moved from 9.786% to 9.793%.
+
+--------------------------------------------------------------------------------
+39. Scoring audit: am I measuring what the competition measures?
+
+    THE FORMULA IS EXACT.  Checked against the harness source (whestbench/budget.py, scoring.py) and
+    the starter kit, not from memory:
+      - per-MLP score = final_layer_mse * max(0.1, C_m/B_m), FINAL LAYER ONLY, against the 1e9-sample
+        ground truth;
+      - the aggregate is the ARITHMETIC MEAN OF PER-MLP SCORES, not mean(mse) x mean(multiplier).
+        The two coincide here only because every MLP sits at the 0.1 floor -- verified: across all
+        100, per-MLP utilisation runs 9.692% to 9.916% and none exceeds 10%;
+      - B_m = 2^41 for Phase 2 (width 1024, depth 16, CURRENT_ROUND = PHASE2_ROUND);
+      - lambda_flops_per_second = 0.0, so C == F.  Phase 1 priced residual wall time at 1e11 FLOPs/s;
+        Phase 2 GATES it instead at residual_wall_time_limit_s = 0.4 s.  Exceeding any limit forces
+        the multiplier to 1.0, a 10x penalty, so these are worth watching:
+            residual wall time   max 0.174 s   against a 0.4 s cap
+            wall time            max 6.6 s     against a 120 s cap
+            failures             0 of 100      (budget, time, residual alike)
+
+    TWO WAYS THE MEASUREMENT WAS NOT THE COMPETITION'S.
+
+    (a) I was scoring 16 of the 100 MLPs, and did not know it.  The local dataset was shard 0 of 7
+        (`mini-00000-of-00007.parquet`, 16 rows), so `--n-mlps`, whose default is "the full dataset
+        size", correctly evaluated 16.  Worse, MLPs 0-7 of that shard are the networks every kernel
+        schedule was fitted on, so half the headline number was fit-contaminated.
+
+        Fixed rather than caveated.  The seed protocol regenerates the stored weights BIT-EXACTLY
+        (checked on MLPs 0, 1, 7, 15: max|regenerated - stored| = 0.0), every other column is small
+        enough to fetch by HTTP range read, so the full 100-MLP split was rebuilt locally
+        (build_split.py) and scored by the real flopscope-metered harness in four batches.  The
+        rebuild of shard 0 reproduces the genuine shard's score to the last digit
+        (8.098687622748458e-08), which is what licenses the other 84.
+
+          MLPs      n        adjusted        raw MSE     util   failed
+          0-15     16    8.098688e-08   8.098688e-07   9.793%     0
+          16-43    28    7.888995e-08   7.888995e-07   9.792%     0
+          44-71    28    7.810807e-08   7.810807e-07   9.814%     0
+          72-99    28    8.100414e-08   8.100414e-07   9.789%     0
+          ALL     100    7.959851e-08   7.959851e-07   9.797%     0
+
+        The full split scores BETTER than the 16-MLP shard (7.960e-08 against 8.099e-08): that shard
+        was a mildly unfavourable draw, not a favourable one.
+
+    (b) The leaderboard grades a PRIVATE HOLDOUT split, not this one.  whestbench distinguishes
+        `public`, `mini` and `holdout` (dataset_io.py: DEFAULT_SPLIT = "public", HOLDOUT_SPLIT =
+        "holdout"), and the starter kit describes mini as the "public Mini split (100 MLPs)" for
+        local testing while leaving the evaluation set unspecified.  So no number in this file is a
+        leaderboard number, and the 2.8e-09 leader figure quoted throughout IS one.  Every "gap to
+        the leader" stated here compares a local dev split against a holdout split.  The direction
+        is not in doubt -- the gap is about 28x -- but the figure is not like for like and should
+        not be quoted as if it were.
+
+    ESTIMATOR COMPLIANCE, checked against the starter kit's allowed-code document.
+      - Shipping fitted constants is explicitly allowed: "trained weights, lookup tables,
+        calibration constants, any precomputed artifact".  The KERNEL table, A4 and S3 are data.
+      - Regenerating weights from the seed AT RUNTIME would be a breach ("meaningful computation" in
+        residual time is disqualifiable).  estimator.py does not: it reads mlp.weights.  Only the
+        offline diagnostics regenerate, and that is dataset construction, not estimation.
+      - Reading mlp.seed to seed the Monte-Carlo RNG is not explicitly addressed and appears
+        permitted; it is what the estimator does.
+
+    TWIN FIDELITY.  Every A/B decision in sections 30-38 was made with the numpy twin, which is not
+    flopscope-metered.  On the same 16 MLPs the twin reads 8.0243e-07 against the harness's
+    8.0987e-07 (0.92% optimistic); across all 100 it reads 7.946e-07 against 7.960e-07 (0.17%).  The
+    bias is small, one-signed and far below every margin that decided a shipped change, so no
+    decision flips -- but twin numbers are not harness numbers and are not quoted as such.
