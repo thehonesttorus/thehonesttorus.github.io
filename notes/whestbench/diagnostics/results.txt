@@ -1113,3 +1113,62 @@ WhestBench Phase 2 public shard (mini, v2-phase2), width 1024, depth 16, scored 
 
     3.6% overall and 3.5% on the 92 held-out networks, against 4.7% on the harness's 16-network
     shard.  The gain is real and general, not a favourable draw.
+
+--------------------------------------------------------------------------------
+38. Completing the off-diagonal closure to the next order in the correlation.  SHIPPED.
+    For Cov(h_a, h_b) only the joint law of the PAIR matters, so enumerate the cumulant patterns in
+    {a,b} and subtract E[h_a]E[h_b], which cancels every piece that survives at rho = 0.
+
+      (a,a,a)   mult 1, third order.  (1/6) k_aaa E[relu'''(z_a) relu(z_b)] with relu''' = delta'.
+                E[delta'(z_a) relu(z_b)] = -[ p_a'(0) Psi_b + p_a(0) Phi_b rho sigma_b/sigma_a ]; the
+                first piece cancels, leaving  -(1/6) lambda_3(a) phi_a Phi_b Sz_ab.
+      (a,a,b)   mult 3.  We keep the leading (1/2) k_aab F2_a Phi_b.  Next order in rho comes from
+                Phi(m(0)/s) = Phi(t_b - rho t_a) ~ Phi_b - rho t_a phi_b.
+      (a,a,a,b) mult 4.  (1/6) k_aaab E[relu'''(z_a) relu'(z_b)]; k_aaab vanishes at rho = 0, and the
+                ansatz k_aaab = g4 sigma_a^2 Sz_ab gives  -(g4/6) Sz_ab t_a phi_a Phi_b.
+      (a,a,a,a) mult 1.  (1/24) k_aaaa E[relu''''(z_a) relu(z_b)], relu'''' = delta''; the surviving
+                O(rho) piece is  +(g4/12) Sz_ab t_a phi_a Phi_b.
+
+    Three of these four collapse onto the SAME direction, because the closure's own third cumulant is
+    k3 = a_l t sigma^3, so lambda_3 is proportional to t:
+
+        Sz . [ (t phi) (x) Phi  +  Phi (x) (t phi) ]
+
+    Elementwise, n^2 flops, 0.004% of budget.  Fitted end to end (cov_rho.py, cov_rho3.py):
+
+      coefficient x g4_l   0.12    0.17    0.22    0.27    0.33
+      fit   (0,2,4,6)     0.9776  0.9720  0.9683  0.9669  0.9682
+      held out (8-15)     0.9851  0.9823  0.9814  0.9827  0.9868
+
+    A flat constant coefficient does exactly as well (0.9816 held out at 0.007), so the g4 schedule is
+    not doing work; 0.22 x g4_l is shipped because its fit is marginally better and its held-out
+    optimum is flat from 0.17 to 0.27.  The (a,a,b) next-order term is neutral at any coefficient.
+
+    The derivation predicts a NEGATIVE coefficient (-(lambda_3/6) - (g4/6) + (g4/12), all negative for
+    these networks) and the negative branch is clearly worse: -0.17 gives 1.0510 of the baseline
+    against 0.9669 at +0.27.  That is the fourth time in this programme a derived value has lost to
+    the same term fitted end to end, and the explanation is the one section 35 established: the
+    closure is calibrated around its own errors, so a term inserted at its derived strength breaks a
+    cancellation.  What the fit is choosing is a BASIS DIRECTION, and the derivation's value is that
+    it found the direction.
+
+    One more round with both terms in place (cov_rho4.py) over Sz.(s phi)(x)(s phi), the same
+    direction at rho^2, the K21 next-order term, and Sz.(phi)(x)(phi): every held-out ratio is 0.9995
+    or worse.  The family is exhausted at two terms.
+
+    Official harness, 16-network mini shard:
+
+      run   adjusted     raw MSE    compute   failed   change
+      18    8.703e-08   8.703e-07   9.786%    0/16     two-point kernel
+      19    8.293e-08   8.293e-07   9.788%    0/16     + rank-one fourth cumulant (A4)
+      20    8.099e-08   8.099e-07   9.793%    0/16     + next order in rho (S3)
+
+    Full 100-network mini split, 1e9-sample ground truth (bank_rho.py):
+
+      configuration          mean       median    fitted(0,2,4,6)  held out (8-99)
+      before this session  8.4069e-07  8.4155e-07   8.2855e-07      8.4102e-07
+      + A4                 8.1065e-07  8.1400e-07   8.0503e-07      8.1133e-07
+      + A4 + S3            7.9460e-07  7.9696e-07   7.7955e-07      7.9575e-07
+
+    5.5% overall for the session, 5.4% on the 92 networks held out from every fit, 6.9% on the
+    harness shard.  Both terms cost n^2 flops; compute utilisation moved from 9.786% to 9.793%.

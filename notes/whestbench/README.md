@@ -34,6 +34,9 @@ corrected at each layer by the leading non-Gaussian structure of the pre-activat
   joint fourth cumulant is not suppressed by the correlation, so this collapses to
   `(g₄/4)·(σφ)_a (σφ)_b` — one positive semidefinite outer product per layer, `n²` flops, 0.002% of the
   budget. Worth 4.7% of the score.
+- **Next order in the correlation.** The `(a,a,a)`, `(a,a,a,b)` and `(a,a,a,a)` patterns all collapse
+  onto the single direction `Sz ⊙ [(tφ)⊗Φ + Φ⊗(tφ)]`, because the closure's own third cumulant is
+  `a_ℓ·t·σ³` so `λ₃ ∝ t`. Elementwise, `n²` flops. Worth another 2.3%.
 
 All arithmetic is float32 through `flopscope`. The normal CDF is an Abramowitz–Stegun 7.1.26 evaluation at
 40 FLOPs/element rather than `flops.stats.norm.cdf`, which costs 96 and silently promotes to float64.
@@ -44,19 +47,19 @@ Official harness, 16-network public shard, `whest run --dataset … --split mini
 
 | metric | value |
 |---|---|
-| adjusted final-layer score | 8.29e-8 |
-| raw final-layer MSE | 8.29e-7 |
+| adjusted final-layer score | 8.10e-8 |
+| raw final-layer MSE | 8.10e-7 |
 | compute utilisation | 9.79% |
 | failed MLPs | 0 of 16 |
 
 Successive harness runs: 9.610e-8 (before the diagonal kernel), 9.055e-8 (diagonal kernel),
-8.703e-8 (two-point kernel), 8.293e-8 (rank-one fourth-cumulant term).
+8.703e-8 (two-point kernel), 8.293e-8 (rank-one fourth-cumulant term), 8.099e-8 (next order in ρ).
 
 The kernel schedule was fitted on networks 0-7 of this shard. Networks 8-15 are held out and improve
 by 6.4%, against 5.1% for the fitted half.
 
 Over the **full 100-network mini split** (92 of them held out from every fit), the estimator scores
-8.107e-7 raw against 8.407e-7 without the fourth-cumulant term — 3.6% overall and 3.5% on the held-out
+7.946e-7 raw against 8.407e-7 without the two covariance terms — 5.5% overall and 5.4% on the held-out
 92. Ground-truth noise is 7.5e-11, so these differences resolve about a thousandfold over.
 
 **Where the remaining error is** (`diagnostics/results.txt`, sections 33-36). A perfect third-cumulant

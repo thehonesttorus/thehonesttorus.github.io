@@ -88,6 +88,15 @@ class FiniteResolutionCumulantEstimator(BaseEstimator):
     # end to end on networks 0/2/4/6 is 0.0020, inside the range g4/4 = 0.0018 to 0.0147 that the
     # shipped kurtosis schedule predicts.
     A4 = 0.0020
+    # Next order in the correlation, third and fourth cumulant together.  For Cov(h_a,h_b) only the
+    # joint law of the PAIR matters, and after subtracting E[h_a]E[h_b] (which cancels every piece
+    # surviving at rho = 0) the (a,a,a) and (a,a,a,b) patterns both reduce to the SAME direction,
+    #     Sz . [ (t phi) (x) Phi  +  Phi (x) (t phi) ],
+    # because the closure's own third cumulant is k3 = a_l t sigma^3, so lambda_3 is proportional to
+    # t.  The derivation predicts a negative coefficient; end to end the data wants +0.22 times the
+    # layer's excess kurtosis, and the held-out optimum is flat between 0.17 and 0.27.  Elementwise,
+    # n^2 flops.
+    S3 = 0.22
 
     def kernel_at(self, l, depth):
         """Schedule entry for layer l of a depth-`depth` network, by relative depth."""
@@ -295,6 +304,10 @@ class FiniteResolutionCumulantEstimator(BaseEstimator):
             if self.A4:
                 v4 = sz * ph
                 C = C + xp.outer(v4, v4) * F32(self.A4)
+            if self.S3:
+                g4k = self.kernel_at(l, L)[1]
+                tp = t * ph
+                C = C + Sz * (xp.outer(tp, Ph) + xp.outer(Ph, tp)) * F32(self.S3 * g4k)
             var = m2 - Psi * Psi if dE2 is None else (m2 + dE2) - m_next * m_next
             C = C - xp.diag(xp.diag(C)) + xp.diag(var)
             # ---- source state for the next layer -----------------------------------------------
