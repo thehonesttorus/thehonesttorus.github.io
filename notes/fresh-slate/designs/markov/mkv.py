@@ -115,7 +115,7 @@ def single_site(P, K, c, Cm=None):
     return d3, d4
 
 
-def mkv(W, w=4, ng_cov=True, K=60, return_all=False, gauss=False, var21=True, two_site=True, ng_site=False):
+def mkv(W, w=4, ng_cov=True, K=60, return_all=False, gauss=False, var21=True, two_site=True, ng_site=False, rank=0):
     """W: (L, n, n) float, x @ W convention. Returns per-layer means (L, n)."""
     W = np.asarray(W, dtype=np.float64)
     L, n, _ = W.shape
@@ -181,8 +181,18 @@ def mkv(W, w=4, ng_cov=True, K=60, return_all=False, gauss=False, var21=True, tw
         for sdict in sources:
             d3, d4 = single_site(sdict["P"], sdict["K"], sdict["coef"], sdict["Cm"])
             k3 += d3; k4 += d4
-            if sdict["age"] >= w:
-                k3old += d3; k4old += d4
+            if sdict["age"] >= w and not sdict.get("lowrank"):
+                if rank > 0:
+                    # separator = top-`rank` transported directions of this source (in target space)
+                    _, _, Vt = np.linalg.svd(np.vstack([sdict["P"], sdict["K"]]), full_matrices=False)
+                    Pr = Vt[:rank].T @ Vt[:rank]
+                    sdict["P"] = sdict["P"] @ Pr; sdict["K"] = sdict["K"] @ Pr
+                    sdict["lowrank"] = True
+                    dd3, dd4 = single_site(sdict["P"], sdict["K"], sdict["coef"], sdict["Cm"])
+                    k3 += dd3 - d3; k4 += dd4 - d4
+                    keep.append(sdict)
+                else:
+                    k3old += d3; k4old += d4
             else:
                 keep.append(sdict)
         sources = keep
