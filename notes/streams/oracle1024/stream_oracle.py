@@ -351,7 +351,22 @@ def rel(a, b, off=False):
     return float(np.sqrt(np.sum((a - b) ** 2) / np.sum(b ** 2)))
 
 
-COLS = ["memless", "wick", "herm2", "herm3", "herm4", "closure_noK4", "closure", "closure_reg", "fit", "fit_reg"]
+COLS = ["memless", "wick", "herm2", "herm3", "herm4", "closure_noK4", "closure", "closure_reg", "fit", "fit_reg",
+        "closure_noB0", "closure_reg_noB0", "closure_projB0", "closure_reg_projB0"]
+# birth terms (everything but the transported old content B0 = Phi^3 kappa3(z)) onto which B0 is projected
+BIRTHS = ["slices", "wick0", "H4", "H6", "B1", "B2", "B3", "B5", "B6"]
+
+
+def births(t, reg=False):
+    names = [("B6reg" if (reg and b == "B6") else b) for b in BIRTHS]
+    return [t["wick"] - t["B0"] if b == "wick0" else t[b] for b in names]
+
+
+def proj_coef(t, reg=False):
+    """least squares of T(B0) on the transported birth terms (D21 space)."""
+    X = np.stack([b.ravel() for b in births(t, reg)], 1)
+    beta, *_ = np.linalg.lstsq(X, t["B0"].ravel(), rcond=None)
+    return beta
 
 
 def ladder_single(st, W, cache=None, log=None, with_h8=True, gauss=None):
@@ -378,8 +393,19 @@ def ladder_pair(tA, tB):
         cA, cB = fit_coef(a), fit_coef(b)
         crA, crB = fit_coef(a, True), fit_coef(b, True)
         mA, mB = models(a, cA, crA), models(b, cB, crB)
-        den = float(np.sum(DA * DB))
+        # old content dropped (births only) and old content replaced by its held-out projection on the births:
+        # beta fitted on the other replica, so both cross-product factors are held out
         r = dict(l=l, noise=e_noise, coefA=cA, coefB=cB, coefrA=crA)
+        for reg, tag in ((False, ""), (True, "_reg")):
+            bA, bB = proj_coef(a, reg), proj_coef(b, reg)
+            for m, t, beta in ((mA, a, bB), (mB, b, bA)):
+                m["closure" + tag + "_noB0"] = m["closure" + tag] - t["B0"]
+                m["closure" + tag + "_projB0"] = m["closure" + tag + "_noB0"] + sum(c * x for c, x in zip(beta, births(t, reg)))
+            pB = sum(c * x for c, x in zip(bA, births(b, reg)))
+            r["projR2" + tag] = 1.0 - float(np.sum((b["B0"] - pB) ** 2) / np.sum(b["B0"] ** 2))
+            r["beta" + tag] = bA
+        r["B0_share"] = 0.5 * (float(np.linalg.norm(a["B0"]) / np.linalg.norm(DA)) + float(np.linalg.norm(b["B0"]) / np.linalg.norm(DB)))
+        den = float(np.sum(DA * DB))
         for k in mA:
             ex = rel(mA[k], DB)
             r[k + "_x"] = ex
@@ -498,6 +524,7 @@ def run_ladder(paths, with_h8=True, out=None, log=None, gauss_path=None):
         cB = {}
         ladder_single(stB, W, cache=cB, with_h8=with_h8, log=log, gauss=gauss)
         prow = ladder_pair(cA, cB)
+        cols = [c for c in COLS if c + "_cp" in prow[0]]
         print(f"\npair {paths[0]} | {paths[1]}: noise-corrected eps of D21(l+1)")
         print("  _xc = model from A vs target B, target noise subtracted (oracle_k3 --pair convention)")
         print("  _cp = replica cross-product <M_A-D_A, M_B-D_B>/<D_A,D_B> (model and target noise removed)")
@@ -509,6 +536,9 @@ def run_ladder(paths, with_h8=True, out=None, log=None, gauss_path=None):
         print("\ncross-product eps^2 x 1e4 +- jackknife standard error (32 column blocks)")
         for r in prow:
             print(f"{r['l']:>2} " + " ".join(f"{1e4 * r[c + '_cp2']:6.1f}+-{1e4 * r[c + '_cp2_se']:5.1f}" for c in cols), flush=True)
+        print("\nold content: share ||T(B0)||/||D21||, held-out R^2 of T(B0) on the transported births (exact / regenerated k4)")
+        for r in prow:
+            print(f"{r['l']:>2} share {r['B0_share']:.3f}  projR2 {r['projR2']:.3f} {r['projR2_reg']:.3f}  beta " + " ".join(f"{c:+.2f}" for c in r["beta"]), flush=True)
         print("\nreplica noise of the model error delta = M - D, ||delta_A - delta_B|| / (sqrt2 ||D||), per column")
         for r in prow:
             print(f"{r['l']:>2} " + " ".join(f"{r[c + '_dn']:11.4f}" for c in cols), flush=True)
