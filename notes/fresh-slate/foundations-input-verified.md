@@ -12,7 +12,7 @@
    - MTP₂ faithfulness needs the graphoid hypothesis. MTP₂ is also a different positivity from the matrix total positivity where cluster algebras began.
    - The Jerrum–Sinclair–Vigoda chain crosses to finite temperature for *every* nonnegative matrix, through the conductance of its state space, not through expansion of the graph.
    - Bethe gets counts right only to a factor e^{O(n)}: per_B ≤ per ≤ 2^{n/2} per_B. Bethe is a per-site (free-energy) object.
-2. **Idea A, block form** (THEOREM, proved in §2, checked C1–C4, C18). For vector-valued a and c:
+2. **Idea A, block form** (DERIVED: proved in §2, checked C1–C4 and C18). For vector-valued a and c:
    - det M[aBc] · det M[B] = det M[aB] · det M[Bc] · ∏ᵢ (1 − ρᵢ²), where ρᵢ are the canonical correlations of a and c conditional on B. Hence I(a : c | B) = −½ Σᵢ log(1 − ρᵢ²).
    - The input's cross-minor ratio generalises to ∏ᵢ ρᵢ², which can vanish without Markovianity.
    - Markov ⟺ rank M[aB|Bc] = |B| ⟺ all |a|·|c| scalar exchange relations degenerate at once.
@@ -21,7 +21,7 @@
    - For Gaussians, "a Markov network is the simultaneous degeneration of exchange relations" is a theorem.
    - Kenyon–Pemantle's cluster-type structure on principal and almost-principal minors goes further (hexahedron move = six cluster mutations):
      - a cube move replaces the conditioning sets of three partial correlations ("mutation = change of separator", DERIVED);
-     - a Gaussian graphical model is a coordinate stratum of a chart iff some chart's conditioning sets separate every non-edge (DERIVED);
+     - a Gaussian graphical model is a coordinate stratum of a chart iff some chart's conditioning sets separate every non-edge (DERIVED, sketch);
      - by exhaustive search over all charts for n ≤ 6, this covers every chordal graph on ≤ 6 vertices and every connected graph on ≤ 6 vertices except the triangular prism (C21).
    - MTP₂ is not the positive part: it is not an orthant of a chart (C21), and Chepuri–George–Speyer Thm 5.1 rules out a sign match with Grassmannian positivity.
    - The identity does not extend to quasi-free fermions (C19).
@@ -97,7 +97,7 @@
 
 **I2.** "So its growth rate is fixed by local neighbourhood statistics for every bounded-degree graph (ACFK)." **CORRECT**, read as estimability.
 - ACFK Thm 1.2: along every Benjamini–Schramm-convergent sequence of graphs of bounded degree, ln M(G_n)/v(G_n) converges. The same holds for the monomer–dimer free energy at every positive activity.
-- Uniform form (proof here). Suppose two sequences of graphs of maximum degree d have local statistics converging to the same limit but values ln M/v that stay ε apart. Interleaving them gives a convergent sequence along which ln M/v does not converge, a contradiction. So for every ε there is a radius R(ε, d) such that radius-R statistics determine ln M/v to ±ε, uniformly over such graphs.
+- Uniform form (proof here). If uniformity failed, there would be pairs (G_n, H_n) of graphs of maximum degree d whose radius-n statistics differ by less than 1/n while their values of ln M/v differ by at least ε. The space of local statistics is compact, so a subsequence of G_n converges, and H_n converges to the same limit. Interleaving the two gives a convergent sequence along which ln M/v does not converge, a contradiction. So for every ε there is a radius R(ε, d) such that radius-R statistics determine ln M/v to ±ε, uniformly over such graphs.
 - The mechanism is the one the input names. Real-rootedness gives ln M/v = ∫ ½ ln(1 + x²) dρ_G(x) for the matching measure ρ_G, whose moments count closed tree-like walks (ACFK Remark 3.6).
 - Check (C9). On large-girth 3-regular graphs ρ_G tends to the Kesten–McKay law, and ∫ ½ ln(1+x²) dKM₃ = 0.58157540 = ½ ln(16/5). This equals the tree (Bethe) value ln(1 + 3r) − (3/2) ln(1 + r²) with r = ½ to all printed digits.
 
@@ -153,7 +153,7 @@
 
 **I16.** "The obstruction is the surface's first Z/2-cohomology." **IMPRECISE.**
 - **Fix:** H¹(Σ; Z/2) ≅ (Z/2)^{2g} acts freely and transitively on the classes of Kasteleyn orientations (Cimasoni–Reshetikhin Thm 3.2). It *indexes* the 4^g terms; it is not an obstruction class.
-- The obstruction to a single Pfaffian is that no one orientation is Kasteleyn-correct for cycles in every homology class.
+- What a single Pfaffian gets wrong is the sign of each perfect matching, which depends on the mod-2 homology class of its symmetric difference with a reference matching. The 4^g terms with Arf signs cancel exactly these signs.
 
 **I17.** "Robertson–Seymour–Thomas (and McCuaig) characterized the bipartite graphs that admit such signs: planar pieces glued together, plus one exception." **CORRECT.**
 - RST (Ann. of Math. 150 (1999); math/9911268), Thm 1.3 = 6.8: a brace has a Pfaffian orientation iff it is isomorphic to the Heawood graph or is obtained from planar braces by repeated 4-sums (trisums).
@@ -293,7 +293,7 @@
   - For Gaussians, MTP₂ ⟺ the precision matrix is an M-matrix (Karlin–Rinott). Every MTP₂ Gaussian is faithful to its concentration graph.
 - Check (C5): an M-matrix precision on a 4-cycle with a pendant path gives
   - 240 statements i ⊥ j | K, with no negative partial correlation and no mismatch between conditional independence and graph separation;
-  - a signed 4-cycle (non-MTP₂) has Σ₀₂ = 0 although no set separates 0 from 2.
+  - a signed 4-cycle (non-MTP₂) has Σ₀₂ = 0, i.e. 0 ⊥ 2 marginally, although the empty set does not separate 0 from 2: it is unfaithful.
 - "Total positivity, where cluster algebras began": cluster algebras began with total positivity of *matrices* (Lusztig; Fomin–Zelevinsky; Chin's introduction).
   - MTP₂ is a lattice-supermodularity of densities. For a Gaussian it constrains the inverse covariance, not the minors of the covariance.
   - The two positivities are different (§2.3).
@@ -348,10 +348,10 @@ and Markovianity is the degeneration of the relation to one monomial. **CORRECT*
    𝓡 = − Σ_{J ≠ a, |J| = p} ε(J) · det M[Ba | BJ] · det M[Bc | BJᶜ], with ε(J) = (−1)^{Σ_{i≤p} i + Σ_{j∈J} j}.
 
    - For p = q = 1 this is the single square (det M[aB|Bc])², and (1)–(2) reduce to I51–I52.
-   - For p, q ≥ 2 the terms have mixed signs (C3: sign pattern + + + − −). So 𝓡 ≥ 0 comes from Fischer's inequality, not term by term.
+   - For p, q ≥ 2 the terms have mixed signs in every instance tried (C3). So 𝓡 ≥ 0 comes from Fischer's inequality, not term by term.
 4. **The input's ratio, generalised.** For p = q, r² = (det M[aB|Bc])²/(det M[aB] det M[Bc]) = ∏ᵢ ρᵢ². Hence:
    - −½ log(1 − r²) ≤ I, with equality iff m = 1 or I = 0 (C3: 0.0011 against the true 0.1400);
-   - r = 0 iff *some* ρᵢ = 0, which does not imply Markovianity (C4: det M[aB|Bc] = 1e-16 while I = 0.2231 = −½ log(1 − 0.6²)).
+   - r = 0 iff *some* ρᵢ = 0, which does not imply Markovianity (C4: det M[aB|Bc] ≈ 1e-15 while I = 0.2231 = −½ log(1 − 0.6²)).
 5. **Markov criterion.** x_a ⊥ x_c | x_B ⟺ S_ac = 0 ⟺ rank M[aB|Bc] = |B| ⟺ det M[Bi | Bj] = 0 for all i ∈ a, j ∈ c. That is, all p·q scalar Dodgson relations (aᵢ, B, c_j) degenerate. C4: rank 3 = |B| in the Markov case; rank 4 and 5 otherwise.
 
 **Proof.**
@@ -372,7 +372,9 @@ attained by the top-k conditional canonical variates of a.
   - Chain rule: I(a : c | B) = I(Uᵀa : c | B) + I(a : c | B, Uᵀa).
   - The first term is −½ log det(I − Vᵀ RRᵀ V), with V = S_aa^{1/2} U orthonormalised.
   - By Poincaré separation (Cauchy interlacing for compressions), the eigenvalues of VᵀRRᵀV are dominated term by term by ρ₁², …, ρ_k², with equality at the top singular vectors. ∎
-- C18 (p = 4, s = 3, q = 3), residual at k = 1: 0.849584 against the formula 0.849584. The best of 2000 random U gives 0.883.
+- C18 (p = 4, s = 3, q = 3):
+  - k = 1: residual 0.4452538821, equal to the formula; the best of 4000 random U gives 0.4511;
+  - k = 2: residual 0.0715099386, equal to the formula; the best random U gives 0.1078.
 
 **Copula extension.** CMI is invariant under injective maps of each coordinate, so Theorems A and A′ hold verbatim for a Gaussian copula, with M the latent correlation matrix (Part 2 unlock 46(d)). Guard: this covers pre-activations z, not activations relu(z), since relu is not injective.
 
@@ -406,7 +408,7 @@ Four statements, from proved to open.
 What exists:
 - Kenyon–Pemantle ("Principal minors and rhombus tilings", 1404.1354), on the principal and odd almost-principal minors of a matrix:
   - Thm 4.3: the ideal of their relations is generated by translates of one relation, the hexahedron relation, which is "a composition of six cluster mutations".
-  - Charts are rhombus tilings of a 2n-gon, and moves between charts are cube moves. In every chart the entries are Laurent polynomials (Thm 4.4).
+  - Charts are rhombus tilings of a 2n-gon, and moves between charts are cube moves. In every chart the matrix entries are Laurent polynomials in the chart's variables (KP §1; Thm 4.4 for the standard chart).
   - On symmetric matrices the relation becomes the Kashaev relation, and each face satisfies Dodgson: |F(f)|² = F(a)F(c) + F(b)F(d) (Thm 5.2). Checked C21.
   - PD matrices are exactly the "positive networks": vertex signs σ(v) = (−1)^{⌊|S|/2⌋}, face signs free (Thm 5.7).
 - Read statistically (DERIVED here):
@@ -501,14 +503,15 @@ Below, each half is stated as theorems with hypotheses, followed by corrections 
 
 - **S1, Hammersley–Clifford (THEOREM).** Let p be a *strictly positive* law on a finite product space. Then p factorises over the cliques of G ⟺ it satisfies the global Markov property ⟺ the local property ⟺ the pairwise property.
   - Positivity is needed: Moussouris's counterexample (via Gandolfi–Lenarda Ex. 3.3; digest [hammersley-clifford.md](../digests/bridges/hammersley-clifford.md)).
-  - Brown–Poulin (1206.0755) Thm 1 states it in this form.
+  - Brown–Poulin (1206.0755) Thm 1 states it in this form (positive Markov network ⟺ Gibbs form e^{Σ_Q h_Q} over cliques).
 - **S2, exact gluing cost (DERIVED; checked C6).** For any law and any junction tree, KL(p ‖ ∏p_C/∏p_S) = Σ_t I(C_t∖S_t : H_{t−1}∖S_t | S_t).
   - The cost of separator gluing is exactly the sum of cut CMIs.
   - For Gaussians it is the log-det gap (§2.1), costing O(s³) per separator of size s. For general laws it costs exp(s) (treewidth).
-- **S3, quantum, commuting (THEOREM).** Brown–Poulin:
-  - Thm 3: Gibbs states of commuting Hamiltonians whose terms sit on cliques are quantum Markov networks (I(A:C|B) = 0 when B separates A from C).
-  - Thm 4: the converse holds on triangle-free graphs; a triangular-lattice example shows it fails in general.
-  - Trees: Thm 5 (Poulin–Hastings).
+- **S3, quantum, commuting (THEOREM).** Brown–Poulin (1206.0755):
+  - Thm 2 (Leifer–Poulin): every positive quantum Markov network is the Gibbs state of a clique-local Hamiltonian, which need not be commuting.
+  - Thm 3: Gibbs states of commuting clique-local Hamiltonians are quantum Markov networks (I(A:C|B) = 0 whenever B shields A from C).
+  - Thm 4: on graphs whose only cliques are edges (triangle-free), positive quantum Markov networks are exactly these Gibbs states. Fig. 2 gives a positive quantum Markov network on a graph with triangles (it tiles the plane) that is not of this form.
+  - Thm 5 (Poulin–Hastings): the same equivalence on trees.
 - **S4, quantum, all temperatures, local (THEOREM).**
   - Yang (2609.38007) Thm II.1: finite-range Hamiltonians, bounded degree, *every* β > 0:
 
@@ -648,7 +651,7 @@ Part 2 unlock 47 already applies the two principles to the network: separators a
    - all residuals ≤ 2e-14, while the sign variant E(U) E(−VU) E(V) fails by O(1).
 2. **Analytic** (|q| = 1, q = e^{iπb²}, b real): Fock–Goncharov's positive representations on L²(ℝ^I), with Y_k = e^{x̂_k}.
    - Here μ_k is implemented by the unitary Φ_b(x̂_k) (Faddeev's non-compact dilogarithm) composed with a metaplectic (Gaussian) unitary for τ.
-   - KN Thm 4.6: the operator of a period is a scalar λ with |λ| = 1. Thm 4.7: λ = 1 when the period is written with the tropical sign sequence.
+   - KN Thm 4.6: the operator of a period is a scalar λ with |λ| = 1, times the operator of the permutation ν for a ν-period. Thm 4.7: λ = 1 when the period is written with the tropical sign sequence.
    - So the circuit is a genuine unitary circuit on L²(ℝ^I): non-Gaussian single-quadrature gates and Gaussian couplers.
    - It is *not* a finite-dimensional tensor-product circuit. At roots of unity there are finite-dimensional cyclic representations (from memory), with normalisation issues.
 3. **C\*-algebraic** (Connes' torus, see I71): μ_k is *not* an automorphism. For irrational θ the gauge action U ↦ zU makes spec(U) = 𝕋, so 1 + q^{2a−1}U is not invertible in A_θ.
@@ -691,7 +694,7 @@ Part 2 unlock 47 already applies the two principles to the network: separators a
 
 **I73.** "… which is Morita-equivalent to the Penrose algebra." **CORRECT.**
 - Connes' *Noncommutative Geometry* (introduction, opened): the Penrose-tiling C*-algebra is AF with K₀ = ℤ² ordered by the golden-ratio half-plane.
-- Kellendonk–Lenz–Savinien (1412.5442) note that its paths are those of the Bratteli diagram with inclusion graph A₄.
+- *On the noncommutative geometry of tilings* (arXiv:1412.5442; Julien–Kellendonk–Savinien, authors from memory) notes that Connes described the Penrose tilings as the paths of the Bratteli diagram with inclusion graph A₄.
 - Both dimension groups are order-isomorphic to ℤ + ℤφ ⊂ ℝ. By Elliott's classification of AF algebras they are stably isomorphic, hence strongly Morita equivalent (Brown–Green–Rieffel). Elliott and Brown–Green–Rieffel are from memory.
 
 ### 4.4 Assessment
@@ -704,3 +707,542 @@ Part 2 unlock 47 already applies the two principles to the network: separators a
 - Part 2 Appendix A ("SPECULATION; not used") stands for the competition. For the programme it is a THEOREM-level example of the Heisenberg-picture objects of stream [H].
 
 ---
+
+## 5. Recommendation
+
+**Ranking.**
+- For the competition: A > B > C.
+- For the programme: B > A > C.
+
+**Push A first, for the competition, as an instrument.**
+- It is the only one of the three that gives *exact* computations on the competition's objects today:
+  - the KL price of a Gaussian or copula separator (Theorem A);
+  - the information-optimal rank-k memory (Theorem A′);
+  - a rank test for Markovianity.
+- Each costs O(s³) per cut, and the Stage Q experiment of §2.5 takes hours.
+- It decides one design question quickly: does a low-rank Gaussian memory across depth exist, and if so which modes carry it?
+- Its limit is explicit. It sees the covariance channel only. The Gaussian closure already reaches raw ≈ 4.3e-6 (BRIEF §1), so the error that remains is non-Gaussian. A filters designs and prices their separators; it is not an estimator and cannot reach raw 1e-8 by itself.
+
+**Develop B, for the programme.**
+- B is the precise form of the programme's local-to-global question. Both classical halves are theorems with explicit hypotheses (§3.1–3.2).
+- It corrects a point that matters for every tree or cavity design: marginals need decay, free energies do not (I59).
+- It isolates the quantum half in one testable conjecture (QB), next to the network-facing Part 2 Conj 8.4. That is where the NCG direction would enter.
+- It also absorbs Idea A's best structural result: Kenyon–Pemantle charts realise "mutation = change of separator" and give Markov networks as coordinate strata (§2.3). This is the algebra of the separator principle.
+
+**Park C.**
+- It is well defined and returns exactly, but it has no route into the competition.
+- Its noncommutative-geometry link (Connes' torus) is weaker than the input states (§4).
+
+---
+
+## 6. Numerical checks
+
+**Setting.** Run in the session scratchpad: numpy 2.4.6 and Python 3.11 in the whest environment; scipy, mpmath and sympy are not installed. OPENBLAS_NUM_THREADS=1, fixed seeds, all sizes ≤ 16 × 16 (exhaustive searches up to 2^15 signings and 908 charts).
+
+**Two sources of numbers.**
+- The table reports the session runs quoted in §§1–4.
+- The two compact scripts below recheck every identity on fresh random instances. Their random streams differ, so instance-dependent numbers differ while the identities hold to the same precision. Their outputs follow each script.
+
+| check | claim (where used) | session result |
+|---|---|---|
+| C1 | scalar Dodgson; CMI three ways (I51–I52) | 3 random 6 × 6 PD: residual ≤ 3e-18; CMI agree to 12 digits; (−1)^{\|B\|} r = partial correlation to 10 digits |
+| C2 | block identity, Theorem A(1)–(2) | (p,q,s) = (2,2,3), (2,3,3), (3,2,2), (3,3,4): \|lhs/rhs − 1\| ≤ 7e-15; CMI = −½ Σ log(1−ρᵢ²) to 12 digits |
+| C3 | naive ratio = ∏ρᵢ²; many-term remainder, Theorem A(3)–(4) | r² = ∏ρᵢ² to 1e-16; naive −½ log(1−r²) = 0.0011 against CMI 0.1400; 𝓡 = sum of 5 signed products (0.47598955426 both), signs mixed |
+| C4 | rank criterion; vanishing cross minor without Markov, Theorem A(4)–(5) | ρ = (0.6, 0): det M[aB\|Bc] = 1e-15, rank 4 = \|B\|+1, CMI 0.223144; ρ = 0: rank 3, CMI 0; ρ = (0.6, 0.3): rank 5 |
+| C5 | gaussoid trinomials; partial correlations; MTP₂ faithfulness; unfaithful signed 4-cycle (A1–A3, I50) | residuals ≤ 6e-16; 240 statements i ⊥ j \| K: 0 negative partial correlations, 0 CI/separation mismatches; signed 4-cycle Σ₀₂ = −1e-17 |
+| C6 | chordal gap = KL = Σ CMI; zero at the Markov projection (I55) | 1.308621985157 three ways; projection ≤ 7e-16 |
+| C7 | Koteljanskii (I54) | 5000 random pairs: no violation; min 0 for nested pairs, 4.6e-7 otherwise |
+| C8 | Heawood spectrum and Pfaffian signing; K₃,₃ (I17–I18) | ±3, ±√2 (×6); per = 24 = max \|det\| over the 2⁸ gauge-fixed signings; K₃,₃: per 6, max \|det\| 4 |
+| C9 | Bethe = Schrijver on regular graphs; Gurvits and Anari–Rezaei; tightness; Kesten–McKay constants (I2, I8–I11) | per_B = (4/3)^10 = 17.7577266338 and (27/16)^9 = 110.9670481672 to 10 digits, at P = A/d; 40 random: min per/per_B = 1.000000, max per/(2^{n/2} per_B) = 0.848; I ⊗ J₂: per/per_B = √2ⁿ (n = 2, 4, 6); ∫½ln(1+x²)dKM₃ = 0.58157540 = tree value = ½ ln(16/5); ∫ln\|x\|dKM_{3,4} = Schrijver to 3e-6 |
+| C10 | Godsil–Gutman; Heilmann–Lieb; MSS signing (I25–I28) | Petersen graph, all 2^15 signings: \|E_s charpoly − μ\| ≤ 1.8e-14; real roots, max 2.6314 ≤ 2√2; min_s λ_max(A_s) = 2.0000 |
+| C11 | Kasteleyn face rule with a hexagonal face; honeycomb (I22) | 4 × 5 grid: \|det\| = count (297.889); with a hexagon: face rule 688.584 = count, −1 on every face 642.080; honeycomb, all +: \|det\| = count (20.138) |
+| C12 | \|det\| versus energy; Lieb's π flux; Lieb–Loss counterexample (I23–I24) | 4 × 4: E(π) = −13.2528 < min of 3000 random fluxes −13.0766 < E(0) = −10.9443; \|det K\| 36 at π, 0 at 0; four squares, spokes 0.2: E(π⁴) = −5.2284 > E(π,π,π,0) = −5.3168 (spokes 0.05: −4.9284 vs −5.2322); 2 × 3 ladder: no counterexample in 400 random magnitude sets |
+| C13 | Kuo condensation (I44) | weighted 4 × 4 grid: 6153.460582 on both sides (another instance: 3546.312743) |
+| C14 | urban renewal (I45) | M(G) = 312.15298547 = (ac+bd) M(G′) (another instance: 235.81896693) |
+| C15 | tropical limits (I34–I36) | 6 × 6 Gaussian: T log per and T log\|det\| → 4.153169 (4.153170 both at T = 0.01); tie [[1,2],[2,3]]: per → 4, det ≡ 0; [[1,2],[2,3.001]]: T log\|det\| = 3.540, 3.977, 4.0005, 4.0010 at T = 10⁻¹…10⁻⁴ |
+| C16 | A₂ dilogarithm identity; constant solution (I70) | (6/π²) Σ L(y/(1+y)) = 3.000000000000 and Σ L(1/(1+y)) = 2.000000000000 for 3 random seeds; L(½) = π²/12; (6/π²) L(1/(1+φ)) = 0.4000000000 |
+| C17 | Chin half-periodicity on A_m ⊗ A_n T-systems (I37, I69) | exact rationals, 7 pairs (m, n): σ = rotation holds in all; identity fails wherever testable; full period 2(h+h′) holds |
+| C18 | conditional CCA = optimal memory, Theorem A′ | (p,s,q) = (4,3,3): k = 1 residual 0.4452538821 = formula, best of 4000 random 0.4511; k = 2: 0.0715099386 = formula, best random 0.1078 |
+| C19 | fermionic caveat (§2.2) | 4 complex 4-mode examples: log-det CMI ≤ 2e-16, fermionic CMI 2.4e-4 to 3.6e-3 |
+| C20 | quantum pentagon; Schützenberger (§4.1) | q = 0.6 and 0.3 + 0.5i, degree ≤ 14: residuals ≤ 2e-14; sign variant off by O(1) |
+| C21 | Kenyon–Pemantle charts (A4, Prop A4′) | Markov chain: contiguous faces of lag ≥ 2 ≤ 1e-19; (0.9, 0.1, 0.9) → ρ_{23\|1} = −0.8692; (0.5, 0.5, −0.5): chart-1 twisted faces (0.5, 0.5, 0.375), chart-2 face −0.125; KP face relation ≤ 2e-10 (4 × 4, minors ~10³); chart counts 2, 8, 62, 908; strata: all connected graphs on ≤ 5 vertices; on 6, all 58 chordal and 53/54 non-chordal (prism fails); stratum Jacobian of full rank for path₆, star₆, C₄ and a chordal 6-graph |
+
+**Script A** (Idea A: C1–C7, C18, C19, C21).
+
+```python
+# Idea A checks C1-C7, C18, C19, C21 (numpy only)
+import numpy as np, itertools
+rng = np.random.default_rng(1)
+D = lambda M, r, c=None: np.linalg.det(M[np.ix_(r, r if c is None else c)]) if len(r) else 1.0
+spd = lambda n: (lambda A: A @ A.T/(n+2))(rng.standard_normal((n, n+2)))
+cmi = lambda M, a, B, c: 0.5*np.log(D(M, a+B)*D(M, B+c)/(D(M, B)*D(M, a+B+c)))
+def isq(S): w, V = np.linalg.eigh(S); return V @ np.diag(w**-0.5) @ V.T
+def canon(M, a, B, c):   # conditional canonical correlations of a and c given B
+    I = a+c; S = M[np.ix_(I, I)] - M[np.ix_(I, B)] @ np.linalg.solve(M[np.ix_(B, B)], M[np.ix_(B, I)]); p = len(a)
+    return np.linalg.svd(isq(S[:p, :p]) @ S[:p, p:] @ isq(S[p:, p:]), compute_uv=False), S
+# C1 scalar Dodgson; CMI = -1/2 log(1-r^2) = 1/2 log(1+y)
+M = spd(6); a, B, c = [0], [1, 2, 3, 4], [5]; x = D(M, a+B, B+c)
+print("C1", D(M, a+B+c)*D(M, B) - D(M, a+B)*D(M, B+c) + x**2, cmi(M, a, B, c), -0.5*np.log(1-x**2/(D(M, a+B)*D(M, B+c))), 0.5*np.log1p(x**2/(D(M, a+B+c)*D(M, B))))
+# C2-C3 block identity; naive ratio = prod rho^2; remainder = signed sum of products of cross minors
+M = spd(7); a, B, c = [0, 1], [2, 3, 4], [5, 6]; rho, _ = canon(M, a, B, c)
+print("C2", D(M, a+B+c)*D(M, B)/(D(M, a+B)*D(M, B+c)*np.prod(1-rho**2)) - 1, cmi(M, a, B, c), -0.5*np.log(1-rho**2).sum())
+print("C3", D(M, a+B, B+c)**2/(D(M, a+B)*D(M, B+c)), np.prod(rho**2), -0.5*np.log(1-np.prod(rho**2)))
+ac = a+c; t = [-(-1)**(3+sum(j+1 for j in J))*D(M, B+a, B+[ac[j] for j in J])*D(M, B+c, B+[ac[j] for j in range(4) if j not in J])
+              for J in itertools.combinations(range(4), 2) if J != (0, 1)]
+print("C3", D(M, a+B)*D(M, B+c) - D(M, a+B+c)*D(M, B), sum(t), np.sign(t))
+# C4 det M[aB|Bc] = 0 with CMI > 0; Markov iff rank M[aB|Bc] = |B|
+for X in (np.diag([0.6, 0.0]), np.zeros((2, 2))):
+    MB = spd(3); C = rng.standard_normal((4, 3)); M = np.zeros((7, 7)); I = [0, 1, 5, 6]
+    M[np.ix_(I, I)] = np.block([[np.eye(2), X], [X.T, np.eye(2)]]) + C @ np.linalg.solve(MB, C.T); M[np.ix_(I, B)] = C; M[np.ix_(B, I)] = C.T; M[np.ix_(B, B)] = MB
+    print("C4", D(M, a+B, B+c), np.linalg.matrix_rank(M[np.ix_(a+B, B+c)], tol=1e-9), cmi(M, a, B, c))
+# C5 gaussoid trinomials; MTP2 faithfulness; an unfaithful signed 4-cycle
+M = spd(5); worst = 0
+for i, j in itertools.combinations(range(5), 2):
+    for r in range(4):
+        for K in itertools.combinations([v for v in range(5) if v not in (i, j)], r):
+            K = list(K); worst = max(worst, abs(D(M, [i]+K, [j]+K)**2 - D(M, [i]+K)*D(M, [j]+K) + D(M, K)*D(M, [i, j]+K)))
+            for k in K:
+                L = [v for v in K if v != k]
+                worst = max(worst, abs(D(M, L)*D(M, [i, k]+L, [j, k]+L) - D(M, [k]+L)*D(M, [i]+L, [j]+L) + D(M, [i]+L, [k]+L)*D(M, [j]+L, [k]+L)))
+E = [(0, 1), (1, 2), (2, 3), (3, 0), (2, 4), (4, 5)]; A = np.zeros((6, 6))
+for u, v in E: A[u, v] = A[v, u] = rng.uniform(0.3, 1)
+M = np.linalg.inv((np.linalg.eigvalsh(A).max() + 0.5)*np.eye(6) - A); adj = {v: {w for e in E for w in e if v in e and w != v} for v in range(6)}
+def sep(i, j, K):
+    seen, st = {i}, [i]
+    while st:
+        for w in adj[st.pop()] - set(K) - seen:
+            if w == j: return False
+            seen.add(w); st.append(w)
+    return True
+res = [(D(M, [i]+list(K), [j]+list(K))/np.sqrt(D(M, [i]+list(K))*D(M, [j]+list(K))), sep(i, j, K)) for i, j in itertools.combinations(range(6), 2)
+       for r in range(5) for K in itertools.combinations([v for v in range(6) if v not in (i, j)], r)]
+print("C5", worst, len(res), sum(pc < -1e-12 for pc, _ in res), sum((abs(pc) < 1e-10) != s_ for pc, s_ in res), np.linalg.inv(np.array([[1, .3, 0, .3], [.3, 1, .3, 0], [0, .3, 1, -.3], [.3, 0, -.3, 1]]))[0, 2])
+# C6 chordal gap = KL to the Markov projection = sum of CMIs; C7 Koteljanskii
+M = spd(6); Cl = [[0, 1, 2], [1, 2, 3], [2, 3, 4], [3, 5]]; Sp = [[1, 2], [2, 3], [3]]
+def gap(M):
+    ld = lambda S: np.linalg.slogdet(M[np.ix_(S, S)])[1]; Kh = np.zeros((6, 6)); H = Cl[0]; tot = 0
+    for C_ in Cl: Kh[np.ix_(C_, C_)] += np.linalg.inv(M[np.ix_(C_, C_)])
+    for S_ in Sp: Kh[np.ix_(S_, S_)] -= np.linalg.inv(M[np.ix_(S_, S_)])
+    for C_, S_ in zip(Cl[1:], Sp): Hn = sorted(set(H) | set(C_)); tot += 0.5*(ld(H) + ld(C_) - ld(S_) - ld(Hn)); H = Hn
+    KM = Kh @ M; return 0.5*(sum(map(ld, Cl)) - sum(map(ld, Sp)) - ld(list(range(6)))), 0.5*(np.trace(KM) - 6 - np.linalg.slogdet(KM)[1]), tot, Kh
+g = gap(M); print("C6", g[:3], gap(np.linalg.inv(g[3]))[:3])
+M = spd(7); sets = [sorted(set(rng.choice(7, rng.integers(1, 7), replace=False).tolist())) for _ in range(4000)]
+print("C7", min(np.log(D(M, S)*D(M, T)/(D(M, sorted(set(S) | set(T)))*D(M, sorted(set(S) & set(T))))) for S, T in zip(sets[::2], sets[1::2])))
+# C18 conditional CCA: the top-k canonical variates are the optimal rank-k memory
+M = spd(10); a, B, c = [0, 1, 2, 3], [4, 5, 6], [7, 8, 9]; rho, S = canon(M, a, B, c); U = np.linalg.svd(isq(S[:4, :4]) @ S[:4, 4:] @ isq(S[4:, 4:]))[0]
+def resid(V):   # I(a:c | B, V^T a) = I(a:c|B) - I(V^T a : c | B)
+    k = V.shape[1]; T = np.zeros((k+6, 10)); T[:k, :4] = V.T; T[k:, 4:] = np.eye(6); Mt = T @ M @ T.T
+    return cmi(M, a, B, c) - cmi(Mt, list(range(k)), list(range(k, k+3)), list(range(k+3, k+6)))
+print("C18", resid(isq(S[:4, :4]) @ U[:, :1]), -0.5*np.log(1-rho[1:]**2).sum(), min(resid(rng.standard_normal((4, 1))) for _ in range(2000)))
+# C19 quasi-free fermions: the Gaussian (log-det) Markov condition does not make the fermionic CMI vanish
+h = lambda v: float(np.sum(-v*np.log(v) - (1-v)*np.log(1-v))); Sf = lambda C, X: h(np.linalg.eigvalsh(C[np.ix_(X, X)]))
+Q, _ = np.linalg.qr(rng.standard_normal((4, 4)) + 1j*rng.standard_normal((4, 4))); C = Q @ np.diag(rng.uniform(0.1, 0.9, 4)) @ Q.conj().T
+v = (C[np.ix_([0], [1, 2])] @ np.linalg.solve(C[np.ix_([1, 2], [1, 2])], C[np.ix_([1, 2], [3])]))[0, 0]; C[0, 3] = v; C[3, 0] = np.conj(v)
+print("C19", np.linalg.eigvalsh(C)[[0, -1]], Sf(C, [0, 1, 2]) + Sf(C, [1, 2, 3]) - Sf(C, [1, 2]) - Sf(C, [0, 1, 2, 3]))
+# C21 Kenyon-Pemantle charts: path Markov chains are the stratum {contiguous faces of lag >= 2 = 0}; MTP2 is not an orthant
+K = np.diag(rng.uniform(1.5, 2.5, 6)) + (lambda e: np.diag(e, 1) + np.diag(e, -1))(rng.uniform(-0.6, 0.6, 5)); M = np.linalg.inv(K)
+r12, r23, r13_2 = 0.9, 0.1, 0.9; r13 = r13_2*np.sqrt((1-r12**2)*(1-r23**2)) + r12*r23; P = np.linalg.inv(np.array([[1, r12, r13], [r12, 1, r23], [r13, r23, 1]]))
+print("C21", max(abs(D(M, list(range(i, j)), list(range(i+1, j+1)))) for i in range(6) for j in range(i+2, 6)), -P[1, 2]/np.sqrt(P[1, 1]*P[2, 2]))
+# C21b Kenyon-Pemantle charts = rhombus tilings (generated by cube moves); a graphical model is a coordinate stratum of a chart
+#      iff some chart's conditioning set S_ij separates i and j for every non-edge ij (Prop A4'). Exhaustive for n <= 5; the prism at n = 6.
+from collections import deque
+def charts(n):
+    std = frozenset((i, j, frozenset(range(i+1, j))) for i in range(n) for j in range(i+1, n)); seen = {std}; dq = deque([std])
+    while dq:
+        T = dq.popleft()
+        for i, j, k in itertools.combinations(range(n), 3):
+            for S in {f[2] for f in T} - {f[2] for f in T if {i, j, k} & f[2]}:
+                A_ = {(i, j, S), (j, k, S), (i, k, S | {j})}; B_ = {(i, k, S), (j, k, S | {i}), (i, j, S | {k})}
+                for X, Y in ((A_, B_), (B_, A_)):
+                    if X <= T and (U := frozenset((T - X) | Y)) not in seen: seen.add(U); dq.append(U)
+    return [{(i, j): S for i, j, S in T} for T in seen]
+def realised(n, E, CH):
+    adj = {v: {w for e in E for w in e if v in e and w != v} for v in range(n)}
+    def sp(i, j, K):
+        seen, st = {i}, [i]
+        while st:
+            for w_ in adj[st.pop()] - K - seen:
+                if w_ == j: return False
+                seen.add(w_); st.append(w_)
+        return True
+    return any(all(sp(i, j, T[(i, j)]) for i, j in itertools.combinations(range(n), 2) if (i, j) not in E) for T in CH)
+def classes(n):   # connected graphs on n vertices up to isomorphism, as (edge list, realised by some labelling?)
+    P = list(itertools.combinations(range(n), 2)); perms = list(itertools.permutations(range(n))); CH = charts(n); out = {}
+    for mask in range(1 << len(P)):
+        E = [P[k] for k in range(len(P)) if mask >> k & 1]; adj = {v: {w for e in E for w in e if v in e and w != v} for v in range(n)}
+        seen, st = {0}, [0]
+        while st:
+            for w_ in adj[st.pop()] - seen: seen.add(w_); st.append(w_)
+        if len(seen) < n: continue
+        key_ = min(sum(1 << P.index(tuple(sorted((p[u], p[v])))) for u, v in E) for p in perms)
+        out[key_] = out.get(key_, False) or realised(n, set(E), CH)
+    return len(CH), len(out), sum(out.values())
+print("C21b", [classes(n) for n in (3, 4, 5)])
+CH6 = charts(6); prism = [(0, 1), (1, 2), (0, 2), (3, 4), (4, 5), (3, 5), (0, 3), (1, 4), (2, 5)]
+print("C21b", len(CH6), any(realised(6, {tuple(sorted((p[u], p[v]))) for u, v in prism}, CH6) for p in itertools.permutations(range(6))))
+```
+
+Output (each line is labelled by its check; C4's second line is the Markov case, C21b lists (charts, connected graphs, realised graphs) for n = 3, 4, 5 and then the prism test at n = 6):
+
+```
+C1 1.6263032587282567e-19 0.26323718866065815 0.2632371886606589 0.2632371886606586
+C2 -5.551115123125783e-16 0.3257586949072381 0.3257586949072378
+C3 0.02419519527738521 0.024195195277385284 0.012246353865999586
+C3 0.0002870190631535566 0.0002870190631535563 [ 1.  1.  1. -1. -1.]
+C4 -1.1970534667108688e-16 4 0.22314355131421168
+C4 1.0168400978048905e-30 3 -4.4464432136239495e-14
+C5 1.3322676295501878e-15 240 0 0 -1.2388464238195343e-17
+C6 (np.float64(1.0752524561019645), np.float64(1.0752524561019652), np.float64(1.0752524561019643)) (np.float64(0.0), np.float64(1.6023737137301802e-31), np.float64(0.0))
+C7 0.0
+C18 0.21776083504293137 0.21776083504293106 0.2229244272081447
+C19 [0.30919386 0.69551248] 0.0012302363544853812
+C21 1.1144416595990837e-18 -0.8691865541560537
+C21b [(2, 2, 2), (8, 6, 6), (62, 21, 21)]
+C21b 908 False
+```
+
+**Script B** (matchings, signs, tropical and cluster checks: C8–C17, C20).
+
+```python
+# Matchings, signs, tropical and cluster checks C8-C17, C20 (numpy + fractions only)
+import numpy as np, itertools, math, random
+from fractions import Fraction
+rng = np.random.default_rng(2)
+def per(A):   # Ryser
+    n = len(A); return (-1)**n*sum((-1)**len(S)*np.prod(A[:, list(S)].sum(1)) for r in range(1, n+1) for S in itertools.combinations(range(n), r)) if n else 1.0
+# C8 Heawood: spectrum; a signing with |det| = per; K33 has none
+N = np.zeros((7, 7)); [N.__setitem__((i, (i+d) % 7), 1) for i in range(7) for d in (0, 1, 3)]
+print(np.round(np.linalg.eigvalsh(np.block([[0*N, N], [N.T, 0*N]])), 6))
+def maxdet(Nb):   # all signings up to row/column gauge: fix + on a spanning tree
+    m = len(Nb); E = list(zip(*np.nonzero(Nb))); seen = {0}; tree = set(); st = [0]
+    while st:
+        u = st.pop()
+        for (i, j) in E:
+            if (i == u and m+j not in seen) or (m+j == u and i not in seen):
+                w = m+j if i == u else i; seen.add(w); st.append(w); tree.add((i, j))
+    free = [e for e in E if e not in tree]
+    return max(abs(np.linalg.det(np.where(np.isin(np.arange(m*m), [i*m+j for (i, j), s in zip(free, sg) if s < 0]).reshape(m, m), -Nb, Nb))) for sg in itertools.product([1, -1], repeat=len(free)))
+print(per(N), maxdet(N), per(np.ones((3, 3))), maxdet(np.ones((3, 3))))
+# C9 Bethe permanent by mirror descent / Sinkhorn; regular closed form; I (x) J2 tightness
+def sk(X, it=50):
+    for _ in range(it): X = X/X.sum(1, keepdims=True); X = X/X.sum(0, keepdims=True)
+    return X
+def bethe(A):
+    P = sk(A.copy()); mk = A > 0
+    for _ in range(3000): P = sk(np.where(mk, np.sqrt(P*A/np.clip(1-P, 1e-300, None)), 0))
+    Pm, Am = P[mk], A[mk]; Q = 1-Pm; return math.exp(-(Pm*np.log(Pm/Am)).sum() + (Q*np.log(np.where(Q > 0, Q, 1))).sum())
+while True:
+    A = sum(np.eye(10)[rng.permutation(10)] for _ in range(3))
+    if A.max() == 1: break
+print(bethe(A), (4/3)**10, per(A), bethe(np.kron(np.eye(3), np.ones((2, 2)))), per(np.kron(np.eye(3), np.ones((2, 2)))))
+r = []
+for _ in range(20):
+    n = int(rng.integers(3, 8)); X = rng.uniform(0, 1, (n, n))*(rng.uniform(0, 1, (n, n)) < 0.8)
+    if per(X) > 0: b = bethe(X); r.append((per(X)/b, per(X)/b/2**(n/2)))
+print(min(x for x, _ in r), max(y for _, y in r))   # per >= per_B and per <= 2^(n/2) per_B
+th = (np.arange(400000) + 0.5)*np.pi/400000
+for d in (3, 4):   # Kesten-McKay: all matchings (tree value) and perfect matchings (Schrijver) at large girth
+    x = 2*np.sqrt(d-1)*np.cos(th); w = d*4*(d-1)*np.sin(th)**2/(2*np.pi*(d*d - x*x))*np.pi/400000; r_ = (-1 + math.sqrt(4*d-3))/(2*(d-1))
+    print((w*0.5*np.log1p(x*x)).sum(), math.log(1 + d*r_) - d/2*math.log(1 + r_*r_), (w*np.log(abs(x))).sum(), 0.5*math.log((d-1)**(d-1)/d**(d-2)))
+# C10 Godsil-Gutman on the Petersen graph, Heilmann-Lieb, an MSS signing
+E = [(i, (i+1) % 5) for i in range(5)] + [(i, i+5) for i in range(5)] + [(5+i, 5+(i+2) % 5) for i in range(5)]
+m = [sum(len({v for e in S for v in e}) == 2*k for S in itertools.combinations(E, k)) for k in range(6)]
+mu = np.zeros(11); mu[0::2] = [(-1)**k*m[k] for k in range(6)]
+def As(sg): A = np.zeros((10, 10)); [A.__setitem__((u, v), s) or A.__setitem__((v, u), s) for (u, v), s in zip(E, sg)]; return A
+ev = [np.linalg.eigvalsh(As(sg)) for sg in itertools.product([1, -1], repeat=15)]
+print(m, np.abs(np.mean([np.poly(e) for e in ev], 0) - mu).max(), np.roots(mu).real.max(), min(e[-1] for e in ev), 2*math.sqrt(2))
+# C11 Kasteleyn face rule on a 4x5 grid with one interior edge removed (a hexagonal face)
+m_, n_ = 4, 5; V = [(i, j) for i in range(m_) for j in range(n_)]
+E = [((i, j), (i, j+1)) for i in range(m_) for j in range(n_-1)] + [((i, j), (i+1, j)) for i in range(m_-1) for j in range(n_) if (i, j) != (1, 2)]
+F = []
+for i in range(m_-1):
+    cols = [j for j in range(n_) if ((i, j), (i+1, j)) in E]
+    F += [[((i, j1), (i+1, j1)), ((i, j2), (i+1, j2))] + [((r, j), (r, j+1)) for r in (i, i+1) for j in range(j1, j2)] for j1, j2 in zip(cols, cols[1:])]
+def solve2(F, rule):   # GF(2): sum of sign bits around a face of length 2l = rule(l)
+    R = [[int(e in f) for e in E] + [rule(len(f)//2)] for f in F]; piv = []; r = 0
+    for col in range(len(E)):
+        k = next((i for i in range(r, len(R)) if R[i][col]), None)
+        if k is None: continue
+        R[r], R[k] = R[k], R[r]; R = [[x ^ y for x, y in zip(Ri, R[r])] if i != r and Ri[col] else Ri for i, Ri in enumerate(R)]; piv.append(col); r += 1
+    x = [0]*len(E); [x.__setitem__(col, R[i][-1]) for i, col in enumerate(piv)]; return x
+blk = [v for v in V if sum(v) % 2 == 0]; wht = [v for v in V if sum(v) % 2]; w = rng.uniform(0.5, 2, len(E))
+def K(x):
+    M = np.zeros((10, 10))
+    for (u, v), s, wt in zip(E, x, w): b, c = (u, v) if sum(u) % 2 == 0 else (v, u); M[blk.index(b), wht.index(c)] = (-1)**s*wt
+    return M
+print(per(np.abs(K([0]*len(E)))), abs(np.linalg.det(K(solve2(F, lambda l: (l+1) % 2)))), abs(np.linalg.det(K(solve2(F, lambda l: 1)))))
+Vh = [(i, j) for i in range(4) for j in range(6)]; Eh = [((i, j), (i, j+1)) for i in range(4) for j in range(5)] + [((i, j), (i+1, j)) for i in range(3) for j in range(6) if (i+j) % 2 == 0]
+bh = [v for v in Vh if sum(v) % 2 == 0]; wh = [v for v in Vh if sum(v) % 2]; Kh = np.zeros((12, 12))
+for (u, v) in Eh: b_, c_ = (u, v) if sum(u) % 2 == 0 else (v, u); Kh[bh.index(b_), wh.index(c_)] = rng.uniform(0.5, 2)
+print(per(Kh), abs(np.linalg.det(Kh)))   # honeycomb (brick wall): all faces hexagons, all signs + already Kasteleyn
+# C12 Lieb-Loss VII(B): four squares, weak spokes at the centre; flux pi in every square is not energy-minimising
+def energy(t, phi):   # 3x3 grid, horizontal bonds real, vertical bonds carry Peierls phases; phi = fluxes of the 4 squares
+    T = np.zeros((9, 9), complex); k = 0
+    for i in range(3):
+        for j in range(2): T[3*i+j, 3*i+j+1] = t[k]; k += 1
+    for i in range(2):
+        th = 0
+        for j in range(3): T[3*i+3+j, 3*i+j] = t[k]*np.exp(1j*th); k += 1; th += phi[2*i+j] if j < 2 else 0
+    e = np.linalg.eigvalsh(T + T.conj().T); return e[e < 0].sum()
+def egrid(m, phi):   # m x m grid, unit hoppings, flux phi[i][j] through square (i,j)
+    T = np.zeros((m*m, m*m), complex)
+    for i in range(m):
+        for j in range(m-1): T[m*i+j, m*i+j+1] = 1
+    for i in range(m-1):
+        th = 0
+        for j in range(m): T[m*i+m+j, m*i+j] = np.exp(1j*th); th += phi[i][j] if j < m-1 else 0
+    e = np.linalg.eigvalsh(T + T.conj().T); return e[e < 0].sum()
+print(egrid(4, [[np.pi]*3]*3), egrid(4, [[0]*3]*3), min(egrid(4, rng.uniform(0, 2*np.pi, (3, 3)).tolist()) for _ in range(1000)))
+t = np.ones(12); t[[2, 3, 7, 10]] = 0.2
+print(energy(t, [np.pi]*4), energy(t, [np.pi, np.pi, np.pi, 0]))
+# C13 Kuo condensation and C14 urban renewal on a weighted 4x4 grid (perfect matchings via permanents)
+def PM(wt, rm=()):
+    B_ = sorted({b for b, _ in wt} - set(rm), key=str); W_ = sorted({c for _, c in wt} - set(rm), key=str)
+    if len(B_) != len(W_): return 0.0
+    A = np.zeros((len(B_), len(W_)))
+    for (b, c), x in wt.items():
+        if b in B_ and c in W_: A[B_.index(b), W_.index(c)] = x
+    return per(A)
+col = lambda v: (v[0]+v[1]) % 2 if v[0] != 'n' else 1 - (v[1][0]+v[1][1]) % 2
+key = lambda u, v: (u, v) if col(u) == 0 else (v, u)
+wt = {key((i, j), (i+di, j+dj)): rng.uniform(0.5, 2) for i in range(4) for j in range(4) for di, dj in ((0, 1), (1, 0)) if i+di < 4 and j+dj < 4}
+a, b, c, d = (0, 0), (0, 3), (3, 3), (3, 0)
+print(PM(wt)*PM(wt, (a, b, c, d)), PM(wt, (a, b))*PM(wt, (c, d)) + PM(wt, (a, d))*PM(wt, (b, c)))
+sq = [(1, 1), (1, 2), (2, 2), (2, 1)]; ws = [wt[key(sq[k], sq[(k+1) % 4])] for k in range(4)]; Dl = ws[0]*ws[2] + ws[1]*ws[3]
+wt2 = {k: x for k, x in wt.items() if k not in [key(sq[k_], sq[(k_+1) % 4]) for k_ in range(4)]}
+nv = [('n', v) for v in sq]
+for k in range(4): wt2[key(sq[k], nv[k])] = 1.0; wt2[key(nv[k], nv[(k+1) % 4])] = ws[(k+2) % 4]/Dl
+print(PM(wt), Dl*PM(wt2))
+# C15 tropical limit of A=[[1,2],[2,3]]: both permutations weigh 4; T log per -> 4, but det(exp(A/T)) = 0 for every T
+w = np.array([1 + 3.0, 2 + 2.0]); s_ = np.array([1, -1])   # weights and signs of the two permutations
+for T in (0.1, 0.01): print(w.max() + T*np.log(np.exp((w - w.max())/T).sum()), (s_*np.exp((w - w.max())/T)).sum())
+# C16 Rogers dilogarithm over the A2 period
+Li2 = lambda x: sum(x**k/k**2 for k in range(1, 400)) if x <= 0.5 else math.pi**2/6 - math.log(x)*math.log(1-x) - Li2(1-x)
+L = lambda x: Li2(x) + 0.5*math.log(x)*math.log(1-x); y = [0.7, 3.1]
+for k in range(3): y.append((1+y[-1])/y[-2])
+print(6/math.pi**2*sum(L(v/(1+v)) for v in y), 6/math.pi**2*sum(L(1/(1+v)) for v in y))
+phi = (1+5**0.5)/2; print(6/math.pi**2*L(1/(1+phi)))   # constant solution y = phi: per-step value 2/5
+# C17 T-system on A3 x A3: T(i,j,u+h+h') = T(4-i,4-j,u), exact rationals
+mm = nn = 3; H = mm+nn+2; rnd = random.Random(0)
+T = {(i, j, u): Fraction(rnd.randint(1, 9), rnd.randint(1, 9)) for i in range(1, mm+1) for j in range(1, nn+1) for u in (0, 1) if (i+j+u) % 2 == 0}
+for u in range(1, 2*H+2):
+    for i in range(1, mm+1):
+        for j in range(1, nn+1):
+            if (i+j+u+1) % 2 == 0:
+                T[(i, j, u+1)] = (math.prod(T[(k, j, u)] for k in (i-1, i+1) if 1 <= k <= mm) + math.prod(T[(i, k, u)] for k in (j-1, j+1) if 1 <= k <= nn))/T[(i, j, u-1)]
+print(all(T[(i, j, u+H)] == T[(mm+1-i, nn+1-j, u)] for (i, j, u) in list(T) if u < 2), all(T[(i, j, u+H)] == T[(i, j, u)] for (i, j, u) in list(T) if u < 2))
+# C20 pentagon E(V)E(U) = E(U)E(-UV)E(V) when VU = qUV, E(x) = sum x^n/(q;q)_n, truncated at degree 12
+DEG, qq = 12, 0.3+0.5j
+def mul(X, Y): 
+    Z = {}
+    for (a1, b1), x in X.items():
+        for (c1, d1), y_ in Y.items():
+            if a1+b1+c1+d1 <= DEG: Z[(a1+c1, b1+d1)] = Z.get((a1+c1, b1+d1), 0) + x*y_*qq**(b1*c1)
+    return Z
+def E_(X):
+    R, P, poch = {}, {(0, 0): 1.0}, 1.0
+    for k in range(DEG+1):
+        if k: P = mul(P, X); poch *= 1 - qq**k
+        for kk, v in P.items(): R[kk] = R.get(kk, 0) + v/poch
+    return R
+lhs = mul(E_({(0, 1): 1}), E_({(1, 0): 1})); rhs = mul(mul(E_({(1, 0): 1}), E_({(1, 1): -1})), E_({(0, 1): 1}))
+print(max(abs(lhs.get(k, 0) - rhs.get(k, 0)) for k in set(lhs) | set(rhs)))
+```
+
+Output, in order:
+- C8: the spectrum (printed over two lines), then per and max |det| for the Heawood graph and K₃,₃;
+- C9: regular graph [per_B, (4/3)^10, per] and I⊗J₂ [per_B, per]; random bounds [min per/per_B, max per/(2^{n/2} per_B)]; Kesten–McKay for d = 3 and 4 [all-matchings integral, tree value, ln|x| integral, Schrijver];
+- C10: [m_k, Godsil–Gutman residual, max root, min λ_max, 2√2];
+- C11: hexagon grid [count, face rule, all −1], then honeycomb [count, |det|];
+- C12: 4 × 4 grid [π, 0, best random], then Lieb–Loss [π⁴, (π,π,π,0)];
+- C13; C14; C15 [T log per, det] at T = 0.1 and 0.01;
+- C16: period sums, then the constant solution;
+- C17: [rotation, identity];
+- C20: the residual.
+
+```
+[-3.       -1.414214 -1.414214 -1.414214 -1.414214 -1.414214 -1.414214
+  1.414214  1.414214  1.414214  1.414214  1.414214  1.414214  3.      ]
+24.0 23.999999999999993 6.0 4.0
+17.75772663381251 17.757726633812588 64.0 1.0 8.0
+1.372059886216939 0.7376817330562153
+0.5815754049028405 0.5815754049028404 0.14384334671649238 0.14384103622589042
+0.6613554692676729 0.6613554692676732 0.26162667118420074 0.26162407188227393
+[1, 15, 75, 145, 90, 6] 1.791795878336444e-14 2.63144517283292 2.000000000000001 2.8284271247461903
+1481.711869063205 1481.7118690630593 1429.996123327475
+1.2760626385133946 1.2760626383655738
+-13.252758550612269 -10.94427190999916 -12.970749074898766
+-5.22842712474619 -5.316753705465365
+1176.1907681936414 1176.1907681936377
+149.85988508344963 149.85988508344997
+4.0693147180559945 0.0
+4.0069314718056 0.0
+3.0 2.0000000000000004
+0.3999999999999999
+True False
+3.049565105563204e-16
+```
+
+Not reproduced in the scripts (session runs only):
+- C17 for the six other pairs (m, n);
+- the n = 6 exhaustive stratum search of C21 (86 s);
+- the Jacobian-rank check of C21;
+- C12's 2 × 3 ladder search.
+
+They use the same functions as the scripts.
+
+---
+
+## 7. Where this note refines Part 2
+
+Each item names the place in [foundations-unlocks.md](foundations-unlocks.md) to update.
+
+- **Unlock 24, last bullet, and its Appendix A row** ("Kasteleyn's face rule equals Lieb's flux rule", THEOREM). Refine to: the face rule is the |det|-maximising canonical flux on every planar bipartite graph (Lieb–Loss Thm 3.1). It minimises the half-filled energy on Lieb's lattices, but not in general (Lieb–Loss §VII(B); C12).
+- **Unlock 32, first bullet, and its Appendix A row** ("tropically per = det = assignment", THEOREM). Refine to: they are equal as formal tropicalisations. The zero-temperature limit of log|det| falls below the assignment value, or to −∞, when top-weight permutations cancel (C15). This agrees with Part 2's own unlock 29.
+- **Appendix A, genus count "from memory"**: now verified (Cimasoni–Reshetikhin: 2^{2g} Pfaffians, Arf signs, an H¹(Σ; Z/2)-torsor).
+- **Appendix A, Ramanujan 2-lifts "from memory"**: now verified (MSS I §5) and checked (C10).
+- **Unlocks 33, 45, 46.**
+  - For vector-valued blocks, the CMI is −½ Σ log(1 − ρᵢ²) (Theorem A), not ½ log(1 + y) with a single cross minor. The memory budget of unlock 45 at a block separator is Theorem A.
+  - Theorem A′ adds the optimal rank-k memory.
+- **Appendix A, "Idea A: a cluster structure … SPECULATION"**: now partly DERIVED.
+  - Kenyon–Pemantle cube moves change separators.
+  - Graphical models are coordinate strata under a criterion that covers all chordal graphs on ≤ 6 vertices (Prop A4′).
+  - CONJECTURE A4\* remains, and MTP₂ is not the positive part.
+- **Unlock 47(b)** ("expanders … are the best case for trees"). Add the hypotheses: unfrustrated models for free energies (T3), and uniqueness for marginals (T4). The competition scores marginals.
+- **Appendix A, "Idea C … SPECULATION; not used"**: the construction is THEOREM-level (KN; §4). It is still not used.
+- **Consistent, no change needed**: unlock 14(a) (lim sup), unlock 26, unlock 34 (graphoid hypothesis), and Appendix A's JSV row ("JSV's crossing rests on positivity").
+
+---
+
+## Appendix A. Every claim of the input, with its verdict
+
+The verdict counts in the Summary are taken from this table.
+- I1–I50 (input §§1–4): 38 CORRECT, 11 IMPRECISE, 1 UNVERIFIED.
+- I51–I79 (ideas and "how much to trust this"): 20 CORRECT, 6 IMPRECISE, 1 UNVERIFIED, 2 OPEN/CONJECTURE.
+
+| # | claim (abridged) | verdict | evidence | streams |
+|---|---|---|---|---|
+| I1 | monomer–dimer: no phase transition (real roots) | CORRECT | Heilmann–Lieb abstract; ACFK Thm 3.3 | B, M |
+| I2 | its growth rate is local for bounded degree | CORRECT (estimability, uniform form proved) | ACFK Thm 1.2; C9 | B |
+| I3 | perfect matchings not local in general | CORRECT | ACFK Thms 1.7–1.8 | B, M |
+| I4 | an edge in all but a cⁿ fraction of perfect matchings | CORRECT | ACFK Thm 1.7 | B, M |
+| I5 | a global rigidity no local view detects | CORRECT | ACFK Thm 1.8 | B |
+| I6 | expanders: no p(e) exponentially close to 1 | CORRECT (d-regular bipartite δ-expanders) | ACFK Thm 1.9 | B |
+| I7 | growth rate local via Gamarnik–Katz | CORRECT | ACFK §1.3; GK Cor 1, Thm 2 | B |
+| I8 | Schrijver's constant per vertex at large girth | CORRECT (no expansion needed) | ACFK Thm 1.5; C9 | B, M |
+| I9 | that constant is the Bethe permanent | CORRECT | proof (Vontobel convexity); C9 | B, M |
+| I10 | Bethe = tree Markov factorisation | CORRECT | Vontobel Cor 15; T1 | B, K |
+| I11 | per_B ≤ per ≤ 2^{n/2} per_B | CORRECT | Anari–Rezaei Thms 3–4; C9 | B, M |
+| I12 | Bethe permanent = limit over covers | IMPRECISE: lim sup | Vontobel Thm 39 | B |
+| I13 | pseudorandom geometry: global count from local tree factorisation | IMPRECISE: growth rate, not count | I11 | B, M |
+| I14 | Kasteleyn: signing turns per into det on planar graphs | IMPRECISE: bipartite per → det; general haf → Pf | Lieb–Loss Thm 3.1 | M |
+| I15 | genus g: 4^g determinants, one per spin structure | CORRECT (Pfaffians) | Cimasoni–Reshetikhin | M |
+| I16 | the obstruction is H¹(Σ; Z/2) | IMPRECISE: H¹ indexes (torsor), not an obstruction | CR Thm 3.2 | M |
+| I17 | RST/McCuaig: planar pieces glued, plus one exception | CORRECT | RST Thm 1.3/6.8, §7.2 | M |
+| I18 | Heawood, Fano incidence graph, eigenvalues ±√2 | CORRECT | C8 | M |
+| I19 | determinants fermions, permanents bosons | CORRECT | TD; AA | M, H |
+| I20 | matchgates classically easy | CORRECT | Terhal–DiVincenzo | M, H |
+| I21 | boson sampling believed hard | CORRECT | Aaronson–Arkhipov | M |
+| I22 | face rule: −1 on 4k-faces, +1 on 4k+2-faces | CORRECT | C11 | M |
+| I23 | coincides with Lieb's flux rule | IMPRECISE: \|det\|-maximiser; energy only on Lieb's lattices | Lieb–Loss Thm 3.1, §VII(B); Lieb 1994; C12 | M, H |
+| I24 | the sign is a ground-state gauge field | IMPRECISE: \|det\|-maximising field | as I23 | M, H |
+| I25 | Godsil–Gutman | CORRECT | MSS I Thm 3.6; C10 | M, B |
+| I26 | roots ≤ 2√(d−1) | CORRECT | Heilmann–Lieb via MSS I; C10 | M, B |
+| I27 | signing = double cover = Z/2 gauge field | CORRECT | Bilu–Linial via MSS I §5 | M |
+| I28 | MSS: bipartite Ramanujan graphs of every degree | CORRECT | MSS I §5; C10 | M, B |
+| I29 | the same method solved Kadison–Singer | CORRECT | MSS II | M |
+| I30 | pure states on the diagonal extend uniquely | CORRECT | MSS II | M, H |
+| I31 | the diagonal is the "classical shadow" | UNVERIFIED (missing context) | Part 2 treats it as an analogy | F, H |
+| I32 | Gurvits's van der Waerden proof is the ancestor | CORRECT | MSS II acknowledgement | M |
+| I33 | strongest bridge to NCG already a theorem | IMPRECISE: operator algebras, not NCG proper | — | H |
+| I34 | tropicalisation: log-sum-exp → max | CORRECT (positive weights) | proof | T |
+| I35 | tropically per = det = assignment | IMPRECISE: formally yes, in the limit no | C15 | T, M |
+| I36 | at zero temperature signs die | IMPRECISE: formally only | C15; Part 2 unlock 29 | T, F |
+| I37 | Chin: tropical proof lifted by positivity and periodicity | CORRECT | Chin Thm 1.1; C17 | T |
+| I38 | finite-temperature permanent #P-hard | CORRECT (exact; approximation is FPRAS) | Valiant via Vontobel §I | T, M |
+| I39 | Kasteleyn and expansion-based JSV are the crossings | IMPRECISE: JSV works for all nonnegative matrices | Vontobel §I-B; GK | T, M |
+| I40 | cluster algebras: tropical-to-full transfer is a theorem | CORRECT | IIKKN; KN Props 2.4, 3.4 | T |
+| I41 | cluster variables = snake-graph matchings | CORRECT (ordinary arcs, crossing monomial) | MSW Thm 4.9 | M, T |
+| I42 | weighted permanents made determinants by Kasteleyn | CORRECT | planar bipartite | M |
+| I43 | octahedron recurrence = sums over perfect matchings | CORRECT | Speyer | M, T |
+| I44 | Kuo condensation is an exchange relation | CORRECT (three-term Plücker form) | Kuo Thm 2.1; C13 | M, K |
+| I45 | urban renewal preserves the dimer sum up to a factor | CORRECT | Propp; Goncharov–Kenyon; C14 | M |
+| I46 | domino shuffling samples exactly | CORRECT | Propp | M |
+| I47 | integrable structure replaces expansion | CORRECT (descriptive) | — | M |
+| I48 | torus dimers are cluster integrable systems | CORRECT | Goncharov–Kenyon | M, T |
+| I49 | planar Ising in OG_{≥0}; same pair as Chin builds on | CORRECT | Galashin–Pylyavskyy Thm 2.3 | M, T |
+| I50 | total positivity governs Markov structure; MTP₂ faithful | IMPRECISE: graphoid needed; MTP₂ ≠ matrix TP | Fallat et al. Thm 6.1, Ex 5.4; C5 | K, T |
+| I51 | Dodgson identity | CORRECT (scalar a, c); block form = Theorem A | C1–C4 | K |
+| I52 | I = −½ log(1 − r²) | CORRECT (scalar); blocks: −½ Σ log(1 − ρᵢ²) | C1–C3 | K |
+| I53 | Markov = degeneration to one monomial | CORRECT (scalar); blocks: all \|a\|·\|c\| relations | Theorem A(5); C4 | K |
+| I54 | Koteljanskii = CMI ≥ 0 | CORRECT (PD) | Cover–Thomas; C7 | K |
+| I55 | chordal Markov ⟺ det = ∏ cliques/∏ separators | CORRECT | proof; C6 | K |
+| I56 | the junction-tree formula Bethe imposes everywhere | CORRECT | T1 | B, K |
+| I57 | open: cluster structure, Markov strata, mutation = separator change, MTP₂ positive | partly DERIVED (Prop A4′), CONJECTURE A4\*, MTP₂ part false | §2.3; C21 | K, T, M |
+| I58 | separator principle strong on amenable geometry | CORRECT (positivity; boundary gain) | S1, S4 | K, B |
+| I59 | tree principle strong while correlations decay; glassiness | IMPRECISE: decay needed for marginals, not free energies | T3–T6 | B |
+| I60 | expanders worst for separators, best for trees; permanent shows both | IMPRECISE: best only for unfrustrated models | S5, T3, T5 | B, K |
+| I61 | substitution towers → plane; covers → tree | IMPRECISE: needs girth → ∞ | §3.3 | B, F |
+| I62 | Bethe permanents are limits over covers; Ramanujan from 2-lifts | CORRECT (lim sup) | Vontobel Thm 39; MSS I | B, M |
+| I63 | box spaces expander ⟺ profinite spectral gap | CORRECT | proof §3.3 | B, H |
+| I64 | the same box spaces break coarse Baum–Connes | CORRECT under stated hypotheses | HLS; Willett–Yu; ℓ^p paper | H |
+| I65 | quantum Bethe on random lifts; Yang says little on expanders | CONJECTURE QB; second part CORRECT | §3.4; S5 | B, K, H |
+| I66 | quantum mutation = Ad Ψ_q ∘ monomial | CORRECT | KN Prop 3.1; Keller | H, T |
+| I67 | layers of commuting local gates (brickwork) | CORRECT (Heisenberg picture) | b = 0 within colours | H |
+| I68 | periodicity transfers via tropical data (KN) | CORRECT | KN Props 2.4, 3.4, Thm 3.5 | H, T |
+| I69 | exactly periodic up to a phase; half-period a permutation | CORRECT (period; classical half-period); quantum half-period DERIVED | KN Thms 4.6–4.7; Chin; C17 | H, T |
+| I70 | classical shadow's value is a central charge | IMPRECISE: (π²/6)·N₋ = period × c_eff | KN Thm 2.7; C16 | T |
+| I71 | at irrational q, the quantum torus is Connes' torus | IMPRECISE: different *-structure; mutation not a C*-automorphism | §4.1 | H |
+| I72 | golden angle: PV embedding into Effros–Shen [[1,1],[1,0]] | CORRECT | Pimsner–Voiculescu; Rieffel | H |
+| I73 | Morita equivalent to the Penrose algebra | CORRECT | Connes; Elliott + BGR (from memory) | H |
+| I74 | "Established: sections 1–4" | IMPRECISE: 11 imprecisions (§1) | Appendix A | all |
+| I75 | the pentagon generalisation is an immediate corollary of Chin plus Keller | UNVERIFIED (claim not located in either paper) | — | T, H |
+| I76 | Idea A identity elementary and correct; cluster structure open | CORRECT (scalar); open part now partly answered | §2 | K |
+| I77 | Idea B a synthesis of proven results; quantum half untested | CORRECT | §3 | B, K |
+| I78 | Idea C well defined, interest unproven | CORRECT | §4 | H |
+| I79 | "local-to-global" names several mechanisms | CORRECT (descriptive) | §3 | all |
+
+The input's source list includes Newman–Vardi, *FPRAS approximation of the matrix permanent in practice*. No claim depends on it, and it was not opened.
+
+---
+
+## Sources
+
+**Opened and checked in this session** (the statement used was read in the source).
+- M. Abért, P. Csikvári, P. Frenkel, G. Kun, *Matchings in Benjamini–Schramm convergent graph sequences*, arXiv:1405.3271. Thms 1.2, 1.5–1.9, 3.3, Remark 3.6, §1.3.
+- O. J. Heilmann, E. H. Lieb, *Theory of monomer-dimer systems*, CMP 25 (1972) 190–232. Abstract.
+- D. Gamarnik, D. Katz, *A deterministic approximation algorithm for computing the permanent of a 0,1 matrix*, arXiv:math/0702039 (JCSS 76 (2010)). Thm 1 (Bayati–Gamarnik–Katz–Nair–Tetali), Thm 2, Cor 1.
+- N. Anari, A. Rezaei, *A tight analysis of Bethe approximation for permanent*, arXiv:1811.02933. Def 2, Thms 3–4, tightness.
+- P. O. Vontobel, *The Bethe permanent of a non-negative matrix*, arXiv:1107.4196 (IEEE Trans. Inf. Theory, 2013). Cor 15, Thm 20, Lemma 21 (convexity), §VII-E (the d-regular evaluation), Thm 39 (lim sup over covers), §I (#P, JSV).
+- D. Cimasoni, N. Reshetikhin, *Dimers on surface graphs and spin structures I*, arXiv:math-ph/0608070. The 2^{2g} Pfaffian formula, Arf invariants, Thm 3.2.
+- N. Robertson, P. D. Seymour, R. Thomas, *Permanents, Pfaffian orientations, and even directed circuits*, Ann. of Math. 150 (1999); arXiv:math/9911268. §§1.1–1.3, 6.3, 6.8, 7.2–7.3.
+- E. H. Lieb, M. Loss, *Fluxes, Laplacians and Kasteleyn's theorem*, Duke Math. J. 71 (1993); arXiv:cond-mat/9209031. Thm 3.1, §VII(B), App. A.
+- E. H. Lieb, *Flux phase of the half-filled band*, PRL 73 (1994); arXiv:cond-mat/9410025. Hypotheses and statement.
+- A. Marcus, D. Spielman, N. Srivastava, *Interlacing families I*, arXiv:1304.4132. Thms 3.1–3.2, 3.6, §5. *Interlacing families II*, arXiv:1306.3969. Kadison–Singer, Thm 1.4, Cor 1.5, Thm 6.1, the credit to Gurvits.
+- B. M. Terhal, D. P. DiVincenzo, arXiv:quant-ph/0108010. S. Aaronson, A. Arkhipov, arXiv:1011.3245. Abstracts.
+- I. Chin, *Half-periodicity of Zamolodchikov periodic cluster algebras*, arXiv:2602.15140 v2. Thm 1.1, Prop 3.1, Cor 3.5, Thm 2.14 (IIKKN), Lemma 4.3.
+- G. Musiker, R. Schiffler, L. Williams, arXiv:0906.0748. Thms 4.9, 4.16, 4.20.
+- D. Speyer, arXiv:math/0402452. E. Kuo, arXiv:math/0304090, Thm 2.1. J. Propp, *Generalized domino-shuffling*, arXiv:math/0111034.
+- A. B. Goncharov, R. Kenyon, *Dimers and cluster integrable systems*, arXiv:1107.5588.
+- P. Galashin, P. Pylyavskyy, *Ising model and the positive orthogonal Grassmannian*, arXiv:1807.03282. Thm 2.3.
+- S. Fallat, S. Lauritzen, K. Sadeghi, C. Uhler, N. Wermuth, P. Zwiernik, *Total positivity in Markov structures*, arXiv:1510.01290. Thm 6.1, Ex 5.4, Karlin–Rinott.
+- M. Madiman, P. Tetali, arXiv:0901.0044 (Koteljanskii as log-det submodularity). T. Cover, J. Thomas, *Determinant inequalities via information theory*, SIAM J. Matrix Anal. Appl. 9 (1988) 384–392 (abstract).
+- T. Boege, A. D'Alì, T. Kahle, B. Sturmfels, *The geometry of gaussoids*, arXiv:1710.07175. Square and edge trinomials, CI ⟺ a_{ij|K} = 0, Thm 5.6, non-realisable gaussoids, Sullivant.
+- R. Kenyon, R. Pemantle, *Principal minors and rhombus tilings*, arXiv:1404.1354 (full text). Hexahedron relation, Thms 4.3, 4.4, 5.2, 5.7, Prop 5.4–5.5, Kashaev form (7)–(10).
+- S. Chepuri, T. George, D. E. Speyer, *Electrical networks and Lagrangian Grassmannians*, arXiv:2106.15418; Ann. Inst. Henri Poincaré D 13 (2026) 191–216. §5.2, Thm 5.1.
+- R. Karpman, *Total positivity for the Lagrangian Grassmannian*, arXiv:1510.04386 (abstract). P. Galashin, T. Lam, *Positroid varieties and cluster algebras* (author's PDF): Thm 3.5, Cor 4.4.
+- R. M. Kashaev, T. Nakanishi, *Classical and quantum dilogarithm identities*, arXiv:1104.4630. Props 2.4, 3.1, 3.4, Thms 2.7, 3.5, 4.6, 4.7. B. Keller, *On cluster theory and quantum dilogarithm identities*, arXiv:1102.4148.
+- M. Pimsner, D. Voiculescu, *Imbedding the irrational rotation C*-algebra into an AF-algebra*, J. Operator Theory 4 (1980) 201–210 (IMAR scan). M. A. Rieffel, *C*-algebras associated with irrational rotations*, Pacific J. Math. 93 (1981).
+- A. Connes, *Noncommutative Geometry* (1994), introduction (the Penrose AF algebra). *On the noncommutative geometry of tilings*, arXiv:1412.5442 (A. Julien, J. Kellendonk, J. Savinien; authors from memory).
+- N. Higson, V. Lafforgue, G. Skandalis, *Counterexamples to the Baum–Connes conjecture*, GAFA 12 (2002) 330–354 (introduction). R. Willett, G. Yu, *Higher index theory for certain expanders and Gromov monster groups II*, arXiv:1012.4151. *Expanders are counterexamples to the ℓ^p coarse Baum–Connes conjecture* (EMS Press). Mimura–Ozawa–Sako–Suzuki, *Group approximation in Cayley topology and coarse geometry III* (AGT 15 (2015)).
+- M. Brown, D. Poulin, *Quantum Markov networks and commuting Hamiltonians*, arXiv:1206.0755. Thms 1–5. D. Poulin, M. B. Hastings, *Markov entropy decomposition*, arXiv:1012.2050.
+- A. Dembo, A. Montanari, *Ising models on locally tree-like graphs*, arXiv:0804.4726. Thms 2.4, 2.6, 2.7.
+- A. Sly, N. Sun, *Counting in two-spin models on d-regular graphs*, arXiv:1203.2602. Thms 1, 2, 4, 5.
+- Through the programme's digests: Yang, arXiv:2609.38007, Thm II.1 ([arxiv-2609.38007.md](../digests/bridges/arxiv-2609.38007.md)); Chen–Rouzé, arXiv:2504.02208, Cor III.2, Cor B.2 ([arxiv-2504.02208.md](../digests/bridges/arxiv-2504.02208.md)); Hammersley–Clifford and the Moussouris counterexample ([hammersley-clifford.md](../digests/bridges/hammersley-clifford.md)).
+
+**From memory (standard; not re-opened).**
+- Valiant (1979); Jerrum–Sinclair–Vigoda (2004); Bilu–Linial (2006); McCuaig (2004).
+- Galluccio–Loebl and Tesler (cited in CR); Keller's periodicity theorem; Fock–Goncharov positive representations; Faddeev's Φ_b.
+- Elliott's classification of AF algebras; Brown–Green–Rieffel; Lubotzky on property (τ); Cheeger and Alon–Milman.
+- Weitz (2006); Pearl and Yedidia–Freeman–Weiss; cluster-expansion locality at high temperature; Kato–Brandão (as tabulated by Yang).
+- 1RSB and condensation (Krzakala et al.; Ding–Sly–Sun); the Lee–Yang effective central charge 2/5; boundary measurements and Plücker relations for planar bipartite graphs (Postnikov; Lam).
