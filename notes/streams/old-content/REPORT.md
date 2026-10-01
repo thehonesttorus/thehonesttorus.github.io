@@ -1,6 +1,6 @@
 # Stream old-content: a cheap carrier for the transported old-source content of κ3
 
-Status: done (2026-10-01). Widths 64, 128, 256 on sample truth (full third-moment atlases) and on a noise-free model
+Status: done (2026-10-01), including the absorption test (final section). Widths 64, 128, 256 on sample truth (full third-moment atlases) and on a noise-free model
 chain; two MLPs and an independent-sample replicate at width 128; a Monte Carlo noise check.
 
 ## Question
@@ -123,8 +123,59 @@ both give the same verdict.
 - The PR of M_{s→t} at age 5 is 6.0 / 10.5 / 23.0 at n = 64 / 128 / 256, i.e. ∝ n.
 - The pool needs k ≈ 0.25–0.3 n per band, so this is the published shared basis, not a near-free carrier.
 
+## Final section: the "not carried at all, absorbed into the closure" branch (`absorb.py`)
+
+Question from the coordinating session. How large is the old pool's share of D21, and how does it scale with n? Can a
+chain drop the old pool and replace its D21 effect by renormalised births? Setup:
+- Sources in the published (no-AD) convention; Old^w = ages > w.
+- Per-layer least squares of D21(Old_l^w) on two feature sets:
+  - **mem**: what a memoryless chain has, the D21 transports of the layer-(l−1) birth diagrams (leading Gaussian Wick
+    ρ², and B1–B5 of `oracle_k3.residual_basis`: D21(z)-hyperedge + C edge, its w3 partner, D3 diagram, Gaussian ρ³,
+    K22 diagram; B0 = the old content itself excluded; B6 needs a `--k4` atlas), plus their transposes.
+  - **mem+young**: the same plus the D21 of each exactly carried young source (ages 1..w), plus transposes.
+- Coefficients fitted per layer on A1, evaluated in-sample (A1), on the independent-sample replicate (A2) and held out
+  on the second MLP (B1). Widths 64 and 256 have one MLP each, so they are in-sample only, an optimistic bound.
+- Every entry is ε = ‖residual‖ / ‖D21(z_l)‖; "share" = ‖D21(Old^w)‖ / ‖D21(z_l)‖ (= the ε of simply dropping).
+
+(1) Share of the old pool, range over layers 10–15:
+
+| w | n = 64 | n = 128 (A1; B1) | n = 256 | extrapolated to n = 1024 |
+|---|---|---|---|---|
+| 1 | 0.71–0.97 | 0.88–0.97; 0.88–0.99 | 0.91–0.98 | ≈ 0.9–1 |
+| 2 | 0.52–0.74 | 0.80–0.95; 0.65–0.95 | 0.76–0.93 | ≈ 0.8–0.95 |
+| 4 | 0.26–0.48 | 0.62–0.79; 0.50–0.88 | 0.49–0.77 | ≈ 0.5–0.8 (does not shrink) |
+
+The share grows from n = 64 to 128 and is flat from 128 to 256. Nothing suggests old content becomes negligible at
+competition width. With a 4-source young window, dropping it costs ε ≈ 0.5–0.8 at depth, against a 0.022 target.
+
+(2) and (3) Absorption, w = 4, range over layers 7–15 (per-layer files `results/absorb_*.txt`):
+
+| features | n = 64 (in-sample) | n = 128 A1 (in-sample) | n = 128 A2 (replicate) | n = 128 B1 (held-out MLP) | n = 256 (in-sample) |
+|---|---|---|---|---|---|
+| none (= share) | 0.26–0.48 | 0.44–0.79 | 0.44–0.79 | 0.39–0.88 | 0.32–0.77 |
+| (3) memoryless births (mem) | 0.25–0.45 | 0.41–0.76 | 0.41–0.76 | 0.39–0.74 | 0.30–0.75 |
+| (2) mem + young sources | 0.21–0.39 | 0.25–0.62 | 0.25–0.61 | 0.35–0.79 | 0.25–0.60 |
+
+w = 1 and w = 2 behave the same way. At w = 1, mem+young reaches 0.67–0.93 at n = 128 in-sample (layers 7–15) and 0.72–0.95 held
+out. Readings:
+- Renormalising the birth diagrams removes at most ~10–15 % of the old pool's D21 (relative), even in-sample.
+  Adding the young sources removes ~30–40 % in-sample, and this does not transfer to the other MLP: held-out B1
+  stays at 0.35–0.79, i.e. at the drop-it level.
+- The A2 replicate reproduces A1 to ±0.004, so these are structural numbers, not noise.
+- The residual is 10–35× the 2.2 % target at every width. Its size relative to D21 does not shrink with n.
+
+So the old content can neither be compressed cheaply (sections above) nor absorbed into renormalised births. The
+first-order birth diagrams and the young sources do not span the D21 of the aged sources. Within this oracle class,
+"not carried at all" fails just as clearly as "carried compressed". Either the leaders carry the old content at full
+rank with a cheaper young/old machinery than the public chain, or their gain comes from elsewhere. The candidates
+this stream cannot rule out:
+- a different closure of the means and variances that does not route through D21 (cf. EscAI's oracle: pre-activation
+  variance is the largest single channel, −40 %);
+- a representation of the whole κ3 that is not a source sum.
+The oracle1024 stream's streaming measurement of the same shares at n = 1024 will pin the extrapolation in table (1).
+
 ## Files
-- `tracker.py`, `carriers.py`, `propproj.py`, `run_all.sh`
+- `tracker.py`, `carriers.py`, `propproj.py`, `absorb.py`, `run_all.sh`
 - `results/tracker_*` per-source D21 shares and validation;
   `results/carriers_*`, `modesS*_*`, `modesU_*`, `cp*_*`, `propproj_*` carrier ε per layer.
   Naming: A1/A2/B1 = width 128 sample truth, K64/K256 = width 64/256 sample truth, `model*` and `*model` = model chain.
