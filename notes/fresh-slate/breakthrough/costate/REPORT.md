@@ -22,7 +22,7 @@
 | **A3gsl, no coincidence atoms (A3gsl_nc)** | **3.25e-7 ± 0.17e-7** | **12.6×** | **273** | **0.27 / 0.18 B** |
 
    The scale-mode co-state matches the exact all-pairs first order at **46 % of its products** (A3gl), and A3gsl edges below it (ratio 0.68–1.11 per network, mean 0.93). **Without the coincidence atoms (at 1024 they are a 1/n effect, and with the scale law they hurt) it is better and cheaper: A3gsl_nc beats the exact all-pairs first order on all six networks (ratio 0.69–0.91) at 32 % of its products.** Best adjusted: A3gsl_nc ≈ 3.25e-7 × 0.18 ≈ 5.9e-8 and A2gl_nc ≈ 4.3e-7 × 0.12 ≈ 5.2e-8 with Strassen L3. These are the best adjusted numbers of the fresh designs measured so far (faces ≈ 1.1e-7, bethe 1.07e-7). At w128 the law-level scale mode even beats all pairs by 1.2×: A3gsl 2.64e-5 against 3.13e-5, which is the mode's own second-order (κ₄-spike) content.
-4. **Verdict.** The co-state lens answers the dossier's question (ii) **positively in effect and negatively in principle**. Old third-order content is not O(L n³) as an exact object. Its *readout-relevant* part, however, is one conserved scalar (the dilation charge) plus a residual that a short exact window (A ≤ 3) and the slice chain absorb, which takes it from O(L² n³) to O(A L n³). But the first-order co-state itself sits at raw ≈ 4e-7 at n = 1024, about 40× above the bar's raw ≈ 1e-8. Best adjusted ≈ 5–6e-8 at 0.12–0.18 B (A2gl_nc, A3gsl_nc; raw 3.3–4.3e-7). That is ahead of or level with the other fresh designs (faces raw 3.2e-7, markov raw 2.4e-7, bethe raw 1.04e-6), and ≈ 35× short of 1.6e-9. What is missing is **not old content any more**: the remaining error is the first-order model error (decoupled gates, first-order Stein, local κ₄), i.e. the second-order Duhamel term of the non-scale content.
+4. **Verdict.** The co-state lens answers the dossier's question (ii) **positively in effect and negatively in principle**. Old third-order content is not O(L n³) as an exact object. Its *readout-relevant* part, however, is one conserved scalar (the dilation charge) plus a residual that a short exact window (A ≤ 3) and the slice chain absorb, which takes it from O(L² n³) to O(A L n³). But the first-order co-state itself sits at raw ≈ 4e-7 at n = 1024, about 40× above the bar's raw ≈ 1e-8. Best adjusted ≈ 5–6e-8 at 0.12–0.18 B (A2gl_nc, A3gsl_nc; raw 3.3–4.3e-7). That is ahead of or level with the other fresh designs (faces raw 3.2e-7, markov raw 2.4e-7, bethe raw 1.04e-6), and ≈ 35× short of 1.6e-9. What is missing is **not old content any more, and not the first-order κ₃ model either**: at w128 the computed co-state equals first-order injection of the *true* κ₃ (2.70e-5 against 2.77e-5, four networks). **The whole remaining gap is joint κ₄ (the second-order Duhamel term): 15× at w128, and its readout-relevant part is concentrated, with rank 8 recovering 8× and rank 32 recovering 11× (§4.6).** The next object for this lens is therefore a few readout-relevant joint-κ₄ modes, identified in closed form as the dilation mode was for κ₃.
 
 ## 1. Setting and the co-state
 
@@ -161,22 +161,21 @@ So the co-state contains an exactly closed sector, the G-mixing law, whose size 
 
 **4.6 What remains: the second-order oracle (w128, `oracle2nd.py`).** True Monte Carlo cumulant slices (two passes, N = 4e6; heisenberg oracle3 atlas code) are injected at every layer into the own (m, C) chain. Table below; `table2nd.py` regenerates it.
 
-| (w128, networks 0, 1) | raw per network | geometric mean |
+| (w128, networks 0, 1, 2, 3) | raw per network | geometric mean |
 |---|---|---|
-| Gaussian closure | 4.74e-04 / 1.96e-04 | 3.05e-04 |
-| computed, exact first order (all pairs) | 4.94e-05 / 3.48e-05 | 4.14e-05 |
-| computed, best co-state A3gsl_nc | 3.02e-05 / 2.69e-05 | 2.85e-05 |
-| oracle: true κ₃, first-order injection | 1.01e-05 / 3.39e-05 | 1.85e-05 |
-| oracle: true κ₃ + joint κ₄ (second order) | 2.49e-06 / 2.72e-06 | 2.60e-06 |
-| oracle: κ₄ slices rank 1 off-diagonal + exact diagonal | 5.08e-06 / 9.68e-06 | 7.01e-06 |
-| oracle: κ₄ slices rank 8 + diagonal | 3.10e-06 / 4.71e-06 | 3.82e-06 |
-| oracle: κ₄ slices rank 32 + diagonal | 3.55e-06 / 3.16e-06 | 3.35e-06 |
-| oracle: κ₄ diagonal only | 1.65e-05 / 1.44e-05 | 1.54e-05 |
+| Gaussian closure | 4.74e-04 / 1.96e-04 / 2.34e-04 / 6.11e-04 | 3.40e-04 |
+| computed, exact first order (all pairs) | 4.94e-05 / 3.48e-05 / 4.06e-05 / 3.70e-05 | 4.01e-05 |
+| computed, best co-state A3gsl_nc | 3.02e-05 / 2.69e-05 / 2.21e-05 / 2.97e-05 | 2.70e-05 |
+| oracle: true κ₃, first-order injection | 1.01e-05 / 3.39e-05 / 2.24e-05 / 7.62e-05 | 2.77e-05 |
+| oracle: true κ₃ + joint κ₄ (second order) | 2.49e-06 / 2.72e-06 / 1.63e-06 / 9.42e-07 | 1.80e-06 |
+| oracle: κ₄ slices rank 1 off-diagonal + exact diagonal | 5.08e-06 / 9.68e-06 / 1.21e-05 / 3.89e-06 | 6.94e-06 |
+| oracle: κ₄ slices rank 8 + diagonal | 3.10e-06 / 4.71e-06 / 3.04e-06 / 2.71e-06 | 3.31e-06 |
+| oracle: κ₄ slices rank 32 + diagonal | 3.55e-06 / 3.16e-06 / 2.14e-06 / 1.73e-06 | 2.54e-06 |
+| oracle: κ₄ diagonal only | 1.65e-05 / 1.44e-05 / 1.58e-05 / 1.23e-05 | 1.47e-05 |
 
-
-Reading. Between the best computed co-state and the second-order oracle lie two factors, given here as geometric means over the networks measured:
-- (a) **the computed κ₃ itself: small and mixed, ≈ 1.5×.** First-order injection of the *true* κ₃ beats the best computed variant by 3× on network 0 and loses to it on network 1. The scale law in the computed co-state partly makes up for first-order model error: decoupled gates, linear transport, and the δ-insertion of κ₃ and κ₄ into the next κ₃.
-- (b) **joint κ₄: the dominant factor, ≈ 7×.** Its readout-relevant part is concentrated: rank 8 off the diagonal (plus the exact diagonal) recovers ≈ 5× of the 7×, and rank 32 ≈ 5.5×. Rank 1 gives ≈ 2.6×, consistent with a large scale-mode (bethe Q) component. The diagonal alone destabilises the chain, as heisenberg R3 found.
+Reading (4 networks, geometric means):
+- (a) **The computed co-state is as good as the true κ₃ at first order.** A3gsl_nc 2.70e-5 against 2.77e-5 for first-order injection of the *true* κ₃, so the first-order model has nothing left to give. Network by network, the true κ₃ alone is erratic (1.0e-5 to 7.6e-5). Without its second-order partner it can destabilise the chain, as heisenberg R2–R3 saw at w64. The computed co-state with the scale law is steadier.
+- (b) **Joint κ₄ is the whole remaining gap: 15× at w128** (2.77e-5 → 1.80e-6). **Its readout-relevant part is concentrated**: rank 1 off the diagonal (plus the exact diagonal) recovers 4×, rank 8 recovers 8×, rank 32 recovers 11×. The diagonal alone destabilises the chain (1.5e-5).
 
 Both are second-order Duhamel content. C5 says that carrying them exactly costs Θ(L³ n³), while the concentration measured here says the readout needs only a few modes of joint κ₄, as it did for old κ₃. The obvious first candidate is the scale mode's own κ₄. The law-level scale treatment already contains it, but only for the scale variance that the κ₃ projection detects.
 
@@ -199,7 +198,7 @@ The no-coincidence variants use 4 instead of 7 products per pair (U and V propag
 **Verdict.** 
 - (a) **Closure, exact: disproved** for any co-state of o(L n²) numbers per cut that a causal forward pass could carry (C2). The obstruction is the double edge, which closes only in the second chaos (C3). The readout co-state is exactly closed (C1), but evaluating it costs Θ(L² n³) at first order and Θ(L³ n³) at second order (C5).
 - (b) **Closure, readout-weighted: established empirically for the old content.** The readout reads old κ₃ through one conserved scalar, the dilation charge (C6, unique by C7), plus a residual that a window of three ages and the slice chain absorb. This turns O(L² n³) into O(A L n³) with A = 1–3 at no loss at n = 1024, and is measured.
-- (c) **The co-state lens alone does not reach the bar.** The exact first order is ≈ 4e-7 raw at 1024, and every cheap closure of the old content can at best reproduce it.
+- (c) **First order is exhausted.** The exact first order is ≈ 4e-7 raw at 1024, the scale-mode co-state is 3.25e-7, and at w128 the computed co-state equals the true-κ₃ first order. The bar needs the second-order (joint κ₄) content: 15× at w128, readout-concentrated at rank ≈ 8–32.
 
 **Deciding experiment for what comes next.** Run the oracle hierarchy of §4.6 at w256 and w512 on the bench seeds: best computed co-state → true κ₃ at first order → + true joint κ₄ → + κ₄ at rank r. It measures how the two remaining factors, (a) the κ₃ model error and (b) joint κ₄, scale with n. Neither can be measured at 1024 by Monte Carlo atlas in reasonable time. If (b) stays ≈ 4× and concentrated at rank ≲ 8 while (a) falls like n^{-1/2} or faster, then a second-order co-state that carries a few readout-relevant κ₄ modes, plus the scale law, is the path to raw ≈ 1e-8. This is the target: the modes need to be identified in closed form, as the dilation mode was for κ₃. If (b) falls with n too, then the first-order co-state's ≈ 3e-7 at 1024 is close to what this lens can reach, and the gap to the bar lies elsewhere.
 

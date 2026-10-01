@@ -49,15 +49,16 @@ def run(Ws, st, mode, r=None):
     return np.array(res)
 
 
-name, N = sys.argv[1], int(float(sys.argv[2])); mlps = [int(x) for x in sys.argv[3].split(",")]
-S = bench.load_set(name)
-out = os.path.join(HERE, "results_live", f"oracle2nd_{name}.jsonl"); os.makedirs(os.path.dirname(out), exist_ok=True)
-for i in mlps:
-    Ws = bench.weights(S, i).astype(np.float64)
-    p1 = passes(Ws, N, 1000 + i); st = passes(Ws, N, 2000 + i, mean=p1["m"])
-    for mode, r in [("first", None), ("full2", None), ("full2", 1), ("full2", 8), ("full2", 32), ("k4diag", None)]:
-        pred = run(Ws, st, mode, r)
-        raw = float(((pred[-1] - S["means"][i][-1]) ** 2).mean() - S["noise"][i])
-        row = dict(set=name, mlp=i, mode=mode, r=r, N=N, raw=raw)
-        open(out, "a").write(json.dumps(row) + "\n")
-        print(name, i, mode, r, f"raw {raw:.3e}", flush=True)
+if __name__ == "__main__":
+    name, N = sys.argv[1], int(float(sys.argv[2])); mlps = [int(x) for x in sys.argv[3].split(",")]
+    S = bench.load_set(name)
+    out = os.path.join(HERE, "results_live", f"oracle2nd_{name}.jsonl"); os.makedirs(os.path.dirname(out), exist_ok=True)
+    for i in mlps:
+        Ws = bench.weights(S, i).astype(np.float64)
+        p1 = passes(Ws, N, 1000 + i); st = passes(Ws, N, 2000 + i, mean=p1["m"])
+        for mode, r in [("first", None), ("full2", None), ("full2", 1), ("full2", 8), ("full2", 32), ("k4diag", None)]:
+            pred = run(Ws, st, mode, r)
+            raw = float(((pred[-1] - S["means"][i][-1]) ** 2).mean() - S["noise"][i])
+            row = dict(set=name, mlp=i, mode=mode, r=r, N=N, raw=raw)
+            open(out, "a").write(json.dumps(row) + "\n")
+            print(name, i, mode, r, f"raw {raw:.3e}", flush=True)

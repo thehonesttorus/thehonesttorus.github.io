@@ -15,7 +15,7 @@ import sys, os, time
 import numpy as np
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, "../../designs/heisenberg"))
-from hd import Gauss, inject  # validated Gaussian quantities and Stein injection (heisenberg stream)
+from hd import Gauss, inject, inject_full2  # validated Gaussian quantities and Stein injection (heisenberg stream)
 from math import factorial
 
 
@@ -81,7 +81,7 @@ def filt(Sold, how, r=None):
     raise ValueError(how)
 
 
-def predict(Ws, A=None, old="drop", rank=None, coinc=True, K=8, record=None, Ap=0, oldfilter=None, r=None, law=False, keep_old=False):
+def predict(Ws, A=None, old="drop", rank=None, coinc=True, K=8, record=None, Ap=0, oldfilter=None, r=None, law=False, keep_old=False, k4=None):
     """old: 'drop' | 'slice' (diagonal double edge only) | 'pool' (renewal: aged-out content is projected on its
     (2,1) slice at the current layer and re-emitted as a secondary form, transported exactly for Ap more layers
     (Ap=None: never re-projected); Ap=0 is the full coincident-support slice chain)."""
@@ -150,7 +150,10 @@ def predict(Ws, A=None, old="drop", rank=None, coinc=True, K=8, record=None, Ap=
             record.append(dict(layer=l, S=S.copy()))
         if live or Sold is not None or (gacc != 0.0 and not law):
             D = np.diag(S).copy()
-            dEa, dC = inject(G, D, S)
+            if k4 is not None and l in k4:          # oracle hook: (K4d, K22, K31) of z_l, second-order injection
+                dEa, dC = inject_full2(G, D, S, *k4[l])
+            else:
+                dEa, dC = inject(G, D, S)
         else:
             dEa, dC = np.zeros(n), np.zeros((n, n))
         Ea = G.Ea + dEa
