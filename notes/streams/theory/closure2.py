@@ -24,10 +24,18 @@ kappa5 ~ eps^4; kappa6 (2,2,2) ~ eps^4.  The target all-distinct kappa3(a) is O(
                           coefficient is 0.5, not 1.0 as in oracle_k3.CLOSURE_COEF.
     second order (eps^4): S-terms below (30 shapes; three need atlas fields that moment_atlas_np.py does not build).
 
+Resummations (section 1.6 of the stream report): LEAF = every diagram with a C-leaf, exactly 6 sym3[Phi_k C_ik Gamma_ij]
+with Gamma = Cov(1[z>0], a) (pair_fields.py), minus TWOLEAF (Wick form with the true density p(0) at the center); TCL =
+every diagram with one kappa3_ijk hyperedge and the rest on one pair, exactly kappa3_ijk (Phi Phi Phi + sum Phi Cov(g, g))
+with gate_GG.  Closures evaluated: wick, cl1_oracle (oracle_k3 coefficients), cl1 (B3 = 0.5), cl1+B7, cl2 (+ all
+available eps^4 terms), LR1/LR2 (leaf-resummed), LRT1/LRT2 (leaf + T-class resummed), and the fits fit1 (oracle_k3's),
+fit2 (B0..B6 refit with the second order fixed), fitLR, fitLRT, fitall.
+
 Usage
-    python closure2.py --pair A.npz B.npz [--layers 0-14] [--out results/x.txt]   pair evaluation (moment_atlas_np format)
+    python closure2.py --pair A.npz B.npz [--layers 0-14] [--out results/x.txt] [--pairfiles PA.npz,PB.npz]
     python closure2.py --pair56 A.npz B.npz                                       same for atlas_k56.py atlases (+ kappa5/6)
     python closure2.py --selftest                                                 n = 3 identity against the enumerator
+    python closure2.py --costcheck A.npz [--layers 10] [--pairfiles PA.npz]       11-matmul path transports vs dense
 """
 import os
 import sys
