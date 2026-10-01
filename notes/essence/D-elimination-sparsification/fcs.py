@@ -92,7 +92,7 @@ def poisson_q(sc, k):
 
 
 def run(W, window=None, slices=False, young=None, rank=None, edge=True, readout=True, dtype=np.float32, trace=None, k4f=None, k4use=True, share=None, share_young=2, k4own=False, k4mf=False, prune=None, prune_slices=None,
-        sample=None, sample_young=2, seed=0, diag=None, diag_fracs=(0.5, 0.25), imp='norm', diag_store=None, oldproj=None, projsrc='prop'):
+        sample=None, sample_young=2, seed=0, diag=None, diag_fracs=(0.5, 0.25), imp='norm', diag_store=None, oldproj=None, projsrc='prop', merge_age=None, merge_rep='oldest'):
     rng = np.random.default_rng(seed)
     L, n, _ = W.shape
     W64 = W.astype(np.float64)
@@ -259,7 +259,10 @@ def run(W, window=None, slices=False, young=None, rank=None, edge=True, readout=
         D = np.zeros((n, n), dtype=np.float64)
         Dold = np.zeros((n, n)) if diag is not None else None
         drec = dict(l=l + 1, E=0.0, sumA=0.0, var={f: 0.0 for f in diag_fracs}, varopt={f: [] for f in diag_fracs}, gsrc=[], nold=0)
+        snaps = []
         for src in sources:
+            if merge_age is not None:
+                snaps.append(D.copy())
             w = src["w2"]
             if "Zs" in src:
                 c = src["c"]; Y, Zr, Ts, wr = src["Ys"], src["Zs"], src["Ts"], src["ws"] * c
@@ -301,6 +304,22 @@ def run(W, window=None, slices=False, young=None, rank=None, edge=True, readout=
                 else:
                     Zs, Ts = Zf, T
                 D += (((Zs * Zs).T @ Ts) + 2 * ((Zs * Ts).T @ Zs)).astype(np.float64)
+        if merge_age is not None:
+            # oracle age hierarchy: the block of sources with age >= merge_age is replaced by its least-squares fit on the
+            # contributions of one or two representative sources (oldest; oldest + youngest of the block)
+            snaps.append(D.copy())
+            Dsl = [snaps[i + 1] - snaps[i] for i in range(len(sources))]
+            blk = [i for i, x in enumerate(sources) if l + 1 - x["s"] >= merge_age]
+            if len(blk) >= 2:
+                Db = sum(Dsl[i] for i in blk)
+                reps = [blk[0]] if merge_rep == 'oldest' else [blk[0], blk[-1]]
+                Rm = np.stack([Dsl[i].ravel() for i in reps], 1)
+                coef, *_ = np.linalg.lstsq(Rm, Db.ravel(), rcond=None)
+                Dfit = (Rm @ coef).reshape(n, n)
+                if diag is not None:
+                    drec["merge_keep"] = float(1 - ((Db - Dfit) ** 2).sum() / (Db ** 2).sum()); drec["merge_coef"] = coef.tolist()
+                D = D - Db + Dfit
+            del snaps, Dsl
         if oldproj is not None and diag is not None and drec["nold"] > 0:
             # oracle: keep only the b-leg components of the old memory along q directions (Perron/Oseledets of the oldest
             # propagator, or the top right singular vectors of D_old itself)

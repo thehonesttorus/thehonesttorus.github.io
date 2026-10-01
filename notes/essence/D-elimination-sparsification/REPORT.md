@@ -1,7 +1,7 @@
 # Team D: elimination, sparsification and scaling
 
-*Status: v0 (1 Oct 2026, ≈ 21:30 UTC). Theory for §1–2, three transfers measured at n = 1024 on the bench (§4), and
-three more analysed but not yet run. Every number is at n = 1024, depth 16, on `w1024_d16`, inside the region stream's
+*Status: final (1 Oct 2026, ≈ 22:00 UTC). Theory for §1–2. Four transfers measured at n = 1024 on the bench (§4): resampling,
+spike projection and two age-merge oracles. Two more are analysed but not run. Every number is at n = 1024, depth 16, on `w1024_d16`, inside the region stream's
 FC estimator (raw 3.24e-8 on MLP 0, 1.81e-8 on MLP 1, reproduced here). Code: `fcs.py` (FC plus unbiased atom
 resampling, atom-Gram diagnostics and oracle projections), `run_d.py`, `probe_coh.py`. Results: `results/*.json`.*
 
@@ -22,9 +22,13 @@ resampling, atom-Gram diagnostics and oracle projections), `run_d.py`, `probe_co
    direction of the propagator in its second leg. But the coherent part is not sufficient: an oracle keeping only the
    Perron component of the old memory scores 1.5e-6, and the best rank-8 second-leg oracle 7.0e-7. The memory is a
    **spike plus an atom-complete bulk**, and the bulk (≈ 8–10 % of the old energy) costs ≈ 20× the bar.
-5. **What this means for the programme.** The leaders' "zero-cost memory" cannot be a sampled, sparsified or spiked
-   representation of the FC atoms. Whatever they do changes the *object*, not its representation. §3.6 gives the
-   one sparsification-flavoured transfer left standing.
+5. **What this means for the programme.** The leaders' "zero-cost memory" cannot be a sampled, sparsified, spiked or
+   age-coarsened representation of the FC atoms:
+   - an oracle that carries all ages ≥ 6 as one rescaled oldest source scores 4.4e-7 (§3.6);
+   - an oracle that carries ages ≥ 3 as two such sources scores 9.6e-7.
+
+   Whatever the leaders do changes the *object*, not its representation. The only representation-level option not
+   killed here is a full CP re-fit (region §6), and the measured multilinear structure gives it a poor prior.
 
 ## 1. Instances
 
@@ -104,10 +108,10 @@ using a lower bound on the capacity from invariant theory (Derksen–Makam degre
 polynomial-time algorithm for noncommutative rank (Edmonds' problem over the free skew field). The commutative analogue
 (PIT for symbolic determinants) is open and tied to circuit lower bounds.
 
-**The angle.** Kwok–Lau–Ramachandran ("Spectral analysis of matrix scaling and operator scaling", FOCS 2019; arXiv id
-1904.03213, from memory): if T is ε-close to doubly balanced and its bipartite operator has spectral gap λ (second
-singular value ≤ 1 − λ), scaling converges *linearly*, in O(log(1/ε)/λ) iterations, and the scaling solution is close to
-the input. The angle is exactly the gap: the cosine between the two normalisation subspaces.
+**The angle.** Kwok–Lau–Ramachandran ("Spectral analysis of matrix scaling and operator scaling", FOCS 2019, arXiv
+1904.03213): if the input has a spectral gap λ (second singular value of the normalised bipartite operator ≤ 1 − λ), then a
+natural gradient flow, and with it the alternating scaling, converges *linearly*, in O(log(1/ε)/λ) iterations. The
+scaling solution then stays close to the input; this is also their route to the Paulsen problem. The angle is exactly the gap: the cosine between the two normalisation subspaces.
 
 ### 1.4 Shorter: intrinsic freeness and expander hierarchies
 
@@ -274,18 +278,32 @@ For each: the objects in each role, why it is not the per-neuron drawing, predic
 - **Cheapest test.** Compare a free-model prediction of K_off(l) with the region's table (MLP 0). Kill if it is off by
   > 30 %. Not run in v0.
 
-### 3.6 Expander hierarchy: coarsen the oldest ages (proposed; the transfer left standing)
+### 3.6 Expander hierarchy: coarsen the oldest ages (oracle measured, killed)
 
-- **Objects.** The sources as nodes of an age hierarchy.
-- **Measured.** Old sources are nearly collinear at the D21 level among the *oldest*: at t = 14 the cosines between
-  sources of birth layers 0–1, 1–2 and 2–3 are 0.86, 0.88 and 0.85, falling to 0.2–0.4 for ages 3–6. Their legs have
-  collapsed onto the common Oseledets directions.
-- **Proposal.** As in an expander hierarchy, merge sources whose D21 contributions have cosine > 0.85 into one carrier,
-  by CP re-fit in the shared leg subspace: the region's §6 "CP merge" experiment, now with a structural reason to expect
-  success at the oldest ages.
-- **Cost.** Merging ages ≥ 6 into one carrier cuts the pairs from 120 to ≈ 75, i.e. ≈ 500 u. **On its own this is not
-  enough for the bar.** The mid ages 3–6, which are least collinear, carry the K_off-weighted price.
-- **Kill.** Raw > 5e-8 with ages ≥ 6 merged into R = n atoms.
+- **Objects.** The sources as nodes of an age hierarchy, as in an expander hierarchy, where well-mixed parts are
+  contracted into one core node.
+- **Motivation (measured, §4.2).** The *oldest* old sources are nearly collinear at the D21 level. At t = 14 the cosines
+  between sources of birth layers 0–1, 1–2 and 2–3 are 0.86, 0.88 and 0.85; they fall to 0.2–0.4 for ages 3–6. Their legs
+  have collapsed onto the common Oseledets directions.
+- **Up step.** Replace the block of sources with age ≥ A by its least-squares fit on the contributions of one or two
+  representative sources, with per-target coefficients chosen with hindsight. This is an oracle, and an upper bound for
+  any carrier that behaves like one or two sources' worth of atoms.
+- **Cost if it had worked.** A = 6 with one representative: ≈ 75 (source, target) pairs, ≈ 500 u. A = 3 with two:
+  ≈ 55 pairs, ≈ 390 u.
+- **Results (MLP 0, `results/merge*_m0.json`).**
+
+| block carried as | share of the block's ‖D‖² captured (t = 7 / 10 / 15) | raw |
+|---|---|---|
+| ages ≥ 6, one representative (the oldest) | 0.58 / 0.61 / 0.73 | 4.4e-7 |
+| ages ≥ 3, two representatives (oldest + youngest of block) | 0.70 / 0.69 / 0.75 | 9.6e-7 |
+| FC, nothing merged | 1 | 3.24e-8 |
+
+- **Kill.** The stated kill was raw > 5e-8 with ages ≥ 6 merged. Measured: 4.4e-7. Pairwise collinearity of neighbouring
+  ages does not extend to the block: the mean cosine over all old pairs is only 0.45.
+- **What is left.** A full CP re-fit into R ≈ n new atoms (region §6) is not of this form and is not killed here.
+  - Its prior is poor at n = 1024. The legs need a shared subspace of q ≈ n/2 (region §5), and a generic tensor in
+    (n/2)^{⊗3} has CP rank ≈ n²/12 ≫ n.
+  - The 0.7–1.4 % merges at widths 64–128 (old-content stream) are pre-asymptotic.
 
 ## 4. Tests run (n = 1024, bench `w1024_d16`, FC with slices = 2 and κ4 mean-field; truth noise subtracted)
 
@@ -343,15 +361,15 @@ Readings:
 
 - **Theorem.** Propositions D1–D3 are elementary and proved here (Gaussian second moments; Poisson sampling algebra; the
   PSD trace bound). The statements about KS, SS, BSS, MSS, GGOW and BBvH are the published theorems, with arXiv ids
-  1605.02353, 0803.0929, 0808.0163, 1306.3969, 1511.03730, 2108.06312 and 2203.00671. KLR's id (1904.03213) is from
-  memory and not yet checked.
+  1605.02353, 0803.0929, 0808.0163, 1306.3969, 1511.03730, 2108.06312 and 2203.00671. KLR's id (1904.03213) has been checked on
+  alphaXiv.
 - **Measurement.** §4 is on MLPs 0–2 with one sampling seed each. The f = 0.75 agreement (Δ 2.1e-8 measured against
   2.0e-8 predicted) is on MLP 0 only; MLP 1's Δ is 2× the prediction.
 - **Synthesis.**
   - "The tracial state is why this whole domain does not pay" (D1 plus conjecture D4).
   - "The absence of a spectral gap is the memory" (KLR reading of F9.1–F9.2).
-- **Speculation.** 3.6 (the age hierarchy) and the sandwich-transport of the Perron part (3.3) as a cost device, if a
-  future object makes the Perron part sufficient.
+- **Speculation.** The sandwich-transport of the Perron part (3.3) as a cost device, if a future object makes the Perron
+  part sufficient.
 - **Risks.**
   - The Perron vector used is the top right singular vector of the oldest propagator, not the mean direction μ_z.
   - The oracle for q = 8 uses D_old's own singular vectors, so it is an upper bound for any rank-8 second-leg carrier,
