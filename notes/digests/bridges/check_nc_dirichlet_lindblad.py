@@ -25,7 +25,8 @@ Pure numpy, finite dimensions. Each check corresponds to a labelled statement in
       GNS-detailed balance for P_beta (Alicki/Carlen-Maas form). Kernel = endpoint face algebra
       D_0; Cesaro limit = Takesaki conditional expectation onto D_0; Dirichlet form = sum of
       KMS-squared commutators (Carlen-Maas Prop. 2.5); P_beta' is stationary / recovered iff the
-      accumulated action F is a function of the endpoint (sufficiency, Note 1 section 6).
+      accumulated action F is a function of the endpoint (sufficiency, Note 1 section 6), and
+      ||E_*(P_beta') - P_beta'||_1 <= 2 tanh(|beta - beta'| max_fibre osc(F) / 4).
   K8  Poincare + commutator bound: E(a) <= (1/2) sum_a sup_t ||[Atilde_a(t), a]||^2, hence a
       Connes-distance radius bound d_D(rho, psi) <= sqrt(#couplings / (2 lambda rho_min)) for every
       state psi, with D the direct integral over modular time of the dressed couplings.
@@ -390,17 +391,19 @@ def check_rerouting(endpoints=(3, 4, 2), beta=0.9, betap=1.7):
         rec = unvec(Ecesaro.conj().T @ vec(rhop), N)  # Schroedinger dual of E applied to P_beta'
         rec_err = np.abs(rec - rhop).sum()
         osc = max(np.ptp(F[lab == k]) for k in range(len(endpoints)))
+        tanh_bound = 2 * np.tanh(abs(beta - betap) * osc / 4)
         ok = kms < 1e-10 and gns < 1e-10 and stat < 1e-12 and kerdim == len(endpoints) \
             and err_E < 1e-9 and errD < 1e-9
         if case.startswith("F = U"):
             ok &= stat_p < 1e-10 and rec_err < 1e-10
         else:
             ok &= stat_p > 1e-6 and rec_err > 1e-6
+        ok &= rec_err <= tanh_bound + 1e-12
         allok &= report(f"K7 {case}", ok,
                         f"KMS {kms:.0e}, GNS {gns:.0e}, dim ker {kerdim} (= #endpoints {len(endpoints)}), "
                         f"Cesaro=Takesaki {err_E:.0e}, Dirichlet=sum c||[V,X]||^2 {errD:.0e}; "
                         f"max fibre osc(F) {osc:.3f}, ||L*(P_beta')||_1 {stat_p:.2e}, "
-                        f"||E_*(P_beta') - P_beta'||_1 {rec_err:.2e}")
+                        f"||E_*(P_beta') - P_beta'||_1 {rec_err:.2e} <= 2 tanh(|b-b'| osc/4) = {tanh_bound:.3f}")
     return allok
 
 
