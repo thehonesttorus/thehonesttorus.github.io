@@ -146,3 +146,12 @@ Team B proved that for walks on the d-torus the λ-term rank decays as Δ^{−d/
 - **Same curve, not a new one.** At ≈ 4.5 n atoms per deep target the merge is a different point on the resolution–loss curve of team G's c·n/a frames (c = 1.5 ≈ 4.7 n, c = 2 ≈ 5.6 n), and it needs a fit the frames do not.
 - **The young pairs set a cost floor.** Ages 1–2 exact are 29 pairs at 6–7 products, ≈ 125 u wall-feasible; with the covariance arrow that is ≈ 0.14 B before any older content. At FC's raw that floors adjusted at ≈ 4.2e-9 (public chain 5.4e-9, leaders 1.6e-9).
 - **What would move the score** (H §11): a representation of ages 1–2 that avoids the per-source Hadamard materialisations, or a cut of the per-pair constant (7 → 4, slice legs only where their score weight is large); and FC's raw accuracy.
+
+## Team G final (22:47 UTC): the 1/a allocation is the score optimum
+
+Correction to "Measured companions" above: the "subcritical (geometric), O(n) in L" reading came from the D21-level energy share and is **reversed at score level** (team G REPORT §3–4, 18 networks).
+
+- **The 1/a allocation wins.** At equal atoms, every steeper profile (a^−1.5, a^−2, linear cut-offs) loses 1.1–2.7× more than the uniform k(a) = c·n/a law, and every flatter one (a^−0.75, a^−0.5) loses 1.1–2.2× more, at n = 256, 512 and 1024. So the Dixmier allocation is the score optimum, and the conditional n ln L lower bound applies at L = 16.
+- **Width-universal loss law.** δ(c)/δ_drop ≈ A e^{−4.6c} holds at all three widths. The c needed for a loss of 10 % of FC is 1.24 / 1.39 / 1.61 at n = 256 / 512 / 1024, a drift explained by δ_drop/FC = 8.6 / 24 / 61. At c = 2, n = 1024, raw is within +2 % of FC on all 6 networks.
+- **Status of G10.** It is a theorem for orthogonal layers (Connes 1989 checked) and a conjecture for gated Gaussian layers.
+- **Per-age weight, directly measured.** Team G inferred the score-effective 1/a weight from optimality. H §12 measures it directly for the slice legs: dropping slice legs older than 4 / 2 / 1 layers costs 1.6–3.5× / 3.6–7.6× / 5–12× in raw (MLPs 0–2, n = 1024). Old ages weigh far more at score level than their Frobenius share, consistent with the reversal.
