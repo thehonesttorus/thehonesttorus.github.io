@@ -288,7 +288,7 @@ def relu_step(st, k3mode="closure", coef=None, order=2, k4carry=True, phi_mode="
     mu_a = m1d[1]
     var_a = m1d[2] - mu_a ** 2
     C_a = cen[(1, 1)].copy(); np.fill_diagonal(C_a, var_a)
-    info = dict(gate=gate)
+    info = dict(gate=gate, F=F, m1d=m1d, C_a=C_a)
     if k2:
         return mu_a, C_a, None, None, info
     # third cumulant slices
@@ -307,8 +307,12 @@ def relu_step(st, k3mode="closure", coef=None, order=2, k4carry=True, phi_mode="
             o["K211"] = ok.all_distinct(st.X)
         else:
             o["K211"] = np.zeros((n, n, n))
-        H = ok.hermite_model(C, mu, var, herm_deg)
-        if k3mode == "wick":
+        if k3mode == "engine":
+            Kd = ok.all_distinct(triple_engine(st, [F[1], F[1], F[1]], emax_g=6, emax_h=2))
+        H = ok.hermite_model(C, mu, var, herm_deg) if k3mode != "engine" else None
+        if k3mode == "engine":
+            pass
+        elif k3mode == "wick":
             c = [1.0, 0, 0, 0, 0, 0, 0]
         elif k3mode == "closure":
             c = ok.CLOSURE_COEF
@@ -316,8 +320,9 @@ def relu_step(st, k3mode="closure", coef=None, order=2, k4carry=True, phi_mode="
             c = coef
         else:
             raise ValueError(k3mode)
-        B = ok.residual_basis(o) if any(abs(x) > 0 for x in c[1:]) else [ok.all_distinct(np.einsum("i,j,k,ijk->ijk", Phi, Phi, Phi, K3z))]
-        Kd = H + sum(ci * b for ci, b in zip(c, B))
+        if k3mode != "engine":
+            B = ok.residual_basis(o) if any(abs(x) > 0 for x in c[1:]) else [ok.all_distinct(np.einsum("i,j,k,ijk->ijk", Phi, Phi, Phi, K3z))]
+            Kd = H + sum(ci * b for ci, b in zip(c, B))
     K3a = Kd
     idx = np.arange(n)
     K3a[idx, idx, :] = D21a; K3a[idx, :, idx] = D21a; K3a[:, idx, idx] = D21a.T
@@ -423,9 +428,28 @@ class Chain:
                 E = rng.standard_normal((n, n)) * eps * rms; np.fill_diagonal(E, 0.0)
                 # perturb kappa3(z)_{aab} and its symmetric images (the (2,1) slice) by E
                 K3z[idx, idx, :] += E; K3z[idx, :, idx] += E; K3z[:, idx, idx] += E.T
+            if self.k4mode == "dense":
+                K4z = self._dense_k4(st, mu_a, k4s, info, Wn)
+                idx = np.arange(n)
+                X = K4z[idx, idx, :, :].astype(np.float64)
+                st = State(mu_z, C_z, K3z, X); st.K4full = K4z
+                continue
             X = transport_k4_slices(*k4s, Wn) if self.k4mode != "zero" else np.zeros((n, n, n))
             st = State(mu_z, C_z, K3z, X)
         return dict(means=means, rec=rec)
+
+
+def _dense_k4(self, st, mu_a, k4s, info, Wn):
+    F, C_a = info["F"], info["C_a"]
+    G, T, S = k4s
+    f2 = F[2] - 2 * mu_a[None, :] * F[1]
+    R = triple_engine(st, [f2, F[1], F[1]], emax_g=3, emax_h=1) - 2 * C_a[:, :, None] * C_a[:, None, :]
+    K = k4_alldistinct(st, F[1], F[1][1], F[1][2], F[1][3])
+    K = set_k4_slices(K, G, T, S, R)
+    return transport4(K, Wn)
+
+
+Chain._dense_k4 = _dense_k4
 
 
 def paper_k2(W):
@@ -444,3 +468,165 @@ def paper_k2(W):
             break
         mu = a @ W[l + 1]; C = W[l + 1].T @ Cn @ W[l + 1]
     return means
+
+
+# ----------------------------------------------------------------------------------------------------------
+# generic first-order diagram engine on three distinct vertices, and the dense fourth-cumulant closure
+# ----------------------------------------------------------------------------------------------------------
+
+def _hyper_value(c, D3, D21, K3, K4, K31, K22, X):
+    """value of the kappa3 / kappa4 hyperedge with vertex counts c = (ci, cj, ck) as an array broadcastable to (n,n,n)."""
+    ci, cj, ck = c
+    r = ci + cj + ck
+    names = "ijk"
+    verts = [(names[v], c[v]) for v in range(3) if c[v] > 0]
+    pat = sorted([m for _, m in verts], reverse=True)
+    vs = sorted(verts, key=lambda t: -t[1])          # highest multiplicity first
+    out_idx = "".join(v for v, _ in verts)           # indices present, in i,j,k order
+    def bcast(arr, idx_in):
+        o = np.einsum(f"{idx_in}->{out_idx}", arr)
+        shape = [1, 1, 1]
+        for d, v in enumerate(out_idx):
+            shape[names.index(v)] = arr.shape[0]
+        return o.reshape(shape)
+    if r == 3:
+        if pat == [3]:
+            return bcast(D3, vs[0][0])
+        if pat == [2, 1]:
+            return bcast(D21, vs[0][0] + vs[1][0])       # D21[doubled, single]
+        return K3
+    if pat == [4]:
+        return bcast(K4, vs[0][0])
+    if pat == [3, 1]:
+        return bcast(K31, vs[0][0] + vs[1][0])
+    if pat == [2, 2]:
+        return bcast(K22, vs[0][0] + vs[1][0])
+    # (2,1,1): X[doubled, a, b]
+    return np.einsum(f"{vs[0][0]}{vs[1][0]}{vs[2][0]}->ijk", X)
+
+
+def triple_engine(st, Fv, emax_g=4, emax_h=2, k3=True, k4=True):
+    """kappa(f_i(z_i), f_j(z_j), f_k(z_k)) on distinct i, j, k: the connected diagrams with at most one kappa3 or
+    kappa4 hyperedge (first order) and Gaussian C edges (Mehler multiplicities, total <= emax_g without a hyperedge,
+    <= emax_h with one). Fv = three tables F[d, n] = E_G[f^{(d)}].  Returns an (n, n, n) array (entries with
+    coincident indices are meaningless)."""
+    from itertools import product
+    n = st.mu.shape[0]
+    D3, D21, K4, K31, K22 = slices_from_state(st)
+    Co = st.C.copy(); np.fill_diagonal(Co, 0.0)
+    Cp = {0: np.ones((n, n)), 1: Co}
+    for m in range(2, emax_g + 1):
+        Cp[m] = Cp[m - 1] * Co
+    hypers = [((0, 0, 0), 1.0)]
+    if k3 and st.K3 is not None:
+        hypers += [(c, 1.0 / (factorial(c[0]) * factorial(c[1]) * factorial(c[2])))
+                   for c in product(range(4), repeat=3) if sum(c) == 3]
+    if k4 and st.X is not None:
+        hypers += [(c, 1.0 / (factorial(c[0]) * factorial(c[1]) * factorial(c[2])))
+                   for c in product(range(5), repeat=3) if sum(c) == 4]
+    out = np.zeros((n, n, n))
+    for c, hc in hypers:
+        emax = emax_g if c == (0, 0, 0) else emax_h
+        hv = None if c == (0, 0, 0) else _hyper_value(c, D3, D21, st.K3, K4, K31, K22, st.X)
+        for a, b, g in product(range(emax + 1), repeat=3):      # a = m_ij, b = m_jk, g = m_ik
+            if a + b + g > emax:
+                continue
+            # connectivity of {i,j,k}
+            adj = {0: set(), 1: set(), 2: set()}
+            for (u, v), m in (((0, 1), a), ((1, 2), b), ((0, 2), g)):
+                if m:
+                    adj[u].add(v); adj[v].add(u)
+            sup = [v for v in range(3) if c[v] > 0]
+            for u in sup:
+                for v in sup:
+                    if u != v:
+                        adj[u].add(v)
+            seen, stack = {0}, [0]
+            while stack:
+                u = stack.pop()
+                for v in adj[u]:
+                    if v not in seen:
+                        seen.add(v); stack.append(v)
+            if len(seen) < 3:
+                continue
+            d = (c[0] + a + g, c[1] + a + b, c[2] + b + g)
+            coef = hc / (factorial(a) * factorial(b) * factorial(g))
+            term = (Fv[0][d[0]][:, None, None] * Fv[1][d[1]][None, :, None] * Fv[2][d[2]][None, None, :])
+            term = term * Cp[a][:, :, None] * Cp[b][None, :, :] * Cp[g][:, None, :]
+            if hv is not None:
+                term = term * hv
+            out += coef * term
+    return out
+
+
+def k4_alldistinct(st, F1, Phi, w2, w3, dtype=np.float32):
+    """leading all-distinct kappa4(a)_{ijkl}: Phi^4 kappa4(z) + Gaussian trees (12 paths, 4 stars) + kappa3(z)
+    hyperedge with one C edge (12 terms).  Built in dtype (n^4)."""
+    n = st.mu.shape[0]
+    Co = st.C.copy(); np.fill_diagonal(Co, 0.0)
+    P = Phi.astype(dtype); w2d = w2.astype(dtype); w3d = w3.astype(dtype); Cd = Co.astype(dtype)
+    K = np.zeros((n, n, n, n), dtype=dtype)
+    if getattr(st, "K4full", None) is not None:
+        K += st.K4full * (P[:, None, None, None] * P[None, :, None, None] * P[None, None, :, None] * P[None, None, None, :])
+    from itertools import permutations
+    # paths p-q-r-s (each unordered path once: 12 = 4!/2)
+    seen = set()
+    for perm in permutations(range(4)):
+        key = min(perm, perm[::-1])
+        if key in seen:
+            continue
+        seen.add(key)
+        p, q, r, s = perm
+        A = (P[:, None] * Cd * w2d[None, :])      # Phi_p C_pq w2_q
+        B = Cd * w2d[None, :]                      # C_qr w2_r
+        D = Cd * P[None, :]                        # C_rs Phi_s
+        T = np.einsum("pq,qr,rs->pqrs", A, B, D, optimize=True)
+        K += np.einsum("pqrs->" + "".join("pqrs"[perm.index(t)] for t in range(4)), T)
+    # stars with centre c
+    for cidx in range(4):
+        A = w3d[:, None] * Cd * P[None, :]
+        T = np.einsum("ca,cb,cd->cabd", A, Cd * P[None, :], Cd * P[None, :], optimize=True)
+        order = [cidx] + [t for t in range(4) if t != cidx]   # T axes = (centre, leaf1, leaf2, leaf3)
+        K += np.einsum("wxyz->" + "".join("wxyz"[order.index(t)] for t in range(4)), T)
+    # kappa3 hyperedge on three vertices, the one of degree 2 joined by C to the fourth
+    if st.K3 is not None:
+        K3 = st.K3.astype(dtype)
+        for sidx in range(4):
+            for ridx in range(4):
+                if ridx == sidx:
+                    continue
+                others = [t for t in range(4) if t not in (sidx, ridx)]
+                # T axes = (o1, o2, r, s): Phi_o1 Phi_o2 w2_r K3_{o1 o2 r} C_rs Phi_s
+                T = np.einsum("abr,rs->abrs", K3 * (P[:, None, None] * P[None, :, None] * w2d[None, None, :]),
+                              Cd * P[None, :], optimize=True)
+                order = others + [ridx, sidx]
+                K += np.einsum("wxyz->" + "".join("wxyz"[order.index(t)] for t in range(4)), T)
+    return K
+
+
+def set_k4_slices(K, G, T, S, R):
+    """overwrite the non-all-distinct entries of the n^4 tensor K with the slices: R_{ijk} = kappa4_{iijk},
+    S_ij = kappa4_iijj, T_ij = kappa4_iiij, G_i = kappa4_iiii."""
+    n = K.shape[0]
+    idx = np.arange(n)
+    R = R.astype(K.dtype)
+    K[idx, idx, :, :] = R
+    K[idx, :, idx, :] = R
+    K[idx, :, :, idx] = R
+    K[:, idx, idx, :] = R.transpose(1, 0, 2)
+    K[:, idx, :, idx] = R
+    K[:, :, idx, idx] = R.transpose(1, 2, 0)
+    a, b = idx[:, None], idx[None, :]
+    for pos in ((a, a, b, b), (a, b, a, b), (a, b, b, a)):
+        K[pos] = S
+    for pos in ((a, a, a, b), (a, a, b, a), (a, b, a, a), (b, a, a, a)):
+        K[pos] = T
+    K[idx, idx, idx, idx] = G
+    return K
+
+
+def transport4(K, W):
+    Wd = W.astype(K.dtype)
+    for _ in range(4):
+        K = np.tensordot(K, Wd, axes=([0], [0]))
+    return K

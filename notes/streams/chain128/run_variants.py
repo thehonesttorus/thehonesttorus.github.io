@@ -39,6 +39,12 @@ def run_variant(v, W, atlas=None, coefs=None):
     if v == "A":
         return ch.Chain(W, k3mode="k2", record=False).run()["means"]
     base = dict(record=False)
+    if ":" in v:                      # generic  k3mode:k4mode[:order]
+        parts = v.split(":")
+        kw = dict(k3mode=parts[0], k4mode=parts[1], coefs=coefs, atlas=atlas)
+        if len(parts) > 2:
+            kw["order"] = int(parts[2])
+        return ch.Chain(W, **kw, **base).run()["means"]
     if v == "M":
         return ch.Chain(W, k3mode="none", **base).run()["means"]
     if v == "B":
@@ -47,8 +53,9 @@ def run_variant(v, W, atlas=None, coefs=None):
         return ch.Chain(W, k3mode="closure", **base).run()["means"]
     if v == "D":
         return ch.Chain(W, k3mode="fit", coefs=coefs, **base).run()["means"]
-    if v == "C0":
-        return ch.Chain(W, k3mode="closure", k4mode="zero", **base).run()["means"]
+    if v in ("C0", "B0", "M0", "D0"):
+        mode = dict(C0="closure", B0="wick", M0="none", D0="fit")[v]
+        return ch.Chain(W, k3mode=mode, coefs=coefs, k4mode="zero", **base).run()["means"]
     if v == "C211":
         return ch.Chain(W, k3mode="closure", k4mode="zero211", **base).run()["means"]
     if v.startswith("CE-"):
