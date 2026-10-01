@@ -107,6 +107,21 @@ Readings. (i) **The exact first-order co-state at n = 1024 measures raw 4.0e-7, 
 
 **The readout reads the old content almost entirely through a rank-1 spike plus a few modes.** In the readout metric, the old (2,1) slice needs about one mode, not the ≥ 0.3 n modes the Frobenius-metric studies needed (old-content stream). Its anatomy (`spike.py`, w128, A = 1): the off-diagonal old slice is 4–5× the diagonal in norm. Its top singular pair carries 43 % of the energy at layer 4, 69 % at 6, 82 % at 8 and 91–95 % from layer 10 on. The left singular vector aligns with the per-neuron scale s (cos 0.8–0.93), the right with the pre-activation mean m (cos 0.88–0.96).
 
+**4.2b The same filters at n = 1024** (3 networks, paired; all pairs 4.03e-7, A1 2.09e-6 on the same networks):
+
+| injected old slice (age > A, Stein level, oracle) | raw |
+|---|---|
+| A = 1, diagonal only | 1.47e-6 |
+| A = 1, one scale scalar fitted to the exact old slice | 1.08e-6 |
+| A = 1, exact diagonal + rank 1 | 7.25e-7 |
+| A = 1, + scale-field vector h fitted (4.3), + diagonal | 7.17e-7 |
+| A = 1, exact diagonal + rank 8 / rank 32 | 6.66e-7 / 5.47e-7 |
+| A = 3, exact diagonal + rank 8 | 4.82e-7 |
+| A = 3, one scale scalar fitted | 6.08e-7 |
+| *non-oracle* A3gl_nc / A3gsl_nc (law-level scale) | 3.5e-7 / 3.25e-7 (6 nets) |
+
+At 1024, the diagonal plus a rank-1 spike gives about 80 % of the old content's MSE reduction at A = 1. The last 20 %, at Stein level, needs ≳ 32 modes (the old-content stream's growth with n, now in the readout metric). But **every Stein-level filter, even an oracle one, loses to the non-oracle law-level scale mode plus an exact window**. The scale mode's higher cumulants are worth more than all the remaining modes of the old (2,1) slice.
+
 **4.3 The spike is the global scale (dilation) mode.** If z = t·x with a scalar t (E t = 1, Var t = v) independent of x ~ N(m, C), then κ₃(z_p, z_p, z_q) = 2v (2 m_p C_pq + m_q C_pp) + O(v², κ₃(t)). Off the diagonal this is dominated by 2v s_p² m_q, rank one along (s², m), which is exactly the measured spike.
 
 **Theorem C6 (the dilation sector of the co-state is exactly closed).** Every arrow is positively homogeneous, F_l(t z) = t F_l(z) for t > 0. Hence for every law ν and every mixing law P on (0, ∞), F_l#(P ⋆ ν) = P ⋆ (F_l#ν), where P ⋆ ν is the law of t·z with t ~ P independent of z ~ ν. The mixing law is transported **unchanged**, a conserved charge of the exact dynamics. For the homogeneous readout, E_{P⋆ν}[r] = E_P[t] · E_ν[r]. So the co-state has a sector that is exactly closed under pull-back and whose dimension does not grow: the scalar law P. Pathwise, ReLU′(z) z = ReLU(z) (Euler), so the scale direction sym(m ⊗ C) of the cumulant dynamics is an eigen-direction of eigenvalue 1 of the exact dynamics. The decoupled-gate linear response of first-order HD does not have this property (E a ≠ Φ m), so it leaks the mode.
@@ -144,6 +159,27 @@ So the co-state contains an exactly closed sector, the G-mixing law, whose size 
 
 **Theorem C7 (uniqueness of the exactly closed symmetry sector, sketch).** Suppose a family of invertible maps g_l intertwines the arrows, F_l ∘ g_l = g_{l+1} ∘ F_l, with F_l = ReLU then W_{l+1}. Commuting with the coordinatewise ReLU (and preserving the orthant structure on which it is linear) forces g_l to be a positive diagonal scaling composed with a permutation. Intertwining a dense W with i.i.d. continuous entries (W g = g′ W) then forces g = c I almost surely. So the dilations are the only continuous symmetry of a generic network, and the scale-mixture law is the only exactly closed sector of the co-state beyond the n readout values themselves. Everything else in the old content must be paid for in pairs, or approximated.
 
+**4.6 What remains: the second-order oracle (w128, `oracle2nd.py`).** True Monte Carlo cumulant slices (two passes, N = 4e6; heisenberg oracle3 atlas code) are injected at every layer into the own (m, C) chain. Table below; `table2nd.py` regenerates it.
+
+| (w128, networks 0, 1) | raw per network | geometric mean |
+|---|---|---|
+| Gaussian closure | 4.74e-04 / 1.96e-04 | 3.05e-04 |
+| computed, exact first order (all pairs) | 4.94e-05 / 3.48e-05 | 4.14e-05 |
+| computed, best co-state A3gsl_nc | 3.02e-05 / 2.69e-05 | 2.85e-05 |
+| oracle: true κ₃, first-order injection | 1.01e-05 / 3.39e-05 | 1.85e-05 |
+| oracle: true κ₃ + joint κ₄ (second order) | 2.49e-06 / 2.72e-06 | 2.60e-06 |
+| oracle: κ₄ slices rank 1 off-diagonal + exact diagonal | 5.08e-06 / 9.68e-06 | 7.01e-06 |
+| oracle: κ₄ slices rank 8 + diagonal | 3.10e-06 / 4.71e-06 | 3.82e-06 |
+| oracle: κ₄ slices rank 32 + diagonal | 3.55e-06 / 3.16e-06 | 3.35e-06 |
+| oracle: κ₄ diagonal only | 1.65e-05 / 1.44e-05 | 1.54e-05 |
+
+
+Reading. Between the best computed co-state and the second-order oracle lie two factors, given here as geometric means over the networks measured:
+- (a) **the computed κ₃ itself: small and mixed, ≈ 1.5×.** First-order injection of the *true* κ₃ beats the best computed variant by 3× on network 0 and loses to it on network 1. The scale law in the computed co-state partly makes up for first-order model error: decoupled gates, linear transport, and the δ-insertion of κ₃ and κ₄ into the next κ₃.
+- (b) **joint κ₄: the dominant factor, ≈ 7×.** Its readout-relevant part is concentrated: rank 8 off the diagonal (plus the exact diagonal) recovers ≈ 5× of the 7×, and rank 32 ≈ 5.5×. Rank 1 gives ≈ 2.6×, consistent with a large scale-mode (bethe Q) component. The diagonal alone destabilises the chain, as heisenberg R3 found.
+
+Both are second-order Duhamel content. C5 says that carrying them exactly costs Θ(L³ n³), while the concentration measured here says the readout needs only a few modes of joint κ₄, as it did for old κ₃. The obvious first candidate is the scale mode's own κ₄. The law-level scale treatment already contains it, but only for the scale variance that the κ₃ projection detects.
+
 ## 5. Cost at n = 1024 and grader notes for the best variants
 
 | variant | products | dense f32 | Strassen L3 (0.683 u, ≈ 70 ms/product batched) | wall (L3) | raw | adjusted (L3) |
@@ -165,11 +201,12 @@ The no-coincidence variants use 4 instead of 7 products per pair (U and V propag
 - (b) **Closure, readout-weighted: established empirically for the old content.** The readout reads old κ₃ through one conserved scalar, the dilation charge (C6, unique by C7), plus a residual that a window of three ages and the slice chain absorb. This turns O(L² n³) into O(A L n³) with A = 1–3 at no loss at n = 1024, and is measured.
 - (c) **The co-state lens alone does not reach the bar.** The exact first order is ≈ 4e-7 raw at 1024, and every cheap closure of the old content can at best reproduce it.
 
-**Deciding experiment for what comes next** (one step beyond this stream's question). The second-order Duhamel term of the *non-scale* content: joint κ₄(pppq), κ₄(ppqq) from δ-insertion of young κ₃ (the heisenberg oracle's covariance drift). The analysis here predicts its readout-relevant part is also concentrated, and cheap to test: run the w128 filter oracle on true (MC) κ₄ slices after removing their scale-mode part (the bethe Q spike, already carried exactly by the scale law). If the remainder of the true κ₄ slices, injected on top of A3gsl, gains ≥ 5× at w128 and its readout-relevant part is rank ≤ 8, then a second-order co-state of O(A² L n³) exists and is the path to raw ≈ 1e-8. If it gains < 3×, this line stops at ≈ 4e-7.
+**Deciding experiment for what comes next.** Run the oracle hierarchy of §4.6 at w256 and w512 on the bench seeds: best computed co-state → true κ₃ at first order → + true joint κ₄ → + κ₄ at rank r. It measures how the two remaining factors, (a) the κ₃ model error and (b) joint κ₄, scale with n. Neither can be measured at 1024 by Monte Carlo atlas in reasonable time. If (b) stays ≈ 4× and concentrated at rank ≲ 8 while (a) falls like n^{-1/2} or faster, then a second-order co-state that carries a few readout-relevant κ₄ modes, plus the scale law, is the path to raw ≈ 1e-8. This is the target: the modes need to be identified in closed form, as the dilation mode was for κ₃. If (b) falls with n too, then the first-order co-state's ≈ 3e-7 at 1024 is close to what this lens can reach, and the gap to the bar lies elsewhere.
 
 ## 7. Files
 
 - `costate.py`: the estimator. Pull-back source atoms (star + exact coincidences); per-pair slices; closures `old = drop | slice | pool | gsm | gsmslice`; `law=True` for the law-level scale mode; oracle filters (`oldfilter = diag | off | rank | gsm | gsm_off | hfit | hfitd`).
 - `validate.py`: pull-back = full-tensor HD to 5e-15.
 - `run.py`, `summarize.py`, `rebuild.py`: runs and tables (`results/*.jsonl`; rows of the w1024 scale batch rebuilt from saved predictions after a git incident, exact).
+- `oracle2nd.py`: the second-order oracle (true MC κ₃/κ₄ slices, own chain, rank filters).
 - `spike.py`, `anatomy.py`: old-slice anatomy. `renorm.py`: the ensemble-renormalisation test (cosine of the slice-chain and true old corrections 0.6–0.7 at w128; one fitted factor does not close the gap).
