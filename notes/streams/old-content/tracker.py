@@ -173,8 +173,18 @@ def model_states(W, lay):
     return Ks, Bs
 
 
-def model_lay(W, lay):
-    """a copy of the atlas layer list whose K3z / K3a are the model chain's (so old_pool runs on the model)."""
+def model_lay(W, lay, cache=None):
+    """a copy of the atlas layer list whose K3z / K3a are the model chain's (so old_pool runs on the model).
+    cache: optional .npz path (float32 tensors) to store / reuse the model chain."""
+    if cache and os.path.exists(cache):
+        z = np.load(cache)
+        out = []
+        for l in range(len(lay)):
+            d = dict(lay[l]); d["K3z"] = z["K3z"][l]
+            if l < len(lay) - 1:
+                d["K3a"] = z["K3a"][l]
+            out.append(d)
+        return out
     Ks, Bs = model_states(W, lay)
     out = []
     for l in range(len(lay)):
@@ -185,6 +195,8 @@ def model_lay(W, lay):
         Ks[l] = None
         d["K3z"] = d["K3z"].astype(np.float32)
         out.append(d)
+    if cache:
+        np.savez(cache, K3z=np.stack([d["K3z"] for d in out]), K3a=np.stack([d["K3a"] for d in out[:-1]]))
     return out
 
 

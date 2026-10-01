@@ -42,7 +42,7 @@ def main():
     else:
         W, lay, N = load_pairs_atlas(args.atlas); args.model = True
     if args.model:
-        lay = model_lay(W, lay)
+        lay = model_lay(W, lay, cache=args.atlas.replace('.npz', '_model.npz'))
     L, n, _ = W.shape
     ks = [int(x) for x in args.ks.split(",")]
     print(f"{args.atlas}{' [MODEL chain]' if args.model else ''}: width {n}, depth {L}, N = {N}, old = age > {args.w} at layer t{', no-AD sources' if args.noad else ''}")

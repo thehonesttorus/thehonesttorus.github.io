@@ -129,7 +129,7 @@ def main():
     else:
         W, lay, N = load_pairs_atlas(args.atlas); args.model = True
     if args.model:
-        lay = model_lay(W, lay)
+        lay = model_lay(W, lay, cache=args.atlas.replace('.npz', '_model.npz'))
     L, n, _ = W.shape
     which = set(args.which.split(","))
     ranks = [int(x) for x in args.ranks.split(",")]
