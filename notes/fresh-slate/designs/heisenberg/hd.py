@@ -393,3 +393,42 @@ def gen_k4_slices(G, W, cycle=True, pairs_exact=True):
             t2 = np.sum(Qd * ((Bm * Bm.T) @ Qd), axis=0)
             K22[p] += 48 * (4 * t1 + 2 * t2) / 6
     return K31, K22, np.diag(K31).copy()
+
+
+def tmode4(T, W):
+    for _ in range(4):
+        T = np.tensordot(T, W, axes=([0], [0]))   # rotates legs; after 4 passes order restored
+    return T
+
+
+def hd2(Ws, A4=None, k4src="single", Kt=4):
+    """HD with all-age kappa_3 (full series) AND all-age kappa_4 tensor transported with decoupled gates;
+    kappa_4 source = exact single-site kappa_4(a_r) (diagonal tensor). Full second-order injection.
+    Full n^4 tensors: prototype only (n <= 64)."""
+    L, n, _ = Ws.shape
+    m = np.zeros(n); C = Ws[0].T @ Ws[0]
+    K3 = None; K4 = None; out = []
+    for l in range(L):
+        G = Gauss(m, C, K=21)
+        if K3 is not None:
+            D = np.einsum("ppp->p", K3).copy(); S = np.einsum("ppq->pq", K3).copy()
+            K4d = np.einsum("pppp->p", K4).copy(); K31 = np.einsum("pppq->pq", K4).copy(); K22 = np.einsum("ppqq->pq", K4).copy()
+            dEa, dC = inject_full2(G, D, S, K4d, K22, K31)
+        else:
+            dEa, dC = np.zeros(n), np.zeros((n, n))
+        Ea = G.Ea + dEa; out.append(Ea)
+        if l + 1 < L:
+            W = Ws[l + 1]; g = G.Phi
+            src3 = G.source_k3(Kt=Kt)
+            new3 = src3 if K3 is None else src3 + K3 * g[:, None, None] * g[None, :, None] * g[None, None, :]
+            K3 = tmode(new3, W)
+            c = k4_single(G)
+            src4 = np.einsum("r,ra,rb,rc,rd->abcd", c, W, W, W, W, optimize=True)
+            if K4 is None:
+                K4 = src4
+            else:
+                g4 = K4 * g[:, None, None, None] * g[None, :, None, None] * g[None, None, :, None] * g[None, None, None, :]
+                K4 = src4 + tmode4(g4, W)
+            Ca = G.cov_a() + dC
+            m = Ea @ W; C = W.T @ Ca @ W
+    return np.array(out)
