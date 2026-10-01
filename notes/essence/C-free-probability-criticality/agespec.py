@@ -23,6 +23,9 @@ from costate import source_atoms, pair_slice
 from hd import Gauss, inject
 
 
+RANKS = os.environ.get("RANKS") == "1"
+
+
 def run(Ws, K=8, coinc=False):
     Ws = np.asarray(Ws, dtype=np.float64)
     L, n, _ = Ws.shape
@@ -55,6 +58,17 @@ def run(Ws, K=8, coinc=False):
             lay["Eres_sum"] = float(Ssum_res @ Ssum_res); lay["Eres_inc"] = float(np.trace(Gr))
             ga = sum(amps); lay["Escale_sum"] = ga * ga * KK
             lay["Escale_inc"] = sum(a * a for a in amps) * KK
+            if RANKS:
+                def rk(X, eps):
+                    sv = np.linalg.svd(X, compute_uv=False) ** 2; c = np.cumsum(sv[::-1])[::-1] / sv.sum()
+                    return int(np.sum(c > eps ** 2))   # modes needed so the dropped tail energy <= eps^2
+                ages_l = lay["ages"]
+                old = [r for r, a in zip(res, ages_l) if a > 4]
+                if old:
+                    tot = sum(old)
+                    lay["rank_old_sum"] = {str(e): rk(tot, e) for e in (0.05, 0.1, 0.2)}
+                    lay["rank_old_each"] = {str(e): [rk(r, e) for r in old] for e in (0.05, 0.1, 0.2)}
+                    lay["rank_young_sum"] = {str(e): rk(sum(r for r, a in zip(res, ages_l) if a <= 4), e) for e in (0.1,)}
             del Rm
         layers.append(lay)
         if live:

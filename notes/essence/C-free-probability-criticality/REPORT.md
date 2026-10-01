@@ -235,6 +235,52 @@ At w128 (8 networks): Tgsl_nc τ = 0.1 wins 8/8 (0.83×), τ = 0.15 wins 7/8 (0.
 
 r(Φ_l²) over layers 0…14 is 1.00, 1.62, 1.85, 1.86, 1.91, 1.95, 2.05, 1.95, 1.89, 2.04, 2.07, 2.07, 1.83, 2.05, 2.13: at n = 1024 the mean gates are nearly frozen projections.
 
+## 6. The coordinator's final question: a carrier for the quenched free sector, or a no-go
+
+*Added after coordinator note 1 and the 21:25 cross-team update. That update reports these costate FC dilation numbers, relayed and not re-run here: inside FC, keeping ages ≤ 4 alone gives raw 7.8e-7, adding the dilation sector of older content gives 3.7–4.4e-7, and full FC gives 3.2e-8. So the free sector beyond age 4 is worth ≈ 3.5e-7.*
+
+**6.1 Correction to the premise of note 1 §4 (Measured).** The age spectrum of the content-transfer operator is **not a power law in energy**.
+- The free sector loses energy geometrically, at 1.02–1.10 × g_l³ per step (§4.2), where g_l = 2EΦ_l² = 1 − 2E Var(gate). That is ≈ 0.13 per step at layer 0 and ≈ 0.6 per step at depth.
+- Only its **rank** follows a power law: PR = n/(2(age + 1)).
+- "No spectral gap" (F9.2) does not mean "no mixing". The mixing gap is supplied by the gate variance, not by the spectrum of the propagator. This is the gap between the pathwise wall (χ₁ = 1) and the annealed transfer (g < 1), Proposition C1.
+- The only part that does not mix is the dilation sector: its retention rises to 0.95 per step, and its contributions add coherently across ages (§4.1–4.2). Content at the parabolic point is exactly that one sector. Everything else is strictly inside the wall.
+
+**6.2 What a carrier must reproduce at one layer (Measured, `agespec.py` with RANKS=1, networks 0 and 1, n = 1024).** Take the dilation-deflated free residual of ages > 4 and compute the number of singular modes of its D21 slice needed for relative error ε:
+
+| layer | old ages | rank of the sum, ε = 5 / 10 / 20 % | sum of per-age ranks, ε = 10 % | young (≤ 4) sum, ε = 10 % |
+|---|---|---|---|---|
+| 6 | 1 | 255 / 191 / 126 | 191 | 399 |
+| 9 | 4 | 205 / 147 / 90 | 573 | 355 |
+| 12 | 7 | 188 / 133 / 80 | 814 | 315 |
+| 15 | 10 | 173 / 121 / 72 | 995 | 272 |
+
+(Network 0; network 1 agrees to within ±8 modes.)
+- The old free slice needs only **≈ n/8 to n/5 modes at 10 %**, fewer than the age-5 source alone.
+- Ranks are **not** additive across ages: the sum needs 121 modes where the per-age ranks add to 995. Freeness would make modes additive at equal energies, but the energies fall geometrically (g³), so the youngest old ages dominate.
+- A CP carrier of R atoms yields slices of rank ≤ 3R. The in-layer requirement is therefore only R ≳ 40–60, and **there is no rank no-go at a single layer**.
+
+**6.3 Where the obstruction actually is.** The in-layer readout is cheap. The cost lies in two places:
+- **Transport (Theorem, costate C2–C3).** Future slices depend on the content through the second chaos, via the double edge. Any carrier whose state is a function of slices (O(n²) numbers per cut) is O(1)-wrong. Measured: the slice chain and pool renewal lose most of the old content.
+- **Merging.** A CP carrier must merge atoms of different ages. The ages sit in mutually free frames (cross-age cosines ≤ 0.03, F9.6), so a *shared* subspace for all ages needs the union of their frames: region's shared Oseledets basis at n/4 is 6× worse. And merging by ALS is itself expensive: region's CP merge to R = n costs 3,510 u and reaches only 2.0e-7.
+
+**The no-go (Conjecture C4, for a class).** Consider carriers that, at every layer, (a) hold the old content as at most R CP atoms in the current layer's coordinates and (b) obtain them by re-fitting a merged approximation of the transported atoms. Assume second-order freeness of different ages (C2(ii)). Then reaching 10 % on the free sector's future slices at every layer needs either R ≥ Σ_{ages} r_{10%}(age, weighted by g³-energy) per merge, or merge work ≥ R² n per layer, with constants that exceed ≈ 7 u per layer at n = 1024.
+- The in-layer measurement of 6.2 shows the per-layer requirement itself is mild. What the conjecture puts beyond budget is re-fitting a merged approximation at every layer in a moving frame.
+- *Not proved.* What is missing is a lower bound on the merge cost for free low-rank tensors; the time ran out.
+
+**6.4 Escape hatches (what the leaders may be doing instead), in order of how directly 6.1–6.3 point to them.**
+1. **Merge once, in a static frame.** Coordinator note §2 writes the memory as a static sum of rank-one birth terms in input space, read through the frame Γ_t. If merging is done there, once per age bin (the note's age multiresolution), the moving-frame re-fit disappears. Two facts make the bins small:
+   - 6.2 shows the read-out need is n/8–n/5 modes, dominated by the youngest old bin;
+   - 6.1 shows the bin's energy falls by g³ ≈ 0.6 per step, so geometric age bins with resolution set by Π g³ (the T2 rule) are the matched multiresolution, not bins set by PR.
+2. **Carry only the trace-weighted young old ages exactly.** T2 at τ = 0.05 already moves the free-sector boundary by energy rather than age. The gain was 0.75×, not 25×, so this alone is not it.
+3. **Second-order, not first-order, content.** Costate §4.6: with true κ₃ the first-order model is exhausted at w128, and the remaining 15× is joint κ₄. A leader at raw 1.1–1.5e-8 must carry it, which suggests they treat old content at law level (exact homogeneity, a sampled scale field) rather than as cumulant tensors. The free sector beyond age 4 would then be carried only implicitly.
+
+**Cheapest decisive test for hatch 1.** At n = 1024, take the old free content of ages 5–8 at cut m:
+- compress it once in the input-space static frame to R ∈ {n/8, n/4, n/2} atoms (HOSVD of the birth atoms' γ-vectors);
+- read it at every later layer through Γ_t;
+- report the D21 error of the free sector and the total raw inside FC.
+
+Kill: no R ≤ n/2 reaches 10 % in D21.
+
 ## 5. Honest assessment
 
 - **Theorem:** I1–I3 as cited. **Derived:** Proposition C1 (elementary), the polynomial decay C(2k, k)/4ᵏ for the free half-projections, and the parabolic correlation rate.

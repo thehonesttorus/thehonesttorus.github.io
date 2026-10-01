@@ -1,0 +1,16 @@
+layer 0 done 2s live=1
+layer 1 done 3s live=2
+layer 2 done 4s live=3
+layer 3 done 5s live=4
+layer 4 done 6s live=5
+layer 5 done 8s live=6
+layer 6 done 12s live=7
+layer 7 done 17s live=8
+layer 8 done 23s live=9
+layer 9 done 31s live=10
+layer 10 done 39s live=11
+layer 11 done 48s live=12
+layer 12 done 59s live=13
+layer 13 done 71s live=14
+layer 14 done 85s live=15
+wrote results/agespec_rank_w1024_0.json 97s
