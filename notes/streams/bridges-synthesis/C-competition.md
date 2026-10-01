@@ -23,7 +23,7 @@ The programme's rules hold throughout:
 **Labels.** Every claim carries exactly one label.
 - **THEOREM**: a published theorem cited to the digest section where it was read, or an elementary statement proved in full here.
 - **KNOWN-LINK**: a published connection between two areas, cited.
-- **DERIVED**: proved here, with the proof in the text. "+ checked" means also verified numerically (checks C1–C11, §10).
+- **DERIVED**: proved here, with the proof in the text. "+ checked" means also verified numerically (checks C1–C12, §10).
 - **ANALOGY**: a structural similarity, with the exact point where it breaks.
 - **CONJECTURE**: a precise statement, not proved, with its test.
 - **SPECULATION**.
@@ -34,7 +34,7 @@ Measured numbers, ours or the streams', are evidence attached to a labelled clai
 - Digests: [D-Y] Yang; [D-CR] Chen–Rouzé; [D-HC] Hammersley–Clifford; [D-EXP] expanders; [D-HDX] HDX / spectral independence; [D-NC] noncommutative Dirichlet forms; [D-TS] transfer-spectrum measurement; [D-CHAT] chat retrieval status.
 - Sibling notes: [A], [B].
 - Stream reports: [O1024] oracle1024; [OC] old-content; [C128] chain128; [CE] coef-ensemble; [CM] costmodel; [EA] est-accuracy (stopped).
-- Plans: [CP] competition plan; [BRIEF] fresh-slate brief; [FU] fresh-slate `foundations-unlocks.md`, consulted only for the two cross-references in §5.3.
+- Plans: [CP] competition plan; [BRIEF] fresh-slate brief; [FU] fresh-slate `foundations-unlocks.md`, consulted only for cross-references (unlocks 1, 35 and 36).
 
 **Retrieval.** No new source was opened. Published results are cited through the digests that quote them. Standard facts used from memory are marked (memory):
 - the Bai–Yin / Latała operator-norm law for i.i.d. matrices;
@@ -47,7 +47,7 @@ Measured numbers, ours or the streams', are evidence attached to a labelled clai
 
 Each is used only as a name, or is re-derived or checked here. The ChatGPT conversation behind [D-Y] could not be retrieved ([D-CHAT] §1).
 
-**New measurements for this note.** The checks C1–C11 run at widths 8–1024. They took about two CPU-hours on a shared 4-core box. The scripts are scratch files, not committed, because this task writes one file. §10 and the Appendix give every formula needed to reproduce them.
+**New measurements for this note.** The checks C1–C12 run at widths 8–1024. They took about three hours of wall time on a shared 4-core box. The scripts are scratch files, not committed, because this task writes one file. §10 and the Appendix give every formula needed to reproduce them.
 
 ---
 
@@ -58,7 +58,7 @@ Each is used only as a name, or is re-derived or checked here. The ChatGPT conve
    - An index that appears twice is transported by the Hadamard square W∘W.
    - An index that appears three times is transported by W∘W∘W.
 
-   For He weights, W∘W = (2/n)·11ᵀ + E with ‖E‖ = (4√2/√n)(1 + o(1)). This is a dense weighted expander, √2 above the Ramanujan value for degree n, and the expander mixing lemma holds verbatim. W∘W∘W is O(1/n). W itself (norm 2√2, no trivial eigenvector) scrambles orientations. DERIVED + checked (C1: ‖E‖ = 0.1767 at n = 1024, predicted 0.1768). The flat (Perron) mode of the doubled leg transmits exactly the *trace channel* of a cumulant, Σ_p κ_{pp…}. That channel is the covariance of the squared norm with the remaining legs. §6.4.
+   For He weights, W∘W = (2/n)·11ᵀ + E with ‖E‖ = (4√2/√n)(1 + o(1)). This is a dense weighted expander, √2 above the Ramanujan value for degree n, and the expander mixing lemma holds verbatim. W∘W∘W is O(1/n). W itself (norm 2√2, no outlier singular value) scrambles orientations. DERIVED + checked (C1: ‖E‖ = 0.1767 at n = 1024, predicted 0.1768). The flat (Perron) mode of the doubled leg transmits exactly the *trace channel* of a cumulant, Σ_p κ_{pp…}. That channel is the covariance of the squared norm with the remaining legs. §6.4.
 2. **Where it is two halves of one mechanism.** Heredity is free and decorrelation does the work.
    - The layer chain is exactly Markov, because each layer is a deterministic function of the previous one.
    - The closure works because pre-activation correlations are entrywise O(n^{−1/2}) and single legs scramble orientation (Haar, [D-TS] §2.4).
@@ -70,7 +70,7 @@ Each is used only as a name, or is re-derived or checked here. The ChatGPT conve
      - Hammersley–Clifford positivity fails at every layer ≥ 1, and the dependency graph is complete (DERIVED + checked).
      - Gates are 0-homogeneous, so any face-law description is blind to the dilation mode of item 4 (THEOREM).
    - **(b) Spectral independence is a frame bound,** Cov ≼ (1+η)·diag. It is not an accuracy certificate for a closure (THEOREM + DERIVED).
-   - **(c) A time-averaged, detailed-balance recovery map cannot restore erased old content.** The ingredients are missing ([D-TS] B8), and the erased content is not a function of the retained state. Under an orientation hypothesis, its Bayes-optimal recovery is zero (DERIVED under hypothesis H, with measured support).
+   - **(c) A time-averaged, detailed-balance recovery map cannot restore erased old content.** The ingredients are missing ([D-TS] B8). What does restore part of it is a *symmetry*. Positive homogeneity carries the scale's κ3 signature unchanged, so the erased content's component along the gain template is a function of the retained state plus one accumulated scalar (§5.2 (a), §7.5). The rest has zero Bayes-optimal recovery under a sign hypothesis (DERIVED under H′, with measured support).
    - **(d) A CMI-type decay statement predicts that the chain may forget essentially nothing.** There is no gap to decay with, and each old source still carries ≈ 0.1 of D21 at the last layer, 5× the bar. §§3–5.
 4. **The one bridge with a positive competition payoff: the dilation (gain) mode.**
    - **Mechanism.** With no biases, every arrow commutes with x ↦ tx for t > 0. The input radius is the obvious consequence ([BRIEF] §3). The less obvious one is that the gain of each input direction, ‖a_l(x̂)‖, fluctuates across directions, and that this fluctuation propagates undiscounted.
@@ -81,10 +81,15 @@ Each is used only as a name, or is re-derived or checked here. The ChatGPT conve
    - **Measured (C7–C9).**
      - The published regeneration u_iC_jk has u parallel to var (cos 0.91–0.997).
      - A single fitted scalar per layer recovers 74–114 % of the D21 gain that the n-parameter regeneration gets at n = 128.
-     - At depth the variance excess along the mean is 1.0–1.6× the gain-mode prediction, so the spike is largely the gain mode at order 2.
-   - **The amplitude.** It is width-stable as c·n. The scalar Var‖z̃‖²/(E‖z̃‖²)² − 2‖C‖²_F/(tr C)², which is exactly the trace of the (2,2) slice divided by (tr C)² (DERIVED identity), predicts it within 30 %.
-   - **The limit at n = 1024.** Across widths the template's share of the slice energy collapses: at layer 15 it is <<SHARE15>> from n = 128 to 1024 (C9). This is the measured mechanism behind the published regeneration's falling share of the κ4 gap (55 → 33 → 20 % at n = 128 → 256 → 1024, [O1024]). At n = 1024 the binding (2,1,1) content is mostly *not* the gain mode.
-   - **Not a Gaussian quantity.** A Gaussian-input recursion recovers layer 1 exactly but only 24–47 % of the amplitude at layer 15 (C10). §7.
+     - At layer 15 the variance excess along the mean is 1.05–1.6× the gain-mode prediction, so the spike at depth is largely the gain mode at order 2.
+   - **The amplitude.** It is width-stable as c·n. The scalar Var‖z̃‖²/(E‖z̃‖²)² − 2‖C‖²_F/(tr C)² is exactly the trace of the (2,2) slice divided by (tr C)² (DERIVED identity). It bounds the amplitude from above: c4/gex = 0.77–1.01 at n = 1024 and 0.5–1.0 at n = 128.
+   - **The limit at n = 1024.** Across widths the template's share of the slice energy falls: at layers 6–15 it is 0.47–0.91 at n = 128 and <<S1024RANGE>> at n = 1024 (C9). This is the measured mechanism behind the published regeneration's falling share of the κ4 gap (55 → 33 → 20 % at n = 128 → 256 → 1024, [O1024]). At n = 1024 the binding (2,1,1) content is mostly *not* the gain mode.
+   - **Not a Gaussian quantity.** A Gaussian-input recursion recovers layer 1 exactly but only 24–47 % of the amplitude at layer 15 (C10).
+   - **Old κ3 content is mostly the gain mode, in the published convention.** In the no-AD convention the old pool's D21 is 49–97 % along the κ3 template T (87–97 % at layers 10–15). A scalar accumulator, fed once by each source as it ages out of the young window and never discounted, removes most of it at zero cost (n = 128, two MLPs, C12):
+     - residual 0.13–0.32 of ‖D21‖, against 0.20–0.88 if the pool is dropped;
+     - still 6–15× the bar, but the part that needs a real carrier shrinks 2.6–4.6× at depth.
+
+     This had not been tested; [OC]'s absorption features were births and young sources. §7.
 5. **The three measured facts named in the brief, priced.** §3.
    - *Free-probability law of old content.* An excellent offline calculator and a DOA carrier at n = 1024: 54–86 u/layer against 3–4 available. Content with more scrambled legs is worse (DERIVED: the kept energy goes as the m-th power of the per-leg fraction). The (2,1,1) slice transports like a covariance, with two scrambled legs and one flattened leg.
    - *BBP spike.* Alive only as deflation, with ≈ 20 % fewer modes. As a standalone carrier ε_tot ≥ 0.16 against 0.022.
@@ -94,10 +99,10 @@ Each is used only as a name, or is re-derived or checked here. The ChatGPT conve
    - *Duality.* This is the one Chen–Rouzé ingredient that transfers, and it is already in use as the Duhamel telescoping of the heisenberg design ([FU] unlock 36). Its backward questions obey the same free-probability mode law, because J and Jᵀ share singular values (DERIVED).
    - *Analogy.* For positively homogeneous dictionaries the dilation is a central charge of the arrow algebra, and the gain mode is its canonical-ensemble fluctuation (Lebowitz–Percus–Verlet).
    - *No role.* The detailed-balanced single-Pauli Lindbladian itself has no competition role: the estimator runs no dynamics and has no stationary state. §8.
-7. **What to run** (§9). Eight experiments use existing tools. The decisive cheap ones are:
-   - E1: rank-1 power iteration of the (2,1,1) slice at n = 1024, minutes per layer;
-   - E7: the gain template at n = 1024 on more networks, one done here (C9);
-   - E8: the D21 → MSE law for dropped old content versus closure error (chain128, hours).
+7. **What to run** (§9). Ten experiments use existing tools. The decisive cheap ones are:
+   - E1: rank-1 power iteration of the (2,1,1) slice at n = 1024, minutes per layer. Is the non-gain remainder one mode?
+   - E7: the gain template at n = 1024 on more networks, two done here (C9).
+   - E9: the old pool minus the template at n = 256, then the old-content carriers on the residual. Does §7.5 bring the old tier into the budget?
 
 ---
 
@@ -113,7 +118,7 @@ Each is used only as a name, or is re-derived or checked here. The ChatGPT conve
 | R6 | η-SI ⟺ Cov ≼ (1+η)·diag; independent of the entrywise smallness the closure needs | THEOREM + DERIVED (C4) | DOA as certificate or lever; diagnostic | 3.3 |
 | R7 | Propagator-basis carriers need ∝ n modes; content with m scrambled legs keeps e(k)^m | THEOREM (cited) + DERIVED | DOA at n = 1024; calculator alive | 3.1 |
 | R8 | Spike alone: ε_tot ≥ 0.16 for the w = 4 tier; as deflation ≈ 20 % fewer modes | DERIVED (arithmetic on measured inputs) | DOA alone; small lever | 3.2 |
-| R9 | Erased old content: no detailed balance or stationarity; not a function of the retained state; Bayes-optimal recovery = 0 under H | DERIVED (under H) + measured support | DOA | 5.1–5.2 |
+| R9 | Erased old content: no detailed-balance recovery (ingredients missing). Its gain-template part is recoverable by the dilation symmetry (accumulator); the rest has Bayes-optimal recovery 0 under H′ | DERIVED (+ measured C12; under H′ for the rest) | DOA for detailed balance; alive for the symmetry | 5.1–5.2 |
 | R10 | Duality (CR's telescoping, [FU] 36) moves the memory from the forward state to the backward question, whose low-rank compressions obey the same free law | KNOWN-LINK + DERIVED | alive for its bilinear error, no mode saving | 5.3 |
 | R11 | No transport gap ⇒ no exponential forgetting; each old source ≈ 0.1 of D21 at t = 15 | DERIVED (conditional) + measured | DOA (forgetting by depth) | 5.4 |
 | R12 | Closure = first-order cluster expansion with exact transport; error ∝ n^{−0.8}, 0.9 % at n = 1024 | KNOWN-LINK + measured | not binding | 6.1–6.3 |
@@ -121,6 +126,7 @@ Each is used only as a name, or is re-derived or checked here. The ChatGPT conve
 | R14 | Scale mixture ⇒ κ4(2,1,1) = Var(s²)·Wick, κ3(2,1) = ½Var(s²)·T, C ∋ Var(s)μμᵀ; gex = Σ_ij κ4_iijj/(tr C)² exactly | DERIVED | explains the published regeneration | 7.1 |
 | R15 | u_Creg ∥ var (cos 0.91–0.997); one scalar recovers 74–114 % of the regeneration's D21 gain at n = 128; c·n width-stable; template share falls with n | measured (C7–C9) | one scalar per layer; not enough at n = 1024 | 7.2–7.3 |
 | R16 | The gain amplitude is not a Gaussian-closure quantity: Gaussian-input increments give 24–47 % of it at layer 15 | measured (C10); CONJECTURE refuted in its simplest form | the scalar needs its own closure | 7.4 |
+| R17 | In the published (no-AD) convention the old κ3 pool is 49–97 % along T; an undiscounted scalar accumulator leaves 0.13–0.32 of ‖D21‖ (0.20–0.88 if dropped) | measured (C12, n = 128); CONJECTURE at n = 1024 | old content becomes a residual 2.6–4.6× smaller | 7.5 |
 
 ---
 
@@ -201,11 +207,14 @@ Consequences:
 
 Hence ε_tot ≥ 0.5·√0.1 ≈ 0.16, against 0.022. **DOA as a standalone carrier.**
 
+The rank-one spike is not the κ3 gain template T of §7.5. T has one leg along μ and the other along var or C. In the published convention, T carries most of the old pool's D21 (§7.5); the spike does not.
+
 **DERIVED (deflation).** Carry the spike exactly and the bulk in the propagator basis. The bulk's own target relaxes from ε to ε/√(1 − f). At f = 0.84 that is from 2 % to 5 %. At age 8 and n = 1024, this means 263 modes instead of 322 ([D-TS] §3.4): ≈ 20 % fewer, but still ∝ n. **A small lever.**
 
 **Link to the gain mode (measured, C9; ANALOGY with an exact breaking point).** The variance excess of C along μ̂ can be compared with the scale-mixture prediction (c4/4)·‖μ‖² of §7.1:
-- at depth (layers 10–15) it is 1.0–1.6× the prediction at n = 128–<<SPIKEMAXN>>;
-- at layer 2 it is 2.4–2.9×.
+- at layer 15 it is 1.05–1.6× the prediction (n = 128–1024, seven networks);
+- at layer 10 it is 1.4–2.2×;
+- at layer 2 it is 2.4–3.3×.
 
 So at depth the spike is largely the gain mode seen at order 2. At shallow layers it is mostly the BGN amplification of the mean direction by gates aligned with it ([D-TS] §2.6). The identification breaks exactly there: the gain mode multiplies the whole vector, while the BGN mechanism amplifies one direction.
 
@@ -283,8 +292,8 @@ For equal thresholds the ratio κ3_ν/κ3 = φ(t)(1−2p)/(t·p(1−p)) lies in 
 
 | quantity | values |
 |---|---|
-| κ3_ν/κ3_exact on the grid t ∈ [0.4, 1], ρ ≤ 0.1 | 1.21–1.28 |
-| κ3_ν/κ3_exact at t = 2, ρ = 0.2 (higher orders enter) | 1.41 |
+| κ3_ν/κ3_exact, five threshold triples in [−0.5, 2] (including mixed signs), ρ = 0.05, 0.1, 0.2, correlations ρ·(1, 0.8, 0.6) | 1.21–1.28 at 14 of 15 points |
+| the same at t = (2, 2, 2), ρ = 0.2 (higher orders enter) | 1.41 |
 | leading-order factor V(t)/t at t = 0.5, 1, 1.5, 2, 3 | 1.264, 1.238, 1.200, 1.159, 1.093 |
 
 **Why the max-ent description fails.** The exact gate law is not a pairwise MRF at the order that matters. Its three-body Möbius coefficient of log P, the HC interaction on the triple ([D-HC] §3.1, Lemma A), is O(ρ²): −1.985e-3, −7.288e-3, −2.497e-2 at ρ = 0.05, 0.1, 0.2 (t = 0.4). That is the same order as the three-gate cumulant itself. Setting it to zero, which is what "Gibbs with 2-cliques" means, misstates the three-gate cumulants by 9–27 % at leading order.
@@ -341,33 +350,48 @@ The construction ([D-Y] §8, [D-CR] §§1.3–3.7) is the time-averaged, KMS-det
 
 As t → ∞, CR's map becomes a conditional expectation onto the fixed-point algebra and recovers exactly ([D-CR] §6.1). Nothing in the estimator plays that algebra, because no law is stationary. The estimator also runs no dynamics. **The construction itself has no competition role.** Its surviving image is the reversible single-gate walk on faces, which serves prong 1 (U6 of local-to-global §5), not the estimator.
 
-### 5.2 DERIVED under hypothesis H: no recovery from the retained state beats dropping
+### 5.2 What can be recovered from the retained state: one exact symmetry, then nothing
 
 **Setting.**
 - S_t is any retained state at layer t: statistics of z_t together with the young content carried exactly.
 - X_t is the erased content: the old-source κ3 transported to t, or its D21 image.
 - R is any recovery map applied to S_t.
 
-**Statement.** E‖X_t − R(S_t)‖² ≥ E‖X_t − E[X_t|S_t]‖², with the expectation over the network ensemble. Under hypothesis H, E[X_t|S_t] = 0. Then no recovery map does better than dropping X_t.
+**(a) DERIVED + measured: the gain-template part of the erased content *is* recoverable, by a symmetry.**
+- *The mechanism.* By §7.1 (v), positive homogeneity carries a scale fluctuation, and with it its κ3 signature c·T_l (T_l = var_aμ_b + 2μ_aC_ab), from one layer to the next with c unchanged. The component of X_t along T_t is therefore a function of the current (μ, var, C), which every design carries, and of one scalar.
+- *Where the scalar comes from.* It is accumulated from the sources as they age out of the young window, while they are still carried.
+- *Measured* (C12, §7.5; n = 128, two MLPs, published no-AD convention).
+  - The old pool's D21 is 49–97 % along T.
+  - The undiscounted accumulator leaves 0.13–0.32 of ‖D21‖, against 0.20–0.88 if the pool is dropped.
+  - The true coefficient is discounted by ≈ 2–3 % per layer, not exactly conserved.
 
-**Hypothesis H.** Conditional on S_t, the law of X_t is invariant under X_t ↦ −X_t.
+This is a recovery map. It needs no detailed balance and no time average, only an exact symmetry of the arrows. It is the positive answer that item 3 admits.
 
-*Proof.* The first inequality is the defining property of the conditional mean. The second claim follows because H makes the conditional law symmetric. ∎
+**(b) DERIVED under hypothesis H′: the rest has zero Bayes-optimal recovery.** Let Y_t = X_t − (its T-component).
 
-**Status of H.** It is an approximation; its evidence is as follows.
-- *Exact at one layer.* E_W[W^{⊗3}] = 0 ([D-TS] §2.5). The flip W_{s+1} ↦ −W_{s+1} reverses the sign of third-order transported content and leaves every even-order transported statistic unchanged.
-- *Approximate downstream.* The downstream gates break the flip, since relu(−z) ≠ relu(z), so H holds only approximately there.
-- *Measured support* ([OC] final section, absorption test at w = 4):
-  - renormalised births remove at most ≈ 10–15 % of the old pool's D21, even in-sample;
-  - adding the young sources removes ≈ 30–40 % in-sample, but this does not transfer: on the held-out MLP the residual stays at the drop-it level (0.35–0.79, against shares of 0.39–0.88).
+*Statement.* E‖Y_t − R(S_t)‖² ≥ E‖Y_t − E[Y_t|S_t]‖², with the expectation over the network ensemble. Under hypothesis H′, E[Y_t|S_t] = 0. Then no recovery map does better than dropping Y_t.
 
-  A conditional mean that existed and could be learned would transfer across networks.
+*Hypothesis H′.* Conditional on S_t, including the accumulator, the law of Y_t is invariant under Y_t ↦ −Y_t.
 
-**CONJECTURE (testable form of H).** Fit absorption coefficients layer by layer on independent MLPs. Their relative signs are random: they agree no more often than a fair coin. Test: E3.
+*Proof.* The first inequality is the defining property of the conditional mean. The second claim follows because H′ makes the conditional law symmetric. ∎
 
-**DERIVED (the Petz map, one line).** Classically, the Petz recovery of a marginalisation channel relative to a reference law σ returns σ's conditional completion of the observed marginal. If σ is the closure's own model, the map returns the closure's births (tree-level content), which the chain already computes. A recovery map passes on the information in its reference; it does not create information. To recover old content, the reference must already contain it, which is circular.
+**Status of H′.** It is an approximation; its evidence is as follows.
+- *Exact at one layer for odd content.* E_W[W^{⊗3}] = 0 ([D-TS] §2.5). The flip W_{s+1} ↦ −W_{s+1} reverses the sign of third-order transported content and leaves every even-order transported statistic unchanged.
+- *Approximate downstream.* The downstream gates break the flip, since relu(−z) ≠ relu(z), so H′ holds only approximately there.
+- *Why the T-part is excluded.* The gain mode is not sign-symmetric: s > 0, and Cov(s, s²)·T does not flip. That is why H′ excludes it, and why (a) works.
+- *Measured support.*
+  - In the AD convention, which re-attributes the gain-mode slices to young sources, the old pool is nearly orthogonal to T: cos² ≤ 0.33 (C12).
+  - [OC]'s absorption test (no-AD, w = 4): births remove at most ≈ 10–15 % of the pool's D21. Young sources remove ≈ 30–40 % in-sample, but this does not transfer; on the held-out MLP the residual stays at the drop-it level (0.35–0.79, against shares of 0.39–0.88).
+  - Neither feature set contained T, so the test supports H′ in the directions it tried, not for the whole pool.
 
-**Verdict on recovery: DOA.**
+**CONJECTURE (testable form of H′).** Fit absorption coefficients for the non-T residual layer by layer on independent MLPs. Their relative signs are random: they agree no more often than a fair coin. Test: E3.
+
+**DERIVED (the Petz map, one line).** Classically, the Petz recovery of a marginalisation channel relative to a reference law σ returns σ's conditional completion of the observed marginal. If σ is the closure's own model, the map returns the closure's births (tree-level content), which the chain already computes. A recovery map passes on the information in its reference; it does not create information.
+
+**Verdict on recovery.**
+- Detailed-balance and time-averaged recovery (§5.1): DOA.
+- Symmetry-based recovery of the gain-template part: alive, measured (a).
+- Recovery of the remainder: DOA under H′.
 
 ### 5.3 What does transfer: duality (KNOWN-LINK + DERIVED)
 
@@ -693,7 +717,7 @@ This is the first quantitative explanation of *why* the u_iC_jk form works at al
 
 **Readings.**
 - Layer 1 is reproduced exactly, since z₀ is Gaussian.
-- Beyond it, the Gaussian-input increments fall to ≈ 0 while the network's gex keeps growing by ≈ 0.9 per layer (units of 2/n). At layer 15 the recursion gives 24–47 % of the measured amplitude.
+- Beyond it, the Gaussian-input increments fall to ≈ 0 while the network's gex keeps growing by ≈ 0.9 (n = 128) to 1.2 (n = 256) per layer, in units of 2/n. At layer 15 the recursion gives 24–47 % of the measured amplitude.
 - So the per-layer gain variance is fed mainly by the non-Gaussian structure of the direction law: higher cumulants interacting with the gates. It is not fed by the covariance.
 
 **CONJECTURE refuted in its simplest form.** "The gain mode is carried by an O(n²)-per-layer scalar recursion from (μ, C) alone."
@@ -730,16 +754,16 @@ This is the first quantitative explanation of *why* the u_iC_jk form works at al
 - It overshoots the best scalar by 0–30 %. The T-coefficient of the old pool is therefore discounted by ≈ 2–3 % per layer, not conserved exactly.
 
 **Readings.**
-- In the convention the published chain uses, the old pool is mostly the gain mode. Its D21 energy at layers 6–15 is 49–97 % along T, at depth 87–97 %.
-- **This was not tested before.** [OC]'s absorption features were birth diagrams and young sources. With them the in-sample residual stays at 0.25–0.62. One scalar on T, which the chain gets for free from (μ, var, C), brings the old pool from 0.22–0.88 of ‖D21‖ down to 0.13–0.24 (best scalar) or 0.13–0.32 (accumulator).
+- In the convention the published chain uses, the old pool is mostly the gain mode. Its D21 energy at layers 6–15 is 49–97 % along T, and 87–97 % at layers 10–15.
+- **This was not tested before.** [OC]'s absorption features were birth diagrams and young sources. With them the in-sample residual stays at 0.25–0.62. One scalar on T, which the chain gets for free from (μ, var, C), brings the old pool from 0.20–0.88 of ‖D21‖ down to 0.13–0.24 (best scalar) or 0.13–0.32 (accumulator).
 - **The AD convention agrees.** That convention moves the gain-mode slices into the young sources, cos²(young, T) = 0.72–0.92. What it calls old is the non-T residual: 0.35–0.45 at depth, nearly orthogonal to T, as [BRIEF] §3 states.
-- **What is left is still 6–15 times the bar.** The template does not remove the old-content problem. It shrinks the part that needs a real carrier by a factor of 3–5 in D21 norm, at n = 128.
+- **What is left is still 6–15 times the bar.** The template does not remove the old-content problem. It shrinks the part that needs a real carrier by a factor of 2.6–4.6 in D21 norm at layers 10–15, at n = 128.
 
 **CONJECTURE (n = 1024).** Two predictions:
 - In the no-AD convention the old pool stays ≥ 70 % (energy) along T at layers ≥ 8. Support: share3_T of the *total* D21 is still 0.72–0.83 at n = 1024 (C9).
 - A carrier then needs to reach only ε_own ≈ 0.022/0.2 ≈ 11 % on the non-T residual, rather than 2–3 % on the whole pool.
 
-If the residual follows the free-probability law of §3.1, that is ≈ 150–210 modes at age 8 and n = 1024 ([D-TS] §3.4: 214 modes at 10 %, 162 at 20 %). A Tucker core of that size costs 3.2–9.3 u per layer, against the 54–86 needed without the template. Tests: E9 (the residual's own mode count) and E2.
+Suppose the residual's mode count follows the single-age law of [D-TS] §3.4 at ε_own ≈ 10–20 % (162–214 modes at age 8, n = 1024). A Tucker core then costs ≈ 4–9 u per layer, against 54–86 u for the w = 4 tier at 2 % without the template. This is rough: the residual is not a generic Haar-oriented source, and its own law must be measured. Tests: E9 (the residual's own mode count) and E2.
 
 ### 7.6 What this means for the competition
 
@@ -759,8 +783,8 @@ If the residual follows the free-probability law of §3.1, that is ≈ 150–210
 ### 7.7 Known links, analogies, and the NCG reading
 
 - **KNOWN-LINK** ([D-TS] §2.3, Hanin–Nica Thm 1, Cor. 3). For a fixed input and random weights, ‖Mu‖² is log-normal with β = 5Σ1/n_i for ReLU. This is the annealed version of the gain accumulation.
-  - The quenched quantity measured here (fixed weights, random input) grows by ≈ 0.9 per layer in units of 2/n, i.e. ≈ 1.8/n per layer, against the annealed 5/n.
-  - So the across-input gain variance of one network is ≈ 35 % of the ensemble's. The other ≈ 65 % is network-to-network variation, which a quenched estimator never sees.
+  - The quenched quantity measured here (fixed weights, random input) grows by ≈ 0.9–1.2 per layer in units of 2/n, i.e. ≈ 1.8–2.4/n per layer, against the annealed 5/n.
+  - So the across-input gain variance of one network is ≈ 35–50 % of the ensemble's. The rest is network-to-network variation, which a quenched estimator never sees.
   - The analogy breaks exactly at quenched versus annealed, the guard of [D-TS] B4.
 - **KNOWN-LINK** (memory: Roberts–Yaida–Hanin, *The Principles of Deep Learning Theory*). The leading finite-width four-point vertex of a ReLU network is O(depth/width). In the ensemble it is the variance of the stochastic metric, i.e. a scale mixture over the previous layer's empirical second moment. The quenched gain mode here is its fixed-network counterpart, and c·n is width-stable as that scaling predicts.
 - **ANALOGY** (memory: Lebowitz–Percus–Verlet ensemble corrections). In a canonical ensemble, correlation functions differ from microcanonical ones by terms proportional to the fluctuation of the conserved quantity times derivatives with respect to it. The gain-mode cumulants (R for κ4, T for κ3, μμᵀ for C) are such terms for the scale.
@@ -770,3 +794,150 @@ If the residual follows the free-probability law of §3.1, that is ≈ 150–210
   - This is a property of the ReLU dictionary, not of the theory. A tiling or a Bratteli diagram has no dilation, so it fails the drag test. It belongs in the dictionary (prong 2), not in Notes 1–2.
   - It does carry one competition lesson. Any face-only description (R5) must be paired with the scale: a "face × gain" state, not a face state.
 
+---
+
+## 8. The user's intuition, tested on the competition object
+
+The intuition: Gibbs states, the approximate local Markov property and MRFs share their "fundamental essence" with expander theory, the time-averaged detailed-balanced single-Pauli Lindbladian hides a bridge, and NCG has a big part to play. On the competition object it splits three ways. [A] §0 and §8 test it on the abstract stage.
+
+**Literally a theorem.**
+1. **The doubled leg is an expander** (R1, §6.4). In every cumulant transport the Hadamard square W∘W is a dense weighted graph √2 above Ramanujan, and the expander mixing lemma holds verbatim. Its Perron mode is the trace (norm-coupling) channel, i.e. the dilation channel of §7. This is the one place in the competition object where "expander" is not a metaphor.
+2. **The annealed layer is a perfect expander,** a twirl onto the scalars ([D-TS] §2.5). The score, however, is quenched: one Kraus operator, no gap.
+3. **Spectral independence is local spectral expansion of the face law** ([D-HDX] §3.4, ALO). It holds, but it is a frame bound (R6) and certifies Glauber mixing, not the estimator.
+
+**Two halves of one mechanism.**
+1. **The closure is heredity plus decorrelation.** The layer chain is exactly Markov: the law of z_{l+1} is a push-forward of the law of z_l, and that is free. The closure is accurate because of decorrelation, which has two faces, the two halves of the transport:
+   - single legs scramble orientation (Haar);
+   - doubled legs average (the expander).
+
+   The local-to-global step "local Markov + decorrelation ⇒ global accuracy" is literally what the leg-partition closure does. The decorrelation comes from randomness (entrywise n^{−1/2}), not from distance or a spectral gap.
+2. **The gain mode is heredity of the scale plus the expander's Perron mode.** Positive homogeneity carries the scale forward exactly, the hereditary half. The doubled-leg expander transmits exactly the norm-coupling channel, the decorrelation half: everything else on a doubled leg is averaged away. Together they explain why the one shape that survives transport is the scale-mixture shape (§7). This is the single "same essence" that pays in the competition.
+
+**False.**
+1. **"The Markov property is an expansion property."** The face law is Markov only for the complete graph and fails positivity (R4). Its accuracy-relevant content is not pairwise (R2), and a pairwise Gibbs closure is biased by up to 4/π (R3).
+2. **"Approximate Markov ⇒ a forgettable past."** There is no gap, so there is no exponential forgetting. Each old source carries ≈ 0.1 of D21 at the last layer (R11).
+3. **"The time-averaged detailed-balanced Lindbladian gives a recovery map for erased content."** The estimator has no dynamics, no stationary state and no detailed balance. The erased content is not a function of the retained state, so its Bayes-optimal recovery is zero under H (R9).
+4. **"Spectral independence certifies the estimator"** (R6).
+
+**What the Lindbladian's "subtle essence" turns out to be, for the competition: *pair, don't recover*.** CR never needs the generator to mix. The defect is paired against a smooth question ([A] §0.4). The commutative version is the Duhamel telescoping that the heisenberg design already uses ([FU] unlock 36). Its compressions meet the same free-probability law (R10). Its gain is the bilinear error.
+
+**NCG's part in the competition.**
+- *Literal:* free probability governs the propagators' mode counts, and the annealed layer is a conditional expectation. Both are offline calculators.
+- *Analogy:* the dilation as a central charge (§7.7).
+- *None:* spectral triples, Connes and Carlen–Maas metrics, and Lindbladian dynamics have no role in an estimator that only pushes forward and pairs. [A] §0.6 and [B] place NCG's real weight in the theory: modular theory, sufficiency, derivations.
+
+---
+
+## 9. Experiments: predictions, falsifiers, tools, costs
+
+| id | experiment | tool | prediction (label) | falsified if | cost |
+|---|---|---|---|---|---|
+| E1 | Best family-rank-1 u⊗M of the (2,1,1) slice at n = 1024 by streaming power iteration (u-step E[z̃_i²·z̃ᵀMz̃] minus Wick terms; M-step: the weighted Gram Z̃ᵀdiag(Σ_i u_iz̃_i²)Z̃ minus Wick terms), plus c·R and the flat variant, each scored by D21 error in the oracle's closure | `stream_oracle.py` (add two O(Nn²) contractions) | At layers ≥ 6 the best rank 1 closes ≤ 40 % of the κ4 gap (a rank failure); c·R closes ≈ the regeneration's 20 %; u ∥ var at cos ≥ 0.95 (CONJECTURE) | rank 1 closes ≥ 60 %: the non-gain remainder has one dominant mode and a cheap carrier exists | ≈ 10 iterations × O(Nn²) at N = 32k: about a minute per layer |
+| E2 | Old-pool D21 share by age at n = 1024: propagate x_{t+1} = W_{t+1}ᵀD_t x_t from each source's centred activations and read the (2,1) slices | `stream_oracle.py` | ≈ 0.1 per old source at t = 15, flat in n from 128 (DERIVED reading of [OC], §5.4) | per-source shares < 0.03 | 1–3 CPU-h at N = 32k |
+| E3 | Sign test of absorption coefficients over 6 MLPs at n = 128 | `moment_atlas_np.py --k3`, `absorb.py` | Per-layer coefficient signs agree across MLPs at chance level (CONJECTURE from H) | sign agreement > 80 % on most layers: a learnable conditional mean exists | 2–3 h |
+| E4 | Kept energy for m scrambled legs: e(k)^m | `transfer_spectrum.py` (ensemble formula, order m) | All-distinct κ4 needs more modes than κ3; the (2,1,1) slice behaves as m = 2 (DERIVED, §3.1) | m = 4 needs fewer modes than m = 3 | minutes |
+| E5 | gate_GG rebuilt from bivariate cumulants (μ, C, κ3_aab, κ3_abb, κ4_aabb, κ4_aaab) by bivariate Edgeworth | atlases | Agreement to the Edgeworth truncation; no trivariate input changes it (THEOREM R2; consistency check for the faces design) | residual far above the truncation estimate | minutes |
+| E6 | Second-order closure residual by diagram class at n = 128 and 256 | `closure2.py` (theory stream) | Short loops (triangles) dominate (ANALOGY of §6.2) | long loops dominate | not priced |
+| E7 | Gain template at n = 1024 on 3+ more networks; c·R scored at the D21 level inside the oracle | `gainshare.py` (scratch; formulas in the Appendix), `stream_oracle.py` | share_R ≈ 0.25–0.4 at layers 2–15; c·n/2 ≈ 2.4 (l = 2) to ≈ 10–14 (l = 15) within ±40 %; c·R closes ≈ 20–30 % of the κ4 gap (measured for 2 networks, C9) | share_R ≥ 0.6 at layers ≥ 6: then the gain mode would be the whole story | ≈ 12 min per network on 3 cores |
+| E8 | Final-layer cost per unit D21 error: dropped old content against injected closure error of equal ‖·‖ | `chain128` teacher forcing | Same slope, 4.2e-6·ε², within 30 % (CONJECTURE, Haar pairing, §5.3) | old content costs ≤ 0.5× per unit: the pairing helps | a few hours at n = 128 |
+| E9 | Old pool minus the gain template at n = 256 (and 1024 by streaming): T-share, then the old-content carriers run on the residual | `tracker.py`, `carriers.py`, `propproj.py` on a `--k3` atlas | no-AD old pool ≥ 70 % along T at layers ≥ 8; the residual needs ε_own ≈ 10–20 %, a few u per layer (CONJECTURE, §7.5) | T-share < 0.5 at n = 256, or the residual needs ∝ n modes at 2 % | n = 256 atlas ≈ 1–2 h; carriers minutes |
+| E10 | A scalar closure for the gain: transport of the (2,2)-trace through the doubled-leg flat mode plus first-order gate births with κ3 and κ4 inputs, compared with measured gex | `gainrec.py` (scratch) | Recovers ≥ 80 % of gex at layer 15, where the Gaussian-input recursion gives 24–47 % (CONJECTURE, §7.4) | < 60 % | an hour of derivation, minutes to run |
+
+The cheap decisive pair is E1 + E7 for the κ4 slice and E9 for old content. E1 answers [CP] §6b's open question, a rank failure or a wrong-M failure, at the real width. E9 decides whether §7.5's template moves the old-content problem into the budget.
+
+---
+
+## 10. Checks (C1–C12): what was run, and the numbers
+
+All runs are in the scratchpad (`csynth/`), not committed. Width-128 checks use the two atlas MLPs of the coordinating session (seeds 3 and 4: N = 5·10⁵ each, with `pre_M211`). The other checks use fresh He MLPs generated with numpy. Fit and score always use different samples.
+
+| check | what | result | § |
+|---|---|---|---|
+| C1 | ‖E‖ and ‖W∘W∘W‖ against 4√2/√n and 2√120/n, n = 128–1024 | 0.1767 vs 0.1768 (n = 1024); tripled 0.0222 vs 0.0214 | 6.4 |
+| C2 | Probit three-gate law (Gauss–Legendre) vs pairwise max-ent | κ3_ν/κ3 = 1.21–1.28; leading factor 1.264–1.093 at t = 0.5–3; three-body Möbius O(ρ²) | 4.2 |
+| C3 | Orthants met by the row cone of W (n = 8–14) | 105/256, 317/1024, 1375/4096, 4606/16384 | 4.3 |
+| C4 | Top Cor(g) mode vs spike image (n = 128, layers 1–4) | overlap 0.44, 0.39, 0.39, 0.49 (random 0.01); 82–99 % of η₀ | 3.3 |
+| C5 | Transport channel fractions (n = 128) | tripled → diagonal 0.36 → 0.03–0.12; D21 doubled→doubled 0.52–0.81, flat to 0.19–0.29 | 6.4 |
+| C6 | Flat (2,1,1) carrier pilot | refuted at layers ≥ 5 (gap closed −2.05 to +0.33) | 6.5 |
+| C7 | u_Creg vs var; slice energy in span(R) (atlases) | cos 0.91–0.997; share 0.27 → 0.94 (MLP 0), 0.30 → 0.85 (MLP 1) | 7.2 |
+| C8 | D21 gap closed by c·R vs u_iC_jk (atlases) | ratio 0.74–1.14, median ≈ 0.9 | 7.2 |
+| C9 | Gain template across widths (Gram trick) | table of §7.3 | 7.3 |
+| C10 | Gaussian-input gain recursion | 24–47 % of gex at layer 15 | 7.4 |
+| C11 | κ3 template T: D21 energy share (atlases); Monte Carlo cost of its amplitude | 0.90–0.97 at layers 8–15 (n = 128); 0.72–0.83 at n = 1024; 1 % amplitude needs 5·10⁴–1.2·10⁵ samples at n = 1024 with the control variate | 7.2, 7.6 |
+| C12 | Old pool along T (tracker, AD and no-AD); undiscounted accumulator | no-AD cos² 0.49–0.97; residual 0.13–0.24 (fit), 0.13–0.32 (accumulator); AD cos² ≤ 0.33 | 7.5 |
+
+**Validation of the estimators.**
+- At layer 0 (z₀ Gaussian), gainscan gives c4 = 0.00 and gex·n/2 = −0.00. gainrec gives Δ₁ = gex₁ to 1 %.
+- The transport identity of the pilots agrees with the oracle to 2.6e-16, and with the atlas D21 to 3.8e-6.
+- The κ4 amplitudes from the Gram trick (C9, n = 128) agree in size with the explicit-tensor values (C8) on different networks.
+
+---
+
+## 11. Messages to the fresh-slate streams and to the theory
+
+- **faces.**
+  1. Gates are 0-homogeneous, so a face-law state is blind to the gain mode (R5). Carry the scale with the faces: a "face × gain" state.
+  2. Pairwise face statistics are bivariate functionals (R2) and cannot be the state for trivariate content.
+  3. Positivity fails at every layer ≥ 1 (R4), so no Hammersley–Clifford factorisation exists.
+  4. A pairwise max-ent completion biases three-gate cumulants by up to 4/π (R3).
+- **bethe.**
+  - Dense layers: the expansion parameter is n^{−1/2} per edge (TAP / Plefka), and short loops dominate (§6.2).
+  - The doubled-leg flat mode is the "cavity field" of the trace channel.
+  - The (2,1,1) slice is covariance-type in transport (§3.1).
+- **signings.**
+  - W ↦ −W kills odd transported content in the annealed average (hypothesis H, §5.2), and the quenched odd content is the sign problem.
+  - The gain mode is even, so it survives every gauge or sign average. It is the part of κ3 and κ4 a signing design gets for free.
+- **tropical.** The gain ‖M_h x̂‖ is a function on the fan, constant in the radial direction of each cone and varying across cones. Its variance across directions is the amplitude of the dominant (2,1,1) shape at moderate width and of most of the old pool's D21 (§7.5).
+- **heisenberg.**
+  - Duality is Chen–Rouzé's telescoping, now in commutative form, and its compressed backward questions obey the same free-probability law, because J and Jᵀ share singular values (R10).
+  - Do not expect mode savings from duality. Expect the bilinear error.
+  - E8 tests whether old content pairs with the final readout like closure error does.
+- **markov.**
+  - There is no gap, so there is no exponential forgetting along depth (R11).
+  - Recovery of erased content has zero Bayes gain under H (R9); E3 tests H.
+  - In the published (no-AD) convention the old pool is mostly the gain template (§7.5). The CMI that matters is that of the non-T residual.
+- **bench / scaffold.**
+  - Two Stage-Q diagnostics cost one sampling pass, O(Nn²): gex per layer, and the template shares share_R and share3_T.
+  - The amplitude of a known template is a matched filter: its Monte Carlo cost does not grow with the number of entries.
+- **Prong 1 / prong 3.**
+  - The dilation is a central charge only for positively homogeneous dictionaries. Keep it in the dictionary, not in Notes 1–2 (drag test, §7.7).
+  - The doubled-leg expander and the trace identity are dictionary facts too. The abstract counterpart, a conditional expectation whose Perron mode is a central element, is a question for [A]'s stage, not answered here.
+
+---
+
+## Appendix: formulas for reproducing the checks
+
+**A1. The (2,1,1) slice without n³ tensors.** z̃ is centred and Co = C with its diagonal zeroed. For distinct (i, j, k):
+- *Regression vector on C_off:* u_i·‖Co‖² = E[z̃_i²(z̃ᵀCo z̃ − 2z̃_i(Co z̃)_i)] − var_i(⟨Co,Co⟩ − 2(Co∘Co)1)_i − 2(Co Co Co)_ii.
+- *Contraction with R:* ⟨M4, R⟩_AD = E[(z̃²·var)·Q − 2Σ_i var_i z̃_i³(Co z̃)_i + 2(z̃²·(Co z̃)² − (z̃²)ᵀ(Co∘Co)z̃²)], with Q = z̃ᵀCo z̃.
+- *Template inner product:* ⟨R_A, R_B⟩_AD = Σ_i var^A_i var^B_i(⟨Co^A,Co^B⟩ − 2(Co^A∘Co^B 1)_i) + 2Σ_i var^A_i(Co^B Co^A Co^B)_ii + 2Σ_i var^B_i(Co^A Co^B Co^A)_ii + 4Σ_i[(Σ_j g_ij)² − Σ_j g_ij²], where g = Co^A∘Co^B.
+- *Slice norm:* ‖K‖² = ⟨M4_A, M4_B⟩ − ⟨M4_A, R_B⟩ − ⟨R_A, M4_B⟩ + ⟨R_A, R_B⟩, from independent batches, each with its own (var, C). Here ⟨M4_A, M4_B⟩_AD = mean_{s∈A, t∈B}[p₂p₁² − 2p₃p₁ − p₂² + 2p₄] with p_m = Σ_i(z̃_si z̃_ti)^m, which takes four N_A × n × N_B GEMMs.
+
+**A2. The κ3 template.**
+- T_ab = var_aμ_b + 2μ_aC_ab for a ≠ b, and D21_ab = E[z̃_a²z̃_b].
+- c3 = ⟨D21, T⟩/‖T‖², estimated per sample as q = Σ_ab z̃_a²T_ab z̃_b. The control variate replaces z̃_a² by z̃_a² − var_a.
+
+**A3. The gain excess.** gex = Var‖z̃‖²/(tr C)² − 2‖C‖²_F/(tr C)², computed in one pass from Σ‖z‖², Σ‖z‖⁴, Σ‖z‖²z, Σz and Σzzᵀ.
+
+**A4. The three-gate law.**
+- Exact P(g₁, g₂, g₃): nested Gauss–Legendre quadrature of the trivariate normal on the orthants shifted by t.
+- Max-ent fit: Newton's method on the pairwise binary exponential family matching all one- and two-gate marginals.
+- Möbius coefficient on the triple: Σ_{S⊆{1,2,3}}(−1)^{3−|S|} log P(1_S).
+
+**A5. The cone test.** Draw a ≥ 0 (|N(0,1)| entries), take sign(aW) for 10⁶ draws, and count distinct patterns. Repeat with x ~ N(0, I) for the Gaussian layer.
+
+**A6. The tracker test.** Run `tracker.run_sources(W, lay, ad=…)` on a `--k3` atlas.
+- The old pool is the sum of the sources with s < l − w.
+- T_l comes from the atlas's (μ, var, C).
+- The accumulator adds ⟨D21(source of age w+1), T_l⟩/‖T_l‖² once per source and never discounts.
+
+---
+
+## Sources
+
+- **Bridge digests:** [arxiv-2609.38007.md](../../digests/bridges/arxiv-2609.38007.md) §8 and §12; [arxiv-2504.02208.md](../../digests/bridges/arxiv-2504.02208.md) §§1.3–3.7, 5.3, 6.1, 7.1; [hammersley-clifford.md](../../digests/bridges/hammersley-clifford.md) §§3.1, 4.1–4.3; [expanders.md](../../digests/bridges/expanders.md) §§3, 9.10, 11.3–11.7; [hdx-spectral-independence.md](../../digests/bridges/hdx-spectral-independence.md) §§3.3–3.5; [nc-dirichlet-lindblad.md](../../digests/bridges/nc-dirichlet-lindblad.md) §4.6; [transfer-spectrum-measurement.md](../../digests/bridges/transfer-spectrum-measurement.md) §§0, 2.1–2.7, 3.4–3.5, 4, 5 (B2, B4–B8); [chat-2609.38007-retrieval-status.md](../../digests/bridges/chat-2609.38007-retrieval-status.md) §1.
+- **Programme:** [research-program.md](../../research-program.md); [conditional-arrow-algebra.md](../../conditional-arrow-algebra.md); [simplicial-complex-as-decomposition.md](../../simplicial-complex-as-decomposition.md); [local-to-global-unlocks.md](../../local-to-global-unlocks.md); [mlp-bridge.md](../../mlp-bridge.md).
+- **Competition:** [competition-plan.md](../../competition-plan.md) §§0, 3.1, 6a, 6b, 7 and the revision log; [fresh-slate/BRIEF.md](../../fresh-slate/BRIEF.md) §§1, 3; [fresh-slate/foundations-unlocks.md](../../fresh-slate/foundations-unlocks.md) unlocks 1, 35 and 36 (cross-references only).
+- **Stream reports:** [oracle1024](../oracle1024/REPORT.md), [old-content](../old-content/REPORT.md) (and `results/tracker_A1.txt`), [chain128](../chain128/REPORT.md), [coef-ensemble](../coef-ensemble/REPORT.md), [costmodel](../costmodel/REPORT.md), [submission](../submission/REPORT.md), [est-accuracy](../est-accuracy/REPORT.md) (stopped), [est-cost](../est-cost/REPORT.md) (stopped).
+- **Tools used for the checks:** [experiments/oracle_k3.py](../../experiments/oracle_k3.py), [experiments/moment_atlas_np.py](../../experiments/moment_atlas_np.py) atlases, [old-content/tracker.py](../old-content/tracker.py), plus scratch scripts whose formulas are in the Appendix.
+- **From memory, as marked:** Bai–Yin / Latała; Mehler; Leonov–Shiryaev; Kotecký–Preiss; TAP / Plefka; Lebowitz–Percus–Verlet (1967); Roberts–Yaida–Hanin (2022).
