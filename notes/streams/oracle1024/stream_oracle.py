@@ -30,6 +30,7 @@ weights from (mu, var); the Hermite K3z term uses the empirical Phi (oracle_k3 u
 Phi(alpha) there only; the difference is reported by `verify`).
 """
 import argparse, os, sys, time
+sys.dont_write_bytecode = True
 import numpy as np
 from math import erf, sqrt, pi, factorial
 
