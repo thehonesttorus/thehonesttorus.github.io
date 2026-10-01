@@ -134,3 +134,21 @@ The true κ₄ helps only together with the true κ₃ (R3), not with the comput
 | 15 | 0.31 (0.956) | 0.31 (0.962) |
 
 The sources are exact. The **first transport step** already costs 22 %: the decoupled-gate linear response κ₃(a) ≈ Φ⊗Φ⊗Φ ∘ κ₃(z) (Approx G) misses the joint gate law E[H_pH_qH_r] and the δ-insertion terms (½ κ_{ppq} E[δ_p H_q ã_r], ⅙ κ_{ppp}(E[δ′_p ã_q ã_r] − Eδ′_p Cov)). At first order the error is harmless (R2: computed ≈ true κ₃ under first-order injection), because it enters the readout multiplied by ε. At second order it is fatal, because the κ₄ injection is calibrated against the true κ₃.
+
+## R11. DIRECT measurement at n = 1024 (shared bench, paired), pull-back implementation `hdpull.py`
+
+`hdpull.py` is the n × n source-layer pull-back realisation of first-order HD (diagonal + star diagrams + exact coincident planes, all ages or the last A + 1 sources). It equals the full-tensor `hd(..., diagrams="star")` to 1e-15 at n = 48 (all ages and A = 2). It runs in about 20 s per network at n = 1024 in float64 numpy.
+
+| set | MLPs | Gaussian reference raw | HD all ages raw (± s.e.) | HD 8 sources (A = 7) raw | gain (all ages) |
+|---|---|---|---|---|---|
+| w256_d16 | 8 | 5.21e-5 | 5.17e-6 ± 4.3e-7 | 5.79e-6 | 10.1× |
+| w512_d16 | 4 | 1.69e-5 | 1.42e-6 ± 5.2e-8 | 1.65e-6 | 11.9× |
+| **w1024_d16** | 6 | **4.10e-6** | **4.23e-7 ± 2.1e-8** | **4.90e-7 ± 2.1e-8** | **9.7×** |
+
+Truth noise is subtracted (3.6e-8 at 1024). Width law of HD 256 → 1024 is n^{-1.86} (all ages) and n^{-1.81} (A = 7); the reference falls as n^{-1.83} on the same pair. The **gain is ≈ 10× and roughly width-independent from 256 on**, not growing as the 64–256 data suggested; the early n^{-2} vs n^{-1} contrast was the pre-asymptotic reference.
+
+Ablation at w256: dropping the exact coincident planes (5 instead of 7 products per pair) gives 7.41e-6 (+43 %), and A = 3 without planes gives 1.05e-5. The planes are needed.
+
+**Cost (kit prices, Strassen L5 0.557 u per product).** Per (source, target) pair: 7 products (direction update, R, 2 star, plane product Δ₂U, 2 contractions with the diagonal merged in). All ages: 120 pairs × 7 × 0.557 + 16 × 1.03 (reference sandwich) ≈ **485 u = 0.47 B**. A = 7: 92 pairs ≈ **375 u = 0.37 B**. Batch each layer's pairs into one Strassen family: about 16 families × 79 calls ≈ 1.3k calls (needed for the residual cap).
+
+**Adjusted at 1024:** all ages 4.23e-7 × 0.47 ≈ **2.0e-7**; A = 7 4.90e-7 × 0.37 ≈ **1.8e-7**. For comparison, the Gaussian reference at the 0.1 floor is ≈ 4.1e-7.
