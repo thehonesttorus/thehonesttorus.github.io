@@ -12,21 +12,21 @@
 
 ## 0. Verdict in brief
 
-1. **The prediction is half right.** Old content does concentrate on the top singular directions of its propagator, and far more than chance: a random k-subspace keeps nothing until k ≈ n, while the top-k subspace of the propagator keeps 95 % (age 4) to 99.99 % (ages ≥ 13) of the energy of the D21 contribution at k = n/4 (§3.2). But the concentration is **polynomial in age and linear in width**. The propagator has no spectral gap in the expander sense. Its participation ratio follows the free-probability law PR ≈ n / (1 + Σ(r_l − 1)) ≈ n/(2·age) to within 1–4 % for ages ≤ 5 (Measured, §3.1). Its consecutive Lyapunov gaps are 0.013–0.018 per layer, which is 3–5 × 1/(2n) and not O(1).
+1. **The prediction is half right.** Old content does concentrate on the top singular directions of its propagator, and far more than chance: a random k-subspace keeps roughly (k/n)³ of the energy (12 % at k = n/2, ε_own > 0.89 for k ≤ 64), while the top-k subspace of the propagator keeps 95 % (age 4) to 99.99 % (ages ≥ 13) of the energy of the D21 contribution at k = n/4 (§3.2). But the concentration is **polynomial in age and linear in width**. The propagator has no spectral gap in the expander sense. Its participation ratio follows the free-probability law PR ≈ n / (1 + Σ(r_l − 1)) ≈ n/(2·age) to within 4 % for ages ≤ 4 (MLP 0; 6 % at age 5) and ≤ 6 (MLP 1) (Measured, §3.1). Its consecutive Lyapunov gaps are 0.013–0.018 per layer, which is 3–5 × 1/(2n) and not O(1).
 2. **Modes needed for a 2 % D21 error.** Two error measures are used. ε_own is the error relative to the content's own D21 contribution. ε_tot is the error relative to the whole D21(z_t), which is what the chain needs.
    - Width 128, ε_own, target-side propagator basis: k = 96 (age 2), 64 (age 4), 40 (age 8), 26–28 (ages 13–15). As a fraction of n that is k/n = 0.75 → 0.2.
-   - Width 128, ε_tot, merged "old tier" (everything older than w layers, one tensor per target layer), targets t ≥ 10: k = 48–56 (w = 4), 28–48 (w = 6), 12–28 (w = 8).
+   - Width 128, ε_tot, merged "old tier" (everything born w or more layers before t, one tensor per target layer), targets t ≥ 10: k = 48–56 (w = 4), 28–48 (w = 6), 12–28 (w = 8).
    - The data-adapted HOSVD basis of the tensor itself, an oracle that a chain does not have, needs about half as many modes: 24–32, 12–24 and 4–16 for the same three thresholds.
    - The second MLP agrees: own 96 / 72 / 40 / 24–28; tiers 48–56, 28–40, 14–24 (§3.6).
-3. **The mode count is a fixed fraction of n, not a fixed number.** The Gaussian-ensemble formula of §2.4 needs only the propagator. It reproduces the measured ε_own and the measured k_2 % exactly at 12 of 15 ages (MLP 0) and 11 of 15 (MLP 1), and is within one grid step at the rest (§3.2, §3.6). Run on fresh He-initialised MLPs at widths 128, 256, 512 and 1024, it gives the same k_2 %/n at every width to ±0.02 (§3.4). At n = 1024 a 2 % (own) carrier therefore needs about 0.19–0.5 n ≈ 200–510 modes for ages 15 down to 4.
-   - **Cost.** A Tucker core of rank k costs k³/n² units per layer. For the w = 4 tier with the propagator basis (≈ 400–450 modes at n = 1024) that is 55–85 units per layer, against the ≈ 3–4 units per layer that [costmodel](../../streams/costmodel/REPORT.md) leaves for old and κ₄ content.
+3. **The mode count is a fixed fraction of n, not a fixed number.** The Gaussian-ensemble formula of §2.4 needs only the propagator. It reproduces the measured k_2 % exactly at 12 of 15 ages (MLP 0) and 11 of 15 (MLP 1), and is within one grid step at the rest (§3.2, §3.6). The ε_own curves agree to a few per cent at ages ≤ 5; at older ages and small k they differ by up to 40 % at ages 6–14 and by up to 1.9× at age 15, in either direction (§3.2). Run on fresh He-initialised MLPs at widths 128, 256, 512 and 1024, it gives the same k_2 %/n at every width to ±0.02 (§3.4). At n = 1024 a 2 % (own) carrier therefore needs about 0.19–0.5 n ≈ 200–510 modes for ages 15 down to 4.
+   - **Cost.** A Tucker core of rank k costs k³/n² units per layer. For the w = 4 tier with the propagator basis (≈ 384–448 modes at n = 1024, i.e. 8 × 48–56) that is 54–86 units per layer, against the ≈ 3–4 units per layer that [costmodel](../../streams/costmodel/REPORT.md) leaves for old and κ₄ content.
    - Only the oldest band is affordable: content older than about 10 layers needs about 0.1 n modes for 2 % of D21, i.e. about 1 unit per layer.
    - This agrees with 504aldo's closed arithmetic ("Tucker core … wins only for r ≲ 150").
-4. **One genuine "Perron" mode exists.** A single outlier direction emerges with depth: the mean direction μ_z(t). Its overlap with the top left singular vector is 0.6–0.94 at ages 8–15 (Measured, width 128, both MLPs) and 0.85 at n = 1024. The ratio s₁/s₂ reaches 1.5–2.0, and the outlier separates from the bulk more clearly as n grows (§3.1, §3.4). It is width-independent and shared by all sources. It carries 0–20 % of the old content's energy up to age 9 and 4–67 % at ages 10–15, where the old content is only 1–6 % of D21 (§3.1, §3.6). This is the one place where the expander / Perron–Frobenius intuition is literally true, and it is a rank-one effect.
+4. **One genuine "Perron" mode exists.** A single outlier direction emerges with depth: the mean direction μ_z(t). Its overlap with the top left singular vector is 0.6–0.94 at ages 8–15 (Measured, width 128, both MLPs) and 0.85 at n = 1024. The ratio s₁/s₂ reaches 1.5–2.0. With width, s₁²/mean s² and the overlap with μ_z grow (age 15: 46 → 128 and 0.49 → 0.85 from n = 128 to 1024), while s₁/s₂ stays near 1.45 from n = 256 on (§3.1, §3.4). It is shared by all sources. For the all-distinct source it carries 0–22 % of the old content's energy up to age 9 and 3–67 % at ages 10–15, where the old content is only 1–6 % of D21 (§3.1, §3.6). For the full source (slices kept) it carries far more: 51 % at age 6, 65 % at age 8 and 78–90 % at ages 10–15 (MLP 0, §3.6). This is the one place where the expander / Perron–Frobenius intuition is literally true, and it is a rank-one effect.
 5. **The expander is the ensemble average, not the layer.** The ensemble-averaged covariance map E_W[Wᵀ S W] = (2/n) Tr(S)·I is a conditional expectation onto the scalars: a perfect expander, all non-trivial eigenvalues 0. The averaged third-order map is identically 0 (Derivation, §2.5). A single layer's map S ↦ B S Bᵀ is a completely positive map with **one** Kraus operator, the opposite end from a quantum expander. What does mix in one layer is the *orientation* of the source relative to the future propagator (§2.4). That is why a formula using only the propagator predicts the error.
-6. **On the faces themselves, an expander-type certificate holds unpinned.** The gate law of each layer is a law on {0,1}ⁿ (the face law of dictionary v1). Its unpinned spectral-independence constant η₀ = λ_max(Ψ) is 1.8–4.9 at width 128 and 2–8 at width 1024 (Measured, §3.5). It is bounded and does not grow like n, which is the hypothesis of the Anari–Liu–Oveis Gharan local-to-global theorem for the single-gate (Glauber, down-up) walk on faces. Pinnings were not tested.
+6. **On the faces themselves, an expander-type certificate is measured, unpinned only.** The gate law of each layer is a law on {0,1}ⁿ (the face law of dictionary v1). Its unpinned spectral-independence constant η₀ = λ_max(Ψ) is 1.7–5.6 at width 128 (both atlas MLPs) and 2–8 at width 1024 (Measured, §3.5). It grows far more slowly than n (η₀/m falls 4–8× from n = 128 to 1024), but at layers ≥ 6 it does grow, by 1.2–2.1× over that range, levelling off at ≈ 7–7.5 between n = 512 and 1024 at layers 9–12 and still rising at layers 13–15. Four widths cannot show it is bounded. Bounded η under every pinning is the hypothesis of the Anari–Liu–Oveis Gharan local-to-global theorem for the single-gate (Glauber, down-up) walk on faces; only the unpinned value was measured, and pinnings were not tested.
 
-So the data support "old content concentrates on its propagator's top modes". They do not support "few modes" at the competition width. The cheap-carrier hope survives only for the oldest band, for the single mean mode, and for a structure-adapted basis that is better than the propagator's (the HOSVD gap). The transported covariance J C(a_s) Jᵀ, which the chain can compute, is such a basis: it comes within 2–8 modes of the oracle when the source keeps its slices (§3.6). But it too needs a fixed fraction of n.
+So the data support "old content concentrates on its propagator's top modes". They do not support "few modes" at the competition width. The cheap-carrier hope survives only for the oldest band, for the single mean mode (which carries most of the slice-containing old content at depth, §3.6), and for a structure-adapted basis that is better than the propagator's (the HOSVD gap). The transported covariance J C(a_s) Jᵀ, which the chain can compute, is such a basis: it comes within 2–8 modes of the oracle when the source keeps its slices (§3.6). But it too needs a fixed fraction of n.
 
 ---
 
@@ -46,7 +46,7 @@ So the data support "old content concentrates on its propagator's top modes". Th
   J_{s→t} = A_t D_{t−1} A_{t−1} ⋯ D_{s+1} A_{s+1}, so that T_{t−1}∘⋯∘T_{s}(X) = J_{s→t}^{⊗3} X when the first map is ungated. The gated version G = D_t J (a_s → linearised a_t) is what `old-content/propproj.py` calls M_{s→t}; its PR is printed for cross-checking.
 - **Source.** K_s = AD(κ3(a_s)), the all-distinct part of the post-activation third cumulant, from central moments of `post_M3` exactly as in `experiments/oracle_k3.py` (`central3`, `all_distinct`).
 - **Transported content.** X_{s,t} = J_{s→t}^{⊗3} K_s, with D21 contribution d_{s,t}[a,b] = X_{s,t}[a,a,b] at layer t. It is compared with the atlas's D21(z_t)[a,b] = κ3(z_a, z_a, z_b).
-  - Because K_s contains everything present at layer s, X_{t−w,t} *is* the merged "old tier" at threshold w: all content older than w layers, linearly transported.
+  - Because K_s contains everything present at layer s, X_{t−w,t} *is* the merged "old tier" at threshold w: all content born at layer t − w or earlier (age ≥ w at t), linearly transported (for the default source, its all-distinct part).
 - **Projection.** P_k = U_k U_kᵀ, where U_k holds the top-k left singular vectors of J_{s→t}. Then X̂ = P_k^{⊗3} X. Since U_kU_kᵀ J = J V_kV_kᵀ, this is the same as projecting the source on the top-k right singular vectors at birth, so it costs a k³ core and n×k legs.
 - **Error measures.**
   ε_own(k) = ‖D21(X̂) − d‖ / ‖d‖,  ε_tot(k) = ‖D21(X̂) − d‖ / ‖D21(z_t)‖,  share = ‖d‖ / ‖D21(z_t)‖,
@@ -55,11 +55,11 @@ So the data support "old content concentrates on its propagator's top modes". Th
 
 ### 1.3 Naive points of this dictionary, stated before the results (rule P2.1)
 
-- **N1 — births and renormalisation ignored.** The task's transport is the Φ³ pass-through only. The oracle ladder (§3.1 of the plan) shows that old content also reaches the all-distinct κ3(a) through the [D21(z) ⊗ C] and [K22 ⊗ C] diagrams with coefficients ≈ 3, so the linear transport is not all of what old content does. Measured consequence: even at age 2 the linearly transported content leaves 84 % of D21(z_t) unexplained (§3.2).
+- **N1 — births and renormalisation ignored.** The task's transport is the Φ³ pass-through only. The oracle ladder (§3.1 of the plan) shows that old content also reaches the all-distinct κ3(a) through the [D21(z) ⊗ C] diagram (coefficient ≈ 3) and the [K22 ⊗ C] diagram (≈ 1.5; fitted 1.2–1.3 at width 128), so the linear transport is not all of what old content does. Measured consequence: even at age 2 the linearly transported content leaves 84 % of D21(z_t) unexplained (§3.2).
 - **N2 — no re-masking.** The source is AD-masked at birth and then transported linearly ("noAD"). The alternative bookkeeping that re-zeroes repeated indices at every layer is a Hadamard mask. It does not commute with projection, and `old-content/propproj.py --ad` already showed it destroys the concentration (keep plateaus at 0.86 for k = 64). Both decompositions are exact identities, with different births; the linear-transfer picture applies only to noAD.
 - **N3 — Monte Carlo noise.** One atlas's D21 has 1–6 % noise. The transported contribution of old sources is noisier: 2 % at age 1, 34 % at age 15 for the tiny oldest contributions. All ε are noise-corrected, but the oldest ages carry large error bars.
 - **N4 — sample size.** One width and two MLPs on the atlas side. The width scaling uses fresh random MLPs and the ensemble formula, not atlases.
-- **N5 — mean-field gates.** The gates are expected gates (Φ ∈ [0, 1]), not per-sample masks. At depth 25–30 % of them are frozen at 0 or 1, i.e. dead or always-on neurons on this input law (Measured).
+- **N5 — mean-field gates.** The gates are expected gates (Φ ∈ [0, 1]), not per-sample masks. At layers ≥ 8, 18–44 % of them have p < 10⁻³ or p > 1 − 10⁻³ and 32–61 % lie outside (0.02, 0.98), i.e. (nearly) dead or always-on neurons on this input law (Measured, both MLPs).
 
 ---
 
@@ -81,7 +81,7 @@ Moreover (B₂B₁)^{⊗k} = B₂^{⊗k}B₁^{⊗k}.
 
 ### 2.2 Free probability: the participation-ratio law (Fact + Derivation)
 
-**Fact** (Pennington–Schoenholz–Ganguli, arXiv:1711.04735, eq. (11) and Supplement Result 1, read). The S-transform turns free multiplicative convolution into a product. For the input–output Jacobian of a deep network, S_{JJᵀ} = ∏_l S_{W_lW_lᵀ} S_{D_l²}.
+**Fact** (Pennington–Schoenholz–Ganguli, arXiv:1711.04735, eqs. (11)–(12) and Supplement Result 1, read; re-checked in verification). The S-transform turns free multiplicative convolution into a product (eq. (11)). For the input–output Jacobian of a deep network, S_{JJᵀ} = ∏_l S_{W_lW_lᵀ} S_{D_l²}.
 
 **Fact** (same source, §2.4–2.5, read).
 - Gaussian (Wishart) factors: S_{WWᵀ}(z) = σ_w⁻²(1+z)⁻¹. A 0/1 gate of density p: S_{D²}(z) = (z+1)/(z+p).
@@ -110,7 +110,7 @@ From Hanin–Nica, arXiv:1812.05994, read:
 - Oseledets: the multiplicative ergodic theorem, giving deterministic exponents and filtrations.
 - Isopi–Newman: when d → ∞ first and then n → ∞, the density of normalised Lyapunov exponents is the triangle law h(λ) = 2λ on (0, 1). Tucci obtains the same global law in the other order of limits, but the local statistics depend on the order (Akemann–Burda–Kieburg).
 
-**Fact (Hanin–Nica §1.4, read).** ‖M^{(d)}u‖² is a line-to-line partition function of a directed polymer on the complete multipartite graph. The D's act as "{0, 1}-valued spins on the vertices … restricting the allowed paths", and mean-zero weights produce "significant cancellation", so that Z_d does not grow exponentially when n grows with d. This is literally a sum over histories through open neurons, i.e. through faces, with signed weights. It is used in §5 (B3).
+**Fact (Hanin–Nica §1 intro p. 2 and §1.4, read).** ‖M^{(d)}u‖² is a line-to-line partition function of a directed polymer on the complete multipartite graph. The D's act as "{0, 1}-valued spins on the vertices … restricting the allowed paths", and mean-zero weights produce "significant cancellation", so that Z_d does not grow exponentially when n grows with d. This is literally a sum over histories through open neurons, i.e. through faces, with signed weights. It is used in §5 (B3).
 
 ### 2.4 Orientation scrambling and a propagator-only error formula (Derivation)
 
@@ -134,17 +134,17 @@ All k are computed at once in O(n²) after one SVD.
 For W with iid N(0, 2/n) entries independent of S: E[WᵀSW]_{ab} = Σ_ij S_ij E[W_ia W_jb] = (2/n) Tr(S) δ_ab. All odd moments vanish, so E[W^{⊗3}] = 0. Therefore:
 - The **ensemble-averaged** covariance transfer is S ↦ (2/n)Tr(S)·I: up to scale, the trace-preserving conditional expectation onto ℂ·I. All its non-trivial eigenvalues are 0, a perfect expander.
 - The ensemble-averaged third-order transfer is **zero**. Old κ₃ content survives only because one particular W is fixed (quenched).
-- The **quenched** map S ↦ BSBᵀ is completely positive with a single Kraus operator. **Fact** (Hastings 2007, as recorded in [expanders.md](expanders.md) §9.10): random-unitary channels with D Kraus operators have |λ₂| → 2√(D−1)/D. A single conjugation (D = 1) is the degenerate end: no averaging, so no trivial eigenvector is isolated.
+- The **quenched** map S ↦ BSBᵀ is completely positive with a single Kraus operator. **Fact** (Hastings 2007, as recorded in [expanders.md](expanders.md) §9.10): Hermitian random-unitary channels with D Kraus operators U(s)/√D (D/2 Haar unitaries and their adjoints) have |λ₂| → 2√(D−1)/D in probability as the dimension N → ∞. A single conjugation (D = 1) is the degenerate end: no averaging, so no trivial eigenvector is isolated.
 - The Pauli twirl in Chen–Rouzé's proof (ρ − ρ_{−A} = 2^{−2|A|−1}Σ_S [S,[S,ρ]], see [arxiv-2609.38007.md](arxiv-2609.38007.md) §8.7) is the analogue of the *annealed* map: a group average that equals a conditional expectation.
 
 ### 2.6 Rank-one outliers (Fact) and the mean mode
 
 **Fact** (Benaych-Georges–Nadakuditi, arXiv:0910.2120, Thms 2.6–2.8, read).
 - Setting: X_n is non-negative definite with limiting spectral law μ_X on [a, b], and X̃ = X_n(I + P) with P = θuu*, where u is in generic position.
-- Threshold: the top eigenvalue leaves b **iff** θ > 1/T_μ(b⁺), with T_μ(z) = ∫ t/(z−t) dμ(t). It then converges to T_μ⁻¹(1/θ), and |⟨ũ, u⟩|² → −1/(θ²ρT′(ρ) + θ).
+- Threshold: the top eigenvalue leaves b **iff** θ > 1/T_μ(b⁺), with T_μ(z) = ∫ t/(z−t) dμ(t). It then converges to T_μ⁻¹(1/θ), and |⟨ũ, u⟩|² → −1/(θ²ρT′(ρ) + θ) for the eigenvector ũ of the non-symmetric X_n(I + P) (Thm 2.7). For the symmetrised (I + P)^{1/2}X_n(I + P)^{1/2}, the relevant form for JJᵀ, Remark 2.10 gives −(θ + 1)/(θT′(ρ)).
 - Below the threshold the overlap tends to 0. Square-root edge decay makes the threshold finite (Prop. 2.9).
 
-**Interpretation (mine).** The gates are not free from the weights in one direction. Φ_{l+1} = Φ(A_{l+1}μ_{a,l}/σ), so D_{l+1}A_{l+1}μ_{a,l} is close to a rectification of the mean: the gates are open exactly where the mean pushes the pre-activation up. A generic direction v, independent of A_{l+1}, has mean-square gain E‖D A v‖²/‖v‖² = 2E[Φ²]. That is 0.5 at layer 0 and 0.58–0.95 at layers 1–15 (Measured on both MLPs), i.e. below 1 whenever gates are uncertain. The mean direction is transported with a larger gain: the measured ratio ‖Jμ_a‖²/(‖μ_a‖² · mean s²) is 1.2–3.3 (MLP 0) and 1.2–5.9 (MLP 1) at n = 128, and 4–8 at n ≥ 256 after 8–15 layers. The result is a coherent rank-one direction amplified relative to the bulk at every layer: a growing multiplicative spike, the BGN mechanism iterated. The measured overlap with μ_z(t) and the growth of the outlier with width (§3.1, §3.4) are what the theorem class predicts once the spike passes threshold. This identification is not proved here: the spike is generated by the coupling, not given as an independent P.
+**Interpretation (mine).** The gates are not free from the weights in one direction. Φ_{l+1} = Φ(A_{l+1}μ_{a,l}/σ), so D_{l+1}A_{l+1}μ_{a,l} is close to a rectification of the mean: the gates are open exactly where the mean pushes the pre-activation up. A generic direction v, independent of A_{l+1}, has mean-square gain E‖D A v‖²/‖v‖² = 2E[Φ²]. That is 0.5 at layer 0 and 0.58–0.95 at layers 1–15 (Measured on both MLPs), with one exception: layer 13 of MLP 1, where mean Φ = 0.59 and 2E[Φ²] = 1.07. It is below 1 when E[Φ²] < ½, which holds at all other layers measured. The mean direction is transported with a larger gain: the measured ratio ‖Jμ_a‖²/(‖μ_a‖² · mean s²) is 1.2–3.3 (MLP 0) and 1.2–5.9 (MLP 1) at n = 128, and 3.1–7.8 at n ≥ 256 after 8–15 layers. The result is a coherent rank-one direction amplified relative to the bulk at every layer: a growing multiplicative spike, the BGN mechanism iterated. The measured overlap with μ_z(t) is the signature the theorem class predicts above threshold. A fixed-θ spike has an n-independent limit, so the growth of s₁²/mean s² with n (§3.4) is a finite-width effect, not part of that prediction. For orientation (Fact, PSG eq. (17), read): a critical ReLU product with Bernoulli(p) gates has bulk edge λ_max ≈ (e/p)L·m₁, about 82 m₁ for p = ½, L = 15. At n = 1024 and age 15 the measured s₁² ≈ 128 m₁ lies above this, and s₂² ≈ 61 m₁ lies below it. Our gates are expected values, not 0/1 masks, so this is only a comparison. This identification is not proved here: the spike is generated by the coupling, not given as an independent P.
 
 ### 2.7 Width scaling (Derivation sketch + Conjecture)
 
@@ -175,7 +175,7 @@ Mean over the 16 − age pairs of each age:
 | 12 | 3.8 | 5.4 | 7.0 | 15.5 | 23.5 | 3.5 | 1.64 | 4.83 | 143 |
 | 15 | 3.4 | 4.4 | 6.0 | 13.0 | 20.0 | 3.2 | 1.53 | 5.69 | 339 |
 
-- **Free-probability law.** Free probability holds to 1–4 % up to age 5. Beyond that the measured PR falls below the free value, by 25 % at age 15; the outlier below accounts for this.
+- **Free-probability law.** Free probability holds to within 4 % up to age 4 (0.0, 0.9, 1.9, 3.7 % at ages 1–4; 6 % at age 5). Beyond that the measured PR falls below the free value, by up to 31 % (ages 9–13) and 23 % at age 15. The outlier below accounts for this (Interpretation).
 - **Cross-check with the old-content stream** (rule C3). Its PR of D_tJ by age on its atlas A1 (a different MLP) was 43.3, 25.4, 17.8, 13.3, 10.5, 8.8, 7.6, 6.5, …. Ours on MLP 0 is 43.4, 25.8, 17.8, 13.1, 10.3, 8.3, 6.8, 5.6: the same law.
 - **Lyapunov spectrum.** Finite-time exponents of J_{0→15} (log sᵢ/15): top eight +0.059, +0.030, +0.007, −0.012, −0.026, −0.037, −0.043, −0.057; sᵢ for i = 16, 32, 64: −0.149, −0.330, −0.966. The mean consecutive gap is 0.0134 for i ≤ 16 and 0.0180 for i = 17–64, against 1/(2n) = 0.0039. There is **no O(1) gap anywhere** except at the top in the mean direction.
 - **Mean-direction outlier** (Measured; overlaps are squared cosines):
@@ -229,7 +229,8 @@ Medians by age. The columns are ε_own and ε_tot at k = 4, 8, 16, 32, 64, then 
 - Random: ε_own > 0.89 at k ≤ 64 at every age.
 - The current covariance C(z_t) is a poor basis; it is dominated by young content.
 - The transported covariance J C(a_s) Jᵀ is better than J at young ages: it closes a third to a half of the J-to-HOSVD gap at ages 2–8, because it encodes where the source's energy sits.
-- The oracle HOSVD needs 1.25–1.7 × fewer modes. The actual sources are more concentrated than the generic ones of §2.4, because their legs come from the earlier propagation, but the gain is a constant factor.
+- The oracle HOSVD needs 1.2–1.7 × fewer modes.
+- Grid caveat: every basis except U_k(J) is evaluated on the coarse grid (4, 8, 12, 16, 20, 24, 32, …), which lacks 28. A one-step difference such as 28 / 32 at ages ≥ 12 is therefore a grid artifact. At age 15 the birth-fixed basis is identical to U_k(J) by construction, and the errors are equal. The actual sources are more concentrated than the generic ones of §2.4, because their legs come from the earlier propagation, but the gain is a constant factor.
 
 **Ensemble formula (§2.4) against measurement.** ε_own at k = 4, 8, 16, 32, 64 (measured | ensemble), and k_2 % (measured / ensemble):
 
@@ -242,6 +243,8 @@ Medians by age. The columns are ε_own and ε_tot at k = 4, 8, 16, 32, 64, then 
 | 10 | .617 .432 .187 .021 .000 | .589 .398 .159 .017 .000 | 36 / 32 |
 | 12 | .669 .433 .152 .011 .000 | .524 .326 .109 .009 .000 | 30 / 28 |
 | 15 | .645 .446 .130 .005 .000 | .461 .262 .069 .003 .000 | 28 / 24 |
+
+**Ensemble formula, per-k agreement (verification note).** The k_2 % agreement is exact at 12 of 15 ages, but the ε_own curves are not reproduced to the same precision. At ages ≥ 6 (MLP 0) the measured ε_own at k ≤ 16 is mostly above the ensemble value: by up to 25 % at ages 6–9 and up to 41 % at ages 10–14. At age 15 it is 40–90 % above (0.130 against 0.069 at k = 16). In MLP 1 the deviation reverses sign at ages 11–13: measured 0.382 against 0.505 at age 12, k = 4. The agreement in k_2 % comes from the steep fall of both curves near the 2 % level.
 
 **Merged old tier.** For each target t and threshold w the tier is the single tensor X_{t−w,t}. The table gives k_2 % of ε_tot as: propagator basis U_k(J) / birth-fixed V_k / eig C(z_t) / HOSVD oracle.
 
@@ -297,7 +300,7 @@ k_2 %/n for ε_own, mean over pairs:
 - **Absolute k at n = 1024** (ε_own = 20, 10, 5, 2, 1 %): age 8 needs 162, 214, 263, 322, 363 modes; age 15 needs 91, 124, 156, 197, 227.
 - **PR·age/n** = 0.47–0.51 for ages ≤ 7 at all widths, i.e. PR ≈ n/(2·age). It falls to 0.39 at age 15 for n = 1024.
 - **Mean-mode outlier at n = 1024**: s₁²/mean = 61 (age 10) and 128 (age 15); s₁/s₂ = 1.15 and 1.45; ⟨u₁, μ_z⟩² = 0.66 and 0.85. The outlier is sharper at larger n, as a BGN spike above threshold should be.
-- The atlas MLP at n = 128 gives k_2 %/n of 0.31 (age 8) and 0.22 (age 15), against 0.30 and 0.17 for the fresh n = 128 MLPs.
+- The atlas MLP at n = 128 gives a measured k_2 %/n of 0.31 (age 8) and 0.22 (age 15). The ensemble formula on the same propagators gives 0.31 and 0.19. The fresh n = 128 MLP gives 0.30 and 0.17. There is one fresh MLP per width (seed 7 + n).
 
 ### 3.5 (e) The face law as a Markov random field: unpinned spectral independence
 
@@ -312,7 +315,13 @@ k_2 %/n for ε_own, mean over pairs:
 
 **Fresh MLPs, n = 1024.** m = 1024 → 472; η₀ = 2.1, 3.8, 5.1, 6.3, 6.9, 7.3, 7.0, 7.6 (same layers). η₀/m → 0.
 
-**Gaussian surrogate check.** A zero-mean Gaussian surrogate with the same correlations (Sheppard's arcsine law, all p = ½) reproduces layer 0 exactly (1.78), which validates the estimator. At depth it gives η₀ = 15–29. The mean shift that freezes half the gates is what keeps the uncertain gates nearly independent.
+**Width dependence (verification note).**
+- At depth η₀ grows with n. Layer 9: 4.2, 6.1, 7.5, 7.5 at n = 128, 256, 512, 1024. Layer 13: 3.7, 4.5, 5.6, 7.9. Layer 15: 6.4, 5.9, 6.0, 7.6.
+- It levels off between n = 512 and 1024 at layers 9–12 and is still rising at layers 13–15.
+- Part of the n = 1024 value is Monte Carlo bias from the 2·10⁴-sample gate statistics. At layer 0, where the gate law is exactly Gaussian, the exact Sheppard value of η₀ is 1.85, 1.80, 1.84, 1.91 for the four widths, against the estimates 1.83, 1.86, 2.00, 2.09 (bias ≈ +0.2 at n = 1024).
+- Bounded η₀ is therefore *consistent with* the data at layers ≤ 12, but four widths do not establish it.
+
+**Gaussian surrogate check.** A zero-mean Gaussian surrogate with the same correlations (Sheppard's arcsine law, all p = ½) reproduces layer 0 exactly (1.78), which validates the estimator. At depth it gives η₀ = 15–29. *Interpretation:* the mean shift that freezes 32–61 % of the gates at layers ≥ 8 reduces the correlation among the uncertain ones. Part of the gap to the surrogate is only the gate count: the surrogate keeps all 128 gates, the measurement 53–78 at depth. Per gate the measured η₀/m is still 2–3× below the surrogate's (0.07–0.09 against 0.19–0.23 at layers 9–15). "Nearly independent" would overstate it: mean |Cor_ij| among the uncertain gates is 0.08–0.10 at depth.
 
 ### 3.6 Second MLP and the full-source contrast
 
@@ -354,7 +363,9 @@ Mean outlier: ⟨u₁, μ_z⟩² = 0.72 (age 8), 0.81 (age 10), 0.89 (age 12), 0
 | k_2 % own: HOSVD oracle | 40 | 24 | 20 | 16 | 12 | 14 | 16 |
 | k_2 % own: ensemble prediction | 96 | 64 | 48 | 40 | 32 | 28 | 24 |
 
-Linear transport of the whole cumulant, slices included, explains far more of D21(z_t) than the AD part alone (unexplained 0.2–0.6 against 0.84–0.96 at ages 2–8). Projecting this source on the propagator basis needs 10–30 % fewer modes than the AD source, and fewer than the ensemble prediction at ages ≥ 7. That is the predicted signature of a non-zero trace part (§2.4), which concentrates on two legs.
+Linear transport of the whole cumulant, slices included, explains far more of D21(z_t) than the AD part alone (unexplained 0.2–0.6 against 0.84–0.96 at ages 2–8). Projecting this source on the propagator basis needs 0–30 % fewer modes than the AD source (none fewer at ages 2 and 6), and fewer than the ensemble prediction at age 4 and ages ≥ 7. This is consistent with a non-zero trace part (§2.4). The trace part Sym(v ⊗ I) transports to Sym(Jv ⊗ JJᵀ), whose Gram factor concentrates like Sym² content (§3.3). *Interpretation: not derived quantitatively.*
+
+**The mean mode carries most of the full source at depth** (verification addition, from `atlas_mlp0_fullsource.npz`, median of 1 − ε_own(1)² by age). The single top direction u₁(J) carries the following share of the transported full-source D21 energy: 17 % (age 4), 33 % (age 5), 51 % (age 6), 58 % (age 7), 65 % (age 8), 75 % (age 9), 78 % (age 10), 85–90 % (ages 11–15). For the AD source the corresponding figures are 0–22 % at ages ≤ 9. This is measured with u₁(J); projecting on μ_z itself was not run.
 
 The **transported covariance basis** comes within 2–8 modes of the HOSVD oracle at every age ≥ 4. For content of covariance-response type, a basis the chain can compute (one n×n sandwich) is nearly optimal.
 
@@ -368,16 +379,16 @@ Because the share is larger, the ε_tot requirement is stricter. Merged tiers at
 - **Concentration: yes.** Against a random basis the propagator basis is enormously better, and it improves with age: k_2 % (own) falls from 96 at age 2 to about 28 at age 15. Old sources share their target-side subspace.
 - **"Few modes": no, at the competition width.**
   1. The concentration law is PR ≈ n/(2·age), the free product of Marchenko–Pastur factors and half-density gates. It has no gap. A 2 % D21 error needs a fixed *fraction* of n, about 0.2–0.5 n for ages 15–4, at every width tested (128–1024), and the ensemble formula that shows this reproduces the atlas measurement.
-  2. The only width-independent structure is one outlier, the mean direction. It carries 0–20 % of the old content's energy up to age 9; at ages 10–14 in MLP 1 it carries more, where the old content is only 1–6 % of D21.
-  3. The data-adapted oracle basis saves a constant factor of 1.25–1.7, not a power of n.
+  2. The only width-independent structure is one outlier, the mean direction. For the AD source it carries 0–22 % of the old content's energy up to age 9; at ages 10–14 in MLP 1 it carries more, where the old content is only 1–6 % of D21. For the full source (slices kept) it carries 51–90 % at ages ≥ 6 (MLP 0, §3.6).
+  3. The data-adapted oracle basis saves a factor of 1.2–1.7 at n = 128. That it stays a constant factor at larger n is §2.7's conjecture, not a measurement.
 
 **How many modes for a 2 % D21 error?** The criterion that matters for the chain is ε_tot, i.e. 2 % of the whole D21(z_t), spent on one tier.
 
 | tier (targets t ≥ 10) | n = 128, propagator basis | n = 128, HOSVD oracle | n = 1024, propagator basis (× 8, §3.4) | Tucker core k³/n² at n = 1024 (units per layer) |
 |---|---|---|---|---|
-| everything older than 4 layers | 48–56 | 24–32 | ≈ 380–450 | 54–84 |
-| older than 6 | 28–48 | 12–24 | ≈ 220–380 | 11–54 |
-| older than 8 | 12–28 | 4–16 | ≈ 100–220 | 0.8–11 |
+| born ≥ 4 layers before t | 48–56 | 24–32 | ≈ 384–448 | 54–86 |
+| born ≥ 6 layers before t | 28–48 | 12–24 | ≈ 224–384 | 11–54 |
+| born ≥ 8 layers before t | 12–28 | 4–16 | ≈ 96–224 | 0.8–11 |
 | single source of age ≥ 10 | 1–11 (median), ≤ 24 (max) | – | ≈ 10–190 | ≤ 7 |
 
 **Caveats.**
@@ -387,7 +398,7 @@ Because the share is larger, the ε_tot requirement is stricter. Merged tiers at
 
 **What the cheap-carrier hope can still use (Interpretation).**
 1. **The oldest band** (ages ≥ 8–10): about 0.1 n shared modes, under 1 unit per layer.
-2. **The mean mode**: one direction, free to track (it is μ_z). It carries up to 20 % of the content of ages ≤ 9 and up to 67 % at ages 10–14 (MLP 1).
+2. **The mean mode**: one direction, close to μ_z (squared overlap 0.6–0.94 at ages ≥ 8), so cheap to track. It carries up to 22 % of the AD content of ages ≤ 9 and up to 67 % at ages 10–14 (MLP 1). For the full source it carries 51–90 % at ages ≥ 6 (§3.6), which makes it the strongest single lever found here. These figures use u₁(J); μ_z itself was not tested as the carrier.
 3. **A basis better than the propagator's**, from structure the chain already has. The HOSVD gap says the sources are not generic: their legs come from C(z_s). J C(a_s) Jᵀ already closes a third to a half of that gap at ages 2–8. A sharper candidate is the leg structure of the Wick term, the factors J D_Φ C(z_s), which is O(n²) per source.
 4. **Covariance-type content is cheap.** Sym² content needs the square, not the cube, of the spectral energy fraction (§3.3). For sources with slices, the transported-covariance basis is within 2–8 modes of the oracle (§3.6). The trace part of a third-order source is carried by a vector and a Gram matrix (§2.4), so old content in "covariance-response" form (504aldo's reading of the leaders) is the right place to look. That agrees with the plan's revision log.
 
@@ -409,27 +420,27 @@ They do *not* meet in the bulk transport of old content, which is a free-probabi
 
 **B1 — THEOREM (§2.1).** The transfer spectra at orders 2 and 3 are the tensor powers of the matrix-product spectrum. No higher-order gap exists that is not already a first-order Lyapunov gap.
 
-**B2 — KNOWN-LINK + Derivation (§2.2–2.3).** Products of random gated matrices obey free multiplicative convolution (Fuss–Catalan-type laws). The participation ratio is n/(1 + Σ(r_l − 1)). The Lyapunov regime (n fixed, d → ∞) and the free regime (d fixed, n → ∞) do not commute (Hanin–Nica §1.1–1.2). The competition shape (d/n = 1/64) is deep in the free regime: concentration ∝ 1/age, not e^{−gap·age}.
+**B2 — KNOWN-LINK + Derivation (§2.2–2.3).** Products of random gated matrices obey free multiplicative convolution (Fuss–Catalan-type laws). The participation ratio is n/(1 + Σ(r_l − 1)). The Lyapunov regime (n fixed, d → ∞) and the free regime (d fixed, n → ∞) do not commute at the level of local singular-value statistics. The global density of Lyapunov exponents is the same triangle law in both orders (Hanin–Nica §1.1–1.2). The competition shape (d/n = 1/64) is deep in the free regime: concentration ∝ 1/age, not e^{−gap·age}.
 
 **B3 — KNOWN-LINK (Hanin–Nica §1.4) + ANALOGY to Note 1.**
 - The old-content transport ‖Jv‖² is a line-to-line polymer partition function over histories through open gates (faces), with signed weights.
-- Note 1 §5.2 identifies KMS states of the arrow algebra with positive Gibbs measures on histories. Their transfer operator (§5.3) is a positive operator, so it has a Perron–Frobenius eigenvector and, under primitivity, a gap (Birkhoff contraction of the Hilbert metric, tanh(Δ/4): Fact (memory)).
-- Our transfer operator is the same sum over histories with *signed* weights. Sign cancellation is what removes the Perron gap in the bulk (Hanin–Nica: "mean zero … significant cancellation").
+- Note 1 §5.2 identifies KMS states of the arrow algebra with positive Gibbs measures on histories. Their transfer operator (§5.3) is a positive operator. Products of strictly positive maps contract the Hilbert projective metric by tanh(Δ/4) (Birkhoff: Fact (memory)), so the backward partition function forgets its terminal condition exponentially. A single Perron–Frobenius eigenvector with a gap exists only in the stationary (repeated-layer) case: the quiver is layered and acyclic (local-to-global §6).
+- Our transfer operator is the same sum over histories with *signed* weights. Hanin–Nica (§1.4) note that mean-zero weights give "significant cancellation", so that Z_d does not grow exponentially with d when n grows with d. *Our reading, not theirs:* this cancellation is what removes the Perron gap in the bulk.
 - In the mean direction the gates align the signs (rectification). The weights become effectively positive along it and a Perron mode reappears: the measured outlier, B6.
 - So the Gibbs-measure picture of Note 1 is the *positive (mean) sector* of the old-content transport, and the bulk is its sign-problem sector. *Interpretation; the identification of the mean sector with a positive cone is not proved.*
 
 **B4 — Derivation (§2.5) + KNOWN-LINK (Hastings, via expanders.md).** The annealed covariance map is a twirl (conditional expectation onto scalars, λ₂ = 0). The quenched map has one Kraus operator. Every expander-type statement about the layer maps is true of the ensemble average, and the average kills third-order content identically.
 
-**B5 — Derivation (§2.4).** Orientation mixing is perfect in one layer: right-orthogonal invariance of A_{s+1}. This is the precise sense in which "the walk could be anywhere" (local-to-global §1, the expander mixing principle) holds here. It holds for the *orientation* of the source, not for its *amplitude*. Its use: any projection's error is predicted from the propagator alone (verified, §3.2), so carrier design reduces to spectral data of J.
+**B5 — Derivation (§2.4).** Orientation mixing is perfect in one layer, up to the dependence of the downstream gates on A_{s+1} (§2.4): right-orthogonal invariance of A_{s+1}. This is the precise sense in which "the walk could be anywhere" (local-to-global §1, the expander mixing principle) holds here. It holds for the *orientation* of the source, not for its *amplitude*. Its use: any projection's error is predicted from the propagator alone. This is verified for k_2 % at 11–12 of 15 ages; the per-k curves deviate by up to 40 % at ages 6–14 and up to 1.9× at age 15 (§3.2). Carrier design therefore reduces, to that accuracy, to spectral data of J.
 
 **B6 — KNOWN-LINK (BGN Thms 2.6–2.8) + Measured + Interpretation.** A rank-one multiplicative spike above the free-probability threshold gives an isolated top singular value whose singular vector overlaps the spike direction. Measured:
 - overlap 0.63–0.93 with μ_z(t) at ages 8–15 (n = 128) and 0.85 at n = 1024;
 - s₁/s₂ ≈ 1.5;
-- the gain of the mean direction is 1.2–3.3 × the bulk mean at n = 128 (MLP 0), up to 5.9 (MLP 1), and 4–8 at n ≥ 256.
+- the gain of the mean direction is 1.2–3.3 × the bulk mean at n = 128 (MLP 0), up to 5.9 (MLP 1), and 3.1–7.8 at n ≥ 256 (ages 8–15).
 This is the single "Perron–Frobenius / spectral gap" of the problem.
 
 **B7 — KNOWN-LINK (ALO; CLV; hdx digest §3.3) + Measured (§3.5).**
-- The face law of each layer is an MRF on {0,1}ⁿ with unpinned η₀ = 1.8–4.9 (n = 128) and 2–8 (n = 1024), bounded and not growing like n. That is the unpinned half of the hypothesis under which the single-gate down-up (Glauber) walk on faces mixes polynomially. ALO Thm 1.3 needs all pinnings; CLV's O(n log n) needs bounded degree, which this dense law does not have.
+- The face law of each layer is an MRF on {0,1}ⁿ with unpinned η₀ = 1.7–5.6 (n = 128) and 2–8 (n = 1024). It grows much more slowly than n but is not shown to be bounded: at layers ≥ 6 it rises 1.2–2.1× from n = 128 to 1024 (§3.5). A bounded η₀ would be the unpinned half of the hypothesis under which the single-gate down-up (Glauber) walk on faces mixes polynomially. ALO Thm 1.3 needs all pinnings; CLV's O(n log n) needs bounded degree, which this dense law does not have.
 - **What must be true** for the full theorem: η_i bounded under every pinning of i gates. Pinning is restriction to a sub-frame (Note 2 §2), so this is a statement about restrictions, U6 of local-to-global §5.
 - **Test:** pinned η from `gate_GG` conditional on one or two gates. It needs third-order gate statistics; the atlases do not store them.
 
@@ -438,8 +449,8 @@ This is the single "Perron–Frobenius / spectral gap" of the problem.
 | CR ingredient | role in [CR] | analogue here | survives? |
 |---|---|---|---|
 | detailed balance (KMS-symmetric generator) | self-adjointness in ⟨·,·⟩_ρ, a stationary state | the layer map B^{⊗3} is not self-adjoint in any natural inner product. The Φ-weighted inner product would need B = D⁻¹BᵀD, false for random W. The quiver is acyclic (local-to-global §6, "Acyclicity") | **no** |
-| stationarity, ℛ[ρ] = ρ | the recovery map fixes the Gibbs state | no stationary old content: the layers are i.i.d. random maps. The ensemble-stationary object is the twirl's fixed point (multiples of I) | **only annealed** |
-| time averaging, ℛ_t = (1/t)∫₀ᵗ e^{sℒ}ds, ℰ(ℛ_t†O) ≤ 2/t | a gap-free small Dirichlet form | the old pool at layer t is Σ_s J_{s→t}^{⊗3}B_s, a *discounted* average over ages of the transfer cocycle applied to births. Its recursion P_{t+1} = T_{t+1}P_t + (birth) is a random affine recursion. Fact (memory): Kesten 1973 / Bougerol–Picard 1992, stationary iff the top Lyapunov exponent is negative. The discount factor is the generic gain² ≈ 2EΦ² < 1, so this is a resolvent, not a Cesàro mean, and the gap-free 2/t mechanism has no counterpart | **reshaped** |
+| stationarity, ℛ[ρ] = ρ | the recovery map fixes the Gibbs state | no stationary old content. The weights are i.i.d., but the layer maps are not: Φ_l depends on all earlier weights through the input law. The ensemble-stationary object is the twirl's fixed point (multiples of I) | **only annealed** |
+| time averaging, ℛ_t = (1/t)∫₀ᵗ e^{sℒ}ds, ℰ(ℛ_t†O) ≤ 2/t | a gap-free small Dirichlet form | the old pool at layer t is Σ_s J_{s→t}^{⊗3}B_s, a *discounted* average over ages of the transfer cocycle applied to births. Its recursion P_{t+1} = T_{t+1}P_t + (birth) is a random affine recursion. Fact (memory): Kesten 1973 / Bougerol–Picard 1992, stationary iff the top Lyapunov exponent is negative. Two hypotheses fail here: the maps are not i.i.d., and the measured top finite-time exponent of J_{0→15} is +0.059 per layer (the mean direction, §3.1). Only generic (bulk) directions are discounted, by the per-leg gain 2EΦ² ≈ 0.58–0.95 per layer (one layer at 1.07, §2.6). So this is at best a resolvent-like discounted sum in the bulk, not a Cesàro mean, and the gap-free 2/t mechanism has no counterpart | **reshaped** |
 | single-Pauli jumps on A generate the algebra on A | local generators; Leibniz walks words back to single sites at cost 2^w | single-gate flips on a block of neurons generate all gate patterns on the block: the Glauber walk on faces of B7. Its certificate (bounded η) is measured unpinned | **yes, on faces** |
 
 The analogue that survives is a time-averaged Glauber dynamics on the face law of a block A of neurons. It is reversible with respect to the face law, which is classical detailed balance. Its Cesàro average would be an approximate recovery map for the gates on A from their boundary; in the dense mean-field case the "boundary" is all other uncertain gates. **SPECULATION:**
@@ -464,12 +475,12 @@ In Connes's terms the old content is the part of the transfer cocycle that the c
 | products ↔ free probability | S_{AB} = S_A S_B for free A, B; S_{JJᵀ} = ∏S_{W_lW_lᵀ}S_{D_l²} | PSG eq. (11), Result 1; BGN §2.5.2 | Fact |
 | products ↔ free probability | ReLU, Gaussian weights, criticality: Var(JJᵀ) = L/p; linear Gaussian: λ_max = L^{−L}(L+1)^{L+1} | PSG eq. (19), §2.4 | Fact |
 | products ↔ free probability | r(a⊠b) − 1 = (r(a) − 1) + (r(b) − 1); PR = n/r | §2.2 | Derivation |
-| products ↔ ergodic theory | Furstenberg–Kesten top exponent; Oseledets MET; Isopi–Newman triangle law; non-commuting limits | as cited in Hanin–Nica §1.2 | Fact (as cited) |
+| products ↔ ergodic theory | Furstenberg–Kesten top exponent; Oseledets MET; Isopi–Newman triangle law; limits non-commuting for local statistics (global triangle law the same in both orders, Tucci) | as cited in Hanin–Nica §1.2 | Fact (as cited) |
 | products ↔ ReLU nets | log-normality of ‖Mu‖² with β = (3/p − 1)Σ1/n_i + …; p = ½ gives the ReLU Jacobian | Hanin–Nica Thm 1, Prop. 2, Cor. 3 | Fact |
 | products ↔ Gibbs measures | ‖Mu‖² = line-to-line polymer partition function over open paths, with spins D | Hanin–Nica §1.4 | Fact (identity) + ANALOGY (B3) |
 | Gibbs ↔ transfer operators | positive operators contract the Hilbert projective metric by tanh(Δ/4); Ruelle–Perron–Frobenius: for Hölder potentials on mixing subshifts of finite type the transfer operator has a simple top eigenvalue with a gap, the Gibbs state is its eigenmeasure, correlations decay exponentially | Birkhoff 1957; Ruelle, Bowen LNM 470 | Fact (memory) |
 | spikes ↔ free probability | rank-one multiplicative spike: outlier iff θ > 1/T_μ(b⁺); eigenvector overlap formula | BGN Thms 2.6–2.8 | Fact |
-| expanders ↔ quantum channels | random-unitary channels: |λ₂| → 2√(D−1)/D; quantum Alon–Boppana | Hastings, via expanders.md §9.10 | Fact (there) |
+| expanders ↔ quantum channels | Hermitian random-unitary channels (U(s+D/2) = U(s)†): |λ₂| → 2√(D−1)/D; quantum Alon–Boppana for that class (open for general CP maps) | Hastings, via expanders.md §9.10 | Fact (there) |
 | expanders ↔ twirls ↔ NCG | E_W[WᵀSW] = (2/n)Tr(S)I, E_W[W^{⊗3}] = 0 | §2.5 | Derivation |
 | Markov semigroups ↔ Gibbs (quantum) | time-averaged KMS Lindbladian with single-Pauli jumps on A is a quasi-local approximate recovery map; local Markov at all temperatures; gap ⇒ global Markov | Chen–Rouzé Thm III.1, Cors III.1–III.2, App. B (via arxiv-2609.38007.md §8) | Fact (there) |
 | random affine recursions | X_n = A_nX_{n−1} + B_n with i.i.d. (A_n, B_n): unique stationary perpetuity iff top Lyapunov exponent < 0 (plus E log⁺‖B‖ < ∞ and non-degeneracy) | Kesten 1973; Bougerol–Picard 1992 | Fact (memory) |
@@ -484,7 +495,7 @@ In Connes's terms the old content is the part of the transfer cocycle that the c
 
 **To `old-content/`.**
 - The propagator basis needs k ≈ 0.2–0.5 n for 2 % (own), and the fraction is width-independent (§3.4). Rank-k carriers built on the linear Φ³ transport therefore do not scale to n = 1024 except for ages ≳ 8–10.
-- The sources-with-slices convention (noAD births B_s, as in `propproj.py`) reports higher keep at equal k than the AD source here: 0.89 against 0.73 at age 8, k = 16, though the conventions also differ in where D21 is read. The harmonic/trace split of §2.4 predicts that the trace part concentrates on two legs. The full-source run (§3.6) confirms the direction: 10–30 % fewer modes than the AD source, and the transported-covariance basis comes within 2–8 modes of the HOSVD oracle.
+- The sources-with-slices convention (noAD births B_s, as in `propproj.py`) reports higher keep at equal k than the AD source here: 0.89 against 0.73 at age 8, k = 16, though the conventions also differ in where D21 is read. The harmonic/trace split of §2.4 predicts that the trace part concentrates on two legs. The full-source run (§3.6) confirms the direction: 0–30 % fewer modes than the AD source, and the single mean mode carries 51–90 % of its energy at ages ≥ 6; and the transported-covariance basis comes within 2–8 modes of the HOSVD oracle.
 - Worth testing next: a basis built from the Wick legs J D_Φ C(z_s), which the chain has. The target is to close the 1.25–1.7× HOSVD gap.
 
 **To `oracle1024/`.** Two cheap measurements at n = 1024 would turn this into a closed number:
@@ -493,7 +504,7 @@ In Connes's terms the old content is the part of the transfer cocycle that the c
 
 The width scaling of k/n is already settled by the ensemble formula.
 
-**To `costmodel/`.** Use the rows of the §4 table as candidate designs. Only "older than 8 layers, about 0.1–0.2 n modes" plausibly fits the old-content budget.
+**To `costmodel/`.** Use the rows of the §4 table as candidate designs. Only "born ≥ 8 layers before t, about 0.1–0.2 n modes" plausibly fits the old-content budget. A carrier worth pricing is the single mean mode for slice-containing old content (§3.6).
 
 **To prong 1.**
 1. The transfer operator on histories with *signed* weights has a positive (mean) sector with a Perron mode and a sign-cancelling bulk (B3, B6). Is there a cocycle formulation in which the positive sector is the KMS / Gibbs part of Note 1 §5 and the bulk is a fluctuation around a conditional expectation (B9)?
@@ -531,3 +542,48 @@ Run times on the shared 4-core box: atlas 95–305 s, scaling 125–195 s, selft
 **Not retrieved:**
 - The ChatGPT share page for arXiv:2609.38007, which is blocked by the egress proxy; see [chat-2609.38007-retrieval-status.md](chat-2609.38007-retrieval-status.md).
 - `C:\Users\User\Downloads\expander_survey.pdf`, which is on the user's machine and not in the container.
+
+### 8.2 Verification log (independent check, 2026-10-01)
+
+**Re-run.**
+- `selftest` reproduces `selftest.txt` byte for byte.
+- `atlas` on the `mlp_00000` seed3/seed4 pair reproduces `atlas_mlp0.txt` (all lines except the run time) and `atlas_mlp0.npz` (maximum array difference 0).
+
+**Independent re-implementation.** I wrote a separate check with einsum D21 contractions, the propagator J built directly and the noise-corrected cross products. It reproduces ε_own, ε_tot and share to 4 decimals for (s, t) = (5, 9), (2, 10), (0, 15) (AD source) and (4, 12) (full source).
+
+**Every table checked against the result files.** The deviations from the result files, all corrected above, were these:
+- the free-probability agreement range;
+- the claimed exact agreement of the ensemble ε_own curves (only k_2 % agrees exactly);
+- the mean-mode energy ranges (0–22 % and 3–67 %, not 0–20 % and 4–67 %);
+- 10–30 % should be 0–30 %;
+- 1.25–1.7 should be 1.2–1.7;
+- 4–8 should be 3.1–7.8;
+- the Tucker cost range 55–85 should be 54–86;
+- the frozen-gate fraction (N5);
+- one layer with 2E[Φ²] > 1.
+
+**Added from the existing result files.**
+- The full-source mean-mode fraction (§3.6).
+- An exact layer-0 Sheppard check of the Monte Carlo bias in η₀ (§3.5).
+
+**Sources re-read via alphaXiv.**
+- PSG: eqs. (11), (12), (14), (17), (19), S11; §2.4–2.5.2.
+- Hanin–Nica: Thm 1, Prop. 2, Cor. 3, §1.1–1.4.
+- BGN: Thms 2.6–2.8, Prop. 2.9, Remark 2.10, §2.5.2.
+
+All transcriptions were faithful except three:
+- the PSG product formula is eq. (12), not (11);
+- the Hanin–Nica non-commutativity concerns local statistics only;
+- for the symmetric JJᵀ, BGN's relevant overlap formula is Remark 2.10.
+
+**Neighbouring-digest citations checked.**
+- expanders.md §9.2, §9.10: Hastings is the Hermitian random-unitary class.
+- hdx-spectral-independence.md §3.3–3.5: ALO Def. 1.1 with Ψ(i,i) = 0, Thm 1.3; Chen–Eldan Fact 23.
+- arxiv-2609.38007.md §8.3, §8.6, §8.7.
+
+**Analogy and theorem corrections.**
+- B8 assumed i.i.d. maps and a negative top exponent. Both fail: Φ_l depends on depth, and the top finite-time exponent is +0.059.
+- B3's quote from Hanin–Nica was attached to a claim (removal of a Perron gap) that is ours, not theirs.
+- The Birkhoff/Perron statement needed the stationary case.
+- "η₀ bounded" was an extrapolation from four widths.
+

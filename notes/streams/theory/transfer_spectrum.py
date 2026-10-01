@@ -35,7 +35,8 @@ Parts (mode `atlas A.npz [B.npz]`; B = the same MLP with an independent sample s
      {l_i l_j}_{i<=j} (s, l of B_l; the Sym^2 functor; checked numerically in `selftest`); per layer and for products; plus the
      capture of the actual transported covariance J C(a_s) J^T by U_k.
  (d) the Gaussian-ensemble prediction of eps_own(k) from the propagator alone. If the source K is replaced by a symmetric Gaussian
-     tensor (or by a Haar rotation of any traceless source), E||D21 error||^2 / E||D21||^2 = 1 - f(k) / f(n) with
+     tensor, E||D21 error||^2 / E||D21||^2 = 1 - f(k) / f(n) (for a Haar rotation of a traceless, e.g. all-distinct, source the
+     same formula holds only up to the O(1/n) weight of the dropped trace part: 1-3 % larger errors at n = 32 in `selftest`) with
         f(k) = (1/3) (sum_a g_a^2)(sum_a g_a) + (2/3) sum_a g_a h_a,  g_a = sum_{p<=k} s_p^2 U_ap^2,  h_a = sum_{p<=k} s_p^4 U_ap^2.
      This needs only the SVD of J, so it runs at width 1024 (mode `scaling`), and its agreement with the measured eps_own at width
      128 is part of the atlas output.
@@ -546,7 +547,7 @@ def run_scaling(widths, L, N, seed, save=None):
             f"{np.mean([res[n]['rows'][(s, s + age)]['s12'] for s in range(L - age)]):4.2f} "
             f"{np.mean([res[n]['rows'][(s, s + age)]['u1mu'] for s in range(L - age)]):4.2f} "
             f"{np.mean([res[n]['rows'][(s, s + age)]['gmu'] for s in range(L - age)]):5.1f}" for n in widths))
-    print("\nsummary: PR * age / n by age and width (free probability predicts ~ age / (2 age - 1 + ...) for gated products)")
+    print("\nsummary: PR * age / n by age and width (free probability: age / r_pred with r_pred = 1 + age + (age - 1)(r(D^2) - 1), i.e. ~ 1/2 for r(D^2) ~ 2)")
     print("age  " + "".join(f"{n:>9}" for n in widths))
     for age in range(1, L):
         print(f"{age:>3}  " + "".join(f"{np.mean([res[n]['rows'][(s, s + age)]['pr'] for s in range(L - age)]) * age / n:9.3f}" for n in widths))
