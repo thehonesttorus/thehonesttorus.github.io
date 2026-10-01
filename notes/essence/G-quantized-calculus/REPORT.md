@@ -270,10 +270,90 @@ n³ log L, once L ≫ n^{1/3}. Total *resolution counted with multiplicity* is s
 note 2's conjecture can hold while the cost form fails. At n = 1024, L = 16 the crossover age 2√n = 64 exceeds L: no
 gain for the competition.
 
-## 5. Honest assessment
+## 5. G6: the hypertrace obstruction (coordinator note 3, §2), made a finite-n theorem
+
+**The fact (verified, Connes, "Compact metric spaces, Fredholm modules, and hyperfiniteness", Ergodic Theory Dynam.
+Systems 9 (1989) 207–220).**
+- Thm 8: a unital C*-algebra with a finitely summable unbounded Fredholm module ((1 + D²)^{−p/2} trace class) has a
+  tracial state. The proof builds T(ε) = (1 + εD²)^{−k}/Tr(·) with ‖[a, T(ε)]‖₁ → 0, an approximately central density.
+- Thm 11: if also Tr(T(ε)a) → τ(a) for a faithful normal trace τ on A″, the limit state is a hypertrace and A″ is
+  hyperfinite.
+- Hence there is no finitely summable unbounded module on C*_red(Γ) for Γ non-amenable (abstract), nor for infinite Γ
+  with property T (Thm 19).
+- Prop 6: D = a length function on ℓ²(Γ) is finitely summable ⇔ Γ has polynomial growth.
+
+**Why it cannot be applied verbatim.** At finite n everything is finite-dimensional: the normalised trace of M_n is an
+exact hypertrace and every D is "finitely summable". The statement must be uniform in n.
+- The finite-n substitute for non-amenability is the **quantum-expander gap**.
+- The finite-n substitute for "finitely summable" is Prop 6's form: **polynomial growth of the counting function**
+  N(λ) = #{eigenvalues of D in [μ − λ, μ + λ]}, **uniformly in n**.
+
+**Definition G9.** Orthogonal U₁, …, U_k on ℝⁿ form a λ-quantum expander if Φ(X) = (1/2k)Σ_i(U_iXU_iᵀ + U_iᵀXU_i)
+satisfies ⟨X, ΦX⟩ ≤ λ‖X‖₂² for all traceless X.
+- For independent Haar orthogonal or unitary U_i, k ≥ 2, this holds with λ → √(2k − 1)/k < 1 w.h.p. as n → ∞
+  (Hastings, Phys. Rev. A 76 (2007) 032315; Pisier, J. Eur. Math. Soc. 16 (2014), "Quantum expanders and geometry of
+  operator spaces").
+- It is the finite-n shadow of the free group F_k (strong asymptotic freeness).
+
+**Theorem G10 (thm).**
+- *Setting.* U₁, …, U_k form a λ-quantum expander on ℝⁿ. D = D* on ℂⁿ satisfies ‖[D, U_i]‖ ≤ 1 for every i: a grading
+  of neuron space that each of the k maps moves by at most one level. Put γ = (1 − λ)/4 and Δ₀ = 2/√(1 − λ).
+- *Growth.* For every centre μ and every λ′ with N(λ′) ≤ n/2, N(λ′ + Δ₀) ≥ (1 + γ)N(λ′). Hence, starting from any
+  eigenvalue, N(mΔ₀) ≥ min(n/2, (1 + γ)^m): the counting function grows exponentially until half the space.
+- *Summability.* A window of width O(log n) already holds n/2 eigenvalues, so for every p,
+  Tr((1 + (D − μ)²)^{−p/2}) ≥ (n/2)(1 + (Δ₀ log_{1+γ} n)²)^{−p/2}, which is unbounded in n.
+- *Conclusion.* **No finitely summable grading of neuron space is uniformly compatible with k ≥ 2 independent fresh
+  layers.** The best possible is θ-summability, Connes' own weakening.
+
+*Proof.* Let P = 1_{|D−μ|≤λ′} (rank N), Q = 1_{|D−μ|>λ′+Δ₀}, and S = 1 − P − Q (the shell).
+1. Expander bound. Φ(1) = 1 and tr(PU_iPU_iᵀ) = ‖PU_iP‖₂², so (1/k)Σ_i‖PU_iP‖₂² = ⟨P, ΦP⟩ ≤ N²/n + λN(1 − N/n). Hence
+   (1/k)Σ_i‖(1 − P)U_iP‖₂² ≥ (1 − λ)N(1 − N/n) ≥ (1 − λ)N/2.
+2. Commutator bound. In D's eigenbasis, (QU_iP)_{ab} = (Q[D, U_i]P)_{ab}/(d_a − d_b) with |d_a − d_b| ≥ Δ₀. So
+   ‖QU_iP‖₂² ≤ ‖[D, U_i]P‖₂²/Δ₀² ≤ N/Δ₀² = (1 − λ)N/4.
+3. So (1/k)Σ_i‖SU_iP‖₂² ≥ (1 − λ)N/4. Since ‖SU_iP‖₂² ≤ rank S, rank S ≥ γN. ∎
+
+**What G10 says about carriers (synthesis; hypotheses explicit).**
+- **Static gradings fail.** A static multiresolution of neuron space has one grading D, resolution N(λ) at level λ,
+  and is used across several fresh layers with bounded level distortion. G10 says its resolution grows exponentially
+  in the level, so it cannot be a hierarchical (polynomial-growth) compression. This is the theorem-level form of
+  three measured failures: shared Oseledets subspaces (region §5, 6×), per-layer moving frames (region §9, 6×) and
+  team D's fixed-rank bases.
+- **One direction is amenable.** A single automorphism (k = 1, the group ℤ) has no gap: λ = 1 and G10 says nothing.
+  The age axis, with D = N and the aging shift, has N(λ) = λ: a 1-summable, Dixmier-critical triple (G6).
+- **The working carriers live in that direction.** Team D's causal frames, region §9's frozen Tucker frames and the
+  dyadic odometer are covariant only under the time shift.
+  - Their frames are transported (U ← GᵀU), so D is conjugated by the dynamics. It is never required to nearly
+    commute with independent layers.
+  - Each block is finite-rank, as an HLS ghost is.
+  - Their algebra is a crossed product of an AF algebra of age blocks by ℤ (for the odometer, the Bunce–Deddens
+    algebra C(ℤ₂) ⋊ ℤ). It is nuclear and admits finitely summable modules.
+- **Answer to G6.** Conditional on the quantum-expander hypothesis for the fresh layers:
+  - finitely summable carriers are forced to be hyperfinite along the age (time-shift) direction;
+  - in neuron space their frames must be transported, not static.
+- **Gaps.**
+  - (i) G10 is proved for orthogonal layers. For gated Gaussian steps G = diag(P)W, which are not unitary, the analogue
+    needs a gap on traceless X for the CP map X ↦ Σ(GXGᵀ + GᵀXG), relative to its value at 1. That should follow from
+    strong convergence to free circular variables (Haagerup–Thorbjørnsen; Collins–Male; Bordenave–Collins), but it is
+    stated here as **conj**.
+  - (ii) The commutator condition is in operator norm. The price norm is tracial (team D §2), and a version with
+    ‖[D, U_i]‖₂ bounded would need a different argument (open).
+  - (iii) G10 forbids polynomial growth of a covariant grading. It does not forbid every cheap estimator, since an
+    estimator need not be a grading.
+
+**Blockwise version of entry (e) (the coordinator's request; thm given G10's escape).** Freeze one frame per dyadic
+age block j (rank r_j, transported within the block).
+- The block polarizations F_j = 2P_j − 1 commute exactly with the transported memory, so their quantized
+  differentials vanish within blocks. All the loss sits in the Eckart–Young tails of §4.1.
+- Summability is then a statement about the sequence (r_j). With r_j = c n/2^j and 2^j ages per block:
+  - the multiplicity-counted resolution is Σ_j 2^j r_j = c n log₂ L (the Dixmier law, G6);
+  - the distinct dimension is Σ_j r_j ≤ 2cn: 1-summable, with no log.
+- Cost follows the multiplicity unless cores merge (§4.3).
+
+## 6. Honest assessment
 
 - **Theorems:** G1–G3 (exact; the commuting-square characterisation is the cleanest new statement), G5 degree 1,
-  G6, G7 (conditional) and its converse, the cost construction. **Failures recorded:** note 2's "not Fredholm"
+  G6, G7 (conditional) and its converse, the cost construction, G10 (finite-n no-go for static gradings; the G6
+  target). **Failures recorded:** note 2's "not Fredholm"
   (wrong diagnosis), (c) carries no information beyond Pythagoras, (d) at degree 2.
 - **Measured:** T3 at n = 256 (8 nets) and 512 (4); n = 1024 in flight. The universal object is the relative loss
   law δ(c)/δ_drop ≈ A e^{−4.6c}; k(a)/n at fixed relative-to-FC accuracy is *not* width-universal (drifts ≈ +0.17 in c
