@@ -10,7 +10,7 @@ def cum3(E1, E2, E3):
             - np.einsum('jk,i->ijk', E2, E1) + 2 * np.einsum('i,j,k->ijk', E1, E1, E1))
 
 
-def mc_stats(Ws, N, batch=200_000, seed=1):
+def mc_stats(Ws, N, batch=50_000, seed=1):
     rng = np.random.default_rng(seed)
     Ls, n, _ = Ws.shape
     acc = [dict() for _ in range(Ls)]
@@ -21,8 +21,9 @@ def mc_stats(Ws, N, batch=200_000, seed=1):
             z = a @ Ws[l]; a = np.maximum(z, 0)
             d = acc[l]
             for nm, x in (('z', z), ('a', a)):
+                X2 = (x[:, :, None] * x[:, None, :]).reshape(len(x), -1)
                 for k, val in (('1', x.sum(0)), ('2', x.T @ x),
-                               ('3', np.einsum('si,sj,sk->ijk', x, x, x, optimize=True))):
+                               ('3', (X2.T @ x).reshape(n, n, n))):
                     d[nm + k] = d.get(nm + k, 0) + val
             d['z4'] = d.get('z4', 0) + (z ** 4).sum(0)
         done += batch

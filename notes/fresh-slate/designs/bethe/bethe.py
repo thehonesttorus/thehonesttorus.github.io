@@ -249,3 +249,122 @@ def estimate_tree(Ws):
         W = Ws[l + 1].astype(np.float64)
         m = mu @ W; v = var @ W ** 2; k3 = k3a @ W ** 3; k4 = k4a @ W ** 4
     return np.array(out)
+
+
+# ------------------------------------------------- v1: exact bivariate-Gaussian edge beliefs -------
+_GLX, _GLW = np.polynomial.legendre.leggauss(40)
+
+
+def bvn_orthant(ta, tb, rho):
+    """P(z_a > 0, z_b > 0) = Phi2(ta, tb; rho) by Gauss-Legendre in theta, rho = sin(theta)."""
+    th1 = np.arcsin(rho)
+    out = ndtr(ta) * ndtr(tb)
+    acc = np.zeros(np.broadcast(ta, tb, rho).shape)
+    hk = ta * tb; hh = 0.5 * (ta * ta + tb * tb)
+    for x, w in zip(_GLX, _GLW):
+        th = 0.5 * th1 * (x + 1)
+        s = np.sin(th); c2 = np.cos(th) ** 2
+        acc += w * np.exp(-(hh - hk * s) / c2)
+    return out + acc * 0.5 * th1 / (2 * np.pi)
+
+
+def uni_G(m, v, qmin, qmax):
+    """Gaussian ladder G_q, q in [qmin, qmax]: G_q = E relu^q / q! (q >= 0), G_{-k} = d^k Phi / dm^k."""
+    s = np.sqrt(v); t = m / s
+    phi = np.exp(-0.5 * t * t) / SQ2PI; Phi = ndtr(t)
+    G = {}
+    M = [Phi, m * Phi + s * phi]
+    for k in range(2, max(qmax, 1) + 1):
+        M.append(m * M[k - 1] + (k - 1) * v * M[k - 2])
+    for k in range(0, qmax + 1):
+        G[k] = M[k] / factorial(k)
+    He = [np.ones_like(t), t]
+    for k in range(2, -qmin + 1):
+        He.append(t * He[k - 1] - (k - 1) * He[k - 2])
+    for k in range(1, -qmin + 1):
+        G[-k] = (-1) ** (k - 1) * He[k - 1] * phi / s ** k
+    return G
+
+
+def edge_table(m, v, c, pmax=2, kmin=-4):
+    """G_{ij} = E_G2[relu_a^i relu_b^j]/(i! j!) with negative indices = mean derivatives, for the
+    bivariate Gaussian of every pair (a row, b column).  i, j in [kmin, pmax]."""
+    n = m.shape[0]
+    ma, mb = m[:, None], m[None, :]
+    va, vb = v[:, None], v[None, :]
+    rho = np.clip(c / np.sqrt(va * vb), -0.999999, 0.999999)
+    c = rho * np.sqrt(va * vb)
+    Ga = uni_G(ma, va, kmin - 1 + kmin, pmax)
+    Gb = uni_G(mb, vb, kmin - 1 + kmin, pmax)
+    vba = np.maximum(vb - c * c / va, 1e-12 * vb); mba = mb - c * ma / va
+    vab = np.maximum(va - c * c / vb, 1e-12 * va); mab = ma - c * mb / vb
+    gba = uni_G(mba, vba, kmin + kmin, pmax)
+    gab = uni_G(mab, vab, kmin + kmin, pmax)
+    from math import comb
+    T = {}
+    for k in range(1, -kmin + 1):
+        for j in range(kmin, pmax + 1):
+            T[(-k, j)] = sum(comb(k - 1, i) * Ga[-k + i] * (-c / va) ** i * gba[j - i] for i in range(k))
+            if j >= 0:
+                T[(j, -k)] = sum(comb(k - 1, i) * Gb[-k + i] * (-c / vb) ** i * gab[j - i] for i in range(k))
+    T[(0, 0)] = bvn_orthant(ma / np.sqrt(va), mb / np.sqrt(vb), rho)
+    for q in range(1, pmax + 1):
+        T[(0, q)] = (mb * T[(0, q - 1)] + vb * T[(0, q - 2)] + c * T[(-1, q - 1)]) / q if q >= 2 else \
+            (mb * T[(0, 0)] + vb * T[(0, -1)] + c * T[(-1, 0)])
+    for p in range(1, pmax + 1):
+        for q in range(0, pmax + 1):
+            T[(p, q)] = (ma * T[(p - 1, q)] + va * T[(p - 2, q)] + c * T[(p - 1, q - 1)]) / p
+    return T
+
+
+def pair_moment(T, p, q, k3a, k3b, k4a, k4b, Kab, Kba, Q=None, Rab=None, Rba=None):
+    g = lambda i, j: T[(i, j)]
+    out = (g(p, q) + k3a / 6 * g(p - 3, q) + k3b / 6 * g(p, q - 3) + k4a / 24 * g(p - 4, q)
+           + k4b / 24 * g(p, q - 4) + Kab / 2 * g(p - 2, q - 1) + Kba / 2 * g(p - 1, q - 2))
+    if Q is not None:
+        out = out + Q / 4 * g(p - 2, q - 2) + Rab / 6 * g(p - 3, q - 1) + Rba / 6 * g(p - 1, q - 3)
+    return factorial(p) * factorial(q) * out
+
+
+def relu_map_edges(m, C, K, k4):
+    v = np.diag(C).copy(); k3 = np.diag(K).copy()
+    L = ladder(m, v, k3, k4)
+    mu, var, k3a, k4a = node_moments(L)
+    c = C.copy(); np.fill_diagonal(c, 0.0)
+    Kab = K.copy(); np.fill_diagonal(Kab, 0.0)
+    T = edge_table(m, v, c)
+    r, cc = (lambda x: x[:, None]), (lambda x: x[None, :])
+    args = (r(k3), cc(k3), r(k4), cc(k4), Kab, Kab.T)
+    E11 = pair_moment(T, 1, 1, *args)
+    E21 = pair_moment(T, 2, 1, *args)
+    E2 = 2 * L[2]
+    Ca = E11 - np.outer(mu, mu)
+    Ka = E21 - np.outer(E2, mu) - 2 * mu[:, None] * Ca
+    np.fill_diagonal(Ca, var); np.fill_diagonal(Ka, 0.0)
+    return mu, Ca, Ka, k3a, k4a, c, L[0], L[-1]
+
+
+def estimate_edge(Ws, old=1, hubs=True):
+    """v1: as estimate_fact but with exact bivariate-Gaussian edge beliefs (all orders in c)."""
+    Ls, n, _ = Ws.shape
+    W = Ws[0].astype(np.float64)
+    m = np.zeros(n); C = W.T @ W; K = np.zeros((n, n)); k4 = np.zeros(n)
+    out = []; prev = None
+    for l in range(Ls):
+        mu, Ca, Ka, k3a, k4a, c, L0, Lm1 = relu_map_edges(m, C, K, k4)
+        out.append(mu)
+        if l + 1 == Ls:
+            break
+        Wn = Ws[l + 1].astype(np.float64)
+        M = c * c * (L0 ** 2)[:, None] * Lm1[None, :] if hubs else 0.0
+        spec = (k3a, Ka - M, c if hubs else None, L0, Lm1)
+        Kn = contract(*spec, Wn, Wn)
+        if old and prev is not None:
+            pspec, Wl = prev
+            P = Wl @ (L0[:, None] * Wn)
+            Kz = K.copy(); k3z = np.diag(K).copy(); np.fill_diagonal(Kz, 0.0)
+            Kn = Kn + contract(*pspec, P, P) - contract(k3z * L0 ** 3, Kz * (L0 ** 2)[:, None] * L0[None, :],
+                                                      None, L0, Lm1, Wn, Wn)
+        prev = (spec, Wn)
+        m = mu @ Wn; C = Wn.T @ Ca @ Wn; K = Kn; k4 = (Wn ** 4).T @ k4a
+    return np.array(out)
