@@ -1,0 +1,58 @@
+{
+ "tag": "v25_packaged_emul",
+ "mode": "client-server emulation",
+ "server_threads": 3,
+ "client_threads": 1,
+ "setup_window_s": 3.604940176010132,
+ "setup_only_s": 0.03652191162109375,
+ "peak_rss_mb_server": 1589,
+ "peak_rss_mb_client": 2090,
+ "summary": {
+  "n_mlps": 2,
+  "n_errors": 0,
+  "C_over_B_max": 0.36667212586871756,
+  "C_over_B_mean": 0.36667212586871756,
+  "final_layer_mse": 5.4775082247715545e-08,
+  "truth_noise_floor": 4.317504440515166e-08,
+  "residual_max_s": 0.1394761950000003,
+  "residual_list_s": [
+   0.1395,
+   0.128
+  ],
+  "wall_max_s": 41.169140049,
+  "n_over_residual_cap": 0,
+  "n_over_wall_cap": 0,
+  "n_nonfinite": 0,
+  "final_mse_minus_noise": 1.1600037842563882e-08
+ },
+ "per_mlp": [
+  {
+   "mlp_index": 0,
+   "mlp_seed": 7301001,
+   "noise": 4.372134760987037e-08,
+   "ok": true,
+   "flops_used": 806320531948,
+   "finite": true,
+   "final_layer_mse": 6.312338740599444e-08,
+   "wall_time_s": 41.169140049,
+   "backend_s": 35.777377532,
+   "overhead_s": 5.252286321999996,
+   "residual_wall_time_s": 0.1394761950000003
+  },
+  {
+   "mlp_index": 1,
+   "mlp_seed": 7301002,
+   "noise": 4.262874120043295e-08,
+   "ok": true,
+   "flops_used": 806320531948,
+   "finite": true,
+   "final_layer_mse": 4.6426777089436655e-08,
+   "wall_time_s": 39.095434471,
+   "backend_s": 34.39509128,
+   "overhead_s": 4.572333518999997,
+   "residual_wall_time_s": 0.12800967199999747
+  }
+ ],
+ "client_stderr_tail": "{\"mlp_index\": 0, \"mlp_seed\": 7301001, \"noise\": 4.372134760987037e-08, \"ok\": true, \"flops_used\": 806320531948, \"finite\": true, \"final_layer_mse\": 6.312338740599444e-08, \"wall_time_s\": 41.169140049, \"backend_s\": 35.777377532, \"overhead_s\": 5.252286321999996, \"residual_wall_time_s\": 0.1394761950000003}\n{\"mlp_index\": 1, \"mlp_seed\": 7301002, \"noise\": 4.262874120043295e-08, \"ok\": true, \"flops_used\": 806320531948, \"finite\": true, \"final_layer_mse\": 4.6426777089436655e-08, \"wall_time_s\": 39.095434471, \"backend_s\": 34.39509128, \"overhead_s\": 4.572333518999997, \"residual_wall_time_s\": 0.12800967199999747}\n",
+ "server_stderr_tail": "[flopscope-server] binding to ipc:///tmp/fs-pkg.sock  (timeout=900.0s)\n<frozen runpy>:88: FlopscopeWarning: stats.norm.pdf promoted its float32 input to float64 to match scipy.stats. If float64 output was not intended, cast the result back with result.astype(np.float32) before downstream operations; float64 operations are billed at twice the float32 dtype rate.\n<frozen runpy>:88: FlopscopeWarning: stats.norm.cdf promoted its float32 input to float64 to match scipy.stats. If float64 output was not intended, cast the result back with result.astype(np.float32) before downstream operations; float64 operations are billed at twice the float32 dtype rate.\n<frozen runpy>:88: SymmetryLossWarning: Symmetry lost along dims (0, 1): add \u2014 no symmetry groups shared by both operands. Use as_symmetric() to re-tag if you know the result is symmetric. Suppress with flops.configure(symmetry_warnings=False).\n"
+}

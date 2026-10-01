@@ -1,0 +1,26 @@
+Packaging folder 
+/home/user/thehonesttorus.github.io/notes/streams/submission/bundles/v29r2/ → 
+/home/user/thehonesttorus.github.io/notes/streams/submission/packages/v29r2.tar.
+gz
+Everything in this folder will be submitted, except .gitignore / .whestignore 
+matches and credential files (excluded for security).
+Submitting 2 files (98.7 KB):
+  LICENSE  (1.0 KB)
+  estimator.py  (97.7 KB)
+⠋ Packaging ━━━━━━━━━━━╸                          32.4/102.1 kB 2.3 MB/s 0:00:01
+✓ Wrote 
+/home/user/thehonesttorus.github.io/notes/streams/submission/packages/v29r2.tar.
+gz in 23ms (31.6 KB)
+╭──────────────────────────── Packaged Submission ─────────────────────────────╮
+│ Command: package                                                             │
+│ Status: success                                                              │
+│ ╭──────────────────────────────── Artifact ────────────────────────────────╮ │
+│ │ ┌──────┬───────────────────────────────────────────────────────────────┐ │ │
+│ │ │ Path │ /home/user/thehonesttorus.github.io/notes/streams/submission/ │ │ │
+│ │ │      │ packages/v29r2.tar.gz                                         │ │ │
+│ │ └──────┴───────────────────────────────────────────────────────────────┘ │ │
+│ ╰──────────────────────────────────────────────────────────────────────────╯ │
+╰──────────────────────────────────────────────────────────────────────────────╯
+Next: `whest submit 
+/home/user/thehonesttorus.github.io/notes/streams/submission/packages/v29r2.tar.
+gz` (or `whest submit --estimator estimator.py`)
