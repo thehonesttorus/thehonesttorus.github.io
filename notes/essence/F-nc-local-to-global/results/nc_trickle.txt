@@ -1,0 +1,24 @@
+== 4 0.0
+m=2: eta_m=0.0000  lambda_max(defects)=0.0000  factor 1-(1+eta)/m=0.5000
+m=3: eta_m=0.0000  lambda_max(defects)=0.0000  factor 1-(1+eta)/m=0.6667
+m=4: eta_m=0.0000  lambda_max(defects)=0.0000  factor 1-(1+eta)/m=0.7500
+n=4 beta=0.0: theorem gap bound 0.2500   true gap 0.2500   ratio 1.00
+== 4 1.0
+m=2: eta_m=0.8941  lambda_max(defects)=0.8941  factor 1-(1+eta)/m=0.0529
+m=3: eta_m=1.6768  lambda_max(defects)=1.6784  factor 1-(1+eta)/m=0.1077
+m=4: eta_m=2.6524  lambda_max(defects)=2.6524  factor 1-(1+eta)/m=0.0869
+n=4 beta=1.0: theorem gap bound 0.0005   true gap 0.0078   ratio 15.70
+== 4 0.3
+m=2: eta_m=0.3662  lambda_max(defects)=0.3662  factor 1-(1+eta)/m=0.3169
+m=3: eta_m=0.6019  lambda_max(defects)=0.6047  factor 1-(1+eta)/m=0.4660
+m=4: eta_m=0.9696  lambda_max(defects)=0.9825  factor 1-(1+eta)/m=0.5076
+n=4 beta=0.3: theorem gap bound 0.0750   true gap 0.0993   ratio 1.33
+== 5 0.3
+m=2: eta_m=0.3623  lambda_max(defects)=0.3623  factor 1-(1+eta)/m=0.3188
+m=3: eta_m=0.5802  lambda_max(defects)=0.5814  factor 1-(1+eta)/m=0.4733
+m=4: eta_m=0.7144  lambda_max(defects)=0.7395  factor 1-(1+eta)/m=0.5714
+m=5: eta_m=0.6300  lambda_max(defects)=0.7845  factor 1-(1+eta)/m=0.6740
+n=5 beta=0.3: theorem gap bound 0.0581   true gap 0.0987   ratio 1.70
+== 5 1.0
+m=2: eta_m=0.8654  lambda_max(defects)=0.8654  factor 1-(1+eta)/m=0.0673
+m=3: eta_m=1.6586  lambda_max(defects)=1.6646  factor 1-(1+eta)/m=0.1138
