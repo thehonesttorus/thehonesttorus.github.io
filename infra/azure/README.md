@@ -51,3 +51,21 @@ policy denies management.azure.com. It is run end to
 end as soon as that host (and login.microsoftonline.com, graph.microsoft.com,
 *.batch.azure.com, *.blob.core.windows.net, *.azurecr.io) is allowed, or from any machine where
 `az login` works.
+
+## GPU bakes and moment atlases (added 2026-10-01, afternoon)
+
+- `05_gpu_pool.sh` creates an autoscaling GPU pool (A100 by default) from the HPC image; `runner/Dockerfile.gpu`
+  is the bake image (torch 2.4.1 + CUDA 12.4, the official v2-phase2 bake stack).
+- `grid.py bake --name fresh-A --n-mlps 1000 --n-samples 100000000 --slices 16` bakes 1,000 fresh-seed MLPs with
+  the official recipe on 16 GPU tasks (≈ 450 s per MLP at N = 1e8 on an A100-class card; N = 1e9 is ≈ 4,500 s on
+  H200 per the community atlases) and leaves the slices under `bakes/<name>/`; merge with `whest dataset merge`.
+- `grid.py atlas --name d8b --start 0 --count 2048 --pairs` computes per-layer marginal moments to order 6, gate
+  probabilities and dense pair blocks for seed-regenerable MLPs (`runner/bake_moments.py`, same conventions as the
+  community atlases `keenanpepper/arc-whestbench-p2-*`).
+- `runner/stage_dataset.py --all-files --prefix <name>` stages a community dataset repository into blob.
+
+Community resources worth staging first (Hugging Face, MIT): `keenanpepper/arc-whestbench-p2-higher-moments-2026`
+(mini split, N = 1e8 joint moments), `keenanpepper/arc-whestbench-p2-full1000-N1e9` (337 GB, all 1,000 full-split MLPs,
+joint moments at N = 1e9), `keenanpepper/arc-whestbench-p2-d8b-corpus-14k` (14,048 seed-regenerable MLPs, marginal
+moments + final means at N = 1e8, plus a teacher bake of the augmented factored K=3 reference chain),
+`keenanpepper/whest-p2-bakev2-*` (Ω-sketched third cumulants).

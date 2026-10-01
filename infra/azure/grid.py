@@ -103,7 +103,7 @@ def cmd_submit(args):
             cmdline = (f"python /app/run_shard.py --bundle {shlex.quote(blob_url(e, e['CONTAINER_SUBMISSIONS'], bblob, sas_sub))} "
                        f"--shard {shlex.quote(blob_url(e, e['CONTAINER_DATASET'], s, sas_data))} --split {args.split} "
                        f"--out {shlex.quote(out)} --tag {tag} --wall-time-limit {args.wall_time_limit} "
-                       f"--max-threads {e['VCPU_PER_TASK']}" + (f" --n-mlps {args.n_mlps}" if args.n_mlps else "")
+                       f"--max-threads {e['VCPU_PER_TASK']} --runner {args.runner}" + (f" --n-mlps {args.n_mlps}" if args.n_mlps else "")
                        + (f" --extra {shlex.quote(args.extra)}" if args.extra else ""))
             tasks.append({"id": f"{tag[:30]}-{sname}"[:64].replace("_", "-"),
                           "commandLine": f"/bin/bash -c {shlex.quote(cmdline)}",
@@ -194,6 +194,76 @@ def cmd_collect(args):
                 fcsv.write(",".join("" if x is None else str(x) for x in r) + "\n")
 
 
+def cmd_bake(args):
+    """Shard a fresh-seed bake over the GPU pool: M slices of one seeds.json, then `whest dataset merge`
+    offline (merge.py) once all slices are in blob under bakes/<name>/."""
+    e = env()
+    key = account_key(e)
+    import secrets
+    seeds = [secrets.randbits(63) for _ in range(args.n_mlps)] if not args.seeds_file else json.load(open(args.seeds_file))
+    sf = f"{args.name}.seeds.json"
+    json.dump(seeds, open(sf, "w"))
+    az("storage", "blob", "upload", "-c", e["CONTAINER_DATASET"], "--account-name", e["STORAGE"], "--account-key", key,
+       "-f", sf, "-n", f"bakes/{args.name}/seeds.json", "--overwrite", json_out=False)
+    sas_r = container_sas(e, key, e["CONTAINER_DATASET"], "rl")
+    sas_w = container_sas(e, key, e["CONTAINER_DATASET"], "rcwl")
+    region = args.region or e["HOME_REGION"]
+    batch_login(e, region)
+    pool = f"{e['PREFIX']}-gpu-{region}"
+    job = f"bake-{args.name}"
+    try:
+        az("batch", "job", "create", "--id", job, "--pool-id", pool, json_out=False)
+    except RuntimeError as ex:
+        if "JobExists" not in str(ex):
+            raise
+    image = f"{e['ACR']}.azurecr.io/{args.image}"
+    tasks = []
+    for k in range(args.slices):
+        cmdline = (f"python /app/bake_shard.py --name {args.name} --seeds {shlex.quote(blob_url(e, e['CONTAINER_DATASET'], f'bakes/{args.name}/seeds.json', sas_r))} "
+                   f"--n-mlps {args.n_mlps} --n-samples {args.n_samples} --slice {k}/{args.slices} --split {args.split} "
+                   f"--dest {shlex.quote('https://' + e['STORAGE'] + '.blob.core.windows.net/' + e['CONTAINER_DATASET'] + '?' + sas_w)}")
+        tasks.append({"id": f"slice-{k:03d}", "commandLine": f"/bin/bash -c {shlex.quote(cmdline)}",
+                      "containerSettings": {"imageName": image, "containerRunOptions": "--rm --gpus all --shm-size 8g"},
+                      "constraints": {"maxWallClockTime": "PT24H", "maxTaskRetryCount": 1},
+                      "userIdentity": {"autoUser": {"scope": "task", "elevationLevel": "admin"}}})
+    for k in range(0, len(tasks), 100):
+        with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False) as f:
+            json.dump(tasks[k:k + 100], f)
+        az("batch", "task", "create", "--job-id", job, "--json-file", f.name, json_out=False)
+    print(f"submitted {len(tasks)} bake slices for {args.n_mlps} MLPs x {args.n_samples} samples in job {job}; seeds in {sf}")
+
+
+def cmd_atlas(args):
+    """Moment atlases (bake_moments.py) for a range of seed-regenerable MLPs on the GPU pool."""
+    e = env()
+    key = account_key(e)
+    sas_w = container_sas(e, key, e["CONTAINER_DATASET"], "rcwl")
+    region = args.region or e["HOME_REGION"]
+    batch_login(e, region)
+    pool = f"{e['PREFIX']}-gpu-{region}"
+    job = f"atlas-{args.name}"
+    try:
+        az("batch", "job", "create", "--id", job, "--pool-id", pool, json_out=False)
+    except RuntimeError as ex:
+        if "JobExists" not in str(ex):
+            raise
+    image = f"{e['ACR']}.azurecr.io/{args.image}"
+    dest = "https://" + e["STORAGE"] + ".blob.core.windows.net/" + e["CONTAINER_DATASET"] + "?" + sas_w
+    tasks = []
+    for i in range(args.start, args.start + args.count):
+        cmdline = (f"python /app/bake_moments.py --weights-from seeds --seed0 {args.seed0} --idx {i} --n-samples {args.n_samples} "
+                   f"{'--pairs ' if args.pairs else ''}--out {shlex.quote(dest)} --tag atlas/{args.name}/mlp_{i:05d}")
+        tasks.append({"id": f"mlp-{i:05d}", "commandLine": f"/bin/bash -c {shlex.quote(cmdline)}",
+                      "containerSettings": {"imageName": image, "containerRunOptions": "--rm --gpus all"},
+                      "constraints": {"maxWallClockTime": "PT12H", "maxTaskRetryCount": 1},
+                      "userIdentity": {"autoUser": {"scope": "task", "elevationLevel": "admin"}}})
+    for k in range(0, len(tasks), 100):
+        with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False) as f:
+            json.dump(tasks[k:k + 100], f)
+        az("batch", "task", "create", "--job-id", job, "--json-file", f.name, json_out=False)
+    print(f"submitted {len(tasks)} atlas tasks in job {job}")
+
+
 def main():
     ap = argparse.ArgumentParser()
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -201,10 +271,17 @@ def main():
     s.add_argument("--split", default="full"); s.add_argument("--shards"); s.add_argument("--regions")
     s.add_argument("--wall-time-limit", type=float, default=600.0); s.add_argument("--n-mlps", type=int)
     s.add_argument("--extra", default=""); s.add_argument("--task-hours", type=int, default=6)
+    s.add_argument("--runner", default="local", help="local (fast; 8 GB limit advisory) or subprocess (grader transport)")
+    b = sub.add_parser("bake"); b.add_argument("--name", required=True); b.add_argument("--n-mlps", type=int, required=True)
+    b.add_argument("--n-samples", type=int, default=100_000_000); b.add_argument("--slices", type=int, default=16)
+    b.add_argument("--split", default="dev"); b.add_argument("--seeds-file"); b.add_argument("--region"); b.add_argument("--image", default="whest-bake:latest")
+    a = sub.add_parser("atlas"); a.add_argument("--name", required=True); a.add_argument("--start", type=int, default=0); a.add_argument("--count", type=int, required=True)
+    a.add_argument("--seed0", type=int, default=770000); a.add_argument("--n-samples", type=int, default=100_000_000); a.add_argument("--pairs", action="store_true")
+    a.add_argument("--region"); a.add_argument("--image", default="whest-bake:latest")
     st_ = sub.add_parser("status"); st_.add_argument("--name", required=True)
     c = sub.add_parser("collect"); c.add_argument("--name", required=True); c.add_argument("--csv")
     args = ap.parse_args()
-    {"submit": cmd_submit, "status": cmd_status, "collect": cmd_collect}[args.cmd](args)
+    {"submit": cmd_submit, "status": cmd_status, "collect": cmd_collect, "bake": cmd_bake, "atlas": cmd_atlas}[args.cmd](args)
 
 
 if __name__ == "__main__":

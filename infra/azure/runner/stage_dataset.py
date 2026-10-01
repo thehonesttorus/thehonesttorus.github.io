@@ -15,17 +15,20 @@ def main():
     ap.add_argument("--revision", required=True)
     ap.add_argument("--dest", required=True, help="container URL with SAS")
     ap.add_argument("--splits", nargs="+", default=["mini", "full"])
+    ap.add_argument("--all-files", action="store_true", help="stage every file of the repo (community atlases)")
+    ap.add_argument("--prefix", default=None, help="blob prefix (default: the revision)")
     ap.add_argument("--workdir", default="/data/stage")
     args = ap.parse_args()
     os.makedirs(args.workdir, exist_ok=True)
     api = HfApi()
     files = api.list_repo_files(args.dataset, repo_type="dataset", revision=args.revision)
-    wanted = [f for f in files if f in ("metadata.json", "README.md")
+    wanted = files if args.all_files else [f for f in files if f in ("metadata.json", "README.md")
               or any(f.startswith(f"data/{s}-") and f.endswith(".parquet") for s in args.splits)]
+    prefix = args.prefix or args.revision
     cc = ContainerClient.from_container_url(args.dest)
     existing = {b.name: b.size for b in cc.list_blobs()}
     for f in sorted(wanted):
-        name = f"{args.revision}/{f}"
+        name = f"{prefix}/{f}"
         local = hf_hub_download(args.dataset, f, repo_type="dataset", revision=args.revision, local_dir=args.workdir)
         size = os.path.getsize(local)
         if existing.get(name) == size:
