@@ -319,6 +319,43 @@ def analyse(path, ranks=(8, 4, 2), sketch=(8, 16, 32), rng=np.random.default_rng
               + " ".join(f"{c:+.2f}" for c in coef) + extra, flush=True)
 
 
+def analyse_k4_modes(path, ranks=(1, 2, 4, 8, 16, 32)):
+    """How compressible is the (2,1,1) fourth-cumulant slice kappa4(z)_{iijk} as a family of n symmetric
+    'covariance-response' matrices indexed by the doubled neuron i?  SVD of the (n, n^2) unfolding gives the
+    best rank-r family kappa4_{iijk} ~ sum_r u^r_i M^r_jk; the table prints the energy captured and the
+    closure's D21 error when the hyperedge is fed the rank-r family (within-sample), next to the r = 1
+    C_off regeneration and the true slice.  Transport cost of a rank-r family: r sandwiches W^T Phi M^r Phi W."""
+    z = np.load(path)
+    W = z["weights"].astype(np.float64)
+    L, n, _ = W.shape
+    print(f"\n{path}: width {n}, depth {L}, N = {int(z['n_samples'])}  (2,1,1) slice as a mode family")
+    print(f"{'l':>2} {'|K211|/|Kd|':>11} | energy of top-r modes: " + " ".join(f"r={r:<3d}" for r in ranks)
+          + " | closure eps with: true " + " ".join(f"r={r:<3d}" for r in ranks) + "  uC   none")
+    for l in range(L - 1):
+        o = layer_objects(z, l)
+        if "K211" not in o:
+            print("no pre_M211 in this atlas"); return
+        K211 = o["K211"]; Wn = W[l + 1]; D21 = o["D21"]
+        K3m = slices_only(o["K3a"])
+        U, S, Vt = np.linalg.svd(K211.reshape(n, n * n), full_matrices=False)
+        e = S ** 2 / np.sum(S ** 2)
+        energies = [float(np.sum(e[:r])) for r in ranks]
+        eps = []
+        for r in ranks:
+            Kr = ((U[:, :r] * S[:r]) @ Vt[:r]).reshape(n, n, n)
+            o_r = dict(o); o_r["K211"] = all_distinct(Kr)
+            eps.append(rel(transport_d21(K3m + closure_model(o_r), Wn), D21))
+        e_true = rel(transport_d21(K3m + closure_model(o), Wn), D21)
+        Co = offdiag(o["C"]); u = np.einsum("ijk,jk->i", K211, Co) / float(np.sum(Co * Co))
+        o_c = dict(o); o_c["K211"] = all_distinct(np.einsum("i,jk->ijk", u, Co))
+        e_uc = rel(transport_d21(K3m + closure_model(o_c), Wn), D21)
+        o_0 = dict(o); o_0["K211"] = np.zeros_like(K211)
+        e_0 = rel(transport_d21(K3m + closure_model(o_0), Wn), D21)
+        ratio = float(np.sqrt(np.sum(K211 ** 2) / np.sum(all_distinct(o["K3a"]) ** 2)))
+        print(f"{l:>2} {ratio:11.3f} | " + " ".join(f"{v:5.3f}" for v in energies) + f" | {e_true:5.3f} "
+              + " ".join(f"{v:5.3f}" for v in eps) + f" {e_uc:5.3f} {e_0:5.3f}", flush=True)
+
+
 def corrected(e, e_noise):
     return float(np.sqrt(max(e ** 2 - e_noise ** 2, 0.0)))
 
@@ -391,6 +428,9 @@ if __name__ == "__main__":
         selftest()
     elif args and args[0] == "--pair":
         analyse_pair(args[1], args[2])
+    elif args and args[0] == "--k4modes":
+        for p in args[1:]:
+            analyse_k4_modes(p)
     else:
         for p in args:
             analyse(p)
