@@ -28,7 +28,7 @@ The measurements below are kept as facts about the object (summarised neutrally 
 |---|---|---|---|
 | `submission/` | [sibling session](https://claude.ai/code/session_01MJTw1ZuvoKiLkEWpcU1skv) | Is the public V29 / V25 chain a safe fallback submission (FLOPs, residual-time margin against the 0.4 s cap, 120 s wall, 5 s setup, 8 GB, non-suite smoke shapes, packaging)? | validated bundles, go/no-go table, upload instructions |
 | `coef-ensemble/` | [sibling session](https://claude.ai/code/session_01VYMnZMdNTUc4ZQEZJ9yZoj) | Coefficient drift vs width (answered at 1024: no drift), then, from 17:00, a cheap carrier for the (2,1,1) fourth-cumulant slice. | coefficient tables, held-out D21 errors, width extrapolation |
-| `chain128/` | [sibling session](https://claude.ai/code/session_016cmvEqAAVYWsNUDTZ4wopY) | Does a better D21 interface lower the final-layer MSE of a full chain? Dense K=3 chain at width 128 with closure variants and teacher forcing. | chain.py, MSE per variant, measured error law |
+| `chain128/` | [sibling session](https://claude.ai/code/session_016cmvEqAAVYWsNUDTZ4wopY) | Does a better D21 interface lower the final-layer MSE of a full chain? Dense K=3 chain at width 128 with closure variants and teacher forcing. | **finished**: REPORT.md (closure ladder maps one-to-one onto final MSE; MSE = a + k·ε²; the (2,1,1) κ4 slice is the lever) |
 | `old-content/` (finished) | [sibling session](https://claude.ai/code/session_01PyRVXWTvmQeHszAB16oDry) | What cheap representation carries the transported old-source third-cumulant content? **Verdict: none; every carrier's size grows with width, and absorbing it into renormalised births fails (10–35× the target).** | per-source tracker, carrier × (D21 error, cost) table |
 | `oracle1024/` (finished: final noise-free ladder at width 1024) | [sibling session](https://claude.ai/code/session_012m7DoPtgXQv4s6iAqRWKak) | The closure ladder at the real shape (width 1024) by streaming Monte Carlo, without n³ tensors. | stream_oracle.py, the ladder at width 1024 |
 | `est-accuracy/` | [sibling session](https://claude.ai/code/session_019vnQdfQcg2TrCQcyC1WYW2) (from 17:04) | Lower the public chain's raw MSE at width 1024 through its fourth-cumulant handling and births. | lever × (raw, C/B, residual, adjusted) table, bundle |
@@ -37,3 +37,18 @@ The measurements below are kept as facts about the object (summarised neutrally 
 | `costmodel/` | background workflow, coordinating session | Metered flopscope cost of every operation a closure-based chain needs, and a design calculator. | cost.py, op and design tables |
 
 Also from the coordinating session's support workflow: `../digests/phase2-intel-2026-10-01.md` (new public information since 10 Sep) and `../../infra/azure/CHECKS.md` (offline validation and fixes of the Azure grid scripts).
+
+## Round 3: the local-to-global essence programme (from 1 Oct 20:45 UTC)
+
+Brief: `notes/essence/BRIEF.md`; the user's mandate verbatim: `notes/essence/INPUT-2026-10-01-local-to-global.md`.
+
+| team | directory | session | scope |
+|---|---|---|---|
+| A | `notes/essence/A-permanents-polynomials/` | [session](https://claude.ai/code/session_01FVAU2TZ37gB5fKRxEXB4S2) | permanents, hafnians, Barvinok interpolation, Bethe permanent, Clifford estimators, Lorentzian polynomials |
+| B | `notes/essence/B-pseudorandomness/` | [session](https://claude.ai/code/session_01EAVH9mdGoca8mpKptzZc4u) | expander-walk pseudorandomness, weighted PRGs and Richardson precision amplification, PRGs for polytopes |
+| C | `notes/essence/C-free-probability-criticality/` | [session](https://claude.ai/code/session_01SnorBLeaw2toS2DkuZcanK) | free probability, two-projection geometry, the wall at 2 and He-init criticality |
+| D | `notes/essence/D-elimination-sparsification/` | [session](https://claude.ai/code/session_01J7YMAiCbTc5HPjyS9a5L2k) | approximate Gaussian elimination, sparsifiers, Kadison–Singer, operator scaling, intrinsic freeness |
+| E | `notes/essence/E-tilings-cones/` | [session](https://claude.ai/code/session_01JaEDBoti5YcGCy8LAXqmhf) | tilings, gap labelling, conic intrinsic volumes, random conical tessellations |
+| F | `notes/essence/F-nc-local-to-global/` | [session](https://claude.ai/code/session_01Jg65pQarkMSSY1zxCFTtwM) | noncommutative trickle-down, localization schemes, commuting squares; cross-team synthesis |
+
+Experiments running alongside: costate (dilation-sector share of the memory at n = 1024), region (CP-merged old tier; FC under the wall-feasible Strassen mix), bethe (localization estimator conditioned on the collective coordinate). Faces and heisenberg are writing final verdicts and stopping.

@@ -1,6 +1,6 @@
 # Foundations, part 2: the theoretical unlocks
 
-*Fresh slate, 1 Oct 2026. This note distils the programme's theoretical unlocks into a numbered list. For each unlock it gives the precise statement, its status, and its computational meaning for an estimator of quenched per-neuron means. Contract: [BRIEF.md](BRIEF.md). Part 1 (`foundations.md`, when it appears) verifies the user's 1 Oct input; Appendix A lists the claims of that input used here, with their status.*
+*Fresh slate, 1 Oct 2026. This note distils the programme's theoretical unlocks into a numbered list. For each unlock it gives the precise statement, its status, and its computational meaning for an estimator of quenched per-neuron means. Contract: [BRIEF.md](BRIEF.md). Part 1, [foundations-input-verified.md](foundations-input-verified.md) (the BRIEF calls it `foundations.md`), verifies the user's 1 Oct input; Appendix A lists the claims of that input used here, with their status, updated against that note's §7. An adversarial check of this note (1 Oct, after the BRIEF's 18:55 UTC correction) is logged at the end.*
 
 ---
 
@@ -19,6 +19,7 @@ The primary sources opened in this session are listed under Sources, with what w
 - DERIVED: proved here (proof given or sketched in one line) or in a programme note (cited by section). "Checked" means a numerical check in §12.
 - CONJECTURE: a precise statement, not proved, given with its evidence and a test.
 - SPECULATION: a direction, not yet precise enough to be false.
+- ANALOGY: a correspondence of form between two settings, asserted as a theorem in neither (used in unlock 40(d) and Appendix A).
 
 **Format of an unlock.**
 - **Statement**: definitions and hypotheses.
@@ -77,7 +78,7 @@ Negative findings below are charged to this dictionary first (BRIEF rule 3), and
 - E h(a_l) = Σ_σ ω(p_σ) ω_σ(h ∘ D_σ);
 - E[z_{l+1} 1_A] = E[a_l 1_A] W_{l+1} for every event A, in particular every face event of the layers ≤ l (z_{l+1} = a_l W_{l+1} holds pointwise).
 
-In Note 2's form, excluding a vertex u is Lüders conditioning: ω_σ^{1−e_u} = ω_{σ∖u}.
+In Note 2's frame form, where ω_σ is the barycentre vector state of the facet algebra (a coherent superposition over the vertices of σ), excluding a vertex u ∈ σ is Lüders conditioning: ω_σ^{1−e_u} = ω_{σ∖u}. This ω_σ is not the commutative one defined above: conditioned on the atom p_σ, p_σ(1 − e_u) = 0 for u ∈ σ.
 
 **Status.** DERIVED (Note 2 §2; faces design E1).
 
@@ -101,11 +102,11 @@ In Note 2's form, excluding a vertex u is Lüders conditioning: ω_σ^{1−e_u} 
 **Status.** DERIVED: (a) and (b) by linearity of expectation, (c) by one integration by parts, (d) by the independence of layers. The Gaussian closure is the special case P(Z > 0) = Φ(μ/s), p_Z(0) τ_Z(0) = s φ(μ/s). Unlock 37 gives the Malliavin form of τ_Z.
 
 **Computational meaning.**
-- *Exactly:* the means need no approximation beyond two scalars per unit per layer: the face mass P(z_{l,j} > 0) and the wall term p(0) τ(0).
-- The error of any closure decomposes exactly as μ × (face-mass defect) + (wall defect).
-- The question the state must answer at layer l is n one-dimensional laws along fresh random directions, not the joint law. This is the precise content of the EscAI oracle (per-neuron marginal laws suffice; BRIEF §3).
+- *Exactly:* given the exact drift μ_Z, the means need exactly two scalars per unit per layer: the face mass P(z_{l,j} > 0) and the wall term p(0) τ(0).
+- With the exact drift, the error of any closure decomposes exactly as μ × (face-mass defect) + (wall defect). A drift error adds (μ − μ̂) × (the closure's face mass).
+- The question the state must answer at layer l is n one-dimensional laws along fresh random directions, not the joint law. This is consistent with the EscAI oracle (BRIEF §3), but the oracle says more than (b): it measures that per-neuron cumulants to fourth order at every layer suffice, a statement made in the cumulant dictionary. (b) is exact and singles out no parametrisation of the n laws.
 - *With controlled error:* for a fixed state and random lines the projections are Gaussian at leading order, under thin-shell and weak-correlation conditions on the centred state (random-projection central limit theorems: Sudakov; Diaconis–Freedman; from memory). The Gaussian closure is that leading order.
-- Gaussian closure leaves ≈ 0.2 n^{−1/2} rms per unit (raw 4e-5 at n = 1024). The bar is ≈ 0.004 n^{−1/2}, so the next order must be right to about 2 %.
+- The Gaussian closure (full covariance propagation) leaves raw ≈ 4.3e-6 at n = 1024, i.e. ≈ 2.1e-3 rms per unit (bench w1024_d16, 6 MLPs; BRIEF §1 as corrected at 18:55 UTC). Its rms error behaves as ≈ 2/n for 128 ≤ n ≤ 1024 (raw 2.9e-4, 5.4e-5, 1.8e-5, 4.3e-6 at n = 128, 256, 512, 1024; bench RESULTS.md), not as n^{−1/2}. That is consistent with the O(n^{−1/2}) quenched per-unit terms living in the variance, which the closure carries. The bar is ≈ 1.3e-4 rms (raw 1.6e-8), ≈ 16× below, so whatever supplies the closure's missing order must be right to about 6 %. (An earlier version used the BRIEF's superseded 4e-5 and said 0.2 n^{−1/2} and 2 %.)
 
 ### 4. Barycentres are boundary integrals; the mean is the Gaussian mass of the walls ⊕ [F, T, H, B]
 
@@ -126,7 +127,7 @@ In Note 2's form, excluding a vertex u is Lüders conditioning: ω_σ^{1−e_u} 
 - (d) Cavity reading. On the wall {z_l(j) = 0} the unit's activation is 0, so there the downstream network coincides with the cavity network in which unit (l, j) is deleted. ∂a_L(k)/∂a_l(j) is that cavity network's linear response to re-inserting the unit.
 - (e) On the sphere, Δ_S F = −(n−1)F + (walls) for F = f|_S, so the total wall mass is (n − 1) times the spherical mean.
 
-**Status.** DERIVED. Found independently by the tropical design (I2, checked at width 8, depth 3: R-E0) and the faces design (E2). Parts (d) and the history-sum derivation of (b) are added here.
+**Status.** DERIVED. Found independently by the tropical design (I2, checked at widths 8–16, depths 2–4: R-E0) and the faces design (E2), and measured neuron by neuron at n = 64, L = 16 in [foundations-problem.md](foundations-problem.md). The cavity reading (d) is also in the tropical design (§3, its transport term); the history-sum derivation of (b) is added here.
 
 **Computational meaning.**
 - *Exactly:* the mean of every neuron is a sum, over upstream units, of wall integrals. Each is (Gaussian density of the unit's pre-activation at 0) × (wall-conditional expectation of slope² × cavity response).
@@ -134,33 +135,34 @@ In Note 2's form, excluding a vertex u is Lüders conditioning: ω_σ^{1−e_u} 
 - It is the exact meet-in-the-middle split: the wall measure is a forward (state) object, the cavity response a backward (question) object.
 
 **Guard.** The identity is exact, but its wall-by-wall factorisation is not perturbative at He initialisation.
-- The weight ‖∇_x z‖² is uncentred: its mean is ≈ μ² + s², not s². The mean spike sits in the wall weights.
+- The weight ‖∇_x z‖² is uncentred and counts the q-th Wiener chaos q times (unlock 37). Its mean exceeds s² by the mean spike and by the high-chaos roughness that depth builds: median E‖∇z‖²/s² = 1.5, 5.0, 16.7 and E‖∇z‖²/(μ² + s²) = 1.3, 2.7, 6.4 at layers 2, 8, 16 (width 64, tropical R-E2). It is not ≈ μ² + s² at depth.
 - The own-wall and inherited terms each miss their factorised forms by O(1), and the two misses cancel (tropical R-E2, correlation −1.00).
 - The centred form, unlock 37, removes this.
 
 ### 5. Fresh randomness: annealed twirl, quenched single Kraus operator, sign sectors ⊕ [B, M, H, K]
 
 **Statement.** Fix the law of a_l and let W = W_{l+1} be independent of it.
-- (a) *Annealed.* E_W[Wᵀ S W] = (2/n) Tr(S) I for every symmetric S. The averaged second-order map is the conditional expectation onto the scalars: a twirl, with all non-trivial eigenvalues 0. Also E[W^{⊗odd}] = 0.
+- (a) *Annealed.* E_W[Wᵀ S W] = (2/n) Tr(S) I for every symmetric S. The averaged second-order map is twice the trace-preserving conditional expectation onto the scalars (the factor 2 is the He gain): a twirl, with all non-trivial eigenvalues 0. Also E[W^{⊗odd}] = 0.
 - (b) *Quenched.* S ↦ Wᵀ S W is completely positive with a single Kraus operator.
 - (c) For w ~ N(0, (2/n) I) and symmetric B: Var(wᵀ B w) = 8‖B‖_F²/n². This is a relative fluctuation √(2/PR(B)) around (2/n) Tr B, with PR(B) = (Tr B)²/‖B‖_F².
   - Bulk objects (PR ∝ n) fluctuate per unit at O(n^{−1/2}), and their layer averages at O(1/n).
   - A spike (PR = O(1), e.g. the mean direction) fluctuates per unit at O(1).
 - (d) *Sign sectors.* The group Z_2^{n×n} of sign flips of W preserves its law.
   - Averaging a quenched quantity over it is the conditional expectation onto functions of |W|.
-  - For a polynomial in W, the average keeps exactly the monomials in which every weight occurs to an even power: the paired, tree sector.
+  - For a polynomial in W, the average keeps exactly the monomials in which every weight occurs to an even power: the paired (even) sector. It still depends on the quenched magnitudes |W|.
   - The remainder is the sign-odd, quenched sector.
 
 **Status.**
 - (a)–(c): THEOREM (Wick/Isserlis; elementary). (a) and (b) are also derived in transfer-spectrum-measurement (finding 5 and §2.5). (c) checked (C6).
-- (d): DERIVED, since E_S ∏ S_e^{k_e} = 1 iff every k_e is even. It is the network form of Godsil–Gutman (unlock 22).
+- (d): DERIVED, since E_S ∏ S_e^{k_e} = 1 iff every k_e is even. It is the network analogue of Godsil–Gutman (unlock 22); unlike there, the even sector is not a tree object (unlock 22(c)).
 
 **Computational meaning.**
 - *Exactly and cheaply:* every annealed prediction is a scalar recursion, and self-averaging bulk quantities (normalised traces, layer averages, spectra) are annealed-computable to O(1/n) (second-order freeness, Mingo–Speicher, from memory).
-- *Warning:* the scored quantity is per unit, and there the quenched content is sign-odd.
+- *Warning:* the scored quantity is per unit, and there three quenched parts enter.
   - From layer 2 on, each unit's mean carries an O(1) sign-odd term: its alignment ⟨m_{l−1}, w_k⟩ with the mean direction. The exact recursion of unlock 3(a) handles it at no cost.
-  - Beyond it, the O(n^{−1/2}) sign-odd terms pair unpaired fresh weights with the state's joint structure.
-- The sign average removes both. The annealed or tree object can therefore never be the estimator; it is the reference against which the quenched sector is measured.
+  - O(n^{−1/2}) sign-odd terms pair unpaired fresh weights with the state's joint structure, e.g. Σ_{i≠j} W_ik W_jk Cov(a_i, a_j) in the unit's variance.
+  - O(n^{−1/2}) sign-even terms carry the quenched magnitudes, e.g. Σ_i (W_ik² − 2/n) Var(a_i). They are not smaller: at layer 2, n = 1024, their rms is 0.060 against 0.044 for the sign-odd part, on a variance of 1.36 (C9). Replacing each unit's quenched variance by its annealed value costs 6.5e-3 rms per neuron at n = 1024 ([foundations-problem.md](foundations-problem.md)).
+- The sign average removes the two sign-odd parts and keeps the sign-even one; the annealed average removes all three. Neither can be the estimator; they are references against which the quenched sectors are measured.
 
 ---
 
@@ -170,7 +172,7 @@ In Note 2's form, excluding a vertex u is Lüders conditioning: ω_σ^{1−e_u} 
 
 **Statement (Note 1 §2–3; Note 2 §1–3).**
 - The layered quiver Λ of faces carries a Toeplitz–Cuntz–Krieger family: partial isometries s_γ, one per arrow, with s_γ* s_γ = p_{source} and Σ_{γ into τ} s_γ s_γ* ≤ p_τ.
-- For a finite layered quiver, T(Λ) ≅ ⊕_σ M_{N(σ)} and C*(Λ) ≅ ⊕_{σ_0} M_{N(σ_0)}, where N(σ) counts the histories ending at σ. The Bratteli heights satisfy h_{l+1} = F_l h_l, with F_l the incidence matrix.
+- For a finite layered quiver, T(Λ) ≅ ⊕_σ M_{N(σ)} and C*(Λ) ≅ ⊕_{σ_0} M_{N(σ_0)}, where N(σ) counts the forward paths starting at σ, the trivial path included (Note 1 §3.1). The Bratteli heights satisfy h_{l+1} = F_l h_l, with F_l the incidence matrix.
 - Three resolutions: D_0 ⊂ D ⊂ C*(Λ).
   - D_0: functions of the current face. This is the Stanley–Reisner algebra C(K) of Note 2.
   - D: functions of the history.
@@ -216,7 +218,7 @@ In Note 2's form, excluding a vertex u is Lüders conditioning: ω_σ^{1−e_u} 
 
 **Computational meaning.**
 - When the square defects of the arrow cocycle are small, the face (barycentre) is a sufficient statistic. An estimator can then carry one number per face instead of one per history.
-- The loss is bounded by a local quantity, four arrows at a time, divided by μ_1 = n². The Fisher-information loss is exactly E Var(F | ends).
+- The loss is bounded by a local quantity, four arrows at a time, divided by √μ_1 = n (in the ℓ² distance of R10). The Fisher-information loss is exactly E Var(F | ends).
 
 **Guard.** The unlock requires the Gibbs form, i.e. positivity. Dictionary v1 fails it: its fitted F has residual 0.42–0.5 against coboundaries, and its face process has 25–35 % memory (mlp-bridge). The failure is charged to the dictionary.
 
@@ -229,12 +231,12 @@ In Note 2's form, excluding a vertex u is Lüders conditioning: ω_σ^{1−e_u} 
 - Plackett's reduction: ∂P(all > 0)/∂ρ_ij = φ_2(0, 0; ρ_ij) P(rest > 0 | z_i = z_j = 0), a codimension-2 face mass. So every orthant mass is an integral of lower-dimensional ones along a correlation path.
 - Counting:
   - A central arrangement of N hyperplanes in general position in R^d has 2 Σ_{i<d} C(N−1, i) regions (Cover; Wendel; Schläfli). So layer 1 alone (N = d = n) has all 2^n orthants.
-  - Zhang–Naitzat–Lim Thm 6.3 bounds the number of linear regions of the whole network by ∏_l Σ_{i ≤ d} C(n_l, i).
+  - Zhang–Naitzat–Lim Thm 6.3 bounds the number of linear regions of the whole network by ∏_{l=1}^{L−1} Σ_{i ≤ d} C(n_l, i), for hidden widths n_l ≥ d and a linear output layer.
 
 **Status.** THEOREM (Sheppard; the trivariate formula; Plackett; Cover; from memory, except that the two formulas were checked in C3 and Zhang–Naitzat–Lim was verified).
 
 **Computational meaning.**
-- *Exactly and cheaply:* masses and barycentres of faces of codimension ≤ 3 in any Gaussian layer cost O(1) elementary functions each. This includes layer 1, which is exactly Gaussian. Pair and triple face data of a Gaussian layer therefore cost O(n²) and O(n³) elementwise operations.
+- *Exactly and cheaply:* masses and barycentres of faces of codimension ≤ 3 in any Gaussian layer cost O(1) work each: elementary functions when the layer is centred, as layer 1 is (exactly Gaussian), and Owen's T or a one-dimensional quadrature when the means are non-zero. Pair and triple face data of a Gaussian layer therefore cost O(n²) and O(n³) elementwise operations.
 - *Never:* enumeration of faces.
 - An estimator that needs the face mass of four or more units must get it by gluing (unlocks 17, 45–47) or by integrating along a path (unlock 38).
 
@@ -259,7 +261,7 @@ In Note 2's form, excluding a vertex u is Lüders conditioning: ω_σ^{1−e_u} 
 - (a) On a tree, belief propagation (sum-product) computes all marginals exactly, in one sweep each way.
 - (b) For 2-spin systems, the marginal at v in G equals the marginal at the root of the self-avoiding-walk tree T_SAW(G, v), with boundary conditions at the leaves that close cycles (Weitz).
 - (c) Loopy BP has a unique fixed point and converges in either of two cases:
-  - if ρ(A) < 1, where A_{i→j, k→l} = tanh|J_ij| δ_{il} 1[k ∈ ∂i ∖ j] is the weighted non-backtracking operator on directed edges (Mooij–Kappen, which improves on Dobrushin);
+  - if ρ(A) < 1, where A_{i→j, k→l} = tanh|J_ij| δ_{il} 1[k ∈ ∂i ∖ j] is the weighted non-backtracking operator on directed edges (Mooij–Kappen Cor. 3). It and Dobrushin's condition do not imply each other: in Mooij–Kappen's Table I, Dobrushin holds and Cor. 3 fails in 170 of 50 000 random N = 4 models. Their local-field refinement (Cor. 4) was the strongest in their trials;
   - if the Gibbs measure on the computation tree is unique (Tatikonda–Jordan).
 
 **Status.** THEOREM: (a) classical; (b) Weitz 2006, from memory; (c) Mooij–Kappen verified, with Tatikonda–Jordan as cited there.
@@ -281,9 +283,9 @@ In Note 2's form, excluding a vertex u is Lüders conditioning: ω_σ^{1−e_u} 
 **Computational meaning.**
 - Across the width of a layer, the right gluing rule is tree-shaped but carries the Onsager correction.
 - Its validity is controlled by a signed spectral quantity, never by absolute row sums.
-- So the measured spectral independence η ≈ 2–8 of the face law is a usable certificate. A Dobrushin-type influence sum over the n/2 hot units is O(√n).
+- So the measured spectral independence η ≈ 2–8 of the face law is a quantity of the right (ℓ²) kind, bounded in n so far. At that size it certifies only a bounded variance factor, not convergence or precision (unlock 17). A Dobrushin-type influence sum over the n/2 hot units is O(√n).
 
-### 13. Power counting for a fresh layer: loops of fresh weights are suppressed, loops through the state are not ⊕ [B, M, K]
+### 13. Power counting for a fresh layer: loops closed among the units a fresh layer touches are suppressed; loops inside the state's history are not ⊕ [B, M, K]
 
 **Statement.** Fix the law ω of a_l, and let w = w_k be a fresh column. Organise the deviation of the law of ⟨a_l, w⟩ from its Gaussian approximation by two things: which units of layer l the fresh weights touch, and the dependences of ω that join those units.
 - (a) Sign-paired (even) contributions are of the order their counting gives. Each sign-unpaired weight turns a sum over units into a random-sign sum, which costs n^{−1/2} unless the summand is coherent in sign. The mean direction is the one coherent case: one unpaired weight, O(1).
@@ -292,12 +294,14 @@ In Note 2's form, excluding a vertex u is Lüders conditioning: ω_σ^{1−e_u} 
 
 **Status.**
 - DERIVED. This is Wick counting for the fresh layer, done independently in the signings design (§1, table) and the bethe design (§2, table). It is consistent with the measured n^{−0.8} residual of first-order gate diagrams (BRIEF §3).
-- CONJECTURE: (b) holds uniformly in depth for the states the network actually produces. The signings design's test T1 measures it.
+- CONJECTURE: (b) holds uniformly in depth for the states the network actually produces. The signings design's test T1 measured it at layer 2 only, one step out of an exact Gaussian copula at n = 12–96: the tree-only κ3 reaches the Monte Carlo floor by n = 96, and the κ4 loop residual falls ≈ n^{−2} from 48 to 96. Depth is untested.
 
 **Computational meaning.**
 - *Cheaply:* the readout of layer l + 1 from a state at layer l needs only tree-shaped contractions. These are matrix products of the fresh layer with node and edge data of the state; no loop sums are needed.
-- All quenched information beyond the mean recursion lives in the state's joint structure: its edges, and how they were built through depth.
+- Beyond the mean recursion, quenched information enters through node data weighted by the quenched magnitudes |W| (unlock 5) and through the state's joint structure: its edges, and how they were built through depth.
 - That is where loops matter and where unlocks 43–47 apply.
+
+**Guard.** The suppression factor of (b) is the typical pairwise correlation of the state, n^{−1/2} only up to a factor that grows with depth: the rms pre-activation correlation reaches 0.43 at layer 15 at n = 128 (bethe design §8). For a covariance of participation ratio PR the rms correlation is ≈ PR^{−1/2}; with the propagator law PR ≈ n/(2·age) of unlock 18 this would be ≈ 0.15 at n = 1024, layer 15 (an estimate, not a measurement).
 
 ### 14. Bethe is the limit of covers; for the network the lift limit is exactly computable ⊕ [B, M, F]
 
@@ -316,7 +320,8 @@ In Note 2's form, excluding a vertex u is Lüders conditioning: ω_σ^{1−e_u} 
 **Status.** (a) THEOREM (Vontobel, Gurvits, Anari–Rezaei, ACFK; all verified). (b) DERIVED, sketch: random lifts are locally tree-like. The rate in M is not established.
 
 **Computational meaning.**
-- *Exactly:* the tree (Bethe) reference of the quenched network is a well-defined object. It is computable by n² one-dimensional convolutions per layer (characteristic functions on a grid). It has exact non-Gaussian single-site laws, all the quenched weights, and no joint structure.
+- *Exactly:* the tree (Bethe) reference of the quenched network is a well-defined object. It is computable by n² one-dimensional convolutions per layer (characteristic functions on a grid). It keeps every quenched (signed) weight, and its single-site laws are exactly computable and non-Gaussian. They are the lift's laws, not the network's: from layer 2 on they omit every covariance between parents, which changes each unit's variance at the leading quenched order (unlock 5) and more at depth.
+- Measured: node beliefs alone (the lift limit) give raw 2.5e-3 and 3.3e-3 at n = 64 and 128, not improving with width (bethe design §8). The cover limit's loop corrections are the covariance between parents and the old content (signings design §8, item 4).
 - The difference between the quenched network and its lift is exactly the loop content.
 - (a) also says that for permanent-type sums the Bethe value is accurate only to e^{O(n)}, i.e. to O(1) per site. The Bethe reference is a per-site object, never a precision tool on its own, consistent with unlock 13(c).
 
@@ -326,7 +331,7 @@ In Note 2's form, excluding a vertex u is Lüders conditioning: ω_σ^{1−e_u} 
 - (a) Heilmann–Lieb: the matching polynomial of a graph of maximum degree d has only real roots, all of modulus ≤ 2√(d−1).
   - The power sums of its roots count closed tree-like walks, i.e. walks in Godsil's path tree (ACFK Remark 3.6).
   - On large-girth sequences the root distribution tends to Kesten–McKay (ACFK Thm 4.1).
-- (b) The matching entropy per vertex, i.e. the monomer–dimer free energy at any positive activity, is estimable: it is continuous under Benjamini–Schramm convergence (ACFK Thm 1.2).
+- (b) The matching entropy per vertex is estimable: it converges along every Benjamini–Schramm convergent sparse sequence (ACFK Thm 1.2, activity 1). The monomer–dimer free energy at any positive activity λ, ½∫ ln(1 + λx²) dρ_G, follows in the same way from the weak convergence of the matching measures (ACFK Thm 3.5).
   - The number of perfect matchings is not estimable, even for d-regular bipartite graphs (Thm 1.8).
   - In some such graphs one edge lies in all but a c^n fraction of the perfect matchings (Thm 1.7).
 - (c) On bipartite δ-expanders every edge has p(e) ≥ (1/d) n^{−2 ln(d−1)/ln(1+δ)} (Thm 1.9). With Gamarnik–Katz, the growth of perfect matchings becomes local.
@@ -335,7 +340,7 @@ In Note 2's form, excluding a vertex u is Lüders conditioning: ω_σ^{1−e_u} 
 **Status.** THEOREM: (a)–(c) verified in ACFK; (d) from memory.
 
 **Computational meaning.**
-- An estimator may trust a local (bounded-radius) computation exactly when the relevant generating function is zero-free along its interpolation path. The order (equivalently, the radius of the local structures) needed is O(log(N/ε)/log(R/|λ|)), where |λ| is the target activity and R the distance to the nearest zero, after a conformal map of the zero-free region to a disk.
+- An estimator may trust a local (bounded-radius) computation when the relevant generating function is zero-free along its interpolation path (a sufficient condition, not a characterisation). The order (equivalently, the radius of the local structures) needed is O(log(N/ε)/log(R/|λ|)), where |λ| is the target activity and R the distance to the nearest zero, after a conformal map of the zero-free region to a disk.
 - Hard (zero-temperature) constraints break locality unless the geometry expands.
 - *Network reading:* the linear-to-ReLU homotopy relu_γ has its singularities at γ = (1 ± i)/2, which gives the geometric rate 0.71 per order at γ = ½ (tropical design P6). A conformal re-parametrisation of the path that avoids these points is the Barvinok-type repair. It was not tried (SPECULATION).
 
@@ -344,7 +349,7 @@ In Note 2's form, excluding a vertex u is Lüders conditioning: ω_σ^{1−e_u} 
 **Statement.**
 - On the d-regular tree (branching number d − 1), Gibbs uniqueness for the zero-field ferromagnetic Ising model holds iff (d−1) tanh β ≤ 1, an ℓ¹ condition.
 - Reconstruction (Kesten–Stigum) occurs when (d−1) tanh² β > 1, an ℓ² condition on the second eigenvalue.
-- Mossel–Sly: on any graph of maximum degree d, Glauber dynamics mixes in O(n log n) when (d−1) tanh β < 1.
+- Mossel–Sly: for the ferromagnetic Ising model with arbitrary external fields on any graph of maximum degree d, Glauber dynamics mixes in O(n log n) when (d−1) tanh β < 1.
 - Yang's CMI bound has a boundary gain that vanishes on expanders (Yang digest, B1). Separator bounds are therefore weakest exactly where tree bounds are strongest.
 
 **Status.** THEOREM (as quoted in the expanders and hdx digests; Kesten–Stigum and Mossel–Sly also from memory).
@@ -356,7 +361,7 @@ In Note 2's form, excluding a vertex u is Lüders conditioning: ω_σ^{1−e_u} 
 ### 17. Spectral independence of the face law: what it gives and what it does not [B, K, F]
 
 **Statement.** Let ω be a law on {0,1}^V (the face law, restricted to the non-deterministic vertices), with D = diag Var(e_u).
-- The influence matrix is Ψ(u, v) = P(v | u) − P(v | ū) = Cov_uv/Var_u. Then λ_max(Ψ) ≤ η_0 iff Cov ⪯ (1 + η_0) D.
+- The influence matrix is Ψ(u, v) = P(v | u) − P(v | ū) = Cov_uv/Var_u for u ≠ v, with Ψ(u, u) = 0, i.e. Ψ = D^{−1} Cov − I. Then λ_max(Ψ) ≤ η_0 iff Cov ⪯ (1 + η_0) D.
 - Hence every linear observable Σ_u a_u e_u has variance at most (1 + η_0) times its product-state value (B-programme R13; markov design P4, citing Chen–Eldan Remark 37).
 - The local-to-global theorems need spectral independence of all pinnings (U6). These are:
   - ALO: λ_2 of the down-up walk from the link spectra;
@@ -368,7 +373,7 @@ In Note 2's form, excluding a vertex u is Lüders conditioning: ω_σ^{1−e_u} 
 - Measured:
   - unpinned η_0 ≈ 1.7–5.6 at n = 128 and 2–8 at n = 1024;
   - 472 of 1024 gates are uncertain (0.02 < p < 0.98) at depth;
-  - a Gaussian surrogate with the same correlations gives η_0 = 15–29.
+  - at n = 128, a zero-mean Gaussian surrogate with the same correlations gives η_0 = 15–29, against 1.7–5.6 measured. Part of the gap is only the gate count (the surrogate keeps all 128 gates, the measurement the 53–78 uncertain ones); per gate the measured η_0/m is 2–3× below the surrogate's.
 
 **Status.** DERIVED (R13) + THEOREM (ALO, CLV, as read in the hdx digest) + measured (transfer-spectrum §3.5). That η_0 stays bounded in n is a CONJECTURE: it levels off between n = 512 and 1024 at layers 9–12, and is still rising at layers 13–15.
 
@@ -386,10 +391,10 @@ In Note 2's form, excluding a vertex u is Lüders conditioning: ω_σ^{1−e_u} 
 - The number of modes k_ε needed for a fixed accuracy of the old-content transport has k_ε/n tending to a constant as n grows.
 - The only width-independent structure is one outlier along the mean direction μ_z: the BBP mechanism, iterated. Its overlap ⟨u_1, μ_z⟩² is 0.85 at n = 1024, age 15.
 
-**Status.** DERIVED + KNOWN-LINK + measured (transfer-spectrum-measurement §2.2–2.6, §3.4, B2, B6; Hanin–Nica for the polymer reading). That k_ε/n is constant is a CONJECTURE beyond the generic sources tested.
+**Status.** THEOREM (free multiplicative convolution; rank-one multiplicative spikes, Benaych-Georges–Nadakuditi; as read in the transfer-spectrum digest, which labels them KNOWN-LINK) + DERIVED (the PR composition law) + measured (transfer-spectrum-measurement §2.2–2.6, §3.4, B2, B6; Hanin–Nica for the polymer reading). PR ≈ n/(2·age) holds to 4–6 % for ages ≤ 4–6; PR·age/n falls to 0.39 at age 15 for n = 1024. That k_ε/n is constant is a CONJECTURE beyond the generic sources tested.
 
 **Computational meaning.**
-- *Negative and decisive:* no fixed-rank compression of signed content carried across depth works. The rank needed is a constant fraction of n, ≈ 0.3 n at the brief's accuracy.
+- *Negative and decisive, in the dictionary measured:* no fixed-rank compression of old third-order content (the (2,1) slice) transported along the gated propagators works, in propagator, transported-covariance or HOSVD bases. The rank needed is a constant fraction of n, ≈ 0.3 n at the brief's accuracy.
 - The one positive (Perron) mode, the mean direction, can be carried separately and exactly at rank one.
 
 ### 19. Orientation scrambling: compression error is predicted by the propagator alone [B, H]
@@ -413,7 +418,7 @@ In Note 2's form, excluding a vertex u is Lüders conditioning: ω_σ^{1−e_u} 
   - The EKZ condition applies to them when ‖J'‖ < 1.
 - (b) Network:
   - At depth one outlier direction (the mean; unlock 18) carries 0.88 of the second moment (ρ_16 at width 256).
-  - Correlations among the uncertain gates fall as the mean shift freezes units: η_0 = 2–8 measured, against 15–29 for the zero-mean surrogate.
+  - Correlations among the uncertain gates fall as the mean shift freezes units: at n = 128, η_0 = 1.7–5.6 measured against 15–29 for the zero-mean surrogate, partly a gate-count effect (unlock 17); mean |Cor_ij| among the uncertain gates is still 0.08–0.10 at depth.
 
 **Status.** (a) THEOREM (Hubbard–Stratonovich, exact; the general localisation scheme of Chen–Eldan is read in the hdx digest). (b) measured.
 
@@ -443,51 +448,63 @@ In Note 2's form, excluding a vertex u is Lüders conditioning: ω_σ^{1−e_u} 
 **Computational meaning.**
 - *Exactly:* every joint expectation of ReLU functionals of a Gaussian or Gaussian-copula layer is a weighted matching sum.
   - Its two-vertex part is closed-form (Mehler).
-  - Its degree-≤ 2 part (paths and cycles) is a determinant (unlock 23).
+  - Its quasi-free resummation is one determinant and one resolvent (unlock 23); the degree-≤ 2 part itself (vertex-disjoint paths and cycles) is an α-permanent, not a determinant.
 - Bosonic sums (hafnians, permanents) are #P-hard in general (Valiant, from memory).
-- An estimator must therefore use the structure of the sum: trees (unlock 13) and determinantal sectors (unlock 23). It must never evaluate the full hafnian.
+- An estimator must therefore use the structure of the sum: trees (unlock 13) and quasi-free resummations (unlock 23). It must never evaluate the full hafnian.
 
-### 22. Sign-averaging is the tree projection; a quenched network is one signing ⊕ [M, B, T]
+### 22. Sign-averaging is the even-sector projection; a quenched network is one signing ⊕ [M, B, T]
 
 **Statement.**
 - (a) Godsil–Gutman. For a graph G with adjacency matrix A and a uniformly random signing s, E_s det(x − A_s) = μ(G, x), the matching polynomial. The cycle terms of the determinant expansion carry an odd power of some edge sign and vanish on average; the matchings survive.
-- (b) The moments of the matching polynomial's roots count closed tree-like walks, i.e. walks in Godsil's path tree, a universal-cover object (ACFK Remark 3.6).
+- (b) The moments of the matching polynomial's roots count closed tree-like walks, i.e. walks in Godsil's path tree, the tree of self-avoiding paths from a vertex, a finite subtree of the universal cover (ACFK Remark 3.6).
   - A signing is a 2-lift, i.e. a Z/2 gauge field.
   - Interlacing families give a signing whose largest new eigenvalue is ≤ 2√(d−1); for bipartite graphs this yields Ramanujan 2-lifts (Marcus–Spielman–Srivastava, Interlacing Families I; from memory).
-- (c) Network form (unlock 5(d)). Averaging any quenched quantity over the signs of a fresh layer gives its paired (tree) sector. From layer 2 on, the per-unit mean has two sign-odd parts:
+- (c) Network form (unlock 5(d)). Averaging any quenched quantity over the signs of a fresh layer gives its even sector: every fresh weight occurs to an even power, and the quenched magnitudes |W| remain. In the network this is not a tree object. Three references must be kept apart:
+  - the annealed average E_W, a scalar recursion with no per-unit information;
+  - the sign average, which keeps |W| (e.g. Σ_i W_ik² Var a_i) and the state's pair dependences met by paired weights (e.g. Σ_{i≠j} W_ik² W_jk² κ(a_i, a_i, a_j, a_j)), and drops every odd term, including the diagonal Σ_i W_ik³ κ3(a_i);
+  - the Bethe lift of unlock 14, which keeps every quenched signed weight and drops the parents' joint structure.
+
+  From layer 2 on, the per-unit mean has two sign-odd parts:
   - an O(1) part, its alignment with the mean direction;
   - an O(n^{−1/2}) part, from unpaired weights joined by the state's joint structure.
+
+  It also has a sign-even quenched part of the same O(n^{−1/2}) order (unlock 5, C9).
 
 **Status.** (a), (b) THEOREM (Godsil–Gutman; Godsil; ACFK; MSS). (c) DERIVED.
 
 **Computational meaning.**
 - *Exactly:* the decomposition quenched = (sign average) + (sign-odd sectors) is canonical and computable sector by sector.
-- The sign average is the annealed or tree object: cheap, and wrong per unit at O(1). The scored information is entirely sign-odd.
-- A design built on a tree, Bethe or annealed object must therefore carry the sign-odd sectors explicitly:
-  - the coherent one through the exact mean recursion (unlock 3(a));
-  - the incoherent one through the state's edges (unlock 13).
+- The sign average is cheap and wrong per unit at O(1), because it drops the mean alignment. It is neither the annealed object nor the Bethe lift, and it is not free of quenched information: its even sector carries the |W| fluctuations at O(n^{−1/2}).
+- A design built on an annealed or sign-averaged object must therefore carry:
+  - the coherent sign-odd sector through the exact mean recursion (unlock 3(a));
+  - the incoherent sign-odd sector through the state's edges (unlock 13);
+  - the sign-even quenched sector through the quenched magnitudes (each unit's variance).
+- A design built on the Bethe lift keeps the signed weights and must add the parents' joint structure (unlock 14).
 
-### 23. The free (determinantal) sector of an interacting Gaussian sum [M, H, K]
+### 23. The free (determinantal) resummation of an interacting Gaussian sum [M, H, K]
 
-**Statement.** In the multigraph expansion of unlock 21(b), take the sub-sum over multigraphs of maximum degree ≤ 2: disjoint unions of paths and cycles. It equals a Gaussian integral of the exponential of a quadratic form, summed exactly by det^{−1/2}(I − D R) and a resolvent (free bosons; with fermionic signs, det^{+1}) (signings design P3(i)).
+**Statement.**
+- (a) If every vertex profile is the exponential of a polynomial of degree ≤ 2, F_v(g) = c_v exp(b_v g + ½ d_v (g² − 1)) (a quasi-free vertex), then E ∏_v F_v(g_v) is a Gaussian integral of the exponential of a quadratic form, summed exactly by det^{−1/2}(I − D R) and a resolvent. Here −½ log det(I − D R) = ½ Σ_k tr((DR)^k)/k sums closed walks that may revisit vertices (free bosons). With Grassmann variables the walks become vertex-disjoint cycles with a sign per cycle, det^{+1} (free fermions).
+- (b) The sub-sum of the multigraph expansion of unlock 21(b) over multigraphs of maximum degree ≤ 2 (vertex-disjoint paths and cycles, each vertex used once) is not this determinant. Its 2-regular part is the α-permanent of the zero-diagonal correlation matrix at α = ½, a hard-core loop gas. Example: two vertices with profiles F̂ = (0, 0, 1) give the polynomial ρ²/2, which vanishes at ρ = 0 and nowhere else, while a constant times a Gaussian integral of the exponential of a real quadratic form is either identically zero or never zero (C10).
+- (c) After renormalising the vertex weights, the two agree on every diagram that visits each vertex at most once. They differ by walks that revisit a vertex (in the two-vertex example, the multiple edges of multiplicity ≥ 4), which the determinant counts with quasi-free weights.
 
-**Status.** THEOREM (Gaussian integral identity, as stated in the signings design).
+**Status.** (a) THEOREM (Gaussian and Grassmann integrals). (b)–(c) DERIVED here and checked (C10). They correct the signings design's P3(i), which equated the degree-≤ 2 sector with the determinant. Its estimator never used the determinant (signings design §8), so its results stand.
 
 **Computational meaning.**
-- *Exactly and cheaply:* the quasi-free part of any sum over pair interactions is one determinant and one resolvent, O(n³).
-- Only vertices of degree ≥ 3, the genuinely interacting hubs, need local (tree) treatment.
-- This is the matching-side form of the separator rule of unlock 47: quasi-free parts are glued by linear algebra, interacting parts by trees.
+- *Exactly and cheaply:* the quasi-free resummation of any sum over pair interactions is one determinant and one resolvent, O(n³). It is not the paths-and-cycles sector: it adds vertex-revisiting walks with quasi-free weights, so as an approximation to that sector it is controlled only to leading order after renormalising the vertex weights.
+- Beyond it, vertices of degree ≥ 3 (the interacting hubs) and the hard-core corrections both need separate treatment.
+- This is the matching-side form of the separator rule of unlock 47: quasi-free parts are glued by linear algebra, interacting parts by trees. By signings T1, loops among fresh-weight legs are negligible at n ≥ 96, so the network's one-step sums never needed this resummation (unlock 13).
 
 ### 24. Determinantal evaluation needs Pfaffian orientations; dense layers have none [M, T]
 
 **Statement.**
-- Kasteleyn: a planar graph has an orientation that turns its perfect-matching count into a Pfaffian. Genus g needs 4^g Pfaffians (Galluccio–Loebl; Tesler; from memory).
+- Kasteleyn: a planar graph has an orientation that turns its perfect-matching count into a Pfaffian. Genus g needs 4^g Pfaffians (Galluccio–Loebl; Tesler; Cimasoni–Reshetikhin, verified in foundations-input-verified.md).
 - Little: a bipartite graph is Pfaffian iff it contains no even subdivision of K_{3,3} as a central subgraph.
 - Robertson–Seymour–Thomas (and McCuaig): a brace is Pfaffian iff it is the Heawood graph or is built from planar braces by repeated 4-sums. This is recognisable in O(n³).
-- Lieb–Loss: on planar bipartite graphs, the phases that maximise |det| are determined completely, which gives another proof of Kasteleyn.
-- Lieb: the optimal flux for the half-filled band is π per square plaquette and 0 per hexagon. This matches Kasteleyn's face rule.
+- Lieb–Loss Thm 3.1: on every planar bipartite graph, with any hopping amplitudes, the canonical flux (π through every square face, 0 through every hexagon; in general π for faces of length 4k and 0 for 4k + 2) maximises |det H| for the hopping matrix H carrying those phases, and gives det H = ±D², with D the dimer partition function. This is Kasteleyn's face rule, and with Lieb–Loss's Theorem A.1 it is another proof of Kasteleyn's theorem.
+- Lieb (1994): the same flux minimises the half-filled-band energy on the lattices covered by his theorem. For arbitrary planar bipartite graphs and amplitudes it does not (Lieb–Loss §VII(B): a four-box graph whose limit is a ring of eight sites).
 
-**Status.** THEOREM (Little, RST, Lieb–Loss and Lieb verified; the genus count from memory).
+**Status.** THEOREM (Little, RST with its O(n³) recognition algorithm, Lieb–Loss Thm 3.1 and §VII(B), and Lieb verified; the genus count, 2^{2g} = 4^g Pfaffians indexed by spin structures, is verified in foundations-input-verified.md via Cimasoni–Reshetikhin).
 
 **Computational meaning (guard).**
 - K_{n,n} is not Pfaffian for n ≥ 3. No signing of a dense layer-to-layer graph turns its matching sums into determinants, so exact determinantal evaluation of the network's matching-type sums is unavailable.
@@ -502,10 +519,10 @@ In Note 2's form, excluding a vertex u is Lüders conditioning: ω_σ^{1−e_u} 
   - ≤ 3^{n/2} for real signs;
   - ≤ 2^{n/2} for complex signs (Karmarkar et al.);
   - ≤ (3/2)^{n/2} for quaternions;
-  - bounded by a constant for Clifford-algebra signs of growing dimension (Chien–Rasmussen–Sinclair).
+  - (1 + O(2^{−k/2}))^{n/2} for signs in the Clifford algebra with k generators, hence bounded once 2^k ≳ n² (Chien–Rasmussen–Sinclair). No polynomial-time algorithm is known for these noncommutative determinants beyond the quaternion case k = 3 (Moore–Russell's summary, arXiv:0906.1702).
 - On random instances the ratio is small: polynomial for random 0/1 matrices (Frieze–Jerrum), and subexponential w.h.p. (Costello–Vu).
 
-**Status.** THEOREM (verified through Chien–Rasmussen–Sinclair). Unbiasedness checked for n = 3, 4 by exact enumeration (C4).
+**Status.** THEOREM (the critical ratios of Karmarkar et al. and Chien–Rasmussen–Sinclair, re-checked through Moore–Russell's summary; the random-instance results from memory). Unbiasedness checked for n = 3, 4 by exact enumeration (C4).
 
 **Computational meaning.**
 - Bosonic quantities (permanents, hafnians) of nonnegative weight matrices have unbiased determinantal estimators. Their variance is controlled by the algebra of the signs and is small on random instances.
@@ -519,7 +536,7 @@ In Note 2's form, excluding a vertex u is Lüders conditioning: ω_σ^{1−e_u} 
   - Kadison–Singer: pure states of the diagonal subalgebra of B(ℓ²) extend uniquely.
   - Weaver's KS_2 form (MSS II Cor 1.5): if Σ_i v_i v_iᵀ = I and ‖v_i‖² ≤ δ, there is a partition into r parts with ‖Σ_{i∈S_j} v_i v_iᵀ‖ ≤ (1/√r + √δ)².
   - Anderson paving (Thm 6.1): every zero-diagonal self-adjoint T is (r, ε)-pavable with r = (6/ε)^4. That is, there are coordinate projections P_1..P_r summing to I with ‖P_i T P_i‖ ≤ ε‖T‖. r ≥ 1/ε² is necessary.
-- (b) Gurvits: for real-stable generating polynomials, capacity bounds give per ≥ n!/n^n for doubly stochastic matrices (van der Waerden), and per ≥ per_B. Capacity is computed by Sinkhorn scaling.
+- (b) Gurvits: for real-stable generating polynomials, capacity bounds give per ≥ n!/n^n for doubly stochastic matrices (van der Waerden); capacity is computed by Sinkhorn scaling. The Bethe lower bound per ≥ per_B is also Gurvits's, but his proof goes through Schrijver's permanental inequality; proofs by real stability (Anari–Oveis Gharan) and by 2-lifts (Csikvári) came later (Anari–Rezaei §1.2).
 - (c) Real stability of a multi-affine generating polynomial implies negative dependence: it is strongly Rayleigh (Borcea–Brändén–Liggett, from memory).
 
 **Status.** THEOREM ((a) MSS II verified; (b) through Anari–Rezaei; (c) from memory).
@@ -528,8 +545,9 @@ In Note 2's form, excluding a vertex u is Lüders conditioning: ω_σ^{1−e_u} 
 - (a) is SPECULATION for the network. Pave the zero-diagonal matrix T = D^{−1/2} Cov(g) D^{−1/2} − I of the face law. Its top eigenvalue is η_0, and ‖T‖ ≤ max(η_0, 1).
   - Paving splits the units of a layer into r = (6‖T‖/ε)^4 blocks, inside each of which the face law has spectral independence ≤ ε. Random partitions do comparably well on random-like T.
   - The face law would then be near-product inside blocks and coupled only across blocks: a certified block mean field.
+  - At n = 1024 the theorem's block count is vacuous: r = (6‖T‖/ε)^4 ≥ 6^4 = 1296 > n even at ε = ‖T‖. Only the random-partition heuristic is usable at this width.
 
-**Guard for (b) and (c).** The network's face law has positive correlations, so it is not strongly Rayleigh. Real-stability tools (capacity, SLC exchange walks, the U2 conjecture of local-to-global-unlocks) do not apply to it directly. They apply to sign-averaged (matching) objects.
+**Guard for (b) and (c).** The network's face law has positive correlations, so it is not strongly Rayleigh. Real-stability tools (capacity, SLC exchange walks, the U2 conjecture of local-to-global-unlocks) do not apply to it directly. They apply to matching-type objects, such as Godsil–Gutman's sign average of a determinant; the network's sign averages are not of that type (unlock 22(c)).
 
 ---
 
@@ -543,8 +561,8 @@ In Note 2's form, excluding a vertex u is Lüders conditioning: ω_σ^{1−e_u} 
   - A linear layer acts by Minkowski sums, with W = W⁺ − W⁻.
   - A ReLU acts by a convex hull: relu(P − Q) = max(P, Q) − Q.
 - Linear regions are the cones of the common refinement of the normal fans. They correspond to vertices of upper faces.
-- The number of regions is at most ∏_l Σ_{i ≤ d} C(n_l, i) (Thm 6.3).
-- ReLU networks are exactly the continuous piecewise-linear functions (Arora et al.).
+- The number of regions is at most ∏_{l=1}^{L−1} Σ_{i ≤ d} C(n_l, i), for hidden widths n_l ≥ d and a linear output layer (Thm 6.3).
+- ReLU networks with biases are exactly the continuous piecewise-linear functions (Arora et al.). Bias-free ones are exactly the positively homogeneous ones (DERIVED: a max–min lattice representation with linear pieces, and max(a, b) = b + relu(a − b)).
 
 **Status.** THEOREM (verified in Zhang–Naitzat–Lim; the P − Q recursion as in the tropical design §1).
 
@@ -557,7 +575,7 @@ In Note 2's form, excluding a vertex u is Lüders conditioning: ω_σ^{1−e_u} 
 **Statement.**
 - max(u, v) = lim_{T→0} T log(e^{u/T} + e^{v/T}), so relu = lim_{T→0} softplus_T.
 - Each tropical polynomial becomes a subtraction-free exponential sum Z_T(x) = Σ_v e^{⟨v, x⟩/T} over the vertices of its Newton polytope. Minkowski sums become products and convex hulls become sums.
-- For a density p continuous at 0: E softplus_T(Z) = E relu(Z) + (π²/6) T² p(0) + O(T⁴).
+- For a bounded density p that is twice differentiable at 0: E softplus_T(Z) = E relu(Z) + (π²/6) T² p(0) + O(T⁴) (checked, C11). If p is only continuous at 0, the remainder is o(T²).
 - For the network, F(T) = F(0) + c_2 T² + …, where c_2 is a density-weighted Gaussian mass of the tropical hypersurface (tropical design I4).
 
 **Status.** THEOREM (Maslov dequantisation, standard) + DERIVED (tropical design I4).
@@ -593,9 +611,9 @@ In Note 2's form, excluding a vertex u is Lüders conditioning: ω_σ^{1−e_u} 
 **Status.** DERIVED (checked, C7) + measured (tropical design R-P1; transfer-spectrum §3.5).
 
 **Computational meaning.**
-- *Exactly, at the bar:* a unit can be replaced by its linear arrow only if t ≳ 4, where the per-unit error is ≤ 7e-6·s.
+- *Exactly, at the bar:* a unit can be replaced by its linear arrow only if t ≳ 4, where the per-unit error is ≈ 7e-6·s (7.1e-6·s at t = 4).
   - At t = 3 the error is 3.8e-4·s.
-  - At t = 2.05 (gate certainty 0.98) it is 7.3e-3·s, sixty times the bar's rms.
+  - At t = 2.054 (gate certainty 0.98) it is 7.3e-3·s, sixty times the bar's rms when s = 1.
 - *Cheaply:* the non-linear (face-splitting) work of a layer is confined to its hot sub-frame, about half the layer at depth for n = 1024.
 - The tropical skeleton is a cost saving on the frozen half, not an approximation scheme (unlock 29).
 
@@ -618,7 +636,7 @@ In Note 2's form, excluding a vertex u is Lüders conditioning: ω_σ^{1−e_u} 
 ### 32. Crossing from zero to finite temperature needs a structure [T, M, K]
 
 **Statement.**
-- The tropicalisations of the permanent and the determinant coincide: both become the assignment problem, which is solvable in polynomial time.
+- The formal tropicalisations of the permanent and the determinant coincide: both become the assignment problem, which is solvable in polynomial time. The zero-temperature limit of T log|det| can fall below the assignment value, or to −∞, when top-weight permutations of opposite sign cancel (foundations-input-verified.md, C15). Signs survive the limit here too (unlock 29).
 - The finite-temperature permanent is #P-hard (Valiant, from memory).
 - Each known polynomial crossing rests on a structure:
   - *positivity:* the FPRAS for nonnegative permanents by Markov chains (Jerrum–Sinclair–Vigoda, from memory), and the Birkhoff–Hopf contraction of positive transfer operators (unlock 40);
@@ -640,16 +658,17 @@ In Note 2's form, excluding a vertex u is Lüders conditioning: ω_σ^{1−e_u} 
 ### 33. Exchange relations tropicalise: CMI is a function of a y-ratio ⊕ [T, K, M]
 
 **Statement.**
-- Take a Gaussian with covariance M on a ⊔ B ⊔ c. The Desnanot–Jacobi (Dodgson) relation in subtraction-free form reads
+- Take a Gaussian with covariance M on a ⊔ B ⊔ c, with a and c single coordinates (blocks: last bullet). The Desnanot–Jacobi (Dodgson) relation in subtraction-free form reads
 
   det M[aB] det M[Bc] = det M[aBc] det M[B] + (det M[aB|Bc])².
 - Put y = (det M[aB|Bc])²/(det M[aBc] det M[B]). Then I(a : c | B) = ½ log(1 + y).
 - Markov (a ⊥ c | B) is y = 0: the degeneration of the exchange relation to one monomial.
 - Under the tropical limit (log scale, max-plus), ½ log(1 + y) → ½ max(0, log y).
+- For blocks a and c the CMI is ½ log(det M[aB] det M[Bc]/(det M[aBc] det M[B])) = −½ Σ_i log(1 − ρ_i²), over the canonical correlations ρ_i of a and c given B (unlock 46(b); foundations-input-verified.md, Theorem A). A single cross minor no longer suffices.
 
 **Status.**
 - DERIVED from Desnanot–Jacobi (checked, C1).
-- Identifying y with a cluster y-variable of an octahedron-recurrence seed is the user's Idea A. As an organising structure for Markov networks it is SPECULATION.
+- Identifying y with a cluster y-variable of an octahedron-recurrence seed is the user's Idea A. As an organising structure for Markov networks it is SPECULATION here; foundations-input-verified.md §2 derives part of it (separator changes as cube moves; graphical models as coordinate strata for chordal graphs on ≤ 6 vertices) and leaves its CONJECTURE A4* open.
 
 **Computational meaning.**
 - *Exactly:* Gaussian and Gaussian-copula CMIs (unlock 46(d)) are ratios of minors, computable in O(|B|³). Along a nested family of separators they are updated by condensation, one exchange relation per step.
@@ -687,12 +706,12 @@ In Note 2's form, excluding a vertex u is Lüders conditioning: ω_σ^{1−e_u} 
 **Computational meaning.**
 - Any split point l gives an exact meet-in-the-middle identity.
 - The forward state needs to be accurate only on the span of the n pulled-back questions, and the backward object has fixed size n per layer at every depth.
-- Forward compression of signed content is impossible (unlock 18). Backward evaluation at full rank n costs only matrix products: the heisenberg design pulls slices back to the source layer at 4n³ per (source, target) pair, with no intermediate n³ tensor.
+- Forward compression of old signed content in a fixed basis fails in the dictionary measured (unlock 18). Backward evaluation at full rank n costs only matrix products: the heisenberg design pulls slices back to the source layer with about four n × n matrix products per (source, target) pair, and no intermediate n³ tensor.
 
 ### 36. Duhamel telescoping and the bilinear (doubly robust) error ⊕ [H, B, K, F]
 
 **Statement.**
-- Let ν_l be any reference chain with ν_1 = μ_1 and ν_{l+1} = Π(T_l ν_l). Here T_l is the exact push-forward by arrow l and Π is any projection onto a tractable family, for example the Gaussian law with the same mean and covariance (the Gaussian closure, used here only as the reference). Put ρ_l = T_{l−1} ν_{l−1}. Then, exactly,
+- Let ν_l be any reference chain with ν_1 = μ_1 and ν_{l+1} = Π(T_l ν_l). Here T_l is the exact push-forward by arrow l and Π is any projection onto a tractable family. The heisenberg design takes the Gaussian law with the same mean and covariance; that makes covariance propagation, an existing estimator that BRIEF rule 1 admits only as a baseline, the forward backbone. The identity is equally valid with other Π: the product-of-marginals projection, whose chain is the Bethe lift (unlock 14), a face-law family, or a Gibbs family on histories (unlock 7). Put ρ_l = T_{l−1} ν_{l−1}. Then, exactly,
 
   E_{μ_L} r_j − E_{ν_L} r_j = Σ_{l=2}^{L} (ρ_l − ν_l)[g_{l,j}].
 - For any model ĝ_l of the pulled-back question,
@@ -703,7 +722,7 @@ In Note 2's form, excluding a vertex u is Lüders conditioning: ω_σ^{1−e_u} 
 
 **Computational meaning.**
 - *With a controlled error that is a product:* the error of reference plus correction is bilinear, (local defect of one arrow) × (model error of the question).
-- A cheap forward reference and a cheap backward model therefore give an error of the order of the product of their errors. Example: the defects are O(n^{−1/2}) per unit and computed exactly from the reference, so a question model with ≈ 2–3 % relative error meets the bar, which needs the first-order correction to ≈ 2 %.
+- A cheap forward reference and a cheap backward model therefore give an error of the order of the product of their errors. Example, with the Gaussian closure as reference: the total correction is the closure's error, ≈ 2.1e-3 rms per unit at n = 1024, and the bar is ≈ 1.3e-4 (unlock 3). If the defects are computed exactly from the reference, a question model with ≈ 6 % relative error meets the bar. Measured: the first-order heisenberg realisation removes a factor ≈ 10 in raw MSE at n = 1024, i.e. it leaves ≈ 30 % of the correction (CONVERGENCE.md).
 - All old content sits inside the exact g_l, so the identity has no memory truncation. Truncations enter only through ĝ.
 
 ### 37. Centred wall identity: the Malliavin–Stein form of the per-unit mean ⊕ [H, T, F]
@@ -732,6 +751,7 @@ with x' an independent copy of x.
 - CONJECTURE: at He initialisation the centred wall correction p_Z(0)(τ_Z(0) − Var Z) is of the order of the non-Gaussianity of Z, O(n^{−1/2}) per unit, so the centred split is perturbative where the uncentred one is not (unlock 4, guard).
   - Support: τ_Z ≡ Var Z for a Gaussian, and the Stein discrepancy E|τ_Z(Z) − Var Z| controls the distance to the Gaussian (Nourdin–Peccati).
   - Test: §11, tropical.
+  - Constraint from measurement: the face-mass and wall defects together make the Gaussian closure's error, ≈ 2/n rms per unit for 128 ≤ n ≤ 1024 (unlock 3). Either each defect is O(1/n) at these widths, or their O(n^{−1/2}) parts cancel. The test should report the two defects separately, with their width scaling.
 
 **Computational meaning.**
 - *Exactly:* the per-unit mean is drift × face mass + wall density × the wall-conditional mean of a weight whose global mean is Var Z. The weight carries no mean spike.
@@ -760,10 +780,10 @@ with x' an independent copy of x.
 **Statement.**
 - (a) Completely Dirichlet forms on the KMS-embedded L² space correspond one-to-one to KMS-symmetric Markov semigroups (Cipriani; Goldstein–Lindsay).
   - Noncommutative Dirichlet forms are squares of twisted derivations (Vernooij–Wirth).
-  - In the commutative case, the associated Connes distance between states is the Kantorovich–Rubinstein W_1 distance for the intrinsic metric (as read in the nc-Dirichlet digest).
+  - In the commutative case the Connes distance is a Kantorovich–Rubinstein W_1 distance. The digest has this for a complete Riemannian spin manifold, with the geodesic metric (Dirac operator). For a Dirichlet form with carré du champ Γ, sup{|φ(f) − ψ(f)| : Γ(f) ≤ 1} is W_1 for the intrinsic metric when Γ(f) ≤ 1 characterises the 1-Lipschitz functions, as for strongly local forms (from memory).
 - (b) Hence |ω(q) − ω̃(q)| ≤ Lip(q) · W_1(ω, ω̃) for every observable q.
   - For a pulled-back question, Lip(g_{l,j}) is bounded by the norms of the gated propagators from l to L.
-  - Measured gains (transfer-spectrum §2.6): a generic direction has mean-square gain 2E[Φ²] ≈ 0.58–0.95 per layer, a contraction. The mean direction is transported with 3.1–7.8 times the bulk gain after 8–15 layers (n ≥ 256).
+  - Measured gains (transfer-spectrum §2.6): a generic direction has mean-square gain 2E[Φ²] ≈ 0.58–0.95 per layer, a contraction (0.5 at layer 0; one measured layer at 1.07). The mean direction is transported with 3.1–7.8 times the bulk gain after 8–15 layers (n ≥ 256).
 
 **Status.** (a) THEOREM (as read in the nc-Dirichlet digest). (b) DERIVED (Kantorovich–Rubinstein duality) + measured.
 
@@ -778,9 +798,9 @@ with x' an independent copy of x.
 - (a) If p_i/q_i ∈ [c, c e^D], then TV(p, q) ≤ tanh(D/4), and the bound is sharp.
 - (b) For a positive chain with kernels A_l > 0, every Doob transform has Dobrushin coefficient ≤ tanh(Δ(A_l)/4). This covers every pinning and every boundary change. Δ is the projective (Hilbert, cross-ratio) diameter, and the certificate is hereditary.
 - (c) The single-site window sampler has absolute spectral gap ≥ (1 − 2 tanh(Δ/4))/w for every window length w and every boundary condition. Block samplers of length b > e^{Δ/2} − 1 have gap ≥ (b − (e^{Δ/2} − 1))/(w + b − 1) (R6).
-- (d) The restriction of the KMS state to the first t layers depends on the terminal condition at most through ∏_{l ≥ t} tanh(Δ_l/4) in total variation (R7; U1 as a theorem).
+- (d) The restriction of the KMS state to the first t layers depends on the terminal condition at most through ∏_{l ≥ t} tanh(Δ_l/4) in total variation (R7). This has the shape of U1 but is not U1; the B-programme's critique pass relabelled that reading ANALOGY.
 
-**Status.** DERIVED (B-programme Lemmas 6.1–6.3, Thm 6.4, Cor 6.5; checked there).
+**Status.** DERIVED (B-programme Lemmas 6.1–6.3, Thm 6.4, Cor 6.5; checked there). The ingredients are classical: Birkhoff's contraction coefficient, and Dobrushin's condition run through the Dyer–Goldberg–Jerrum path coupling (B-programme §6).
 
 **Computational meaning.** In the positive sector (face masses, Gibbs laws on histories, the rectified mean direction), an estimator can:
 - truncate history after a depth computed from one layer kernel, with a guaranteed total-variation error;
@@ -813,8 +833,8 @@ with x' an independent copy of x.
 **Statement.**
 - Let P be a self-adjoint contraction with spectral gap λ, i.e. spectrum in [−1, 1 − λ] ∪ {1}.
   - The projection onto its top eigenspace is approximated in norm to ε by a polynomial of degree O(λ^{−1/2} log(1/ε)) in P (Chebyshev acceleration).
-  - More crudely, by P^k with k = O(λ^{−1} log(1/ε)).
-- In coarse geometry: with a gap, the global projection is a norm limit of finite-propagation operators (Roe algebra; Kazhdan projections). Ghost projections are the exception (Willett–Yu, as read in the expanders digest).
+  - More crudely, by P^k with k = O(λ^{−1} log(1/ε)), provided the gap is absolute (spectrum in [−1 + λ, 1 − λ] ∪ {1}); with −1 in the spectrum use ((I + P)/2)^k.
+- In coarse geometry: with a gap, the global projection is a norm limit of finite-propagation operators (Roe algebra; Kazhdan projections). For an expander this projection is a non-compact ghost: it lies in the Roe algebra, yet no finite window sees it, and its K-theory class is not assembled from local data (coarse Baum–Connes fails surjectivity; Higson, Higson–Lafforgue–Skandalis, Willett–Yu, as read in the expanders digest).
 
 **Status.** THEOREM (Chebyshev, standard; Roe and Kazhdan as read in the expanders digest; the degree bound from memory).
 
@@ -833,7 +853,7 @@ with x' an independent copy of x.
 - Möbius inversion of log P over subsets (the blackening algebra) gives the interaction potentials Φ_A, which vanish off the cliques.
 - Approximately: if every non-adjacent mixed difference is ≤ δ, then ‖Φ_A‖ ≤ 2^{|A|−2} δ for every non-clique A (hammersley-clifford digest).
 - Pinning (conditioning on a set) preserves the Markov property with the induced graph. Marginalising fills in: it adds edges between the neighbours of the removed set.
-- The quantum version holds for commuting Gibbs states (Brown–Poulin; Leifer–Poulin).
+- Quantum version: Gibbs states of commuting clique Hamiltonians are quantum Markov networks. The converse (full rank, Markov ⇒ commuting clique Hamiltonian) holds on chains, trees and triangle-free graphs, and fails with triangles (Brown–Poulin; Leifer–Poulin; hammersley-clifford digest).
 - Intersection holds quantitatively, with Friedrichs-angle constant 1/(1 − c_F).
 
 **Status.** THEOREM (Hammersley–Clifford; Möbius) + DERIVED (the pointwise approximation and quantitative intersection, in the hammersley-clifford digest and A-unification).
@@ -847,7 +867,7 @@ with x' an independent copy of x.
 
 **Statement.**
 - z_{l+1} = relu(z_l) W_{l+1} is a deterministic function of z_l, so (z_1, …, z_L) is a (degenerate) Markov chain for every network.
-- The face process σ_l = sgn z_l is a function (lumping) of it. A lumping is Markov iff the lumpability condition holds (Kemeny–Snell; Rosenblatt; from memory). Otherwise its memory is created by marginalising the coordinates within faces: fill-in (unlock 43).
+- The face process σ_l = sgn z_l is a function (lumping) of it. It is Markov for every initial law iff the chain is strongly lumpable (Kemeny–Snell); for the given input law the condition is weak lumpability (Rosenblatt; from memory). Otherwise its memory is created by marginalising the coordinates within faces: fill-in (unlock 43).
 - Every Gibbs law on histories is Markov at every layer (unlock 7).
 - Markov at a layer is equivalent to a commuting square of the past, future and present conditional expectations inside the history algebra D (U8; the commutative case is proved).
 
@@ -858,7 +878,7 @@ with x' an independent copy of x.
 - Every coarser state (faces; a Gaussian field plus sites; windows) has a memory cost, and that cost is exactly computable (unlock 45).
 - Measured:
   - dictionary v1's face process has 25–35 % memory (mlp-bridge);
-  - 40 % of the pairwise joint structure feeding the next layer is older than one layer (BRIEF §3).
+  - about 40 % of the pairwise third-order structure feeding the next layer, the (2,1) slice κ3(z_a, z_a, z_b), is older than one layer (BRIEF §3), a measurement made in the cumulant dictionary.
 
   Both are charged to the resolution of the dictionary.
 
@@ -893,17 +913,17 @@ with x' an independent copy of x.
 
   log det M ≤ Σ_C log det M_C − Σ_S log det M_S,
 
-  with equality iff the Gaussian is Markov on the graph (iterated Koteljanskii; equivalently, maximum entropy given the clique marginals). The gap equals the KL divergence to the Markov projection and the sum of the cut CMIs.
+  with equality iff the Gaussian is Markov on the graph (iterated Koteljanskii; equivalently, maximum entropy given the clique marginals). Half the gap, ½(Σ_C log det M_C − Σ_S log det M_S − log det M), equals the KL divergence to the Markov projection and the sum of the cut CMIs.
 - (d) CMI is invariant under injective transformations of each coordinate. So for a Gaussian copula (z_i = T_i(g_i), T_i increasing, g Gaussian), the CMI of z is the Gaussian CMI of the latent correlation.
 
-**Status.** THEOREM ((a), (b), (d) classical; (c) maximum entropy) + checked (C1; C2, where the gap 1.2277 equals Σ CMI = 1.2277 and a tridiagonal precision gives 0 to 4e-16).
+**Status.** THEOREM ((a), (b), (d) classical; (c) maximum entropy) + checked (C1; C2, where half the log-det gap, 1.2277, equals Σ CMI = 1.2277, and a tridiagonal precision gives 0 to 4e-16).
 
 **Computational meaning.**
 - *Exactly and cheaply:* for every quasi-free or copula state, every cut CMI is a ratio of determinants. The Gaussian parts of the faces, signings and markov designs' states are of this kind.
 - The memory budget of unlock 45 then costs O(s³) per separator of size s.
 - The Markov defect can be monitored inside the estimator at no sampling cost.
 
-**Guard.** (d) applies to pre-activations, not to activations. relu is not injective, so the CMIs of a_l and z_l differ.
+**Guard.** (d) needs a Gaussian copula. It can hold for pre-activations (exactly at layer 1; approximately where the state is modelled as a copula), never for activations: relu is not injective, so the CMIs of a_l and z_l differ.
 
 ### 47. Separator along depth, tree across width: pseudorandomness is the switch ⊕ [K, B, M]
 
@@ -911,17 +931,19 @@ with x' an independent copy of x.
 - (a) Separator gluing (junction trees, Hammersley–Clifford, Yang's CMI bounds) is exact, or controlled by CMI. For a general law it costs exp(separator size) (treewidth). For a quasi-free (Gaussian) law, conditioning on a separator is a Schur complement, O(s³), and its CMI is a determinant ratio (unlock 46).
 - (b) Tree gluing (Bethe, cavity, TAP) is approximate, controlled by the decay of correlations along computation trees.
   - It is strong on pseudorandom geometry, and weak at low temperature and on amenable geometry.
-  - Expanders are the worst case for separators, since Yang's boundary gain vanishes on them. They are the best case for trees (unlocks 12, 16).
+  - Expanders are the worst case for separators, since Yang's boundary gain vanishes on them. They are the best case for trees (unlocks 12, 16) under correlation decay: uniqueness for marginals, unfrustrated models for free energies (foundations-input-verified.md §3.2, T3–T4, and §3.3). The competition scores marginals.
 - (c) The network supplies both geometries.
   - Depth is a path of exact separators (unlock 44), but each separator is a whole layer: size n, and not quasi-free because of the faces.
-  - Width is a dense pseudorandom bipartite geometry through fresh weights, where only tree-shaped contractions survive (unlock 13).
+  - Width is a dense pseudorandom bipartite geometry through fresh weights, where only tree-shaped contractions survive, as far as measured (unlock 13: layer 2).
 
 **Status.** DERIVED (a synthesis of the cited theorems: the user's Idea B, checked against the programme's results).
 
-**Computational meaning.** The design rule this produces:
+**Computational meaning.** The design rule it admits under the quasi-free reading (see the bias guard below):
 - Glue along depth through quasi-free separators: Gaussian or Gaussian-copula fields, carried exactly by linear algebra at O(n³) per layer.
 - Attach the non-quasi-free content (faces, hubs, unary non-Gaussian potentials) as local decorations, glued across width by tree rules with the Onsager correction.
 - Charge the residual to two measurable defects: the cut CMIs along depth (unlock 45) and the cycle content across width (unlock 13).
+
+**Guard (bias).** Read literally, this rule is covariance propagation with local cumulant decorations (hubs, sources): the structure of the existing estimators that BRIEF rule 1 admits only as baselines, and the structure on which all six fresh-slate designs converged (CONVERGENCE.md). The principle does not single out quasi-free separators. That choice is made for linear-algebra convenience and is a dictionary item. Separators of other kinds (face states, unlock 8; Gibbs laws on histories, unlock 7; coherent states, unlock 49) are equally admissible and have not been taken to an estimator.
 
 **Guard.** Old content (BRIEF §3) is a cross-layer joint structure with no low-rank form. Neither rule is local there; the Heisenberg evaluation (unlocks 35–36) is the alternative.
 
@@ -932,9 +954,9 @@ with x' an independent copy of x.
   - it is zero on separated pairs iff the field is Markov;
   - it decays across a buffer under strong spatial mixing;
   - it equals λ(G)/d on the two ends of an edge (expander mixing);
-  - on adjacent binary spins it is the geometric mean of the two Dobrushin influences.
+  - on adjacent binary spins it is the largest conditional correlation, at most the geometric mean of the two Dobrushin influences.
 
-  The sharp two-projection inequality is (1 − c) Var_{A∪B} ≤ Var_A + Var_B. Alternating projections converge at rate ‖(E_A E_B)^k − E_{A∩B}‖ = c^{2k−1} (Aronszajn; Kayalar–Weinert; from memory).
+  The sharp two-projection inequality is (1 − c) Var_{A∪B} ≤ Var_A + Var_B. Alternating projections converge at rate ‖(E_A E_B)^k − E_{A∪B}‖ = c^{2k−1}, where E_{A∪B} projects onto N_A ∩ N_B (Aronszajn; Kayalar–Weinert; from memory).
 - (b) For quantum states, I(A : C | B) = 0 iff the Connes cocycle ρ_{BC}^{it} ρ^{−it} stays in M_{AB} ⊗ 1. Quantitatively, I ≤ (1/α + 3) d_A^{2α/(1+α)} q^{2α/(1+α)}, with q the KMS-strip-weighted leakage and d_A² the Jones index.
 
 **Status.** DERIVED (A-unification §3–4) + THEOREM (as marked).
@@ -984,9 +1006,9 @@ with x' an independent copy of x.
 | 3 | ridge reduction, exact mean recursion, two scalars per unit | ● | ● | | ● | ● | ● | the exact target: face mass and wall term per unit per layer |
 | 4 | barycentres as boundary integrals; mean = wall mass | ● | ● | | ● | ● | | the exact interior/boundary duality (uncentred) |
 | 5 | fresh randomness: twirl, one Kraus operator, sign sectors | | ● | ● | | ● | ● | what is annealed-computable, and why the score is not |
-| 13 | power counting for a fresh layer | | ● | ● | | | ● | tree contractions across width suffice; joint structure of the state is necessary |
+| 13 | power counting for a fresh layer | | ● | ● | | | ● | tree contractions across width suffice (measured at layer 2); joint structure of the state is necessary |
 | 14 | Bethe = cover limit; network lift limit | ● | ● | ● | | | | an exact, computable tree reference |
-| 22 | sign-averaging = tree projection | | ● | ● | ● | | | the scored information is sign-odd |
+| 22 | sign-averaging = even-sector projection | | ● | ● | ● | | | the sign average keeps the weight magnitudes, drops the mean alignment, and is neither the annealed nor the Bethe object |
 | 29 | signs are the whole answer at T = 0 | | | ● | ● | ● | | closes the dominant-cone/path route |
 | 30 | frozen units are linear arrows | ● | | | ● | ● | | where face-splitting work lives; exact threshold t ≳ 4 |
 | 33 | CMI = ½ log(1 + y) | | | ● | ● | | ● | exchange relations, their degeneration and tropical limit |
@@ -997,7 +1019,7 @@ with x' an independent copy of x.
 | 40 | positivity quantified | ● | ● | | | ● | ● | certified forgetting in the positive sector only |
 | 44 | depth exactly Markov at full resolution | ● | ● | | | | ● | memory is a property of the resolution |
 | 45 | memory = Σ CMI = KL to the Gibbs family | ● | | | | ● | ● | an exact error budget for any separator state |
-| 47 | separator along depth, tree across width | | ● | ● | | | ● | the gluing rule for each direction of the network |
+| 47 | separator along depth, tree across width | | ● | ● | | | ● | the gluing rule for each direction of the network; its quasi-free reading is a dictionary choice (guard) |
 
 ---
 
@@ -1006,27 +1028,27 @@ with x' an independent copy of x.
 **I. The estimand has an exact skeleton: a linear mean recursion plus two wall/face scalars per unit (unlocks 3, 37, with 1 and 4).**
 - E z_{l+1} = E[a_l] W_{l+1} exactly.
 - For every unit, E relu(z) = μ P(z > 0) + E[δ(z) Γ_z]. Here Γ_z = ⟨∇z, −∇L^{−1}(z − μ)⟩ is a two-replica overlap of input-space gradients, and its mean is exactly Var z.
-- Gaussian closure is the approximation "Gaussian face mass, Gaussian wall density, Γ ≡ Var z". Its error splits exactly into drift × (face-mass defect) + (wall defect).
+- Gaussian closure is the approximation "Gaussian face mass, Gaussian wall density, Γ ≡ Var z". Given the exact drift, its error splits exactly into drift × (face-mass defect) + (wall defect). It is ≈ 2/n rms per unit for 128 ≤ n ≤ 1024, ≈ 16× the bar at n = 1024 (unlock 3).
 - Globally, E f = E Δf: the mean is the Gaussian mass of the tropical hypersurface, which by summation by parts is the statement that barycentres of faces are facet integrals.
-- The uncentred form of this identity puts the mean spike into the wall weights and is non-perturbative (tropical R-E2). The centred form does not.
+- The uncentred form of this identity puts the mean spike and the high-chaos roughness of depth into the wall weights and is non-perturbative (tropical R-E2). The centred form does not.
 
-**II. Fresh randomness organises the width: annealed = twirl, sign average = tree, score = sign-odd (unlocks 5, 13, 22, 12).** W_{l+1} is independent of the law of a_l. Consequently:
+**II. Fresh randomness organises the width: annealed = twirl, sign average = even sector, and the score has three quenched parts (unlocks 5, 13, 22, 12).** W_{l+1} is independent of the law of a_l. Consequently:
 - the annealed one-step map is a perfect expander;
-- averaging over the fresh layer's signs is exactly the paired, tree sector (Godsil–Gutman);
-- the quenched per-unit information is sign-odd. It has two parts: an O(1) coherent alignment with the mean direction, which the exact recursion carries, and an O(n^{−1/2}) incoherent pairing of fresh weights with the state's joint structure.
+- averaging over the fresh layer's signs keeps exactly the even sector, the network analogue of Godsil–Gutman; it keeps the quenched magnitudes |W| and is not a tree object;
+- the quenched per-unit information has three parts: an O(1) coherent sign-odd alignment with the mean direction, which the exact recursion carries; an O(n^{−1/2}) incoherent sign-odd pairing of fresh weights with the state's joint structure; and an O(n^{−1/2}) sign-even part carried by the magnitudes, as large as the second (C9).
 
-Loops formed by fresh weights alone are suppressed by n^{−1/2}. So across width the gluing rule is tree-shaped (Bethe/TAP with the Onsager term, certified only by ℓ² quantities), and everything beyond the mean recursion lives in the state's joint structure.
+Loops closed among the units a fresh layer touches are suppressed by the state's typical pairwise correlation (n^{−1/2} up to a factor that grows with depth; measured at layer 2 only). So across width the gluing rule is tree-shaped (Bethe/TAP with the Onsager term, certified only by ℓ² quantities), and everything beyond the mean recursion and the quenched magnitudes lives in the state's joint structure.
 
 **III. Depth is exactly Markov at full resolution; any coarser state pays a computable sum of CMIs (unlocks 44–47).**
 - Memory is a property of the resolution. Its price is D(P ‖ P_JT) = Σ_cuts CMI. This equals the KL distance to the Gibbs-on-histories (KMS) family and the sum of the Petz sufficiency defects.
-- For quasi-free (Gaussian or Gaussian-copula) separators, conditioning is a Schur complement, and each CMI is a ratio of minors: I = ½ log(1 + y), with y the ratio of the two monomials of the Desnanot–Jacobi exchange relation. Markov is the degeneration y = 0.
-- Design rule: glue along depth through quasi-free separators, attach the face (non-quasi-free) content as local decorations glued across width by trees, and set the window length by the measured CMI decay.
+- For quasi-free (Gaussian or Gaussian-copula) separators, conditioning is a Schur complement, and each CMI is a ratio of minors: for single coordinates, I = ½ log(1 + y), with y the ratio of the two monomials of the Desnanot–Jacobi exchange relation, and Markov is the degeneration y = 0; for blocks, the Koteljanskii ratio (unlock 33).
+- One design rule follows if separators are taken quasi-free: glue along depth through Gaussian or copula fields, attach the face (non-quasi-free) content as local decorations glued across width by trees, and set the window length by the measured CMI decay. That reading reproduces covariance propagation with cumulant decorations, the existing estimators' structure (unlock 47, guard). The quasi-free choice is a dictionary item, not part of the principle.
 
 **IV. States forward, questions backward, with a bilinear error (unlocks 35, 36, 39).**
 - The pairing of the law at layer l with the pulled-back readout is invariant. Duhamel telescoping writes the error of any forward reference exactly as Σ_l (local defect of arrow l)[exact pulled-back question].
 - With a model of the question, the remainder is bilinear: defect × model error.
-- There are exactly n questions per layer, so backward evaluation works at full rank. Forward compression of signed content is impossible (k_ε/n is constant).
-- State errors reach the output through the Lipschitz constants of the questions: contracted in the bulk (gain 2E[Φ²] < 1 per layer) and amplified along the mean direction.
+- There are exactly n questions per layer, so backward evaluation works at full rank. Forward compression of old signed content in a fixed basis fails in the dictionary measured (k_ε/n is constant; unlock 18).
+- State errors reach the output through the Lipschitz constants of the questions: contracted in the bulk (gain 2E[Φ²] ≈ 0.58–0.95 per layer; one measured layer at 1.07) and amplified along the mean direction.
 
 **V. Positivity is the only certified source of forgetting and compression; the scored content is signed (unlocks 40, 18, 29, 12).**
 - The positive sector has explicit, hereditary certificates. This sector is the face masses, Gibbs laws on histories, and the rectified mean direction. Its certificates are TV ≤ tanh(Δ/4), uniform window gaps, forgetting ∏ tanh(Δ_l/4), and one Perron/BBP mode.
@@ -1034,7 +1056,7 @@ Loops formed by fresh weights alone are suppressed by n^{−1/2}. So across widt
   - the free-probability bulk has no gap (PR ≈ n/(2·age), k_ε/n constant);
   - the path sum is a weak-disorder polymer with no dominant path;
   - the zero-temperature Newton-polytope form cancels by 10²³ at n = 1024.
-- No design may rely on decay, low rank, or a tropical skeleton of the signed sector. It must be carried at full rank or evaluated backward. On the dense pseudorandom geometry only spectral (ℓ²) certificates are usable; Dobrushin-type (ℓ¹) ones fail by √n.
+- No design may rely on decay, low rank, or a tropical skeleton of the signed sector in the dictionaries measured so far (propagator, covariance and HOSVD bases for old cumulant slices; dominant cone or path). There it must be carried at full rank or evaluated backward; a new dictionary would have to be tested afresh (BRIEF rule 3). On the dense pseudorandom geometry only spectral (ℓ²) certificates are usable; Dobrushin-type (ℓ¹) ones fail by √n.
 
 ---
 
@@ -1042,18 +1064,19 @@ Loops formed by fresh weights alone are suppressed by n^{−1/2}. So across widt
 
 Each guard is stated with the dictionary item it is charged to (BRIEF rule 3). None of them refutes a general statement.
 
-- **Uncentred wall split** (unlock 4; tropical R-E2). Charged to the dictionary "walls weighted by input-space slope²". The centred identity (37) is the repair at the level of the identity. Whether its wall correction is O(n^{−1/2}) is the CONJECTURE stated in unlock 37, tested as in §11.
+- **Uncentred wall split** (unlock 4; tropical R-E2). Charged to the dictionary "walls weighted by input-space slope²". The centred identity (37) is the repair at the level of the identity. Whether its wall correction is O(n^{−1/2}), or O(1/n) as the closure's measured error suggests, is the CONJECTURE stated in unlock 37, tested as in §11.
 - **The zero-temperature skeleton** (unlocks 29, 30, 32). The 10²³ cancellation, the weak-disorder polymer, and hot gates (a quarter of them at depth 16) are charged to "dominant cone or dominant path as the state". The tropical content of the theory survives as the signed wall identities and as a cost saving on the frozen sub-frame.
 - **Forward compression of signed content** (unlocks 18, 19): no gap, k_ε/n constant, no low-rank form below ≈ 0.3 n. Charged to "carry old content in a fixed small basis". The theory's answer is backward evaluation (unlocks 35–36).
 - **Dictionary v1** (unlocks 8, 44): 25–35 % face-process memory, and a residual of 0.42–0.5 against coboundaries. Charged to the resolution of v1. Unlock 45 prices it exactly.
 - **Positivity hypotheses** (unlocks 7, 8, 40, 41). The certificates apply to Gibbs laws on histories and to positive kernels. Signed transport is outside them, which is a statement about scope, not a failure.
 - **ℓ¹ certificates on dense layers** (unlock 11): Mooij–Kappen, Dobrushin, and BP certificates based on |J| fail by √n. Use ℓ² certificates (unlock 12).
 - **Spectral independence at η ≈ 7** (unlock 17) gives a bounded variance factor, not precision. Mixing certificates built on it are numerically vacuous.
-- **Determinantal, real-stable and totally positive tools** (unlocks 24, 26, 34). K_{n,n} is not Pfaffian, and the face law is neither strongly Rayleigh nor MTP₂. These tools apply to sign-averaged (matching) objects only.
-- **Sign averages** (unlock 22) are wrong per unit at O(1). They are references, never estimators.
-- **Copula invariance** (unlock 46(d)) does not pass through relu: it holds for pre-activations only.
+- **Determinantal, real-stable and totally positive tools** (unlocks 24, 26, 34). K_{n,n} is not Pfaffian, and the face law is neither strongly Rayleigh nor MTP₂. These tools apply to matching-type objects only; the network's sign averages are not such objects (unlock 22(c)).
+- **Sign averages** (unlock 22) are wrong per unit at O(1), and they are not annealed objects: they keep the quenched magnitudes. They are references, never estimators.
+- **Determinantal resummation** (unlock 23). The determinant counts vertex-revisiting walks; the hard-core paths-and-cycles sector is an α-permanent. Charged to the dictionary "quasi-free = degree-≤ 2 sector" (signings design P3(i)).
+- **Copula invariance** (unlock 46(d)) does not pass through relu: it can hold only for pre-activations, and only where they are (modelled as) a Gaussian copula.
 - **Annealed asymptotics** (unlock 31): 9π²/(2l²) overestimates 1 − c_16 by a factor 2.5. Use the iterate.
-- **The user's Idea C** (a periodic quantum circuit from quantum cluster mutations). No computational meaning for quenched means was found; it is not used. SPECULATION.
+- **The user's Idea C** (a periodic quantum circuit from quantum cluster mutations). The construction is THEOREM-level (Kashaev–Nakanishi; foundations-input-verified.md §4). No computational meaning for quenched means was found; it is not used.
 
 ---
 
@@ -1068,37 +1091,40 @@ Each guard is stated with the dictionary item it is charged to (BRIEF rule 3). N
   - Exact linearisation at the bar needs t = |μ|/s ≳ 4 (unlock 30).
   - 1 − c_16 = 0.071, not the asymptotic 0.17 (unlock 31).
 - **bethe.**
-  - The random-lift limit (unlock 14(b)) is an exact, computable tree reference with exact non-Gaussian single-site laws. Use it to measure loop content as quenched minus lift.
+  - The random-lift limit (unlock 14(b)) is an exact, computable tree reference whose non-Gaussian single-site laws are exactly computable; they are the lift's, not the network's. Use it to measure loop content as quenched minus lift; that difference already contains the covariance between parents, at the leading quenched order.
   - Dense certificates must be ℓ², with the Onsager term (unlock 12).
 - **signings.**
-  - The sign-sector decomposition (unlocks 5(d), 22) is the theorem behind §1 Step A.
+  - The sign-sector decomposition (unlocks 5(d), 22) is the theorem behind §1 Step A. Two corrections to DESIGN.md: a block of three legs on one index (W³) has zero mean and is unpaired, so the {3} sector of κ3 is O(n^{−1}), not O(n^{−1/2}) (the bethe design's table agrees; n·rms is constant from n = 256 to 4096); and P3(i) equates the degree-≤ 2 sector with a determinant, which unlock 23 corrects.
   - The Pfaffian guard (unlock 24) closes exact determinantal evaluation on dense layers.
   - Signed-lift control variates (unlock 25) need an identity that makes the network's mean a sign average before they can be used.
 - **heisenberg.**
   - The Lipschitz gains of unlock 39 give an error budget: amplified along the mean direction, contracted in the bulk.
   - The centred identity (unlock 37) is the readout question in Gaussian-space form.
-  - Theorem 2's bilinearity means ĝ needs ≈ 2–3 % relative accuracy, not 2e-4 absolute.
+  - Theorem 2's bilinearity means ĝ needs ≈ 6 % relative accuracy on the correction (≈ 1.3e-4 absolute on a ≈ 2.1e-3 correction at n = 1024), not the bar's absolute accuracy on the mean. The first-order realisation leaves ≈ 30 % (unlock 36).
 - **markov.**
   - For the quasi-free (Gaussian, copula) part of the state, the CMI budget is closed-form (unlock 46). Monitor it inside the estimator.
   - Measure cut CMIs against age to set d (unlock 45).
-  - Copula invariance holds for pre-activations only.
+  - Copula invariance can hold for pre-activations only, and only where they are a Gaussian copula (exactly at layer 1).
 
 ---
 
 ## 12. Numerical checks
 
-Run in the session scratchpad with numpy (scipy is not installed in the whest environment; normal functions come from math.erf), OPENBLAS_NUM_THREADS=1, seeds fixed. Each check supports the claim it is attached to; none is a claim of its own.
+Run in the session scratchpad with numpy (scipy is not installed in the whest environment; normal functions come from math.erf), OPENBLAS_NUM_THREADS=1, seeds fixed. Each check supports the claim it is attached to; none is a claim of its own. C9–C11 were added by the adversarial check; C1, C2, C4, C5 and C8 were re-run then from the script below (C8 at 1e6 samples: E Γ_Z 0.40988 against Var Z 0.40967).
 
 | check | claim | result |
 |---|---|---|
 | C1 | Dodgson exchange relation; I(a:c\|B) = ½ log(1 + y) (unlocks 33, 46) | three random 6 × 6 SPD matrices: relation residual ≤ 2e-15; CMI equal to 10 digits (0.2632371887, 1.2337629262, 0.1329056055) |
-| C2 | chordal (path) junction tree: log-det gap = KL to the Markov projection = Σ CMI; zero iff Markov (unlock 46(c)) | generic 6 × 6: 1.227709586 = 1.227709586; tridiagonal precision: −4.4e-16 and 0 |
+| C2 | chordal (path) junction tree: half the log-det gap = KL to the Markov projection = Σ CMI; zero iff Markov (unlock 46(c)) | generic 6 × 6: 1.227709586 = 1.227709586; tridiagonal precision: −4.4e-16 and 0 |
 | C3 | Sheppard and trivariate orthant formulas (unlock 9) | Monte Carlo (8e6 samples) within 1σ in all six cases, e.g. 0.24689 ± 0.00015 vs 0.24702; 0.08717 ± 0.00010 vs 0.08726 |
 | C4 | Godsil–Gutman: E_ε det(ε ∘ √A)² = per(A) (unlock 25) | exact enumeration over all sign patterns: n = 3, 0.1946602504 = 0.1946602504; n = 4, 1.1579296180 = 1.1579296180 |
 | C5 | arc-cosine iterate from c_0 = 0 (unlock 31) | c_l = 0.318, 0.494, 0.681, 0.834, 0.897, 0.929 (l = 1, 2, 4, 8, 12, 16); 1 − c_16 = 0.0705 against 9π²/512 = 0.1735; l²(1 − c_l) = 43.72 at l = 2000 against 44.41 |
 | C6 | Var(wᵀBw) = 8‖B‖_F²/n² (unlock 5(c)) | n = 200, 2e4 samples: 3.899 against 3.947 (Monte Carlo error ≈ 1 %) |
 | C7 | E relu(Z) − relu(m) = s[φ(t) − tΦ̄(t)] (unlock 30) | 2e7 samples with a control variate: 8.643e-3 vs 8.643e-3; 7.123e-3 vs 7.138e-3; 1.919e-4 vs 1.911e-4; 3.83e-6 vs 3.57e-6 |
 | C8 | centred wall identity (unlock 37), Z = Σ_i v_i relu(⟨x, w_i⟩), d = 3, h = 6, hot unit (μ/s = −0.07) | 4e6 samples: E Γ_Z = 0.40966 vs Var Z = 0.40967 (exact arc-cosine value); smooth form E[(Z−μ) tanh(Z/ε)] = E[tanh'(Z/ε) Γ_Z/ε] at ε = 0.3, 0.1, 0.03: 0.4581/0.4575, 0.4909/0.4898, 0.4954/0.4942; wall form 0.2478 vs 0.2473 (ε = 0.02 kernel); E relu Z = 0.22909 vs μP + wall = 0.22852; uncentred E‖∇Z‖² = 0.550 vs μ² + Var = 0.412 |
+| C9 | sign-even and sign-odd quenched parts of a unit's variance at layer 2 (unlocks 5, 22) | exact Cov(a_1) by the arc-cosine kernel, one network per width: rms of Σ_i (W_ik² − 2/n) Var a_i against Σ_{i≠j} W_ik W_jk Cov(a_i, a_j) is 0.117 vs 0.086 at n = 256 and 0.060 vs 0.044 at n = 1024, on an annealed variance of 1.36; through the Gaussian readout, 8.6e-3 vs 6.4e-3 rms per unit at n = 1024 |
+| C10 | degree-≤ 2 multigraph sector against det^{−1/2} (unlock 23) | two vertices, F̂ = (0, 0, 1): Gauss–Hermite E[He₂(g_1) He₂(g_2)]/4 = ρ²/2 at ρ = 0.1, 0.3, 0.6 to machine precision. Two vertices with F̂ = (1, 0, d): sector 1 + d²ρ²/2 = 1.045, against the quasi-free det^{−1/2}(I − DR) normalised at ρ = 0, 1.250 (d = 0.5, ρ = 0.6) |
+| C11 | softplus temperature expansion (unlock 28) | Z ~ N(0.3, 1), quadrature: (E softplus_T − E relu − (π²/6)T² p(0)) / (E softplus_T − E relu) = −3.9e-2, −1.0e-2, −2.6e-3 at T = 0.2, 0.1, 0.05, i.e. an O(T⁴) remainder |
 
 C8 uses the closed form of the Mehler-smoothed gradient for a two-layer unit. With ∇Z(y) = Σ_i v_i 1[⟨y, w_i⟩ > 0] w_i:
 
@@ -1154,20 +1180,20 @@ print(((Z-mu)*(Z > 0)).mean(), (np.exp(-0.5*(Z/eps)**2)/(eps*np.sqrt(2*np.pi))*g
 | perfect matchings are not local; one edge in all but a c^n fraction | THEOREM (ACFK Thm 1.7, 1.8; verified) | 15 |
 | expansion restores locality (with Gamarnik–Katz); Schrijver's constant at large girth | THEOREM (ACFK Thm 1.9, 1.5; verified) | 14, 15 |
 | per_B ≤ per ≤ 2^{n/2} per_B; Bethe = limit over covers | THEOREM (Gurvits; Anari–Rezaei Thm 4; Vontobel Thm 39, as a lim sup; verified) | 14 |
-| Kasteleyn (planar); 4^g Pfaffians at genus g | THEOREM (planar case via Lieb–Loss, verified; genus count from memory) | 24 |
+| Kasteleyn (planar); 4^g Pfaffians at genus g | THEOREM (planar case via Lieb–Loss, verified; genus count verified in foundations-input-verified.md via Cimasoni–Reshetikhin) | 24 |
 | Pfaffian bipartite graphs (RST, McCuaig) with the Heawood exception | THEOREM (RST verified: the brace characterisation and Little's K_{3,3} criterion) | 24 |
-| Kasteleyn's face rule equals Lieb's flux rule | THEOREM (Lieb 1994 verified: π per square plaquette, 0 per hexagon) | 24 |
-| Godsil–Gutman; roots ≤ 2√(d−1); MSS Ramanujan 2-lifts; Kadison–Singer | THEOREM (Godsil–Gutman, KS/paving verified; Ramanujan 2-lifts from memory) | 22, 26 |
+| Kasteleyn's face rule equals Lieb's flux rule | THEOREM for the determinant's modulus on every planar bipartite graph (Lieb–Loss Thm 3.1); for the half-filled energy only on the lattices of Lieb (1994), false in general (Lieb–Loss §VII(B)) | 24 |
+| Godsil–Gutman; roots ≤ 2√(d−1); MSS Ramanujan 2-lifts; Kadison–Singer | THEOREM (Godsil–Gutman, KS/paving verified; Ramanujan 2-lifts verified in foundations-input-verified.md, MSS I §5) | 22, 26 |
 | "the diagonal is the classical shadow" | ANALOGY: D_0 ⊂ C*(Λ) plays the role of the diagonal masa (unlock 6); paving as a block mean field is SPECULATION (unlock 26) | 6, 26 |
-| tropically per = det = assignment | THEOREM | 32 |
+| tropically per = det = assignment | THEOREM as formal tropicalisations; the zero-temperature limit of the determinant falls below the assignment value when top permutations cancel (foundations-input-verified.md, C15) | 32 |
 | Chin's proof: tropical c-vectors and T-systems, lifted by positivity and periodicity | THEOREM (Chin 2602.15140 Thm 1.1 verified; the lift is the IIKKN periodicity theorem) | 32 |
 | the general permanent is #P-hard; Kasteleyn and JSV cross to finite temperature | THEOREM (from memory); JSV's crossing rests on positivity | 32 |
 | cluster variables and T-systems are matching sums; Kuo condensation; urban renewal; Goncharov–Kenyon; Galashin–Pylyavskyy | THEOREM (from memory); context only, no computational use found | 33 |
 | MTP₂ distributions are faithful | THEOREM with the graphoid hypothesis (Fallat et al. Thm 6.1, verified) | 34 |
 | Idea A: the Dodgson identity, and CMI as a function of its two terms | DERIVED and checked (C1); sharpened to I = ½ log(1 + y) | 33, 46 |
-| Idea A: a cluster structure on Gaussian states with Markov networks as boundary strata | SPECULATION | 33 |
-| Idea B: separator vs tree local-to-global, with pseudorandomness as the switch | DERIVED for the network as unlock 47, refined by quasi-free separators; the quantum half is a CONJECTURE (B-programme 8.4) | 47, 49 |
-| Idea C: a provably periodic quantum circuit | SPECULATION; not used | — |
+| Idea A: a cluster structure on Gaussian states with Markov networks as boundary strata | SPECULATION here; partly DERIVED in foundations-input-verified.md §2 (cube moves change separators; graphical models as coordinate strata on chordal graphs with ≤ 6 vertices); its CONJECTURE A4* is open, and MTP₂ is not the positive part | 33 |
+| Idea B: separator vs tree local-to-global, with pseudorandomness as the switch | DERIVED for the network as unlock 47 (its quasi-free reading is a dictionary choice, unlock 47 guard); the tree half needs correlation decay; the quantum half is a CONJECTURE (B-programme 8.4) | 47, 49 |
+| Idea C: a provably periodic quantum circuit | construction THEOREM-level per foundations-input-verified.md §4; not used | — |
 
 ---
 
@@ -1184,9 +1210,33 @@ print(((Z-mu)*(Z > 0)).mean(), (np.exp(-0.5*(Z/eps)**2)/(eps*np.sqrt(2*np.pi))*g
 - E. H. Lieb, *Flux phase of the half-filled band*, Phys. Rev. Lett. 73 (1994) 2158.
 - I. Chin, *Half-periodicity of Zamolodchikov periodic cluster algebras*, arXiv:2602.15140. Thm 1.1 and the structure of its proof.
 - S. Chien, L. Rasmussen, A. Sinclair, *Clifford algebras and approximating the permanent*. The Godsil–Gutman estimator and the critical ratios quoted in unlock 25.
+- C. Moore, A. Russell, *Approximating the permanent via nonabelian determinants*, arXiv:0906.1702. §1: the critical ratios of Karmarkar et al. and Chien–Rasmussen–Sinclair, and the absence of a polynomial-time algorithm for the Clifford determinants beyond the quaternions (opened by the adversarial check).
 - J. M. Mooij, H. J. Kappen, *Sufficient conditions for convergence of the sum-product algorithm*, arXiv:cs/0504030.
 - N. Robertson, P. D. Seymour, R. Thomas, *Permanents, Pfaffian orientations, and even directed circuits*, Ann. of Math. 150 (1999) 929–975 (with Little's theorem as stated there).
+
+**Re-opened by the adversarial check (1 Oct).** ACFK (Thms 1.2, 1.5, 1.7–1.9, 3.3, 3.5, Remark 3.6, Thm 4.1), Anari–Rezaei (Thms 3–4, §1.2, the tight example), Vontobel (Def. 38, Thm 39), Zhang–Naitzat–Lim (Thm 5.2, Props 5.5–5.6, Thm 6.3 with its hypotheses), MSS II (Cor 1.5, Thm 6.1, the r ≥ 1/ε² remark), Fallat et al. (Thms 5.3, 6.1, Example 6.2, §4.1), Chin (Thm 1.1, Thm 2.14 = the IIKKN periodicity theorem), Mooij–Kappen (Cor. 3, §V, Table I), RST (main theorem, Little's theorem, Algorithm 9.7 in O(n³)), Lieb–Loss (Thm 3.1, §VII(B), Appendix).
 
 **Through the programme's digests (cited by digest section).** Chen–Rouzé arXiv:2504.02208; Yang arXiv:2609.38007; Hanin–Nica arXiv:1812.05994; ALO, CLV, Chen–Eldan, Alev–Lau, Oppenheim, Dinur–Kaufman (hdx digest); EKZ, Hoory–Linial–Wigderson, Willett–Yu (expanders digest); Cipriani, Goldstein–Lindsay, Vernooij–Wirth, Carlen–Maas (nc-Dirichlet digest); Hammersley–Clifford, Brown–Poulin, Leifer–Poulin (hammersley-clifford digest); Fawzi–Renner and JRSWW (Chen–Rouzé digest).
 
 **From memory (standard; not re-opened).** Isserlis 1918; Sheppard 1899; Plackett 1954; Price 1958; Kahane 1986; Cover 1965; Wendel 1962; Kemeny–Snell 1960; Sudakov 1978; Diaconis–Freedman 1984; Mingo–Speicher 2006; Weitz 2006; Mossel–Sly 2013; Kesten–Stigum 1966; Godsil–Gutman 1981; Godsil 1981; Marcus–Spielman–Srivastava, Interlacing Families I; Barvinok 2016; Patel–Regts 2017; Borcea–Brändén–Liggett 2009; Valiant 1979; Jerrum–Sinclair–Vigoda 2004; Galluccio–Loebl 1999; Tesler 2000; Füredi–Komlós 1981; Bai–Yin 1988; Bolthausen 2014; Aronszajn 1950; Kayalar–Weinert 1988; Hubbard 1959 and Stratonovich 1957; Cho–Saul 2009; Nourdin–Peccati (Stein kernel and Malliavin calculus, 2009–2012); Houdré–Pérez-Abreu 1995; Maslov dequantisation.
+
+---
+
+## Critique log (adversarial check, 1 Oct 2026)
+
+Every claim was re-derived or re-computed; the sources marked as verified were re-opened (Sources). Numbers checked in the scratchpad are C1–C11. Corrected:
+
+1. **Unlock 3, §9 I, unlock 36, §11 heisenberg (scale of the closure error).** The note used the BRIEF's superseded 4e-5 for the Gaussian closure at n = 1024 and wrote "0.2 n^{−1/2} rms, next order right to 2 %, ĝ to 2–3 %". Measured: raw 4.3e-6, ≈ 2.1e-3 rms per unit, scaling ≈ 2/n for 128 ≤ n ≤ 1024. The required relative accuracy is ≈ 6 %.
+2. **Unlocks 5, 22, §8 row 22, §9 II (sign sectors).** "The quenched per-unit content is sign-odd" and "sign average = annealed or tree object" were false. The sign average keeps the quenched magnitudes |W|, whose O(n^{−1/2}) contribution to each unit's variance is as large as the sign-odd edge term (C9). The sign average, the annealed average and the Bethe lift are three different references. The averaged covariance map is twice the conditional expectation onto the scalars.
+3. **Unlock 23 (determinantal sector).** "The degree-≤ 2 multigraph sector equals det^{−1/2}(I − DR)" was false; it repeated the signings design's P3(i). The determinant sums vertex-revisiting walks; the hard-core sector is an α-permanent (C10).
+4. **Unlock 4 guard, §9 I.** E‖∇z‖² is not ≈ μ² + s² at depth: it is 6.4 (μ² + s²) at layer 16 (tropical R-E2). The excess is the chaos over-count of unlock 37, not only the mean spike.
+5. **Unlock 46(c), C2.** The log-det gap is twice the KL divergence and the CMI sum; the checked number was already half the gap.
+6. **Unlock 6.** N(σ) counts forward paths starting at σ (Note 1 §3.1), not histories ending at σ.
+7. **Unlock 2.** The barycentre vector state of Note 2 and the commutative atom-conditioned ω_σ were identified; for the latter, p_σ(1 − e_u) = 0.
+8. **Unlock 40(d).** "U1 as a theorem" reversed the B-programme's own relabelling to ANALOGY.
+9. **Unlock 42.** P^k needs an absolute gap; ghost projections are the gap mechanism's instance for expanders, not an exception to it.
+10. **Unlock 11.** Mooij–Kappen's spectral condition does not dominate Dobrushin's (their Table I).
+11. **Unlock 26.** Gurvits's per ≥ per_B goes through Schrijver's inequality, not capacity; MSS paving is vacuous at n = 1024 (r ≥ 1296).
+12. **Smaller.** Unlock 8 (√μ_1, not μ_1); unlock 9 (non-centred layers need Owen's T or a quadrature; ZNL hypotheses); unlock 12 ("usable certificate" contradicted unlock 17); unlock 14 (the lift's single-site laws are not the network's); unlock 15 (zero-freeness is sufficient, not "exactly when"; activity 1 vs any activity); unlock 16 (Mossel–Sly is ferromagnetic); unlock 17 (Ψ has zero diagonal; the surrogate's 15–29 is at n = 128); unlock 18 (undefined label KNOWN-LINK; the negative result is stated for its dictionary); unlock 22(b) (the path tree is not the universal cover); unlock 24 (Lieb's energy result is lattice-specific); unlock 25 (Clifford determinants are not known to be computable efficiently); unlock 27 (Arora's theorem needs biases); unlock 28 (O(T⁴) needs smoothness at 0); unlock 30 (7.1e-6 at t = 4; t = 2.054; "sixty times" holds for s = 1); unlock 32 (formal tropicalisation only); unlock 33 (singletons; blocks need canonical correlations); unlock 39 (Connes distance = W_1 as the digest has it; one layer at gain 1.07); unlock 43 (quantum HC fails with triangles); unlock 44 (the 40 % is the (2,1) third-order slice; strong vs weak lumpability); unlock 46 guard (copula invariance needs a copula); unlock 48 ("at most" the geometric mean; E_{A∪B}).
+
+Bias, flagged in place (unlock 3, unlock 36, unlock 47 guard, §9 III and V). The note's design rule, "glue along depth through quasi-free separators and decorate across width", reads as covariance propagation plus cumulant hubs and sources. BRIEF rule 1 admits these existing estimators only as baselines, and all six fresh-slate designs converged on them (CONVERGENCE.md). The Duhamel identity of unlock 36 was quantified only with the Gaussian closure as Π. The EscAI oracle, a cumulant-ladder measurement, was called "the precise content" of an exact identity. Negative results measured in one dictionary (old cumulant slices in propagator bases) were stated for "signed content" in general.
