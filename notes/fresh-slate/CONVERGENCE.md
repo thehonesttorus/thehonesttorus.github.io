@@ -49,3 +49,23 @@ Every principle so far has been realised as "a Gaussian reference plus carried c
 ## Round 3 (from 20:45 UTC): the local-to-global essence programme
 
 At the user's direction (`notes/essence/INPUT-2026-10-01-local-to-global.md`), six deep-dive teams study the "forget one piece, re-randomise, converge to global" process where it delivers large computational payoff, its noncommutative generalisation, and non-naive transfers to the memory problem: A permanents and polynomials, B pseudorandomness of layered computation, C free probability and criticality, D elimination and sparsification, E tilings and conic geometry, F the noncommutative framework and synthesis (`notes/essence/BRIEF.md`). In parallel: costate measures the dilation-sector share of the memory at n = 1024; region measures a CP-merged old tier and reprices FC under the wall-feasible Strassen mix; bethe tests a localization estimator conditioned on the collective coordinate.
+
+## Round 3, first results (21:20 UTC)
+
+Measured at n = 1024 (MLP 0 unless stated). Raw = final MSE minus truth noise.
+
+| variant inside FC | raw | source |
+|---|---|---|
+| FC, all ages | 3.24e-8 (6 MLPs: 3.03e-8) | costate `results/fcdil_w1024.jsonl`, region |
+| ages ≤ 2 only | 1.77e-6 | costate |
+| ages ≤ 2 + dilation sector of older content (oracle amplitudes) | 7.67e-7 | costate |
+| ages ≤ 4 only | 7.79e-7 | costate |
+| ages ≤ 4 + dilation sector of older content (oracle / law-level) | 3.84e-7 / 3.71–4.35e-7 | costate |
+| old content (age > 2) CP-merged to R = n atoms per layer (6 MLPs) | 2.02e-7; merge alone 3,510 u | region §8 |
+
+- **The dilation lead (D1) fails at FC precision.** Carrying the conserved scale sector of the old content recovers about 2× of what dropping it costs, and leaves FC 12× worse at a window of 4. The coherent sector is real but carries only part of the readout-relevant memory.
+- **CP merging is closed** on both accuracy (rank-limited: 8 ALS sweeps change nothing) and cost.
+- **FC repriced under the wall-feasible Strassen mix:** ≈ 855 products, ≈ 557 u = 0.544 B, adjusted 1.65e-8 (region §8).
+- **Essence team v0s agree on one verdict:** the local-to-global machinery explains why memory is expensive and measures each obstruction, but supplies no carrier. Team A: the nonnegative (Bethe, diagonal-pairing) sector holds about 80 % of memory energy at depth but leaves 0.47–0.70 relative error; additive signed sums defeat Clifford/quaternion sketches; the gate law is not Lorentzian. Team B: the hybrid argument holds in strong form (fresh-weight orthogonality) but none of the gaps does (effective λ ≈ 1, width ∝ n). Team C: content splits into a dilation Jordan sector (coherent across ages, odds law s/(1 − s) = 0.31·k) and a free sector (cross-age cosines ≤ 0.03, energy × g³ per step, PR = n/(2(age + 1)) to 1 % up to age 5); free energy beyond age 3/5/7 is 5.6/2.9/1.3 % of final D21 energy. Team E: an annealed conic "wedge calculus" reproduces the transfer coefficients and the old-content age law from 2-D conic geometry, but the binding object is quenched.
+- **Interpolation (final):** in the Wiener chaos of the *weights*, 92–93 % of per-neuron κ3 variance at depth is chaos 1, σ²(Wᵀt)_p with t = Cov(|ã|², a), which has an O(n²) recursion; the (2,1) slice's chaos-1 part is the rank-one spike. Conditioning on the top principal coordinate at n = 1024 removes ≈ 78 % of excess kurtosis, but that coordinate is only mildly non-Gaussian there (κ3 0.18, κ4 0.04).
+- **Reading.** Every coherent, annealed or symmetric sector (dilation, Bethe, trace, chaos-1-in-weights) is cheap and worth about 2×. The quenched, signed, incoherent free sector of old content is what costs, and it is needed to 5–10 %.
