@@ -43,3 +43,8 @@ the covariance between the memory field Q_t (an n-vector of second-chaos variabl
 - Team A: section 3. The pieces are second-chaos elements with squared-correlation angles; hafnian and Bethe structure of their Gram matrix.
 - Team E: section 2. The frames Γ_t are the linear maps on the cones of the activation fan; the static tensor is a sum over births at cone walls.
 - Team F: all of it, for the dictionary: C6/C7 as the fixed-point algebra of the dilation action, C2/C3 as the failure of a commuting square at every cut, section 4 as the classification of sectors.
+
+## Correction (21:10 UTC, from team C's final and team D's §3.7)
+
+- **Section 4 overstated the power law.** The free sector's *energy* decays geometrically, by (1.02–1.10)·g³ per step with g = 2E[Φ²] = 1 − 2E Var(gate) (about 0.13 per step at layer 0, 0.6 at depth). Only its *rank* follows a power law (participation ratio n/(2(age + 1))). The mixing gap comes from gate variance, not from the propagator spectrum. The non-mixing part is exactly the dilation sector.
+- **The age-multiresolution seed survives as an oracle.** Reading each source of age a in the top 2n/a right singular directions of its own propagator is lossless at n = 1024 (team D: 3.31e-8 against FC's 3.24e-8 on MLP 0, 1.95e-8 against 1.81e-8 on MLP 1; 1.5n/a gives 3.71e-8, n/a gives 8.0e-8). The cost is harmonic, about 2n·ln t per target, i.e. O(n³ log L): roughly half of FC. A causal (QR-transported) version is being tested by team D.
