@@ -314,7 +314,7 @@ A closure built on that description is worse than the probit (Gaussian) closure 
 
 **Checks (C3).** The orthants met by K, sampled with a ≥ 0 at random, are lower bounds limited by sampling:
 
-| n | orthants met by the cone of rows of W | met by Gaussian input (layer 0), same samples | 2ⁿ |
+| n | orthants met by the cone of rows of W (8·10⁵ draws of a ≥ 0) | met by Gaussian input, layer 0 (4·10⁵ draws) | 2ⁿ |
 |---|---|---|---|
 | 8 | 105 | 250 | 256 |
 | 10 | 317 | 896 | 1024 |
@@ -925,7 +925,7 @@ All runs are in the scratchpad (`csynth/`), not committed. Width-128 checks use 
 - Max-ent fit: Newton's method on the pairwise binary exponential family matching all one- and two-gate marginals.
 - Möbius coefficient on the triple: Σ_{S⊆{1,2,3}}(−1)^{3−|S|} log P(1_S).
 
-**A5. The cone test.** Draw a ≥ 0 (|N(0,1)| entries), take sign(aW) for 10⁶ draws, and count distinct patterns. Repeat with x ~ N(0, I) for the Gaussian layer.
+**A5. The cone test.** Draw 8·10⁵ points a ≥ 0: half with |N(0,1)| entries, half also masked to random faces of ℝⁿ₊. Take sign(aW) and count the distinct patterns. Repeat with 4·10⁵ draws of x ~ N(0, I) for the Gaussian layer.
 
 **A6. The tracker test.** Run `tracker.run_sources(W, lay, ad=…)` on a `--k3` atlas.
 - The old pool is the sum of the sources with s < l − w.
@@ -938,7 +938,7 @@ All runs are in the scratchpad (`csynth/`), not committed. Width-128 checks use 
 
 - **Bridge digests:** [arxiv-2609.38007.md](../../digests/bridges/arxiv-2609.38007.md) §8 and §12; [arxiv-2504.02208.md](../../digests/bridges/arxiv-2504.02208.md) §§1.3–3.7, 5.3, 6.1, 7.1; [hammersley-clifford.md](../../digests/bridges/hammersley-clifford.md) §§3.1, 4.1–4.3; [expanders.md](../../digests/bridges/expanders.md) §§3, 9.10, 11.3–11.7; [hdx-spectral-independence.md](../../digests/bridges/hdx-spectral-independence.md) §§3.3–3.5; [nc-dirichlet-lindblad.md](../../digests/bridges/nc-dirichlet-lindblad.md) §4.6; [transfer-spectrum-measurement.md](../../digests/bridges/transfer-spectrum-measurement.md) §§0, 2.1–2.7, 3.4–3.5, 4, 5 (B2, B4–B8); [chat-2609.38007-retrieval-status.md](../../digests/bridges/chat-2609.38007-retrieval-status.md) §1.
 - **Programme:** [research-program.md](../../research-program.md); [conditional-arrow-algebra.md](../../conditional-arrow-algebra.md); [simplicial-complex-as-decomposition.md](../../simplicial-complex-as-decomposition.md); [local-to-global-unlocks.md](../../local-to-global-unlocks.md); [mlp-bridge.md](../../mlp-bridge.md).
-- **Competition:** [competition-plan.md](../../competition-plan.md) §§0, 3.1, 6a, 6b, 7 and the revision log; [fresh-slate/BRIEF.md](../../fresh-slate/BRIEF.md) §§1, 3; [fresh-slate/foundations-unlocks.md](../../fresh-slate/foundations-unlocks.md) unlocks 1, 35 and 36 (cross-references only).
+- **Competition:** [competition-plan.md](../../competition-plan.md) §§0, 3.1, 6a, 6b, 7 and the revision log; [phase2-intel-2026-10-01.md](../../digests/phase2-intel-2026-10-01.md) (board numbers); [fresh-slate/BRIEF.md](../../fresh-slate/BRIEF.md) §§1, 3; [fresh-slate/foundations-unlocks.md](../../fresh-slate/foundations-unlocks.md) unlocks 1, 35 and 36 (cross-references only).
 - **Stream reports:** [oracle1024](../oracle1024/REPORT.md), [old-content](../old-content/REPORT.md) (and `results/tracker_A1.txt`), [chain128](../chain128/REPORT.md), [coef-ensemble](../coef-ensemble/REPORT.md), [costmodel](../costmodel/REPORT.md), [submission](../submission/REPORT.md), [est-accuracy](../est-accuracy/REPORT.md) (stopped), [est-cost](../est-cost/REPORT.md) (stopped).
 - **Tools used for the checks:** [experiments/oracle_k3.py](../../experiments/oracle_k3.py), [experiments/moment_atlas_np.py](../../experiments/moment_atlas_np.py) atlases, [old-content/tracker.py](../old-content/tracker.py), plus scratch scripts whose formulas are in the Appendix.
 - **From memory, as marked:** Bai–Yin / Latała; Mehler; Leonov–Shiryaev; Kotecký–Preiss; TAP / Plefka; Lebowitz–Percus–Verlet (1967); Roberts–Yaida–Hanin (2022).
