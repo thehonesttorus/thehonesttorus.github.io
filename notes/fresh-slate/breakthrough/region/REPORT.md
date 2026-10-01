@@ -1,36 +1,41 @@
 # Breakthrough stream "region": the feasible region at n = 1024, and a design inside it
 
-*Status: v1 (1 Oct 2026, late evening UTC). Part 1 measured on bench MLPs 0–2 of w1024_d16. Part 2: a first-order
-Wiener-chaos estimator ("FC") measured end to end at n = 1024 on MLPs 0–2, with its fourth-order input supplied by the
-atlas (oracle) and its compressions priced. MLPs 3–5 are being added. Every number is at n = 1024, depth 16, on the
-shared bench networks.*
+*Status: v2, final for this session (2 Oct 2026, ≈ 02:30 UTC). Part 1 is measured on bench MLPs 0–2 of w1024_d16.
+Part 2 is a self-contained first-order Wiener-chaos estimator ("FC"), measured on all 6 bench MLPs at n = 1024 and
+paired with the exact Gaussian closure. Every number is at n = 1024, depth 16, on the shared bench networks.*
 
 **Summary.**
 
 1. **The books close.** At n = 1024, the exact Gaussian closure's final MSE is the incoherent sum over layers of its
-   local errors times measured transfer coefficients K(l). The priced sum matches the measured MSE to 6 %, 46 % and 2 %
-   on MLPs 0, 1 and 2.
-2. **Where the closure's error is.** About 70 % of it is the non-Gaussian correction to the off-diagonal post-activation
-   covariance and about 30 % the per-neuron mean readout. The first-order bivariate Edgeworth term built on the joint κ3
-   slice D21, plus the joint κ4 (2,2) slice, removes the covariance part to 4–6e-9 (×700–900).
-3. **What any estimator at the bar must carry** (§4):
+   local errors times measured transfer coefficients K(l), to 2–6 % (46 % on one MLP, where errors cancel between
+   layers).
+   - ≈ 70 % of that MSE is the non-Gaussian correction of the off-diagonal covariance.
+   - ≈ 30 % is the per-neuron mean readout.
+2. **Necessary conditions** (§4). Any estimator at the bar must carry:
    - a dense covariance arrow, accurate to ≈ 0.3 % of ‖C_off‖_F at layers 6–12;
-   - D21 at every layer to ≲ 5–10 %, including content of every age. Dropping ages > 4 costs 25× the bar at n = 1024;
-   - the joint fourth cumulant **only through n-vectors**: the diagonal κ4 and the column means of the (2,2) slice. The
-     full n² slices and the (3,1) slice are not needed, and a 30 % error in the mean field costs nothing;
-   - the diagonal κ3 and κ4 for the readout at layers ≥ 5.
-4. **A representation that carries all of this.** FC is first-order Wiener chaos: two-time cross-covariances, every
-   age, exact slices. With the κ4 mean field supplied by the atlas it reaches raw **7.6e-9, 2.6e-8 and 3.8e-8** on
-   MLPs 0–2 (mean 2.4e-8). That is about 200× below the exact Gaussian closure and in the leaders' accuracy class.
-   Without κ4 it reaches 3.5e-7.
-5. **Its cost is the problem.** Dense, FC costs ≈ 0.8 B. The old content does not compress into subspaces at
-   n = 1024:
-   - per-source rank n/4: 4× worse;
-   - a shared Oseledets subspace of dimension n/4: 6× worse;
-   - dimension n/2: lossless, but no cheaper.
+   - D21 at every layer to ≲ 5–10 %, including content of every age (dropping ages > 4 costs 25× the bar);
+   - the joint fourth cumulant **only through 2 n-vectors per layer**: the diagonal κ4 and the column means of the
+     (2,2) slice. These must be within ≈ 30 %: × 0.7 costs nothing, × 0.3 costs 3×, and omitting the column means
+     costs 6×;
+   - the diagonal κ3 and κ4 for the readout.
 
-   The open problem is therefore exactly two objects: an O(n³)-per-layer carrier of all-age D21 to ≈ 7 %, and a carrier
-   of the κ4 mean field to ≈ 30 % (§6).
+   Not necessary: the n² κ4 slices, the (3,1) slice, second-order Edgeworth on the covariance, coherent directions,
+   and early-layer accuracy.
+3. **Sufficient construction** (§5). FC carries first-order chaos with two-time cross-covariances, every age, exact
+   slices, and a new O(n²)-per-layer mean-field recursion for the κ4 vectors. The fresh-weight lemma makes the
+   all-distinct κ4 drop out of every index sum. It scores raw **3.0e-8 ± 0.35e-8 on all 6 bench MLPs** (exact Gaussian
+   closure: 4.10e-6, ≈ 135× worse). Its D21 error compounds from 2.5 % to 10 % with depth; the second-order birth
+   diagrams are the identified next lever.
+4. **Cost verdict.** Dense, FC costs ≈ 840 units (0.82 B), ≈ 0.5 B with Strassen. Adjusted that is ≈ 1.5–2.5e-8, so
+   it does not compete. Every cheap form of the old content was measured and fails at n = 1024:
+   - a per-source rank-256 row basis: 4× worse;
+   - a shared Oseledets subspace q = n/4: 6× worse (q = n/2 is lossless but no cheaper);
+   - Wick-atom pruning to n/4: 100× worse;
+   - slice-atom pruning to n/2: 2.5× worse.
+
+   Each source is an atom-complete sum: all n atoms carry comparable energy. In a bilinear (matrix-product)
+   realisation the all-age D21 then costs ≥ ≈ 4 products per (source, target) pair, i.e. ≥ 480 units (§6). The leaders'
+   ≤ 154 units imply they do not compute this object atom by atom. §6 states the remaining open problem precisely.
 
 Files: `gclose.py` (exact bivariate-Gaussian closure), `lr_probe.py` (transfer coefficients), `mc1024.py` +
 `mc_analyse.py` + `price.py` (n = 1024 Monte Carlo atlas in two independent halves, noise-corrected norms, pricing),
@@ -240,75 +245,99 @@ field (the fresh-weight lemma, §1).
   D21(z_l)_ab = Σ_{s<l} Σ_r w2_{s,r} [ Y_ra² Z_rb + 2 Y_ra Z_ra Y_rb ].
 
   This is the Heisenberg/Duhamel identity written in the chaos basis.
-- **Slices.** Repeated indices on the same neuron are O(1), not suppressed by correlations, so each layer adds a
-  slice-supported source: the exact Gaussian per-pair and per-neuron slices (1-D Gauss–Hermite), corrected to first
-  order by the current D21 and κ4 slices of z, minus what the chaos already carries.
-- **The rest.** The covariance arrow is the exact Gaussian kernel plus the first-order bivariate Edgeworth terms of §3.
-  The readout and variance are first-order Edgeworth.
-- **κ4.** FC has no κ4 carrier of its own yet. For the measurements below the κ4 mean field (N7) is taken from the
-  atlas: an oracle input of 3 n-vectors per layer.
+- **Slices.** Repeated indices on the same neuron are O(1), not suppressed by correlations. So each layer adds a
+  slice-supported source with atoms (Z_r, Z_r, (ΔZ)_r). Δ = the exact Gaussian per-pair and per-neuron slices of κ3(a)
+  (1-D Gauss–Hermite with the conditional ReLU mean), plus their first-order Edgeworth corrections by the current D21,
+  diagonal κ4 and K22 column means, minus what the chaos already carries.
+- **Fourth order: the mean-field recursion** (`k4mf.py`, new). Per layer:
+  - (i) per-neuron κ4(a) by univariate Edgeworth (κ3/6, κ4/24, κ3²/72 terms on truncated-normal derivatives);
+  - (ii) column means of the post-activation (2,2) slice from the Gaussian Mehler terms (C, C², Cov²), the K22 and
+    D21 corrections;
+  - (iii) transport by W_{l+1} using (1/n) Σ_i W_ri W_r'i → (2/n) δ_rr' in coherent sums.
 
-**Measurements** (raw = final MSE − bench truth noise):
+  The all-distinct κ4 is dropped. By the fresh-weight lemma it enters every index sum incoherently. Cost O(n²) per
+  layer. Against the atlas it tracks the K22 column means to 6–35 % (ratio 0.70–1.00 by depth) and the diagonal κ4 to
+  30–55 %, which is inside the N7 tolerance.
+- **The rest.** The covariance arrow is the exact Gaussian kernel plus the first-order bivariate Edgeworth terms of §3
+  (D21, K22, K31). The readout and variance are first-order Edgeworth with κ3 and κ4.
 
-| variant | MLP 0 | MLP 1 | MLP 2 |
-|---|---|---|---|
-| exact Gaussian closure | 5.00e-6 | 4.75e-6 | 4.72e-6 |
-| FC, second chaos only, no κ4 | 5.2e-7 | | |
-| FC, exact slices, no κ4 | 3.5e-7 | | |
-| **FC, exact slices, κ4 mean field supplied** | **3.8e-8** | **7.6e-9** | **2.6e-8** |
-| same, per-source row basis k = 256 for ages > 2 | 1.4e-7 | | |
-| same, shared Oseledets subspace q = 256 for ages > 2 | 2.3e-7 | | |
-| same, shared Oseledets subspace q = 512 for ages > 2 | 3.6e-8 | | |
+**Bench measurement, w1024_d16, all 6 MLPs** (`run_bench.py`, `results/bench_fc_mf_*.json`; raw = final MSE − bench
+truth noise):
 
-D21 error of FC against the atlas: 2.4–2.9 % at layer 2, 4.6–4.9 % at layer 5, 6.2–6.5 % at layer 8, 8–8.6 % at layer 11
-and 9.6–10 % at layer 14, the same on all three MLPs. The growth is the compounding of the omitted
-second-order (hyperedge) birth diagrams. oracle1024's leg-partition closure shows they take the one-step error from
-≈ 4 % to ≈ 1 %. Adding them should take FC below 1e-8 by N2's ε² law.
+| MLP | 0 | 1 | 2 | 3 | 4 | 5 | mean ± s.e. |
+|---|---|---|---|---|---|---|---|
+| exact Gaussian closure | 5.00e-6 | 4.75e-6 | 4.71e-6 | 3.53e-6 | 3.51e-6 | 3.10e-6 | 4.10e-6 ± 0.33e-6 |
+| **FC (self-contained)** | **3.24e-8** | **1.81e-8** | **3.03e-8** | **2.28e-8** | **3.89e-8** | **3.96e-8** | **3.03e-8 ± 0.35e-8** |
 
-**Cost at n = 1024 (dense, units).** There are 120 (source, target) pairs. Each needs:
-- 2 products for Wick: the Z update and Y = S Φ Z;
-- 2 for the Wick contractions;
-- 3 for the slice source.
+For reference: the public chain is ≈ 2.1e-8 at 0.25 B; the leaders 1.14–1.5e-8 at 0.11–0.15 B.
 
-Total ≈ 840 units, plus a 30-unit covariance arrow: **≈ 0.85 B**. With Strassen L5 ≈ 0.5 B. The 40-node quadrature
-of the birth slices is negligible in FLOPs but ≈ 800 calls per layer; it needs a closed form or ≤ 8 nodes for the
-residual cap.
+**Ablations and oracles (MLP 0 unless stated):**
 
-**Compression at n = 1024 fails for the old content.**
-- A per-source rank-256 row basis loses 4×.
-- A shared Oseledets subspace (the top right-singular subspace of the long gated product, which all old sources'
-  legs approach) loses 6× at q = n/4 and nothing at q = n/2. At q = n/2 the aggregated core readout costs n q³ ≈ 60
-  units per layer.
+| variant | raw |
+|---|---|
+| FC without κ4, second chaos only | 5.2e-7 |
+| FC without κ4, exact slices | 3.5e-7 |
+| κ4 diagonal-source model only (per-neuron Gaussian κ4 transported, `k4own`) | 2.7e-7 |
+| κ4 from the atlas: full slices, used only in birth slices | 2.0e-7 |
+| κ4 from the atlas: diagonal only, no (2,2) column means | 2.3e-7 |
+| κ4 from the atlas: column means × 0.3 | 1.1e-7 |
+| κ4 from the atlas: column means × 0.7 | 3.6e-8 |
+| κ4 from the atlas: column means (MLPs 0, 1, 2) | 3.8e-8, 7.6e-9, 2.6e-8 |
+| **κ4 from the mean-field recursion (self-contained)** | **3.2e-8** |
+| old content: only sources of age ≤ 4 / ≤ 2 | 8.5e-7 / 1.9e-6 |
+| per-source row basis k = 256 for ages > 2 | 1.4e-7 |
+| shared Oseledets subspace q = 256 / 512 for ages > 2 | 2.3e-7 / 3.6e-8 |
+| atom pruning, Wick and slice atoms to 50 % / 25 % (MLPs 0–2) | 1.3e-6 / 3.4e-6 |
+| Wick atoms to 25 % only / slice atoms to 50 % only | 3.1e-6 / 8.2e-8 |
 
-So the old third-order content needs ≳ n/2 dimensions at n = 1024. This agrees with the old-content stream's
-extrapolation (k ≈ 0.3 n), now measured end to end.
+**D21 error of FC against the atlas.** The profile is the same on every MLP: 2.4–2.9 % at layer 2, 4.6–4.9 % at layer
+5, 6.2–6.5 % at layer 8, 8–8.6 % at layer 11 and 9.6–10 % at layer 14. The growth is the compounding of the omitted
+second-order (hyperedge) birth diagrams. oracle1024's leg-partition closure takes the one-step error from ≈ 4 % to
+≈ 1 %. With them, N2's ε² law predicts the covariance channel at ≲ 5e-9, i.e. FC near 1e-8.
+
+**Cost at n = 1024 (units; prototype in numpy, 48 s per MLP on 2 threads).**
+- There are 120 (source, target) pairs. Each needs:
+  - transport of the Y, Z and slice-leg rows: 3 products;
+  - the two Wick contractions (Y∘Y)ᵀ diag(w2) Z and (Y∘Z)ᵀ diag(w2) Y: 2 products;
+  - the two slice contractions: 2 products.
+- That is ≈ 840 units, plus a 30-unit covariance arrow and O(n²) everything else: **≈ 0.85 B dense, ≈ 0.5 B with
+  Strassen L5**.
+- **Adjusted ≈ 1.5–2.5e-8**: 16× better than the Gaussian closure's 4.1e-7 at the floor, but 10–15× above the bar.
+- The 40-node birth-slice quadrature is negligible in FLOPs but ≈ 800 calls per layer. A port needs a closed form or
+  ≤ 8 nodes for the residual cap.
 
 ## 6. Verdict and the precise open problem
 
-- **Accuracy.** The region analysis turns "the leaders do it somehow" into a target, and FC shows the target is
-  sufficient. Carry:
-  - (a) the exact Gaussian covariance arrow;
-  - (b) all-age D21 to ≈ 5–10 % (FC's first-order chaos does this, 2.5 → 10 % compounding);
-  - (c) three κ4 n-vectors per layer to ≈ 30 %;
-  - (d) first-order Edgeworth readout.
+- **What the region says.** The leaders' accuracy (≈ 1–1.5e-8) is reachable with the information listed in §4, and FC
+  shows that a principled first-order representation of exactly that information gets within 2× of it (3.0e-8 on the
+  6 bench MLPs), with a known next lever, the second-order birth diagrams.
+- **Accuracy is not the binding problem at n = 1024. Cost is.** The binding object is the all-age D21 contraction
+  D21(t) = Σ_{s<t} Σ_r w2_{s,r} [Y_ra² Z_rb + 2 Y_ra Z_ra Y_rb] (+ slice analogue), needed to ≈ 5–10 % in Frobenius at
+  layers 6–12. The measurements establish three properties of it at n = 1024:
+  - (i) content of every age is needed (N6);
+  - (ii) the legs do not compress into subspaces below n/2;
+  - (iii) every atom of every source carries comparable energy, so atoms cannot be pruned.
+- **A cost bound under those properties.** For a bilinear realisation (matrix products over the atom index), the
+  inner dimension at target t is t·n atoms, so the contractions alone cost ≥ 2 t n³ and the transports ≥ 2 t n³.
+  That is ≥ 4 × 120 = 480 units (≥ 270 with Strassen), against the leaders' 113–154 units in total.
+- **Consequence for the leaders.** They cannot be computing this object atom by atom. Either:
+  - (a) they carry an *aggregated* state whose D21 readout is O(n³) per layer, i.e. a merged representation of the old
+    third cumulant with ≲ n atoms re-fitted each layer (CP merging; the old-content stream measured R = n merged atoms
+    at 0.7–1.4 % at widths 64–128, and at n = 1024 our tolerance is the looser ≈ 7 %); or
+  - (b) their error budget is spent differently: e.g. cruder D21 at layers where K_off is small (0–3 and 14 carry
+    ≲ 15 % of the price), compensated by inter-layer cancellation of the kind MLP 1 shows.
+- **The concrete next experiment.** Inside FC, replace the old sources (age > 2) by one CP-merged atom set of size
+  R ∈ {n/2, n} per layer (ALS in the q-space of the young legs). Measure raw on the 6 bench MLPs and price the merge.
+  If R = n gives ≤ 5e-8, an O(L n³) estimator at ≈ 0.15 B with raw ≈ 3e-8 exists, and the hyperedge diagrams are the
+  lever to the bar.
 
-  That yields raw ≈ 2.4e-8 on three bench MLPs, the public chain's and the leaders' accuracy class, ≈ 200× below the
-  Gaussian closure. Adding the second-order birth diagrams is the next accuracy lever, predicted to reach ≲ 1e-8.
-- **Cost.** The same estimator costs ≈ 0.85 B dense, ≈ 6× over the leaders' bill, because the all-age D21 is a sum
-  over 120 (source, target) pairs. Each pair costs ≥ 5–7 products in the explicit chaos form, and the measurements
-  rule out subspace compression below n/2.
-- **The open problem, stated exactly.** The bar at ≤ 0.15 B needs a way to evaluate, at every target layer l, the
-  n × n contraction Σ_{s<l} Σ_r w2_{s,r} [Y_ra² Z_rb + 2 Y_ra Z_ra Y_rb] (plus its slice analogue) to ≈ 7 % in
-  Frobenius norm. The budget for it is ≈ 4–6 units per layer, i.e. ≈ 0.5 units per (source, target) pair or an
-  aggregated O(n³) state. Separately, the κ4 mean field must come from a carrier costing O(n²–n³) per layer.
-  Neither object needs coherent structure, second-order Edgeworth on the covariance, or the n² κ4 slices.
+## 7. What this stream contributes to the fresh-slate programme
 
-## 7. Next
-
-1. MLPs 3–5: atlases running; FC + κ4 mean field on all 6 bench MLPs.
-2. κ4 mean-field tolerance: diagonal only (no column means), and column means × 0.3 (running).
-3. A κ4 mean-field carrier from the chaos picture: the third-chaos star and the diagonal source, whose coherent row
-   norms Σ_i Z_ri² are O(n²) given the propagators.
-4. The per-pair cost: test whether one Hadamard-free contraction per pair suffices for the old ages, using the
-   polarisation 3 sym(y, y, z) = ½[(y+z)^{⊗3} − (y−z)^{⊗3} − 2 z^{⊗3}] with a cube-sketch of the aggregated old
-   content.
+- **A fresh-weight lemma**, with its quantitative consequence, measured: incoherent errors are priced by Frobenius norm
+  with layer coefficients K(l). The Gaussian closure's whole error is accounted for channel by channel.
+- **The first derivation of the "ε² law" from first principles.** Its coefficient is the priced energy of the
+  non-Gaussian covariance correction.
+- **The identification of what the joint fourth cumulant contributes:** two n-vectors per layer, closed by a
+  memoryless mean-field recursion, again a fresh-weight consequence.
+- **A self-contained, principled estimator at 3.0e-8 at n = 1024.** It is the strongest fresh design so far: the
+  convergence dossier's best projection was ≈ 4–7e-7. Its cost gap is reduced to one explicitly stated object.
