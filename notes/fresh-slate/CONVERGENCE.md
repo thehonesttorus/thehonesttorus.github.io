@@ -69,3 +69,19 @@ Measured at n = 1024 (MLP 0 unless stated). Raw = final MSE minus truth noise.
 - **Essence team v0s agree on one verdict:** the local-to-global machinery explains why memory is expensive and measures each obstruction, but supplies no carrier. Team A: the nonnegative (Bethe, diagonal-pairing) sector holds about 80 % of memory energy at depth but leaves 0.47–0.70 relative error; additive signed sums defeat Clifford/quaternion sketches; the gate law is not Lorentzian. Team B: the hybrid argument holds in strong form (fresh-weight orthogonality) but none of the gaps does (effective λ ≈ 1, width ∝ n). Team C: content splits into a dilation Jordan sector (coherent across ages, odds law s/(1 − s) = 0.31·k) and a free sector (cross-age cosines ≤ 0.03, energy × g³ per step, PR = n/(2(age + 1)) to 1 % up to age 5); free energy beyond age 3/5/7 is 5.6/2.9/1.3 % of final D21 energy. Team E: an annealed conic "wedge calculus" reproduces the transfer coefficients and the old-content age law from 2-D conic geometry, but the binding object is quenched.
 - **Interpolation (final):** in the Wiener chaos of the *weights*, 92–93 % of per-neuron κ3 variance at depth is chaos 1, σ²(Wᵀt)_p with t = Cov(|ã|², a), which has an O(n²) recursion; the (2,1) slice's chaos-1 part is the rank-one spike. Conditioning on the top principal coordinate at n = 1024 removes ≈ 78 % of excess kurtosis, but that coordinate is only mildly non-Gaussian there (κ3 0.18, κ4 0.04).
 - **Reading.** Every coherent, annealed or symmetric sector (dilation, Bethe, trace, chaos-1-in-weights) is cheap and worth about 2×. The quenched, signed, incoherent free sector of old content is what costs, and it is needed to 5–10 %.
+
+## Round 3, first positive carriers (21:30 UTC)
+
+| carrier (inside FC, n = 1024) | raw, MLPs 0 / 1 / 2 | cost | source |
+|---|---|---|---|
+| FC, all ages exact | 3.24 / 1.81 / 3.03e-8 | ≈ 840 u dense, ≈ 557 u wall-feasible | region |
+| ages 5–8 Tucker-compressed once at the cut in the static frame, R = n/4, then transported | 3.34 / 1.81 / 3.05e-8 (lossless) | 36 + 384 u once, then 1.5 + 16 u per layer | region §9 |
+| same, R = n/8 | 4.00 / 2.66 / 3.98e-8 (+30 %) | 18 + 48 u once, then 0.75 + 2 u per layer | region §9 |
+| same, rank-R CP instead of Tucker | 6.1e-8 (n/4), 8.8e-8 (n/8), MLP 0 | — | region §9 |
+| old (age > 2) content's channel constant in the repeated index carried by one n-vector (≈ 0 u), remainder exact | 3.67 / 1.84 / – e-8 | O(n²) per layer | team B T2 |
+| each source of age a read in the top 2n/a right singular directions of its own propagator (oracle) | 3.31 / 1.95 / – e-8 | ≈ 0.51 of FC (O(n³ log L)) | team D §3.7 |
+
+- **Static once-per-bin compression works where per-layer moving frames failed** (6× worse at n/4) and where CP merging failed (6.7× worse at R = n). About three bins at R = n/8 carry all content older than four layers for ≈ 250 u; the young tier (ages 1–4, exact, ≈ 400 u) is now FC's dominant cost.
+- **80 % of old energy is one channel.** Old D21 is 79–81 % constant in the repeated index (the dilation/norm channel), carried at O(n²) per layer. The irreducible object is the a-traceless remainder T° (≈ 45 % of the old tensor's norm), which loosens every merge tolerance ≈ 2.2×.
+- **Reading (coordinator note 2).** Freezing the polarization per age block makes the memory's commutator effectively finite rank (R ≈ n/4–n/8 per block), although it is not compact for the global gauge polarization; the per-age resolution law 2n/a makes the age grading Dixmier-critical (total ∝ n ln L).
+- **Open:** static bins for ages 3–4 and a cheaper core readout (region); T°-only bins (region); causal multiresolution with frozen dyadic frames (team D); a Hadamard-readout carrier of a few sandwich-transported symmetric matrices, the one untested class consistent with the leaders' cost (costate); width universality and the log-L lower bound (team G).
