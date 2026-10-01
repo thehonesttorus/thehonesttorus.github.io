@@ -1,0 +1,4 @@
+{"mlp": 0, "variant": "base", "age": 2, "raw": 3.236327386491434e-08}
+{"mlp": 0, "variant": "drop_fluct", "age": 2, "raw": 1.0063932144298952e-06}
+{"mlp": 0, "variant": "drop_mean", "age": 2, "raw": 6.818554870927909e-07}
+{"mlp": 0, "variant": "drop_old", "age": 2, "raw": 1.7692951355721216e-06}

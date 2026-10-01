@@ -1,6 +1,7 @@
 # Team B: pseudorandomness of walks and of layered computation
 
-*Status: v0 (1 Oct 2026). Contract: [../BRIEF.md](../BRIEF.md); mandate: [../INPUT-2026-10-01-local-to-global.md](../INPUT-2026-10-01-local-to-global.md).
+*Status: v1, final for this session (2 Oct 2026). v0 had §§0–5 without the T2 measurements; v1 adds the T2 tests
+(§3 T2, §4), closes T6, and adds the second network for T4. Contract: [../BRIEF.md](../BRIEF.md); mandate: [../INPUT-2026-10-01-local-to-global.md](../INPUT-2026-10-01-local-to-global.md).
 Tests: [tests/](tests/). Every number quoted from other streams carries its source; everything else is marked
 THEOREM (checked in the primary source), DERIVED (derived here, sketch given), MEASURED (run here), SYNTHESIS or
 CONJECTURE.*
@@ -31,7 +32,7 @@ CONJECTURE.*
      points of the error-reduction map (§3.3).
 
    The pseudorandomness theorems therefore give *explanations* of the established facts (N6, N7, F9, costate C3) and
-   clean negatives. They give no cheap carrier of memory.
+   clean negatives for the incoherent half of the memory. For the coherent half they give a working carrier (item 6).
 3. **The one positive structure: D-quasirandomness.** The fresh layer's O(n) symmetry splits a third-order tensor
    into its trace (vector) part, of dimension n, and its traceless part, of dimension ≈ n³/6. Readouts with coincident
    indices see the trace part with a gain Θ(n) over its Frobenius share.
@@ -51,6 +52,26 @@ CONJECTURE.*
    - The reason: the even part of the centred pre-activations already holds **η = 33 % (layer 3) to 45 % (layer 16)**
      of their variance, so parity designs remove nothing at depth.
    - The sampled noise reproduces F6.10 (0.29 at layer 10, 0.19 at 15).
+   - MLP 1 agrees: gain 0.98–1.04×, η = 0.33–0.45.
+6. **JMR's mean term carries the coherent half of the memory at O(n²) per layer** (MEASURED inside FC, n = 1024,
+   bench MLP 0).
+   - **The split.** Split the old (age > 2) part of D21 into its part constant in the repeated index a, i.e. the
+     O(n)-average over the last fresh layer, which equals Cov(norm process, z_b), and the Wishart fluctuation.
+     - The constant part holds **79–81 % of the old D21 energy** at layers 8–15.
+     - Each part is needed: dropping it costs **6.8e-7** (constant part) and **1.0e-6** (fluctuation), against FC's
+       3.24e-8. The two penalties add up to the whole-memory penalty of 1.77e-6.
+   - **The carrier.** JMR's mean term (the squared graph averaged over the fresh layer) freezes each source's row
+     scalars when it turns old and multiplies them by one scalar gain per layer, ⟨P² c⟩. That makes the constant part
+     a **single n-vector transported by P_t: O(n²) per layer, ≈ 0.02 units in total**.
+   - **The result.**
+     - With the constant part from this recursion and the fluctuation exact, FC scores **3.67e-8** (+13 %).
+       On MLP 1 it scores 1.84e-8 against 1.81e-8 (+2 %).
+     - The vector's own error is 2 % at layers 4–7 and grows to 9.5 % at layer 15.
+     - Keeping only ages ≤ a exact and the constant channel beyond them gives 1.0e-6, 4.0e-7 and 1.8e-7 at
+       a = 2, 4, 6. That is 1.8–2.1× better than dropping old content (region: 8.5e-7 at a = 4), but still
+       6–30× above FC.
+   - **The verdict.** The incoherent (Wishart) half of the memory, ≈ 20 % of its D21 energy, is the irreducible
+     part, and the fresh-weight lemma prices it in full. The coherent half is solved.
 
 ## 1. Instances (depth over breadth)
 
@@ -328,13 +349,72 @@ weights' symmetry, not from any neuron graph.
 - **Coherent channels are cheap and amplified (N7).** The mean part (2/n) tr(D) diag(Φ²) is the slice channel. It
   is diagonal, so it costs O(n²).
 
-**Cheapest decisive test (prediction, not yet run).**
-- Inside FC on bench MLP 0, split each aged atom's D21 contribution into its O(n)-mean part (row-constant in a) and
+**Test, as specified in v0.**
+- Inside FC on bench MLP 0, split each aged source's D21 contribution into its O(n)-mean part (constant in a) and
   its Wishart fluctuation.
 - Prediction: the fluctuation share stays ≥ 50 % of the old D21 energy at every age ≥ 2 (λ_eff ≈ 1).
-- Cost: one FC run (≈ 48 s).
-- **Kill:** a fluctuation share decaying geometrically with age would mean an effective gap exists, contradicting
-  F9.2 and reopening age truncation with a correction.
+- Kill: a fluctuation share decaying geometrically with age.
+
+**Result (MEASURED, `tests/t2_split.py`, `tests/t2_split_mlp0.json`).**
+- **No geometric decay with age: the gap is absent, as predicted.** The mean share of a source is 37–58 % at ages
+  1–4 and 50–76 % at ages ≥ 6, at every target. It rises slowly with age.
+- **The v0 prediction about the share is wrong.** The fluctuation is *not* ≥ 50 % of the merged old content:
+  - The constant (mean) parts of different ages add *coherently*. The rms cosine between the contributions of
+    different ages is 0.26–0.41 (max 0.89), and the sum of per-source energies is only 0.23–0.37 of the total energy
+    at targets 8–15.
+  - So the merged old D21 is **79–81 % constant in a** at targets 8, 12 and 15 (62 % at target 4).
+- The old share of D21 energy is 16 %, 49 %, 66 % and 77 % at targets 4, 8, 12 and 15. This is consistent with
+  region N6.
+
+**What the constant part is.**
+- (1/n) Σ_a κ3(z_a, z_a, z_b) = κ(N_t, z_b), with N_t = (1/n) Σ_a (z_a − m_a)².
+- So it is the covariance of each neuron with the layer's **norm process**: the dilation sector of BRIEF item 8, and
+  the collective coordinate of F2.4 and of the (2,2) spike.
+- Region N7's κ4 column means are the same object one order up, κ(N_t, z_b, z_b). So the trivial-isotypic channel
+  is the norm process at every order.
+
+**Which part the final means need (`tests/t2_ablate.py`, raw on MLP 0, FC = 3.24e-8).**
+
+| D21 used by the chain | raw |
+|---|---|
+| FC (all exact) | 3.24e-8 |
+| old (age > 2) constant part removed | 6.8e-7 |
+| old fluctuation removed | 1.0e-6 |
+| all old removed | 1.77e-6 |
+| old constant part from the annealed vector recursion, fluctuation exact | **3.67e-8** |
+| same, with old = age > 4 | 3.59e-8 |
+| young ages ≤ a exact + annealed constant channel only: a = 2 / 4 / 6 | 1.0e-6 / 4.0e-7 / 1.8e-7 |
+
+**The annealed recursion (JMR's mean term, made computational).**
+- For a fresh layer, E_W ‖x diag(P) W‖² = Σ_i x_i² P_i² c_i ≈ ‖x‖² ⟨P² c⟩, where c_i = ‖W_{i·}‖². The same holds
+  for x·y.
+- So a source's row scalars ‖Y_r‖², Y_r·Z_r, ‖Z_r‖² and Z_r·T_r are frozen when it turns old (exact, from the young
+  tier) and multiplied by one scalar gain per layer.
+- Its constant part is then (w ∘ q)ᵀ Z_s(t) + 2 (w ∘ q′)ᵀ Y_s(t) + (slice terms), divided by n: a vector times the
+  transported legs. Merged over sources, that is a single vector r with r(t+1) = γ_t r(t) P_t + (entrants).
+- Cost: O(n²) per layer.
+- Its error against the exact constant part is 0–2 % at layers 3–7, 4–5 % at 8–11, and 7–9.5 % at 12–15. It
+  grows because the frozen scalars ignore the gate–leg correlations that build up.
+
+**Second network (MLP 1): replicates.**
+- FC 1.81e-8 (region's figure reproduced).
+- Old constant part removed: 8.7e-7.
+- Annealed constant channel: **1.84e-8 (+2 %)**.
+- Hybrid at a = 6: 1.85e-7.
+
+**What this settles.**
+- The old content separates exactly as JMR's proof does:
+  - a mean term, which is cheap and carries ≈ 80 % of the energy and ≈ 40 % of the penalty;
+  - a λ term (the fluctuation), with λ_eff ≈ 1, which carries ≈ 20 % of the energy and ≈ 60 % of the penalty.
+- The λ term is the true cost object. It is the traceless part of the merged old tensor read through the last fresh
+  layer, Σ_{ijk} T°_ijk G_ia G_ja G_kb, and it needs T° in full.
+- **Cost model for the competition.** Young ages ≤ a exact at ≈ 4–7 units per source per layer, plus the constant
+  channel (≈ 0 units):
+  - a = 2: ≈ 0.1–0.15 B, raw 1.0e-6;
+  - a = 6: ≈ 0.4 B, raw 1.8e-7.
+
+  Neither competes. The constant channel is a free 1.8–2.1× on any age-truncated chain, and a free ingredient of any
+  design that merges old content: only the traceless remainder needs carrying.
 
 ### T3. Richardson / weighted-PRG error reduction on the memory recursion (DERIVED)
 
@@ -411,7 +491,7 @@ once.
 
 **Prediction checked:** gain ≈ 1/(1 − (1 − η)³ × (odd-noise share)) ≈ 1 at η ≈ 0.4. **Killed**, as a carrier of
 memory by sampling.
-- A second network (MLP 1) is running; its numbers will be added in the final version.
+- MLP 1 (v1) agrees within noise: gain 1.04, 1.02, 1.02, 1.01, 1.00, 0.98, 0.99 at layers 3–16, with η = 0.33–0.45.
 - Higher designs (OU replica designs isolating chaos levels, Kerdock-type spherical designs) face the same
   obstacle: the even chaos at depth is spread over degrees ≥ 4 (Oishi's chaos spectrum: effective degree 8–14).
 
@@ -451,13 +531,30 @@ The natural candidate is the **lift** that AKMPSV and JMR both use (tensor-lift 
 The test is the b-mode (matrix-valued) rank of the merged old tensor at n = 1024, to 7 % in the readout norm.
 - If M ≲ 10, this is the leaders' carrier.
 - If M ∝ n (as "atom-complete" suggests for the legs), the carrier is something else.
-- Not run in v0.
+
+**v1: closed by existing measurements, no new run needed.**
+- A b-mode truncation to M modes gives D21 ↦ D21 Π_M, so its readout error is at least the best rank-M error of
+  D21 itself.
+- Truncating D21 to rank 64 costs 2.5e-7, and rank 256 costs 8.2e-8 (F6.11, est). The part of D21 that the current
+  layer does not produce needs rank 128–256 for 60–98 % of its energy.
+- The merged old tensor is symmetric, so every mode has the same multilinear rank. Symmetric Tucker of the merged
+  old tier at R = 512 is 14× worse (504aldo F46), and the Tucker core costs r³/n² units (F88).
+- **So the Sym² lift with M ≈ 5–10 modes is ruled out in either orientation.**
+
+What survives of T6 is item 6 of the summary: the leaders' "≈ 7 symmetric sandwiches per layer" can be the coherent
+(norm-process) channel of the old content at O(n²) plus a covariance-shaped κ4 core. The incoherent fluctuation
+(≈ 1.0e-6 if dropped) would still have to be carried somehow.
 
 ## 4. Tests run
 
 | test | file | network(s) | result |
 |---|---|---|---|
-| T4 antithetic vs plain sampled D21 noise, n = 1024 | `tests/d21_antithetic.py` | bench w1024_d16 MLP 0 (MLP 1 running) | gain 0.98–1.04× at layers 3–16; η = 0.33–0.45 |
+| T4 antithetic vs plain sampled D21 noise, n = 1024 | `tests/d21_antithetic.py` | bench w1024_d16 MLPs 0, 1 (N = 32,768) | gain 0.98–1.04× at layers 3–16; η = 0.33–0.45 |
+| T2 mean / fluctuation split of old D21 by age, cross-age coherence | `tests/t2_split.py` (on `tests/fc_hooked.py`, region fc.py with three hooks) | MLP 0 | no age decay; merged old content 79–81 % constant in a; ages add coherently |
+| T2 ablations: which part the final means need | `tests/t2_ablate.py` | MLP 0 | constant part 6.8e-7, fluctuation 1.0e-6 if dropped (FC 3.24e-8); MLP 1: constant part 8.7e-7 (FC 1.81e-8) |
+| T2 annealed (JMR mean-term) vector recursion for the constant channel | `tests/t2_annealed.py` | MLPs 0, 1 | 3.67e-8 (+13 %), 1.84e-8 (+2 %) at O(n²); hybrids a = 2/4/6: 1.0e-6 / 4.0e-7 / 1.8e-7 (MLP 1, a = 6: 1.85e-7) |
+
+All results are in `tests/t2_ablate_results.jsonl`.
 
 ## 5. Honest assessment
 
@@ -466,7 +563,7 @@ The test is the b-mode (matrix-valued) rank of the merged old tensor at n = 1024
 | THEOREM (read in source) | JMR Thm 3.1, Thm 1.7–1.9, Prop 5.5; AKMPSV Lemma 6.2, Thm 1.3, the LU / squaring structure |
 | THEOREM (standard, from memory) | MOO, HKM, OST, Nazarov, INW, Gowers; arXiv ids given where known |
 | DERIVED | the Schur-orthogonality reading of the fresh-weight lemma (§2.2); the costate collapse with the backward Lyapunov recursion (T2, mean-field gates only); the projective fixed-point statement (T3) |
-| MEASURED | T4 at n = 1024, one network so far |
+| MEASURED | T4 at n = 1024 on two networks; T2 split on MLP 0; ablations and annealed channel on MLPs 0 and 1 |
 | CONJECTURE | the noncommutative ignore-first-step theorem (§2.3) |
 | SYNTHESIS | "the payoff must be an exact linearisation (Sym² lift)" (T6) |
 
@@ -477,3 +574,16 @@ The test is the b-mode (matrix-valued) rank of the merged old tensor at n = 1024
   approximations with ε₀ < 1 are not excluded by proof, only by the Haar-bulk argument.
 - The main negative (λ_eff ≈ 1, width ∝ n) is consistent with every established fact, so this report mostly
   *explains*; it does not *overturn*.
+- The T2 measurements are inside FC, whose own D21 has 2.5–10 % error (region §5). The split is of FC's memory, not
+  of the exact law. The constant-part share is measured on one network, the penalties and the annealed channel on two.
+- "Ages add coherently" (cosines up to 0.89) seems to contradict F8.3 (old content nearly orthogonal to other ages).
+  It probably does not: the coherence is plausibly all in the constant (norm-process) channel, and F8.3 was measured
+  on content beyond it. This was not checked here.
+
+**What the next session should do.**
+1. Replicate T2 on MLPs 2–5.
+2. Fix the drift of the annealed channel at layers 12–15 with one exact rank-one correction per layer: the
+   gate–leg correlation of the Perron direction.
+3. Attack only the traceless remainder T° of the merged old tensor, now known to be ≈ 20 % of old energy and
+   ≈ 1.0e-6 of penalty. Any merging scheme (region §6 CP merge) should be fitted to T°, not to T. Its reduced norm
+   loosens the merge tolerance by ≈ √(1/0.2) ≈ 2.2×.
