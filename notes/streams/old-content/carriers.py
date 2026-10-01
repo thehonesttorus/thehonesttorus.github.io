@@ -159,6 +159,61 @@ def main():
                 row.append(f"{e:5.3f} [{res:4.2f}]")
             print(f"{l:>2} | " + " ".join(row), flush=True)
 
+    if "modesS" in which:
+        # (e) structure of the mode matrices S_p of the optimal rank-r family: (i) each S_p truncated to rank q
+        # (transport then costs 2 q/n units per mode instead of one sandwich); (ii) each S_p replaced by its least-squares
+        # fit on matrices a chain already has at layer l (C, C*C, mu mu^T, var/mu outer products, I)
+        rr = [r for r in (4, 8, 16) if r <= n]; qs = [q for q in (4, 8, 16, 32, 64) if q < n]
+        print(f"\n(e) modes with structured S_p: eps for r in {rr}; columns: exact S | rank-q S for q in {qs} | S fitted on C-features")
+        for l, O, _ in pool:
+            if l <= args.w:
+                continue
+            den = nrm(D21z[l]); C = lay[l]["C"]; mu = lay[l]["mu"]; var = np.diag(C); one = np.ones(n)
+            F = [C, C * C, np.outer(mu, mu), np.outer(var, one) + np.outer(one, var), np.outer(mu, one) + np.outer(one, mu), np.eye(n),
+                 np.outer(np.sqrt(var), np.sqrt(var))]
+            X = np.stack([f.ravel() for f in F], 1)
+            out = []
+            V, S = modes_fit(O, max(rr))
+            for r in rr:
+                Vr, Sr = V[:, :r], S[:r]
+                row = [nrm(modes_d21(Vr, Sr) - d21(O)) / den]
+                for q in qs:
+                    Sq = np.empty_like(Sr)
+                    for p_ in range(r):
+                        ev, U = np.linalg.eigh(Sr[p_]); idx = np.argsort(-np.abs(ev))[:q]
+                        Sq[p_] = (U[:, idx] * ev[idx]) @ U[:, idx].T
+                    row.append(nrm(modes_d21(Vr, Sq) - d21(O)) / den)
+                Sf = np.stack([(X @ np.linalg.lstsq(X, Sr[p_].ravel(), rcond=None)[0]).reshape(n, n) for p_ in range(r)])
+                row.append(nrm(modes_d21(Vr, Sf) - d21(O)) / den)
+                out.append(f"r={r}: " + " ".join(f"{v:5.3f}" for v in row))
+            print(f"{l:>2} | " + " | ".join(out), flush=True)
+
+    if "modesSdyn" in which:
+        # dynamic version of the low-rank-S family: state = sym3(sum_p v_p (x) U_p L_p U_p^T); transported exactly
+        # (v -> W^T Phi v, U_p -> W^T Phi U_p; plus the AD slice correction when not --noad), the incoming source added,
+        # then re-truncated (oracle: unfolding SVD to r modes, each S_p to rank q)
+        pairs = [(4, n // 8), (8, n // 8), (8, n // 4), (16, n // 16), (16, n // 8), (16, n // 4), (32, n // 8)]
+        print(f"\n(e) modesS-dyn: eps per layer for (r, q) in {pairs}; cost at n = 1024 ~ 2 r q / n units transport+readout")
+        state = {pq: None for pq in pairs}
+        for l, O, In in pool:
+            den = nrm(D21z[l]); row = []
+            for (r, q) in pairs:
+                if state[(r, q)] is None:
+                    Kh = O.copy()
+                else:
+                    Kprev, Inprev, Phi = state[(r, q)]
+                    Kh = T3(MASK(phi3(Kprev + Inprev, Phi)), W[l])
+                if nrm(Kh) == 0:
+                    row.append(0.0); state[(r, q)] = (Kh, In, lay[l]["Phi"]); continue
+                V, S = modes_fit(Kh, r)
+                for p_ in range(r):
+                    ev, U = np.linalg.eigh(S[p_]); idx = np.argsort(-np.abs(ev))[:q]
+                    S[p_] = (U[:, idx] * ev[idx]) @ U[:, idx].T
+                Khat = modes_dense(V, S)
+                row.append(nrm(d21(Khat) - d21(O)) / den)
+                state[(r, q)] = (Khat, In, lay[l]["Phi"])
+            print(f"{l:>2} | " + " ".join(f"{v:5.3f}" for v in row), flush=True)
+
     if "modesC" in which:
         print(f"\n(e) modes-C: v-space fixed to the top-r eigenvectors of C_l (and of Phi C Phi of layer l-1 transported);"
               f" S_r = Old(v_r,.,.); eps")

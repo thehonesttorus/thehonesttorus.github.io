@@ -1,0 +1,1 @@
+/root/atl/B1/mlp_00000.npz: width 128, depth 16, N = 600000, young window w = 4, no-AD sources
