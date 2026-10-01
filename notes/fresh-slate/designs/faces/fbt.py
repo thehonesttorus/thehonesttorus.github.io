@@ -70,7 +70,7 @@ def mehler_cov(mu, C, R=6):
     return out
 
 
-def predict(W, mode="lin", R=6, use_k4=True, mean_var="edge", d21=False, win=1, k22=False, winonly=False, radial=False):
+def predict(W, mode="lin", R=6, use_k4=True, mean_var="edge", d21=False, win=1, k22=False, winonly=False, radial=False, cpass=0.0):
     """mode: 'gauss' (no kappa3/4), 'lin' (FBT: facet births on Gaussian input legs, all depths), 'mem' (one-step tree)."""
     W = np.asarray(W, dtype=np.float64)
     L, n, _ = W.shape
@@ -132,6 +132,14 @@ def predict(W, mode="lin", R=6, use_k4=True, mean_var="edge", d21=False, win=1, 
         var = np.maximum(np.diag(C), 1e-300); s_ = np.sqrt(var); t = mu / s_
         if mode == "gauss":
             k3 = np.zeros(n); k4 = np.zeros(n)
+        if cpass and l > 1 and mode == "hyb" and d21:
+            # curvature passage of old skew through the facets of layer l-1: 3 sym[w2_i Phi_j w2_k D21(z)_ik C_jk]
+            w2 = 2 * cfac
+            U = W[l] * w2[:, None]
+            V = (w2[:, None] * W[l]) * ((Cprev * beta[None, :]) @ W[l])
+            k3 = k3 + cpass * (U * (D21prev @ V)).sum(0)
+        if d21 and l > 0 and mode == "hyb":
+            D21prev_next = D21
         if radial and l > 0:
             k4 = k4 + radial_dk4(mu, var, k3, n)
         Ea = readout(mu, var, k3, k4)
@@ -153,6 +161,8 @@ def predict(W, mode="lin", R=6, use_k4=True, mean_var="edge", d21=False, win=1, 
         Ea2 = second_moment(mu, var, k3, k4) if mean_var == "edge" else (mu * mu + var) * ndtr(t) + mu * s_ * _phi(t)
         np.fill_diagonal(Ca, np.maximum(Ea2 - Ea * Ea, 1e-300))
         Cprev = C
+        if d21 and l > 0 and mode == "hyb":
+            D21prev = D21prev_next
     return np.stack(out)
 
 
@@ -237,3 +247,11 @@ def predict_win6_rad(W):
 
 def predict_gauss_rad(W):
     return predict(W, mode="gauss", radial=True)
+
+
+def predict_w16_cp3(W):
+    return predict(W, mode="hyb", d21=True, win=16, cpass=3.0)
+
+
+def predict_w16_cp1(W):
+    return predict(W, mode="hyb", d21=True, win=16, cpass=1.0)

@@ -225,6 +225,8 @@ The bookkeeping (Mehler, bivariate Edgeworth) is standard.
 - The ablations name the next terms. The pair fourth-order terms (2,2)/(3,1) together with the κ3² second-order Edgeworth terms are needed in Cov(a); my diagonal-inner-covariance attempt failed (§8b). After those, the folding of old births by later facets (cross-birth cumulants, T2/T5).
 - Cost: the $O(L^2)$ pair loop dominates. A depth window of 6 keeps 70 % of the gain at 65 % of the cost. Recursive updates of $K_{s\to l}$ and products shared across $s$ are the obvious levers.
 
+**Curvature passage (markov stream's finding).** Old skew crossing a later facet through its curvature, not through the gate average $\beta$, is the ladder's term $3\,\mathrm{sym}[w2_i\Phi_jw2_kD21(z)_{ik}C_{jk}]$. Added to the per-neuron κ3 only, with coefficient 1 or 3 (`fbt.predict_w16_cp1`, `predict_w16_cp3`), it changes w256 from 8.68e-6 to 8.58e-6 / 8.40e-6 (≤ 3 %). At w64 it is slightly worse. Its contribution through the (2,1) slice that feeds Cov(a) is not implemented. Since the slice is worth 5× (ablation), that is where this term would have to act, and it is the first item for v4.
+
 **Deciding experiment (revised).** On w1024_d16, run 'w16' with oracle injection layer by layer. Replace in turn (a) the closure covariance, (b) the per-neuron κ3/κ4 and (c) the (2,1) slice by Monte Carlo truth at every layer, and measure which injection removes the remaining 3.2e-7.
 - If (a) dominates, the next step is the pair fourth-order terms in Cov(a).
 - If (c) dominates, it is the folding of old births: the facet-conditional covariance $\mathrm{Cov}(z_l\mid z_{s,k}=0)$ in the facet-normal dictionary that §9 v2 proposed.
