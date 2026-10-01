@@ -1,6 +1,6 @@
 # Team B: pseudorandomness of walks and of layered computation
 
-*Status: v1, final for this session (2 Oct 2026). v0 had §§0–5 without the T2 measurements; v1 adds the T2 tests
+*Status: v1.1, final for this session (2 Oct 2026); v1.1 adds T3b, the Richardson range no-go. v0 had §§0–5 without the T2 measurements; v1 adds the T2 tests
 (§3 T2, §4), closes T6, and adds the second network for T4. Contract: [../BRIEF.md](../BRIEF.md); mandate: [../INPUT-2026-10-01-local-to-global.md](../INPUT-2026-10-01-local-to-global.md).
 Tests: [tests/](tests/). Every number quoted from other streams carries its source; everything else is marked
 THEOREM (checked in the primary source), DERIVED (derived here, sketch given), MEASURED (run here), SYNTHESIS or
@@ -457,6 +457,93 @@ weights' symmetry, not from any neuron graph.
 - Ours is *dimension*: we need only ≈ 7 % precision (N2), but at full rank. The bulk of A[s, l] is Haar-like
   (participation ratio ≈ n/(2·age), F9.1), and a Haar-like matrix has no cheap operator-norm approximant with
   ε₀ < 1. Its best rank-q approximation has relative Frobenius error √(1 − q/n).
+
+### T3b. The Richardson question, answered: a range no-go and its escape hatches (v1.1, DERIVED)
+
+**The question (coordinator, 21:25 UTC).** Is there an exactly applicable operator against which a cheap
+approximate memory can be corrected?
+
+**Yes, there is an exact operator.** The one-step memory map 𝒯_l(T) = T ×³ P_l + B_{l+1} applies exactly to any
+CP state with R ≤ n atoms, at ≈ 2R/n units of transport plus 2R/n units of D21 readout. It applies equally in
+coordinator note §2's static form: a static tensor read through the frame Γ_t. So the residual
+r = B − (I − 𝒮) T̃ of any cheap chain T̃ can be formed exactly.
+- For example, region's CP merge at R = n: there the residual is the per-layer merge error, a CP sum of ≤ 3R + n
+  atoms.
+
+**But the correction cannot leave the range of the approximate inverse.**
+- **Lemma (range).** Let M be any linear approximate inverse (the cheap chain run on given births), and
+  P_m = Σ_{i≤m} (I − M L)^i M. Then P_m B ∈ range(M) for every m. So after any number of rounds,
+
+  ‖T − P_m B‖ ≥ dist(T, range(M)).
+
+  Proof: each term (I − ML)^i M B is M applied to something.
+- Richardson converts *precision* inside a span. It cannot create *span*.
+- In AKMPSV the approximate inverse is a full-range nk × nk matrix (an LU of the lifted Laplacian), so only
+  precision is missing. Our missing ingredient is span, so the AKMPSV payoff cannot transfer.
+
+**Consequences for every cheap carrier measured so far.**
+
+| cheap M | range | Richardson limit (≥ error of the best element of the range) |
+|---|---|---|
+| shared subspace q per leg (504aldo old tier, Oseledets) | legs in a q-dim subspace | the old-tier error at that q (q = n/4: 2.3e-7, region §5) |
+| annealed / O(n)-averaged channel (T2 here, costate, F, D) | the trace (norm-process) sector | the traceless remainder: 1.0e-6 if dropped (T2) |
+| age truncation | ages ≤ a | the old content: 8.5e-7 at a = 4 (region N6) |
+| CP merge at R atoms | rank-R symmetric tensors | rank-limited: 2.0e-7 at R = n (region §8) |
+| Perron / spike carriers (team D) | spike + rank 8 | 7.0e-7 (team D) |
+
+For the trace sector the obstruction is sharper than the lemma. The traceless remainder T° is mapped by the
+annealed M to ≈ 0, because by Schur orthogonality (§2.2) traceless content feeds the trace channel only
+incoherently. So T° lies in the kernel of M in expectation, and the Richardson iterates never see it.
+
+**The no-go, stated for a class.**
+- Class: any estimator whose memory is a cheap linear chain M, i.e. (i) a projection, (ii) an equivariant (annealed)
+  average, or (iii) a bounded-rank CP or Tucker state, or a sum of these, corrected by any number of exact one-step
+  applications.
+- Its error is ≥ the distance from the true memory to range(M).
+- At n = 1024 the remainder T° that must be in that range is ≈ 20 % of old D21 energy, costs ≈ 1.0e-6 if missed,
+  and has effective rank ∝ n per age (atom-complete; team D estimates ≈ n²/12 in total).
+- A range that contains it to the needed 5–10 % costs ≥ the 480-unit bilinear bound (region §6).
+
+**So the leaders cannot be running cheap-chain-plus-correction on this representation.**
+
+**Escape hatches the no-go does not cover.**
+
+E1. **An implicit full-range M.**
+- The memory is never stored. It is the exact sum Σ_s B_s ×³ P_{s→t}, whose operators (the weights) are known.
+  Only its readout is approximated, by an unbiased randomised estimator, and the estimator's noise is corrected by
+  averaging.
+- The range is full. The obstruction is variance.
+- Measured closures:
+  - sampling D21 directly needs ≥ 15–60 % noise per layer at budget (F6.10);
+  - parity designs give 1.0× (T4);
+  - random sketches of an atom-complete sum have relative noise ≈ M/√k for M atoms and k sketches (§3, v0
+    reasoning).
+- Open only if some structured design kills the *even-chaos* noise. None is known.
+
+E2. **A nonlinear readout of a few transported matrices.**
+- The b-mode / Tucker no-go (T6) covers readouts that are *linear* in the carried matrices.
+- A readout that is *bilinear* covers rank up to n²: for example D21° ≈ Σ_{k≤K} (X_k ∘ Y_k) with X_k, Y_k
+  transported by sandwiches (2 units each), or Hadamard products against the exact covariance.
+- It is not closed under transport, since (WᵀXW) ∘ (WᵀYW) ≠ Wᵀ(X ∘ Y)W, so it would need a per-layer refit. It is
+  also not ruled out by any measurement here.
+- **This is the one class compatible with "the leaders transport ≈ 7 symmetric matrices per layer" that the
+  campaign has not tested.**
+- Test: fit D21°(t) (the a-traceless old fluctuation, available in `tests/t2_ablate.py`'s stash) by Σ_{k≤K}
+  X_k ∘ Y_k, with X_k, Y_k drawn from the span of {C(z_t), C(a_t), Γ_tᵀΓ_t, their one-step images}. Measure the
+  readout error against K.
+- **Kill:** > 50 % residual at K = 8.
+
+E3. **A different carried object whose exact one-step operator is an n²-state linear map.**
+- An example would be the non-Gaussian covariance correction ΔC itself, with old content entering only through a
+  closed linear response. Coordinator note §3, D21 as a cross-covariance inside the second chaos, is the natural
+  route.
+- No such identity is known. Region §3's fact that ΔC is 98 % incoherent and needs D21 at full rank is evidence
+  against a closed n² recursion. It is not a proof.
+
+**One-line answer.** The exact operator exists and is cheap. Richardson against it is sound, but it is confined to
+the range of the cheap chain, and every cheap range measured excludes the quenched traceless remainder. What the
+leaders do must lie in E1 (implicit state, variance-corrected), E2 (a nonlinear readout of a few transported
+matrices, the untested one), or E3 (a different closed object).
 
 ### T4. Structured designs that fool odd chaos exactly (JMR Thm 1.7, the Z₂ case), MEASURED
 
