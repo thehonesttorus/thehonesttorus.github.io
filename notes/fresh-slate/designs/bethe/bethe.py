@@ -368,3 +368,96 @@ def estimate_edge(Ws, old=1, hubs=True):
         prev = (spec, Wn)
         m = mu @ Wn; C = Wn.T @ Ca @ Wn; K = Kn; k4 = (Wn ** 4).T @ k4a
     return np.array(out)
+
+
+# ------------------------------------------------- v2: node kappa4 with two-site and tree terms ----
+def pair_cumulants4(T, mu, E2, E3, args):
+    """Q_ab = kappa(a,a,b,b), R_ab = kappa(a,a,a,b) of a = relu(z) from the edge table."""
+    E11 = pair_moment(T, 1, 1, *args); E21 = pair_moment(T, 2, 1, *args)
+    E22 = pair_moment(T, 2, 2, *args); E31 = pair_moment(T, 3, 1, *args)
+    E12 = E21.T
+    ma, mb = mu[:, None], mu[None, :]
+    Ea = {0: 1.0, 1: ma, 2: E2[:, None], 3: E3[:, None]}
+    Eb = {0: 1.0, 1: mb, 2: E2[None, :]}
+    Eab = {(1, 1): E11, (2, 1): E21, (1, 2): E12, (2, 2): E22, (3, 1): E31}
+    def raw(i, j):
+        if i == 0: return Eb[j]
+        if j == 0: return Ea[i]
+        return Eab[(i, j)]
+    from math import comb
+    def central(p, q):
+        return sum(comb(p, i) * comb(q, j) * (-ma) ** (p - i) * (-mb) ** (q - j) * raw(i, j)
+                   for i in range(p + 1) for j in range(q + 1))
+    c11 = central(1, 1); c20 = central(2, 0); c02 = central(0, 2)
+    R = central(3, 1) - 3 * c20 * c11
+    Q = central(2, 2) - c20 * c02 - 2 * c11 ** 2
+    np.fill_diagonal(R, 0.0); np.fill_diagonal(Q, 0.0)
+    return Q, R
+
+
+def k4_next(W, k4a, Q, R, c, L, mu):
+    """kappa4 of z_j = sum_a W_aj a_a: node + (3,1) + (2,2) patterns + generated (2,1,1) and
+    (1,1,1,1) tree terms (with the leading coincidence subtractions)."""
+    L0, Lm1, Lm2 = L[0], L[-1], L[-2]
+    W2 = W * W
+    out = (W2 * W2).T @ k4a
+    out += 4 * np.einsum('aj,aj->j', W2 * W, R @ W)
+    out += 3 * np.einsum('aj,aj->j', W2, Q @ W2)
+    X = L0[:, None] * W                     # x_ab = c_ab L0_b W_b
+    U = c @ X
+    c2 = c * c
+    s = c2 @ (X * X)                        # sum_b x_ab^2
+    h4 = 2 * (L0 * (1 - L0) - mu * Lm1)     # kappa(a,a,.,.) hub coefficient
+    out += 6 * np.einsum('aj,aj->j', W2 * h4[:, None], U * U - s)
+    kk = 2 * mu * (1 - L0)                  # leaf coefficient
+    Y = Lm1[:, None] * W * U
+    out += 12 * np.einsum('aj,aj->j', W2 * kk[:, None], c @ Y - L0[:, None] * W * (c2 @ (Lm1[:, None] * W)))
+    t3 = (c2 * c) @ (X ** 3)
+    out += 4 * np.einsum('aj,aj->j', Lm2[:, None] * W, U ** 3 - 3 * U * s + 2 * t3)
+    out += 12 * np.einsum('bj,bj->j', Y, c @ Y)
+    return out
+
+
+def relu_map_edges4(m, C, K, k4):
+    v = np.diag(C).copy(); k3 = np.diag(K).copy()
+    L = ladder(m, v, k3, k4)
+    mu, var, k3a, k4a = node_moments(L)
+    c = C.copy(); np.fill_diagonal(c, 0.0)
+    Kab = K.copy(); np.fill_diagonal(Kab, 0.0)
+    T = edge_table(m, v, c, pmax=3)
+    r, cc = (lambda x: x[:, None]), (lambda x: x[None, :])
+    args = (r(k3), cc(k3), r(k4), cc(k4), Kab, Kab.T)
+    E11 = pair_moment(T, 1, 1, *args); E21 = pair_moment(T, 2, 1, *args)
+    E2 = 2 * L[2]; E3 = 6 * L[3]
+    Ca = E11 - np.outer(mu, mu)
+    Ka = E21 - np.outer(E2, mu) - 2 * mu[:, None] * Ca
+    np.fill_diagonal(Ca, var); np.fill_diagonal(Ka, 0.0)
+    Q, R = pair_cumulants4(T, mu, E2, E3, args)
+    return mu, Ca, Ka, k3a, k4a, c, L, Q, R
+
+
+def estimate_edge4(Ws, old=1, k4mode='full'):
+    Ls, n, _ = Ws.shape
+    W = Ws[0].astype(np.float64)
+    m = np.zeros(n); C = W.T @ W; K = np.zeros((n, n)); k4 = np.zeros(n)
+    out = []; prev = None
+    for l in range(Ls):
+        mu, Ca, Ka, k3a, k4a, c, L, Q, R = relu_map_edges4(m, C, K, k4)
+        L0, Lm1 = L[0], L[-1]
+        out.append(mu)
+        if l + 1 == Ls:
+            break
+        Wn = Ws[l + 1].astype(np.float64)
+        M = c * c * (L0 ** 2)[:, None] * Lm1[None, :]
+        spec = (k3a, Ka - M, c, L0, Lm1)
+        Kn = contract(*spec, Wn, Wn)
+        if old and prev is not None:
+            pspec, Wl = prev
+            P = Wl @ (L0[:, None] * Wn)
+            Kz = K.copy(); k3z = np.diag(K).copy(); np.fill_diagonal(Kz, 0.0)
+            Kn = Kn + contract(*pspec, P, P) - contract(k3z * L0 ** 3, Kz * (L0 ** 2)[:, None] * L0[None, :],
+                                                      None, L0, Lm1, Wn, Wn)
+        prev = (spec, Wn)
+        k4n = k4_next(Wn, k4a, Q, R, c, L, mu) if k4mode == 'full' else (Wn ** 4).T @ k4a
+        m = mu @ Wn; C = Wn.T @ Ca @ Wn; K = Kn; k4 = k4n
+    return np.array(out)
