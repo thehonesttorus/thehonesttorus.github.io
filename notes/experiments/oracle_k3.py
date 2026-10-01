@@ -120,6 +120,7 @@ def residual_basis(o):
     B3  sym[ w2_i Phi_j w2_k D3z_i C_ij C_ik ] ?  -> replaced by: sym[ w3_i Phi_j Phi_k D3z_i C_ij C_ik ] (D3 hyperedge + two edges)
     B4  Gaussian order-rho^3 terms (hermite degree 6 minus degree 4)
     B5  sym[ w2_i w2_j Phi_k K22z_{ij} C_ik ]  with K22z the off-diagonal (2,2) cumulant slice of z  (kappa4 (i,i,j,j) + edge)
+    B6  sym[ w2_i Phi_j Phi_k kappa4(z)_{iijk} ]  (the (2,1,1) fourth-cumulant hyperedge; needs an atlas built with --k4)
     Coefficients are fitted; exact combinatorial constants are not needed for the oracle question."""
     mu, var, C, K3z = o["mu"], o["var"], o["C"], o["K3z"]
     sig = np.sqrt(var); alpha = mu / sig
@@ -135,6 +136,8 @@ def residual_basis(o):
     B.append(hermite_model(C, mu, var, 6) - hermite_model(C, mu, var, 4))
     if "K22" in o:
         B.append(sym3(np.einsum("i,j,k,ij,ik->ijk", w2, w2, Phi, o["K22"], Co)))
+    if "K211" in o:
+        B.append(sym3(np.einsum("i,j,k,ijk->ijk", w2, Phi, Phi, o["K211"])))
     return [all_distinct(b) for b in B]
 
 
@@ -215,7 +218,16 @@ def layer_objects(z, l):
     Eu2u2 = (M22 - 2 * mu[None, :] * M21 - 2 * mu[:, None] * M21.T
              + np.outer(m2, mu ** 2) + np.outer(mu ** 2, m2) + 4 * np.outer(mu, mu) * M11 - 3 * np.outer(mu ** 2, mu ** 2))
     K22 = offdiag(Eu2u2 - np.outer(var, var) - 2 * C ** 2)
-    return dict(mu=mu, var=var, C=C, K3z=K3z, K3a=K3a, D21=D21_1, Phi=Phi, w2=gaussian_w2(mu, var), K22=K22)
+    out = dict(mu=mu, var=var, C=C, K3z=K3z, K3a=K3a, D21=D21_1, Phi=Phi, w2=gaussian_w2(mu, var), K22=K22)
+    if "pre_M211" in z.files:
+        # kappa4(z)_{iijk} on distinct i, j, k from the raw (2,1,1) moment: central E[u_i^2 u_j u_k] - var_i C_jk - 2 C_ij C_ik
+        M211 = z["pre_M211"][l]
+        Eu2uu = (M211 - np.einsum("k,ij->ijk", mu, M21) - np.einsum("j,ik->ijk", mu, M21) + np.einsum("j,k,i->ijk", mu, mu, m2)
+                 - 2 * np.einsum("i,ijk->ijk", mu, z["pre_M3"][l] - np.einsum("k,ij->ijk", mu, M11) - np.einsum("j,ik->ijk", mu, M11)
+                                 + np.einsum("i,j,k->ijk", mu, mu, mu))
+                 + np.einsum("i,jk->ijk", mu ** 2, M11 - np.outer(mu, mu)))
+        out["K211"] = all_distinct(Eu2uu - np.einsum("i,jk->ijk", var, C) - 2 * np.einsum("ij,ik->ijk", C, C))
+    return out
 
 
 def k22_lambda_law(z, l1):
@@ -238,7 +250,7 @@ def analyse(path, ranks=(8, 4, 2), sketch=(8, 16, 32), rng=np.random.default_rng
     L, n, _ = W.shape
     print(f"\n{path}: width {n}, depth {L}, N = {int(z['n_samples'])}")
     print(f"{'l':>2} {'transp':>6} {'R2(K22|C)':>9} {'R2+C*C':>7} {'d21n/8':>6} {'n/4':>5} {'n/2':>5} | {'memless':>7} {'off':>5} | {'wick':>5} {'off':>5} | "
-          f"{'herm2':>5} {'herm3':>5} {'herm4':>5} | " + " ".join(f"hub{n//r:>3}" for r in ranks) + " | " + " ".join(f"sk{s:>3}" for s in sketch) + f" | {'wick+hub':>8} | {'fitR2':>5} {'fit':>5} {'off':>5}  coefficients B0..B5")
+          f"{'herm2':>5} {'herm3':>5} {'herm4':>5} | " + " ".join(f"hub{n//r:>3}" for r in ranks) + " | " + " ".join(f"sk{s:>3}" for s in sketch) + f" | {'wick+hub':>8} | {'fitR2':>5} {'fit':>5} {'off':>5}  coefficients B0..B6")
     for l in range(L - 1):
         o = layer_objects(z, l)
         K3a, D21 = o["K3a"], o["D21"]

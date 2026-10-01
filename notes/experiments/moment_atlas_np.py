@@ -36,10 +36,12 @@ def mlps_from_seeds(seed0, count, width, depth):
         yield f"seed-{seed0 + i}", seed0 + i, W, None
 
 
-def atlas(W, n_samples, chunk, sample_seed, pairs=True, gates=True, k3=False):
+def atlas(W, n_samples, chunk, sample_seed, pairs=True, gates=True, k3=False, k4=False):
     L, n, _ = W.shape
     if k3:
         pre_M3 = np.zeros((L, n, n, n)); post_M3 = np.zeros((L, n, n, n))   # full raw third moments (small width only)
+    if k4:
+        pre_M211 = np.zeros((L, n, n, n))   # E[z_i^2 z_j z_k]: the (2,1,1) raw fourth moment of the pre-activation
     pre_s = np.zeros((4, L, n)); post_s = np.zeros((4, L, n)); gate = np.zeros((L, n))
     if pairs:
         pM11 = np.zeros((L, n, n)); pM21 = np.zeros((L, n, n)); pM22 = np.zeros((L, n, n))
@@ -74,6 +76,8 @@ def atlas(W, n_samples, chunk, sample_seed, pairs=True, gates=True, k3=False):
                 # fp32 GEMM per chunk (chunk-level rounding ~1e-6 relative, far below the MC noise), fp64 accumulation
                 pre_M3[l] += (z.T @ (z[:, :, None] * z[:, None, :]).reshape(m, n * n)).reshape(n, n, n)
                 post_M3[l] += (a.T @ (a[:, :, None] * a[:, None, :]).reshape(m, n * n)).reshape(n, n, n)
+            if k4:
+                pre_M211[l] += ((z * z).T @ (z[:, :, None] * z[:, None, :]).reshape(m, n * n)).reshape(n, n, n)
             a_prev = a
         done += m
     N = float(n_samples)
@@ -86,6 +90,8 @@ def atlas(W, n_samples, chunk, sample_seed, pairs=True, gates=True, k3=False):
         out.update(gate_GG=(GG / N).astype(np.float32), gate_GX=(GX / N).astype(np.float32))
     if k3:
         out.update(pre_M3=pre_M3 / N, post_M3=post_M3 / N)
+    if k4:
+        out.update(pre_M211=pre_M211 / N)
     return out
 
 
@@ -97,6 +103,7 @@ def main():
     ap.add_argument("--n-samples", type=int, default=1_000_000); ap.add_argument("--chunk", type=int, default=16384)
     ap.add_argument("--no-pairs", action="store_true"); ap.add_argument("--no-gates", action="store_true")
     ap.add_argument("--k3", action="store_true", help="also accumulate the full third-moment tensors (width <= 256)")
+    ap.add_argument("--k4", action="store_true", help="also accumulate the (2,1,1) fourth-moment tensor of the pre-activation")
     ap.add_argument("--limit", type=int, default=None, help="process only the first LIMIT MLPs (after --skip)")
     ap.add_argument("--skip", type=int, default=0, help="skip the first SKIP MLPs of the source")
     ap.add_argument("--sample-seed", type=int, default=20260824,
@@ -111,9 +118,9 @@ def main():
         if args.limit is not None and i >= args.skip + args.limit:
             break
         t0 = time.time()
-        chunk = min(args.chunk, 1024) if args.k3 else args.chunk
+        chunk = min(args.chunk, 1024) if (args.k3 or args.k4) else args.chunk
         res = atlas(W, args.n_samples, chunk, sample_seed=args.sample_seed ^ (i * 2654435761 % 2**63),
-                    pairs=not args.no_pairs, gates=not args.no_gates, k3=args.k3)
+                    pairs=not args.no_pairs, gates=not args.no_gates, k3=args.k3, k4=args.k4)
         res.update(name=name, mlp_seed=seed, weights=W)
         if gt is not None:
             res["gt_mean"] = gt
