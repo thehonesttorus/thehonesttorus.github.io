@@ -312,3 +312,27 @@ per-neuron variance and third cumulant are jointly binding (each ≈ half the er
 small final factor (1.3×) once they are right. So the target of any next carrier is v and κ3 at depth, i.e.
 the covariance drift and the old third-order content — the same two binding facts every stream found, now
 measured inside the Bethe estimator at n = 1024.
+
+## 15. Localization on the Perron coordinate (coordinator's round-3 request), n = 1024
+
+Realisation: pin the input-space linear part of the deep collective coordinate, t = vᵀx with
+v ∝ W_1 Φ_1 W_2 ⋯ Φ_{15} W_16 u (u the top eigenvector of the layer-16 covariance; matvecs only); x | t is exactly
+Gaussian (mean t v, covariance I − vvᵀ), so the law of the pinned coordinate is exact and need not be carried;
+run the conditional closure at K Gauss–Hermite nodes in t and average.
+
+| estimator | MLP 0 | MLP 1 | all 6 (mean) | cost |
+|---|---|---|---|---|
+| Gaussian closure | 5.00e-6 | 4.75e-6 | 4.10e-6 | 1× |
+| localized Gaussian closure (K = 7; converged by K = 7 at w128) | 3.81e-6 | 3.47e-6 | 3.07e-6 (1.34×) | 7× |
+| v4 old0 | 6.82e-7 | 7.05e-7 | 5.82e-7 | 1× |
+| localized v4 old0 (K = 3) | 6.68e-7 | 6.82e-7 | — (1.03×) | 3× |
+| v4 old1 | 4.30e-7 | 4.53e-7 | 3.76e-7 | 1× |
+| localized v4 old1 (K = 3) | 4.17e-7 | 4.35e-7 | — (1.03×) | 3× |
+
+At w128 the same localization gave the Gaussian closure 1.5–2×. **Conditioning on the input-linear part of g
+does not remove the need for old content (old1/old0 stays 1.6× after localization) and adds ≈ 3 % to v4.**
+The reason is in §11c: the deep coordinate's variance is mostly *not* first-chaos in x (its κ3 ≈ 0.7, κ4 ≈ 1
+come from nonlinear content), so pinning its linear shadow conditions on little of it, and v4's Q edge belief
+already carries the variance-modulation part that pinning would capture. A localization that works must pin g
+itself (a nonlinear function of x), which needs its law carried consistently: the v5 problem (§11c), unsolved
+here.
