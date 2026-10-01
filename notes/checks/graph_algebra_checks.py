@@ -205,3 +205,40 @@ for k in range(1, Lmax + 1):
                     new.add(pr)
         reach, n = new, n + 1
     print(f"k={k}: prop(E_k) in T(Lambda) = {n}   predicted 2*ceil(L/k)-1 = {2 * math.ceil(Lmax / k) - 1}   (L = {Lmax})")
+
+# --- two simplicial complexes on the set of faces (note 2: nerves, coherence) ---------------------
+# (i)  history complex: F (a set of faces) is a simplex iff some complete history visits every face in F.
+#      Algebraically: joint certainty of the commuting "visited" projections on complete histories.
+# (ii) coherence complex of D_0 inside C^*(Lambda): F is a simplex iff some pure state of C^*(Lambda)
+#      (a vector state in one origin block) gives positive mass to every p_sigma, sigma in F, i.e. iff the
+#      faces in F are reachable from a common input face: the nerve of the cover of E^0 by origin blocks.
+# Both must be downward closed, and (i) is contained in (ii).
+def visited(p):  # faces visited by a path, including both ends
+    ed = edges_of(p)
+    return frozenset([start_of(p)] + [r(e) for e in ed]) if ed else frozenset([start_of(p)])
+hist_facets = {visited(p) for p in complete}
+reach_facets = {frozenset().union(*[visited(p) for p in paths if path_s(p) == v]) for v in sources}
+def downward_closure(facets):
+    out = set()
+    for Fc in facets:
+        Fl = list(Fc)
+        for m in range(1, len(Fl) + 1):
+            for comb in itertools.combinations(Fl, m):
+                out.add(frozenset(comb))
+    return out
+hist_cx, reach_cx = downward_closure(hist_facets), downward_closure(reach_facets)
+assert hist_cx <= reach_cx
+# joint-certainty check for (i): product of visited-projections on complete histories is nonzero iff F in hist_cx
+cidx = {p: n for n, p in enumerate(complete)}
+def visited_proj(sigma):
+    return np.diag([1.0 if sigma in visited(p) else 0.0 for p in complete])
+sample = list(hist_cx)[:200] + [frozenset(c) for c in itertools.combinations(sorted(faces), 2) if frozenset(c) not in hist_cx][:50]
+for Fc in sample:
+    P = np.eye(len(complete))
+    for sigma in Fc:
+        P = P @ visited_proj(sigma)
+    assert (np.any(P != 0)) == (Fc in hist_cx)
+print(f"history complex: {len(hist_facets)} facets (distinct face sequences of the {len(complete)} complete histories), {len(hist_cx)} simplices, "
+      f"max dim {max(len(F) for F in hist_cx) - 1}; joint-certainty characterisation holds on {len(sample)} samples")
+print(f"coherence complex of D_0 in C*(Lambda): {len(reach_facets)} facets (one per input face), {len(reach_cx)} simplices, "
+      f"max dim {max(len(F) for F in reach_cx) - 1}; contains the history complex")
