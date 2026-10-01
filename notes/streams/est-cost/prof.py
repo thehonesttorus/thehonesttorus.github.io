@@ -14,6 +14,7 @@ ap.add_argument("--calls", type=int, default=2)
 ap.add_argument("--save-pred", default=None)
 ap.add_argument("--dataset", default="/root/work/dev6")
 ap.add_argument("--keep-log", action="store_true")
+ap.add_argument("--lines", action="store_true", help="attribute calls/units to estimator source lines (slower)")
 a = ap.parse_args()
 
 import numpy as np
@@ -46,6 +47,23 @@ class _Ctx:
     api_version = "1.0"; scratch_dir = None; submission_dir = os.path.dirname(os.path.abspath(a.est))
 
 
+LINES = []
+if a.lines:
+    import flopscope._budget as _fb
+    _orig_charge = _fb.BudgetContext._charge_op
+    _estfile = os.path.abspath(a.est)
+
+    def _charge(self, op_name, flop_cost, *ar, **kw):
+        f = sys._getframe(1)
+        loc = "?"
+        while f is not None:
+            if os.path.abspath(f.f_code.co_filename) == _estfile:
+                loc = f"{f.f_code.co_name}:{f.f_lineno}"
+                break
+            f = f.f_back
+        LINES.append((loc, op_name, flop_cost))
+        return _orig_charge(self, op_name, flop_cost, *ar, **kw)
+    _fb.BudgetContext._charge_op = _charge
 est = mod.Estimator()
 with flops.BudgetContext(flop_budget=10 ** 15, quiet=True):
     est.setup(_Ctx())
@@ -64,6 +82,7 @@ for c in range(a.calls):
     print(json.dumps(rec), flush=True)
     res["calls"].append(rec)
     log = list(ctx.op_log)
+    lines_c = list(LINES); LINES.clear()
     pred_np = np.asarray(pred)
     if a.save_pred:
         np.save(a.save_pred.replace(".npy", f"_c{c}.npy"), pred_np)
@@ -91,6 +110,16 @@ res["gap_sum"] = gsum
 res["family"] = {k: dict(units=v[0], calls=v[1], gap_ms=1e3 * v[2]) for k, v in sorted(fam.items(), key=lambda kv: -kv[1][0])}
 res["layer"] = {k: dict(units=v[0], calls=v[1], gap_ms=1e3 * v[2]) for k, v in sorted(lay.items())}
 res["family_op"] = {k: dict(units=v[0], calls=v[1], gap_ms=1e3 * v[2]) for k, v in sorted(opk.items(), key=lambda kv: -kv[1][2])[:80]}
+if a.lines:
+    agg = defaultdict(lambda: [0, 0.0, ""])
+    for loc, op, fc in lines_c:
+        agg[loc][0] += 1; agg[loc][1] += fc / UNIT; agg[loc][2] = op
+    res["lines"] = {k: dict(calls=v[0], units=v[1], op=v[2]) for k, v in sorted(agg.items(), key=lambda kv: -kv[1][0])}
+    byfn = defaultdict(lambda: [0, 0.0])
+    for loc, op, fc in lines_c:
+        byfn[loc.split(":")[0]][0] += 1; byfn[loc.split(":")[0]][1] += fc / UNIT
+    res["functions"] = {k: dict(calls=v[0], units=v[1]) for k, v in sorted(byfn.items(), key=lambda kv: -kv[1][0])}
+    print(json.dumps(res["functions"], indent=0))
 json.dump(res, open(a.out, "w"), indent=1)
 print(f"gap_sum {gsum:.3f}s  resid {res['calls'][-1]['resid']:.3f}s")
 for k, v in list(res["family"].items()):
