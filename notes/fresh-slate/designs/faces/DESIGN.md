@@ -177,14 +177,20 @@ Bench sets (w64, w128: 8 MLPs, N = 1e7) and own bakes (w256: 4 MLPs, N = 5e6; w5
 
 | variant | w64 | w128 | w256 | w512 | width law | raw(1024) | cost (units) | adjusted(1024) |
 |---|---|---|---|---|---|---|---|---|
-| w = 1 ('hyb21') | 1.88e-4 | 9.88e-5 | 3.39e-5 | | n^-1.24 | 6.5e-6 | ≈ 140 | 9e-7 |
+| w = 1 ('hyb21') | 1.88e-4 | 9.88e-5 | 3.39e-5 | | n^-1.24 | 6.5e-6 | ≈ 630 | 4e-6 |
 | w = 2 | 1.68e-4 | 6.38e-5 | | | | | | |
 | w = 3 | 1.53e-4 | 4.37e-5 | | | | | | |
-| w = 4 | 1.48e-4 | 3.29e-5 | 1.38e-5 | W4_512 | n^-1.71 | 1.2e-6 | ≈ 300 | 3.4e-7 |
-| w = 6 | 1.55e-4 | 2.74e-5 | 9.89e-6 | W6_512 | n^-1.99 | 5.6e-7 | ≈ 410 | 2.2e-7 |
+| w = 4 | 1.48e-4 | 3.29e-5 | 1.38e-5 | | n^-1.71 | 1.2e-6 | ≈ 630 | 7e-7 |
+| w = 6 | 1.55e-4 | 2.74e-5 | 9.89e-6 | | n^-1.99 | 5.6e-7 | ≈ 630 | 3.5e-7 |
+| w = 6, window only (no older births) | 1.49e-4 | 2.79e-5 | 1.17e-5 | 1.86e-6 | n^-1.84 (64–512) | see 1024 | ≈ 410 | |
 | w = 8 | 1.61e-4 | 3.18e-5 | | | | | | |
-| w = 16 (all depths renormalised) | 1.90e-4 | 3.93e-5 | 8.68e-6 | W16_512 | n^-2.22 | 3.9e-7 | ≈ 630 | 2.4e-7 |
-| reference 'gauss' | 4.46e-4 | 2.82e-4 | 8.60e-5 | | n^-1.19 | 1.9e-5 | 40 | 1.9e-6 |
+| w = 16 (all depths renormalised) | 1.90e-4 | 3.93e-5 | 8.68e-6 | 1.29e-6 | n^-2.22 (64–256); n^-2.75 (256–512) | see 1024 | ≈ 630 | |
+| reference 'gauss' | 4.46e-4 | 2.82e-4 | 8.60e-5 | 1.54e-5 | n^-2.5 (256–512) | measured 4.1–5e-6 at 1024 (bench) | 40 | |
+| 'mem21' | 2.75e-4 | 1.82e-4 | 6.29e-5 | 1.01e-5 | | | ≈ 100 | |
+
+w512: own bake, seeds 11–14, 4 MLPs, N = 2e6, truth noise 4.3e-8. The hybrid variants (w < 16) also run input-leg births for every older pair, so they cost as much as w = 16. 'Window only' drops these and loses nothing at w ≥ 6. **Small-width fits over-predict at 1024** (coordinator calibration: the Gaussian closure falls ≈ n^-2 above 128). The 'raw(1024)' column above is the 64–256 fit; it is kept only for comparison with the direct 1024 run below.
+
+Radial mode (coordinator finding #2, the bethe stream's rank-one κ4 spike seeded by the input radius). The exact radial excess of κ4 from $z=R\,y$ (homogeneity, $R=\|x\|/\sqrt n$) was added to the readout. It changes nothing: w512 w16 1.29e-6 → 1.35e-6, Gaussian 1.54e-5 → 1.55e-5. The direct radial contribution is $O(1/n)$ and small. A spike amplified by depth would have to be a transported object (old births along the mean direction), which the depth window already carries.
 
 Ablations of w = 16 at w128: dropping the (2,1) slice from Cov(a) gives 2.07e-4 (5×); dropping κ4 gives 9.48e-5 (2.4×). Adding (2,2) and (3,1) pair terms through the same tree, with the inner covariance taken diagonal and without the κ3² terms, makes it worse (5.6e-5): **failed and dropped**; the second-order Edgeworth terms of the same order are missing.
 

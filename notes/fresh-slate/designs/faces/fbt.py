@@ -39,6 +39,25 @@ def second_moment(mu, var, k3, k4):
         + k3 ** 2 / (72 * s ** 6) * 2 * s * s * h3 * f
 
 
+def _rmom(n):
+    from scipy.special import gammaln
+    return [np.exp(gammaln((n + k) / 2) - gammaln(n / 2)) * (2.0 / n) ** (k / 2) for k in range(5)]
+
+
+def radial_dk4(mu, var, k3, n):
+    """Exact radial-mode excess of kappa4 for z = R y, R = |x|/sqrt(n) independent of the sphere-level y
+    (positive homogeneity): y taken with the closure's first three cumulants and kappa4(y) = 0."""
+    R = _rmom(n)
+    def k4_of(r1, r2, r3, r4):
+        m1y = mu / r1; m2y = mu * mu + var            # E R^2 = 1 exactly
+        vy = m2y - m1y ** 2
+        m3y = k3 + 3 * m1y * vy + m1y ** 3
+        m4y = 3 * vy ** 2 + 4 * k3 * m1y + 6 * m1y ** 2 * vy + m1y ** 4
+        m1, m2, m3, m4 = r1 * m1y, r2 * m2y, r3 * m3y, r4 * m4y
+        return m4 - 4 * m3 * m1 - 3 * m2 ** 2 + 12 * m2 * m1 ** 2 - 6 * m1 ** 4
+    return k4_of(R[1], R[2], R[3], R[4]) - k4_of(1.0, 1.0, 1.0, 1.0)
+
+
 def mehler_cov(mu, C, R=6):
     s = np.sqrt(np.maximum(np.diag(C), 1e-300)); t = mu / s; f = _phi(t)
     rho = C / np.outer(s, s)
@@ -51,7 +70,7 @@ def mehler_cov(mu, C, R=6):
     return out
 
 
-def predict(W, mode="lin", R=6, use_k4=True, mean_var="edge", d21=False, win=1, k22=False, winonly=False):
+def predict(W, mode="lin", R=6, use_k4=True, mean_var="edge", d21=False, win=1, k22=False, winonly=False, radial=False):
     """mode: 'gauss' (no kappa3/4), 'lin' (FBT: facet births on Gaussian input legs, all depths), 'mem' (one-step tree)."""
     W = np.asarray(W, dtype=np.float64)
     L, n, _ = W.shape
@@ -113,6 +132,8 @@ def predict(W, mode="lin", R=6, use_k4=True, mean_var="edge", d21=False, win=1, 
         var = np.maximum(np.diag(C), 1e-300); s_ = np.sqrt(var); t = mu / s_
         if mode == "gauss":
             k3 = np.zeros(n); k4 = np.zeros(n)
+        if radial and l > 0:
+            k4 = k4 + radial_dk4(mu, var, k3, n)
         Ea = readout(mu, var, k3, k4)
         out.append(Ea)
         if l == L - 1:
@@ -204,3 +225,15 @@ def predict_win4(W):
 
 def predict_win6(W):
     return predict(W, mode="hyb", d21=True, win=6, winonly=True)
+
+
+def predict_w16_rad(W):
+    return predict(W, mode="hyb", d21=True, win=16, radial=True)
+
+
+def predict_win6_rad(W):
+    return predict(W, mode="hyb", d21=True, win=6, winonly=True, radial=True)
+
+
+def predict_gauss_rad(W):
+    return predict(W, mode="gauss", radial=True)

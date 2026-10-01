@@ -1,0 +1,5 @@
+## predict_gauss
+  w1024_d16 mlp 0: mse 5.0469e-06  raw 5.0032e-06  all-layer 2.866e-06  4.7s
+  w1024_d16 mlp 1: mse 4.7894e-06  raw 4.7468e-06  all-layer 2.698e-06  3.3s
+  w1024_d16 mlp 2: mse 4.7504e-06  raw 4.7148e-06  all-layer 2.299e-06  3.5s
+  w1024_d16 mlp 3: mse 3.5607e-06  raw 3.5276e-06  all-layer 2.141e-06  3.4s
