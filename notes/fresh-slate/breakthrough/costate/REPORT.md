@@ -64,15 +64,61 @@ Per live (s, k) pair: propagate [U; V; X] by the shared right factor Φ_k W_{k+1
 
 Calls: one propagation family plus one hub family per layer ≈ 16 × (46 + 87) ≈ 2.1k calls ≈ 0.07 s residual, which is within the 0.4 s limit.
 
-## 4. Measurements (direct, n = 1024 bench set w1024_d16; and w128_d16)
+## 4. Measurements: closures of the old content (direct n = 1024 and w128)
 
-Runs: `run.py` → `results/<set>.jsonl`, summarised by `summarize.py`. Raw = final-layer MSE − truth noise (3.6e-8 at 1024, N = 2e6).
+Runs: `run.py` → `results/<set>[_suffix].jsonl`, summarised by `summarize.py`. Raw = final-layer MSE − truth noise (3.6e-8 at 1024, N = 2e6). "Products" = n³ products counted by the prototype. A = largest age carried exactly (age = k − s − 1).
 
-*First run (MLP 0 at n = 1024):* Gaussian closure raw 5.00e-6. **Exact first-order co-state (all 120 pairs) raw 3.92e-7: gain 12.8×, 33 s numpy.** This is the first direct width-1024 measurement of first-order Heisenberg–Duhamel; the heisenberg stream projected 4–7e-7 from width 256.
+**4.1 The exact first-order co-state and the natural n² closures**
 
-The closure sweep (all six MLPs: ages A = 0..7; the slice chain for old content; Tucker truncation at rank n/(2·age); no coincidence atoms) is running. Its table goes here.
+| variant | w1024 raw (3 MLPs) | gain | w128 raw (8 MLPs) | gain | products |
+|---|---|---|---|---|---|
+| Gaussian closure | 4.82e-6 | 1 | 2.82e-4 | 1 | 60 |
+| **all pairs (exact first order)** | **4.03e-7 ± 0.06e-7** | **12.0** | 3.13e-5 | 9.0 | 855 |
+| all pairs, no coincidence atoms | 5.08e-7 | 9.5 | 6.09e-5 | 4.6 | 495 |
+| A = 0 / 1 / 2 / 3 | 3.03e-6 / 2.09e-6 / 1.44e-6 / 1.05e-6 | 1.6 / 2.3 / 3.3 / 4.6 | 1.92e-4 / 1.24e-4 / 8.6e-5 / 6.1e-5 | 1.5 / 2.3 / 3.3 / 4.6 | 120 / 218 / 309 / 393 |
+| A = 5 / 7 | 6.57e-7 / 4.84e-7 | 7.3 / 10.0 | 4.0e-5 / 3.2e-5 | 7.0 / 8.9 | 540 / 659 |
+| A = 0 / 1 / 3 + diagonal slice chain for older | 1.57e-6 / 1.17e-6 / 6.87e-7 | 3.1 / 4.1 / 7.0 | 8.0e-5 / 6.0e-5 / 3.7e-5 | 3.5 / 4.7 / 7.6 | 174 / 268 / 435 |
+| Tucker truncation of propagators at rank n/(2·age) | 6.97e-7 | 6.9 | 4.2e-5 | 6.7 | 855 (C4: no saving) |
+| pool renewal (re-project to (2,1) support, exact after) | — | — | A0: 6.8e-5 … 8.9e-5 | ≤ 4.2 | — |
 
-## 5. Predicted error and next experiments
+Readings. (i) **The exact first-order co-state at n = 1024 measures raw 4.0e-7, 12× below the Gaussian closure.** That is the first direct width-1024 number for first-order Heisenberg–Duhamel (projected 4–7e-7 from width 256), and it ties with the best fresh design so far (faces, 3.2e-7). (ii) Old content is essential at 1024 and decays slowly with age: A = 7 still leaves 20 %. (iii) Every causal n² closure loses a large share (C2–C3). Re-projecting onto (2,1) support even once (pool renewal) loses most of it: the all-distinct part matters.
 
-- Prediction (from C3): the slice-chain closure of old content recovers little more than age truncation at the same A. If it recovers ≥ 80 % of the all-ages gain at n = 1024, then C3's same-order argument fails quantitatively at this width, and an O(L n³) co-state exists in practice.
-- Prediction (from C1/C2 and the heisenberg oracle R3): even the exact first-order co-state stays a factor of 10–40 above the bar at n = 1024. The remaining factor is second order, which costs Θ(L³ n³) in pull-back form (C5).
+**4.2 What the readout actually reads of the old content (oracle filters, w128).** The old content is carried exactly. Only what is injected at each layer is filtered: young (age ≤ A) exact, old (age > A) filtered.
+
+| injected old slice | w128 raw |
+|---|---|
+| nothing (A = 1) | 1.24e-4 |
+| diagonal only (per-neuron skewness) | 1.06e-4 |
+| off-diagonal only | 9.0e-5 |
+| exact diagonal + **rank-1** off-diagonal (SVD) | **4.65e-5** |
+| exact diagonal + rank 8 / rank 64 | 3.30e-5 / 3.13e-5 |
+| A = 0, exact diagonal + rank 8 | 3.27e-5 |
+| everything (all pairs) | 3.13e-5 |
+
+**The readout reads the old content almost entirely through a rank-1 spike plus a few modes.** In the readout metric, the old (2,1) slice needs about one mode, not the ≥ 0.3 n modes the Frobenius-metric studies needed (old-content stream). Its anatomy (`spike.py`, w128, A = 1): the off-diagonal old slice is 4–5× the diagonal in norm. Its top singular pair carries 43 % of the energy at layer 4, 69 % at 6, 82 % at 8 and 91–95 % from layer 10 on. The left singular vector aligns with the per-neuron scale s (cos 0.8–0.93), the right with the pre-activation mean m (cos 0.88–0.96).
+
+**4.3 The spike is the global scale (dilation) mode.** If z = t·x with a scalar t (E t = 1, Var t = v) independent of x ~ N(m, C), then κ₃(z_p, z_p, z_q) = 2v (2 m_p C_pq + m_q C_pp) + O(v², κ₃(t)). Off the diagonal this is dominated by 2v s_p² m_q, rank one along (s², m), which is exactly the measured spike.
+
+**Theorem C6 (the dilation sector of the co-state is exactly closed).** Every arrow is positively homogeneous, F_l(t z) = t F_l(z) for t > 0. Hence for every law ν and every mixing law P on (0, ∞), F_l#(P ⋆ ν) = P ⋆ (F_l#ν), where P ⋆ ν is the law of t·z with t ~ P independent of z ~ ν. The mixing law is transported **unchanged**, a conserved charge of the exact dynamics. For the homogeneous readout, E_{P⋆ν}[r] = E_P[t] · E_ν[r]. So the co-state has a sector that is exactly closed under pull-back and whose dimension does not grow: the scalar law P. Pathwise, ReLU′(z) z = ReLU(z) (Euler), so the scale direction sym(m ⊗ C) of the cumulant dynamics is an eigen-direction of eigenvalue 1 of the exact dynamics. The decoupled-gate linear response of first-order HD does not have this property (E a ≠ Φ m), so it leaks the mode.
+In the programme's terms, the dilations form a one-parameter automorphism group commuting with every arrow, like a gauge action. The scale-mixture states form the family it generates, and its fixed-point (invariant) sector is a sufficient sub-algebra for the scale direction. Per C1–C3, all the rest of the old content costs pairs.
+
+**4.4 Carrying the scale mode (non-oracle).** Content that ages out (age > A) is projected, at the layer where it retires, onto the scale-mixture slice K = 2 m ⊗ C + diag(C) ⊗ m: γ = ⟨S_old, K⟩ / ⟨K, K⟩, an O(n²) dot product of matrices already computed. The amplitudes are accumulated (conserved charge) and used as v = γ/2 at every later layer, in two ways:
+- **gp**: first-order Stein injection of γ K;
+- **gl** (law level): ReLU moments from the de-scaled covariance C_x = (C − v m mᵀ)/(1 + v), and Cov(a) = (1 + v) Cov_x(a) + v E a E aᵀ. This uses homogeneity exactly, E[ReLU(t x_p)] = E[t] E[ReLU(x_p)], so the mode's higher cumulants (its κ₄ spike, the bethe stream's "global order parameter") come in at no cost.
+- **gs / gsl**: the same, plus the residual (S_old − γ K) carried by the diagonal slice chain.
+
+Extra cost over A-truncation: O(n²) per layer for gp/gl, 2 products per layer for the slice chain.
+
+| variant (w128, 8 MLPs) | raw | products |
+|---|---|---|
+| A = 1 / 2 / 3, old dropped | 1.24e-4 / 8.6e-5 / 6.1e-5 | 218 / 309 / 393 |
+| oracle: A = 1 + best single scalar per layer (γ fitted to the exact old slice) | 5.25e-5 | — |
+| gp: A = 0 / 1 / 2 / 3 (first-order injection) | 2.7e-4 / 7.3e-5 / 4.6e-5 / 3.7e-5 | 120 / 218 / 309 / 393 |
+| gs: A = 1 / 3 | 6.4e-5 / 3.2e-5 | 268 / 435 |
+| **gl: A = 1 / 2 / 3 (law level)** | **3.66e-5 / 3.10e-5 / 2.81e-5** | 218 / 309 / 393 |
+| **gsl: A = 1 / 3** | **3.04e-5 / 2.64e-5** | 268 / 435 |
+| all pairs (exact first order) | 3.13e-5 | 855 |
+
+Projecting at age 0 is wrong: the source has not yet turned into the scale mode, and A0gp is worse than A0. From age 1 on, the projection works. Over a fitted scalar at first order (A1gsm oracle 5.25e-5), the law-level version gains another 1.4×, and gl/gsl beat the exact all-pairs first order at a quarter to half of its products. That is direct evidence that the scale mode carries the second-order content: its κ₄ spike, which is coherent.
+
+**4.5 Width 1024 (the decisive set).** In progress: A1gl, A2gl, A1gsl, A3gsl, A3gl, paired with gauss / full / A1 / A1gp / A3gs on all six networks. First number, MLP 0: **A1gl raw 7.8e-7** (A1 2.09e-6, all pairs 3.9e-7).

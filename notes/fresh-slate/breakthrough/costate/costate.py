@@ -41,31 +41,79 @@ def source_atoms(G, K=8):
 
 def pair_slice(a2, U, V, X, dl, coinc=True):
     """S(p,q) = T(u_p, u_p, u_q) for the source with factors U (=U_{s->k}), V = R U, X = Dl U."""
-    S = 2 * (U * V).T @ (a2[:, None] * V) + (V * V).T @ (a2[:, None] * U)
+    S = 0.0 if V is None else 2 * (U * V).T @ (a2[:, None] * V) + (V * V).T @ (a2[:, None] * U)
     if coinc:
         S += (U * U).T @ (X + dl[:, None] * U) + 2 * (U * X).T @ U
     return S
 
 
-def predict(Ws, A=None, old="drop", rank=None, coinc=True, K=8, record=None, dtype=np.float64):
+def filt(Sold, how, r=None):
+    """Oracle filters on the exact old slice: what part of it does the readout need?"""
+    if how == "diag":
+        return np.diag(np.diag(Sold))
+    if how == "off":
+        return Sold - np.diag(np.diag(Sold))
+    if how == "rank":
+        Uu, s, Vt = np.linalg.svd(Sold)
+        return (Uu[:, :r] * s[:r]) @ Vt[:r] + np.diag(np.diag(Sold) - np.einsum("ij,j,ji->i", Uu[:, :r], s[:r], Vt[:r]))
+    if callable(how):
+        return how(Sold)
+    raise ValueError(how)
+
+
+def predict(Ws, A=None, old="drop", rank=None, coinc=True, K=8, record=None, Ap=0, oldfilter=None, r=None, law=False):
+    """old: 'drop' | 'slice' (diagonal double edge only) | 'pool' (renewal: aged-out content is projected on its
+    (2,1) slice at the current layer and re-emitted as a secondary form, transported exactly for Ap more layers
+    (Ap=None: never re-projected); Ap=0 is the full coincident-support slice chain)."""
     Ws = np.asarray(Ws, dtype=np.float64)
     L, n, _ = Ws.shape
     m = np.zeros(n); C = Ws[0].T @ Ws[0]
-    live = []          # list of dict(s, a2, dl, U, V, X)
-    Sold = None        # n^2 slice chain for sources older than A (old == 'slice')
+    live = []          # forms: dict(s, kind, a2, dl, U, V, X)
+    Sold = None
+    gacc = 0.0         # old == 'gsm': accumulated scale-mode amplitude (conserved scalar)
     out = []
     nprod = 0
     for l in range(L):
+        v = 0.5 * gacc if law else 0.0           # scale variance: slice amplitude gamma = 2 Var(t)
+        if law and v > 0:
+            C = (C - v * np.outer(m, m)) / (1 + v)
         G = Gauss(m, C, K=K)
         S = np.zeros((n, n))
-        for src in live:
-            S += pair_slice(src["a2"], src["U"], src["V"], src["X"], src["dl"], coinc)
-            nprod += 4 if coinc else 2
+        sl = []
+        Sfilt = np.zeros((n, n)) if oldfilter is not None else None
+        for f in live:
+            Sf = pair_slice(f["a2"], f["U"], f["V"], f["X"], f["dl"], coinc or f["kind"] == "pool")
+            sl.append(Sf)
+            if oldfilter is not None and A is not None and (l - f["s"] - 1) > A:
+                Sfilt += Sf
+            else:
+                S += Sf
+            nprod += (2 if f["V"] is not None else 0) + (2 if (coinc or f["kind"] == "pool") else 0)
         if Sold is not None:
             S += Sold
+        Kg = 2 * G.m[:, None] * G.C + (G.m[None, :] * np.diag(G.C)[:, None])
+        if old in ("gsm", "gsmslice") and gacc != 0.0 and not law:
+            S += gacc * Kg
+        if record is not None and Sfilt is not None and np.any(Sfilt):
+            record.append(dict(layer=l, gsm_oracle=float(np.sum(Kg * Sfilt) / np.sum(Kg * Kg)), gsm_pred=float(gacc)))
+        if Sfilt is not None and live and np.any(Sfilt):
+            if isinstance(oldfilter, str) and oldfilter.startswith("gsm"):
+                # Gaussian scale mixture z = (1+d) x: slice of 2 Var(d) (m (x) C)_sym, one scalar per layer fitted (oracle)
+                Kg = 2 * G.m[:, None] * G.C + (G.m[None, :] * np.diag(G.C)[:, None])
+                if oldfilter == "gsm_off":
+                    Ko = Kg - np.diag(np.diag(Kg)); So = Sfilt - np.diag(np.diag(Sfilt))
+                    gam = np.sum(Ko * So) / np.sum(Ko * Ko)
+                    S += gam * Ko + np.diag(np.diag(Sfilt))
+                else:
+                    gam = np.sum(Kg * Sfilt) / np.sum(Kg * Kg)
+                    S += gam * Kg
+                if record is not None:
+                    record.append(dict(layer=l, gsm_gamma=gam))
+            else:
+                S += filt(Sfilt, oldfilter, r)
         if record is not None:
             record.append(dict(layer=l, S=S.copy()))
-        if live or Sold is not None:
+        if live or Sold is not None or (gacc != 0.0 and not law):
             D = np.diag(S).copy()
             dEa, dC = inject(G, D, S)
         else:
@@ -77,45 +125,56 @@ def predict(Ws, A=None, old="drop", rank=None, coinc=True, K=8, record=None, dty
         W = Ws[l + 1]
         g = G.Phi
         M = g[:, None] * W                        # one linear-response step: diag(Phi_l) W_{l+1}
-        # old content handled by an n^2 closure: the (2,1)-slice chain with diagonal (annealed) double edge
-        if old == "slice":
+        if old in ("slice", "gsmslice"):
             newold = None
             if Sold is not None:
                 newold = (M * M).T @ Sold @ M; nprod += 2
-            for src in [s for s in live if A is not None and (l - s["s"]) > A]:
-                Sa = pair_slice(src["a2"], src["U"], src["V"], src["X"], src["dl"], coinc)
-                t = (M * M).T @ Sa @ M; nprod += 2
-                newold = t if newold is None else newold + t
+            for f, Sf in zip(live, sl):
+                if A is not None and (l - f["s"]) > A:
+                    if old == "gsmslice":
+                        gk = float(np.sum(Kg * Sf) / np.sum(Kg * Kg)); gacc += gk
+                        Sf = Sf - gk * Kg
+                    t = (M * M).T @ Sf @ M; nprod += 2
+                    newold = t if newold is None else newold + t
             Sold = newold
-        # advance live sources; retire those older than A
         nl = []
-        for src in live:
-            age_next = (l + 1) - src["s"] - 1
-            if A is not None and age_next > A:
+        pool = None
+        for f, Sf in zip(live, sl):
+            age_next = (l + 1) - f["s"] - 1
+            lim = (None if oldfilter is not None else A) if f["kind"] == "src" else Ap
+            if lim is not None and age_next > lim:
+                if old == "pool":
+                    pool = Sf if pool is None else pool + Sf
+                if old == "gsm":
+                    gacc += float(np.sum(Kg * Sf) / np.sum(Kg * Kg))
                 continue
             for key in ("U", "V", "X"):
-                if key == "X" and not coinc:
+                if f[key] is None:
                     continue
-                src[key] = src[key] @ M; nprod += 1
+                f[key] = f[key] @ M; nprod += 1
             if rank is not None:
                 d = rank(age_next)
                 if d is not None and d < n:
-                    # project transported factors on the top-d right singular subspace of U_{s->k+1}
-                    _, _, Vt = np.linalg.svd(src["U"], full_matrices=False)
+                    _, _, Vt = np.linalg.svd(f["U"], full_matrices=False)
                     P = Vt[:d].T
                     for key in ("U", "V", "X"):
-                        if key in src and src[key] is not None:
-                            src[key] = (src[key] @ P) @ P.T
-            nl.append(src)
+                        if f[key] is not None:
+                            f[key] = (f[key] @ P) @ P.T
+            nl.append(f)
         live = nl
-        # new source at layer l (feeds z_{l+1})
+        if pool is not None:
+            # secondary form at layer l: coincident-support tensor with slice `pool`, seen from z_{l+1} through M
+            Dl = pool.copy(); dl = np.diag(pool).copy(); np.fill_diagonal(Dl, 0.0)
+            live.append(dict(s=l, kind="pool", a2=None, dl=dl, U=M.copy(), V=None, X=Dl @ M)); nprod += 1
         a2, R, Dl, dl = source_atoms(G, K)
-        src = dict(s=l, a2=a2, dl=dl, U=W.copy(), V=R @ W, X=(Dl @ W) if coinc else None)
-        nprod += 2 if coinc else 1
         if A is None or A >= 0:
-            live.append(src)
+            live.append(dict(s=l, kind="src", a2=a2, dl=dl, U=W.copy(), V=R @ W, X=(Dl @ W) if coinc else None))
+            nprod += 2 if coinc else 1
         m = Ea @ W
-        C = W.T @ (G.cov_a() + dC) @ W
+        Ca = G.cov_a() + dC
+        if law and v > 0:
+            Ca = (1 + v) * Ca + v * np.outer(Ea, Ea)
+        C = W.T @ Ca @ W
         nprod += 2
     if record is not None:
         record.append(dict(nprod=nprod))
