@@ -1,7 +1,7 @@
 # GPU bake image: the torch version the official v2-phase2 bake used (2.4.1, CUDA 12.4) plus the
 # harness, for `whest dataset bake --torch --device cuda` and for moment atlases (bake_moments.py).
 FROM pytorch/pytorch:2.4.1-cuda12.4-cudnn9-runtime
-ENV PYTHONUNBUFFERED=1 PIP_NO_CACHE_DIR=1 HF_HOME=/data/hf CUBLAS_WORKSPACE_CONFIG=:4096:8
+ENV PYTHONUNBUFFERED=1 PIP_NO_CACHE_DIR=1 HF_HOME=/tmp/hf CUBLAS_WORKSPACE_CONFIG=:4096:8
 RUN pip install "flopscope>=0.12.1,<0.13.0" "whestbench[gpu]>=0.16.1,<0.17.0" \
     "datasets>=3" pyarrow huggingface_hub azure-storage-blob numpy
 WORKDIR /app

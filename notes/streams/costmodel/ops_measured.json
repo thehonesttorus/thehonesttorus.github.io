@@ -1,0 +1,1199 @@
+{
+ "n": 1024,
+ "unit_flops": 2147483648.0,
+ "flopscope": "0.12.1+np2.4.6",
+ "results": [
+  {
+   "name": "mm_f32: (n,n)@(n,n) float32",
+   "note": "",
+   "flops": 2146435072,
+   "units": 0.99951171875,
+   "calls": 1,
+   "wall_ms": 22.092387000157032,
+   "backend_ms": 21.49995799845783,
+   "overhead_ms": 0.5383170009736205,
+   "residual_ms": 0.06444400059990585,
+   "ops": {
+    "matmul[float32]": [
+     0.99951171875,
+     1
+    ]
+   }
+  },
+  {
+   "name": "mm_f64: (n,n)@(n,n) float64",
+   "note": "",
+   "flops": 4292870144,
+   "units": 1.9990234375,
+   "calls": 1,
+   "wall_ms": 44.151580999823636,
+   "backend_ms": 43.62414999923203,
+   "overhead_ms": 0.4819570003746776,
+   "residual_ms": 0.05721900197386276,
+   "ops": {
+    "matmul[float64]": [
+     1.9990234375,
+     1
+    ]
+   }
+  },
+  {
+   "name": "mm_mixed: f32 @ f64 (promotes, billed f64)",
+   "note": "",
+   "flops": 4292870144,
+   "units": 1.9990234375,
+   "calls": 1,
+   "wall_ms": 43.24878999977955,
+   "backend_ms": 42.776960999617586,
+   "overhead_ms": 0.42724699960672297,
+   "residual_ms": 0.05026300095778424,
+   "ops": {
+    "matmul[float64]": [
+     1.9990234375,
+     1
+    ]
+   }
+  },
+  {
+   "name": "mm_out_pooled: matmul(out=preallocated)",
+   "note": "",
+   "flops": 2146435072,
+   "units": 0.99951171875,
+   "calls": 1,
+   "wall_ms": 19.52174100006232,
+   "backend_ms": 18.9653460001864,
+   "overhead_ms": 0.5198589988140156,
+   "residual_ms": 0.045050001062918454,
+   "ops": {
+    "matmul[float32]": [
+     0.99951171875,
+     1
+    ]
+   }
+  },
+  {
+   "name": "mm_transposed_view: W.T @ G (strided left operand)",
+   "note": "",
+   "flops": 2146435072,
+   "units": 0.99951171875,
+   "calls": 1,
+   "wall_ms": 30.644237998785684,
+   "backend_ms": 29.536164000091958,
+   "overhead_ms": 1.0334889993828256,
+   "residual_ms": 0.09007600056065712,
+   "ops": {
+    "matmul[float32]": [
+     0.99951171875,
+     1
+    ]
+   }
+  },
+  {
+   "name": "thin_mm r=16: (n,n)@(n,16)",
+   "note": "",
+   "flops": 33538048,
+   "units": 0.01561737060546875,
+   "calls": 1,
+   "wall_ms": 2.665285001057782,
+   "backend_ms": 1.4203849987097783,
+   "overhead_ms": 1.1091470023529837,
+   "residual_ms": 0.14060699868423399,
+   "ops": {
+    "matmul[float32]": [
+     0.01561737060546875,
+     1
+    ]
+   }
+  },
+  {
+   "name": "thin_mm r=32: (n,n)@(n,32)",
+   "note": "",
+   "flops": 67076096,
+   "units": 0.0312347412109375,
+   "calls": 1,
+   "wall_ms": 2.2557470001629554,
+   "backend_ms": 1.4828429993940517,
+   "overhead_ms": 0.7392290008283453,
+   "residual_ms": 0.037757999962195754,
+   "ops": {
+    "matmul[float32]": [
+     0.0312347412109375,
+     1
+    ]
+   }
+  },
+  {
+   "name": "thin_mm r=64: (n,n)@(n,64)",
+   "note": "",
+   "flops": 134152192,
+   "units": 0.062469482421875,
+   "calls": 1,
+   "wall_ms": 3.3354289989802055,
+   "backend_ms": 2.5002050006150967,
+   "overhead_ms": 0.8071810007095337,
+   "residual_ms": 0.03201799881935585,
+   "ops": {
+    "matmul[float32]": [
+     0.062469482421875,
+     1
+    ]
+   }
+  },
+  {
+   "name": "thin_mm r=128: (n,n)@(n,128)",
+   "note": "",
+   "flops": 268304384,
+   "units": 0.12493896484375,
+   "calls": 1,
+   "wall_ms": 5.05840799996804,
+   "backend_ms": 4.729080999823054,
+   "overhead_ms": 0.2936470009444747,
+   "residual_ms": 0.04426099985721521,
+   "ops": {
+    "matmul[float32]": [
+     0.12493896484375,
+     1
+    ]
+   }
+  },
+  {
+   "name": "thin_mm r=256: (n,n)@(n,256)",
+   "note": "",
+   "flops": 536608768,
+   "units": 0.2498779296875,
+   "calls": 1,
+   "wall_ms": 8.715899000890204,
+   "backend_ms": 8.354346000487567,
+   "overhead_ms": 0.32620999991195276,
+   "residual_ms": 0.039491998904850334,
+   "ops": {
+    "matmul[float32]": [
+     0.2498779296875,
+     1
+    ]
+   }
+  },
+  {
+   "name": "thin_mm r=384: (n,n)@(n,384)",
+   "note": "",
+   "flops": 804913152,
+   "units": 0.37481689453125,
+   "calls": 1,
+   "wall_ms": 16.528174999621115,
+   "backend_ms": 14.61277900125424,
+   "overhead_ms": 1.8690569977479754,
+   "residual_ms": 0.05158900239621289,
+   "ops": {
+    "matmul[float32]": [
+     0.37481689453125,
+     1
+    ]
+   }
+  },
+  {
+   "name": "matvec: (n,n)@(n,)",
+   "note": "",
+   "flops": 2096128,
+   "units": 0.0009760856628417969,
+   "calls": 1,
+   "wall_ms": 0.6207989990798524,
+   "backend_ms": 0.2837470001395559,
+   "overhead_ms": 0.30262600012065377,
+   "residual_ms": 0.03873599962389562,
+   "ops": {
+    "matmul[float32]": [
+     0.0009760856628417969,
+     1
+    ]
+   }
+  },
+  {
+   "name": "batched k=2: (k,n,n)@(k,n,n)",
+   "note": "",
+   "flops": 4292870144,
+   "units": 1.9990234375,
+   "calls": 1,
+   "wall_ms": 63.028694999957224,
+   "backend_ms": 62.38831500013475,
+   "overhead_ms": 0.567504999708035,
+   "residual_ms": 0.14316499982669484,
+   "ops": {
+    "matmul[float32]": [
+     1.9990234375,
+     1
+    ]
+   }
+  },
+  {
+   "name": "bcast k=2: (n,n)@(k,n,n)",
+   "note": "",
+   "flops": 4292870144,
+   "units": 1.9990234375,
+   "calls": 1,
+   "wall_ms": 38.8659229993209,
+   "backend_ms": 38.27679999994871,
+   "overhead_ms": 0.5281780013319803,
+   "residual_ms": 0.06988899804127868,
+   "ops": {
+    "matmul[float32]": [
+     1.9990234375,
+     1
+    ]
+   }
+  },
+  {
+   "name": "concat k=2: (n,n)@(n,k*n) (one wide product)",
+   "note": "",
+   "flops": 4292870144,
+   "units": 1.9990234375,
+   "calls": 1,
+   "wall_ms": 42.78991800129006,
+   "backend_ms": 42.28243299985479,
+   "overhead_ms": 0.45560000035038684,
+   "residual_ms": 0.05990699901303742,
+   "ops": {
+    "matmul[float32]": [
+     1.9990234375,
+     1
+    ]
+   }
+  },
+  {
+   "name": "batched k=4: (k,n,n)@(k,n,n)",
+   "note": "",
+   "flops": 8585740288,
+   "units": 3.998046875,
+   "calls": 1,
+   "wall_ms": 126.16379599967331,
+   "backend_ms": 125.35323399970366,
+   "overhead_ms": 0.5405169995356118,
+   "residual_ms": 0.280731999737327,
+   "ops": {
+    "matmul[float32]": [
+     3.998046875,
+     1
+    ]
+   }
+  },
+  {
+   "name": "bcast k=4: (n,n)@(k,n,n)",
+   "note": "",
+   "flops": 8585740288,
+   "units": 3.998046875,
+   "calls": 1,
+   "wall_ms": 100.79522799969709,
+   "backend_ms": 100.21347700057959,
+   "overhead_ms": 0.5223309999564663,
+   "residual_ms": 0.0676220006425865,
+   "ops": {
+    "matmul[float32]": [
+     3.998046875,
+     1
+    ]
+   }
+  },
+  {
+   "name": "concat k=4: (n,n)@(n,k*n) (one wide product)",
+   "note": "",
+   "flops": 8585740288,
+   "units": 3.998046875,
+   "calls": 1,
+   "wall_ms": 73.1073959996138,
+   "backend_ms": 72.56134599992947,
+   "overhead_ms": 0.49445900003775023,
+   "residual_ms": 0.06067399954190478,
+   "ops": {
+    "matmul[float32]": [
+     3.998046875,
+     1
+    ]
+   }
+  },
+  {
+   "name": "batched k=8: (k,n,n)@(k,n,n)",
+   "note": "",
+   "flops": 17171480576,
+   "units": 7.99609375,
+   "calls": 1,
+   "wall_ms": 303.72861700016074,
+   "backend_ms": 302.776296999582,
+   "overhead_ms": 0.5249030000413768,
+   "residual_ms": 0.4444510013854597,
+   "ops": {
+    "matmul[float32]": [
+     7.99609375,
+     1
+    ]
+   }
+  },
+  {
+   "name": "bcast k=8: (n,n)@(k,n,n)",
+   "note": "",
+   "flops": 17171480576,
+   "units": 7.99609375,
+   "calls": 1,
+   "wall_ms": 174.52777800099284,
+   "backend_ms": 173.52739200032374,
+   "overhead_ms": 0.5539430003409507,
+   "residual_ms": 0.45991199840500485,
+   "ops": {
+    "matmul[float32]": [
+     7.99609375,
+     1
+    ]
+   }
+  },
+  {
+   "name": "concat k=8: (n,n)@(n,k*n) (one wide product)",
+   "note": "",
+   "flops": 17171480576,
+   "units": 7.99609375,
+   "calls": 1,
+   "wall_ms": 209.20417999877827,
+   "backend_ms": 208.46862200050964,
+   "overhead_ms": 0.4465729998628376,
+   "residual_ms": 0.29841699870303273,
+   "ops": {
+    "matmul[float32]": [
+     7.99609375,
+     1
+    ]
+   }
+  },
+  {
+   "name": "batched k=16: (k,n,n)@(k,n,n)",
+   "note": "",
+   "flops": 34342961152,
+   "units": 15.9921875,
+   "calls": 1,
+   "wall_ms": 433.2075509992137,
+   "backend_ms": 432.14867599999707,
+   "overhead_ms": 0.4915099998470396,
+   "residual_ms": 0.5825580010423437,
+   "ops": {
+    "matmul[float32]": [
+     15.9921875,
+     1
+    ]
+   }
+  },
+  {
+   "name": "bcast k=16: (n,n)@(k,n,n)",
+   "note": "",
+   "flops": 34342961152,
+   "units": 15.9921875,
+   "calls": 1,
+   "wall_ms": 334.4012199995632,
+   "backend_ms": 333.4058830005233,
+   "overhead_ms": 0.5006619994674111,
+   "residual_ms": 0.5117300006531877,
+   "ops": {
+    "matmul[float32]": [
+     15.9921875,
+     1
+    ]
+   }
+  },
+  {
+   "name": "concat k=16: (n,n)@(n,k*n) (one wide product)",
+   "note": "",
+   "flops": 34342961152,
+   "units": 15.9921875,
+   "calls": 1,
+   "wall_ms": 471.5244729995902,
+   "backend_ms": 470.1781370004028,
+   "overhead_ms": 0.8169410011760192,
+   "residual_ms": 0.5458229970827233,
+   "ops": {
+    "matmul[float32]": [
+     15.9921875,
+     1
+    ]
+   }
+  },
+  {
+   "name": "loop k=8: 8 separate (n,n)@(n,n) calls",
+   "note": "",
+   "flops": 17171480576,
+   "units": 7.99609375,
+   "calls": 8,
+   "wall_ms": 167.59216799982823,
+   "backend_ms": 163.10006899948348,
+   "overhead_ms": 4.0368600020883605,
+   "residual_ms": 0.4641109990188852,
+   "ops": {
+    "matmul[float32]": [
+     7.99609375,
+     8
+    ]
+   }
+  },
+  {
+   "name": "gram_alias: einsum('ji,jk->ik', X, X) same object",
+   "note": "",
+   "flops": 1074265600,
+   "units": 0.5002439022064209,
+   "calls": 1,
+   "wall_ms": 59.988139999404666,
+   "backend_ms": 18.79233799991198,
+   "overhead_ms": 41.06402400066145,
+   "residual_ms": 0.1375699994241586,
+   "ops": {
+    "einsum[float32]": [
+     0.5002439022064209,
+     1
+    ]
+   }
+  },
+  {
+   "name": "gram_inner: inner(X, X) = X X^T same object",
+   "note": "",
+   "flops": 1074265600,
+   "units": 0.5002439022064209,
+   "calls": 1,
+   "wall_ms": 55.132864999904996,
+   "backend_ms": 17.731089999870164,
+   "overhead_ms": 37.32209500049066,
+   "residual_ms": 0.08502399941789918,
+   "ops": {
+    "inner[float32]": [
+     0.5002439022064209,
+     1
+    ]
+   }
+  },
+  {
+   "name": "gram_matmul_T: X.T @ X (view is another object)",
+   "note": "",
+   "flops": 2146435072,
+   "units": 0.99951171875,
+   "calls": 1,
+   "wall_ms": 25.620050999350497,
+   "backend_ms": 24.8727920006786,
+   "overhead_ms": 0.6266879991017049,
+   "residual_ms": 0.13146899982530158,
+   "ops": {
+    "matmul[float32]": [
+     0.99951171875,
+     1
+    ]
+   }
+  },
+  {
+   "name": "as_symmetric (n,n) f32",
+   "note": "",
+   "flops": 7340031,
+   "units": 0.0034179682843387127,
+   "calls": 1,
+   "wall_ms": 56.82639999940875,
+   "backend_ms": 0.0,
+   "overhead_ms": 56.70271000053617,
+   "residual_ms": 0.13187099830247462,
+   "ops": {
+    "as_symmetric[float32]": [
+     0.0034179682843387127,
+     1
+    ]
+   }
+  },
+  {
+   "name": "symmetrize canonical-copy",
+   "note": "",
+   "error": "TypeError: symmetrize() missing 1 required keyword-only argument: 'symmetry'"
+  },
+  {
+   "name": "weighted alias einsum('ji,j,jk->ik', G, d, G)",
+   "note": "",
+   "error": "SymmetryError: Tensor not symmetric along axes (0, 1): max deviation = inf (tolerance: atol=1e-06, rtol=1e-05). See: https://aicrowd.github.io/flopscope/docs/guides/symmetry"
+  },
+  {
+   "name": "sandwich_plain: X=diag(p)W; X.T @ (S @ X)",
+   "note": "",
+   "flops": 4293918720,
+   "units": 1.99951171875,
+   "calls": 3,
+   "wall_ms": 39.14819800047553,
+   "backend_ms": 37.38838000208489,
+   "overhead_ms": 1.605286999620148,
+   "residual_ms": 0.16328499805240426,
+   "ops": {
+    "multiply[float32]": [
+     0.00048828125,
+     1
+    ],
+    "matmul[float32]": [
+     1.9990234375,
+     2
+    ]
+   }
+  },
+  {
+   "name": "sandwich_einsum3: as_symmetric(S) + einsum('ji,jk,kl->il',X,S,X)",
+   "note": "",
+   "flops": 3229089279,
+   "units": 1.5036618704907596,
+   "calls": 3,
+   "wall_ms": 119.36133300150686,
+   "backend_ms": 40.55985600098211,
+   "overhead_ms": 78.5554409994802,
+   "residual_ms": 0.2514949992473703,
+   "ops": {
+    "multiply[float32]": [
+     0.00048828125,
+     1
+    ],
+    "as_symmetric[float32]": [
+     0.0034179682843387127,
+     1
+    ],
+    "einsum[float32]": [
+     1.499755620956421,
+     1
+    ]
+   }
+  },
+  {
+   "name": "sandwich_einsum3_pretagged (S already tagged)",
+   "note": "",
+   "flops": 3221749248,
+   "units": 1.500243902206421,
+   "calls": 2,
+   "wall_ms": 65.864475998751,
+   "backend_ms": 38.88533300050767,
+   "overhead_ms": 26.785055997606833,
+   "residual_ms": 0.20352300271042623,
+   "ops": {
+    "multiply[float32]": [
+     0.00048828125,
+     1
+    ],
+    "einsum[float32]": [
+     1.499755620956421,
+     1
+    ]
+   }
+  },
+  {
+   "name": "sandwich_v25: einsum('ij,ia,jb->ab', S_tag, X, X)",
+   "note": "",
+   "flops": 3221749248,
+   "units": 1.500243902206421,
+   "calls": 2,
+   "wall_ms": 70.43957799942291,
+   "backend_ms": 42.82839699953911,
+   "overhead_ms": 27.45137700185296,
+   "residual_ms": 0.16907499957596883,
+   "ops": {
+    "multiply[float32]": [
+     0.00048828125,
+     1
+    ],
+    "einsum[float32]": [
+     1.499755620956421,
+     1
+    ]
+   }
+  },
+  {
+   "name": "sandwich_untagged_einsum3 (S not tagged)",
+   "note": "",
+   "flops": 4293918720,
+   "units": 1.99951171875,
+   "calls": 2,
+   "wall_ms": 42.49919900030363,
+   "backend_ms": 41.36516400103574,
+   "overhead_ms": 1.0276689990860177,
+   "residual_ms": 0.15567000082228333,
+   "ops": {
+    "multiply[float32]": [
+     0.00048828125,
+     1
+    ],
+    "einsum[float32]": [
+     1.9990234375,
+     1
+    ]
+   }
+  },
+  {
+   "name": "sandwich_cholesky: L=chol(S); Y=L^T X; Y^T Y aliased",
+   "note": "",
+   "flops": 3579663189,
+   "units": 1.6669105687178671,
+   "calls": 4,
+   "wall_ms": 134.06386700080475,
+   "backend_ms": 95.0643799988029,
+   "overhead_ms": 38.63523900145083,
+   "residual_ms": 0.3747929986275267,
+   "ops": {
+    "multiply[float32]": [
+     0.00048828125,
+     1
+    ],
+    "linalg.cholesky[float32]": [
+     0.16666666651144624,
+     1
+    ],
+    "matmul[float32]": [
+     0.99951171875,
+     1
+    ],
+    "einsum[float32]": [
+     0.5002439022064209,
+     1
+    ]
+   }
+  },
+  {
+   "name": "sandwich_factor: S=UU^T given; Y=U^T X; Y^T Y aliased",
+   "note": "",
+   "flops": 3221749248,
+   "units": 1.500243902206421,
+   "calls": 3,
+   "wall_ms": 75.86994500161381,
+   "backend_ms": 37.19632200045453,
+   "overhead_ms": 38.483415000882815,
+   "residual_ms": 0.195664999409928,
+   "ops": {
+    "multiply[float32]": [
+     0.00048828125,
+     1
+    ],
+    "matmul[float32]": [
+     0.99951171875,
+     1
+    ],
+    "einsum[float32]": [
+     0.5002439022064209,
+     1
+    ]
+   }
+  },
+  {
+   "name": "sandwich_diag_only: sum(X*(S@X), 0)",
+   "note": "",
+   "flops": 2149579776,
+   "units": 1.0009760856628418,
+   "calls": 4,
+   "wall_ms": 25.7183609992353,
+   "backend_ms": 23.85484499973245,
+   "overhead_ms": 1.6849719995661872,
+   "residual_ms": 0.18718300088949036,
+   "ops": {
+    "multiply[float32]": [
+     0.0009765625,
+     2
+    ],
+    "matmul[float32]": [
+     0.99951171875,
+     1
+    ],
+    "sum[float32]": [
+     0.0004878044128417969,
+     1
+    ]
+   }
+  },
+  {
+   "name": "sandwich_einsum3_f64",
+   "note": "",
+   "flops": 6458178558,
+   "units": 3.0073237409815192,
+   "calls": 3,
+   "wall_ms": 167.73771699990903,
+   "backend_ms": 85.36978099800763,
+   "overhead_ms": 82.12528000331076,
+   "residual_ms": 0.2489319977030391,
+   "ops": {
+    "multiply[float64]": [
+     0.0009765625,
+     1
+    ],
+    "as_symmetric[float64]": [
+     0.006835936568677425,
+     1
+    ],
+    "einsum[float64]": [
+     2.999511241912842,
+     1
+    ]
+   }
+  },
+  {
+   "name": "strassen L0: one (n,n)@(n,n)",
+   "note": "",
+   "flops": 2146435072,
+   "units": 0.99951171875,
+   "calls": 1,
+   "wall_ms": 19.519501000104356,
+   "backend_ms": 19.002711000212003,
+   "overhead_ms": 0.47070900109247304,
+   "residual_ms": 0.05486599911819212,
+   "ops": {
+    "matmul[float32]": [
+     0.99951171875,
+     1
+    ]
+   },
+   "rel_err_vs_f64": 3.407849743284513e-07
+  },
+  {
+   "name": "strassen L1: one (n,n)@(n,n)",
+   "note": "",
+   "flops": 1882980352,
+   "units": 0.8768310546875,
+   "calls": 23,
+   "wall_ms": 33.33842900065065,
+   "backend_ms": 27.066365000791848,
+   "overhead_ms": 5.475539996041334,
+   "residual_ms": 0.802550002845237,
+   "ops": {
+    "add[float32]": [
+     0.00146484375,
+     12
+    ],
+    "copyto[float32]": [
+     0.00048828125,
+     4
+    ],
+    "subtract[float32]": [
+     0.000732421875,
+     6
+    ],
+    "matmul[float32]": [
+     0.8741455078125,
+     1
+    ]
+   },
+   "rel_err_vs_f64": 5.824985823164345e-07
+  },
+  {
+   "name": "strassen L2: one (n,n)@(n,n)",
+   "note": "",
+   "flops": 1656815616,
+   "units": 0.771514892578125,
+   "calls": 45,
+   "wall_ms": 62.702553999770316,
+   "backend_ms": 48.24582199398719,
+   "overhead_ms": 12.526422991868458,
+   "residual_ms": 1.9696510153153213,
+   "ops": {
+    "add[float32]": [
+     0.0040283203125,
+     24
+    ],
+    "copyto[float32]": [
+     0.0013427734375,
+     8
+    ],
+    "subtract[float32]": [
+     0.00201416015625,
+     12
+    ],
+    "matmul[float32]": [
+     0.764129638671875,
+     1
+    ]
+   },
+   "rel_err_vs_f64": 1.1634747858341111e-06
+  },
+  {
+   "name": "strassen L3: one (n,n)@(n,n)",
+   "note": "",
+   "flops": 1466548224,
+   "units": 0.6829147338867188,
+   "calls": 67,
+   "wall_ms": 90.91913399970508,
+   "backend_ms": 72.71847500305739,
+   "overhead_ms": 15.900095004326431,
+   "residual_ms": 2.3073799929989036,
+   "ops": {
+    "add[float32]": [
+     0.008514404296875,
+     36
+    ],
+    "copyto[float32]": [
+     0.002838134765625,
+     12
+    ],
+    "subtract[float32]": [
+     0.0042572021484375,
+     18
+    ],
+    "matmul[float32]": [
+     0.6673049926757812,
+     1
+    ]
+   },
+   "rel_err_vs_f64": 1.6767854271939417e-06
+  },
+  {
+   "name": "strassen L4: one (n,n)@(n,n)",
+   "note": "",
+   "flops": 1307791360,
+   "units": 0.6089878082275391,
+   "calls": 91,
+   "wall_ms": 156.7529830008425,
+   "backend_ms": 124.37739299275563,
+   "overhead_ms": 29.16921201176592,
+   "residual_ms": 3.2134069970197743,
+   "ops": {
+    "add[float32]": [
+     0.01636505126953125,
+     48
+    ],
+    "copyto[float32]": [
+     0.002838134765625,
+     12
+    ],
+    "subtract[float32]": [
+     0.008182525634765625,
+     24
+    ],
+    "matmul[float32]": [
+     0.5816020965576172,
+     7
+    ]
+   },
+   "rel_err_vs_f64": 2.423353358322693e-06
+  },
+  {
+   "name": "strassen L5: one (n,n)@(n,n)",
+   "note": "",
+   "flops": 1192938496,
+   "units": 0.5555052757263184,
+   "calls": 113,
+   "wall_ms": 386.87870300054783,
+   "backend_ms": 340.7246109818516,
+   "overhead_ms": 41.86763402140059,
+   "residual_ms": 4.292789997634827,
+   "ops": {
+    "add[float32]": [
+     0.030103683471679688,
+     60
+    ],
+    "copyto[float32]": [
+     0.00545501708984375,
+     16
+    ],
+    "subtract[float32]": [
+     0.015051841735839844,
+     30
+    ],
+    "matmul[float32]": [
+     0.5048947334289551,
+     7
+    ]
+   },
+   "rel_err_vs_f64": 3.6160834851403357e-06
+  },
+  {
+   "name": "strassen L3: batch of 4 products",
+   "note": "",
+   "flops": 5866192896,
+   "units": 2.731658935546875,
+   "calls": 67,
+   "wall_ms": 340.84231599990744,
+   "backend_ms": 319.1774769984477,
+   "overhead_ms": 19.039969998630113,
+   "residual_ms": 2.632232002724777,
+   "ops": {
+    "add[float32]": [
+     0.0340576171875,
+     36
+    ],
+    "copyto[float32]": [
+     0.0113525390625,
+     12
+    ],
+    "subtract[float32]": [
+     0.01702880859375,
+     18
+    ],
+    "matmul[float32]": [
+     2.669219970703125,
+     1
+    ]
+   }
+  },
+  {
+   "name": "strassen hub L3: sum_k X_k Y_k^T, k=4",
+   "note": "",
+   "flops": 5846482944,
+   "units": 2.7224807739257812,
+   "calls": 69,
+   "wall_ms": 323.09397400058515,
+   "backend_ms": 299.49515298540064,
+   "overhead_ms": 20.81361501586798,
+   "residual_ms": 2.792034998492454,
+   "ops": {
+    "add[float32]": [
+     0.0212860107421875,
+     36
+    ],
+    "copyto[float32]": [
+     0.0113525390625,
+     12
+    ],
+    "subtract[float32]": [
+     0.0127716064453125,
+     18
+    ],
+    "swapaxes[None]": [
+     0.0,
+     1
+    ],
+    "matmul[float32]": [
+     2.669219970703125,
+     1
+    ],
+    "sum[float32]": [
+     0.00785064697265625,
+     1
+    ]
+   }
+  },
+  {
+   "name": "strassen L5: batch of 4 products",
+   "note": "",
+   "flops": 4771753984,
+   "units": 2.2220211029052734,
+   "calls": 113,
+   "wall_ms": 1185.105881000709,
+   "backend_ms": 1137.340352010142,
+   "overhead_ms": 42.71378898192779,
+   "residual_ms": 5.058589007603587,
+   "ops": {
+    "add[float32]": [
+     0.12041473388671875,
+     60
+    ],
+    "copyto[float32]": [
+     0.021820068359375,
+     16
+    ],
+    "subtract[float32]": [
+     0.060207366943359375,
+     30
+    ],
+    "matmul[float32]": [
+     2.0195789337158203,
+     7
+    ]
+   }
+  },
+  {
+   "name": "strassen hub L5: sum_k X_k Y_k^T, k=4",
+   "note": "",
+   "flops": 4694090752,
+   "units": 2.185856342315674,
+   "calls": 127,
+   "wall_ms": 1116.345681999519,
+   "backend_ms": 1058.8640730038605,
+   "overhead_ms": 51.10288098512683,
+   "residual_ms": 6.38643300953845,
+   "ops": {
+    "add[float32]": [
+     0.07525920867919922,
+     60
+    ],
+    "copyto[float32]": [
+     0.021820068359375,
+     16
+    ],
+    "subtract[float32]": [
+     0.04515552520751953,
+     30
+    ],
+    "swapaxes[None]": [
+     0.0,
+     7
+    ],
+    "matmul[float32]": [
+     2.0195789337158203,
+     7
+    ],
+    "sum[float32]": [
+     0.024042606353759766,
+     7
+    ]
+   }
+  },
+  {
+   "name": "sandwich_strassen L3: two Strassen products",
+   "note": "",
+   "flops": 2933096448,
+   "units": 1.3658294677734375,
+   "calls": 134,
+   "wall_ms": 196.7242709997663,
+   "backend_ms": 150.9728780038131,
+   "overhead_ms": 38.993283988020266,
+   "residual_ms": 6.765693009583629,
+   "ops": {
+    "add[float32]": [
+     0.01702880859375,
+     72
+    ],
+    "copyto[float32]": [
+     0.00567626953125,
+     24
+    ],
+    "subtract[float32]": [
+     0.008514404296875,
+     36
+    ],
+    "matmul[float32]": [
+     1.3346099853515625,
+     2
+    ]
+   }
+  },
+  {
+   "name": "sandwich_strassen L4: two Strassen products",
+   "note": "",
+   "flops": 2615582720,
+   "units": 1.2179756164550781,
+   "calls": 182,
+   "wall_ms": 315.10263200107147,
+   "backend_ms": 256.9897430093988,
+   "overhead_ms": 51.65479599418177,
+   "residual_ms": 6.464624995714985,
+   "ops": {
+    "add[float32]": [
+     0.0327301025390625,
+     96
+    ],
+    "copyto[float32]": [
+     0.00567626953125,
+     24
+    ],
+    "subtract[float32]": [
+     0.01636505126953125,
+     48
+    ],
+    "matmul[float32]": [
+     1.1632041931152344,
+     14
+    ]
+   }
+  },
+  {
+   "name": "sandwich_strassen L5: two Strassen products",
+   "note": "",
+   "flops": 2385876992,
+   "units": 1.1110105514526367,
+   "calls": 226,
+   "wall_ms": 637.727420000374,
+   "backend_ms": 552.6714590068877,
+   "overhead_ms": 75.84204099475755,
+   "residual_ms": 9.220148998792865,
+   "ops": {
+    "add[float32]": [
+     0.060207366943359375,
+     120
+    ],
+    "copyto[float32]": [
+     0.0109100341796875,
+     32
+    ],
+    "subtract[float32]": [
+     0.030103683471679688,
+     60
+    ],
+    "matmul[float32]": [
+     1.0097894668579102,
+     14
+    ]
+   }
+  },
+  {
+   "name": "sandwich_strassen_sym3 L4: S X then 3 of 4 output blocks",
+   "note": "",
+   "flops": 2319365120,
+   "units": 1.0800385475158691,
+   "calls": 192,
+   "wall_ms": 396.72620199962694,
+   "backend_ms": 326.58437899590353,
+   "overhead_ms": 61.95390998618677,
+   "residual_ms": 8.194727017325931,
+   "ops": {
+    "add[float32]": [
+     0.034775733947753906,
+     96
+    ],
+    "copyto[float32]": [
+     0.0090484619140625,
+     34
+    ],
+    "subtract[float32]": [
+     0.018410682678222656,
+     48
+    ],
+    "matmul[float32]": [
+     1.01780366897583,
+     14
+    ]
+   }
+  },
+  {
+   "name": "sandwich_strassen_sym3 L5: S X then 3 of 4 output blocks",
+   "note": "",
+   "flops": 2204512256,
+   "units": 1.0265560150146484,
+   "calls": 214,
+   "wall_ms": 520.6608389999019,
+   "backend_ms": 451.1764309772843,
+   "overhead_ms": 61.86479102143494,
+   "residual_ms": 7.626204002008308,
+   "ops": {
+    "add[float32]": [
+     0.048514366149902344,
+     108
+    ],
+    "copyto[float32]": [
+     0.01166534423828125,
+     38
+    ],
+    "subtract[float32]": [
+     0.025279998779296875,
+     54
+    ],
+    "matmul[float32]": [
+     0.941096305847168,
+     14
+    ]
+   }
+  },
+  {
+   "name": "sandwich_factor_strassen L5: Y=U^T X Strassen + aliased Gram",
+   "note": "",
+   "flops": 2267204096,
+   "units": 1.0557491779327393,
+   "calls": 114,
+   "wall_ms": 470.81436600092275,
+   "backend_ms": 351.6396879840613,
+   "overhead_ms": 114.14930001592438,
+   "residual_ms": 5.031208000218612,
+   "ops": {
+    "add[float32]": [
+     0.030103683471679688,
+     60
+    ],
+    "copyto[float32]": [
+     0.00545501708984375,
+     16
+    ],
+    "subtract[float32]": [
+     0.015051841735839844,
+     30
+    ],
+    "matmul[float32]": [
+     0.5048947334289551,
+     7
+    ],
+    "einsum[float32]": [
+     0.5002439022064209,
+     1
+    ]
+   },
+   "_": 

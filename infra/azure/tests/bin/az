@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# fake az for offline tests (see ../fake_az.py)
+exec "${FAKE_AZ_PYTHON:-python3}" "$(dirname "$0")/../fake_az.py" "$@"

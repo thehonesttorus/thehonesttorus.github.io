@@ -44,7 +44,7 @@ def main():
     ap.add_argument("--chunk-size", type=int, default=131072)
     ap.add_argument("--device", default="cuda")
     args = ap.parse_args()
-    work = tempfile.mkdtemp(prefix="bake-")
+    work = tempfile.mkdtemp(prefix="bake-", dir=os.environ.get("AZ_BATCH_TASK_WORKING_DIR"))  # node resource disk on Batch
     seeds = os.path.join(work, "seeds.json")
     fetch(args.seeds, seeds)
     out = os.path.join(work, "out")

@@ -98,7 +98,9 @@ def main():
     ap.add_argument("--keep", action="store_true")
     args = ap.parse_args()
     t0 = time.time()
-    work = tempfile.mkdtemp(prefix="shard-")
+    # on Batch, scratch goes to the task working directory (node resource disk), not the container
+    # layer, which sits on the OS disk shared by all concurrent tasks of the node
+    work = tempfile.mkdtemp(prefix="shard-", dir=os.environ.get("AZ_BATCH_TASK_WORKING_DIR"))
     try:
         est = prepare_bundle(args.bundle, work)
         ddir = prepare_dataset(args.shard, args.split, args.width, args.depth, work)
