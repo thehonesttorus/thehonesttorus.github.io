@@ -12,8 +12,12 @@ On 1 Oct the user ruled that the competition system starts from a fresh slate, d
 | `../fresh-slate/designs/tropical/` | [session](https://claude.ai/code/session_01Nxk2j9cDDW1yXsPEw5ZzdJ) | tropical skeleton of the network and its lift to finite temperature |
 | `../fresh-slate/designs/heisenberg/` | [session](https://claude.ai/code/session_013o8FK6ftrxpJEts6ucFHWM) | observables pulled back through the arrows; Dirichlet forms on Gaussian space |
 | `../fresh-slate/designs/markov/` | [session](https://claude.ai/code/session_0161pRau9Ub5kdDyNkrkxhcp) | Markov networks, conditional mutual information, exchange relations, recovery maps |
+| `../fresh-slate/breakthrough/costate/` | [session](https://claude.ai/code/session_013EjyY2ofzhY3rEZoAzxCrd) (from 19:09) | breakthrough round: the minimal co-state — the smallest observable algebra the readout needs, closed under pull-back |
+| `../fresh-slate/breakthrough/interpolation/` | [session](https://claude.ai/code/session_01JXmPTixz71xn11Hzx62BYj) (from 19:09) | breakthrough round: interpolation in the disorder — smart paths, Bolthausen conditioning (Onsager memory), covers |
+| `../fresh-slate/breakthrough/region/` | [session](https://claude.ai/code/session_01TjtRHMJmmfJ9TaXzrdKnH8) (from 19:09) | breakthrough round: the feasible region — what any ≤ 0.15 B, raw ≤ 1.5e-8 estimator must carry, and a design inside it |
 | `../fresh-slate/bench/` | [session](https://claude.ai/code/session_019vnQdfQcg2TrCQcyC1WYW2) (was est-accuracy) | design-agnostic benchmark sets, truth, the Stage Q evaluator, the Stage P harness |
 | `../fresh-slate/scaffold/` | [session](https://claude.ai/code/session_013Q5iH6p39ofihtZhCPeTka) (was est-cost) | grader-safe flopscope template, porting kit with measured primitive costs, residual budget |
+| `../fresh-slate/CONVERGENCE.md` | coordinating session (19:15) | what the six designs converged on after round one, the gap (30–60×), and the open question for round two |
 | `../fresh-slate/foundations*.md` | background workflow, coordinating session | first-principles problem structure, the programme's unlocks, verification of the user input, neutral measured facts |
 
 ## Earlier streams (moment-chain era, wrapping up as fact-finding)
