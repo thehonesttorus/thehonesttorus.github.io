@@ -618,12 +618,16 @@ def edge_table_pairs(m, va, vb, c, pmax=2, kmin=-4):
     return T
 
 
-def estimate_v4(Ws, old=1, qgen=True, verbose=False, pairmix=True, qscale=1.0, mixC=True):
+def estimate_v4(Ws, old=1, qgen=True, verbose=False, pairmix=True, qscale=1.0, mixC=True, node_oracle=None, oracle_from=1):
     Ls, n, _ = Ws.shape
     W = Ws[0].astype(np.float64)
     m = np.zeros(n); C = W.T @ W; K = np.zeros((n, n)); k4 = np.zeros(n); Qz = np.zeros((n, n))
     out = []; prev = None; info = []
     for l in range(Ls):
+        if node_oracle is not None and l >= oracle_from:
+            t = node_oracle[l]
+            C = C.copy(); np.fill_diagonal(C, t['v']); K = K.copy(); np.fill_diagonal(K, t['k3']); k4 = t['k4']
+            if 'm' in t: m = t['m']
         mu, Ca, Ka, k3a, k4a, c, L, Q, R = relu_map_v4(m, C, K, k4, Qz * qscale, need4=(l + 1 < Ls), pairmix=pairmix, mixC=mixC)
         L0, Lm1 = L[0], L[-1]
         out.append(mu); info.append(dict(m=m, v=np.diag(C).copy(), k3=np.diag(K).copy(), k4=k4))
