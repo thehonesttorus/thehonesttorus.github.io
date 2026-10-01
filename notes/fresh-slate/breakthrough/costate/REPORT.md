@@ -179,6 +179,33 @@ Reading (4 networks, geometric means):
 
 Both are second-order Duhamel content. C5 says that carrying them exactly costs Θ(L³ n³), while the concentration measured here says the readout needs only a few modes of joint κ₄, as it did for old κ₃. The obvious first candidate is the scale mode's own κ₄. The law-level scale treatment already contains it, but only for the scale variance that the κ₃ projection detects.
 
+**4.7 The joint κ₄ the readout needs is the scale mode again, but κ₃ and κ₄ must be fixed together (w128, `hybrid.py`, `k4anatomy.py`).**
+- *Anatomy of the true κ₄* (MC atlas, network 0). The off-diagonal (2,2) slice κ₄(z_p, z_p, z_q, z_q) is 88–94 % rank one at every depth, along s² ⊗ s² (cos 0.96–0.99): the bethe Q spike, i.e. Var(t²) C_pp C_qq of a scale mixture. The (3,1) slice is 75–95 % rank one at depth, along m ⊗ m (cos 0.8–0.97).
+- *Size of the scale variance, three ways* (network 0, along depth):
+
+  | source | value along depth |
+  |---|---|
+  | κ₄ spike (true atlas) | 0.0065 → 0.16 (growing faster at depth) |
+  | layer self-overlap Var(Q)/(4Q̄²), O(n²) Mehler (`norm_dv`) | 0.013 → 0.074 (saturating) |
+  | κ₃ projection of the old slice (what the carrier uses) | ≈ 0.003 → 0.02 |
+
+- *What the readout wants* (8 networks, raw):
+
+  | variant | raw | products |
+  |---|---|---|
+  | Gaussian closure | 2.82e-4 | |
+  | Gaussian closure + scale law with the self-overlap v (**Gn**) | 1.16e-4 | 30 |
+  | the same + exact young pairs (A3n_nc) | 3.4e-4 | 231 |
+  | the same, with the scale part deflated from the injected slice (A3nd_nc) | 9.8e-5 | 231 |
+  | κ₃-based carrier, deflated (A3gsld_nc) | 1.29e-4 | 273 |
+  | κ₃-based carrier, undeflated (A3gsl_nc) | **2.56e-5** | 273 |
+
+  The best combination keeps the small κ₃-detected v and leaves the scale content of the young pairs in their Stein injection.
+- *True κ₄ on top of the computed co-state hurts* (networks 0, 1). A3gsl_nc goes 3.0e-5 / 2.7e-5 → 4.5e-5 / 4.1e-5 with all of κ₄, 4.5e-5 / 4.0e-5 with rank 8, and 5.1e-5 / 3.9e-5 with κ₄'s top mode dropped. Without the scale law it is 6.8e-5 / 6.3e-5. The oracle's 15× needs the true κ₃ *and* the true κ₄. The computed κ₃ is as good as the true one at first order (§4.6), but not at second order.
+- **Free side result for any Gaussian-closure design.** Gn (closure + law-level scale with the self-overlap variance, zero extra n³ products) measures **2.56e-6 against 4.10e-6 at n = 1024 (six networks, every one better)**, 2.4× at w128. In the bethe stream's language this is the global order parameter carried at law level by homogeneity.
+
+Reading. The second-order content the readout needs is, to first approximation, the same dilation sector as for κ₃, but at second order. An *independent* scale mixture (one v) cannot be both the κ₃-visible amount (≈ 0.02) and the κ₄-visible amount (≈ 0.16). The κ₄ spike implies a scale fluctuation correlated with the field, the scale field h of §4.3, carried at second order. So the next co-state is the scale *field* h_l (an n-vector per layer, transported by Wᵀ(Φ ∘ h), O(n²) per layer) at law level, with κ₃ from the young pairs computed consistently with it. That is a concrete, cheap object, and it is untested.
+
 ## 5. Cost at n = 1024 and grader notes for the best variants
 
 | variant | products | dense f32 | Strassen L3 (0.683 u, ≈ 70 ms/product batched) | wall (L3) | raw | adjusted (L3) |
@@ -199,6 +226,7 @@ The no-coincidence variants use 4 instead of 7 products per pair (U and V propag
 - (a) **Closure, exact: disproved** for any co-state of o(L n²) numbers per cut that a causal forward pass could carry (C2). The obstruction is the double edge, which closes only in the second chaos (C3). The readout co-state is exactly closed (C1), but evaluating it costs Θ(L² n³) at first order and Θ(L³ n³) at second order (C5).
 - (b) **Closure, readout-weighted: established empirically for the old content.** The readout reads old κ₃ through one conserved scalar, the dilation charge (C6, unique by C7), plus a residual that a window of three ages and the slice chain absorb. This turns O(L² n³) into O(A L n³) with A = 1–3 at no loss at n = 1024, and is measured.
 - (c) **First order is exhausted.** The exact first order is ≈ 4e-7 raw at 1024, the scale-mode co-state is 3.25e-7, and at w128 the computed co-state equals the true-κ₃ first order. The bar needs the second-order (joint κ₄) content: 15× at w128, readout-concentrated at rank ≈ 8–32.
+- (d) **Second order is the scale field.** The joint κ₄ the readout needs is again concentrated in the dilation sector: (2,2) slice rank one along s² ⊗ s², (3,1) slice along m ⊗ m. But an independent scale mixture cannot carry both the κ₃- and the κ₄-visible scale variance, and adding the true κ₄ to the computed κ₃ hurts. The next object is the correlated scale field at law level (§4.7). A free by-product: the Gaussian closure plus the law-level scale from the layer self-overlap gives 1.6× at n = 1024 at zero cost.
 
 **Deciding experiment for what comes next.** Run the oracle hierarchy of §4.6 at w256 and w512 on bench seeds: best computed co-state → true κ₃ at first order → + true joint κ₄ → + κ₄ at rank r. Monte Carlo atlases at 1024 are out of reach. At w128 the measured factors are (a) ≈ 1× for the κ₃ model and (b) ≈ 15× for joint κ₄, with rank 8 recovering 8×. The experiment measures how (b) and its rank concentration scale with n:
 - If (b) stays ≳ 10× at w512 and rank ≲ 32 keeps most of it, a second-order co-state is the path to raw ≈ 1e-8 at 1024. It would carry a few readout-relevant joint-κ₄ modes, with the scale law already holding the scale part. The modes must then be identified in closed form (candidates: the scale mode's own κ₄, i.e. the bethe Q spike, and the correlated scale field h of §4.3), and their generation computed by δ-insertion at O(r L n³).

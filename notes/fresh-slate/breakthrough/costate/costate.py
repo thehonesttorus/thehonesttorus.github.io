@@ -67,6 +67,27 @@ def fit_h(C, S, iters=40):
     return h
 
 
+def norm_dv(G, Kmax=8):
+    """Scale-variance increment from the layer self-overlap Q = sum_p ReLU(x_p)^2 under the de-scaled Gaussian:
+    dv = Var(Q) / (4 E[Q]^2), Var(Q) by the Mehler series of a^2 (coefficients c_k = E[a^2 He_k]) + exact diagonal."""
+    al, rho = G.alpha, G.rho
+    K = min(Kmax, G.K)
+    c = [None] + [G.g2[k] + 2 * G.Ea * al[k] for k in range(1, K + 1)]
+    cov = np.zeros_like(rho); rk = np.ones_like(rho); fk = 1.0
+    for k in range(1, K + 1):
+        rk = rk * rho; fk *= k
+        cov += np.outer(c[k], c[k]) * rk / fk
+    m, s, t = G.m, G.s, G.t
+    Phi, ph = G.Phi, G.ph
+    T = [Phi, ph]
+    for j in range(2, 5):
+        T.append((-t) ** (j - 1) * ph + (j - 1) * T[j - 2])
+    from math import comb
+    M = [sum(comb(k, j) * m ** (k - j) * s ** j * T[j] for j in range(k + 1)) for k in range(5)]
+    np.fill_diagonal(cov, M[4] - M[2] ** 2)
+    return float(cov.sum() / (4 * M[2].sum() ** 2))
+
+
 def filt(Sold, how, r=None):
     """Oracle filters on the exact old slice: what part of it does the readout need?"""
     if how == "diag":
@@ -81,7 +102,7 @@ def filt(Sold, how, r=None):
     raise ValueError(how)
 
 
-def predict(Ws, A=None, old="drop", rank=None, coinc=True, K=8, record=None, Ap=0, oldfilter=None, r=None, law=False, keep_old=False, k4=None):
+def predict(Ws, A=None, old="drop", rank=None, coinc=True, K=8, record=None, Ap=0, oldfilter=None, r=None, law=False, keep_old=False, k4=None, vsrc="kappa3", deflate=False):
     """old: 'drop' | 'slice' (diagonal double edge only) | 'pool' (renewal: aged-out content is projected on its
     (2,1) slice at the current layer and re-emitted as a secondary form, transported exactly for Ap more layers
     (Ap=None: never re-projected); Ap=0 is the full coincident-support slice chain)."""
@@ -91,10 +112,11 @@ def predict(Ws, A=None, old="drop", rank=None, coinc=True, K=8, record=None, Ap=
     live = []          # forms: dict(s, kind, a2, dl, U, V, X)
     Sold = None
     gacc = 0.0         # old == 'gsm': accumulated scale-mode amplitude (conserved scalar)
+    vnorm = 0.0        # vsrc == 'norm': scale variance accumulated from layer self-overlap fluctuations
     out = []
     nprod = 0
     for l in range(L):
-        v = 0.5 * gacc if law else 0.0           # scale variance: slice amplitude gamma = 2 Var(t)
+        v = (vnorm if vsrc == "norm" else 0.5 * gacc) if law else 0.0   # scale variance (gamma = 2 Var(t))
         if law and v != 0:
             # model constraint Var z_p = (1+v) C_x,pp + v m_p^2 >= v m_p^2 for every p (and |v| < 1)
             vmax = 0.95 * np.min(np.diag(C) / np.maximum(m * m, 1e-300))
@@ -104,6 +126,8 @@ def predict(Ws, A=None, old="drop", rank=None, coinc=True, K=8, record=None, Ap=
                     record.append(dict(layer=l, clamp=True))
             C = (C - v * np.outer(m, m)) / (1 + v)
         G = Gauss(m, C, K=K)
+        if law and vsrc == "norm" and l + 1 < L:
+            vnorm_next = vnorm + norm_dv(G)
         S = np.zeros((n, n))
         sl = []
         Sfilt = np.zeros((n, n)) if oldfilter is not None else None
@@ -148,6 +172,8 @@ def predict(Ws, A=None, old="drop", rank=None, coinc=True, K=8, record=None, Ap=
                 S += filt(Sfilt, oldfilter, r)
         if record is not None:
             record.append(dict(layer=l, S=S.copy()))
+        if deflate and law and np.any(S):
+            S = S - (np.sum(Kg * S) / np.sum(Kg * Kg)) * Kg      # scale part of the slice is carried by the law
         if live or Sold is not None or (gacc != 0.0 and not law):
             D = np.diag(S).copy()
             if k4 is not None and l in k4:          # oracle hook: (K4d, K22, K31) of z_l, second-order injection
@@ -208,6 +234,8 @@ def predict(Ws, A=None, old="drop", rank=None, coinc=True, K=8, record=None, Ap=
         if A is None or A >= 0:
             live.append(dict(s=l, kind="src", a2=a2, dl=dl, U=W.copy(), V=R @ W, X=(Dl @ W) if coinc else None))
             nprod += 2 if coinc else 1
+        if law and vsrc == "norm":
+            vnorm = vnorm_next
         m = Ea @ W
         Ca = G.cov_a() + dC
         if law and v != 0:

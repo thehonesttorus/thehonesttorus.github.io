@@ -2,7 +2,7 @@ import sys, os, json, numpy as np, collections
 HERE = os.path.dirname(os.path.abspath(__file__))
 D = "results_live" if os.path.isdir(os.path.join(HERE, "results_live")) else "results"
 for fn in sorted(os.listdir(os.path.join(HERE, D))):
-    if not fn.endswith(".jsonl"): continue
+    if not fn.endswith(".jsonl") or fn.startswith(("oracle2nd_", "hybrid_")): continue
     rows = [json.loads(l) for l in open(os.path.join(HERE, D, fn))]
     by = collections.OrderedDict()
     for r in rows: by.setdefault(r["variant"], {})[r["mlp"]] = r

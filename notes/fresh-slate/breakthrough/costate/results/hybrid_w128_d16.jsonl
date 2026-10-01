@@ -1,0 +1,12 @@
+{"set": "w128_d16", "mlp": 0, "variant": "A3gsl_nc", "raw": 3.018032815067259e-05}
+{"set": "w128_d16", "mlp": 0, "variant": "+k4 full", "raw": 4.528131832547403e-05}
+{"set": "w128_d16", "mlp": 0, "variant": "+k4 rank8", "raw": 4.4514860162918046e-05}
+{"set": "w128_d16", "mlp": 0, "variant": "+k4 full, top mode dropped", "raw": 5.122083029586081e-05}
+{"set": "w128_d16", "mlp": 0, "variant": "+k4 rank2-8", "raw": 5.1597346649017075e-05}
+{"set": "w128_d16", "mlp": 0, "variant": "A3 (no scale law) +k4 full", "raw": 6.833930296715299e-05}
+{"set": "w128_d16", "mlp": 1, "variant": "A3gsl_nc", "raw": 2.6859617198440994e-05}
+{"set": "w128_d16", "mlp": 1, "variant": "+k4 full", "raw": 4.072790639106392e-05}
+{"set": "w128_d16", "mlp": 1, "variant": "+k4 rank8", "raw": 4.036556543198094e-05}
+{"set": "w128_d16", "mlp": 1, "variant": "+k4 full, top mode dropped", "raw": 3.865894350954702e-05}
+{"set": "w128_d16", "mlp": 1, "variant": "+k4 rank2-8", "raw": 3.842412809555351e-05}
+{"set": "w128_d16", "mlp": 1, "variant": "A3 (no scale law) +k4 full", "raw": 6.329798100630748e-05}
