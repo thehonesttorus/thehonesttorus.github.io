@@ -339,6 +339,14 @@ EA_DUMP = _os.environ.get("EA_DUMP", "")       # debug: dump per-layer chain int
 EA_DUMPS = []
 EA_DF = float(_os.environ.get("EA_DF", "0"))     # exact (2,1,1) feed of the transported post-ReLU kappa4 DIAGONAL, one step
 EA_DFABS = _os.environ.get("EA_DFABS", "1") == "1"  # 1: the one-step content is left to the newborn's residual leg
+EA_XDIAG = float(_os.environ.get("EA_XDIAG", "0"))  # dG core term: (1-x) (W*W) g + x * exact diag of the
+                                                    # transported post-ReLU (4)+(2,2) kappa4 slices / 2
+EA_FBX = float(_os.environ.get("EA_FBX", "1"))   # scale of the D21-feedback X leg (closure B1: Xt = 1.5 d(w2) D21)
+EA_FBY = float(_os.environ.get("EA_FBY", "1"))   # scale of the D21-feedback Y leg (closure B2: Yt = 0.5 d(w1) D21^T d(w3))
+EA_B5 = float(_os.environ.get("EA_B5", "0"))     # closure B5 (K22 hyperedge + edge) on the newborn Y leg:
+                                                 # Yt += EA_B5 * 0.5 d(w2) wk4m d(w3) as 2 thin columns
+EA_PS = float(_os.environ.get("EA_PS", "0"))     # dG += EA_PS/2 * exact transported diagonal of the Gaussian
+                                                 # path/star kappa4 births of the previous layer (EscAI direct_diagonal)
 EA_FEED = float(_os.environ.get("EA_FEED", "1")) # scale of the K4->K3 feed (birth X3/Y3 and the u column)
 NO_WK431 = _os.environ.get("V17_NO_WK431", "0") == "1"
 NO_REGEN = _os.environ.get("V17_NO_REGEN", "0") == "1"
@@ -538,6 +546,8 @@ class Estimator(BaseEstimator):
         w1_prev = None  # wick w(1) of the previous layer, folded into WD
 
         df_hist = []   # EA_DF: (W, w1, w2, K4v) of earlier layers
+        kx_prev = None  # EA_XDIAG: (K4v, K22) of the previous post-ReLU layer
+        ps_prev = None  # EA_PS: (C_off, w1, w2, w3) of the previous layer
         for li, w in enumerate(mlp.weights):
             last = li == L - 1
             trim = last and not FULL_LAST  # V19: mean-only final layer
@@ -730,6 +740,9 @@ class Estimator(BaseEstimator):
                     if D21 is not None:
                         dD21 = _zero_diag((RS * kr) @ Sm.T + ((Sm * Sm) * (kr * 0.5)) @ Rm.T)
                         D21 = D21 + dD21
+                        if _os.environ.get("EA_DFDBG"):
+                            print("DFDBG", li, float(fnp.linalg.norm(dD21)), float(fnp.linalg.norm(D21 - dD21)),
+                                  float(fnp.linalg.norm(dD3)), float(fnp.linalg.norm(D3 - dD3)), flush=True)
                 if regen:
                     # F68: exact transported diagonal of the regenerated core
                     # G = diag(g) + lam C_off:  dG = (W*W) g + lam (diag(C_pre)
@@ -739,6 +752,17 @@ class Estimator(BaseEstimator):
                     if BETA != 0.0:
                         # V25: adaptive lambda. dG is affine in lam: t_g + lam * t_v.
                         t_g = WW @ g_prev
+                        if EA_XDIAG != 0.0 and kx_prev is not None:
+                            W2K = WW @ kx_prev[1]
+                            t_x = ((WW * WW) @ kx_prev[0] + fnp.sum(W2K * WW, axis=1) * 3.0) * 0.5
+                            t_g = t_g * (1.0 - EA_XDIAG) + t_x * EA_XDIAG
+                        if EA_PS != 0.0 and ps_prev is not None:
+                            Cq, q1, q2, q3 = ps_prev
+                            Xq = (W * fnp.reshape(q1, (1, -1))) @ Cq
+                            Yq = Xq * W * fnp.reshape(q2, (1, -1))
+                            psd = (fnp.sum((Yq @ Cq) * Yq, axis=1) * 12.0
+                                   + fnp.sum((W * fnp.reshape(q3, (1, -1))) * Xq * Xq * Xq, axis=1) * 4.0)
+                            t_g = t_g + psd * (0.5 * EA_PS)
                         t_v = var - WW @ var_prev
                         dG0 = t_g + t_v * lam_prev                # table value first
                         rr = fnp.mean(dG0) / fnp.mean(var)
@@ -919,9 +943,18 @@ class Estimator(BaseEstimator):
                 Qf, _ = fnp.linalg.qr(Yf)
                 Bf = Qf.T @ D21                       # D21 ~= Qf @ Bf
                 F1_b = fnp.reshape(w2, (-1, 1)) * Qf            # Xt = F1 R1, R1 = 1.5 Bf
-                R1T_b = Bf.T * 1.5                              # (n, rfb) = R1^T
+                R1T_b = Bf.T * (1.5 * EA_FBX)                   # (n, rfb) = R1^T
                 F2_b = w1col * Bf.T                             # Yt = F2 R2, R2 = 0.5 Qf^T d(w3)
-                R2T_b = Qf * fnp.reshape(w3 * 0.5, (-1, 1))     # (n, rfb) = R2^T
+                R2T_b = Qf * fnp.reshape(w3 * (0.5 * EA_FBY), (-1, 1))     # (n, rfb) = R2^T
+                if EA_B5 != 0.0:
+                    if regen:
+                        b5f = fnp.stack([w2 * dG, w2], axis=1) * (EA_B5 / 6.0)
+                        b5r = fnp.stack([w3, w3 * dG], axis=1)
+                    else:
+                        b5f = fnp.zeros((n, 2), dtype=f32)
+                        b5r = b5f
+                    F2_b = fnp.concatenate([F2_b, b5f], axis=1)
+                    R2T_b = fnp.concatenate([R2T_b, b5r], axis=1)
                 Xt_b = F1_b @ R1T_b.T
                 Yt_b = F2_b @ R2T_b.T
                 X1_b = a_b * 3.0 + Xt_b
@@ -939,9 +972,9 @@ class Estimator(BaseEstimator):
                 D3_new = None
                 if rfb > 0:
                     F1_b = fnp.zeros((n, rfb), dtype=f32)
-                    F2_b = F1_b
+                    F2_b = fnp.zeros((n, rfb + (2 if EA_B5 != 0.0 else 0)), dtype=f32)
                     R1T_b = F1_b
-                    R2T_b = F1_b
+                    R2T_b = F2_b
             if regen and mode == 1 and not NO_FEED:
                 # K4->K3 feed (F68): X3 = diag(w1^2 dG) + lam a_b d(w1), Y3 = y 1^T
                 # with y = (m/4) w2; M_t1 = u v^T, u = (m/4) w2*dG, v = w1^2.
@@ -1036,7 +1069,7 @@ class Estimator(BaseEstimator):
             newborn = (a_b, Rr_full, Lr_full, S3c, e_b, Ff_b)
             if rfb > 0:
                 r1n = fnp.reshape(R1T_b, (1, n, rfb))
-                r2n = fnp.reshape(R2T_b, (1, n, rfb))
+                r2n = fnp.reshape(R2T_b, (1, n, R2T_b.shape[1]))
                 if R1T_st is None:
                     R1T_st, R2T_st = r1n, r2n
                 else:
@@ -1067,6 +1100,10 @@ class Estimator(BaseEstimator):
             rows.append(mu)
             if EA_DF != 0.0:
                 df_hist.append((W, w1, w2, K4v))
+            if EA_XDIAG != 0.0:
+                kx_prev = (K4v, K22)
+            if EA_PS != 0.0:
+                ps_prev = (C_off, w1, w2, W_all[:, self._i31])
 
         return fnp.stack(rows, axis=0)
 
