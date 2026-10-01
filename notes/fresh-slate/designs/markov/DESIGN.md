@@ -182,3 +182,30 @@ I consider (1) unlikely on the evidence of §8.
 - Width 512 Stage Q for MKV-2 (numpy, ≈ 4 min per MLP).
 - Stabilise the curvature passage at small width (damp the quadratic Galerkin term when the per-site emission is large).
 - Price MKV-2 in flopscope calls: ≈ (9 per source + 10) × sources per layer, ≈ 1.5k calls for full history, under the 6–8k cap.
+
+## 10. Direct measurement at n = 1024 (bench w1024_d16, 6 networks, N = 2e6; truth noise 3.6e-8 subtracted; `results/bench1024_*.json`)
+
+This replaces the width projections of §9. Those had been anchored on a Gaussian-closure value of 5.2e-5 at 1024; the measured value is 4.1e-6. All estimators are paired on the same 6 networks.
+
+| estimator | raw final MSE ± s.e. | all-layer MSE | cost @1024 | multiplier | **adjusted** |
+|---|---|---|---|---|---|
+| Gaussian closure | 4.10e-6 ± 3.3e-7 | 2.33e-6 | ≈ 19 u | 0.1 (floor) | **4.1e-7** |
+| MKV window 1 | 3.60e-6 ± 2.3e-7 | 1.93e-6 | 104 u | 0.102 | **3.7e-7** |
+| MKV window 4 | 1.26e-6 ± 7.0e-8 | 6.0e-7 | 283 u | 0.276 | **3.5e-7** |
+| MKV full history | 4.18e-7 ± 1.9e-8 | 3.3e-7 | 550 u | 0.537 | **2.2e-7** |
+
+(All-layer MSE includes the larger truth noise of early layers, ≈ 3.5e-7 at layer 1, so it is noise-dominated there.)
+
+**Final verdict.**
+- The best variant, full-history MKV, measures raw 4.2e-7 at n = 1024. That is 10× below Gaussian closure and 25–40× above the target raw ≈ 1e-8.
+- At its cost it scores adjusted 2.2e-7, about 140× worse than the 1.6e-9 bar.
+- Every variant lands within a factor of 2 in adjusted score: what each gains in accuracy it pays back in cost.
+- The width-256 slope (n^-2.6) over-predicted the 256→1024 gain. The measured 256→1024 factor is 12× ≈ n^-1.8, close to Gaussian closure's own n^-2.
+- So the site expansion improves the Gaussian closure by a roughly width-independent factor of about 10 at full history. It does not change its order in n.
+
+**Not competitive. The deciding facts are measured, not projected.**
+1. The depth-cut CMI is large and has no cheap separator (§8).
+2. Carried history costs O(L²) dense products.
+3. Even with full history, the first-order Markov-network ansatz leaves raw 4e-7 at 1024.
+
+The leading remaining terms are the two-hyperedge chains: the curvature passage of §7, item 7, plus its higher orders. The MKV-2 run at 1024, which adds the curvature passage, was still running at the time of writing; if it completes, its result is in `results/bench1024_c16.json`. At width 256 it gained 1.4× over full-history MKV, which would leave it at raw ≈ 3e-7, so it cannot change the verdict.
