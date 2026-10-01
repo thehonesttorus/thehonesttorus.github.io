@@ -1,0 +1,10 @@
+verify at128/mlp_00000.npz vs st128v.npz: width 128, depth 16, N = 100000 / 100000
+relative differences, streamed vs dense (per term, in D21(l+1) space; columns: eps dense, eps streamed)
+ 0 D21:1.4e-06 slices:2.5e-06 wick:2.6e-07 B0:9.1e-07 B1:2.2e-06 B2:2.3e-06 B3:8.1e-06 B4:2.0e-07 B5:5.6e-06 B6:5.3e-06 H4:5.9e-08 H6:2.0e-07 H8:1.0e-07 B6reg:4.0e-05 u:4.3e-05
+   memless 0.2957/0.2957  wick 0.0993/0.0993  herm4 0.0990/0.0990  closure 0.0607/0.0607  closure_reg 0.0985/0.0985  fit(tensor) 0.0607/0.0606
+ 1 D21:2.5e-06 slices:1.2e-06 wick:7.7e-07 B0:9.3e-07 B1:8.0e-07 B2:1.6e-06 B3:1.4e-06 B4:2.3e-07 B5:3.3e-06 B6:6.1e-06 H4:1.5e-07 H6:2.3e-07 H8:1.5e-07 B6reg:3.4e-06 u:4.0e-06
+   memless 0.4511/0.4511  wick 0.0945/0.0945  herm4 0.0949/0.0951  closure 0.0437/0.0437  closure_reg 0.0801/0.0801  fit(tensor) 0.0432/0.0432
+ 2 D21:2.5e-06 slices:1.1e-06 wick:2.1e-06 B0:2.6e-06 B1:9.6e-07 B2:1.8e-06 B3:1.7e-06 B4:3.4e-07 B5:4.6e-06 B6:1.0e-05 H4:2.5e-07 H6:3.4e-07 H8:3.5e-07 B6reg:2.3e-06 u:2.7e-06
+   memless 0.4863/0.4863  wick 0.0876/0.0876  herm4 0.0875/0.0879  closure 0.0339/0.0339  closure_reg 0.0682/0.0682  fit(tensor) 0.0325/0.0325
+ 3 D21:3.2e-06 slices:1.2e-06 wick:2.4e-06 B0:3.0e-06 B1:8.1e-07 B2:1.6e-06 B3:2.0e-06 B4:3.2e-07 B5:3.6e-06 B6:9.4e-06 H4:2.4e-07 H6:3.2e-07 H8:2.8e-07 B6reg:2.8e-06 u:3.1e-06
+   memless 0.4493/0.4493  wick 0.0819/0.0819  herm4 0.0794/0.0808  closure 0.0285/0.0285  closure_reg 0.0603/0.0603  fit(tensor) 0.0257/0.0256
