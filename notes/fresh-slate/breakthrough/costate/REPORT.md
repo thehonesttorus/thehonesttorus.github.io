@@ -136,6 +136,12 @@ Projecting at age 0 is wrong: the source has not yet turned into the scale mode,
 - Per network, A3gsl / all pairs = 1.11, 0.97, 1.10, 0.68, 0.83, 0.91.
 - (Per-layer MSEs in the result files include the per-layer truth noise Var(a_l)/N. That is 3.4e-7 at layer 1, where every method is exact, and it falls with depth to 3.6e-8 at layer 16. Read only the final layer.)
 
+**C6 stated abstractly (for the framework; rule 3).** Let a group G act on every object of a layered system by maps that intertwine every arrow, F ∘ g = g ∘ F. In the Koopman picture this is an automorphism group α_g of each layer algebra with α_g K = K α_g. Then:
+- (i) G-mixtures of states are transported with their mixing law unchanged: F#(P ⋆ ν) = P ⋆ F#ν.
+- (ii) The conditional expectation onto G-invariant observables commutes with the transfer operator.
+- (iii) A readout that is a G-eigen-observable (α_g r = χ(g) r) reads the mixing law only through E_P[χ].
+So the co-state contains an exactly closed sector, the G-mixing law, whose size depends only on G and not on depth. Everything outside it is subject to the double-edge obstruction (C3). For a Bratteli diagram or a tiling with a scaling symmetry the statement reads the same. Here G = (ℝ_{>0}, ×) acts by dilation, χ(t) = t, and C7 says it is the whole symmetry group for generic weights. The operational content is a split: carry the invariant sector at law level, for free; spend pairs only on the rest.
+
 **Theorem C7 (uniqueness of the exactly closed symmetry sector, sketch).** Suppose a family of invertible maps g_l intertwines the arrows, F_l ∘ g_l = g_{l+1} ∘ F_l, with F_l = ReLU then W_{l+1}. Commuting with the coordinatewise ReLU (and preserving the orthant structure on which it is linear) forces g_l to be a positive diagonal scaling composed with a permutation. Intertwining a dense W with i.i.d. continuous entries (W g = g′ W) then forces g = c I almost surely. So the dilations are the only continuous symmetry of a generic network, and the scale-mixture law is the only exactly closed sector of the co-state beyond the n readout values themselves. Everything else in the old content must be paid for in pairs, or approximated.
 
 ## 5. Cost at n = 1024 and grader notes for the best variants

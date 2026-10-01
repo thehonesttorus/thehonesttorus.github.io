@@ -95,7 +95,13 @@ def predict(Ws, A=None, old="drop", rank=None, coinc=True, K=8, record=None, Ap=
     nprod = 0
     for l in range(L):
         v = 0.5 * gacc if law else 0.0           # scale variance: slice amplitude gamma = 2 Var(t)
-        if law and v > 0:
+        if law and v != 0:
+            # model constraint Var z_p = (1+v) C_x,pp + v m_p^2 >= v m_p^2 for every p (and |v| < 1)
+            vmax = 0.95 * np.min(np.diag(C) / np.maximum(m * m, 1e-300))
+            if v > vmax or v < -0.5:
+                v = min(max(v, -0.5), vmax)
+                if record is not None:
+                    record.append(dict(layer=l, clamp=True))
             C = (C - v * np.outer(m, m)) / (1 + v)
         G = Gauss(m, C, K=K)
         S = np.zeros((n, n))
@@ -201,7 +207,7 @@ def predict(Ws, A=None, old="drop", rank=None, coinc=True, K=8, record=None, Ap=
             nprod += 2 if coinc else 1
         m = Ea @ W
         Ca = G.cov_a() + dC
-        if law and v > 0:
+        if law and v != 0:
             Ca = (1 + v) * Ca + v * np.outer(Ea, Ea)
         C = W.T @ Ca @ W
         nprod += 2
