@@ -816,7 +816,7 @@ The intuition: Gibbs states, the approximate local Markov property and MRFs shar
 **False.**
 1. **"The Markov property is an expansion property."** The face law is Markov only for the complete graph and fails positivity (R4). Its accuracy-relevant content is not pairwise (R2), and a pairwise Gibbs closure is biased by up to 4/π (R3).
 2. **"Approximate Markov ⇒ a forgettable past."** There is no gap, so there is no exponential forgetting. Each old source carries ≈ 0.1 of D21 at the last layer (R11).
-3. **"The time-averaged detailed-balanced Lindbladian gives a recovery map for erased content."** The estimator has no dynamics, no stationary state and no detailed balance. The erased content is not a function of the retained state, so its Bayes-optimal recovery is zero under H (R9).
+3. **"The time-averaged detailed-balanced Lindbladian gives a recovery map for erased content."** The estimator has no dynamics, no stationary state and no detailed balance. Part of the erased content *is* recoverable, but by a symmetry, not by detailed balance: the dilation carries the gain-template component unchanged (§5.2 (a)). The rest has Bayes-optimal recovery zero under H′ (R9).
 4. **"Spectral independence certifies the estimator"** (R6).
 
 **What the Lindbladian's "subtle essence" turns out to be, for the competition: *pair, don't recover*.** CR never needs the generator to mix. The defect is paired against a smooth question ([A] §0.4). The commutative version is the Duhamel telescoping that the heisenberg design already uses ([FU] unlock 36). Its compressions meet the same free-probability law (R10). Its gain is the bilinear error.
@@ -834,7 +834,7 @@ The intuition: Gibbs states, the approximate local Markov property and MRFs shar
 |---|---|---|---|---|---|
 | E1 | Best family-rank-1 u⊗M of the (2,1,1) slice at n = 1024 by streaming power iteration (u-step E[z̃_i²·z̃ᵀMz̃] minus Wick terms; M-step: the weighted Gram Z̃ᵀdiag(Σ_i u_iz̃_i²)Z̃ minus Wick terms), plus c·R and the flat variant, each scored by D21 error in the oracle's closure | `stream_oracle.py` (add two O(Nn²) contractions) | At layers ≥ 6 the best rank 1 closes ≤ 40 % of the κ4 gap (a rank failure); c·R closes ≈ the regeneration's 20 %; u ∥ var at cos ≥ 0.95 (CONJECTURE) | rank 1 closes ≥ 60 %: the non-gain remainder has one dominant mode and a cheap carrier exists | ≈ 10 iterations × O(Nn²) at N = 32k: about a minute per layer |
 | E2 | Old-pool D21 share by age at n = 1024: propagate x_{t+1} = W_{t+1}ᵀD_t x_t from each source's centred activations and read the (2,1) slices | `stream_oracle.py` | ≈ 0.1 per old source at t = 15, flat in n from 128 (DERIVED reading of [OC], §5.4) | per-source shares < 0.03 | 1–3 CPU-h at N = 32k |
-| E3 | Sign test of absorption coefficients over 6 MLPs at n = 128 | `moment_atlas_np.py --k3`, `absorb.py` | Per-layer coefficient signs agree across MLPs at chance level (CONJECTURE from H) | sign agreement > 80 % on most layers: a learnable conditional mean exists | 2–3 h |
+| E3 | Sign test of absorption coefficients for the non-T residual (old pool minus its T-component) over 6 MLPs at n = 128 | `moment_atlas_np.py --k3`, `absorb.py`, `tracker.py` | Per-layer coefficient signs agree across MLPs at chance level (CONJECTURE from H′) | sign agreement > 80 % on most layers: a learnable conditional mean exists beyond T | 2–3 h |
 | E4 | Kept energy for m scrambled legs: e(k)^m | `transfer_spectrum.py` (ensemble formula, order m) | All-distinct κ4 needs more modes than κ3; the (2,1,1) slice behaves as m = 2 (DERIVED, §3.1) | m = 4 needs fewer modes than m = 3 | minutes |
 | E5 | gate_GG rebuilt from bivariate cumulants (μ, C, κ3_aab, κ3_abb, κ4_aabb, κ4_aaab) by bivariate Edgeworth | atlases | Agreement to the Edgeworth truncation; no trivariate input changes it (THEOREM R2; consistency check for the faces design) | residual far above the truncation estimate | minutes |
 | E6 | Second-order closure residual by diagram class at n = 128 and 256 | `closure2.py` (theory stream) | Short loops (triangles) dominate (ANALOGY of §6.2) | long loops dominate | not priced |
@@ -885,7 +885,7 @@ All runs are in the scratchpad (`csynth/`), not committed. Width-128 checks use 
   - The doubled-leg flat mode is the "cavity field" of the trace channel.
   - The (2,1,1) slice is covariance-type in transport (§3.1).
 - **signings.**
-  - W ↦ −W kills odd transported content in the annealed average (hypothesis H, §5.2), and the quenched odd content is the sign problem.
+  - W ↦ −W kills odd transported content in the annealed average (hypothesis H′, §5.2), and the quenched odd content is the sign problem.
   - The gain mode is even, so it survives every gauge or sign average. It is the part of κ3 and κ4 a signing design gets for free.
 - **tropical.** The gain ‖M_h x̂‖ is a function on the fan, constant in the radial direction of each cone and varying across cones. Its variance across directions is the amplitude of the dominant (2,1,1) shape at moderate width and of most of the old pool's D21 (§7.5).
 - **heisenberg.**
@@ -894,7 +894,7 @@ All runs are in the scratchpad (`csynth/`), not committed. Width-128 checks use 
   - E8 tests whether old content pairs with the final readout like closure error does.
 - **markov.**
   - There is no gap, so there is no exponential forgetting along depth (R11).
-  - Recovery of erased content has zero Bayes gain under H (R9); E3 tests H.
+  - The gain-template part of erased content is recoverable by symmetry, i.e. the accumulator of §7.5. The rest has zero Bayes gain under H′ (R9); E3 tests H′.
   - In the published (no-AD) convention the old pool is mostly the gain template (§7.5). The CMI that matters is that of the non-T residual.
 - **bench / scaffold.**
   - Two Stage-Q diagnostics cost one sampling pass, O(Nn²): gex per layer, and the template shares share_R and share3_T.
