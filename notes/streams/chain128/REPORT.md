@@ -1,6 +1,6 @@
 # chain128 — does a better D21 interface give a lower final-layer MSE?
 
-*Stream report, 2026-10-01. Code, raw JSON per (variant, MLP) and derived tables are in this directory. Numbers
+*Stream report, 2026-10-01 (final for this session). Code, raw JSON per (variant, MLP) and derived tables are in this directory. Numbers
 regenerate from `results/` with `summarize.py --raw results/raw,results/eps`, `law.py`, and
 `width_fit.py results/ladder_o1_w`.*
 
@@ -37,7 +37,7 @@ regenerate from `results/` with `summarize.py --raw results/raw,results/eps`, `l
    | zeroed | 1.7e-5 |
 
    At the step level, ε falls with width as n^-0.3…0.6 for the closures with the exact slice. With the slice
-   regenerated or dropped it falls as n^-0.05…0.2. Extrapolated to n = 1024, "first-order closure + regenerated
+   regenerated or dropped it falls as n^-0.05…0.2. Extrapolated to n = 1024, "first-order diagrams + regenerated
    (2,1,1) core" lands at ε ≈ 6–7 %, which is the published chain's measured 4–7 %. The exact slice extrapolates to
    ε ≈ 1 %.
 4. **The Edgeworth order matters.** Adding the κ3²/2 term (order 2) without the matching κ5/κ6 and κ3·κ4 terms
@@ -47,9 +47,10 @@ regenerate from `results/` with `summarize.py --raw results/raw,results/eps`, `l
 5. **For a self-consistent chain at width 128 the binding error is the fourth-cumulant closure.**
    - κ4 = 0: every κ3 rule sits at 2.0–2.4e-5.
    - The memoryless κ4 (slices only) is worse, 1.4–1.7e-4.
-   - A dense κ4 closure fixes this: full κ4 carried (n⁴ = 268M entries), with all same-order diagrams including
-     κ3×κ3 (`dense2`), at Edgeworth order 1. It gets within ~3× of the teacher-forced level (MLP 1: 6.9e-6 vs 1.6e-6
-     teacher-forced vs 4.6e-5 with κ4 = 0; other MLPs in §6).
+   - A dense κ4 closure fixes most of this: full κ4 carried (n⁴ = 268M entries), with all same-order diagrams
+     including κ3×κ3 (`dense2`), at Edgeworth order 1.
+   - Over 8 MLPs it gets 1.03e-5 mean (geo 7.8e-6), against 2.4e-5 with κ4 = 0 and 2.8e-4 for K=2.
+   - That is 2–5× above the teacher-forced-κ4 chain.
 6. ARC's reference `mlp_kprop` is not public (git asks for credentials; not on PyPI). The dense chain + engine served
    as the reference instead.
 
@@ -240,7 +241,7 @@ its all-distinct part at layer 12 gives 1.05.
 | C / D / engine | | mem | 2 | 8.4e-5 / 8.4e-5 / 8.0e-5 (8) | 1.4e-5 | 4.2e-5 |
 | engine | engine | dense | 2 | 2.1e-5 (MLPs 0–2) | 1.0e-6 | 8.3e-6 |
 | engine | engine | dense2 | 2 | 3.0e-5 (7 MLPs; median 1.4e-5) | 9.8e-7 | 6.4e-6 |
-| **engine** | **engine** | **dense2** | **1** | DENSE2_O1 | | |
+| **engine** | **engine** | **dense2** | **1** | **1.03e-5 (8; geo 7.8e-6; per MLP 2.3, 6.9, 21, 17, 15, 3.5, 3.3, 14 ×1e-6)** | 8.50e-07 | 3.83e-06 |
 
 How the κ4 closure behaves along the chain (MLP 0, order 2), as relative error of K4 = κ4(z)_{aaaa}:
 - memoryless: 16 % at layer 1, 47 % at layer 4, 65 % at 8, 78–91 % at 13–15. Memoryless κ4 is worse than κ4 = 0 at
@@ -248,8 +249,10 @@ How the κ4 closure behaves along the chain (MLP 0, order 2), as relative error 
 - dense: 9 %, 13 %, 35 %, 37–67 %.
 - dense2: 9 %, 12 %, 34 %, 33–46 %.
 
-At order 2, dense2 blew up in the last 3–4 layers on 4 of 7 MLPs. At order 1 that blow-up is gone on the MLPs run so
-far.
+At order 2, dense2 blew up in the last 3–4 layers on 4 of 7 MLPs. At order 1 that blow-up is gone on all 8.
+- Per MLP, dense2 at order 1 beats κ4 = 0 (2.4e-5 mean) on every MLP, by 1.2–6.7×.
+- On the 4 atlas MLPs it is 2–5× above the teacher-forced-κ4 chain (2.5e-6 mean).
+- The remaining gap is the κ4 closure at layers ≳ 8.
 
 ## Verdict
 - **The D21 interface translates.** With the fourth cumulant right, final-layer MSE follows ε(D21)² over two decades:
@@ -277,7 +280,7 @@ far.
   none. dense2 at order 1 (every same-order κ4 diagram) brings the chain to within a few × of teacher-forced κ4.
 
 ## Open issues
-- dense2 at order 1 has been run only on the MLPs listed in §6, at ~25 min per MLP.
+- dense2 at order 1 costs ~25 min and 5 GB per MLP. Only the engine κ3 rule was run on top of it; closure and Wick on dense2 at order 1 were not.
 - Atlas noise (N = 5e5) is 1–6 % on D21 and 2–10 % on K4 per atlas. ε is noise-corrected only where a pair exists
   (MLP 0 at widths 128, 64, 32); elsewhere it includes ≈ +0.5 % layer-rms.
 - The width-64 end-to-end chain hit negative variances at depth (order 2; the Edgeworth corrections are not

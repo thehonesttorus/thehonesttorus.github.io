@@ -14,6 +14,11 @@ Variants (see REPORT.md):
   F<l>  C with kappa3(a_l) replaced by the atlas's (teacher forcing at layer l), needs --atlas
   FD<l> same, only the all-distinct part
   N<eps>  C with a relative rms perturbation eps of D21(z) at every layer (error law)
+Generic forms (used for the reported runs):
+  <k3mode>:<k4mode>[:<order>]        e.g. engine:atlas:1, closure:atlas_reg211:1, engine:atlas_rank4:1, engine:dense2:1
+      k3mode in none | wick | closure | fit | engine | k2;  k4mode in zero | mem | dense | dense2 | atlas |
+      atlas_reg211 | atlas_zero211 | atlas_rank<r>;  order = Edgeworth order of the step (default 2; 1 is better)
+  N<eps>s<seed>@<base>   F<l>@<base>   FD<l>@<base>   FA<l>@<base>    perturbation / teacher forcing on a base chain
 """
 import argparse, glob, json, os, time
 import numpy as np
