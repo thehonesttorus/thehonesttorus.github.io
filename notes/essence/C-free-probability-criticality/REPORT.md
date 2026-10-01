@@ -1,6 +1,6 @@
 # Team C: free probability, two-projection geometry and the wall at 2 — REPORT
 
-*Essence programme, round 3. v0, 1 Oct 2026, ≈ 22:15 UTC. Labels: **Theorem** (published, with source), **Derived** (proved here, elementary), **Measured** (this directory, numbers below), **Synthesis**, **Conjecture**. Every n = 1024 number is on the six bench networks `w1024_d16` unless stated otherwise.*
+*Essence programme, round 3. v1, 1–2 Oct 2026 (v0 ≈ 22:15 UTC; v1 adds the T1/T2/T4 tests at n = 1024). Labels: **Theorem** (published, with source), **Derived** (proved here, elementary), **Measured** (this directory, numbers below), **Synthesis**, **Conjecture**. Every n = 1024 number is on the six bench networks `w1024_d16` unless stated otherwise.*
 
 ## 0. Answer in brief
 
@@ -25,7 +25,13 @@
    - The part that does not mix is exactly the dilation/Perron sector, and in the true dynamics it is a single conserved scalar (one Jordan block). Everything else mixes geometrically at rate g³ ≈ 0.13 (layer 0) to 0.6 (depth) per step, with no spectral gap needed: the forgetting is the gate variance.
    - So: carry the dilation scalar exactly at O(n²), and truncate the free sector at an age set by the cumulative free trace Π g³, not by a fixed age.
    - At the final layer the free sector beyond age A holds 5.6 % (A = 3), 2.9 % (A = 5) and 1.3 % (A = 7) of the total D21 energy (measured).
-   - The window costs ≈ 3–4 products per pair (costate prices). Costate's A3gsl_nc (273 products, raw 3.25e-7) is this design with a uniform window. §3 gives two refinements this theory predicts: a leak-corrected dilation amplitude and a trace-adaptive window, with their tests.
+   - The window costs ≈ 3–4 products per pair (costate prices). Costate's A3gsl_nc (273 products, raw 3.25e-7) is this design with a uniform window.
+   - **Measured (v1).** A window set by the cumulative free trace Π (2EΦ²)³ ≥ τ beats the uniform window on all six networks at n = 1024:
+     - raw **2.43e-7** at 308 products (τ = 0.05, 0.75× A3gsl_nc), the lowest raw of any first-order design in the campaign;
+     - raw 2.68e-7 at 269 products (τ = 0.1, 0.83×);
+     - best adjusted ≈ **4.4e-8** (raw 2.91e-7 at 226 products, Strassen L3 price), against costate's best of 5.2–5.9e-8.
+   - The other predicted refinement, a leak-corrected dilation amplitude (T1), is killed. The early decay of γ is a transient onto the invariant direction, not a leak.
+   - T4 confirms the Perron diagnosis: with the mean gates permuted (traffic-independent), PR follows the free law to 2 % at every age.
 6. **What this does not do.** It explains the first-order old content and prices it. It does not reach the bar. Costate §4.6 shows the remaining 15× (at w128) is joint κ₄, and that is again concentrated in the dilation sector. The theory here says why: the dilation sector is the only parabolic (non-mixing) sector, so it is the only one whose higher cumulants accumulate with depth (Var log t ∝ depth).
 
 ## 1. Instances
@@ -88,7 +94,7 @@
 - (d) Under the exact dynamics the dilation direction is an eigen-direction of eigenvalue exactly 1 (costate C6: Euler's φ′(z)z = φ(z) makes the annealed step inherit the pathwise criticality on that one direction). With per-layer births the pair (charge, accumulated scale variance) evolves by [[1, 0], [β_l, 1]]: a unipotent Jordan block of size 2, the affine (μ = 2) case of I2.
 
 **Conjecture C2 (the critical trichotomy for quenched third-order content).** Setting: He-initialised bias-free ReLU, width n → ∞, depth L fixed, first-order (decoupled-gate) transport of third-order content. Split the content at each layer as γ K_k ⊕ R, where K_k is the dilation template and R ⊥ K_k. Then:
-- (i) **Parabolic sector.** The dilation amplitudes of different ages add coherently; under exact transport each amplitude is conserved, and under decoupled transport it is retained at a rate ρ_D(a) ↑ 1 with age a.
+- (i) **Parabolic sector.** The dilation amplitudes of different ages add coherently. Each source's overlap with K relaxes onto the invariant direction: its retention rate ρ_D(a) ↑ 1 with age a, and the early ρ_D < 1 is the decay of the non-invariant transient (T1 rules out reading it as a leak). On the invariant direction itself the eigenvalue is exactly 1 (C6).
 - (ii) **Free sector.** The residuals R_{s→k} of different sources s are asymptotically free of second order: their normalised Gram matrix tends to the identity, with off-diagonals O(n^{−1/2}) plus a rank-one Perron correction. Each one's energy obeys E‖R_{s→k+1}‖² = g_k³ E‖R_{s→k}‖² (1 + O(Perron)).
 - (iii) **No elliptic sector** exists for generic weights.
 - (iv) **Perron correction.** The only non-free correction is the mean direction. The mean gate Φ_{l+1} depends on W_{l+1} through m_{l+1} = E[a_l] W_{l+1}, a rank-one coupling, so the propagator is a spiked free product: its PR falls below n/(2(age + 1)) once the spike separates (BBP), which happens at age ≈ 6–8 at n = 1024.
@@ -105,7 +111,11 @@ This is the noncommutative version of "old content is a quenched fluctuation": i
 
 Common dictionary (anti-naivety rule). The pieces are **age sectors of the third-order content** (one per birth layer), split into the dilation template and the free residual. They are tensors in Sym³, not neurons. Per-neuron gates enter only through **one scalar per layer**, g_l, and one vector, the Perron direction. The down step is annealing the gate; the up step is re-randomisation by the fresh weight; the angle is g_l; the global quantity is the D21 slice at the kink layer and, through it, the readout.
 
-### T1. Leak-corrected dilation charge (explains a costate tension; cheap)
+### T1. Leak-corrected dilation charge — **killed at w128 (§4.5)**
+
+*Result.* Scaling the retiring amplitudes by 1.33–2.5 hurts: A3gsl_nc goes from 2.56e-5 to 3.4–4.8e-5, and A1gl_nc from 3.5e-5 to 4.4–6.8e-5. The optimum is the uncorrected projection (factor 1–1.25). The reading below was wrong and has been corrected in C2(i). The early decay of γ (0.86 per step) is not a leak of a conserved quantity. It is the transient of the non-invariant part of a star atom's overlap with K. Only a true scale mixture is invariant (C6), and the retention ratio rising to 0.95 with age is the content *relaxing onto* the eigenvalue-1 direction. Projecting at retirement, after the transient, is therefore right, and the self-overlap and κ₄-visible scale variances (costate §4.7) are a different object: the second-order, correlated scale field.
+
+*Original prediction, kept for the record:*
 
 - **Prediction.** Decoupled-gate transport leaks the dilation amplitude at 0.86, 0.87, 0.88, 0.89 per step over ages 0→4 (measured), while the exact dynamics conserves it (C6). The costate carrier projects content when it retires at age A + 1, after the leak, so it under-counts the scale variance by Π ρ_D ≈ 0.58 at A = 3 and 0.75 at A = 1.
   - This explains part of costate §4.7: the κ₃-visible v (≈ 0.02) is below the self-overlap v (0.074) and the κ₄-spike v (0.16).
@@ -115,7 +125,16 @@ Common dictionary (anti-naivety rule). The pieces are **age sectors of the third
 - **Kill.** Raw at 1024 not better than 3.25e-7 (A3gsl_nc) at equal products.
 - **Status.** Queued for v1.
 
-### T2. Trace-adaptive window for the free sector (seed 2's design, priced)
+### T2. Trace-adaptive window for the free sector (seed 2's design, priced) — **confirmed at n = 1024 (§4.5)**
+
+*Result.* Rule: keep pair (s, k) exact while Π_{l=s+1}^{k} (2 E Φ_l²)³ ≥ τ, otherwise retire it into the dilation charge (and, for "gsl", the slice chain). This beats costate's uniform A = 3 window on all six networks at equal or fewer products.
+- τ = 0.1: raw 2.68e-7 ± 0.13e-7 at 269 products, 0.83× (0.71–0.93), against 3.25e-7 at 273.
+- τ = 0.05: raw **2.43e-7 ± 0.11e-7** at 308 products, 0.75× (0.60–0.86). This is the lowest raw of any first-order design measured in the campaign; the exact all-pairs first order is 4.0e-7 at 855 products.
+- Best adjusted: gl with τ = 0.1, raw 2.91e-7 at 226 products, **≈ 4.4e-8 adjusted** at Strassen L3 (0.15 B). Costate's best was 5.2–5.9e-8.
+
+The only input is one scalar per layer, g_l = 2 E Φ_l², which is the free-probability trace law (tr UᵀU/n = 2 Π g to 1e-4). The design gain is theory-driven: the free sector forgets at the gate's Jensen gap, which varies 5× in rate across depth, so a window measured in ages mis-allocates.
+
+*Original prediction:*
 
 - **Prediction.** The free residual of source s at kink k has energy ∝ Π_{l=s+1}^{k−1} 1.03 g_l³ (measured law). Early sources die fast (g ≈ 0.5–0.7, so 0.13–0.35 per step); late sources die slowly (g ≈ 0.8–0.97, so 0.5–0.9 per step).
   - A uniform age window wastes products on early sources and drops late ones too soon.
@@ -131,7 +150,14 @@ Common dictionary (anti-naivety rule). The pieces are **age sectors of the third
 - **Measured.** The residual transport is 1.02–1.10 × g³, and the odds constant is 0.30–0.33 at every layer.
 - **Kill.** If the readout-weighted (not Frobenius) tail fails to follow the law; costate §4.2 found the readout weighting differs strongly from Frobenius for the scale mode.
 
-### T4. Spiked free product: deflate the Perron direction from the propagators
+### T4. Spiked free product: deflate the Perron direction from the propagators — **diagnostic confirmed at n = 1024 (§4.6)**
+
+*Result.* With the mean gates randomly permuted per layer, PR follows the free law n/(1 + (a + 1) + Σ_l (r(Φ_l²) − 1)) to ≤ 2 % at every age 1–13. With the true gates it falls to 0.77× the law at age 13. With one input's pathwise 0/1 gates it is flat at n/(2(a + 1)) (0.98–1.04).
+- So the sub-free tail of F9.1 is exactly the coupling of the annealed gate to W through the mean, a failure of Male's traffic-independence hypothesis by one rank-one direction.
+- It is an annealed phenomenon: pathwise gates show no outlier.
+- The v0 caveat came from a wrong guess: r(Φ²) is 1.6–2.1 at n = 1024 (the mean gates are nearly frozen), not 1.2.
+
+*Original statement:*
 
 - **Prediction (C2(iv)).** The propagators are a free product plus one outlier. The outlier both breaks the free law (PR −20 % at age 14) and carries the dilation template's m-leg (scale/g³ ≈ 1.2 per step against 1.03 for the bulk).
   - Splitting U = u₁σ₁v₁ᵀ + U_bulk makes the bulk exactly free, so second-order free formulas apply to it.
@@ -181,6 +207,34 @@ Caveat (Measured, to be resolved in v1). With the mean gates treated as free fro
 | of the free-sector energy | 0.77 | 0.59 | 0.45 | 0.33 | 0.17 | 0.08 |
 | of the total D21 energy | 0.13 | 0.10 | 0.075 | 0.056 | 0.029 | 0.013 |
 
+**4.5 Design tests (T1, T2; `costate_c.py` = costate.py plus two switches, `t1.py`, `summ_t.py`).**
+- `costate_c.py` adds `leakfac` and `tau` to costate.py; with both at their defaults it reproduces costate exactly (A3gsl_nc 3.247e-7 = costate's 3.25e-7).
+- Raw = final-layer MSE − truth noise, paired on the same networks.
+- Adjusted = raw × max(0.1, 0.683 u × products / 1024 u), i.e. Strassen L3 at costate's prices. That is a price, not a measured wall time.
+
+| variant (6 × w1024) | raw | products | vs A3gsl_nc (range) | wins | adjusted (L3) |
+|---|---|---|---|---|---|
+| costate A3gsl_nc (uniform window A = 3) | 3.25e-7 ± 0.17e-7 | 273 | 1 | — | 5.9e-8 |
+| **Tgsl_nc, τ = 0.05** | **2.43e-7 ± 0.11e-7** | 308 | 0.75 (0.60–0.86) | 6/6 | 5.0e-8 |
+| Tgsl_nc, τ = 0.03 | 2.53e-7 | 334 | 0.78 | 6/6 | 5.6e-8 |
+| Tgsl_nc, τ = 0.1 | 2.68e-7 ± 0.13e-7 | 269 | 0.83 (0.71–0.93) | 6/6 | 4.8e-8 |
+| Tgsl_nc, τ = 0.15 | 2.83e-7 | 245 | 0.88 | 5/6 | 4.6e-8 |
+| **Tgl_nc, τ = 0.1** | 2.91e-7 ± 0.15e-7 | **226** | 0.90 (0.80–1.04) | 5/6 | **4.4e-8** |
+| Tgl_nc, τ = 0.2 / 0.3 | 3.9e-7 / 5.8e-7 | 182 / 148 | 1.21 / 1.80 | | 4.7e-8 / 5.8e-8 |
+
+At w128 (8 networks): Tgsl_nc τ = 0.1 wins 8/8 (0.83×), τ = 0.15 wins 7/8 (0.82×). T1, leak factor on the retiring amplitude (w128, A3gsl_nc, geometric means): 0.5 → 2.93e-5, 0.75 → 2.53e-5, **1 → 2.30e-5**, 1.25 → 2.27e-5, 1.7 → 2.93e-5, 2.5 → 4.22e-5. The optimum is at 1–1.25, so T1 is killed.
+
+**4.6 Traffic freeness of the gates (T4, `t4.py`, network 0, w1024, chain from s = 1).** Each entry is PR × 2(a + 1)/n at age a, with the free law in brackets, computed from the measured r(Φ_l²):
+
+| age | 1 | 2 | 5 | 7 | 9 | 11 | 13 |
+|---|---|---|---|---|---|---|---|
+| true mean gates | 1.10 | 1.09 | 1.06 | 0.99 | 0.95 | 0.88 | 0.77 |
+| permuted mean gates | 1.10 | 1.09 | 1.07 | 1.06 | 1.05 | 1.02 | 1.01 |
+| free law with r(Φ²) | 1.10 | 1.10 | 1.07 | — | — | — | 1.03 |
+| pathwise gates, one input | 1.00 | 1.00 | 1.01 | 1.00 | 1.03 | 1.03 | 1.04 |
+
+r(Φ_l²) over layers 0…14 is 1.00, 1.62, 1.85, 1.86, 1.91, 1.95, 2.05, 1.95, 1.89, 2.04, 2.07, 2.07, 1.83, 2.05, 2.13: at n = 1024 the mean gates are nearly frozen projections.
+
 ## 5. Honest assessment
 
 - **Theorem:** I1–I3 as cited. **Derived:** Proposition C1 (elementary), the polynomial decay C(2k, k)/4ᵏ for the free half-projections, and the parabolic correlation rate.
@@ -190,3 +244,5 @@ Caveat (Measured, to be resolved in v1). With the mean gates treated as free fro
   - (b) The D21 Frobenius metric is not the readout metric. Costate §4.2 showed the readout weights the dilation spike much more heavily, so the tail prices in §4.4 are conservative for the free sector.
   - (c) The odds constant 0.31 is an empirical regularity. Its value is not derived.
   - (d) None of this addresses joint κ₄, which costate identifies as the remaining 15×. The theory says only that it should again be dominated by the parabolic sector.
+  - (e) **Where the design stands.** The theory-driven window is a real but constant-factor gain: 0.75–0.9× raw, about 25 % better adjusted. At ≈ 4.4e-8 adjusted it is still ≈ 27× from the bar (1.6e-9). The first-order model is close to exhausted (costate §4.6), so the next factor must come from second-order content in the parabolic sector.
+  - (f) The τ rule uses the leg-wise Frobenius law g³ and ignores readout weighting and the Perron excess (×1.2 per step on the dilation template). A readout-weighted τ is the obvious untested refinement.

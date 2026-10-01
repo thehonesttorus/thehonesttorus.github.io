@@ -1,0 +1,15 @@
+w1024_d16 Tgsl_nc~0.03   mlp 3: raw 2.469e-07 nprod 325 18s
+w1024_d16 Tgsl_nc~0.05   mlp 3: raw 2.369e-07 nprod 303 18s
+w1024_d16 Tgl_nc~0.2     mlp 3: raw 3.883e-07 nprod 175 14s
+w1024_d16 Tgl_nc~0.3     mlp 3: raw 6.557e-07 nprod 143 13s
+w1024_d16 Tgsl_nc~0.25   mlp 3: raw 3.710e-07 nprod 207 15s
+w1024_d16 Tgsl_nc~0.03   mlp 4: raw 3.272e-07 nprod 333 18s
+w1024_d16 Tgsl_nc~0.05   mlp 4: raw 2.885e-07 nprod 311 16s
+w1024_d16 Tgl_nc~0.2     mlp 4: raw 3.548e-07 nprod 183 13s
+w1024_d16 Tgl_nc~0.3     mlp 4: raw 4.911e-07 nprod 147 12s
+w1024_d16 Tgsl_nc~0.25   mlp 4: raw 3.859e-07 nprod 209 14s
+w1024_d16 Tgsl_nc~0.03   mlp 5: raw 2.070e-07 nprod 321 17s
+w1024_d16 Tgsl_nc~0.05   mlp 5: raw 2.172e-07 nprod 295 16s
+w1024_d16 Tgl_nc~0.2     mlp 5: raw 2.919e-07 nprod 175 13s
+w1024_d16 Tgl_nc~0.3     mlp 5: raw 4.168e-07 nprod 143 13s
+w1024_d16 Tgsl_nc~0.25   mlp 5: raw 3.087e-07 nprod 197 14s

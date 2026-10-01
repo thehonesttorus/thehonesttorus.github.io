@@ -1,0 +1,12 @@
+w1024_d16 A3gsl_nc       mlp 0: raw 3.568e-07 nprod 273 16s
+w1024_d16 Tgsl_nc~0.15   mlp 0: raw 2.659e-07 nprod 259 16s
+w1024_d16 Tgl_nc~0.1     mlp 0: raw 2.863e-07 nprod 239 15s
+w1024_d16 Tgsl_nc~0.1    mlp 0: raw 2.518e-07 nprod 281 16s
+w1024_d16 A3gsl_nc       mlp 1: raw 3.047e-07 nprod 273 17s
+w1024_d16 Tgsl_nc~0.15   mlp 1: raw 2.867e-07 nprod 255 15s
+w1024_d16 Tgl_nc~0.1     mlp 1: raw 2.710e-07 nprod 231 16s
+w1024_d16 Tgsl_nc~0.1    mlp 1: raw 2.565e-07 nprod 275 17s
+w1024_d16 A3gsl_nc       mlp 2: raw 3.337e-07 nprod 273 16s
+w1024_d16 Tgsl_nc~0.15   mlp 2: raw 3.411e-07 nprod 237 15s
+w1024_d16 Tgl_nc~0.1     mlp 2: raw 3.454e-07 nprod 219 14s
+w1024_d16 Tgsl_nc~0.1    mlp 2: raw 3.112e-07 nprod 263 15s
