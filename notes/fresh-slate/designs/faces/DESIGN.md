@@ -128,3 +128,63 @@ $\kappa_3(z_{l,j})=\sum_sT_s[j]$ with $T_s=\mathbb E[(\nu_sP_{s\to l})_j\tilde z
 | share | .22 | .10 | .07 | .10 | .10 | .08 | .01 | .08 | .07 | .07 | .01 | .07 | .00 | .01 | .02 | .00 |
 
 The final-layer skew is spread over every birth depth, and the most recent facets contribute nothing net as the first leg. A per-layer (memoryless) gluing cannot be right however good its one-step rule is. The structure is the transported old content of BRIEF §3, here seen in its exact face form.
+
+### 7.5 T4 (degree-0 route: face-wise constant Jacobians) — `t4_gram.py`, log `t4_n64.log`
+
+For degree-1 $f,g$: $\mathbb E[fg]=\mathbb E[\nabla f\cdot\nabla g]+\mathbb E[g\,\Delta f]$, and the gradient Gram $G_l=J_l^\top J_l$ (constant on each face) obeys $G_{l+1}=W^\top D_lG_lD_lW$ exactly (checked to 1e-15). Face decoupling $\mathbb E G_{l+1}\approx W^\top(\mathbb E[gg^\top]\circ\mathbb EG_l)W$ has one-step relative error 6–13 % (diag 3–8 %). The Gaussian (Mehler) pair closure for $\mathbb E[zz^\top]$, given the true $(\mu,C)$, has 0.5–3 % (diag 0.3–1.8 %). The Gram is only half of the second moment at depth; the facet part $\mathbb E[z\Delta z^\top]$ is as large. **Falsified**: decoupling gates from face-wise constant gradients is 5–10× worse than closing the pre-activation pair law.
+
+## 8. Dictionary v1–v2 and Stage Q (`fbt.py`, `run_q.py`, `results/`)
+
+v1 state: $(\mu_l,C_l)$ and the face-averaged arrows $P_{x\to l}$, $P_{s\to l}$. The per-layer operations:
+
+- face-measure Mehler covariance: the Hermite profile of ReLU is the sequence of face measures of increasing codimension, by E2;
+- facet births on Gaussian legs, transported along face-averaged arrows (E5). Modes: 'mem' (one-step tree, legs from the closure covariance) and 'lin' (all depths, legs from the input chaos);
+- Edgeworth readout.
+
+v2 ('21' modes) also computes the mixed slice $\kappa(z_j,z_j,z_m)=2b_j^\top Q_mb_j+4b_j^\top Q_jb_m$ and feeds it into $\mathrm{Cov}(a)$ by the leading bivariate Edgeworth term.
+
+Truth: widths 64 (bench set w64_d16, 8 MLPs, N = 1e7), 128 and 256 (own bakes with seeds 11–14, N = 1e7 and 5e6); depth 16. Raw = final-layer MSE − truth noise.
+
+| estimator | w64 | w128 | w256 | width slope | raw(1024) extrapolated | cost at 1024 (units) | adjusted(1024) |
+|---|---|---|---|---|---|---|---|
+| Gaussian closure, face-measure Mehler covariance ('gauss') | 4.46e-4 | 1.97e-4 | 8.60e-5 | n^-1.19 | 1.66e-5 | ≈ 40 | 1.7e-6 |
+| + one-step facet tree κ3, κ4 ('mem') | 4.11e-4 | 1.86e-4 | 7.59e-5 | n^-1.22 | 1.43e-5 | ≈ 64 | 1.4e-6 |
+| + multi-depth facet births on input legs ('lin') | 4.71e-4 | 2.15e-4 | 6.98e-5 | n^-1.38 | 1.10e-5 | ≈ 380 (O(L²)) | 4.1e-6 |
+| 'mem' + (2,1) slice into Cov(a) ('mem21') | 2.75e-4 | 1.30e-4 | 6.29e-5 | n^-1.06 | 1.44e-5 | ≈ 100 | 1.4e-6 |
+| 'lin' + (2,1) slice into Cov(a) ('lin21') | 3.24e-4 | 1.22e-4 | 4.54e-5 | n^-1.42 | 6.4e-6 | ≈ 600 (O(L²)) | 3.8e-6 |
+| reference: plain MC at the 0.1 floor (bench) | 6.7e-6 | | | | | 102 | ≈ 1.2e-6 |
+
+The width-fit bands quoted by `eval_q` are much narrower than the real uncertainty. I take ×2 on the extrapolated raw: three widths, 4–8 MLPs, s.e. 10–20 % per width.
+
+**Where the error is** (`diag_oracle_means.py`, w64). The one-step facet tree cuts the layer-2 error 25× (3.9e-5 → 1.6e-6). From layer 4 on, every variant converges to the same error, and feeding the true intermediate means does not reduce it. The dominant error is the pair (covariance) closure, i.e. pair non-Gaussianity, which the face measures of single neurons cannot carry.
+
+**Why the face transport has a ceiling** (`diag_chaos.py`, log `diag_chaos.log`). The two quantities that face-averaged arrows carry exactly are the face-averaged gradient (first chaos in $x$) and the facet births on it (second chaos). At depth 16 they hold 18–23 % and 18–23 % of each neuron's variance, at widths 64, 128, 256 and 512 alike. About 60 % sits in chaos ≥ 3 (births of births). This is a width-independent property of deep ReLU kernels: depth spreads the kernel over high degrees, consistent with the Phase-1 finding that Hermite-exact rules buy little. Any fixed-order transport of facet data in input coordinates is capped. The renormalisation that per-layer chains do (legs taken from the current covariance) is needed. But renormalised legs plus transported old births over-count by ×(depth) (T2), because later facets fold old skew away. Getting the folding right is exactly the (2,1)/(2,1,1) cumulant transport of the existing chains.
+
+## 9. Verdict
+
+**Projected at n = 1024**: best faces estimator 'mem21' (or 'mem'), raw ≈ 1.4e-5 (×2 band 0.7–3e-5), cost ≈ 0.1 B, adjusted ≈ 1.4e-6 (0.7–3e-6). The best raw, 'lin21' at 6.4e-6 (3–13e-6), costs O(L² n³) ≈ 0.6 B, so adjusted ≈ 4e-6. This sits at the level of plain Monte Carlo and about 10³ above the bar (1.6e-9 adjusted).
+
+**What the principle delivered** (all exact and checked numerically, `check_exact.py`):
+- E1, transport of barycentres;
+- E2, barycentres as facet integrals and $\mathbb Ef=\mathbb E\Delta f$;
+- E3/E4, the barycentric decomposition;
+- E5, the facet-birth telescoping $\tilde z_l=xP_{x\to l}+\sum_s\nu_sP_{s\to l}$;
+- the radial factorisation $a(x)=R\,b(\theta)$;
+- the degree-0 Gram transport $G_{l+1}=W^\top DGDW$;
+- the exact age attribution of the final-layer skew.
+
+The structural findings:
+1. Non-Gaussianity is carried by facets (codimension 1), not by faces (codimension 0). At $p=1/2$ the gate field is exactly symmetric.
+2. The final-layer third cumulant is born roughly uniformly over all 15 earlier layers plus the input (T3). The most recent facets contribute about nothing net, so memoryless gluing is impossible in principle.
+3. Old births do not accumulate: later facets fold them away.
+4. At depth only ~40 % of the variance is in chaos ≤ 2 of the input, independent of width.
+
+**What would make it competitive.** A face-native carrier of the folding: the facet-conditional covariance $\mathrm{Cov}(z_l\mid z_{s,k}=0)-\mathrm{Cov}(z_l)$, i.e. how crossing the facet of neuron $(s,k)$ changes the layer's covariance. This is the face reading of the (2,1) and (2,1,1) slices. It would need a representation of size ≪ $n^3$ in the dictionary of facet normals $v_{s,k}$ (the face-averaged gradients). All four dictionaries tested here (gate field, hub-face regression, facet births on input legs, face-wise Gram) fail before that object.
+
+**Deciding experiment.** At width 256, measure the facet-conditional covariance shift for all facets of the last 4 layers by Monte Carlo. Test whether it is captured to ≤ 5 % by a rank-r expansion in outer products of facet normals $v_{s,k}v_{s,k}^\top$ with r ≤ 32 per layer. If yes, a face chain at O(r n² L) per layer is possible and the ladder's 2 % D21 target becomes reachable. If no (BRIEF §3 says the (2,1) slice has no low-rank form below 0.3 n, which predicts no), the faces principle offers no computational shortcut over the cumulant chains for this task. Its value is then the exact identities and the structural map above, which belong in the write-up.
+
+**Charged to the dictionary, not the theory.** The theory's objects are faces, arrows and conditional expectations. The realisation always read "face" as a gate pattern or a facet of a single neuron, and "arrow" as a face-averaged linear map. Neither sees how a facet of layer $s$ conditions the joint law of layer $l$. That is the missing coherence (the noncommutative part, in the note's language): the off-diagonal $\varphi(s_\mu s_\nu^*)$ between histories that arrive at the same face by different routes. A dictionary in which states keep these coherences between facets of different depths is the natural v3, but I found no way to make it cheaper than $n^3$ per layer.
+
+### Messages to the other prongs
+- To prong 1 (theory): the coboundary/sufficiency dichotomy has a measured realisation here. The own-face barycentre is not sufficient (T1: the gate field misses about 99 % of the skew). The insufficiency is not local in depth (T3: uniform age profile).
+- To the chain streams: the exact telescoping E5 and the age attribution T3 are cheap diagnostics for any transport rule. The x-term share of the final-layer κ3 (16–27 %) has the exact Stein form $T_x=2\,\mathrm{Cov}(z_j,\nabla z_j\cdot p_j)$, with $p_j$ the face-averaged gradient.

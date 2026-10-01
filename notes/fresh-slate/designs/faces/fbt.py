@@ -51,7 +51,7 @@ def mehler_cov(mu, C, R=6):
     return out
 
 
-def predict(W, mode="lin", R=6, use_k4=True, mean_var="edge"):
+def predict(W, mode="lin", R=6, use_k4=True, mean_var="edge", d21=False):
     """mode: 'gauss' (no kappa3/4), 'lin' (FBT: facet births on Gaussian input legs, all depths), 'mem' (one-step tree)."""
     W = np.asarray(W, dtype=np.float64)
     L, n, _ = W.shape
@@ -70,11 +70,13 @@ def predict(W, mode="lin", R=6, use_k4=True, mean_var="edge"):
             cs.append(cfac)
             if mode == "lin":
                 b = Px[l]
-                k3 = np.zeros(n); V = np.zeros((n, n))
+                k3 = np.zeros(n); V = np.zeros((n, n)); D21 = np.zeros((n, n))
                 for s in range(l):
                     K = Px[s].T @ b                          # Cov of the linear legs, (k, j)
                     M = Pfrom[s] * cs[s][:, None] * K
                     k3 += 6 * (M * K).sum(0)
+                    if d21:   # kappa(y_j, y_j, y_m) = 2 b_j^T Q_m b_j + 4 b_j^T Q_j b_m
+                        D21 += 2 * (K * K).T @ (Pfrom[s] * cs[s][:, None]) + 4 * M.T @ K
                     if use_k4:
                         V += Px[s] @ M
                 k4 = 48 * (V * V).sum(0) if use_k4 else np.zeros(n)
@@ -82,6 +84,8 @@ def predict(W, mode="lin", R=6, use_k4=True, mean_var="edge"):
                 K = (Cprev * beta[None, :]) @ W[l]          # Cov(z_{l-1,k}, linear image at l)
                 M = W[l] * cfac[:, None] * K
                 k3 = 6 * (M * K).sum(0)
+                if d21:
+                    D21 = 2 * (K * K).T @ (W[l] * cfac[:, None]) + 4 * M.T @ K
                 if use_k4:
                     # b^T Q^2 b with legs in z_{l-1} space: Q_j = sum_k W_kj c_k e_k e_k^T, b = beta W (Gaussian z_{l-1}, cov Cprev)
                     Y = Cprev @ M
@@ -98,6 +102,10 @@ def predict(W, mode="lin", R=6, use_k4=True, mean_var="edge"):
         beta = ndtr(t)
         cfac = _phi(t) / (2 * s_)
         Ca = mehler_cov(mu, C, R)
+        if d21 and l > 0 and mode in ("lin", "mem"):
+            # bivariate Edgeworth, leading order: dE[a_i a_k] = D21_ik phi_i Phi_k / (2 s_i) + D21_ki Phi_i phi_k / (2 s_k)
+            A1 = (_phi(t) / s_)[:, None] * beta[None, :] * D21
+            Ca = Ca + 0.5 * (A1 + A1.T)
         Ea2 = second_moment(mu, var, k3, k4) if mean_var == "edge" else (mu * mu + var) * ndtr(t) + mu * s_ * _phi(t)
         np.fill_diagonal(Ca, np.maximum(Ea2 - Ea * Ea, 1e-300))
         Cprev = C
@@ -118,3 +126,11 @@ def predict_lin_k3(W):
 
 def predict_mem(W):
     return predict(W, mode="mem")
+
+
+def predict_mem21(W):
+    return predict(W, mode="mem", d21=True)
+
+
+def predict_lin21(W):
+    return predict(W, mode="lin", d21=True)

@@ -1,0 +1,12 @@
+n=64
+z-layer  2: first chaos |b|^2/var 0.735   second chaos 2trQ^2/var 0.232
+z-layer  8: first chaos |b|^2/var 0.262   second chaos 2trQ^2/var 0.251
+z-layer 16: first chaos |b|^2/var 0.189   second chaos 2trQ^2/var 0.229
+n=256
+z-layer  2: first chaos |b|^2/var 0.733   second chaos 2trQ^2/var 0.234
+z-layer  8: first chaos |b|^2/var 0.337   second chaos 2trQ^2/var 0.241
+z-layer 16: first chaos |b|^2/var 0.232   second chaos 2trQ^2/var 0.197
+n=512
+z-layer  2: first chaos |b|^2/var 0.733   second chaos 2trQ^2/var 0.234
+z-layer  8: first chaos |b|^2/var 0.330   second chaos 2trQ^2/var 0.234
+z-layer 16: first chaos |b|^2/var 0.220   second chaos 2trQ^2/var 0.175
