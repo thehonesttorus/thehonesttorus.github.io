@@ -1,0 +1,11 @@
+{"mlp": 0, "K": null, "raw": 3.236327386491434e-08, "wick_products": 465.0, "slice_products": 360.0, "wall": 41.6}
+{"mlp": 0, "K": 1, "raw": 1.6833142840700578e-07, "wick_products": 465.0, "slice_products": 45.0, "wall": 36.8}
+{"mlp": 1, "K": 1, "raw": 2.189555232791983e-07, "wick_products": 465.0, "slice_products": 45.0, "wall": 37.4}
+{"mlp": 2, "K": 1, "raw": 1.7350022537970595e-07, "wick_products": 465.0, "slice_products": 45.0, "wall": 36.9}
+{"mlp": 0, "K": 2, "raw": 1.1520324260161964e-07, "wick_products": 465.0, "slice_products": 87.0, "wall": 37.4}
+{"mlp": 1, "K": 2, "raw": 1.372760777506557e-07, "wick_products": 465.0, "slice_products": 87.0, "wall": 38.6}
+{"mlp": 2, "K": 2, "raw": 1.1682261328177657e-07, "wick_products": 465.0, "slice_products": 87.0, "wall": 36.9}
+{"mlp": 0, "K": 4, "raw": 5.0395028332396254e-08, "wick_products": 465.0, "slice_products": 162.0, "wall": 37.0}
+{"mlp": 1, "K": 4, "raw": 6.291442512024481e-08, "wick_products": 465.0, "slice_products": 162.0, "wall": 34.7}
+{"mlp": 2, "K": 4, "raw": 6.926950779841578e-08, "wick_products": 465.0, "slice_products": 162.0, "wall": 34.7}
+DRIVER_DONE
