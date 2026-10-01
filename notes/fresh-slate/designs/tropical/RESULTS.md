@@ -108,3 +108,19 @@ E3b scanned windows, degrees and T vs T² polynomials over all 16 bench MLPs, *s
 The best family differs between the two widths, so the gain is not robust.
 
 Integrating dF/dT along the T-homotopy with the closure supplying the derivative returns G(0) + e(T_max), i.e. no gain. The small-T derivative is a wall-density functional (I4) and carries the same bias. **The temperature route carries at most ~2× and cannot be the lift.**
+
+## Stage Q at n = 1024 (measured directly, bench w1024_d16, 6 MLPs, N = 2e6, truth noise 3.6e-8)
+
+TCT-0: **raw 4.10e-6 ± 3.3e-7** (all-layer 2.3e-6). The bench Gaussian baseline is 4.3e-6. At 19 u (0.1 floor) the adjusted score is **4.1e-7**.
+
+The 64–128 width fit (n^{-0.66}, raw 7e-5) over-predicted by 17×: small-width scaling is pre-asymptotic (see the coordinator's calibration note).
+
+## R-E4: temperature bridge with a sampled residual (hybrid, e4_paired_temperature.py)
+
+F(0) = G(T) + E[a(x;0) − a(x;T)] + e(T), with the difference estimated from paired samples:
+
+- The per-sample variance of the paired difference, Vd(T), rises from 0.01 V0 to 0.6 V0 over T = 0.1 → 1.2, faster than e(T) falls. V0 is the plain per-sample variance.
+- At 3,277 pairs (the 0.1-floor budget) the best projected MSE is:
+  - w64: 1.5e-5 and 7.5e-6, against plain MC with the same budget at 1.7e-5 and 4.7e-6;
+  - w128: 2.1e-5 and 1.9e-5, against 2.4e-5 and 2.0e-5.
+- **No gain over plain sampling. Dead.**

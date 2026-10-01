@@ -148,7 +148,12 @@ At one upstream layer (k = l − 1), the transport correction for a jointly Gaus
 4. TCT-0, the only workable realisation, equals the Gaussian closure with an exact two-wall lift: raw 4.5e-4 (w64) and 2.8e-4 (w128) on the bench, projected raw ≈ 5–7e-5 at 1024, 19 u (R-Stage Q).
 5. Temperature as a deformation parameter makes the closure 400× more accurate at T ≈ 0.8, but the extrapolation back to T = 0 buys at most 1.6–2.5×, and only optimistically (R-E3).
 
-**Projected adjusted MSE at n = 1024 for the best tropical estimator:** (TCT-0 + T-extrapolation) ≈ 3e-6 (range 2e-6 to 7e-6). The cost is ≈ 20–40 u (several closure passes at different T), at the 0.1 floor. **This is roughly 2,000× above the bar of 1.6e-9. Not competitive.**
+**Measured at n = 1024** (bench w1024_d16, 6 MLPs):
+- TCT-0 is raw 4.10e-6 ± 3.3e-7 at 19 u, i.e. adjusted 4.1e-7. My earlier 64–128 projection of 7e-5 was 17× pessimistic, because small-width scaling is pre-asymptotic.
+- Adding the optimistic T-extrapolation gain (1.6–2.5× at 64–128; untested at 1024) gives at best raw ≈ 2–4e-6 and adjusted ≈ 2–4e-7. The cost is several closure passes, still at the 0.1 floor.
+- The temperature bridge with a sampled residual (E4) does no better than plain sampling.
+
+**Best tropical estimator: adjusted ≈ 4e-7 (range 2e-7 to 5e-7), about 250× above the bar of 1.6e-9. Not competitive.**
 
 **Charged to what.** Following the brief's rule 3, the failure is charged to the realisation, not to the theory. The tropical dictionary (fan, Newton polytopes, multiplicities, max-plus paths) describes the network exactly, but in *uncentred* coordinates:
 
@@ -165,6 +170,14 @@ The one small parameter the picture yields is n^{-1/2}: upstream walls are micro
 - (iii) a *centred* tropical calculus, i.e. a fan/Newton-polytope structure for a − (r/E r)·m, in which the cancellations are removed analytically. I know of no such construction.
 
 **Deciding experiment** (to reopen the route): measure the hot fraction and the I2 birth/transport error at n = 1024 on the layers where the closure error is born. If either shrinks with n, faster than the closure error itself, a tropical lift becomes perturbative there. Everything at 64–256 says it does not: R-E2 shows the cancellation is O(1) and grows with depth.
+
+**Reusable exact identities:**
+- (I1) Euler: a(x) = x·∇a(x), with ∇a piecewise constant on cones.
+- (I2) Tropical curvature: E a = E[Δa] = Σ_{k,m} E[δ(z_{k,m}) |∇z_{k,m}|² S_{←(k,m)}]. Equivalently, the total wall mass equals (n − 1) × the spherical mean. Verified at toy scale with a finite-variance kernel estimator, whose bias is O(h).
+- (I3) The exact two-wall (bivariate truncated-normal) lift via Owen's T, in `tct0.py`.
+- (I4) The temperature bridge: E softplus_T(z) = E relu(z) + (π²/6) T² p(0) + O(T⁴).
+  - Its practical content is that the closure error collapses ~400× by T ≈ 0.8 pre-activation std (w64).
+  - Neither extrapolation (≤ 2.5×) nor a sampled residual (none) transfers that accuracy back to T = 0.
 
 **What this stream hands to the others:**
 
