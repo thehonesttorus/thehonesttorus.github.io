@@ -121,3 +121,26 @@ The site formula is right; what is wrong is that a site's residual crosses a lat
 
 7. *MKV-2 built (`mkv2.py`).* Each site carries an orthonormal 3-function basis of its own latent (span{X, ξX, X²} with 1 and ξ removed). Crossing a ReLU is the second-order Gaussian conditional expectation given ξ_s, Galerkin-projected back onto the basis, with the He₁ part folded into the link. With the curvature switched off it reproduces `mkv.py` to 1e-14 (κ3, κ4, variance at every layer), so the reformulation is exact. `checks/check_repair_l3.py`: layer-3 κ3 slope 0.842 → 0.957 (width 64), the remaining 4 % being the layer-2 two-site floor. Through the chain (width 128, 2 MLPs) the curvature passage halves the error at layers 3–11 (e.g. layer 8: 1.9e-5 → 1.2e-5 and 1.3e-5 → 7.7e-6; all-layer MSE 1.41e-5 → 1.11e-5 and 1.47e-5 → 9.9e-6), but the final layer is unchanged (2.8e-5 → 3.1e-5; 3.4e-5 → 3.3e-5). At width 64 the repeated quadratic passage degrades the deepest layers (κ3 relative error 1.6 at layer 16 with curvature at all ages), and restricting it to young sources does not help the final layer.
 8. *Where the final-layer error sits.* Width 128, full history: 54–67 % of the final-layer squared error is in neurons with μ/σ > 2 (nearly always on, read out as their mean) and 22–25 % in 1 < μ/σ < 2. The final error is accumulated error in the *means* of earlier layers, carried coherently by the weights (the mean-direction spike), not a tail-readout failure. Mehler-series truncation is ruled out (K = 60 vs 300: identical). At depth 8–16 about half the neurons at width 128 have P(z > 0) < 0.02 or > 0.98 and the rms inter-neuron correlation grows to 0.35.
+
+## 8. Stage Q on the shared bench (`results/bench_*.json`, `results/sep_w128_d16.json`)
+
+Final-layer raw MSE (truth noise subtracted), 8 MLPs per width; Gaussian closure and plain MC at the floor are the bench calibrations.
+
+| estimator | w64 | w128 | fit | raw @1024 (2-point extrapolation) | cost @1024 |
+|---|---|---|---|---|---|
+| Gaussian closure | 4.5e-4 | 2.8e-4 | n^-0.66 | 7e-5 | ~19 u |
+| plain MC at the 0.1 floor (bench) | 6.7e-6 | 1.2e-5 | — | — | 102 u |
+| MKV w=4 | 2.5e-4 | 8.2e-5 | n^-1.63 | 2.8e-6 | 283 u |
+| MKV full history | 3.3e-4 | 5.2e-5 | n^-2.66 | 2.1e-7 | 550 u |
+| MKV-2 (curvature), full | NaN (diverges on one MLP) | 4.8e-5 | — | — | ≈ 500 u |
+
+**Separator test (the principle's own question: is there a better separator than the current layer?).** P3 says the price of a separator is the CMI across the cut. Measured price (w128 bench, 4 MLPs, final raw MSE): per-neuron projection of retired content 3.5e-4 (window 1) / 2.1e-4 (window 2); keeping the top-r transported directions of each retired source (in target space): r = 8 → 2.8e-4, r = 32 (= n/4) → 1.3e-4, r = 16 with window 2 → 1.2e-4; full history 5.8e-5. A quarter of all directions recovers only about half of the log gap. **No low-dimensional separator for old content was found**: consistent with the brief's "no low-rank representation below ≈ 0.3 n modes".
+
+**How the design carries the two convergent items.** (i) Non-Gaussian covariance: the (2,1)-slice correction of the field, summed site by site (5 products per source per layer; it is the single largest lever, 6e-4 → 1e-4 at width 64). (ii) Old third-order content: carried exactly as per-source transports (P, K), 2 products per source per layer; dropping it (window 1) loses 3–6× in final MSE at width 128.
+
+## 9. Verdict (provisional until the width-256 point)
+
+- **Projected adjusted MSE at n = 1024:** full-history MKV ≈ 2e-7 raw × 0.54 ≈ **1e-7 adjusted**, with an uncertainty of at least a decade either way: two widths only, and the 64→128 slope (n^-2.7) is steeper than any mechanism in §4 predicts, so it may flatten. Best case ~1e-8 adjusted; plausible 1e-7–1e-6. Window 4: ≈ 3e-6 raw × 0.28 ≈ 8e-7. At the 0.1 B floor (window 1) it is no better than Gaussian closure (≈ 4e-6 adjusted). The bar is 1.6e-9. **Not competitive by ≈ 2 decades.**
+- **Why, charged to the realisation first:** (a) the depth-cut CMI is large and has no cheap separator (§8), so history must be carried at O(L²) cost — 550 u; (b) every carried source needs ≈ 9 dense products per layer for its own cumulants plus the (2,1) covariance correction; (c) the remaining error at depth is accumulated error in the layer *means* (§7 item 8), which the site expansion only reaches through the covariance correction. The principle itself held where it was testable: the single-site formulas are exact for the ansatz (1e-16), the two-site κ4 trees and the per-site curvature passage are exactly the Markov-network corrections the CMI accounting points to, and P3 correctly predicted the price of each separator.
+- **What would make it competitive:** a ≈ 5× cheaper carried history at the same accuracy (e.g. batching all sources' (2,1) corrections into one product pair per layer instead of 5 per source), together with a width scaling at least as steep as n^-2 holding up to 1024. Both are needed: ≈ 100 u and raw ≈ 1e-8 at 1024.
+- **The deciding experiment:** full-history MKV at widths 256 and 512 on the bench (a 4-point width fit). If the slope stays ≤ −2.5, the next step is the cost reduction above; if it flattens to ≈ −1.5 (like window 4), the design is out.
