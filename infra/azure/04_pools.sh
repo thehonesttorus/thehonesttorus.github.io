@@ -19,8 +19,8 @@ $target = min($MAX_NODES_PER_POOL, need);
   "id": "$pool",
   "vmSize": "$VM_SIZE",
   "virtualMachineConfiguration": {
-    "imageReference": {"publisher": "microsoft-dsvm", "offer": "ubuntu-hpc", "sku": "2204", "version": "latest"},
-    "nodeAgentSKUId": "batch.node.ubuntu 22.04",
+    "imageReference": {"publisher": "microsoft-azure-batch", "offer": "ubuntu-server-container", "sku": "20-04-lts", "version": "latest"},
+    "nodeAgentSKUId": "batch.node.ubuntu 20.04",
     "containerConfiguration": {
       "type": "dockerCompatible",
       "containerImageNames": ["$ACR.azurecr.io/$IMAGE"],

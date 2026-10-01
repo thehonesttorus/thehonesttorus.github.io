@@ -43,8 +43,11 @@ Layout
 Order of operations (first time): `az login` → `00_quotas.sh` (edit `env.sh`) → `01_bootstrap.sh`
 → `02_build_image.sh` → `04_pools.sh` → `03_stage_dataset.sh` → `grid.py submit ...`.
 
-Status: written on 2026-10-01 against the documented `az batch` / harness interfaces, **not yet
-executed**, because this session's network policy denies management.azure.com. It is run end to
+Status: written on 2026-10-01 against the documented `az batch` / harness interfaces. The
+in-container part (`runner/run_shard.py` on a parquet shard with a bundled estimator, through
+`whest run --runner subprocess`, producing the JSON the collector reads) is **tested locally**;
+the Azure provisioning and `grid.py` are **not yet executed**, because this session's network
+policy denies management.azure.com. It is run end to
 end as soon as that host (and login.microsoftonline.com, graph.microsoft.com,
 *.batch.azure.com, *.blob.core.windows.net, *.azurecr.io) is allowed, or from any machine where
 `az login` works.
