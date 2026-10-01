@@ -87,9 +87,9 @@ B1 2.90–3.13, B2 2.89–2.99, B3 0.17–0.46, B4 0.8–1.0, B5 1.25–1.50, B6
 
 | width | leading Wick | closure without κ4 | leg-partition closure | closure, regenerated κ4 | fitted closure | fit coef B6 at layer 14 |
 |---|---|---|---|---|---|---|
-| 128 | 7–11 % | 9.4–12 % | 3.7–7.1 % | 6–8 % | 1.7–2.7 % | 1.05–1.2 |
-| 256 | 6.7–8.4 % | 5.7–7.4 % | 2.0–2.9 % | 4.5–5.9 % | 1.5–2.0 % | ≈ 1.3 |
-| 1024 (prelim.) | 4.0–4.5 % | 2.9–3.2 % | 0.8–1.0 % | 2.5–2.7 % | 0.7–0.9 % | 1.42 |
+| 128 | 7.0–10.3 % | 9.4–12.2 % | 3.7–7.1 % | 5.9–8.3 % | 1.7–3.0 % | 1.05–1.15 |
+| 256 | 6.6–8.4 % | 5.7–7.4 % | 2.0–2.9 % | 4.3–5.9 % | 1.55–2.04 % | 1.21–1.27 |
+| 1024 (prelim., 1 MLP) | 4.0–4.5 % | 2.85–3.17 % | 0.81–0.98 % | 2.46–2.70 % | 0.72–0.89 % | 1.42 |
 
 (the width-128 streaming numbers reproduce the dense oracle tables of competition-plan §3.1 on other MLPs:
 closure 3–7 %, fit 1.4–2.7 %, coefficient drift with depth.)
@@ -100,4 +100,4 @@ much faster than the leading Wick term (≈ n^(−0.25)); at width 1024 the *un-
 diagrams) is a finite-width effect: at 1024 the fitted coefficients equal the leg-partition ones within noise at
 every depth, and the fit buys only ~0.1 point over the derived closure. (3) The exact (2,1,1) κ4 slice is
 essential: without it 3 %, with the r = 1 regeneration u_i C_jk 2.5–2.7 % (above the bar), exact 0.9 %. The
-regeneration's relative capture of the κ4 term gets *worse* with width (128: removes ~40 % of the gap, 1024: ~20 %).
+regeneration's relative capture of the κ4 term gets *worse* with width: of the gap between "no κ4" and "exact κ4" it closes ≈ 55 % at width 128, ≈ 33 % at 256 and ≈ 20 % at 1024.
