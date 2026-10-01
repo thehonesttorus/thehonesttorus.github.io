@@ -7,7 +7,7 @@ Raw output of [`../../oracle_k3.py`](../../oracle_k3.py) on local atlases built 
 | `width32_single_k4.txt`, `width32_k4modes.txt` | seed 770000, width 32, depth 5, N = 4e5 | single-atlas ladder with the (2,1,1) fourth-cumulant slice; the slice as a mode family |
 | `width128_oracle_single_mlp0.txt` | dev128 MLP 0 (ralph-sutton), seed 1, N = 5e5 | single-atlas ladder without the fourth-cumulant slice |
 | `width128_oracle_pair_mlp{0,1}.txt` | seeds 1 vs 2 | noise-corrected cross-evaluation without the fourth-cumulant slice |
-| `width128_oracle_single_k4_mlp0.txt` | seed 3 | single-atlas ladder with the slice (closure, fit, regeneration columns) |
+| `width128_oracle_single_k4_mlp{0,1}.txt` | seed 3 | single-atlas ladder with the slice (closure, fit, regeneration columns); the two MLPs' fitted coefficient profiles agree within ~0.1 for the (2,1,1), w3-D21 and rho^3 terms at every layer |
 | `width128_oracle_pair_k4_mlp{0,1}.txt` | seeds 3 vs 4 | noise-corrected cross-evaluation with the slice |
 | `width128_oracle_k4modes_mlp{0,1}.txt` | seed 3 | the (2,1,1) slice as a family of covariance-response modes |
 
