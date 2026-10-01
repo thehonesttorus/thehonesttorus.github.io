@@ -347,6 +347,11 @@ EA_B5 = float(_os.environ.get("EA_B5", "0"))     # closure B5 (K22 hyperedge + e
                                                  # Yt += EA_B5 * 0.5 d(w2) wk4m d(w3) as 2 thin columns
 EA_PS = float(_os.environ.get("EA_PS", "0"))     # dG += EA_PS/2 * exact transported diagonal of the Gaussian
                                                  # path/star kappa4 births of the previous layer (EscAI direct_diagonal)
+EA_XSL = float(_os.environ.get("EA_XSL", "0"))   # use-side (2,2) and (3,1) slices: mix x of the exact transport of the
+                                                 # previous post-ReLU (4)+(2,2) kappa4 slices with (1-x) of the regenerated
+EA_XNORM = _os.environ.get("EA_XNORM", "0") == "1"  # EA_XDIAG: rescale the exact term to the mean of (W*W) g
+EA_XSLW = int(_os.environ.get("EA_XSLW", "0"))   # 0 both slices, 1 only (3,1), 2 only (2,2)
+EA_XD4 = _os.environ.get("EA_XD4", "0") == "1"   # EA_XDIAG variant without the (2,2) matmul
 EA_FEED = float(_os.environ.get("EA_FEED", "1")) # scale of the K4->K3 feed (birth X3/Y3 and the u column)
 NO_WK431 = _os.environ.get("V17_NO_WK431", "0") == "1"
 NO_REGEN = _os.environ.get("V17_NO_REGEN", "0") == "1"
@@ -753,8 +758,18 @@ class Estimator(BaseEstimator):
                         # V25: adaptive lambda. dG is affine in lam: t_g + lam * t_v.
                         t_g = WW @ g_prev
                         if EA_XDIAG != 0.0 and kx_prev is not None:
-                            W2K = WW @ kx_prev[1]
-                            t_x = ((WW * WW) @ kx_prev[0] + fnp.sum(W2K * WW, axis=1) * 3.0) * 0.5
+                            if EA_XD4:
+                                # cheap: exact (4)-slice transport only, the (2,2) part stays projected
+                                t_x = t_g + (WW * WW) @ (kx_prev[0] * 0.5) - WW @ (kx_prev[0] * float(st["cA"]))
+                            else:
+                                W2K = WW @ kx_prev[1]
+                                t_x = ((WW * WW) @ kx_prev[0] + fnp.sum(W2K * WW, axis=1) * 3.0) * 0.5
+                            if _os.environ.get("EA_XDBG"):
+                                print("XDBG", li, float(fnp.mean(t_g)), float(fnp.mean(t_x)),
+                                      float(fnp.std(t_g) / fnp.mean(t_g)), float(fnp.std(t_x) / fnp.mean(t_x)),
+                                      float(fnp.mean(var - WW @ var_prev)), float(lam_prev), flush=True)
+                            if EA_XNORM:
+                                t_x = t_x * (fnp.mean(t_g) / fnp.mean(t_x))
                             t_g = t_g * (1.0 - EA_XDIAG) + t_x * EA_XDIAG
                         if EA_PS != 0.0 and ps_prev is not None:
                             Cq, q1, q2, q3 = ps_prev
@@ -776,6 +791,19 @@ class Estimator(BaseEstimator):
                     g22c = fnp.reshape(dG * (METRIC_C / 6.0), (-1, 1))
                     wk4m = _zero_diag(g22c + g22c.T)
                     wk431 = None if trim else C_off * (0.5 * METRIC_C * lam_prev)
+                    if EA_XSL != 0.0 and kx_prev is not None and not trim:
+                        k4p, k22p = kx_prev
+                        W2 = WW
+                        W2K = W2 @ k22p
+                        x22 = (W2 * fnp.reshape(k4p, (1, -1))) @ W2.T + (W2K @ W2.T) * 2.0
+                        x31 = (W2 * W * fnp.reshape(k4p, (1, -1))) @ W.T + ((W2K * W) @ W.T) * 6.0
+                        if EA_XSLW != 1:
+                            wk4m = _zero_diag(wk4m * (1.0 - EA_XSL) + x22 * EA_XSL)
+                        if EA_XSLW != 2:
+                            wk431 = _zero_diag(wk431 * (1.0 - EA_XSL) + x31.T * EA_XSL)   # column = tripled index
+                        if _os.environ.get("EA_XDBG"):
+                            print("XSL", li, float(fnp.mean(wk4m)), float(fnp.mean(x22)), float(fnp.linalg.norm(x22)),
+                                  float(fnp.linalg.norm(C_off * lam_prev)), float(fnp.linalg.norm(x31)), flush=True)
                     if _os.environ.get("V17_DEBUG", "0") == "1":
                         DEBUG.append(dict(layer=li, dG=dG, g_prev=g_prev, var_prev=var_prev,
                                           lam=lam_prev, var=var, D3=D3, D21=D21))
@@ -1100,7 +1128,7 @@ class Estimator(BaseEstimator):
             rows.append(mu)
             if EA_DF != 0.0:
                 df_hist.append((W, w1, w2, K4v))
-            if EA_XDIAG != 0.0:
+            if EA_XDIAG != 0.0 or EA_XSL != 0.0:
                 kx_prev = (K4v, K22)
             if EA_PS != 0.0:
                 ps_prev = (C_off, w1, w2, W_all[:, self._i31])
