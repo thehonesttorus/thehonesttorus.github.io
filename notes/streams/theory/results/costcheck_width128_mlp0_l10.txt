@@ -1,0 +1,8 @@
+  WICK   rel.diff 11-matmul path transport vs dense n^4 transport 7.5e-16   (fast 0.009s)
+  B1     rel.diff 11-matmul path transport vs dense n^4 transport 7.9e-16   (fast 0.001s)
+  B2     rel.diff 11-matmul path transport vs dense n^4 transport 6.9e-16   (fast 0.002s)
+  B3     rel.diff 11-matmul path transport vs dense n^4 transport 7.6e-16   (fast 0.001s)
+  B5     rel.diff 11-matmul path transport vs dense n^4 transport 1.1e-06   (fast 0.001s)
+  S5c    rel.diff 11-matmul path transport vs dense n^4 transport 7.2e-16   (fast 0.002s)
+  S4d    rel.diff 11-matmul path transport vs dense n^4 transport 7.8e-16   (fast 0.002s)
+  LEAF   rel.diff 11-matmul path transport vs dense n^4 transport 7.3e-16   (fast 0.002s)

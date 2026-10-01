@@ -106,11 +106,25 @@ TERM_INFO = {
     "S9a": ("2new", "k5", 0.75, "kappa5 (2,2,1) slice kappa5_iijjk: w2_i w2_j Phi_k"),
     "S9b": ("2new", "k5", 0.5, "kappa5 (3,1,1) slice kappa5_iiijk: w3_i Phi_j Phi_k"),
     "S10": ("2new", "k6", 0.125, "kappa6 (2,2,2) slice kappa6_iijjkk: w2 w2 w2"),
+    # leaf-resummed closure (section 5 of REPORT.md): every diagram in which some vertex k is attached by a single
+    # C edge to i sums to Phi_k C_ik Gamma_ij, Gamma_ij = Cov(1[z_i>0], a_j) (exact pair object); diagrams with two
+    # such leaves on one center are counted twice and are subtracted exactly with the true density p_i(0) = E relu''.
+    "LEAF": ("R", "leaf", 6.0, "sym3[Phi_k C_ik Gamma_ij], Gamma_ij = Cov(1[z_i>0], relu(z_j))  (all C-leaf diagrams)"),
+    "TWOLEAF": ("R", "leaf", -1.0, "Wick form with the true density p_i(0) at the center (double-counted two-leaf class)"),
+    "TWOLEAFe": ("R", "leaf", -1.0, "same with the Edgeworth density w2 + D3/6 w5 + K4/24 w6"),
+    "TCL": ("R", "tclass", 1.0, "kappa3_ijk (Phi_i Phi_j Phi_k + sum_pairs Phi_k Cov(1[z_i>0], 1[z_j>0])): every diagram with one "
+            "kappa3_ijk hyperedge and the rest on one pair (B0, B7, S3a1, S4b, S7a, ... to all orders); needs gate_GG"),
+    "G3t": ("1", "gauss-nonleaf", 1.0, "Gaussian rho^3 triangle C_ij C_jk C_ik: w2 w2 w2"),
+    "G4a": ("2", "gauss-nonleaf", 0.75, "Gaussian rho^4 C_ij^2 C_jk^2: w2_i w4_j w2_k"),
+    "G4b": ("2", "gauss-nonleaf", 1.5, "Gaussian rho^4 C_ij^2 C_jk C_ik: w3_i w3_j w2_k"),
 }
+NONLEAF1 = ["B6", "B7", "G3t"]
+NONLEAF2 = ["S3a1", "S3a2", "S3b1", "S3b2", "S3b3", "S4a", "S4b", "S4c", "S4d", "S4e", "S5a", "S5b", "S6a", "S6b",
+            "S7a", "S7b", "S7c", "S8", "G4a", "G4b"]
 FIRST = ["B0", "B1", "B2", "B3", "B4", "B5", "B6"]          # oracle_k3.residual_basis order
 ORACLE_COEF = [1.0, 3.0, 3.0, 1.0, 1.0, 1.5, 1.5]            # oracle_k3.CLOSURE_COEF (B3 overcounted by 2)
 LEG_COEF = [TERM_INFO[t][2] for t in FIRST]                  # corrected: B3 = 0.5
-SECOND_AVAIL = [t for t, v in TERM_INFO.items() if v[0] == "2" and t != "B3"]
+SECOND_AVAIL = [t for t, v in TERM_INFO.items() if v[0] == "2" and t not in ("B3", "G4a", "G4b")]
 SECOND_NEW = [t for t, v in TERM_INFO.items() if v[0] == "2new"]
 
 
@@ -174,6 +188,18 @@ def terms(o, names=None):
         add("S7b", lambda: sym3(E("i,j,k,ij,ik->ijk", w4, w2, Phi, K22, Do)))
         add("S7c", lambda: sym3(E("i,j,k,ij,ki->ijk", w3, w2, w2, K22, Do)))
         add("S8", lambda: sym3(E("i,j,k,ij,jk->ijk", w2, w4, w2, K22, K22)))
+    add("G3t", lambda: E("i,j,k,ij,jk,ik->ijk", w2, w2, w2, Co, Co, Co))
+    add("G4a", lambda: sym3(E("i,j,k,ij,jk->ijk", w2, w4, w2, Co * Co, Co * Co)))
+    add("G4b", lambda: sym3(E("i,j,k,ij,jk,ik->ijk", w3, w3, w2, Co * Co, Co, Co)))
+    if "GG" in o:
+        Gc = offdiag(o["GG"] - np.outer(Phi, Phi))
+        add("TCL", lambda: Td * (E("i,j,k->ijk", Phi, Phi, Phi) + E("k,ij->ijk", Phi, Gc) + E("i,jk->ijk", Phi, Gc)
+                                 + E("j,ik->ijk", Phi, Gc)))
+    if "Gam" in o:
+        add("LEAF", lambda: sym3(E("k,ik,ij->ijk", Phi, Co, offdiag(o["Gam"]))))
+        add("TWOLEAF", lambda: ok.wick_model(C, Phi, o["w2hat"], np.zeros_like(T)))
+        if K4f is not None:
+            add("TWOLEAFe", lambda: ok.wick_model(C, Phi, w2 + D3 / 6 * w5 + K4 / 24 * w6, np.zeros_like(T)))
     if "P" in o:
         add("S9a", lambda: sym3(E("i,j,k,ijk->ijk", w2, w2, Phi, o["P"])))
     if "Q" in o:
@@ -191,10 +217,18 @@ def wick_gauss(o):
 # ---------------------------------------------------------------------------------------------------------------
 # objects from atlases
 # ---------------------------------------------------------------------------------------------------------------
+def _attach_pair(o, pair, l, h_index=1):
+    if pair is not None:
+        o["Gam"] = pair["Gam"][l]
+        o["w2hat"] = pair["w2hat"][h_index, l]
+    return o
+
+
 class Atlas:
     """moment_atlas_np.py atlas (raw moments) with the big tensors loaded once."""
 
-    def __init__(self, path):
+    def __init__(self, path, pairfile=None):
+        self.pair = dict(np.load(pairfile)) if pairfile else None
         z = np.load(path)
         self.path = path
         self.files = z.files
@@ -202,6 +236,7 @@ class Atlas:
         self.N = int(z["n_samples"])
         for k in ("pre_s", "post_s", "gate_p", "pre_M11", "pre_M21", "pre_M22", "post_M11"):
             setattr(self, k, z[k])
+        self.gate_GG = z["gate_GG"] if "gate_GG" in z.files else None
         self.pre_M3 = z["pre_M3"]; self.post_M3 = z["post_M3"]
         self.pre_M211 = z["pre_M211"] if "pre_M211" in z.files else None
 
@@ -218,6 +253,8 @@ class Atlas:
         n = len(mu); idx = np.arange(n)
         o = dict(mu=mu, var=var, C=C, T=T, K3a=K3a, D21=T1[idx, idx, :].copy(), Phi=self.gate_p[l].astype(np.float64),
                  w=relu_w(mu, var))
+        if self.gate_GG is not None:
+            o["GG"] = self.gate_GG[l].astype(np.float64)
         if self.pre_M211 is not None:
             M21 = self.pre_M21[l].astype(np.float64); M3 = self.pre_M3[l]; M211 = self.pre_M211[l]
             Eu2uu = (M211 - np.einsum("k,ij->ijk", mu, M21) - np.einsum("j,ik->ijk", mu, M21) + np.einsum("j,k,i->ijk", mu, mu, m2)
@@ -226,13 +263,14 @@ class Atlas:
                      + np.einsum("i,jk->ijk", mu ** 2, C))
             Cf = C.copy(); np.fill_diagonal(Cf, var)
             o["K4f"] = Eu2uu - np.einsum("i,jk->ijk", var, Cf) - 2 * np.einsum("ij,ik->ijk", Cf, Cf)
-        return o
+        return _attach_pair(o, self.pair, l)
 
 
 class Atlas56:
     """atlas_k56.py atlas (central moments, with the kappa5 / kappa6 slices)."""
 
-    def __init__(self, path):
+    def __init__(self, path, pairfile=None):
+        self.pair = dict(np.load(pairfile)) if pairfile else None
         z = np.load(path)
         self.path = path
         self.W = z["weights"].astype(np.float64)
@@ -249,7 +287,7 @@ class Atlas56:
                  P=all_distinct(cm.cumulant("iijjk")), Q=all_distinct(cm.cumulant("iiijk")), S=all_distinct(cm.cumulant("iijjkk")),
                  Phi=d["gate_p"][l].astype(np.float64), w=relu_w(mu, var), K3a=d["post_m3"][l],
                  D21=d["pre_m3"][l + 1][idx, idx, :].copy())
-        return o
+        return _attach_pair(o, self.pair, l)
 
 
 class CentralMoments:
@@ -328,6 +366,76 @@ def transport(X, W):
     return np.einsum("ia,iab->ab", W, T2)
 
 
+# ---------------------------------------------------------------------------------------------------------------
+# cheap transports of path-shaped terms (cost accounting, section 4 of REPORT.md)
+# ---------------------------------------------------------------------------------------------------------------
+# every term whose factors live on two of the three vertex pairs is a PATH  X_ijk = A_ik B_jk  (center k; the vertex
+# weights are absorbed: A = diag(a) M diag(c), B = diag(b) N).  Its symmetrised all-distinct transport needs only
+# n x n matmuls:  T(sym3 X) = (1/3)(R_center + R_end_i + R_end_j) - (i = j coincidence slice), with
+#   G = W^T A, H = W^T B                                   2 matmuls
+#   R_center = (G o H) W                                   1
+#   R_end_i  = (A (W o H^T))^T W   ,  R_end_j likewise      2 + 2
+#   coincidence slice Y_ik = A_ik B_ik: (W o W)^T Y W, (W o (Y W))^T W     2 + 2
+# = 11 matmuls (11 units at n = 1024), and several path terms sharing one arm B cost the same 11 together.
+PATH = {  # name: (A_ik, B_jk) builders on the objects (center k carries its weight inside A)
+    "WICK": lambda o, q: (q["Phi"][:, None] * q["Co"] * q["w2"][None, :], q["Phi"][:, None] * q["Co"]),
+    "B1": lambda o, q: (q["w2"][:, None] * q["Do"] * q["w2"][None, :], q["Phi"][:, None] * q["Co"]),
+    "B2": lambda o, q: (q["Phi"][:, None] * q["Do"].T * q["w3"][None, :], q["Phi"][:, None] * q["Co"]),
+    "B3": lambda o, q: (q["Phi"][:, None] * q["Co"] * (q["w5"] * q["D3"])[None, :], q["Phi"][:, None] * q["Co"]),
+    "B5": lambda o, q: (q["w2"][:, None] * q["K22"] * q["w3"][None, :], q["Phi"][:, None] * q["Co"]),
+    "S5c": lambda o, q: (q["Phi"][:, None] * q["V"].T * q["w4"][None, :], q["Phi"][:, None] * q["Co"]),
+    "S4d": lambda o, q: (q["Phi"][:, None] * q["Do"].T * q["w4"][None, :], q["Phi"][:, None] * q["Do"].T),
+    # the whole C-leaf class in one path transport: center i, arms Phi_k C_ik and Gamma_ij
+    "LEAF": lambda o, q: (q["Phi"][:, None] * q["Co"], offdiag(o["Gam"]).T),
+}
+
+
+def path_objects(o):
+    n = len(o["mu"]); idx = np.arange(n)
+    Dm = o["T"][idx, idx, :]
+    q = dict(Phi=o["Phi"], Co=offdiag(o["C"]), Do=offdiag(Dm), D3=np.diag(Dm).copy())
+    for d in range(2, 7):
+        q[f"w{d}"] = o["w"][d]
+    if "K4f" in o:
+        q["K22"] = offdiag(o["K4f"][:, idx, idx]); q["V"] = offdiag(o["K4f"][idx, idx, :])
+    return q
+
+
+def transport_path(A, B, W):
+    """T(all_distinct(sym3[A_ik B_jk])) with 11 n x n matmuls (no n^3 object)."""
+    G = W.T @ A; H = W.T @ B                       # [a, k]
+    Rc = (G * H) @ W
+    Ri = (A @ (W * H.T)).T @ W
+    Rj = (B @ (W * G.T)).T @ W
+    Y = A * B                                      # coincidence slice i = j:  X_iik = A_ik B_ik
+    Yc = (W * W).T @ Y @ W
+    P = Y @ W
+    Ye = (W * P).T @ W                             # b on one of the coinciding ends (both ends give the same)
+    return ((Rc + Ri + Rj) - (Yc + 2 * Ye)) / 3.0
+
+
+def cost_check(path, l=10, pairfile=None):
+    """dense n^4 transport of the path terms vs the 11-matmul formula, on one atlas layer."""
+    A = Atlas(path, pairfile); o = A.objects(l); q = path_objects(o); W = A.W[l + 1]
+    TT = terms(o)
+    for name, fn in PATH.items():
+        if name == "LEAF" and "Gam" not in o:
+            continue
+        Am, Bm = fn(o, q)
+        t0 = time.time(); fast = transport_path(Am, Bm, W); t1 = time.time()
+        if name == "WICK":
+            dense_t = ok.wick_model(o["C"], o["Phi"], o["w"][2], np.zeros_like(o["T"]))
+            dense = transport(dense_t, W)
+            fast = 3 * fast     # the Wick term is the sum of the 3 labelled diagrams = 3 sym3[...]
+        else:
+            dense = transport(TT[name], W)
+            # closure2 tensors are sym3[X] with X written on (i, j, k); PATH writes the same diagram with the
+            # center on k, so the two must agree up to the term's symmetry factor
+            pass
+        t2 = time.time()
+        print(f"  {name:6s} rel.diff 11-matmul path transport vs dense n^4 transport {rel(fast, dense):.1e}   (fast {t1 - t0:.3f}s)")
+
+
 def corrected(e, en):
     return float(np.sqrt(max(e * e - en * en, 0.0)))
 
@@ -365,8 +473,8 @@ def analyse_pair(A, B, layers, out=print, both=True):
             Tw_gate = transport(Kw_gate, Wn)
             res[tag] = dict(o1=o1, TT=TT, Kd=Kd, K3m=K3m, D21t=D21t, en=en, Tr=Tr, base_m=base_m,
                             Tw_gauss=Tw_gauss, Kw_gate=Kw_gate, Tw_gate=Tw_gate)
-        rows.append((l, res, time.time() - t0))
         yield l, res
+        del res
 
 
 def summarise(l, res, Wn, emit):
@@ -412,6 +520,34 @@ def summarise(l, res, Wn, emit):
         for g, ts in groups.items():
             o["+" + g] = ev(cl1p + sum(TERM_INFO[t][2] * Tr[t] for t in ts))
             o["-" + g] = ev(cl2 + (sum(TERM_INFO[t][2] * Tr[t] for t in new) if new else 0) - sum(TERM_INFO[t][2] * Tr[t] for t in ts))
+        if "LEAF" in Tr:
+            newl = [t for t in SECOND_NEW if t in Tr]
+            lr1 = base + 6.0 * Tr["LEAF"] + Tr["B0"] + sum(TERM_INFO[t][2] * Tr[t] for t in NONLEAF1)
+            o["LR1"] = ev(lr1 - Tr["TWOLEAF"])
+            o["LR1e"] = ev(lr1 - Tr["TWOLEAFe"])
+            lr2 = sum(TERM_INFO[t][2] * Tr[t] for t in NONLEAF2)
+            o["LR2"] = ev(lr1 - Tr["TWOLEAF"] + lr2)
+            o["LR2e"] = ev(lr1 - Tr["TWOLEAFe"] + lr2)
+            if newl:
+                o["LR2+k56"] = ev(lr1 - Tr["TWOLEAF"] + lr2 + sum(TERM_INFO[t][2] * Tr[t] for t in newl))
+            # free refit of the leaf-resummed basis (theory: LEAF 6, TWOLEAF -1, B6 1.5, B7 3, G3t 1)
+            TT0 = r["TT"]
+            fixed2 = sum(TERM_INFO[t][2] * TT0[t] for t in NONLEAF2) + (sum(TERM_INFO[t][2] * TT0[t] for t in newl) if newl else 0)
+            lb = ["LEAF", "TWOLEAF", "B6", "B7", "G3t"]
+            cLR, _ = fit_tensor(r["Kd"] - TT0["B0"] - fixed2, [TT0[t] for t in lb])
+            o["fitLR"] = ev(base + Tr["B0"] + lr2 + (sum(TERM_INFO[t][2] * Tr[t] for t in newl) if newl else 0)
+                            + sum(c * Tr[t] for c, t in zip(cLR, lb)))
+            o["coefLR"] = dict(zip(lb, cLR))
+            if "TCL" in Tr:
+                lrt1 = base + 6.0 * Tr["LEAF"] - Tr["TWOLEAF"] + Tr["TCL"] + 1.5 * Tr["B6"] + Tr["G3t"]
+                o["LRT1"] = ev(lrt1)
+                rest2 = [t for t in NONLEAF2 if t not in ("S3a1", "S4b", "S7a")]
+                o["LRT2"] = ev(lrt1 + sum(TERM_INFO[t][2] * Tr[t] for t in rest2))
+                lbt = ["LEAF", "TWOLEAF", "TCL", "B6", "G3t"]
+                fixt = sum(TERM_INFO[t][2] * TT0[t] for t in rest2)
+                cT, _ = fit_tensor(r["Kd"] - fixt, [TT0[t] for t in lbt])
+                o["fitLRT"] = ev(base + sum(TERM_INFO[t][2] * Tr[t] for t in rest2) + sum(c * Tr[t] for c, t in zip(cT, lbt)))
+                o["coefLRT"] = dict(zip(lbt, cT))
         # single-term ablations: cl1+B7 plus one term, cl2 minus one term
         o["add1"] = {t: ev(cl1p + TERM_INFO[t][2] * Tr[t]) for t in sec + new}
         o["drop1"] = {t: ev(cl2 + (sum(TERM_INFO[u][2] * Tr[u] for u in new) if new else 0) - TERM_INFO[t][2] * Tr[t]) for t in sec + new}
@@ -463,8 +599,8 @@ def fmt_layer(l, s):
     return avg
 
 
-def main_pair(pa, pb, layers, outpath, k56=False):
-    A = (Atlas56 if k56 else Atlas)(pa); B = (Atlas56 if k56 else Atlas)(pb)
+def main_pair(pa, pb, layers, outpath, k56=False, pairs=(None, None)):
+    A = (Atlas56 if k56 else Atlas)(pa, pairs[0]); B = (Atlas56 if k56 else Atlas)(pb, pairs[1])
     W = A.W
     f = open(outpath, "w") if outpath else None
 
@@ -477,6 +613,7 @@ def main_pair(pa, pb, layers, outpath, k56=False):
     allrows = []
     for l, res in analyse_pair(A, B, layers):
         s = summarise(l, res, W[l + 1], emit)
+        res.clear()
         avg = fmt_layer(l, s)
         allrows.append((l, s, avg))
         if outpath:
@@ -486,6 +623,12 @@ def main_pair(pa, pb, layers, outpath, k56=False):
         cols = ["noise", "wick", "cl1_oracle", "cl1", "cl1+B7", "cl2"] + (["cl2+k56"] if "cl2+k56" in avg else []) + ["fit1", "fit2", "fit3", "fitall"]
         emit(f"L{l:02d} " + " ".join(f"{c}={avg[c]:.4f}" for c in cols))
         emit(f"     tensor R2: cl1+B7 {avg['tensR2_cl1+B7']:.4f}  cl2 {avg['tensR2_cl2']:.4f}")
+        if "LR1" in avg:
+            emit("     leaf-resummed: " + " ".join(f"{c}={avg[c]:.4f}" for c in ("LR1", "LR1e", "LR2", "LR2e", "LR2+k56", "fitLR", "LRT1", "LRT2", "fitLRT") if c in avg)
+                 + "   coefLR AB: " + " ".join(f"{t}:{c:+.3f}" for t, c in s["AB"]["coefLR"].items()))
+            if "coefLRT" in s["AB"]:
+                emit("     coefLRT AB (theory LEAF 6, TWOLEAF -1, TCL 1, B6 1.5, G3t 1): "
+                     + " ".join(f"{t}:{c:+.3f}" for t, c in s["AB"]["coefLRT"].items()))
         emit("     groups (+g on cl1+B7 | -g from cl2): " + "  ".join(f"{k[1:]}:{avg[k]:.4f}|{avg['-' + k[1:]]:.4f}" for k in avg if k.startswith("+")))
         for tag in ("AB", "BA"):
             emit(f"     coef {tag} fit1 (B0..B6): " + " ".join(f"{c:+.3f}" for c in s[tag]["coef1"]))
@@ -524,13 +667,16 @@ if __name__ == "__main__":
     pos = []
     i = 0
     while i < len(args):
-        if args[i] in ("--layers", "--out"):
+        if args[i] in ("--layers", "--out", "--pairfiles"):
             opt[args[i]] = args[i + 1]; i += 2
         else:
             pos.append(args[i]); i += 1
     if pos and pos[0] == "--selftest":
         import toy_diagrams
         toy_diagrams.check_closure2_identity()
+    elif pos and pos[0] == "--costcheck":
+        cost_check(pos[1], int(opt.get("--layers", 10)), opt.get("--pairfiles"))
     elif pos and pos[0] in ("--pair", "--pair56"):
         L = np.load(pos[1])["weights"].shape[0]
-        main_pair(pos[1], pos[2], parse_layers(opt.get("--layers"), L), opt.get("--out"), k56=(pos[0] == "--pair56"))
+        pf = tuple(opt["--pairfiles"].split(",")) if "--pairfiles" in opt else (None, None)
+        main_pair(pos[1], pos[2], parse_layers(opt.get("--layers"), L), opt.get("--out"), k56=(pos[0] == "--pair56"), pairs=pf)

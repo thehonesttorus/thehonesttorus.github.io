@@ -7,15 +7,15 @@
 ## 0. Summary
 
 1. **Nobody in the top 5 has disclosed a method.** J2W, marius_binner, Luna, suliman_tadros and mliston have published nothing (forum, GitHub, Hugging Face, blogs). What is new is indirect: the leaders' trajectory, a top-7 team (AndreasHad04) describing its representation, and a third team's (EscAI) cost anatomy of the leaders.
-2. **The largest public research drop since 504aldo** is team EscAI's MIT repository `corpaci/ARCwhitebox` (29 Sep, board rank 42–45, adjusted 5.0e-9). It contains three findings that bear directly on our plan:
-   - **Covariance-response modes tested and killed.** They wrote out "covariance-response modes" with symmetric-matrix transport `B ← WᵀBW` (the exact idea in our Line C) and killed it on 28 Sep at a preregistered gate.
+2. **The largest public research drop since 504aldo** is team EscAI's MIT repository `corpaci/ARCwhitebox` (29 Sep; its README cites submission 332675 at rank 42, adjusted 5.0e-9; on the 1 Oct board EscAI is 43=, adjusted 4.8e-9, raw 2.19e-8, util 0.2209, last submitted 30 Sep). It contains three findings that bear directly on our plan:
+   - **Covariance-response modes specified and killed.** They wrote out "covariance-response modes" with symmetric-matrix transport `B ← WᵀBW` (the exact idea in our Line C) and killed the expansion on 28 Sep at a preregistered gate (G0). The gate ran on a skeleton with no modes (A = 0) and failed on in-place consumption of the born (2,1) slice; the mode-seed gate (G1) was never run. The evidence that bears on the modes themselves is a follow-up probe: congruent (`WᵀBW`-type) transport of the born content gives |cos| ≤ 0.008 against the true slice.
    - **The error lives in the pre-activation marginals.** In an oracle that replaces pre-activation variance, κ₃ and joint κ₄ at every layer, raw MSE drops about 20× (2.3e-8 to 1.2e-9). Variance alone gives −40%.
    - **504aldo's κ₄ gain is cancellation.** His fitted λ is about 3× the physical value; on an exact base the same channel hurts.
 3. **Rules: one substantive clarification and no other changes.**
    - **Fair accounting (16 Sep).** The starter kit and flopscope docs now say metering does not establish eligibility, and the Sponsor may "invalidate, re-score, or disqualify" any submission whose benefit "derives from how computation is accounted", including during prize review. Packing is banned explicitly.
    - **Strassen confirmed permitted (11 Sep).** Strassen–Winograd as flopscope ops is allowed with no recursion limit.
    - **No version changes.** flopscope 0.12.1 and whestbench 0.16.1 are still the latest on PyPI; there has been no library release since 29 Aug (the evaluator reported whestbench 0.16.0 on 29 Sep).
-   - **Dates unchanged.** Team freeze is 2 Oct, close 17 Oct, write-ups 24 Oct. **Winners are announced 15 Nov** (Rules §6, as quoted on the forum).
+   - **Dates unchanged.** Team freeze is 2 Oct, close 17 Oct, write-ups 24 Oct. **Winners are announced 15 Nov** (stated by a participant on the forum, who cites Rules §6 for the 14-day document window; the organizer's reply does not contradict it).
 4. **Grader traps confirmed on 29 Sep:**
    - The smoke test still runs an MLP deeper than 16 layers.
    - `x.shape = ...` works locally but raises on the grader's flopscope-client.
@@ -56,7 +56,7 @@ This was already in our landscape note and is restated because §1.1 postdates i
 
 > "`whest validate --estimator ...` predicts on `sample_mlp(width=4, depth=2)` … so it passes. `whest run --split mini` uses the graded 1024 x 16 shape, so it passes."
 
-Our plan already probes depth 32 and width-4/depth-2; this confirms the trap is still live on 29 Sep with whestbench 0.16.0.
+Our plan already probes depth 32 and width-4/depth-2; this confirms the trap is still live on 29 Sep with whestbench 0.16.0. Corroboration (ours, from metadata only): the organizers' Hugging Face dataset [`aicrowd/whestbench-smoke-mlp`](https://huggingface.co/datasets/aicrowd/whestbench-smoke-mlp) (last updated 27 Jul, before Phase 2) holds one row in an 8.5 MB parquet file. That matches one 256×32 float32 MLP (256²·32·4 B = 8.4 MB), not 1024×16 (67 MB), so the smoke MLP is probably still the Phase 1 shape. Rows were not read.
 
 [flopscope #267](https://github.com/AIcrowd/flopscope/issues/267), AndreasHad04, 29 Sep:
 
@@ -80,7 +80,7 @@ Three of these (#264, #265, #267) are stale symmetry tags that make a later cont
 ### 1.5 Timeline, prizes and logistics
 
 - **Dates are unchanged.** The latest statement remains the 18197 announcement (23 Aug): team freeze **2 Oct 23:59 UTC**, close **17 Oct 23:59 UTC**, write-ups **24 Oct 23:59 UTC**.
-- **Winners are announced on 15 November.** oleksandr_barskyi, [18197 #3, 26 Sep 2026](https://discourse.aicrowd.com/t/phase-2-of-the-arc-white-box-estimation-challenge-is-live/18197/3), citing the Rules: "Winners are announced on 15 November and Section 6 of the Official Rules gives 14 days to sign and return the Prize Winner Documents." This date is not in our notes.
+- **Winners are announced on 15 November.** Participant oleksandr_barskyi, [18197 #3, 26 Sep 2026](https://discourse.aicrowd.com/t/phase-2-of-the-arc-white-box-estimation-challenge-is-live/18197/3): "Winners are announced on 15 November and Section 6 of the Official Rules gives 14 days to sign and return the Prize Winner Documents." Only the 14 days is attributed to §6; the date is his statement. The organizer's reply (#4) repeats the 14 days and does not contradict the date, but we could not read the Rules page to confirm it. This date is not in our notes.
 - **Payment and eligibility.** mohanty, [18197 #4, 1 Oct 2026, 00:21 UTC](https://discourse.aicrowd.com/t/phase-2-of-the-arc-white-box-estimation-challenge-is-live/18197/4):
   > "Payment: international bank transfer (SWIFT) in USD to an account in the winner's own name."
   > "Winners should expect to provide photo ID, proof of address and bank details, and to return the documents within 14 days."
@@ -95,7 +95,7 @@ From [submission #330153](https://www.aicrowd.com/challenges/arc-white-box-estim
 
 > "Final score · Full test set Graded on all 100 MLPs — the number that ranks you. The private split is sealed until results release." … "These 50 MLPs are graded once and revealed at Phase 2 close."
 
-This describes the public board: 50 public plus 50 gated MLPs, the gated half revealed at close. Prize ranking still comes only from the fresh private re-run of each team's single designated submission (challenge overview page; 18118, 31 Jul). The same page gives the grader's speed: **mean effective compute 7.57e11 FLOPs (34.4% of B), per-MLP wall 76.3–100.3 s** (median about 78 s), which is about 1e10 FLOP/s. A chain much above 0.4 B is at risk of the 120 s wall cap. At the leaders' 0.11–0.15 B it is not.
+The same page calls the 50 gated MLPs "The 50 holdout MLPs — a different partition from the public split — that decide the final rank." That wording conflicts with our notes: prize ranking comes only from a fresh private re-run of each team's single designated submission (challenge overview page; 18118, 31 Jul). The UI text is probably loose and describes only the public board (50 public plus 50 gated MLPs, the gated half revealed at close), but the conflict is unresolved. Ask the organizers rather than assume either reading. The same page gives the grader's speed: **mean effective compute 7.57e11 FLOPs (34.4% of B), per-MLP wall 76.3–100.3 s** (median about 78 s), which is about 1e10 FLOP/s. A chain much above 0.4 B is at risk of the 120 s wall cap. At the leaders' 0.11–0.15 B it is not.
 
 ---
 
@@ -123,7 +123,7 @@ Readings:
 - **J2W is at the 0.1 floor**, so it gains from now on only through raw.
 - **marius_binner has the best raw on the board (1.14e-8)** at 0.15 B; raw about 1.1e-8 is demonstrably reachable.
 - **Luna and MeatProxy reached the top 6 with 16 and 13 entries**: late or very efficient entrants.
-- **lode_dockx is a pure floor rider**: raw 2.76e-8 at 0.1015 B, about the public chain's raw at a third of its cost.
+- **lode_dockx is a pure floor rider**: raw 2.76e-8 at 0.1015 B. That is about 25% worse raw than the public chain (about 2.2e-8 at 0.25 B), at about 40% of its cost.
 - **Ranks 35–50 sit at raw 2.06–2.23e-8 and util 0.20–0.24**, the signature of 504aldo V29 clones. jamesrahenry, [18218 #2, 13 Sep](https://discourse.aicrowd.com/t/everything-we-tried-a-factorized-k-3-cumulant-propagation-estimator-at-0-25-x-b-where-its-flops-go-and-25-measured-dead-ends-team-504aldo-rank-10/18218/2): "What does it feel like to have 13 different exact submissions under other people's accounts?"
 
 ### 2.2 J2W's trajectory
@@ -132,12 +132,12 @@ Readings:
 |---|---|---|---|---|
 | 1 Sep | ≈5e-9 | 2.27e-8 | 0.22 | 504aldo findings log F59 (our digest) |
 | 5 Sep | — | — | 0.213 → 0.186 | F77 |
-| 6 Sep | — | — | 0.164 | F86 |
+| 6 Sep | — | ≈2.0e-8 (1.97–2.02e-8 for the 0.15–0.16 B cluster that includes J2W) | 0.164 | F86 |
 | ≈27 Sep | 1.8e-9 | 1.66e-8 | 0.1089 | EscAI `research/tenfold_push/README.md` |
 | 28 Sep 19:47 UTC | 1.7e-9 | 1.62e-8 | 0.1082 | EscAI `research/contraction_push/leaderboard_update.json` |
 | 1 Oct | 1.6e-9 | 1.50e-8 | 0.1101 | live board |
 
-Cost fell 2× in September and then stopped at the floor. Raw has improved steadily (2.27 → 1.50e-8) over the last week of September.
+Cost fell 2× in September and then stopped at the floor. Raw improved over the whole month: from 2.27e-8 (1 Sep) to about 2.0e-8 (6 Sep), then 1.66e-8 (about 27 Sep), then 1.50e-8 (1 Oct). The last step is about 10% in four days.
 
 ### 2.3 J2W's identity, Phase 1 signal (circumstantial)
 
@@ -147,7 +147,7 @@ Cost fell 2× in September and then stopped at the floor. Raw has improved stead
 - **What this suggests.** If jwanza is joe_wanza, J2W's Phase 1 method used quantized lookup tables with gather/segment sums.
 - **Since then:**
   - Flopscope prices computed-index gathers at weight 4.0 ("No free-gather discount", cost-model doc).
-  - The 16 Sep rule bans packing.
+  - The 16 Sep rule bans packing, though it says "Choosing a lower-precision dtype or quantizing values is not, by itself, this packing technique", so int16 tables are not banned as such.
   - J2W's Phase 2 cost history (0.22 → 0.11 B) looks like a chain being compressed, not a lookup-table trick.
 - **Nothing public ties J2W's Phase 2 method to lookup tables.**
 
@@ -175,7 +175,7 @@ Their measurement: the post-activation (2,2) κ₄ slice is regressed on C_pre o
 
 What this tells us:
 
-- **A second top-10 representation exists.** It is not per-source legs and carries a dense n×n post-activation κ₄(2,2) slice with a κ₄→κ₃ feed. It reaches raw 1.55e-8 at 0.163 B, better raw than any leg chain (504aldo's float64 ceiling is about 2.07e-8). "Cap 3776" is an unexplained configuration parameter.
+- **A second top-10 representation exists.** It is "a different factorisation" from 504aldo's per-source legs and materialises the post-activation κ₄(2,2) slice (an n×n object) and both covariances. Its κ₄→κ₃ feed arm was "sitting unpriced" when they posted, so it is a candidate, not a confirmed part of the shipped chain. The measurement "decided a build" for them, without saying which way. It reaches raw 1.55e-8 at 0.163 B, better raw than any leg chain (504aldo's float64 ceiling is about 2.07e-8). "Cap 3776" is an unexplained configuration parameter.
 - **The (2,2) slice is not C-shaped at depth**, so whatever AndreasHad04 carries there is real off-C content.
 
 ### 2.5 Cost anatomy of the leaders, from EscAI (29 Sep 2026)
@@ -192,17 +192,17 @@ What this tells us:
 
 > "From the leaderboard I see someone trimmed 7-22% of the chain's cost (4.2e-9 to 5.2e-9) without losing accuracy; cost anatomy (fig 2 in the post) did not find that for me."
 
-**Inference (ours).** J2W now sits at **0.110 B, below the 0.131–0.15 B young-tier-only bill** of the public representation. So J2W does not run the public chain with a cheap old tier. Either its young tier is also different, or it runs a different representation altogether. marius_binner (0.151 B, raw 1.14e-8) sits on the 0.15 B cluster line, but with raw 46% better than the public chain.
+**Inference (ours).** J2W now sits at **0.110 B, below the 0.131–0.15 B young-tier-only bill** of the public representation. So J2W does not run the public chain as published with a cheap old tier. Either its young tier is engineered differently (EscAI's measured young-block floor is 0.055–0.07 B, so a leaner young tier fits under 0.11 B), or it runs a different representation altogether. marius_binner (0.151 B, raw 1.14e-8) sits on the 0.15 B cluster line, but with raw 46% better than the public chain.
 
 ---
 
 ## 3. New code: team EscAI, `corpaci/ARCwhitebox` (MIT, pushed 29 Sep 2026)
 
-Source: <https://github.com/corpaci/ARCwhitebox>, two commits, both 29 Sep (`c0a1c6c` "Public research corpus: WHEST Phase 2 cumulant estimator + falsification ledger"; `144f2d6`). Author Luiza Corpaci, team EscAI. Graded **submission 332675**: raw 2.19e-8, util 0.2308, adjusted 5.0e-9, zero failures, rank 42 (45 tied on 28 Sep). 502 files.
+Source: <https://github.com/corpaci/ARCwhitebox>, two commits, both 29 Sep (`c0a1c6c` "Public research corpus: WHEST Phase 2 cumulant estimator + falsification ledger"; `144f2d6`). Author Luiza Corpaci, team EscAI. Graded **submission 332675**: raw 2.19e-8, util 0.2308, adjusted 5.0e-9, zero failures, rank 42 (45 tied on 28 Sep). The 1 Oct board shows a later EscAI entry (30 Sep 07:22) at 43=, adjusted 4.8e-9, util 0.2209, same raw. 502 files.
 
 **Shipped estimator.** 504aldo V29 is embedded verbatim with attribution, plus their own Strassen join routing and a "rung-7 squeeze" (leaf-16, stage-off, old-source rank 352): 0.2430 → 0.2304 B at raw 2.27e-8.
 
-### 3.1 Covariance-response modes and symmetric-matrix transport: specified, built, killed (28 Sep)
+### 3.1 Covariance-response modes and symmetric-matrix transport: specified, killed at the first gate (28 Sep)
 
 [`research/astra_responsemode_spec.md`](https://github.com/corpaci/ARCwhitebox/blob/main/research/astra_responsemode_spec.md) defines the state:
 
@@ -214,7 +214,7 @@ with update `B_a <- Wᵀ B_a W` ("tagged sandwich 1.5 u each") and `B_a <- (w1 w
 
 > "What the leaders' tier implies is NOT this expansion with derived closures: either fitted closures + a weaker error coupling (= G0 passing for them), or constructions absent from all public evidence."
 
-The kill ([`research/DEADENDS.md`](https://github.com/corpaci/ARCwhitebox/blob/main/research/DEADENDS.md), "Response-mode expansion (rebuild thread, killed at G0 2026-09-28)"):
+The kill ([`research/DEADENDS.md`](https://github.com/corpaci/ARCwhitebox/blob/main/research/DEADENDS.md), "Response-mode expansion (rebuild thread, killed at G0 2026-09-28)"). The harness `port_rm.py` is a skeleton with "A=0 modes, analytic born slices consumed in place". The B_a modes were therefore never run, and the mode-seed gate G1 was never reached. What was measured is the born-slice consumption, plus a post-freeze transport probe (last quote):
 
 > "P2 as written FAILS at object level, not tolerance level: born D21_hat vs the lean chain's window-1 (age-1) S21 content has cosine 0.005-0.018"
 
@@ -251,7 +251,7 @@ Interventions at every layer (the mean propagates naturally; selected fields are
 
 > "correcting three pre-activation moment channels throughout the network reduces eight-network raw MSE by about 20×. The tested cheap approximations do not reproduce that reduction."
 
-The same 20× is reached through a **linear deferred-mean path**, which leaves the trajectory fixed and only propagates the readout's local correction through Wᵀ ([`research/observable_push/README.md`](https://github.com/corpaci/ARCwhitebox/blob/main/research/observable_push/README.md)): "Eight-network raw MSE falls from **2.34422e-8 to 1.17282e-9**, about **20× lower**." Their 40-feature fitted response explains only 8.77% of baseline error, and a fitted ridge correction gains 3%.
+The same 20× is reached through a **linear deferred-mean path**, which leaves the trajectory fixed and only propagates the readout's local correction through Wᵀ ([`research/observable_push/README.md`](https://github.com/corpaci/ARCwhitebox/blob/main/research/observable_push/README.md)): "Eight-network raw MSE falls from **2.34422e-8 to 1.17282e-9**, about **20× lower**." Deployable versions fail. On held-out nets 4–7, their existing moment fit applied through deferred transport gains 3.2% (ratio 0.9684), and the 40-feature propagated-response ridge gains 0.7% (0.9928); the 40-feature span explains only 8.77% of baseline error.
 
 Covariance error structure ([`research/contraction_push/README.md`](https://github.com/corpaci/ARCwhitebox/blob/main/research/contraction_push/README.md)), layer 14:
 
@@ -277,7 +277,7 @@ On data provenance:
 
 > "504aldo's dumps are built from snapshot `ce926b7d1ced65faa668c01b94a43f8c4f43783d` … Our mini_p2.npz was extracted from the currently-pinned @v2-phase2 snapshot `aa99830fdc09fad15407b10e8e3459d3e18bba0a` … Different snapshots => plausibly different weight draws (a seed-protocol version bump changes every MLP) and possibly different GT quality."
 
-**Corroboration (ours).** A committed HF cache in [`barnobarno666/ARC-White-Box-Estimation-2026`](https://github.com/barnobarno666/ARC-White-Box-Estimation-2026) (pushed 5 Sep) holds `refs/v2-phase2 = aa99830fdc09fad15407b10e8e3459d3e18bba0a`. The tag pointed at `aa99830f` by about 4 Sep, so 504aldo's `ce926b7d` is a different snapshot, presumably the pre-30-Aug state (the dataset's last-modified date is 30 Aug). Whether the MLPs differ is unresolved. EscAI's suggested check is to compare `mlp_seed` of row 0 against `6319981554997072999`.
+**Corroboration (ours).** A committed HF cache in [`barnobarno666/ARC-White-Box-Estimation-2026`](https://github.com/barnobarno666/ARC-White-Box-Estimation-2026) (pushed 5 Sep) holds `refs/v2-phase2 = aa99830fdc09fad15407b10e8e3459d3e18bba0a`. The tag pointed at `aa99830f` by 5 Sep at the latest (the ref file was committed in `0887a59`, 5 Sep 16:33 UTC), so 504aldo's `ce926b7d` is a different snapshot, presumably the pre-30-Aug state (the dataset's last-modified date is 30 Aug). Whether the MLPs differ is unresolved. EscAI's suggested check is to compare `mlp_seed` of row 0 against `6319981554997072999`.
 
 ### 3.4 Other measured negatives and positives worth keeping
 
@@ -326,7 +326,7 @@ GitHub searches for repositories by leaderboard names (J2W/jwanza, marius_binner
 ## 6. What this changes for us
 
 1. **Line C cannot be "covariance-response modes" as written.**
-   - **Why.** Our plan's revision log names "symmetric n×n objects (covariance-response modes)" as the leaders' probable representation. EscAI wrote exactly that state (`B_a ← WᵀB_aW`, four C-snapshot seeds), priced it at 0.13–0.15 B, and killed it on 28 Sep. The born (2,1) slice is a post-activation object, it does not transport congruently through W, and in-place consumption is 66× worse. Its error coupling is 14× stronger than the chain's.
+   - **Why.** Our plan's revision log names "symmetric n×n objects (covariance-response modes)" as the leaders' probable representation. EscAI wrote exactly that state (`B_a ← WᵀB_aW`, four C-snapshot seeds), priced it at 0.13–0.15 B, and killed the expansion on 28 Sep before any mode was run (the gate harness had A = 0). The born (2,1) slice is a post-activation object and does not transport congruently through W. In-place consumption is 66× worse, and congruent transport of the born content gives |cos| ≤ 0.008 against the true slice. The error coupling is 14× stronger than the chain's. The case against modes is therefore structural, from the transport probe, not a measured mode run.
    - **What would revive it.** A transport rule for the (2,1) slice that uses only elementwise and congruent operations. Nobody has one, and the correct transport costs about 6 dense products per layer, which is the young-block floor.
    - **Action.** Do not rebuild that spec. Keep the gate-statistics branch of Line C (P(z_i>0, z_j>0), gate–activation cross-moments), which nobody has tested publicly. Screen anything new with their `research/eps_prescreen.py` and `port_rm.py` (MIT) before building it.
 2. **Point the 1,000-network oracle (Line A step 2) at the pre-activation marginals, not only at D21.** EscAI's 8-network oracle says:
@@ -334,20 +334,20 @@ GitHub searches for repositories by leaderboard names (J2W/jwanza, marius_binner
    - The same 20× comes through a cheap linear deferred-mean path.
    - The readout is not the bottleneck (formula bias 1.2e-10).
 
-   **Action:** replicate their intervention table on 1,000 networks with keenanpepper's N = 1e9 full-split moments. Their targets were noisy (1e8 samples) and covered 8 nets; the grid gives about 125× the networks. Then decompose the variance error into its sources (κ₃ feedback into C, κ₄, the Mehler covariance map). A variance-only fix worth −40% at no extra cost is the cheapest lever anyone has identified, and nobody has found a deployable version.
+   **Action:** replicate their intervention table on 1,000 networks with keenanpepper's N = 1e9 full-split moments. Their targets were noisy (1e8 samples) and covered 8 nets; the grid gives about 125× the networks. Then decompose the variance error into its sources (κ₃ feedback into C, κ₄, the Mehler covariance map). The variance-only oracle (−40%, 3 nets, with layer-0 variance replaced by a noisy reference) is the largest single-channel effect measured. EscAI caution that "noisy/interacting interventions are not a unique causal decomposition" and that replacing post-activation variance alone gains nothing. Nobody has a deployable way to compute that variance, and its cost is unknown.
 3. **Treat every λ-table as base-specific.**
    - The public κ₄ "regeneration" gain is cancellation against the pruned base's bias (λ ≈ 3× physical; physical λ ≈ 2.1–2.6e-3, flat in depth).
    - It was fitted on HF snapshot `ce926b7d`, not the current `@v2-phase2` (`aa99830f`).
    - **Action:** pin our staged dataset by commit hash and record `mlp_seed` of row 0. If we change the base chain, refit λ (or drop the channel) on that base, and test on held-out nets before trusting the 2× from 504aldo's V17.
 4. **Lever (b) of our §3.1 oracle ladder (a better-than-rank-1 carrier for the (2,1,1) κ₄ slice) now has outside support.**
-   - EscAI's small-width runs found that keeping all repeated κ₄ entries cuts raw by 35–64%.
-   - AndreasHad04 (rank 7, raw 1.55e-8) carries a dense post-activation κ₄(2,2) slice with a κ₄→κ₃ feed in a non-leg factorization.
+   - EscAI's small-width runs (reference algorithm, width 128, 3 nets) found that keeping all repeated κ₄ entries cuts raw by 35%. The diagonal alone gives 24.5% of that, so the (2,1,1)-specific increment is about 14% relative. At width 192 the cut is 64%, on 1 net.
+   - AndreasHad04 (rank 7, raw 1.55e-8) materialises the post-activation κ₄(2,2) slice in a non-leg factorization (its κ₄→κ₃ feed was unbuilt on 22 Sep) and finds that slice far from C-shaped at depth.
 
-   Two independent teams found real off-C fourth-order content. Our diagram identification (first-order gate diagrams including [κ₄(2,1,1)]) is still unpublished and is a candidate write-up contribution; cite EscAI and AndreasHad04.
+   Two independent teams found real off-C fourth-order content. Neither isolated the (2,1,1) slice at competition width, so this is support, not confirmation. Our diagram identification (first-order gate diagrams including [κ₄(2,1,1)]) is still unpublished and is a candidate write-up contribution; cite EscAI and AndreasHad04.
 5. **The money line moved and the leader is at the cost floor.**
-   - J2W: raw 1.50e-8 at 0.110 B (adjusted 1.6e-9). Its raw improved 34% over September (2.27e-8 on 1 Sep) and 10% in the last two days (1.66e-8 on about 27 Sep).
+   - J2W: raw 1.50e-8 at 0.110 B (adjusted 1.6e-9). Its raw improved 34% over September (2.27e-8 on 1 Sep): about 10% since about 27 Sep (1.66e-8) and 7% since 28 Sep (1.62e-8).
    - Beating J2W on the private re-run likely needs **raw ≲ 1.3–1.4e-8 at ≤ 0.10 B** by 17 Oct, or **≲ 0.9–1.0e-8 at 0.15 B**.
-   - Since marius has 1.14e-8 at 0.15 B, a cost cut alone would put him first. J2W does not run the public chain's young tier (0.11 B is below its 0.131–0.15 B bill).
+   - Since marius has 1.14e-8 at 0.15 B, a cost cut alone would put him first. J2W does not run the public chain's young tier as published (0.11 B is below its 0.131–0.15 B bill).
    - Our plan's §0 targets (raw ≤ 1.6e-8 at ≤ 0.10 B) are therefore about 10–20% too loose. **Revise them to raw ≤ 1.3e-8 at ≤ 0.10 B.**
 6. **Rules and grader hygiene to add to §5 (submission discipline):**
    - (a) Use no symmetry tag we did not create through `as_symmetric` or the documented Gram/`einsum` aliasing. Stale tags after `shuffle`, `choose`, `permutation` or `.shape` (flopscope #264–#267) are disqualifiable under the 16 Sep fair-accounting text, "including … during prize review".
@@ -387,5 +387,6 @@ GitHub searches for repositories by leaderboard names (J2W/jwanza, marius_binner
 | `barnobarno666/ARC-White-Box-Estimation-2026` (HF ref file) | 5 Sep |
 | `anhminhzui-dev/arc-whest`; `MurtuzaShaikh26/ARC-White-Box-Challenge-26` | 8–11 Sep |
 | Hugging Face MCP searches; keenanpepper dataset listing | 1 Oct (newest item 13 Sep) |
+| `aicrowd/whestbench-smoke-mlp` metadata (1 row, 8.5 MB parquet), <https://huggingface.co/datasets/aicrowd/whestbench-smoke-mlp> | updated 27 Jul |
 | alphaXiv `discover_papers` (two queries, after 15 May 2026) | 1 Oct |
 | PyPI `pip index versions flopscope / whestbench` | 1 Oct |

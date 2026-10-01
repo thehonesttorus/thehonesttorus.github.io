@@ -76,7 +76,7 @@ def measure(name, prep, fn, note="", reps=2):
                        wall_ms=1e3 * (t1 - t0), backend_ms=1e3 * (b1 - b0), overhead_ms=1e3 * (o1 - o0),
                        residual_ms=1e3 * (r1 - r0), ops={k: [v[0] / UNIT, v[1]] for k, v in ops.items()})
             if isinstance(out, dict):
-                rec.update(out)
+                rec.update({k: v for k, v in out.items() if not k.startswith("_")})
     except Exception as exc:  # noqa: BLE001
         rec.update(error=f"{type(exc).__name__}: {str(exc)[:200]}")
     RESULTS.append(rec)
@@ -119,7 +119,7 @@ measure("gram_alias: einsum('ji,jk->ik', X, X) same object", lambda: (A(Gn),), l
 measure("gram_inner: inner(X, X) = X X^T same object", lambda: (A(Gn),), lambda x: fnp.inner(x, x))
 measure("gram_matmul_T: X.T @ X (view is another object)", lambda: (A(Gn),), lambda x: x.T @ x)
 measure("as_symmetric (n,n) f32", lambda: (A(Sn),), lambda s: flops.as_symmetric(s, symmetry=(0, 1)))
-measure("symmetrize canonical-copy", lambda: (A(Sn),), lambda s: flops.symmetrize(s, mode="canonical-copy") if hasattr(flops, "symmetrize") else fnp.symmetrize(s, mode="canonical-copy"))
+measure("symmetrize canonical-copy", lambda: (A(Sn),), lambda s: flops.symmetrize(s, symmetry=(0, 1), mode="canonical-copy"))
 measure("weighted alias einsum('ji,j,jk->ik', G, d, G)", lambda: (A(Gn), A(wn)), lambda g, d: fnp.einsum("ji,j,jk->ik", g, d, g))
 
 
@@ -356,11 +356,11 @@ def fam_shared_basis(W, p, U, c):
 
 
 for r in (1, 4, 8, 16, 32):
-    Mn = np.stack([symm() for _ in range(r)])
+    Mn = np.stack([spd() * 0.03 for _ in range(r)])
     measure(f"family_loop_tagged r={r}: r x (as_symmetric + einsum3)", lambda Mn=Mn: (A(Wn), A(pn), A(Mn)), fam_loop_tagged)
     measure(f"family_batched_matmul r={r}: M@X then X^T@T", lambda Mn=Mn: (A(Wn), A(pn), A(Mn)), fam_batched_matmul)
-    measure(f"family_batched_einsum_tagged r={r}: einsum('ji,mjk,kl->mil') M tagged (1,2)",
-            lambda Mn=Mn: (A(Wn), A(pn), flops.as_symmetric(A(Mn), symmetry=(1, 2))), fam_batched_einsum_tagged)
+    measure(f"family_batched_einsum_untagged r={r}: einsum('ji,mjk,kl->mil')",
+            lambda Mn=Mn: (A(Wn), A(pn), A(Mn)), fam_batched_einsum_tagged)
     for q in (64, 256):
         measure(f"family_shared_basis r={r} q={q}: transport U (n x q) + r diag cores",
                 lambda q=q, r=r: (A(Wn), A(pn), A(R.standard_normal((N, q)).astype(f32)), A(R.standard_normal((r, q)).astype(f32))), fam_shared_basis)

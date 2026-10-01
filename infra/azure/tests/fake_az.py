@@ -53,8 +53,16 @@ exists = env.get("FAKE_AZ_EXISTS") == "1"
 out = None
 if cmd == "account show":
     out = {"id": SUB, "name": "fake-sub", "state": "Enabled"}
+elif cmd == "batch account login":
+    acct = opt("-n", "--name")
+    out = {"account": acct, "endpoint": f"https://{acct}.eastus.batch.azure.com/", "primaryKey": "cHJpbWFyeQ==",
+           "secondaryKey": "c2Vjb25kYXJ5"} if "--show" in argv else None
+elif cmd.startswith("batch ") and cmd.split()[1] in ("pool", "job", "task") and not env.get("AZURE_BATCH_ACCOUNT"):
+    # data-plane calls must run after batch_login, whose credentials are per-process AZURE_BATCH_* variables
+    sys.stderr.write(f"fake_az: '{cmd}' without AZURE_BATCH_ACCOUNT (no batch_login in this process)\n")
+    sys.exit(2)
 elif cmd in ("provider register", "group create", "storage account create", "acr create", "batch account create",
-             "batch account login", "batch job create", "batch job set", "batch pool autoscale enable", "acr login",
+             "batch job create", "batch job set", "batch pool autoscale enable", "acr login",
              "storage blob upload"):
     out = {}
 elif cmd == "storage container create":

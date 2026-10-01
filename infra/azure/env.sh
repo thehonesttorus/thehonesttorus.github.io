@@ -59,7 +59,17 @@ pool_name() { echo "${PREFIX}-pool-$1"; }
 # Shared-key login: the Owner/Contributor roles carry no Batch data-plane permissions, so the
 # default Entra ID login gets 403 on pool/job/task calls unless "Azure Batch Data Contributor"
 # is assigned.  Shared key needs only listKeys on the account, which Owner/Contributor have.
-batch_login() { az batch account login -n "$(batch_account_name "$1")" -g "$RG" --shared-key-auth -o none; }
+# The credentials are also exported as AZURE_BATCH_* (az reads them before ~/.azure/config), so
+# this shell keeps its account even if another az process (grid.py, a second script) logs in to
+# another region meanwhile: the login itself is stored in the config file all az processes share.
+batch_login() {
+  local creds
+  creds=$(az batch account login -n "$(batch_account_name "$1")" -g "$RG" --shared-key-auth --show \
+          --query "[account, endpoint, primaryKey]" -o tsv) || return 1
+  { read -r AZURE_BATCH_ACCOUNT; read -r AZURE_BATCH_ENDPOINT; read -r AZURE_BATCH_ACCESS_KEY; } <<<"$creds"
+  [ -n "$AZURE_BATCH_ACCESS_KEY" ] || { _env_fail "no shared key for Batch account $(batch_account_name "$1")"; return 1; }
+  export AZURE_BATCH_ACCOUNT AZURE_BATCH_ENDPOINT AZURE_BATCH_ACCESS_KEY AZURE_BATCH_AUTH_MODE=shared_key
+}
 
 # Storage account key (data-plane calls with --auth-mode login would need a Storage Blob Data role).
 storage_key() { az storage account keys list -n "$STORAGE" -g "$RG" --query '[0].value' -o tsv; }

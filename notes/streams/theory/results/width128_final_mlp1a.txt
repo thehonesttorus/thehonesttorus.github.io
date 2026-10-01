@@ -1,0 +1,19 @@
+pair /tmp/claude-0/-home-user-thehonesttorus-github-io/b94ff8ab-040c-538b-a2af-dbe7aa5288dd/scratchpad/atlas128/seed3/mlp_00001.npz | /tmp/claude-0/-home-user-thehonesttorus-github-io/b94ff8ab-040c-538b-a2af-dbe7aa5288dd/scratchpad/atlas128/seed4/mlp_00001.npz: width 128, depth 16, N = 500000 + 500000
+eps = noise-corrected relative rms error of D21(l+1), model from one atlas, target from the other, averaged over both orientations
+L00 noise=0.0605 wick=0.0422 cl1_oracle=0.0543 cl1=0.0543 cl1+B7=0.0544 cl2=0.0541 fit1=0.0540 fit2=0.0541 fit3=0.0541 fitall=0.0541
+     tensor R2: cl1+B7 0.9902  cl2 0.9904
+     leaf-resummed: LR1=0.0541 LR1e=0.0541 LR2=0.0542 LR2e=0.0541 fitLR=0.0539 LRT1=0.0541 LRT2=0.0542 fitLRT=0.0539   coefLR AB: LEAF:+1.763 TWOLEAF:+0.412 B6:+1.486 B7:+3.053 G3t:+1.012
+     coefLRT AB (theory LEAF 6, TWOLEAF -1, TCL 1, B6 1.5, G3t 1): LEAF:+1.763 TWOLEAF:+0.412 TCL:+0.999 B6:+1.486 G3t:+1.012
+     groups (+g on cl1+B7 | -g from cl2): rho4:0.0544|0.0541  dress:0.0544|0.0541  k3+2e:0.0544|0.0541  k3xk3:0.0544|0.0541  k4odd+e:0.0541|0.0544  K22+2e:0.0544|0.0541  K22xk3:0.0544|0.0541  K22xK22:0.0544|0.0541
+     coef AB fit1 (B0..B6): +0.000 +3.010 -64.582 +15.750 +0.962 +17.720 +1.479
+     coef AB fit2 (B0..B6 | 2nd order + B7 fixed): -0.001 +3.018 -38.294 +45.690 +1.008 +36.642 +1.502
+     coef AB fit3 (B0..B6, B7 | 2nd order fixed): -0.001 +3.017 -38.238 +45.667 +1.008 +36.634 +1.502 +3.014
+     coef BA fit1 (B0..B6): +0.001 +3.086 +17.933 -43.018 +0.968 +10.611 +1.477
+     coef BA fit2 (B0..B6 | 2nd order + B7 fixed): -0.001 +3.061 +15.579 +25.963 +1.015 +1.725 +1.499
+     coef BA fit3 (B0..B6, B7 | 2nd order fixed): -0.001 +3.060 +15.719 +25.999 +1.015 +1.786 +1.499 +3.051
+     add1 (cl1+B7 + term): S1:0.0544 S2a:0.0544 S2c:0.0544 S3a1:0.0544 S3a2:0.0544 S3b1:0.0544 S3b2:0.0544 S3b3:0.0544 S3b4:0.0544 S3b5:0.0544 S4a:0.0544 S4b:0.0544 S4c:0.0544 S4d:0.0544 S4e:0.0544 S5a:0.0545 S5b:0.0544 S5c:0.0540 S5d:0.0544 S6a:0.0544 S6b:0.0544 S6c:0.0544 S7a:0.0544 S7b:0.0544 S7c:0.0544 S8:0.0544
+     drop1 (cl2 - term):   S1:0.0541 S2a:0.0541 S2c:0.0541 S3a1:0.0541 S3a2:0.0541 S3b1:0.0541 S3b2:0.0541 S3b3:0.0541 S3b4:0.0541 S3b5:0.0541 S4a:0.0541 S4b:0.0541 S4c:0.0541 S4d:0.0541 S4e:0.0541 S5a:0.0540 S5b:0.0541 S5c:0.0544 S5d:0.0541 S6a:0.0541 S6b:0.0541 S6c:0.0541 S7a:0.0541 S7b:0.0541 S7c:0.0541 S8:0.0541
+     coef AB fitall: B0:-0.00 B1:+3.04 B2:-40.28 B3:+44.55 B4:+1.01 B5:+42.40 B6:+1.50 B7:+3.01 S1:+1.00 S2c:+0.15 S3a1:-107438.69 S3a2:-170.54 S3b1:-190.22 S3b2:+1.02 S3b3:+283.19 S3b4:+4.12 S3b5:-27420.85 S4a:-2.53 S4b:-597.59 S4c:-1.00 S4d:-0.48 S4e:-9.30 S5a:+1.38 S5b:+37.69 S5c:+1.00 S5d:-2.38 S6a:+0.37 S6b:-78237.52 S6c:+495.92 S7a:+1358753.19 S7b:-4.51 S7c:+1002.35 S8:+0.43
+     scales (rms, normalised by sigmas): rho:8.75e-02 k3_ijk:1.41e-03 D21_iik:1.99e-03 D3_iii:3.72e-03 K22_iijj:2.90e-03 K211_iijk:2.02e-03 K31_iiij:3.54e-03 K4_iiii:6.96e-03
+     size |coef*T(term)|/|D21|: B0:0.0353 B1:0.0034 B2:0.0000 B3:0.0000 B4:0.0086 B7:0.0034 S1:0.0012 S2a:0.0003 S3a1:0.0000 S3a2:0.0000 S3b1:0.0000 S3b2:0.0002 S3b3:0.0000 S3b4:0.0003 S3b5:0.0000 S4a:0.0000 S4b:0.0000 S4c:0.0000 S4d:0.0000 S4e:0.0000 B5:0.0000 B6:0.0350 S2c:0.0002 S5a:0.0020 S5b:0.0000 S5c:0.0025 S5d:0.0000 S6a:0.0002 S6b:0.0000 S6c:0.0000 S7a:0.0000 S7b:0.0000 S7c:0.0000 S8:0.0000 G3t:0.0086 G4a:0.0012 G4b:0.0000 TCL:0.0355 LEAF:0.5329 TWOLEAF:-0.2662 TWOLEAFe:-0.2663
+     tnoise of term:            B0:0.0359 B1:0.0034 B2:0.0000 B3:0.0000 B4:0.0002 B7:0.0034 S1:0.0000 S2a:0.0003 S3a1:0.0000 S3a2:0.0000 S3b1:0.0000 S3b2:0.0003 S3b3:0.0000 S3b4:0.0003 S3b5:0.0000 S4a:0.0000 S4b:0.0000 S4c:0.0000 S4d:0.0000 S4e:0.0000 B5:0.0000 B6:0.0352 S2c:0.0002 S5a:0.0020 S5b:0.0000 S5c:0.0025 S5d:0.0000 S6a:0.0002 S6b:0.0000 S6c:0.0000 S7a:0.0000 S7b:0.0000 S7c:0.0000 S8:0.0000 G3t:0.0002 G4a:0.0000 G4b:0.0000 TCL:0.0361 LEAF:0.0132 TWOLEAF:-0.0061 TWOLEAFe:-0.0059

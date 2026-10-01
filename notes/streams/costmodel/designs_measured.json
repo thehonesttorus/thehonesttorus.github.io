@@ -1,0 +1,869 @@
+{
+ "n": 1024,
+ "results": [
+  {
+   "name": "hazard tagged sandwich, indef symmetric S, entry scale 1.0",
+   "hazard": true,
+   "error": "SymmetryError: Tensor not symmetric along axes (0, 1): max deviation = inf (tolerance: atol=1e-06, rtol=1e-05). See: https://aicrowd.github.io/flopscope/docs/guides/symmetry"
+  },
+  {
+   "name": "hazard tagged sandwich, indef symmetric S, entry scale 0.1",
+   "hazard": true,
+   "units": 1.5031735892407596,
+   "calls": 2,
+   "residual_ms": 0.22860900025989395,
+   "backend_ms": 39.831989000958856,
+   "wall_ms": 115.3950600000826,
+   "ops": {
+    "as_symmetric": [
+     0.0034179682843387127,
+     1
+    ],
+    "einsum": [
+     1.499755620956421,
+     1
+    ]
+   }
+  },
+  {
+   "name": "hazard tagged sandwich, indef symmetric S, entry scale 0.01",
+   "hazard": true,
+   "units": 1.5031735892407596,
+   "calls": 2,
+   "residual_ms": 0.2223070005129557,
+   "backend_ms": 44.18314000031387,
+   "wall_ms": 119.33032700108015,
+   "ops": {
+    "as_symmetric": [
+     0.0034179682843387127,
+     1
+    ],
+    "einsum": [
+     1.499755620956421,
+     1
+    ]
+   }
+  },
+  {
+   "name": "hazard tagged sandwich, indef symmetric S, entry scale 0.001",
+   "hazard": true,
+   "units": 1.5031735892407596,
+   "calls": 2,
+   "residual_ms": 0.19049699949391652,
+   "backend_ms": 47.32337299901701,
+   "wall_ms": 127.22144399958779,
+   "ops": {
+    "as_symmetric": [
+     0.0034179682843387127,
+     1
+    ],
+    "einsum": [
+     1.499755620956421,
+     1
+    ]
+   }
+  },
+  {
+   "name": "hazard tagged sandwich, spd symmetric S, entry scale 1.0",
+   "hazard": true,
+   "units": 1.5031735892407596,
+   "calls": 2,
+   "residual_ms": 0.22054099827073514,
+   "backend_ms": 36.060608999832766,
+   "wall_ms": 102.87909799990302,
+   "ops": {
+    "as_symmetric": [
+     0.0034179682843387127,
+     1
+    ],
+    "einsum": [
+     1.499755620956421,
+     1
+    ]
+   }
+  },
+  {
+   "name": "hazard tagged sandwich, spd symmetric S, entry scale 0.1",
+   "hazard": true,
+   "units": 1.5031735892407596,
+   "calls": 2,
+   "residual_ms": 0.18466499932401348,
+   "backend_ms": 41.79549899890844,
+   "wall_ms": 117.45238399998925,
+   "ops": {
+    "as_symmetric": [
+     0.0034179682843387127,
+     1
+    ],
+    "einsum": [
+     1.499755620956421,
+     1
+    ]
+   }
+  },
+  {
+   "name": "hazard tagged sandwich, spd symmetric S, entry scale 0.01",
+   "hazard": true,
+   "units": 1.5031735892407596,
+   "calls": 2,
+   "residual_ms": 0.19428599989623763,
+   "backend_ms": 38.78082699884544,
+   "wall_ms": 112.50042500068957,
+   "ops": {
+    "as_symmetric": [
+     0.0034179682843387127,
+     1
+    ],
+    "einsum": [
+     1.499755620956421,
+     1
+    ]
+   }
+  },
+  {
+   "name": "hazard tagged sandwich, spd symmetric S, entry scale 0.001",
+   "hazard": true,
+   "units": 1.5031735892407596,
+   "calls": 2,
+   "residual_ms": 0.23660799888602924,
+   "backend_ms": 44.86200599785661,
+   "wall_ms": 120.9076820014161,
+   "ops": {
+    "as_symmetric": [
+     0.0034179682843387127,
+     1
+    ],
+    "einsum": [
+     1.499755620956421,
+     1
+    ]
+   }
+  },
+  {
+   "name": "weighted Gram G^T diag(d) G, plain product",
+   "units": 1.0,
+   "calls": 2,
+   "residual_ms": 0.10195899994869251,
+   "backend_ms": 18.825415998435346,
+   "wall_ms": 19.745001998671796,
+   "ops": {
+    "multiply": [
+     0.00048828125,
+     1
+    ],
+    "matmul": [
+     0.99951171875,
+     1
+    ]
+   }
+  },
+  {
+   "name": "weighted Gram, split-sign aliased (take rows by sign)",
+   "units": 0.5031745433807373,
+   "calls": 9,
+   "residual_ms": 1.4916780000930885,
+   "backend_ms": 30.47188300297421,
+   "wall_ms": 116.22181699931389,
+   "ops": {
+    "abs": [
+     4.76837158203125e-07,
+     1
+    ],
+    "sqrt": [
+     4.76837158203125e-07,
+     1
+    ],
+    "multiply": [
+     0.0009765625,
+     2
+    ],
+    "take": [
+     0.001953125,
+     2
+    ],
+    "einsum": [
+     0.4999995231628418,
+     2
+    ],
+    "subtract": [
+     0.00024437904357910156,
+     1
+    ]
+   }
+  },
+  {
+   "name": "design v (K=2 covariance) cov=einsum L0",
+   "design": "v",
+   "lev": 0,
+   "cov": "einsum",
+   "units": 1.520263433456421,
+   "calls": 43,
+   "residual_ms": 1.8029490056505892,
+   "backend_ms": 60.6753580050281,
+   "wall_ms": 113.28437300107908,
+   "ops": {
+    "multiply": [
+     0.0205078125,
+     42
+    ],
+    "einsum": [
+     1.499755620956421,
+     1
+    ]
+   }
+  },
+  {
+   "name": "design v (K=2 covariance) cov=sym3 L0",
+   "design": "v",
+   "lev": 0,
+   "cov": "sym3",
+   "units": 1.7725830078125,
+   "calls": 53,
+   "residual_ms": 1.6728879854781553,
+   "backend_ms": 67.64779200057092,
+   "wall_ms": 83.51862000017718,
+   "ops": {
+    "multiply": [
+     0.0205078125,
+     42
+    ],
+    "copyto": [
+     0.0029296875,
+     9
+    ],
+    "matmul": [
+     1.7491455078125,
+     2
+    ]
+   }
+  },
+  {
+   "name": "design v (K=2 covariance) cov=einsum L3",
+   "design": "v",
+   "lev": 3,
+   "cov": "einsum",
+   "units": 1.520263433456421,
+   "calls": 43,
+   "residual_ms": 1.604296008736128,
+   "backend_ms": 61.182694993476616,
+   "wall_ms": 110.96650200124714,
+   "ops": {
+    "multiply": [
+     0.0205078125,
+     42
+    ],
+    "einsum": [
+     1.499755620956421,
+     1
+    ]
+   }
+  },
+  {
+   "name": "design v (K=2 covariance) cov=sym3 L3",
+   "design": "v",
+   "lev": 3,
+   "cov": "sym3",
+   "units": 1.28851318359375,
+   "calls": 163,
+   "residual_ms": 5.948459991486743,
+   "backend_ms": 163.69827800008352,
+   "wall_ms": 214.25715599980322,
+   "ops": {
+    "multiply": [
+     0.0205078125,
+     42
+    ],
+    "copyto": [
+     0.007781982421875,
+     29
+    ],
+    "add": [
+     0.0130462646484375,
+     60
+    ],
+    "subtract": [
+     0.00677490234375,
+     30
+    ],
+    "matmul": [
+     1.2404022216796875,
+     2
+    ]
+   }
+  },
+  {
+   "name": "design v (K=2 covariance) cov=einsum L4",
+   "design": "v",
+   "lev": 4,
+   "cov": "einsum",
+   "units": 1.520263433456421,
+   "calls": 43,
+   "residual_ms": 0.9796419963095104,
+   "backend_ms": 53.3297659985692,
+   "wall_ms": 87.75859999877866,
+   "ops": {
+    "multiply": [
+     0.0205078125,
+     42
+    ],
+    "einsum": [
+     1.499755620956421,
+     1
+    ]
+   }
+  },
+  {
+   "name": "design v (K=2 covariance) cov=sym3 L4",
+   "design": "v",
+   "lev": 4,
+   "cov": "sym3",
+   "units": 1.1520614624023438,
+   "calls": 209,
+   "residual_ms": 7.958696989589953,
+   "backend_ms": 268.39206201111665,
+   "wall_ms": 336.05042199997115,
+   "ops": {
+    "multiply": [
+     0.0205078125,
+     42
+    ],
+    "copyto": [
+     0.0100250244140625,
+     33
+    ],
+    "add": [
+     0.025943756103515625,
+     84
+    ],
+    "subtract": [
+     0.0135040283203125,
+     42
+    ],
+    "matmul": [
+     1.0820808410644531,
+     8
+    ]
+   }
+  },
+  {
+   "name": "design v (K=2 covariance) cov=einsum L5",
+   "design": "v",
+   "lev": 5,
+   "cov": "einsum",
+   "units": 1.520263433456421,
+   "calls": 43,
+   "residual_ms": 1.120846000048914,
+   "backend_ms": 57.01296100050968,
+   "wall_ms": 94.9237170007109,
+   "ops": {
+    "multiply": [
+     0.0205078125,
+     42
+    ],
+    "einsum": [
+     1.499755620956421,
+     1
+    ]
+   }
+  },
+  {
+   "name": "design v (K=2 covariance) cov=sym3 L5",
+   "design": "v",
+   "lev": 5,
+   "cov": "sym3",
+   "units": 1.0480403900146484,
+   "calls": 255,
+   "residual_ms": 7.85504499617673,
+   "backend_ms": 457.07907000542036,
+   "wall_ms": 528.213584999321,
+   "ops": {
+    "multiply": [
+     0.0205078125,
+     42
+    ],
+    "copyto": [
+     0.01264190673828125,
+     37
+    ],
+    "add": [
+     0.048514366149902344,
+     108
+    ],
+    "subtract": [
+     0.025279998779296875,
+     54
+    ],
+    "matmul": [
+     0.941096305847168,
+     14
+    ]
+   }
+  },
+  {
+   "name": "design ii (closure births, 4 leg types) L0",
+   "design": "ii",
+   "lev": 0,
+   "cov": "sym3",
+   "units": 12.7969970703125,
+   "calls": 118,
+   "residual_ms": 3.892287000780925,
+   "backend_ms": 353.9358300004096,
+   "wall_ms": 389.9807799989503,
+   "ops": {
+    "multiply": [
+     0.0341796875,
+     70
+    ],
+    "copyto": [
+     0.01171875,
+     27
+    ],
+    "matmul": [
+     12.7437744140625,
+     5
+    ],
+    "add": [
+     0.00732421875,
+     15
+    ],
+    "diagonal": [
+     0.0,
+     1
+    ]
+   }
+  },
+  {
+   "name": "design ii-wick (leading Wick leg only) L0",
+   "design": "ii-wick",
+   "lev": 0,
+   "cov": "sym3",
+   "units": 6.7823486328125,
+   "calls": 82,
+   "residual_ms": 2.903469005104853,
+   "backend_ms": 199.90151099773357,
+   "wall_ms": 227.09925199887948,
+   "ops": {
+    "multiply": [
+     0.025390625,
+     52
+    ],
+    "copyto": [
+     0.00732421875,
+     18
+    ],
+    "matmul": [
+     6.7467041015625,
+     5
+    ],
+    "add": [
+     0.0029296875,
+     6
+    ],
+    "diagonal": [
+     0.0,
+     1
+    ]
+   }
+  },
+  {
+   "name": "design ii (closure births, 4 leg types) L3",
+   "design": "ii",
+   "lev": 3,
+   "cov": "sym3",
+   "units": 8.830360412597656,
+   "calls": 426,
+   "residual_ms": 16.788614009783487,
+   "backend_ms": 1161.0849909939134,
+   "wall_ms": 1314.2637189994275,
+   "ops": {
+    "multiply": [
+     0.0341796875,
+     70
+    ],
+    "copyto": [
+     0.04779052734375,
+     83
+    ],
+    "add": [
+     0.1140289306640625,
+     183
+    ],
+    "subtract": [
+     0.0536041259765625,
+     84
+    ],
+    "matmul": [
+     8.580757141113281,
+     5
+    ],
+    "diagonal": [
+     0.0,
+     1
+    ]
+   }
+  },
+  {
+   "name": "design ii-wick (leading Wick leg only) L3",
+   "design": "ii-wick",
+   "lev": 3,
+   "cov": "sym3",
+   "units": 4.715293884277344,
+   "calls": 390,
+   "residual_ms": 15.29523700446589,
+   "backend_ms": 562.009147974095,
+   "wall_ms": 686.5460760000133,
+   "ops": {
+    "multiply": [
+     0.025390625,
+     52
+    ],
+    "copyto": [
+     0.0263671875,
+     74
+    ],
+    "add": [
+     0.0585479736328125,
+     174
+    ],
+    "subtract": [
+     0.0280609130859375,
+     84
+    ],
+    "matmul": [
+     4.576927185058594,
+     5
+    ],
+    "diagonal": [
+     0.0,
+     1
+    ]
+   }
+  },
+  {
+   "name": "design ii (closure births, 4 leg types) L4",
+   "design": "ii",
+   "lev": 4,
+   "cov": "sym3",
+   "units": 7.880712509155273,
+   "calls": 544,
+   "residual_ms": 23.21131599637738,
+   "backend_ms": 1880.2308139875095,
+   "wall_ms": 2087.751898001443,
+   "ops": {
+    "multiply": [
+     0.0341796875,
+     70
+    ],
+    "copyto": [
+     0.0500335693359375,
+     87
+    ],
+    "add": [
+     0.21328353881835938,
+     243
+    ],
+    "subtract": [
+     0.10351181030273438,
+     114
+    ],
+    "matmul": [
+     7.479703903198242,
+     29
+    ],
+    "diagonal": [
+     0.0,
+     1
+    ]
+   }
+  },
+  {
+   "name": "design ii-wick (leading Wick leg only) L4",
+   "design": "ii-wick",
+   "lev": 4,
+   "cov": "sym3",
+   "units": 4.209207534790039,
+   "calls": 508,
+   "residual_ms": 21.10405701205309,
+   "backend_ms": 1061.4459849894047,
+   "wall_ms": 1243.136475000938,
+   "ops": {
+    "multiply": [
+     0.025390625,
+     52
+    ],
+    "copyto": [
+     0.0286102294921875,
+     78
+    ],
+    "add": [
+     0.11069869995117188,
+     234
+    ],
+    "subtract": [
+     0.054416656494140625,
+     114
+    ],
+    "matmul": [
+     3.990091323852539,
+     29
+    ],
+    "diagonal": [
+     0.0,
+     1
+    ]
+   }
+  },
+  {
+   "name": "design ii (closure births, 4 leg types) L5",
+   "design": "ii",
+   "lev": 5,
+   "cov": "sym3",
+   "units": 7.18838357925415,
+   "calls": 656,
+   "residual_ms": 28.57565097474435,
+   "backend_ms": 3702.5759480184206,
+   "wall_ms": 3952.913349001392,
+   "ops": {
+    "multiply": [
+     0.0341796875,
+     70
+    ],
+    "copyto": [
+     0.0814361572265625,
+     103
+    ],
+    "add": [
+     0.3869791030883789,
+     303
+    ],
+    "subtract": [
+     0.19085025787353516,
+     144
+    ],
+    "matmul": [
+     6.494938373565674,
+     35
+    ],
+    "diagonal": [
+     0.0,
+     1
+    ]
+   }
+  },
+  {
+   "name": "design ii-wick (leading Wick leg only) L5",
+   "design": "ii-wick",
+   "lev": 5,
+   "cov": "sym3",
+   "units": 3.8377737998962402,
+   "calls": 620,
+   "residual_ms": 24.089921016638982,
+   "backend_ms": 1946.8420000139304,
+   "wall_ms": 2169.5639669997036,
+   "ops": {
+    "multiply": [
+     0.025390625,
+     52
+    ],
+    "copyto": [
+     0.0443115234375,
+     94
+    ],
+    "add": [
+     0.20196247100830078,
+     294
+    ],
+    "subtract": [
+     0.1005392074584961,
+     144
+    ],
+    "matmul": [
+     3.4655699729919434,
+     35
+    ],
+    "diagonal": [
+     0.0,
+     1
+    ]
+   }
+  },
+  {
+   "name": "design iii r=1 L0",
+   "design": "iii",
+   "lev": 0,
+   "r": 1,
+   "cov": "sym3",
+   "units": 14.549072265625,
+   "calls": 127,
+   "residual_ms": 5.382926001402666,
+   "backend_ms": 521.6991730067093,
+   "wall_ms": 565.5288890011434,
+   "ops": {
+    "multiply": [
+     0.0341796875,
+     70
+    ],
+    "copyto": [
+     0.0146484375,
+     36
+    ],
+    "matmul": [
+     14.492919921875,
+     5
+    ],
+    "add": [
+     0.00732421875,
+     15
+    ],
+    "diagonal": [
+     0.0,
+     1
+    ]
+   }
+  },
+  {
+   "name": "design iii r=1 L5",
+   "design": "iii",
+   "lev": 5,
+   "r": 1,
+   "cov": "sym3",
+   "units": 8.215916156768799,
+   "calls": 665,
+   "residual_ms": 26.530840981649817,
+   "backend_ms": 4049.3401800322317,
+   "wall_ms": 4283.710951000103,
+   "ops": {
+    "multiply": [
+     0.0341796875,
+     70
+    ],
+    "copyto": [
+     0.09407806396484375,
+     112
+    ],
+    "add": [
+     0.43549346923828125,
+     303
+    ],
+    "subtract": [
+     0.21613025665283203,
+     144
+    ],
+    "matmul": [
+     7.436034679412842,
+     35
+    ],
+    "diagonal": [
+     0.0,
+     1
+    ]
+   }
+  },
+  {
+   "name": "design iii r=4 L0",
+   "design": "iii",
+   "lev": 0,
+   "r": 4,
+   "cov": "sym3",
+   "units": 19.8052978515625,
+   "calls": 154,
+   "residual_ms": 9.527670012175804,
+   "backend_ms": 858.6652600024536,
+   "wall_ms": 927.9597559998365,
+   "ops": {
+    "multiply": [
+     0.0341796875,
+     70
+    ],
+    "copyto": [
+     0.0234375,
+     63
+    ],
+    "matmul": [
+     19.7403564453125,
+     5
+    ],
+    "add": [
+     0.00732421875,
+     15
+    ],
+    "diagonal": [
+     0.0,
+     1
+    ]
+   }
+  },
+  {
+   "name": "design iii r=4 L5",
+   "design": "iii",
+   "lev": 5,
+   "r": 4,
+   "cov": "sym3",
+   "units": 11.298513889312744,
+   "calls": 692,
+   "residual_ms": 31.223091991705587,
+   "backend_ms": 5855.55224001655,
+   "wall_ms": 6144.539167000403,
+   "ops": {
+    "multiply": [
+     0.0341796875,
+     70
+    ],
+    "copyto": [
+     0.1320037841796875,
+     139
+    ],
+    "add": [
+     0.5810365676879883,
+     303
+    ],
+    "subtract": [
+     0.29197025299072266,
+     144
+    ],
+    "matmul": [
+     10.259323596954346,
+     35
+    ],
+    "diagonal": [
+     0.0,
+     1
+    ]
+   }
+  },
+  {
+   "name": "design iii r=8 L0",
+   "design": "iii",
+   "lev": 0,
+   "r": 8,
+   "cov": "sym3",
+   "units": 26.8135986328125,
+   "calls": 190,
+   "residual_ms": 7.6480380030261585,
+   "backend_ms": 840.8048649944249,
+   "wall_ms": 895.6100460000016,
+   "ops": {
+    "multiply": [
+     0.0341796875,
+     70
+    ],
+    "copyto": [
+     0.03515625,
+     99
+    ],
+    "matmul": [
+     26.7369384765625,
+     5
+    ],
+    "add": [
+     0.00732421875,
+     15
+    ],
+    "diagonal": [
+     0.0,
+     1
+    ]
+   }
+  }
+ ]
+}

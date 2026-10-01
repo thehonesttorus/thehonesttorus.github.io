@@ -67,8 +67,15 @@ def batch_account_name(e, region):
 
 
 def batch_login(e, region):
+    """Point this process's az calls at one region's Batch account (shared key).  `az batch account
+    login` alone keeps the account in ~/.azure/config, which every az process shares, so a concurrent
+    run (`status` while `submit` runs, or 04_pools.sh) would switch the account under this one and
+    its jobs would land, silently pending, in another region's account.  The AZURE_BATCH_* variables
+    take precedence over that file and are private to this process and its az children."""
     acct = batch_account_name(e, region)
-    az("batch", "account", "login", "-n", acct, "-g", e["RG"], "--shared-key-auth", json_out=False)
+    c = az("batch", "account", "login", "-n", acct, "-g", e["RG"], "--shared-key-auth", "--show")
+    os.environ.update(AZURE_BATCH_ACCOUNT=c["account"], AZURE_BATCH_ENDPOINT=c["endpoint"],
+                      AZURE_BATCH_ACCESS_KEY=c["primaryKey"], AZURE_BATCH_AUTH_MODE="shared_key")
     return acct
 
 

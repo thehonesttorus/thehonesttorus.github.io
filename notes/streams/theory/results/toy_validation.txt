@@ -1,0 +1,78 @@
+closure2 term identity on a toy triple (s=0.35, t=0.3): worst relative difference 3.68e-15
+  B0    coef 1.0000  closure2 -2.9183519642e-02  enumerator -2.9183519642e-02  rel.diff 1.2e-16
+  B1    coef 3.0000  closure2 -3.0798556694e-03  enumerator -3.0798556694e-03  rel.diff 2.8e-16
+  B2    coef 3.0000  closure2 +6.0673556877e-04  enumerator +6.0673556877e-04  rel.diff 0.0e+00
+  B3    coef 0.5000  closure2 +2.6719891455e-04  enumerator +2.6719891455e-04  rel.diff 2.0e-16
+  B4    coef 1.0000  closure2 -4.0524922995e-05  enumerator -4.0524922995e-05  rel.diff 3.7e-15
+  B5    coef 1.5000  closure2 +3.0760586322e-04  enumerator +3.0760586322e-04  rel.diff 1.8e-16
+  B6    coef 1.5000  closure2 -2.3078545329e-02  enumerator -2.3078545329e-02  rel.diff 0.0e+00
+  B7    coef 3.0000  closure2 -2.0075774057e-03  enumerator -2.0075774057e-03  rel.diff 4.3e-16
+  S1    coef 1.0000  closure2 -2.9389767961e-05  enumerator -2.9389767961e-05  rel.diff 1.3e-15
+  S2c   coef 0.1250  closure2 -1.8622919334e-04  enumerator -1.8622919334e-04  rel.diff 1.5e-16
+  S3a1  coef 1.5000  closure2 +1.6861862876e-05  enumerator +1.6861862876e-05  rel.diff 2.0e-16
+  S3a2  coef 3.0000  closure2 +7.6111551342e-05  enumerator +7.6111551342e-05  rel.diff 0.0e+00
+  S3b1  coef 1.5000  closure2 -1.6211454055e-04  enumerator -1.6211454055e-04  rel.diff 1.7e-16
+  S3b2  coef 1.5000  closure2 -7.8143195822e-04  enumerator -7.8143195822e-04  rel.diff 0.0e+00
+  S3b3  coef 3.0000  closure2 +1.2847248808e-04  enumerator +1.2847248808e-04  rel.diff 4.2e-16
+  S3b4  coef 3.0000  closure2 -2.1703336990e-04  enumerator -2.1703336990e-04  rel.diff 0.0e+00
+  S3b5  coef 3.0000  closure2 -4.4258209297e-05  enumerator -4.4258209297e-05  rel.diff 1.5e-16
+  S4a   coef 0.5000  closure2 +9.1854928905e-04  enumerator +9.1854928905e-04  rel.diff 1.2e-16
+  S4b   coef 3.0000  closure2 -2.6598037773e-04  enumerator -2.6598037773e-04  rel.diff 8.2e-16
+  S4c   coef 0.7500  closure2 +1.5634440500e-03  enumerator +1.5634440500e-03  rel.diff 1.4e-16
+  S4d   coef 0.7500  closure2 +5.7739575833e-03  enumerator +5.7739575833e-03  rel.diff 1.5e-16
+  S4e   coef 1.5000  closure2 +1.3106027898e-03  enumerator +1.3106027898e-03  rel.diff 1.7e-16
+  S5a   coef 1.5000  closure2 +6.4712273935e-04  enumerator +6.4712273935e-04  rel.diff 0.0e+00
+  S5b   coef 3.0000  closure2 +2.2151051064e-04  enumerator +2.2151051064e-04  rel.diff 7.3e-16
+  S5c   coef 1.0000  closure2 -1.4515414799e-03  enumerator -1.4515414799e-03  rel.diff 1.5e-16
+  S5d   coef 1.0000  closure2 +2.3021413048e-04  enumerator +2.3021413048e-04  rel.diff 0.0e+00
+  S6a   coef 0.7500  closure2 -3.4782892195e-04  enumerator -3.4782892195e-04  rel.diff 0.0e+00
+  S6b   coef 0.7500  closure2 -3.1415724997e-06  enumerator -3.1415724997e-06  rel.diff 1.3e-16
+  S6c   coef 1.5000  closure2 -9.5151372522e-05  enumerator -9.5151372522e-05  rel.diff 0.0e+00
+  S7a   coef 0.7500  closure2 +6.4394233422e-05  enumerator +6.4394233422e-05  rel.diff 0.0e+00
+  S7b   coef 0.7500  closure2 -2.5684752583e-04  enumerator -2.5684752583e-04  rel.diff 4.2e-16
+  S7c   coef 0.7500  closure2 -6.5872287982e-04  enumerator -6.5872287982e-04  rel.diff 1.6e-16
+  S8    coef 0.1875  closure2 -7.6409229653e-04  enumerator -7.6409229653e-04  rel.diff 1.4e-16
+  S9a   coef 0.7500  closure2 +1.1627945638e-02  enumerator +1.1627945638e-02  rel.diff 1.5e-16
+  S9b   coef 0.5000  closure2 +9.3463842389e-04  enumerator +9.3463842389e-04  rel.diff 1.2e-16
+  S10   coef 0.1250  closure2 +5.5869723769e-03  enumerator +5.5869723769e-03  rel.diff 1.6e-16
+  G3t   coef 1.0000  closure2 +9.0185947303e-07  enumerator +9.0185947303e-07  rel.diff 0.0e+00
+  G4a   coef 0.7500  closure2 -2.2692185370e-05  enumerator -2.2692185370e-05  rel.diff 1.5e-16
+  G4b   coef 1.5000  closure2 +1.8993310519e-09  enumerator +1.8993310519e-09  rel.diff 2.2e-16
+  B3 with oracle_k3.CLOSURE_COEF = 1.0: +5.343978e-04 vs enumerator +2.671989e-04 (ratio 2.0000)
+  WICK  closure2/oracle -6.0616058617e-03  enumerator -6.0616058617e-03  rel.diff 0.0e+00
+completeness at network order <= 4: 187 connected diagrams; 18 are degree-1 gate dressings (exact through P(z>0)); not covered by a closure2 term: none
+leaf decomposition at network order <= 4: 81 C-leaf diagrams, 106 non-leaf covered by 27 shapes, uncovered: 0; NONLEAF shapes with a C-leaf: none
+
+leaf identity, smoothed relu delta=0.5: (exact - leaf + two-leaf - non-leaf diagrams to order N) / lam^(N+1)
+   lam     |leaf part|/|k3|     N=1        N=2        N=3        N=4        N=5    
+   0.200       0.734       -2.6378e-01 +2.9360e-01 +1.1381e-01 -1.1811e-02 -2.9012e+00
+   0.100       0.832       -1.8708e-01 +1.6583e-01 -2.1111e-01 +2.7490e+00 -3.3309e+00
+   0.070       0.865       -1.6046e-01 +1.6578e-01 -3.9032e-01 +3.2585e+00 -1.7287e+00
+   0.050       0.887       -1.4376e-01 +1.7777e-01 -5.1057e-01 +3.4414e+00 -4.6148e-01
+   0.035       0.904       -1.3231e-01 +1.9258e-01 -5.9439e-01 +3.4918e+00 +4.8255e-01
+   0.025       0.917       -1.2535e-01 +2.0489e-01 -6.4505e-01 +3.4860e+00 +1.0723e+00
+
+dressing of a vertex (smoothed relu delta=0.5): |E f^(d)(z) - series| after orders 0, 1, 2; d = 1 and d = 2
+  lam 0.400  d=1: 2.52e-02 3.02e-03 1.84e-03   d=2: 1.97e-02 1.12e-02 7.33e-03
+  lam 0.200  d=1: 4.16e-02 2.82e-03 2.57e-03   d=2: 3.63e-02 1.47e-02 1.46e-02
+  lam 0.100  d=1: 3.13e-02 2.19e-03 1.47e-03   d=2: 2.06e-02 4.21e-04 1.84e-03
+  lam 0.050  d=1: 1.68e-02 5.12e-04 2.16e-04   d=2: 1.16e-02 4.32e-04 1.88e-04
+  lam 0.025  d=1: 8.51e-03 1.11e-04 2.76e-05   d=2: 6.17e-03 1.54e-04 2.28e-05
+
+residual_N / lam^(N+1), smoothed relu delta=0.5, quadrature 72^3 (17736 diagrams up to order 5)
+   lam       N=1        N=2        N=3        N=4        N=5    
+   0.200  -1.1408e+00 +9.2521e-01 -4.1091e-01 -1.8148e+00 +4.1767e+00
+   0.100  -1.1368e+00 +7.7399e-01 -4.0329e-01 +6.2974e-02 -1.7986e+00
+   0.070  -1.1156e+00 +7.3128e-01 -4.4321e-01 +5.4816e-01 -2.7617e+00
+   0.050  -1.0967e+00 +7.0540e-01 -4.6695e-01 +8.0074e-01 -3.2316e+00
+   0.035  -1.0803e+00 +6.8737e-01 -4.7939e-01 +9.4784e-01 -3.5259e+00
+   0.025  -1.0685e+00 +6.7595e-01 -4.8399e-01 +1.0259e+00 -3.7052e+00
+
+residual_N / lam^(N+1), smoothed relu delta=0.25, quadrature 112^3 (17736 diagrams up to order 5)
+   lam       N=1        N=2        N=3        N=4        N=5    
+   0.200  -1.2422e+00 +1.0545e+00 -7.0997e-01 -3.2886e+00 +1.6330e+01
+   0.100  -1.2662e+00 +9.4065e-01 -8.3112e-01 -1.0054e+00 +7.5220e+00
+   0.070  -1.2499e+00 +9.0772e-01 -9.1889e-01 -1.9444e-01 +4.6134e+00
+   0.050  -1.2332e+00 +8.8771e-01 -9.7021e-01 +3.0212e-01 +2.8215e+00
+   0.035  -1.2178e+00 +8.7359e-01 -9.9822e-01 +6.5972e-01 +2.4268e+00
+   0.025  -1.2063e+00 +8.6449e-01 -1.0084e+00 +9.7947e-01 +7.0934e+00

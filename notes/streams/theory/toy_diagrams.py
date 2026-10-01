@@ -275,7 +275,49 @@ SHAPES = {
     "S9a": [[((2, 2, 1), 1)]],
     "S9b": [[((3, 1, 1), 1)]],
     "S10": [[((2, 2, 2), 1)]],
+    "G3t": [[(E_ij, 1), (E_jk, 1), (E_ik, 1)]],
+    "G4a": [[(E_ij, 2), (E_jk, 2)]],
+    "G4b": [[(E_ij, 2), (E_jk, 1), (E_ik, 1)]],
 }
+NONLEAF = ["B0", "B6", "B7", "G3t", "S3a1", "S3a2", "S3b1", "S3b2", "S3b3", "S4a", "S4b", "S4c", "S4d", "S4e", "S5a",
+           "S5b", "S6a", "S6b", "S7a", "S7b", "S7c", "S8", "G4a", "G4b", "S9a", "S9b", "S10"]
+
+
+def has_c_leaf(diag):
+    """some vertex has non-self degree 1 and that leg is on a C edge."""
+    nonself = [(c, m) for c, m in diag if sum(1 for x in c if x) >= 2]
+    dn = degrees(nonself)
+    for v in range(V):
+        if dn[v] == 1:
+            for c, m in nonself:
+                if c[v] and sum(c) == 2:
+                    return True
+    return False
+
+
+def check_leaf_completeness(N=4):
+    """network order <= N: every diagram is a C-leaf diagram (resummed by Phi_k C_ik Gamma_ij) or, up to gate
+    dressings of degree-1 vertices, one of the NONLEAF shapes; and no NONLEAF shape has a C-leaf."""
+    diags = enumerate_diagrams(N, order_network, mmax=N + 2)
+    nl = set()
+    for name in NONLEAF:
+        nl |= shape_signatures(name, [d for d, _ in diags])
+    bad_nl = [nm for nm in NONLEAF if any(has_c_leaf(sg) for sg in shape_signatures(nm, [d for d, _ in diags]))]
+    missing = []
+    nleaf = 0
+    for d, o in diags:
+        if has_c_leaf(d):
+            nleaf += 1
+            continue
+        nonself = tuple(sorted((c, m) for c, m in d if sum(1 for x in c if x) >= 2))
+        if canon(nonself) in nl:
+            continue
+        missing.append((o, canon(d)))
+    print(f"leaf decomposition at network order <= {N}: {nleaf} C-leaf diagrams, {len(diags) - nleaf - len(missing)} non-leaf "
+          f"covered by {len(NONLEAF)} shapes, uncovered: {len(missing)}; NONLEAF shapes with a C-leaf: {bad_nl or 'none'}")
+    for o, sg in missing[:10]:
+        print("   ", o, sg)
+    return missing
 
 
 def shape_signatures(name, diags):
@@ -427,25 +469,128 @@ def check_closure_ladder_relu(lams=(0.3, 0.2, 0.1), q=(160, 224), N=5):
               + " ".join(f"{abs(ex - cum[k]) / abs(ex):.2e}" for k in range(1, N + 1)))
 
 
-def check_dressing(lams=(0.4, 0.2, 0.1, 0.05)):
-    """the degree-1 vertex weight: P(z_v > 0) exact vs Phi(alpha) + the self-hyperedge series
-    kappa3/3! w4 + kappa4/4! w5 + kappa3^2/(2 3!^2) w7 (orders t, t^2, t^2)."""
-    print("\ndressing of a degree-1 vertex: |P(z>0) - series| / P after orders 0, 1, 2 in t")
+def check_dressing(lams=(0.4, 0.2, 0.1, 0.05, 0.025), delta=0.5, q=64):
+    """the dressed vertex weight E_true[f^(d)(z_v)] (d = 1, 2) of the smoothed relu, exact by quadrature, against the
+    Gaussian weight plus the self-hyperedge series kappa3/3! w(d+3) + kappa4/4! w(d+4) + kappa3^2/(2 3!^2) w(d+6)
+    (orders t^0, t^1, t^2).  At delta -> 0 these are P(z > 0) and the density of z at 0."""
+    print(f"\ndressing of a vertex (smoothed relu delta={delta}): |E f^(d)(z) - series| after orders 0, 1, 2; d = 1 and d = 2")
+    X, Wq = gh_grid(q)
     for lam in lams:
         toy = Toy(lam, lam, seed=3, cubic=1.0)
         kap, mean = cumulants(toy, 4, q=16)
-        X, Wq = gh_grid(200)
-        g = Wq @ (toy.z(X)[:, 0] > 0)
-        w = relu_weights(mean[0], kap[(0, 0)], 10)
+        z0 = toy.z(X)[:, 0]
+        u = z0 / delta
+        e1 = float(Wq @ (0.5 * (1 + erf_v(u / sqrt(2)))))                 # E f'(z)
+        e2 = float(Wq @ (np.exp(-0.5 * u * u) / sqrt(2 * pi) / delta))     # E f''(z)
+        w = relu_weights(mean[0], kap[(0, 0)] + delta ** 2, 12)
         k3, k4 = kap[(0, 0, 0)], kap[(0, 0, 0, 0)]
-        s0 = w[1]; s1 = s0 + k3 / 6 * w[4]; s2 = s1 + k4 / 24 * w[5] + k3 ** 2 / 72 * w[7]
-        print(f"  lam {lam:.2f}: P {g:.8f}  errors {abs(g - s0):.2e} {abs(g - s1):.2e} {abs(g - s2):.2e}")
+        row = []
+        for d, ex in ((1, e1), (2, e2)):
+            s0 = w[d]; s1 = s0 + k3 / 6 * w[d + 3]; s2 = s1 + k4 / 24 * w[d + 4] + k3 ** 2 / 72 * w[d + 6]
+            row.append(f"d={d}: {abs(ex - s0):.2e} {abs(ex - s1):.2e} {abs(ex - s2):.2e}")
+        print(f"  lam {lam:.3f}  " + "   ".join(row))
+
+
+def check_scaling_table(delta=0.5, lams=(0.2, 0.1, 0.07, 0.05, 0.035, 0.025), N=5, q=72):
+    """signed residual after generic order N divided by lam^(N+1): must tend to a constant as lam -> 0."""
+    diags = enumerate_diagrams(N, order_generic, mmax=N + 2)
+    print(f"\nresidual_N / lam^(N+1), smoothed relu delta={delta}, quadrature {q}^3 ({len(diags)} diagrams up to order {N})")
+    print("   lam    " + " ".join(f"   N={k}    " for k in range(1, N + 1)))
+    for lam in lams:
+        toy = Toy(lam, lam, seed=2, cubic=1.0)
+        kap, mean = cumulants(toy, N + 2, q=4 * (N + 2))
+        w = vertex_weights(kap, mean, delta, dmax=2 * N + 8)
+        ex, _ = kappa3_f(toy, delta, q)
+        part = np.zeros(N + 1)
+        for d, o in diags:
+            part[o] += weight(d, kap, w)
+        cum = np.cumsum(part)
+        print(f"  {lam:6.3f}  " + " ".join(f"{(ex - cum[k]) / lam ** (k + 1):+.4e}" for k in range(1, N + 1)))
+
+
+def check_leaf_identity(delta=0.5, lams=(0.2, 0.1, 0.07, 0.05, 0.035, 0.025), N=5, q=72):
+    """exact kappa3 - [sum_roles Phi_k C_ik Gamma_ij - sum_centers Phi_j Phi_k C_ij C_ik p_i] (all from quadrature:
+    Gamma_ij = Cov(f'(z_i), f(z_j)), Phi = E f', p = E f'') must equal the sum of the diagrams WITHOUT a C-leaf;
+    the residual after the non-leaf diagrams of generic order <= N, divided by lam^(N+1), must tend to a constant."""
+    diags = [(d, o) for d, o in enumerate_diagrams(N, order_generic, mmax=N + 2) if not has_c_leaf(d)]
+    X, Wq = gh_grid(q)
+    print(f"\nleaf identity, smoothed relu delta={delta}: (exact - leaf + two-leaf - non-leaf diagrams to order N) / lam^(N+1)")
+    print("   lam     |leaf part|/|k3|  " + " ".join(f"   N={k}    " for k in range(1, N + 1)))
+    for lam in lams:
+        toy = Toy(lam, lam, seed=2, cubic=1.0)
+        kap, mean = cumulants(toy, N + 2, q=4 * (N + 2))
+        w = vertex_weights(kap, mean, delta, dmax=2 * N + 8)
+        Z = toy.z(X)
+        F = f_smooth(Z, delta); F1 = 0.5 * (1 + erf_v(Z / delta / sqrt(2))); F2 = np.exp(-0.5 * (Z / delta) ** 2) / sqrt(2 * pi) / delta
+        Fc = F - Wq @ F
+        ex = float(Wq @ (Fc[:, 0] * Fc[:, 1] * Fc[:, 2]))
+        Phi = Wq @ F1; p = Wq @ F2
+        F1c = F1 - Phi
+        Gam = np.einsum("p,pi,pj->ij", Wq, F1c, Fc)
+        C = np.array([[kap[tuple(sorted((i, j)))] for j in range(V)] for i in range(V)])
+        leaf = 0.0
+        for k, i, j in itertools.permutations(range(V)):
+            leaf += Phi[k] * C[i, k] * Gam[i, j]
+        two = 0.0
+        for i in range(V):
+            j, k = [v for v in range(V) if v != i]
+            two += Phi[j] * Phi[k] * C[i, j] * C[i, k] * p[i]
+        part = np.zeros(N + 1)
+        for d, o in diags:
+            part[o] += weight(d, kap, w)
+        cum = np.cumsum(part)
+        rem = ex - leaf + two
+        print(f"  {lam:6.3f}   {abs(leaf - two) / abs(ex):9.3f}       " + " ".join(f"{(rem - cum[k]) / lam ** (k + 1):+.4e}" for k in range(1, N + 1)))
+
+
+def in_tclass(diag):
+    """exactly one all-distinct kappa3 hyperedge, every other non-self hyperedge on one and the same pair."""
+    nonself = [(c, m) for c, m in diag if sum(1 for x in c if x) >= 2]
+    tri = [(c, m) for c, m in nonself if all(c)]
+    if len(tri) != 1 or tri[0][0] != (1, 1, 1) or tri[0][1] != 1:
+        return False
+    pairs = {tuple(v for v in range(V) if c[v]) for c, m in nonself if not all(c)}
+    return len(pairs) <= 1
+
+
+def check_tclass_identity(delta=0.5, lams=(0.2, 0.1, 0.07, 0.05, 0.035, 0.025), N=5, q=72):
+    """exact - LEAF + TWOLEAF - T_ijk (Phi_i Phi_j Phi_k + sum_pairs Phi_k Cov(f'(z_i), f'(z_j))) must equal the sum of
+    the diagrams that are neither C-leaf nor in the T class; residual after order N over lam^(N+1)."""
+    diags = [(d, o) for d, o in enumerate_diagrams(N, order_generic, mmax=N + 2) if not has_c_leaf(d) and not in_tclass(d)]
+    X, Wq = gh_grid(q)
+    print(f"\nT-class + leaf identity, smoothed relu delta={delta}: residual after the remaining diagrams to order N, / lam^(N+1)")
+    for lam in lams:
+        toy = Toy(lam, lam, seed=2, cubic=1.0)
+        kap, mean = cumulants(toy, N + 2, q=4 * (N + 2))
+        w = vertex_weights(kap, mean, delta, dmax=2 * N + 8)
+        Z = toy.z(X)
+        F = f_smooth(Z, delta); F1 = 0.5 * (1 + erf_v(Z / delta / sqrt(2))); F2 = np.exp(-0.5 * (Z / delta) ** 2) / sqrt(2 * pi) / delta
+        Fc = F - Wq @ F
+        ex = float(Wq @ (Fc[:, 0] * Fc[:, 1] * Fc[:, 2]))
+        Phi = Wq @ F1; p = Wq @ F2
+        F1c = F1 - Phi
+        Gam = np.einsum("p,pi,pj->ij", Wq, F1c, Fc)
+        Gg = np.einsum("p,pi,pj->ij", Wq, F1c, F1c)
+        C = np.array([[kap[tuple(sorted((i, j)))] for j in range(V)] for i in range(V)])
+        leaf = sum(Phi[k] * C[i, k] * Gam[i, j] for k, i, j in itertools.permutations(range(V)))
+        two = sum(Phi[[v for v in range(V) if v != i][0]] * Phi[[v for v in range(V) if v != i][1]]
+                  * C[i, [v for v in range(V) if v != i][0]] * C[i, [v for v in range(V) if v != i][1]] * p[i] for i in range(V))
+        T = kap[(0, 1, 2)]
+        tcl = T * (Phi[0] * Phi[1] * Phi[2] + Phi[2] * Gg[0, 1] + Phi[0] * Gg[1, 2] + Phi[1] * Gg[0, 2])
+        part = np.zeros(N + 1)
+        for d, o in diags:
+            part[o] += weight(d, kap, w)
+        cum = np.cumsum(part)
+        rem = ex - leaf + two - tcl
+        print(f"  {lam:6.3f}  |T-class|/|k3| {abs(tcl) / abs(ex):6.3f}   " + " ".join(f"{(rem - cum[k]) / lam ** (k + 1):+.4e}" for k in range(1, N + 1)))
 
 
 if __name__ == "__main__":
     check_closure2_identity()
     check_completeness(4)
+    check_leaf_completeness(4)
+    check_leaf_identity()
+    check_tclass_identity()
     check_dressing()
-    check_scaling(delta=0.5)
-    check_scaling(delta=0.25, q=96)
-    check_closure_ladder_relu()
+    check_scaling_table(delta=0.5)
+    check_scaling_table(delta=0.25, q=112)

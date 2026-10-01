@@ -35,7 +35,7 @@ Layout
 | `env.sh` | names, regions, VM size, slots per node; source it first |
 | `00_quotas.sh` | vCPU quota table per region/family, Batch account quotas |
 | `01_bootstrap.sh` | resource group, storage + containers, container registry, Batch accounts (one per region) |
-| `02_build_image.sh` | cloud build of `runner/Dockerfile` into the registry |
+| `02_build_image.sh` | cloud build (local docker fallback) of `runner/Dockerfile` and `runner/Dockerfile.gpu` into the registry |
 | `03_stage_dataset.sh` | one Batch task that copies the HF dataset into blob |
 | `04_pools.sh` | autoscaling container pools, one per region, scale-to-zero when idle |
 | `05_gpu_pool.sh` | one autoscaling GPU pool (A100 by default) for bakes and moment atlases |

@@ -34,10 +34,11 @@ captures each `--json-file` payload. It then checks:
 
 **Result on the fixed tree:** all steps pass. 330 az calls (34 distinct command+flag sets), 0
 failing. 30 JSON objects validate with 0 problems. 18 task command lines and 12 autoscale formulas
-pass with 0 problems. shellcheck is clean, and py_compile is clean. The 20 commands used in the
-first-run checklist below were checked the same way: 0 failing.
+pass with 0 problems. shellcheck is clean, and py_compile is clean. The 17 distinct az commands
+quoted in the first-run checklist below were checked the same way: 0 failing (flags only; the output
+keys their `--query` expressions read were checked against `azure.cli.core.util.todict` of the SDK models).
 
-**Negative control:** the same harness run on the original files (git HEAD) flags the `%`
+**Negative control:** the same harness run on the original files (commit 995baf8, with `FAKE_AZ_ACR_PASS` set to a password without quotes: the default one contains a `"`, which breaks the original heredoc pool JSON, F21, before the formula lint is reached) flags the `%`
 operator in all 11 CPU pool formulas. It also flags `--gpus` in all 7 GPU tasks, 4 invalid task
 ids, the stage task's unwrapped command line, non-admin container tasks, the `collect` crash and the
 `--shards 7` crash. Its az calls and JSON property names were all valid: the original's defects
@@ -79,6 +80,7 @@ Ordered by impact. "Would have" describes the first run with the network open.
 | F2 | 04 | Autoscale formula used `pending % slots`: `%` is not in the autoscale operator table | every pool create fails with an invalid-formula error (`autoscale enable` too) | `ceil(pending / slots)` (`ceil` is a documented built-in) |
 | F3 | 04, 05 | `max($PendingTasks.GetSample(TimeInterval_Minute * 2, 0))` with no guard for missing samples (new pool, sample lag) | formula evaluation errors / no scaling while samples are missing | Documented pattern: `GetSamplePercent` guard, keep the current target when fewer than 25 % of samples exist, `max(0, min(MAX, need))` (one `autoscale_formula` helper in `env.sh` for both pools) |
 | F4 | 03, 04, 05, grid.py | `az batch account login` without `--shared-key-auth` uses Entra ID. Owner/Contributor carry no Batch *DataActions*, and Microsoft's tutorial states the "Azure Batch Data Contributor" role "is required to create pools, jobs, and tasks" | 403 on every pool/job/task call | `batch_login` helper with `--shared-key-auth` (needs only listKeys on the account, which Owner/Contributor have) |
+| F24 | env.sh, grid.py | (found in review) `az batch account login` stores the current account in `~/.azure/config`, which every az process shares. `grid.py` and the scripts switch accounts region by region, so a second az process (`grid.py status` while `submit` runs, or `04_pools.sh`) moves the first one to another region's account mid-run. `az batch job create` accepts a pool id that does not exist in that account, so the tasks sit pending with no error | jobs and tasks silently created in the wrong region's account, never scheduled | `batch_login` (both copies) takes the credentials from `login --shared-key-auth --show` and exports them as `AZURE_BATCH_ACCOUNT`/`AZURE_BATCH_ENDPOINT`/`AZURE_BATCH_ACCESS_KEY`/`AZURE_BATCH_AUTH_MODE`, which az reads before the config file (knack `CLIConfig.get`; the env names are in `az batch job set --help`) and which stay private to the process. The fake az now refuses data-plane calls made without them |
 | F5 | 01 | `az storage container create --auth-mode login` needs a *Storage Blob Data* role (Owner lacks data actions), and `\|\| true` swallowed the failure | containers never created; every upload/SAS step fails later with a confusing error | account key (`storage_key` helper), no `\|\| true` (create is idempotent) |
 | F6 | 03 | User-delegation SAS (`--auth-mode login --as-user`) needs `generateUserDelegationKey` (a Storage Blob Data role) | staging never starts | account-key SAS, like grid.py |
 | F7 | 03 (+ stage_dataset.py) | Stage task ran as the default non-admin user. Batch maps the task user into the container, and `stage_dataset.py` did `makedirs("/data/stage")` | `PermissionError` at start | `autoUser {scope: pool, elevationLevel: admin}` (root in the container, as the docs advise); scratch and `HF_HOME` (incl. the hf_xet chunk cache) moved to `$AZ_BATCH_TASK_WORKING_DIR` |
@@ -133,14 +135,19 @@ shell on the first failing command.
    where it is 0 or small, and set `MAX_NODES_PER_POOL` to at most quota / 64. Every region must
    resolve the family name; a `?` means `VM_SIZE` is not offered by Batch there.
 4. **Image still supported.** After `batch_login eastus`:
-   `az batch pool supported-images list --query "[?imageReference.offer=='ubuntu-hpc'].{sku:imageReference.sku,agent:nodeAgentSKUId,caps:capabilities,eol:batchSupportEndOfLife}" -o table`.
-   Expect `2204` / `batch.node.ubuntu 22.04` with `DockerCompatible`. If it shows an end-of-life date
-   before 17 Oct 2026 or is missing, switch `POOL_IMAGE`/`NODE_AGENT_SKU` to the listed `2404` /
+   `az batch pool supported-images list --query "[?imageReference.offer=='ubuntu-hpc'].{sku:imageReference.sku,agent:nodeAgentSkuId,caps:capabilities,eol:batchSupportEndOfLife}" -o table`.
+   (az prints the snake_case SDK attribute camel-cased, `nodeAgentSkuId`; the REST spelling
+   `nodeAgentSKUId` would come back empty.) Expect `2204` / `batch.node.ubuntu 22.04` with
+   `DockerCompatible`. If it shows an end-of-life date before 17 Oct 2026 (the Phase 2 submission
+   deadline) or is missing, switch `POOL_IMAGE`/`NODE_AGENT_SKU` to the listed `2404` /
    `batch.node.ubuntu 24.04` pair.
 5. **`./02_build_image.sh`.** Both images build. `az acr repository list -n $ACR -o table` shows
    `whest-runner` and `whest-bake`. On `TasksOperationsNotAllowed` (free-trial subscription), either
    upgrade to pay-as-you-go or run it where `docker` is installed (the script falls back to a local
-   build + push).
+   build + push). Both base images come from Docker Hub; if a cloud build fails on `toomanyrequests`
+   (Docker Hub pull limit on the shared build agents), import them once with
+   `az acr import -n $ACR --source docker.io/library/python:3.11-slim` (and the `pytorch/pytorch` tag)
+   and point the `FROM` lines at `$ACR.azurecr.io/...`.
 6. **`./04_pools.sh`** (and `./05_gpu_pool.sh` once GPU quota exists). Not checkable offline: the
    service accepting `osDisk.diskSizeGB` (if rejected, `OS_DISK_GB=0 ./04_pools.sh`) and the formula
    evaluating at runtime. Check both on one pool:
