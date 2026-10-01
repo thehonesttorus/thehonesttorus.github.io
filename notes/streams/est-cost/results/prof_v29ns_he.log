@@ -1,0 +1,53 @@
+/root/work/whest-p2-cumulant-k3/estimators/estimator_v29_ns.py:691: FlopscopeWarning: stats.norm.pdf promoted its float32 input to float64 to match scipy.stats. If float64 output was not intended, cast the result back with result.astype(np.float32) before downstream operations; float64 operations are billed at twice the float32 dtype rate.
+  flops.stats.norm.pdf(v)
+/root/work/whest-p2-cumulant-k3/estimators/estimator_v29_ns.py:692: FlopscopeWarning: stats.norm.cdf promoted its float32 input to float64 to match scipy.stats. If float64 output was not intended, cast the result back with result.astype(np.float32) before downstream operations; float64 operations are billed at twice the float32 dtype rate.
+  flops.stats.norm.cdf(v)
+/root/work/whest-p2-cumulant-k3/estimators/estimator_v29_ns.py:706: SymmetryLossWarning: Symmetry lost along dims (1, 2): slicing removed all symmetric dim groups. Use as_symmetric() to re-tag if you know the result is symmetric. Suppress with flops.configure(symmetry_warnings=False).
+  fnp.einsum("tij,ti,tj,tg->gij", t3, t3[:, :, 0], t3[:, 0, :], g3)
+/root/work/whest-p2-cumulant-k3/estimators/estimator_v29_ns.py:707: SymmetryLossWarning: Symmetry lost along dims (1, 2): slicing removed all symmetric dim groups. Use as_symmetric() to re-tag if you know the result is symmetric. Suppress with flops.configure(symmetry_warnings=False).
+  fnp.einsum("ti,ti,tg->gi", t3[:, :, 0], t3[:, :, 1], g3)
+/root/work/whest-p2-cumulant-k3/estimators/estimator_v29_ns.py:708: SymmetryLossWarning: Symmetry lost along dims (0, 1): slicing removed all symmetric dim groups. Use as_symmetric() to re-tag if you know the result is symmetric. Suppress with flops.configure(symmetry_warnings=False).
+  fnp.einsum("iq,kqn->kin", m[:, :16], t3[:, :16, :])
+/root/work/whest-p2-cumulant-k3/estimators/estimator_v29_ns.py:708: SymmetryLossWarning: Symmetry lost along dims (1, 2): slicing removed all symmetric dim groups. Use as_symmetric() to re-tag if you know the result is symmetric. Suppress with flops.configure(symmetry_warnings=False).
+  fnp.einsum("iq,kqn->kin", m[:, :16], t3[:, :16, :])
+/root/work/whest-p2-cumulant-k3/estimators/estimator_v29_ns.py:709: SymmetryLossWarning: Symmetry lost along dims (1, 2): slicing removed all symmetric dim groups. Use as_symmetric() to re-tag if you know the result is symmetric. Suppress with flops.configure(symmetry_warnings=False).
+  fnp.einsum("ki,kc->ic", t3[:, :, 0], t3[:, :, 1])
+/root/work/whest-p2-cumulant-k3/estimators/estimator_v29_ns.py:711: SymmetryLossWarning: Symmetry lost along dims (1, 2): slicing removed all symmetric dim groups. Use as_symmetric() to re-tag if you know the result is symmetric. Suppress with flops.configure(symmetry_warnings=False).
+  fnp.einsum("kij,kj->ki", t3, t3[:, 0, :])
+/root/work/whest-p2-cumulant-k3/estimators/estimator_v29_ns.py:712: SymmetryLossWarning: Symmetry lost along dims (1, 2): slicing removed all symmetric dim groups. Use as_symmetric() to re-tag if you know the result is symmetric. Suppress with flops.configure(symmetry_warnings=False).
+  fnp.einsum("ki,ki->i", t3[:, :, 0], t3[:, :, 1])
+/root/work/whest-p2-cumulant-k3/estimators/estimator_v29_ns.py:713: SymmetryLossWarning: Symmetry lost along dims (1, 2): slicing removed all symmetric dim groups. Use as_symmetric() to re-tag if you know the result is symmetric. Suppress with flops.configure(symmetry_warnings=False).
+  fnp.einsum("kij,kqj->iq", t3, t3[:, :16, :])
+/root/work/whest-p2-cumulant-k3/estimators/estimator_v29_ns.py:1157: FlopscopeWarning: stats.norm.pdf promoted its float32 input to float64 to match scipy.stats. If float64 output was not intended, cast the result back with result.astype(np.float32) before downstream operations; float64 operations are billed at twice the float32 dtype rate.
+  phi = flops.stats.norm.pdf(alpha).astype(f32)
+/root/work/whest-p2-cumulant-k3/estimators/estimator_v29_ns.py:1158: FlopscopeWarning: stats.norm.cdf promoted its float32 input to float64 to match scipy.stats. If float64 output was not intended, cast the result back with result.astype(np.float32) before downstream operations; float64 operations are billed at twice the float32 dtype rate.
+  Phi = flops.stats.norm.cdf(alpha).astype(f32)
+{"units": 273.465530149173, "CB": 0.26705618178630175, "resid": 0.7517734229962514, "backend": 129.10813060900082, "overhead": 7.189635875002921, "wall": 137.0496244430542, "ops": 12905}
+{"units": 260.05932163400576, "CB": 0.25396418128320875, "resid": 0.7601613060007253, "backend": 142.87164701300094, "overhead": 6.648787247998371, "wall": 150.28067564964294, "ops": 13121}
+gap_sum 1.074s  resid 0.760s
+young_transport       60.71 u   1753 calls    181.3 ms
+hub                   54.90 u   1811 calls    194.5 ms
+shared                27.91 u   1083 calls     88.5 ms
+old_legs              27.89 u   1105 calls     84.6 ms
+j_rf                  20.76 u    153 calls     12.3 ms
+fb                    11.45 u    533 calls     49.2 ms
+j_rot                  9.14 u     42 calls      4.1 ms
+j_proj                 7.50 u     20 calls      3.4 ms
+cpre                   7.10 u   1418 calls     91.8 ms
+j_tier2                6.70 u    135 calls     11.6 ms
+thin_transport         5.86 u     58 calls      9.4 ms
+j_qc                   3.75 u     10 calls      0.3 ms
+thin                   3.70 u     70 calls      4.7 ms
+elem                   3.27 u    424 calls     33.7 ms
+nonlin                 2.92 u    990 calls     89.8 ms
+j_core                 2.82 u     59 calls      3.7 ms
+birth                  2.47 u   1485 calls     90.4 ms
+feed                   0.49 u    189 calls     14.6 ms
+qc_transport           0.37 u      1 calls      0.2 ms
+pk2k                   0.12 u    705 calls     38.6 ms
+assemble               0.07 u     75 calls     10.3 ms
+wick_scale             0.06 u     84 calls      9.2 ms
+regen                  0.05 u    313 calls     19.1 ms
+other                  0.03 u    131 calls      8.4 ms
+dslices                0.01 u     26 calls      0.8 ms
+wick                   0.01 u    448 calls     19.4 ms

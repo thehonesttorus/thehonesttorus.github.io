@@ -1,0 +1,107 @@
+/home/user/thehonesttorus.github.io/notes/streams/est-cost/bundles/v29e/estimator.py:855: FlopscopeWarning: stats.norm.pdf promoted its float32 input to float64 to match scipy.stats. If float64 output was not intended, cast the result back with result.astype(np.float32) before downstream operations; float64 operations are billed at twice the float32 dtype rate.
+  flops.stats.norm.pdf(v)
+/home/user/thehonesttorus.github.io/notes/streams/est-cost/bundles/v29e/estimator.py:856: FlopscopeWarning: stats.norm.cdf promoted its float32 input to float64 to match scipy.stats. If float64 output was not intended, cast the result back with result.astype(np.float32) before downstream operations; float64 operations are billed at twice the float32 dtype rate.
+  flops.stats.norm.cdf(v)
+/home/user/thehonesttorus.github.io/notes/streams/est-cost/bundles/v29e/estimator.py:870: SymmetryLossWarning: Symmetry lost along dims (1, 2): slicing removed all symmetric dim groups. Use as_symmetric() to re-tag if you know the result is symmetric. Suppress with flops.configure(symmetry_warnings=False).
+  fnp.einsum("tij,ti,tj,tg->gij", t3, t3[:, :, 0], t3[:, 0, :], g3)
+/home/user/thehonesttorus.github.io/notes/streams/est-cost/bundles/v29e/estimator.py:871: SymmetryLossWarning: Symmetry lost along dims (1, 2): slicing removed all symmetric dim groups. Use as_symmetric() to re-tag if you know the result is symmetric. Suppress with flops.configure(symmetry_warnings=False).
+  fnp.einsum("ti,ti,tg->gi", t3[:, :, 0], t3[:, :, 1], g3)
+/home/user/thehonesttorus.github.io/notes/streams/est-cost/bundles/v29e/estimator.py:872: SymmetryLossWarning: Symmetry lost along dims (0, 1): slicing removed all symmetric dim groups. Use as_symmetric() to re-tag if you know the result is symmetric. Suppress with flops.configure(symmetry_warnings=False).
+  fnp.einsum("iq,kqn->kin", m[:, :16], t3[:, :16, :])
+/home/user/thehonesttorus.github.io/notes/streams/est-cost/bundles/v29e/estimator.py:872: SymmetryLossWarning: Symmetry lost along dims (1, 2): slicing removed all symmetric dim groups. Use as_symmetric() to re-tag if you know the result is symmetric. Suppress with flops.configure(symmetry_warnings=False).
+  fnp.einsum("iq,kqn->kin", m[:, :16], t3[:, :16, :])
+/home/user/thehonesttorus.github.io/notes/streams/est-cost/bundles/v29e/estimator.py:873: SymmetryLossWarning: Symmetry lost along dims (1, 2): slicing removed all symmetric dim groups. Use as_symmetric() to re-tag if you know the result is symmetric. Suppress with flops.configure(symmetry_warnings=False).
+  fnp.einsum("ki,kc->ic", t3[:, :, 0], t3[:, :, 1])
+/home/user/thehonesttorus.github.io/notes/streams/est-cost/bundles/v29e/estimator.py:875: SymmetryLossWarning: Symmetry lost along dims (1, 2): slicing removed all symmetric dim groups. Use as_symmetric() to re-tag if you know the result is symmetric. Suppress with flops.configure(symmetry_warnings=False).
+  fnp.einsum("kij,kj->ki", t3, t3[:, 0, :])
+/home/user/thehonesttorus.github.io/notes/streams/est-cost/bundles/v29e/estimator.py:876: SymmetryLossWarning: Symmetry lost along dims (1, 2): slicing removed all symmetric dim groups. Use as_symmetric() to re-tag if you know the result is symmetric. Suppress with flops.configure(symmetry_warnings=False).
+  fnp.einsum("ki,ki->i", t3[:, :, 0], t3[:, :, 1])
+/home/user/thehonesttorus.github.io/notes/streams/est-cost/bundles/v29e/estimator.py:877: SymmetryLossWarning: Symmetry lost along dims (1, 2): slicing removed all symmetric dim groups. Use as_symmetric() to re-tag if you know the result is symmetric. Suppress with flops.configure(symmetry_warnings=False).
+  fnp.einsum("kij,kqj->iq", t3, t3[:, :16, :])
+/home/user/thehonesttorus.github.io/notes/streams/est-cost/bundles/v29e/estimator.py:1343: FlopscopeWarning: stats.norm.pdf promoted its float32 input to float64 to match scipy.stats. If float64 output was not intended, cast the result back with result.astype(np.float32) before downstream operations; float64 operations are billed at twice the float32 dtype rate.
+  phi = flops.stats.norm.pdf(alpha).astype(f32)
+/home/user/thehonesttorus.github.io/notes/streams/est-cost/bundles/v29e/estimator.py:1344: FlopscopeWarning: stats.norm.cdf promoted its float32 input to float64 to match scipy.stats. If float64 output was not intended, cast the result back with result.astype(np.float32) before downstream operations; float64 operations are billed at twice the float32 dtype rate.
+  Phi = flops.stats.norm.cdf(alpha).astype(f32)
+{"units": 274.6967273452319, "CB": 0.26825852279807805, "resid": 0.6945841120123077, "backend": 85.2823338330304, "overhead": 4.896626158957133, "wall": 90.87364602088928, "ops": 10710}
+{"units": 261.15180976176634, "CB": 0.25503106422047495, "resid": 0.7515939130162224, "backend": 110.77656324696181, "overhead": 4.847307980021924, "wall": 116.37553381919861, "ops": 10063}
+{"units": 258.89087683940306, "CB": 0.25282312191347955, "resid": 0.737072164015899, "backend": 89.35668394800723, "overhead": 4.742301933976705, "wall": 94.83618521690369, "ops": 9827}
+{
+"_predict_core": {
+"calls": 3428,
+"units": 63.85895994352177
+},
+"_assemble": {
+"calls": 1757,
+"units": 1.9664077758789062
+},
+"_dslices": {
+"calls": 1292,
+"units": 23.34972429368645
+},
+"_lcombos": {
+"calls": 1004,
+"units": 1.6265192031860352
+},
+"_rcombos": {
+"calls": 1004,
+"units": 2.3861160278320312
+},
+"_leaf_mm": {
+"calls": 551,
+"units": 63.693443775177
+},
+"_leaf_hub": {
+"calls": 210,
+"units": 1.2891416549682617
+},
+"prod": {
+"calls": 168,
+"units": 51.17869472503662
+},
+"_zero_diag": {
+"calls": 164,
+"units": 7.82012939453125e-05
+},
+"_sym_product": {
+"calls": 98,
+"units": 0.02734375
+},
+"_hub4": {
+"calls": 51,
+"units": 22.93272113800049
+},
+"ab": {
+"calls": 30,
+"units": 1.430511474609375e-05
+},
+"<dictcomp>": {
+"calls": 25,
+"units": 1.3210810720920563e-05
+},
+"mm": {
+"calls": 19,
+"units": 26.535186767578125
+},
+"?": {
+"calls": 16,
+"units": 0.0
+},
+"<listcomp>": {
+"calls": 16,
+"units": 9.685754776000977e-08
+},
+"full": {
+"calls": 6,
+"units": 0.0
+},
+"make": {
+"calls": 2,
+"units": 0.045795440673828125
+},
+"predict": {
+"calls": 2,
+"units": 1.5258323401212692e-05
+}
+}
+gap_sum 1.022s  resid 0.737s
+other                258.89 u   9827 calls   1022.1 ms

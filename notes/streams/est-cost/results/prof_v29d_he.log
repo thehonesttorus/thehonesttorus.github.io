@@ -1,0 +1,29 @@
+/home/user/thehonesttorus.github.io/notes/streams/est-cost/bundles/v29d/estimator.py:854: FlopscopeWarning: stats.norm.pdf promoted its float32 input to float64 to match scipy.stats. If float64 output was not intended, cast the result back with result.astype(np.float32) before downstream operations; float64 operations are billed at twice the float32 dtype rate.
+  flops.stats.norm.pdf(v)
+/home/user/thehonesttorus.github.io/notes/streams/est-cost/bundles/v29d/estimator.py:855: FlopscopeWarning: stats.norm.cdf promoted its float32 input to float64 to match scipy.stats. If float64 output was not intended, cast the result back with result.astype(np.float32) before downstream operations; float64 operations are billed at twice the float32 dtype rate.
+  flops.stats.norm.cdf(v)
+/home/user/thehonesttorus.github.io/notes/streams/est-cost/bundles/v29d/estimator.py:869: SymmetryLossWarning: Symmetry lost along dims (1, 2): slicing removed all symmetric dim groups. Use as_symmetric() to re-tag if you know the result is symmetric. Suppress with flops.configure(symmetry_warnings=False).
+  fnp.einsum("tij,ti,tj,tg->gij", t3, t3[:, :, 0], t3[:, 0, :], g3)
+/home/user/thehonesttorus.github.io/notes/streams/est-cost/bundles/v29d/estimator.py:870: SymmetryLossWarning: Symmetry lost along dims (1, 2): slicing removed all symmetric dim groups. Use as_symmetric() to re-tag if you know the result is symmetric. Suppress with flops.configure(symmetry_warnings=False).
+  fnp.einsum("ti,ti,tg->gi", t3[:, :, 0], t3[:, :, 1], g3)
+/home/user/thehonesttorus.github.io/notes/streams/est-cost/bundles/v29d/estimator.py:871: SymmetryLossWarning: Symmetry lost along dims (0, 1): slicing removed all symmetric dim groups. Use as_symmetric() to re-tag if you know the result is symmetric. Suppress with flops.configure(symmetry_warnings=False).
+  fnp.einsum("iq,kqn->kin", m[:, :16], t3[:, :16, :])
+/home/user/thehonesttorus.github.io/notes/streams/est-cost/bundles/v29d/estimator.py:871: SymmetryLossWarning: Symmetry lost along dims (1, 2): slicing removed all symmetric dim groups. Use as_symmetric() to re-tag if you know the result is symmetric. Suppress with flops.configure(symmetry_warnings=False).
+  fnp.einsum("iq,kqn->kin", m[:, :16], t3[:, :16, :])
+/home/user/thehonesttorus.github.io/notes/streams/est-cost/bundles/v29d/estimator.py:872: SymmetryLossWarning: Symmetry lost along dims (1, 2): slicing removed all symmetric dim groups. Use as_symmetric() to re-tag if you know the result is symmetric. Suppress with flops.configure(symmetry_warnings=False).
+  fnp.einsum("ki,kc->ic", t3[:, :, 0], t3[:, :, 1])
+/home/user/thehonesttorus.github.io/notes/streams/est-cost/bundles/v29d/estimator.py:874: SymmetryLossWarning: Symmetry lost along dims (1, 2): slicing removed all symmetric dim groups. Use as_symmetric() to re-tag if you know the result is symmetric. Suppress with flops.configure(symmetry_warnings=False).
+  fnp.einsum("kij,kj->ki", t3, t3[:, 0, :])
+/home/user/thehonesttorus.github.io/notes/streams/est-cost/bundles/v29d/estimator.py:875: SymmetryLossWarning: Symmetry lost along dims (1, 2): slicing removed all symmetric dim groups. Use as_symmetric() to re-tag if you know the result is symmetric. Suppress with flops.configure(symmetry_warnings=False).
+  fnp.einsum("ki,ki->i", t3[:, :, 0], t3[:, :, 1])
+/home/user/thehonesttorus.github.io/notes/streams/est-cost/bundles/v29d/estimator.py:876: SymmetryLossWarning: Symmetry lost along dims (1, 2): slicing removed all symmetric dim groups. Use as_symmetric() to re-tag if you know the result is symmetric. Suppress with flops.configure(symmetry_warnings=False).
+  fnp.einsum("kij,kqj->iq", t3, t3[:, :16, :])
+/home/user/thehonesttorus.github.io/notes/streams/est-cost/bundles/v29d/estimator.py:1339: FlopscopeWarning: stats.norm.pdf promoted its float32 input to float64 to match scipy.stats. If float64 output was not intended, cast the result back with result.astype(np.float32) before downstream operations; float64 operations are billed at twice the float32 dtype rate.
+  phi = flops.stats.norm.pdf(alpha).astype(f32)
+/home/user/thehonesttorus.github.io/notes/streams/est-cost/bundles/v29d/estimator.py:1340: FlopscopeWarning: stats.norm.cdf promoted its float32 input to float64 to match scipy.stats. If float64 output was not intended, cast the result back with result.astype(np.float32) before downstream operations; float64 operations are billed at twice the float32 dtype rate.
+  Phi = flops.stats.norm.cdf(alpha).astype(f32)
+{"units": 274.6962390639819, "CB": 0.26825804596091984, "resid": 0.7208633769976132, "backend": 88.62326259100723, "overhead": 4.845137296995063, "wall": 94.18932604789734, "ops": 10758}
+{"units": 261.15180976176634, "CB": 0.25503106422047495, "resid": 0.7656775029804521, "backend": 112.68502061299773, "overhead": 4.5868659600221235, "wall": 118.03762745857239, "ops": 10105}
+{"units": 258.89087683940306, "CB": 0.25282312191347955, "resid": 0.695980259015414, "backend": 90.01125817901175, "overhead": 4.396688143972824, "wall": 95.10398268699646, "ops": 9869}
+gap_sum 0.950s  resid 0.696s
+other                258.89 u   9869 calls    949.8 ms
