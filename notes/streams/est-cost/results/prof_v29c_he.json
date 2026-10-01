@@ -1,0 +1,216 @@
+{
+ "est": "bundles/v29c/estimator.py",
+ "mlp": "he",
+ "calls": [
+  {
+   "units": 274.56989072915167,
+   "CB": 0.2681346589151872,
+   "resid": 0.8113148559950787,
+   "backend": 112.84612782900513,
+   "overhead": 6.034878764999803,
+   "wall": 119.69244837760925,
+   "ops": 11847
+  },
+  {
+   "units": 261.08359359856695,
+   "CB": 0.25496444687360054,
+   "resid": 0.8016673089905453,
+   "backend": 141.65610901702098,
+   "overhead": 5.3400032609883965,
+   "wall": 147.79786133766174,
+   "ops": 11192
+  }
+ ],
+ "gap_sum": 1.0849155015039287,
+ "family": {
+  "other": {
+   "units": 261.08359359856695,
+   "calls": 11192,
+   "gap_ms": 1084.9155015039287
+  }
+ },
+ "layer": {
+  "--": {
+   "units": 261.08359359856695,
+   "calls": 11192,
+   "gap_ms": 1084.9155015039287
+  }
+ },
+ "family_op": {
+  "other|add": {
+   "units": 6.193845286034048,
+   "calls": 3625,
+   "gap_ms": 300.8470830063743
+  },
+  "other|multiply": {
+   "units": 2.051911395508796,
+   "calls": 2809,
+   "gap_ms": 216.93818000380816
+  },
+  "other|subtract": {
+   "units": 2.7500267028808594,
+   "calls": 1271,
+   "gap_ms": 166.968236995217
+  },
+  "other|isfinite": {
+   "units": 7.62939453125e-06,
+   "calls": 1,
+   "gap_ms": 136.39282700000877
+  },
+  "other|matmul": {
+   "units": 233.3183627128601,
+   "calls": 956,
+   "gap_ms": 127.8510559982351
+  },
+  "other|sum": {
+   "units": 0.8451289860531688,
+   "calls": 162,
+   "gap_ms": 56.17979399858086
+  },
+  "other|copyto": {
+   "units": 2.92348575592041,
+   "calls": 1144,
+   "gap_ms": 23.14617700369581
+  },
+  "other|einsum": {
+   "units": 9.105180501937866,
+   "calls": 166,
+   "gap_ms": 11.221307497748967
+  },
+  "other|empty": {
+   "units": 0.0,
+   "calls": 41,
+   "gap_ms": 7.211043999177491
+  },
+  "other|reshape": {
+   "units": 0.94464111328125,
+   "calls": 41,
+   "gap_ms": 6.628796999848419
+  },
+  "other|mean": {
+   "units": 1.430511474609375e-05,
+   "calls": 30,
+   "gap_ms": 4.420990000426173
+  },
+  "other|power": {
+   "units": 0.00010692328214645386,
+   "calls": 29,
+   "gap_ms": 3.877728000361458
+  },
+  "other|maximum": {
+   "units": 7.62939453125e-06,
+   "calls": 16,
+   "gap_ms": 2.9896130001816346
+  },
+  "other|true_divide": {
+   "units": 1.5272758901119232e-05,
+   "calls": 62,
+   "gap_ms": 2.915834999157596
+  },
+  "other|stack": {
+   "units": 0.0005254745483398438,
+   "calls": 124,
+   "gap_ms": 2.849514999297753
+  },
+  "other|as_symmetric": {
+   "units": 0.0546874925494194,
+   "calls": 16,
+   "gap_ms": 2.0480989994666743
+  },
+  "other|asarray": {
+   "units": 5.831010639667511e-06,
+   "calls": 34,
+   "gap_ms": 1.8786050009111932
+  },
+  "other|diagonal": {
+   "units": 0.0,
+   "calls": 54,
+   "gap_ms": 1.5151140000853047
+  },
+  "other|moveaxis": {
+   "units": 0.0,
+   "calls": 54,
+   "gap_ms": 1.4054260002467345
+  },
+  "other|sqrt": {
+   "units": 7.62939453125e-06,
+   "calls": 16,
+   "gap_ms": 1.394153000546794
+  },
+  "other|stats.norm.cdf": {
+   "units": 0.000732421875,
+   "calls": 16,
+   "gap_ms": 1.1699000003773108
+  },
+  "other|linalg.qr": {
+   "units": 2.8938548173755407,
+   "calls": 82,
+   "gap_ms": 0.9460679991661891
+  },
+  "other|stats.norm.pdf": {
+   "units": 0.0004119873046875,
+   "calls": 16,
+   "gap_ms": 0.9217799999987619
+  },
+  "other|concatenate": {
+   "units": 0.0002288818359375,
+   "calls": 15,
+   "gap_ms": 0.8231329995851411
+  },
+  "other|fill_diagonal": {
+   "units": 8.535385131835938e-05,
+   "calls": 179,
+   "gap_ms": 0.7887309998295677
+  },
+  "other|swapaxes": {
+   "units": 0.0,
+   "calls": 116,
+   "gap_ms": 0.4684010002620198
+  },
+  "other|astype": {
+   "units": 3.0517578125e-05,
+   "calls": 32,
+   "gap_ms": 0.39803700065021985
+  },
+  "other|diag": {
+   "units": 0.0,
+   "calls": 43,
+   "gap_ms": 0.23862100033511524
+  },
+  "other|all": {
+   "units": 7.628928869962692e-06,
+   "calls": 1,
+   "gap_ms": 0.21250100007819128
+  },
+  "other|transpose": {
+   "units": 0.0,
+   "calls": 13,
+   "gap_ms": 0.16421200029981264
+  },
+  "other|eye": {
+   "units": 4.76837158203125e-07,
+   "calls": 1,
+   "gap_ms": 0.08409500014749938
+  },
+  "other|zeros": {
+   "units": 0.0,
+   "calls": 4,
+   "gap_ms": 0.02044199982265127
+  },
+  "other|ones": {
+   "units": 4.76837158203125e-07,
+   "calls": 1,
+   "gap_ms": 0.0
+  },
+  "other|clip": {
+   "units": 1.3969838619232178e-08,
+   "calls": 15,
+   "gap_ms": 0.0
+  },
+  "other|copy": {
+   "units": 0.0002803802490234375,
+   "calls": 7,
+   "gap_ms": 0.0
+  }
+ }
+}
