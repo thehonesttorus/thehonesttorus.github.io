@@ -77,3 +77,54 @@ The three gluing errors, each a named face quantity:
 ## 7. Log
 
 - v0 written before any measurement.
+
+### 7.1 T1 (one-step oracle, width 64, N = 2e5–4e5): v0 falsified — `t1_onestep.py`, `t1b_decomp.py`, logs `t1_n64.log`, `t1b_n64.log`
+
+| layer | κ3(z′) rms | corr(κ3 from G2, true) | one-step MSE, Gaussian with exact variance | BFC v0 | oracle κ3 | oracle κ3+κ4 |
+|---|---|---|---|---|---|---|
+| 2 | 0.265 | 0.08 | 5.1e-5 | 5.6e-5 | 7.1e-6 | 3.2e-7 |
+| 8 | 0.217 | −0.55 | 8.7e-5 | 9.3e-5 | 2.2e-5 | 1.5e-6 |
+| 16 | 0.226 | −0.08 | 1.8e-5 | 1.7e-5 | 2.1e-5 | 2.1e-6 |
+
+Where the skew lives (T1b): in the face representation $a=mg+r$ the gate-field functional $U=\Lambda^\top(g-p)$ carries a third cumulant of rms 0.003 at layer 2 (true 0.266) and 0.048 at layer 8 (true 0.213). At layer 2 this is forced: $p=1/2$, so the Bernoulli field is symmetric and $\kappa(g_i,g_i,g_k)=(1-2p_i)\Gamma_{ik}=0$.
+
+**Charge to the dictionary.** The naive point was G1: "the within-face residual is Gaussian and independent of the face". The skew of $a_k=g_kz_k$ is a product effect of the gate and the within-face magnitude (the hinge). It sits in $\kappa(g,r,r)$, $\kappa(g,g,r)$, $\kappa_3(r)$, which G1 discards. Codimension-0 face data (masses, barycentres) are the wrong carriers of non-Gaussianity. By E2 the carriers are the **facets** (codimension 1): the hinge's curvature $\mathbb E\,\mathrm{ReLU}''=$ facet density. Dictionary v1 therefore moves the state from faces to facets.
+
+### 7.2 T1c (hub gluing of the all-distinct κ3, width 64, N = 1e6) — `t1c_hub.py`, logs `t1c_gauss64.log`, `t1c_sphere64.log`
+
+Gluing rule: conditional expectation onto the hub's σ-algebra, $\mathbb E[\tilde a_i\tilde a_k\tilde a_m]\approx\mathbb E[\tilde a_k\,\mathbb E[\tilde a_i\mid z_k]\,\mathbb E[\tilde a_m\mid z_k]]$ summed over the three hub choices. Two variants: 'lin' (linear in $z_k$) and 'face' (linear on each half-face of $k$, i.e. span$\{z_k,a_k\}$). Only pair data and 1-body hub moments are used.
+
+| z-layer | all-distinct κ3 rms | lin: corr / rel. err | face: corr / rel. err |
+|---|---|---|---|
+| 2 | 0.068 | 1.00 / 0.06 | 0.97 / 0.25 |
+| 4 | 0.082 | 0.65 / 0.77 | 0.76 / 0.74 |
+| 8 | 0.085 | 0.87 / 0.96 | 0.92 / 1.39 |
+| 12 | 0.111 | 0.96 / 1.32 | — |
+| 16 | 0.133 | 0.99 / 1.74 | — |
+
+At the Gaussian layer the linear hub rule is exact (it is the leading Wick tree). At depth it has the right direction (corr 0.96–0.99) but 2–3× the size. The face-wise projection does not fix this. The likely cause is strong correlation at depth: with $\rho\to1$ the three hub terms each reproduce the same structure ($\rho=1$ gives exactly 3×). A second cause is the hub's own transported skew. **Radial hypothesis tested and falsified**: by homogeneity $a(x)=R\,b(\theta)$ exactly (check C3), so the radial mode could have been the over-counted latent hub. With sphere inputs the over-count is unchanged (layer 16: 1.72 vs 1.74).
+
+### 7.3 T2 (facet births transported by face-averaged arrows) — `t2_births.py`, log `t2_n64.log`
+
+**E5 (exact telescoping).** With face-averaged slopes $\beta_s=\mathrm{Cov}(a_s,z_s)/\mathrm{Var}(z_s)$ and births $\nu_s=\tilde a_s-\beta_s\tilde z_s$ (the non-linear part of the activation, born at the facet):
+$$\tilde z_l=xP_{x\to l}+\sum_{s<l}\nu_sP_{s\to l},\qquad P_{s\to l}=W_{s+1}D_{\beta_{s+1}}\cdots D_{\beta_{l-1}}W_l .$$
+This is exact (telescoping error 2e-4 in float32, T3). It is the face principle in pure form: on each face the arrow is linear, $P$ is the face-averaged arrow, and everything non-linear is born at facets. Tree gluing gives $\kappa_3(z_{l,j})\approx6\sum_{s<l}\sum_k(P_{s\to l})_{kj}c_{s,k}K[k,j]^2$, with $c$ = facet coefficient and $K$ the covariance carrying the two legs.
+
+| legs $K$ | rel. err of κ3 at z-layers 3 / 8 / 12 / 16 | corr |
+|---|---|---|
+| true cross-layer covariance Cov($z_s,z_l$) | 0.38 / 2.6 / 6.2 / 10.5 | 0.96–0.99 |
+| birth-layer covariance transported, $C_sD_\beta P_{s\to l}$ | 0.43 / 2.2 / 5.0 / 9.1 | 0.94–0.98 |
+| Gaussian input legs only, $P_{x\to s}^\top P_{x\to l}$ ('lin', a quadratic chaos in $x$) | 0.42 / 0.53 / 0.56 / 0.35 | 0.89–0.96 |
+| memoryless: only $s=l-1$, true legs | 0.46 / 0.25 / 0.40 / 0.44 | 0.89–0.99 |
+
+Accumulating births over depth with realistic legs grows linearly with depth, while the true κ3 stays flat (rms 0.2–0.25). Later facets fold away old skew. A tree transport along face-averaged arrows cannot see this; the folding is the cross-birth cumulant $\kappa(\nu_s,\nu_{s'},\cdot)$.
+
+### 7.4 T3 (exact age attribution of the final-layer skew) — `t3_age.py`
+
+$\kappa_3(z_{l,j})=\sum_sT_s[j]$ with $T_s=\mathbb E[(\nu_sP_{s\to l})_j\tilde z_{l,j}^2]$ (exact; the sum checks to 4e-5). Width 64, z-layer 16, share $T_s\cdot\kappa_3/|\kappa_3|^2$:
+
+| source | x | age 15 | 14 | 13 | 12 | 11 | 10 | 9 | 8 | 7 | 6 | 5 | 4 | 3 | 2 | 1 (last layer) |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| share | .22 | .10 | .07 | .10 | .10 | .08 | .01 | .08 | .07 | .07 | .01 | .07 | .00 | .01 | .02 | .00 |
+
+The final-layer skew is spread over every birth depth, and the most recent facets contribute nothing net as the first leg. A per-layer (memoryless) gluing cannot be right however good its one-step rule is. The structure is the transported old content of BRIEF §3, here seen in its exact face form.

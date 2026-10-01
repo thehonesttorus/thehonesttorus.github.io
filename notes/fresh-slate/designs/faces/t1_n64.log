@@ -1,0 +1,4 @@
+# n=64 N=200000 seed=11 sampled in 10s
+layer=2 k3_rms=2.647e-01 k3_g2_relerr=9.999e-01 k3_corr=7.635e-02 k4_rms=3.481e-01 k4_g2_relerr=1.278e+00 mse_gauss=5.081e-05 mse_bfc_k3=5.081e-05 mse_bfc=5.569e-05 mse_orc_k3=7.050e-06 mse_orc=3.182e-07 var_check=2.958e-09
+layer=8 k3_rms=2.168e-01 k3_g2_relerr=1.056e+00 k3_corr=-5.482e-01 k4_rms=2.394e-01 k4_g2_relerr=1.013e+00 mse_gauss=8.740e-05 mse_bfc_k3=9.275e-05 mse_bfc=9.310e-05 mse_orc_k3=2.179e-05 mse_orc=1.509e-06 var_check=2.143e-09
+layer=16 k3_rms=2.257e-01 k3_g2_relerr=1.002e+00 k3_corr=-8.099e-02 k4_rms=3.656e-01 k4_g2_relerr=9.911e-01 mse_gauss=1.776e-05 mse_bfc_k3=1.700e-05 mse_bfc=1.729e-05 mse_orc_k3=2.131e-05 mse_orc=2.134e-06 var_check=1.705e-09

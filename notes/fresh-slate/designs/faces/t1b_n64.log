@@ -1,0 +1,2 @@
+layer 2: k3(z') rms 0.266 | act-rep: 1-idx 0.190 2-idx 0.147 distinct 0.070 | gate field U: k3 rms 0.003 1-idx 0.000 2-idx 0.000 distinct 0.003 corr(k3U,k3z) 0.36
+layer 8: k3(z') rms 0.213 | act-rep: 1-idx 0.035 2-idx 0.239 distinct 0.084 | gate field U: k3 rms 0.048 1-idx 0.003 2-idx 0.019 distinct 0.028 corr(k3U,k3z) -0.52
