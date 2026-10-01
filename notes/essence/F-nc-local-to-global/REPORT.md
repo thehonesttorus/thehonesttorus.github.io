@@ -8,7 +8,7 @@
 
 1. **The spectral trickle-down has no noncommutative obstruction once it is written in the forget lattice** (Theorem F1, §2.1). For any lattice of KMS-symmetric conditional expectations E_A ("forget A"), closed under intersection of ranges, the heat-bath dynamics (1/n)Σ_i E_i has gap ≥ ∏_{m=2}^{n} (1 − (1+η_m)/m), where η_m + 1 is the frame bound ‖Σ_{i∈A}(E_{A∖i} − E_A)‖ at level |A| = m, and η_m ≤ λ_max of the matrix of pairwise commuting-square defects ‖E_{A∖i}E_{A∖j} − E_A‖. Pinning is never used: the operator norm on the whole L² is the supremum over pinnings classically, and N_A-bimodularity replaces disintegration noncommutatively. The classical case is exactly Anari–Liu–Oveis Gharan Thm 1.3 / Alev–Lau. Checked on a non-commuting 4- and 5-qubit Gibbs ring: the bound holds, is exact at β = 0 and within 1.3–1.7× at β = 0.3.
 2. **The noncommutative failure is entropic, and it is one step** (§2.2). Classical local-to-global for entropy (Chen–Liu–Vigoda Thm 5.6) converts spectral to entropic contraction *inside a link*, where the densities are single-site marginals with bounded ratio b. With no links, the noncommutative comparison must be made on a whole region, at a cost that grows like e^{c|A|} (the χ_KMS growth already measured in A-unification C10–C11). **Repair hypothesis:** the Pimsner–Popa constant of the one-site inclusion N_A ⊂ N_{A∖i} (a Jones index, O(d²), not exponential) plays the role of b. Conjecture F2 states the resulting iterable approximate tensorization; its two known corners (m = 2: Bardet–Capel–Rouzé; exact commuting lattice: Lemma F2a, proved here) are both consistent with it.
-3. **Dictionary, precise (§3).** The fresh-weight average E_W over rotation-invariant Gaussian weights acts on tensors through the **Brauer algebra**: a sum over pairings. The *through-string* pairings are the commuting-square part: they give the Frobenius currency and the incoherent sum over layers. The *caps* are Jones projections with loop value n and Markov trace τ = 1/n: they are partial traces, i.e. the coincident-pattern channel, the column sums of N7, the trace channel and the dilation charge. He initialisation puts the cap sector exactly at eigenvalue 1 (loop n × variance 2/n × gate density ½ = 1), a unipotent sector with no mixing (angle 0). By Proposition F3 an angle-0 sector cannot be quasi-factorized; it must be **pinned** (localized), which is Chen–Eldan / Bauerschmidt–Bodineau's move.
+3. **Dictionary, precise (§3).** The fresh-weight average E_W over rotation-invariant Gaussian weights acts on tensors through the **Brauer algebra**: a sum over pairings. The *through-string* pairings are the commuting-square part: they give the Frobenius currency and the incoherent sum over layers. The *caps* are Jones projections with loop value n (normalised projection e/n, Markov trace τ = 1/n², index n²): they are partial traces, i.e. the coincident-pattern channel, the column sums of N7, the trace channel and the dilation charge. He initialisation puts the cap sector exactly at eigenvalue 1 (loop n × variance 2/n × gate density ½ = 1), a unipotent sector with no mixing (angle 0). By Proposition F3 an angle-0 sector cannot be quasi-factorized; it must be **pinned** (localized), which is Chen–Eldan / Bauerschmidt–Bodineau's move.
 4. **Measured at n = 1024 (§5.2, three networks).** The cap (trace) channel holds 0.66–0.79 of the energy of the old (2,1) slice at layers ≥ 8. With costate's scale mode the union holds 0.82 at layer 15 (random-direction control ≤ 0.005). The remaining through-string bulk (18 % of old energy at A = 1, still 12.5 % beyond age 3 and 3.5 % beyond age 7) forgets only slightly faster than the cap sector. Priced by the ε² law, that bulk costs ≈ 3e-7 at A = 3. So the cap sector is most of the memory, not all of it, and the bulk is the decisive remainder.
 5. **Transfers, measured (§4, §5.4).**
    - Pinning the cap sector (T1) lands at 7.6–7.7e-7 on all three networks at first order (young A = 1 exact). That is 60–70 % of the old-content gain, the same cap that team A's no-go and team D's Perron oracle hit.
@@ -20,7 +20,8 @@
      - the through-string free sector: per-step angle g_l = 2τ(P_x P_{x′}), a two-projection trace, with energy g³ per step and rank n/(2(a+1)); it tensorizes by Theorem F1 at η = 0.
    - *Agreement.* Five teams' numbers agree on this split: cap share 0.75–0.82, free decay 1.02–1.10·g³, rank law ≈ 2n/a.
    - *The theorem shape for memory at one layer's cost.* An approximate commuting square between the carrier and the transport, iterable for free over independent layers. Linear carriers face a conjectured harmonic floor Ω(n³ log L) (Conjecture F4).
-   - *The live escape.* Node sufficiency, from Bethe's oracle: memory is needed only through 3 n-vectors per layer. Add law-level cap pinning, plus free-sector cores merged without fit in a shared basis per age bin (Conjecture F5). Deciding test S1 is in §7.3 / §5.5.
+   - *The live escape.* Node sufficiency, from Bethe's oracle: memory is needed only through 3 n-vectors per layer. Add law-level cap pinning, plus free-sector cores merged without fit in a shared basis per age bin (Conjecture F5).
+   - *Measured (S1, §5.5).* The shared-basis cores form an exact commuting square with transport. Causally they carry **all content of ages ≥ 8 in 64 dimensions at excess ≈ 5e-9 over exact first order, for ≈ 1–2 u per layer**. Deep memory is cheap; the bill is ages 1–7.
 
 ## 1. Instances, to the level of their proofs
 
@@ -332,21 +333,84 @@ Each filter keeps the exact diagonal and a part of the old off-diagonal slice, i
 - **The cap channel is not the readout-optimal subspace.** A plain rank-64 SVD (4.84e-7) beats cap + bulk rank 64 (5.09e-7). The readout reads old content through a ≈ 64–256-dimensional subspace that only partly aligns with the O(n)-invariant cap directions.
 - Consequence for T1: pinning the cap sector alone, at Stein level, would at best take the A = 1 co-state from 1.36e-6 to ≈ 7.7e-7. Costate's law-level treatment of the same sector (A3gsl_nc, 3.25e-7) does better than Stein level, which is the evidence that *pinning at law level* (Proposition F3), rather than first-order projection, is what pays.
 
+### 5.5 Test S1: one shared basis per dyadic age bin, so that cores merge without fit (`s1_shared.py`, `costate_f.py`, MLP 0, n = 1024)
+
+**Construction.** Inside costate's exact first-order co-state, every source of age ≥ a_min is restricted to a k-dimensional target-space basis that is **shared by all sources in its dyadic age bin** [2^j, 2^{j+1}). The oracle takes the top-k eigenvectors of Σ_{s∈bin} U_sᵀU_s at each layer. For comparison, "own" restricts each source to its own top-k directions (costate's rank hook).
+
+**Why sharing matters (theorem-level reason).**
+- Once all members of a bin live in one basis B (n × k), each (2,1)-slice term of each source has the form Σ_{ijl} G_{ijl} B_{pi}B_{pj}B_{ql}. The core G (k³) is a *sum over members with no fit*, and it does not change under transport: transport acts only on B, as B ← orth(Mᵀ B), with the k × k change of basis applied to G.
+- So the bin's projection P_bin and the transport form an **exact commuting square**, T_t P_bin(t) = P_bin(t+1) T_t. The only defect is the one-time projection at bin entry (Theorem F1 at η = 0 then sums these entry defects incoherently).
+- This is the "fit-free linear re-binning that commutes with transport" that team E §4.9 left as its open hatch.
+
+| variant (ages ≥ a_min restricted) | raw | ratio to exact |
+|---|---|---|
+| exact first order, all pairs | 3.92e-7 | 1 |
+| shared k = 256, a_min = 4 | 3.97e-7 | 1.01 |
+| shared k = 128, a_min = 4 | 4.92e-7 | 1.25 |
+| own k = 128, a_min = 4 | 4.91e-7 | 1.25 |
+| shared k = 64, a_min = 4 | 6.39e-7 | 1.63 |
+| **shared k = 64, a_min = 8** | **3.94e-7** | **1.01** |
+| shared k = 2n/a, a_min = 4 | 3.93e-7 | 1.00 |
+| *causal* cohort k = 64, a_min = 8, one cohort per 8 layers | **3.97e-7** | **1.01** |
+| *causal* cohort k = 32, a_min = 8 | 4.27e-7 | 1.09 |
+| *causal* cohort k = 256, a_min = 4, cohorts of 4 layers | 4.12e-7 | 1.05 |
+| *causal* cohort k = 128, a_min = 4 | 5.51e-7 | 1.40 |
+
+*Causal* means: each source is projected once, when it reaches age a_min, onto its own top-k target directions. It joins the open cohort, whose older members are re-projected onto the newest member's basis (a k × k change on the cores). Nothing else is ever fitted, and transport is exact afterwards. Building the basis needs only a rank-k range finder of one n × n factor, O(k n²), not an oracle.
+
+**Readings.**
+- **Sharing is free.** One basis per dyadic bin is as good as each source's own basis (4.92e-7 vs 4.91e-7 at k = 128).
+- **Deep memory is small.** All content of ages ≥ 8 is read losslessly through one shared 64-dimensional basis (n/16). Ages 4–7 need ≈ 256 (n/4). This decays faster than the per-source law 2n/a (team D), which would give 256 at age 8: sharing plus g³ decay compress further.
+- **Cost of the merged-core readout.** It is 2nk³ + 2n²k per bin per layer:
+  - k = 64: 0.27 u;
+  - k = 128: 2.1 u;
+  - k = 256: 16.6 u.
+
+  Basis transport is 2n²k (≤ 0.25 u). Building a core costs ≈ 2nk³ per term once per entering source.
+
+  So bin [8, 16) costs ≈ 0.3–1 u per layer, essentially free. Bin [4, 8) at k = 256 costs more than its 4 exact pairs would. **The bill sits in ages 1–7, not in deep memory.**
+- **The causal version holds up.** Deep memory (ages ≥ 8) is carried causally at k = 64 with excess ≈ 5e-9 over exact first order, and at k = 32 with ≈ 3.5e-8. Ages ≥ 4 at k = 256 carry an excess of ≈ 2e-8.
+- **Accounting at n = 1024, L = 16.** FC's pairs with age ≥ 8 are 28 of 120, ≈ 196 u of its 840 u. The causal cohort carrier replaces them by ≈ 1–2 u per layer:
+  - one core build per entering source, ≈ 6 terms × 2nk³ ≈ 1.6 u at k = 64;
+  - the readout, ≈ 0.3 u;
+  - the basis transport, ≈ 0.1 u.
+
+  That saves ≈ 20 % of FC at no measurable accuracy cost.
+- **The real bill.** Ages 1–7 (≈ 92 pairs, ≈ 640 u) stay at near-full rank. So at this width and depth, **"memory" in the deep sense is cheap. The binding object is the mid-range content of ages 1–7**, whose free sector has not yet decayed (g³ ≈ 0.6 per step at depth).
+- **Caveat.** These are first-order (Stein-level) co-state numbers on one network (MLP 1 in `results/s1_w1024_mlp1.jsonl`). The excess that matters is absolute, since FC sits at 3e-8. The a_min = 8, k = 64 excess (≈ 2–5e-9) is below the bar's resolution. The a_min = 4, k = 128 excess (1.6e-7) is not.
+
 ## 6. Honest assessment
 
-- **Theorem**:
-  - F1 (spectral k-level trickle-down in any forget lattice; elementary, checked numerically);
+- **Theorem** (proved here, elementary, checked):
+  - F1 (spectral k-level trickle-down in any forget lattice);
   - Lemma F2a (entropic, exact commuting lattice);
-  - Proposition F3 (central defect);
-  - the Isserlis split of the fresh-weight average into through-strings and caps.
-- **Measured**: the F1 checks, and the cap share of old content at n = 1024 (one network so far).
-- **Synthesis**: the Brauer/Jones reading of the fresh-weight lemma; the identification of caps with the coincident pattern, column sums, trace channel and dilation charge; He-criticality as unit loop eigenvalue of the cap sector.
-- **Conjecture**: F2 (noncommutative entropic trickle-down under one-site Pimsner–Popa bounds).
-- **Speculation**: that the leaders' memory carrier is "cap sector pinned + bulk merged".
+  - Proposition F2b (the entropic frame constant equals the spectral one in linear response);
+  - Proposition F3 (a central defect must be pinned);
+  - the Isserlis split of the fresh-weight average into through-strings and caps;
+  - the exact commuting square between a transported shared basis and transport, which is what makes merged cores fit-free (§5.5).
+- **Measured** (n = 1024, bench w1024_d16):
+  - cap share of old (2,1)-slice energy, 0.82 at depth on three networks;
+  - the age profile of cap and bulk;
+  - the bulk rank profile;
+  - readout filters: cap 7.6–7.7e-7 on three networks, bulk needing rank ≈ 256;
+  - S1: shared-basis cores, causal, deep memory at k = 64 with excess ≈ 5e-9 (MLP 0; MLP 1 in `results/`).
+
+  All competition measurements are at first-order (Stein) level inside costate's co-state, not inside FC.
+- **Synthesis**:
+  - the Brauer/Jones reading of the fresh-weight lemma;
+  - the two-sector mechanism uniting A–E;
+  - the consistency ledger;
+  - the approximate-commuting-square formulation of a carrier.
+- **Conjecture**:
+  - F2 (noncommutative entropic trickle-down under one-site Pimsner–Popa bounds);
+  - F4 (harmonic floor for linear carriers);
+  - F5 (node-level iterable tensorization).
+- **Speculation**: how the leaders carry ages 1–7.
 - **Risks.**
-  - F1 may be folklore (being checked).
-  - F2 may need an additive noncommutativity correction (BCR's d).
-  - On the competition side, the measured bulk (≈ 15–20 % of old energy, long-lived, high-rank) is exactly the part that no sector argument carries. If T2's merge fails, the local-to-global lens explains ≈ 80 % of memory and leaves the decisive 20 % to brute force or to error-budget shifting.
+  - F1 is probably folklore. The literature probe found no k-level quantum statement, but that is not proof.
+  - F2 may need BCR's additive noncommutativity correction.
+  - S1's excess is measured against first order (4e-7 floor). Inside FC (3e-8) the k = 64 deep-memory excess must be re-measured.
+  - F4 is supported by every linear carrier measured, but is unproven.
 
 ## 7. Synthesis across teams A–E
 
@@ -392,7 +456,7 @@ Each filter keeps the exact diagonal and a part of the old off-diagonal slice, i
 | pricing | K(l) from θ_l to ±0.1 log (E); D1 exact (D); books close 2–6 % (region) | E, D, region |
 
 **What the mechanism explains among the established facts (brief §3).**
-- "Old content nearly orthogonal to the present and to other ages" (F8.3) is through-string orthogonality: free-sector contents of different ages are Brauer-orthogonal, and the cap part is coherent across ages, with D's mean cosine between old sources 0.38–0.46 coming from it.
+- "Old content nearly orthogonal to the present and to other ages" (F8.3) is through-string orthogonality: free-sector contents of different ages are Brauer-orthogonal, and the cap part is coherent across ages. D's mean cosine between old sources, 0.38–0.46, is consistent with coming from the cap (inference, not separately measured).
 - "Every age matters" (N6) has two causes: angle 0 in the cap, and a slow free angle (g³ ≈ 0.6 at depth).
 - "Ensemble mean zero, purely quenched" (F8.5): the free sector has zero E_W-image by construction, so every annealed or gauge-averaged carrier, i.e. every conditional expectation onto invariants, misses it (A's no-go, E's Conjecture E3).
 - "The leaders carry memory at about zero cost" is **not** explained. §7.2 says exactly what would explain it.
@@ -436,13 +500,21 @@ with R_t the readout map and T_t the exact (first-order chaos) transport. So the
 - (b) **Sector split of node beliefs.** Node beliefs split as (cap part, computable at law level from the pinned collective coordinates at O(n²) per layer) + (free part). The free part's node-diagonal is a sum over age bins of core contractions in a shared QR-transported basis, merged without fit.
 - (c) **Iterability.** By Theorem F1 at η = 0, per-layer defects in (a) and (b) add incoherently.
 
-If (a)–(c) hold with cores of dimension k_b = 2n/a_b ≤ n^{2/3} for all ages beyond a short exact window, the whole carrier costs O(n³) per layer, about one layer. The cost of a node readout from a core is n·k³, which is ≤ n³ only for k ≤ n^{2/3} ≈ 100, i.e. ages ≳ 20 at n = 1024. **So at n = 1024, L = 16 the shape does not yet close on cost.** A single shared core at k ≈ n^{2/3} per bin would need the free sector of ages ≥ 4 to be readable at node level through ≈ 100 shared directions. That is the decisive, cheap measurement (§7.3, test S1).
+**Measured status of (b) (§5.5, test S1).**
+- **Fit-free merged cores in a shared, transported basis are measured to work, causally.** All content of ages ≥ 8 is carried in one 64-dimensional cohort basis per bin with excess ≈ 5e-9 over exact first order, at ≈ 1–2 u per layer.
+- Ages ≥ 4 need k ≈ 256 (excess ≈ 2e-8 causal), where the n k³ core readout (≈ 16 u per bin per layer) is no cheaper than exact pairs.
+- **So the theorem shape closes on cost for deep memory and not for ages 1–7.** At n = 1024, L = 16 the remaining bill (≈ 640 u in FC's accounting) is mid-range content whose free sector has not yet decayed. A one-layer-cost estimator therefore needs, in addition, a cheaper representation of ages 1–7. The candidates are:
+  - node sufficiency (a), which reduces what must be read to 3 n-vectors per layer but not the transport;
+  - the public chain's young tier;
+  - a lower-rank readout of bin [4, 8) (HOSVD of its core, untested).
 
 ### 7.3 Deciding tests the synthesis implies (cheapest first)
 
-- **S1 (node-level rank of the free sector).** At n = 1024, measure the fraction of the per-neuron free-sector κ3 (old sources, cap part removed) captured when every old source is restricted to a *shared* k-dimensional basis per dyadic age bin (QR-transported), for k ∈ {64, 128, 256}.
-  - Kill: k = 256 leaves > 7 % rms at layers ≥ 6.
-  - Alive: k ≤ 128 suffices. Then the node-level carrier costs ≈ n·k³ + 2kn² per bin per layer, ≈ 1–2 u at k = 128.
+- **S1 (shared basis per age bin; run, §5.5).** It was run end-to-end on the readout rather than at node level.
+  - Deep memory (ages ≥ 8) closes at k = 64, causally.
+  - Ages ≥ 4 need k ≈ 256.
+  - Robustness on MLP 1 is in `results/s1_w1024_mlp1.jsonl`.
+  - Next: the same inside FC (exact slices + κ4 mean field) to confirm the excess at the 3e-8 level, and HOSVD truncation of the bin-[4, 8) core.
 - **S2 (Bethe node sufficiency with computed cap and true free node beliefs).** In bethe v4, inject the true node beliefs minus their cap part, and supply the cap part from the law-level scale field. This tests whether (a) and (b) compose.
 - **S3 (frame bound over layers, F T3).** Inject each layer's local error separately and measure the inter-layer correlation matrix. This tests the cancellation route and the Theorem-F1 reading of books-close.
 - **Already decided by others.**
@@ -476,4 +548,8 @@ If (a)–(c) hold with cores of dimension k_b = 2n/a_b ≤ n^{2/3} for all ages 
 
 - `nc_trickle.py`: Theorem F1 check.
 - `trace_share.py`: cap-sector share of old content at n = 1024 (uses costate's code read-only).
+- `bulk_rank.py`: rank profile of the bulk slice.
+- `cap_filter.py`: readout filters (cap, cap + rank-k bulk).
+- `costate_f.py`: a copy of costate's `predict` with two added hooks, `shared` (oracle basis per dyadic bin) and `causal` (cohort bases); otherwise unchanged.
+- `s1_shared.py`: runner for S1.
 - `results/`: outputs.

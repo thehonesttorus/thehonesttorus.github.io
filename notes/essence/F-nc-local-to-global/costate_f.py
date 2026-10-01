@@ -102,7 +102,7 @@ def filt(Sold, how, r=None):
     raise ValueError(how)
 
 
-def predict(Ws, A=None, old="drop", rank=None, shared=None, coinc=True, K=8, record=None, Ap=0, oldfilter=None, r=None, law=False, keep_old=False, k4=None, vsrc="kappa3", deflate=False):
+def predict(Ws, A=None, old="drop", rank=None, shared=None, causal=None, coinc=True, K=8, record=None, Ap=0, oldfilter=None, r=None, law=False, keep_old=False, k4=None, vsrc="kappa3", deflate=False):
     """old: 'drop' | 'slice' (diagonal double edge only) | 'pool' (renewal: aged-out content is projected on its
     (2,1) slice at the current layer and re-emitted as a secondary form, transported exactly for Ap more layers
     (Ap=None: never re-projected); Ap=0 is the full coincident-support slice chain)."""
@@ -226,6 +226,23 @@ def predict(Ws, A=None, old="drop", rank=None, shared=None, coinc=True, K=8, rec
                             f[key] = (f[key] @ P) @ P.T
             nl.append(f)
         live = nl
+        if causal is not None:
+            # Team F causal S1: (k, amin, c). A source reaching age amin is projected once on its own top-k target
+            # directions and joins the open cohort (created < c layers ago); older cohort members are re-projected on
+            # the newest member's basis (fit-free on cores). Transport afterwards is exact.
+            ck, camin, cc = causal
+            if "cohorts" not in predict.__dict__ or l == 0: predict.cohorts = []
+            for f in live:
+                if f["kind"] != "src" or (l + 1) - f["s"] - 1 != camin: continue
+                _, _, Vt = np.linalg.svd(f["U"], full_matrices=False); P = Vt[:ck].T
+                coh = predict.cohorts[-1] if predict.cohorts and l - predict.cohorts[-1]["l"] < cc else None
+                if coh is None:
+                    coh = dict(l=l, members=[]); predict.cohorts.append(coh)
+                coh["members"].append(f)
+                for g_ in coh["members"]:
+                    for key in ("U", "V", "X"):
+                        if g_[key] is not None:
+                            g_[key] = (g_[key] @ P) @ P.T
         if shared is not None:
             # Team F test S1: one shared target-space basis per dyadic age bin (oracle: top-k eigvecs of sum U^T U)
             bins = {}

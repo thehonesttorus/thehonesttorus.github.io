@@ -7,9 +7,10 @@ import bench, costate_f as cf
 name, i = sys.argv[1], int(sys.argv[2]); specs = sys.argv[3].split(",")
 S = bench.load_set(name); W = bench.weights(S, i).astype(float); truth = S["means"][i]; noise = S["noise"][i]; n = W.shape[1]
 for sp in specs:
-    kind, amin, k = sp.split(":"); amin = int(amin)
+    kind, amin, k = sp.split(":")[:3]; amin = int(amin)
     kk = (lambda a: None if a < amin else (min(n, int(2 * n / a)) if k == "2n/a" else int(k)))
     kw = dict(shared=kk) if kind == "shared" else (dict(rank=kk) if kind == "own" else {})
+    if kind == "causal": kw = dict(causal=(int(k), amin, int(sp.split(":")[3])))
     pred = cf.predict(W, **kw)
     raw = float(((pred[-1] - truth[-1]) ** 2).mean() - noise)
     print(json.dumps(dict(mlp=i, spec=sp, raw=raw)), flush=True)
