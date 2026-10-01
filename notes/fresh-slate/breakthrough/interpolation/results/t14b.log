@@ -1,0 +1,5 @@
+using t13 kappa3, N = 2097152.0
+z layer 5: rms k3 0.0146 rms resid 0.0052 rms age0-chaos3 0.0047 corr(resid, age0) 0.528  frac of resid explained 0.135
+z layer 9: rms k3 0.0130 rms resid 0.0038 rms age0-chaos3 0.0024 corr(resid, age0) 0.473  frac of resid explained 0.202
+z layer 13: rms k3 0.0104 rms resid 0.0030 rms age0-chaos3 0.0014 corr(resid, age0) 0.488  frac of resid explained 0.238
+z layer 15: rms k3 0.0116 rms resid 0.0031 rms age0-chaos3 0.0013 corr(resid, age0) 0.344  frac of resid explained 0.114

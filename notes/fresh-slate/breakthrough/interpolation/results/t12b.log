@@ -1,0 +1,8 @@
+using t13, N = 2097152.0
+{} final raw 1.291e-06  per-layer: 5.2e-07 8.6e-07 1.0e-06 1.3e-06
+{'tmc': True} final raw 1.182e-06  per-layer: 5.1e-07 8.7e-07 1.0e-06 1.2e-06
+{'tmc': True, 'var': True} final raw 8.995e-07  per-layer: 4.1e-07 5.1e-07 7.2e-07 9.4e-07
+{'var': True} final raw 9.038e-07  per-layer: 4.2e-07 5.3e-07 7.8e-07 9.5e-07
+{'k3o': True} final raw 1.077e-06  per-layer: 3.9e-07 6.9e-07 8.7e-07 1.1e-06
+{'var': True, 'k3o': True} final raw 3.539e-07  per-layer: 2.8e-07 2.7e-07 3.6e-07 4.0e-07
+{'var': True, 'k3o': True, 'mo': True} final raw 2.317e-07  per-layer: 4.0e-07 2.8e-07 2.7e-07 2.8e-07

@@ -5,7 +5,7 @@ i.i.d. Gaussian, so Gaussian integration by parts **in the weights** (smart path
 conditioning, covers) is available. Labels: **Theorem** (proved here), **Measured** (bench `w1024_d16`, 6 MLPs, truth
 noise 3.6e-8 subtracted), **Prediction**. All numbers are raw final-layer MSE at n = 1024 unless stated.*
 
-v0 (≈ 2 h in). Code in this directory; results in `results/`.
+v2 (final for this session). Code in this directory; results in `results/` (large MC arrays kept out of git).
 
 ## 0. Summary
 
@@ -49,24 +49,38 @@ v0 (≈ 2 h in). Code in this directory; results in `results/`.
    from first-order Edgeworth plus the chaos-0 contraction of the transport Gram (no fitted coefficients):
    t_{l+1} = src_G + ½σ²(Σγ)·Φ∘(Wᵀt_l) + ½σ²(t_l·Wu)·φ/s, **R² = 0.990–0.998 per layer** against MC (oracle input).
    Cost: O(K n²) per layer on top of the closure.
-6. **Trace-channel closure (TC, `tc.py`): raw 1.45e-6 (1.31e-6 with the chi factor) at n = 1024, 6/6 MLPs**, against
-   4.10e-6 for the order-2 Gaussian closure and 4.30e-6 for the bench closure; cost ≈ the closure's (≈ 17 units ≈
-   0.017 B, multiplier 0.1) → **adjusted ≈ 1.3e-7**: the level of the best fresh design (HD first order, projected
-   1–1.8e-7 at 0.26 B) at a fifteenth of its cost, and ≈ 80× above the bar.
-7. **What is left is quenched.** A disorder-conditional (self-averaging) correction trained on 23 fresh networks gains
-   nothing on top of TC (1.31 → 1.28e-6): the closure's self-averaging error *was* the trace channel. The scalar κ4
-   channel (chaos 0 of κ4(z_p): 3σ⁴X, X = excess norm variance, oracle value) adds 1.29 → 1.02e-6 (MLP 0). Injecting
-   the Monte Carlo t instead of the propagated one gives 1.51 → 1.37e-6 (MLP 0): the propagation of t is not the
-   bottleneck either. The remainder is the chaos ≥ 2 content (the 7 % of κ3 outside the trace channel, the
-   off-rank-one part of the (2,1) slice, the κ4 slices through a matrix-valued trace M = Σ_i κ4(a)_{ii··}).
+6. **Trace-channel closure (TC, `tc.py`): raw 1.45e-6 (1.31e-6 with the chi factor), and with the self-consistent
+   scalar κ4 channel (TCX): raw 1.054e-6 at n = 1024, 6/6 MLPs better** (0.93–1.28e-6), against 4.30e-6 for the bench
+   Gaussian closure (4.1×). Cost ≈ the closure's: one sandwich per layer (2 u dense f32, or ≈ 1.1 u Strassen L5) plus
+   O(Kn²) → **≈ 33 units ≈ 0.032 B, multiplier 0.1 → adjusted ≈ 1.05e-7**, the level of the best fresh design
+   (Heisenberg–Duhamel first order, projected 1–1.8e-7 at 0.26 B) at an eighth of its cost, ≈ 65× above the bar.
+7. **What is left is quenched and old.** (i) A disorder-conditional (self-averaging) correction trained on 23 fresh
+   networks gains nothing on top of TC (1.31 → 1.28e-6): the closure's self-averaging error *was* the trace channel.
+   (ii) Oracles at N = 2M (MLP 0): exact per-neuron z variances in the TC chain 1.29 → 0.90e-6; exact per-neuron κ3
+   → 1.08e-6; both → 3.5e-7; plus exact means → 2.3e-7 (≈ the oracles' own noise floor). Exact post-activation
+   covariance → 1.00e-6; the κ4 matrix trace M (chaos 2 of the κ4 slices, oracle) → 1.10e-6 (no help beyond X).
+   (iii) The 7 % of per-neuron κ3 outside the trace channel is old: the age-0 Gaussian source explains 11–24 % of it.
+   (iv) A second, mean-direction trace channel t^μ = Cov((μ̂·ã)², a) (from Bolthausen conditioning of the gates on
+   m = μ·w) is negligible (≤ 0.01 % of residual variance). The remainder is the chaos ≥ 2 old content and the
+   variance drift it drives, i.e. exactly the expensive objects of the dossier.
 
-**Verdict v1.** (a), (b), (c) do not give an exact O(Ln³) representation of the quenched mean; each fails for a stated
-reason. But the lens's own decomposition — **Wiener chaos in the weights** — identifies which part of the old content is
-low-dimensional: the chaos-1 trace of κ3, one n-vector per layer, with an exact-to-1 % O(n²) recursion. That turns
-the Gaussian closure into a 3.1–3.3× better estimator at the same cost. It is not a path to 1e-8 on its own: the
-remaining error is quenched chaos ≥ 2 content, which is where the expensive designs live. The useful export to the
-other streams is (i) the trace channel, which any chain can carry for free (and should subtract before compressing
-old content — it is the rank-one "spike" of the (2,1) slice), and (ii) the chi factor.
+**Verdict.** (a), (b), (c) do not give an exact O(Ln³) representation of the quenched mean; each fails for a stated
+reason (Stein closes only on the averaged copy; independent layers leave no Onsager memory; covers cut exactly the
+loops that carry the answer). But the lens's own decomposition — **Wiener chaos in the weights** — finds the part of
+old content that is low-dimensional: the chaos-1 trace of κ3, one n-vector per layer (the covariance of each neuron
+with the per-input order parameter |ã|²), plus the chaos-0 trace of κ4 (one scalar), both with derived O(n²)
+recursions. They turn the Gaussian closure into a 4.1× better estimator at the same cost (adjusted ≈ 1.05e-7).
+It is **not** a path to 1e-8 alone: the remainder is chaos ≥ 2, old, and quenched. Exports to the other streams:
+(i) carry t and X in any chain — they are free and remove the rank-one "spike" of the (2,1) slice and the coherent
+norm kurtosis before any compression of old content is attempted; (ii) the chi factor; (iii) the warning that
+self-averaging (trained) corrections have nothing left to learn once t is carried.
+
+**Deciding experiment (for whoever continues).** Run the dossier's best old-content machinery (HD first order, or the
+moment chain) with the trace channel subtracted from its sources and transported analytically, and measure (1) the
+participation ratio / rank of the remaining (2,1) old content and (2) the final MSE vs the same machinery without
+the subtraction, at n = 1024. If subtraction lowers the rank needed by ≥ 3× at equal accuracy, the expensive
+O(L²n³) part becomes affordable at the 0.1 floor; if not, the trace channel is a 4× free improvement of cheap
+chains and nothing more.
 
 ## 1. The task in the lens
 
@@ -209,17 +223,46 @@ Cost over the closure: O(Kn²) per layer (one matvec Wᵀt and the Mehler source
 worse than nothing at small width). Per-layer MSE, MLP 0: closure grows 4e-7 → 5.0e-6 over 16 layers; TC 3.3e-7 →
 1.6e-6 — the trace channel removes most of the depth growth.
 
-## 6. Next (in progress)
+## 6. Scalar κ4 channel and the remainder
 
-1. **Locate TC's remainder** (`t13_hiN.py`, N = 2M): oracle per-neuron z variances vs oracle κ3 in the TC chain.
-2. **Is the non-trace 7 % of κ3 young?** (`t14_age0.py`): correlation of the chaos ≥ 2 residual with the age-0
-   Gaussian source. If yes, TC + the age-0 star diagram (≈ 3 products per layer) completes the per-neuron κ3.
-3. **The matrix trace of κ4.** κ4(z_p,z_p,z_q,z_q) and κ4(z_p,z_p,z_p,z_q) have chaos-0/2 parts carried by the scalar
-   X = Σ_ij κ4_iijj (tested as oracle: 1.29 → 1.02e-6) and the matrix M = Σ_i κ4(a)_{ii··} = κ3(τ, a, a) − 2C²,
-   which a chain can carry with one extra sandwich per layer (≈ 1 unit).
+**X recursion (`tc.py`, `x_channel=True`).** X_l = Σ_ij κ4(a_l)_iijj = Var|ã_l|² − 2‖C_l‖² (the excess norm variance;
+chaos 0 of every κ4(z_p…) contraction: κ4(z_p) ∋ 3σ⁴X, κ4(z_p,z_p,z_q,z_q) ∋ σ⁴X). Var|ã_{l+1}|² by Mehler on the
+Gaussian part plus ¼σ⁴(Σγ)²X_l (chaos-0 κ4) plus σ²(Σγ)(u·y) (chaos-1 κ3); X_{l+1} = Var − 2‖C_{l+1}‖². Against the
+MC X (t15, N = 262k): within 1–4 % at layers 1–3, drifting to ≈ 0.5× by depth; injected as per-neuron κ4 = 3σ⁴X
+(mean, second moment) and the rank-one κ4(ppqq) covariance term.
+
+| n = 1024, 6 MLPs | final raw | all-layer MSE |
+|---|---|---|
+| bench Gaussian closure | 4.30e-6 | 2.43e-6 |
+| TC + chi | 1.31e-6 | 8.18e-7 |
+| **TCX + chi** | **1.05e-6** | **7.00e-7** |
+
+(w128: TC + chi 1.09e-4, TCX + chi 1.17e-4 — pre-asymptotic, as for every first-order design.)
+
+**Oracle ladder inside the TC chain (MLP 0, `t12_oracle.py`, `t12c_oracle.py`, `t16_oracleCM.py`; MC N = 2M / 262k).**
+
+| substitution | final raw |
+|---|---|
+| none (TC + chi) | 1.29e-6 |
+| MC t (exact-centred) | 1.18e-6 |
+| MC X (scalar κ4) | 1.02–1.05e-6 |
+| MC κ4 matrix trace M (+X) | 1.10e-6 |
+| exact post-activation covariance C_l | 1.00e-6 |
+| exact per-neuron κ3(z) | 1.08e-6 |
+| exact per-neuron z variance | 0.90e-6 |
+| exact variance + κ3 | 3.5e-7 |
+| exact variance + κ3 + X | 2.3e-7 |
+| exact mean + variance + κ3 (+X) | 2.3e-7 (2.2e-7) ≈ noise floor of the oracle |
+
+Readout check: with exact (m, v, κ3) at the last layer, the first-order Edgeworth readout is 1.2e-7 against the bake
+including ≈ 1e-7 of truth and MC noise, so the readout is not the floor.
+
+**Trace channel scale.** With exact-centred MC t as input, the derived transport coefficient is right to 2 %; the
+self-consistent t's 0.71× scale deficit at depth comes from the Gaussian source (fitted coefficient 1.04–1.13 per
+layer), i.e. from non-Gaussian corrections to the source that the recursion omits. Worth ≤ 9 % of the MSE.
 
 ## Files
 
 `common.py` (helpers), `t0_baselines.py` (closure, chi factor, tree cover, annealed variance), `t1_norm.py`
 (order parameters, mixture readouts), `t2_closures.py` (Hermite-order-K Gaussian closure), `t3_selfavg.py`
-(self-averaging split), `gen_train.py` (training networks), `tc.py` (trace-channel closure), `t4`–`t14` (tests, see headers). Results: `results/*.json|log`.
+(self-averaging split), `gen_train.py` (training networks), `tc.py` (TC/TCX estimator: `predict(W, chi=True, x_channel=True)`), `t4`–`t18` (tests; each file's docstring says what it measures). Large MC arrays (t15) are in the session scratch, not in git. Results: `results/*.json|log`.

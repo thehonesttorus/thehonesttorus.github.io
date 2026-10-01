@@ -1,0 +1,5 @@
+{} final raw 1.291e-06  bias +2.0e-04  per-layer: 5.2e-07 8.6e-07 1.0e-06 1.3e-06
+{'trueC': True} final raw 9.968e-07  bias +1.2e-04  per-layer: 8.7e-07 8.9e-07 8.9e-07 1.0e-06
+{'Xonly': True} final raw 1.018e-06  bias +1.7e-04  per-layer: 4.9e-07 7.3e-07 8.5e-07 1.1e-06
+{'Mch': True} final raw 1.103e-06  bias +2.0e-04  per-layer: 4.9e-07 7.5e-07 9.0e-07 1.1e-06
+{'Mch': True, 'k4scale': 0.5} final raw 1.154e-06  bias +2.0e-04  per-layer: 4.9e-07 7.7e-07 9.2e-07 1.2e-06

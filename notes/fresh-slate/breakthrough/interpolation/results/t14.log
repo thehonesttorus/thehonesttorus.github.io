@@ -1,1 +1,13 @@
 z layer 5: rms k3 0.0147 rms resid 0.0060 rms age0-chaos3 0.0047 corr(resid, age0) 0.445  frac of resid explained 0.078
+z layer 9: rms k3 0.0130 rms resid 0.0040 rms age0-chaos3 0.0024 corr(resid, age0) 0.451  frac of resid explained 0.183
+z layer 13: rms k3 0.0105 rms resid 0.0030 rms age0-chaos3 0.0014 corr(resid, age0) 0.475  frac of resid explained 0.226
+Traceback (most recent call last):
+  File "/home/user/thehonesttorus.github.io/notes/fresh-slate/breakthrough/interpolation/t14_age0.py", line 12, in <module>
+    m, S = states[l]; Lc = np.linalg.cholesky(S + 1e-9 * np.eye(n)).astype(np.float32)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/whest/lib/python3.11/site-packages/numpy/linalg/_linalg.py", line 875, in cholesky
+    r = gufunc(a, signature=signature)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/whest/lib/python3.11/site-packages/numpy/linalg/_linalg.py", line 147, in _raise_linalgerror_nonposdef
+    raise LinAlgError("Matrix is not positive definite")
+numpy.linalg.LinAlgError: Matrix is not positive definite
