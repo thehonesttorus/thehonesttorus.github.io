@@ -25,6 +25,9 @@ Single-atlas table (python oracle_k3.py A.npz [B.npz ...]), one row per layer:
   hub n/r     eps when the all-distinct part is kept as the top n/r "hub columns" (SVD of the (n^2, n) unfolding)
   sketch s    eps when the all-distinct part is projected on a random s-dimensional subspace along two indices
   wick+hub    eps when the Wick closure is used and its residual is kept as top n/4 hub columns
+  K211|C      (atlases with --k4 only) R^2 of the (2,1,1) fourth cumulant of z, kappa4(z)_{iijk}, on the separable
+              regeneration u_i C_jk the published chain uses for it (one free u per doubled index), and the eps of
+              the closure when the kappa4 hyperedge is fed that regenerated slice instead of the true one
 
 Pair mode (python oracle_k3.py --pair A.npz B.npz) needs two atlases of the SAME MLP built with
 different --sample-seed; it measures the Monte Carlo noise floor of every quantity and re-evaluates
@@ -302,9 +305,18 @@ def analyse(path, ranks=(8, 4, 2), sketch=(8, 16, 32), rng=np.random.default_rng
         e_fit, e_fit_off = rel(Tf, D21), rel(Tf, D21, off=True)
         Tc = transport_d21(K3m + closure_model(o), Wn)
         e_cl, e_cl_off = rel(Tc, D21), rel(Tc, D21, off=True)
+        extra = ""
+        if "K211" in o:
+            K211 = o["K211"]; Co = offdiag(o["C"]); cc = float(np.sum(Co * Co))
+            u = np.einsum("ijk,jk->i", K211, Co) / cc                     # per doubled index, least squares on C_off
+            K211_reg = all_distinct(np.einsum("i,jk->ijk", u, Co))
+            r2_211 = 1.0 - float(np.sum((K211 - K211_reg) ** 2)) / float(np.sum(K211 ** 2))
+            o_reg = dict(o); o_reg["K211"] = K211_reg
+            e_reg = rel(transport_d21(K3m + closure_model(o_reg), Wn), D21)
+            extra = f" | K211|C R2 {r2_211:5.3f} closure(reg) {e_reg:5.3f}"
         print(f"{l:>2} {e_transport:6.3f} {r2a:9.3f} {r2b:7.3f} {spec[0]:6.3f} {spec[1]:5.3f} {spec[2]:5.3f} | {e_mem:7.3f} {e_mem_off:5.3f} | {e_wick:5.3f} {e_wick_off:5.3f} | "
               + " ".join(f"{h:5.3f}" for h in herm) + " | " + " ".join(f"{h:6.3f}" for h in hub) + " | " + " ".join(f"{v:5.3f}" for v in sk) + f" | {e_wh:8.3f} | {e_cl:7.3f} {e_cl_off:5.3f} | {r2fit:5.3f} {e_fit:5.3f} {e_fit_off:5.3f}  "
-              + " ".join(f"{c:+.2f}" for c in coef), flush=True)
+              + " ".join(f"{c:+.2f}" for c in coef) + extra, flush=True)
 
 
 def corrected(e, e_noise):
