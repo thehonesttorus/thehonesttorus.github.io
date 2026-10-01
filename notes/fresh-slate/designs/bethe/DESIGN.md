@@ -229,3 +229,64 @@ makes v5 *worse* (7–27e-5): the node κ3 and K already contain the g-part, so 
 "collective + residual" double-counts. Charged to the realisation (how the residual is defined), not to
 the principle: a consistent split must define the residual cumulants as conditional cumulants given g,
 propagated as such.
+
+## 12. v4 at n = 1024 (bench w1024_d16, all 6 networks, paired, truth noise subtracted per network)
+
+| estimator | raw MSE ± s.e. | × below Gaussian | n³ products / layer | units (dense / Strassen L3) | adjusted (Strassen) |
+|---|---|---|---|---|---|
+| Gaussian closure | 4.10e-6 ± 3.3e-7 | 1 | 2 | 32 | 4.1e-7 |
+| v1 edge1 (pairs + K + hubs + age-1 triples) | 8.1e-7 ± 0.5e-7 | 5.1 | 16 | 245 / 170 | 1.4e-7 |
+| v4 old0 (+ order parameter Q, node κ4 two-site/tree, no old triples) | 5.8e-7 ± 0.4e-7 | 7.0 | 14 | 220 / 153 | 8.7e-8 |
+| **v4 old1** (+ age-1 old triples) | **3.76e-7 ± 0.28e-7** | **10.9** | 23 | 355 / 245 | **9.0e-8** |
+
+(Per-network v4-old1 raw: 4.3, 4.5, 4.2, 3.6, 3.0, 3.0 e-7.) The order-parameter carry is worth 1.4× without old
+triples and 2.2× with them; at n = 1024 it is perturbative (Var η small) and stable, unlike at n ≤ 128.
+The hub generation of Q (H) changes nothing at 1024 (4.74e-7 with and without, MLP 0) and is dropped from the cost.
+Elementwise work: 3 mixture nodes × the exact edge table (Φ2 by 20-node Gauss–Legendre, max error 2e-10 for
+|ρ| ≤ 0.99) ≈ 0.6 u per layer, included in the units.
+
+Cost breakdown per transition (v4 old1): C' sandwich 2; K' = node + (2,1) patterns + fresh hubs 5; age-1 old
+triples (gated two-step propagator + its contraction + pattern subtraction) 9; Q' = (W∘W)ᵀ(Q^a + diag κ4^a)(W∘W) 2;
+node κ4 (R, Q patterns, (2,1,1) hub/leaf, (1,1,1,1) star/path with coincidence subtractions) 5.
+Python-side residual: ≈ 60 calls per layer plain, × ~46 per Strassen L3 product → keep Strassen to the 16
+largest products; ≈ 1 000–4 000 calls per MLP, inside the 0.2 s plan. Wall: Strassen L3 104 ms/product ×
+23 × 15 ≈ 36 s, inside 120 s.
+
+## 13. Verdict
+
+**Projected adjusted MSE at n = 1024: 9e-8 (range 7e-8 – 1.3e-7: raw 3.8e-7 ± 0.3e-7 measured directly, cost
+0.15–0.35 B depending on how much Strassen survives the wall cap).** That is ≈ 55× above the 1 Oct bar
+(1.6e-9), comparable to the best fresh design (faces: raw 3.2e-7 at 0.35–0.62 B), and 1.2× better than it in
+adjusted terms at present prices.
+
+What the principle delivered, in order of value:
+1. The **power counting** (§2, now foundations unlock 13): the lift-limit (node-only) Bethe estimate is wrong at
+   the leading quenched order; edge beliefs are necessary; distinct-triple structure enters κ3 at the same order.
+   Measured: tree-only does not improve with width (2.5e-3 → 3.3e-3).
+2. **Exact edge beliefs** with all orders in ρ (the bivariate-Gaussian table + Stein recursion), with the
+   non-Gaussian cross cumulants as perturbations: a smooth, exact-to-1e-16 pair map; the pair (off-diagonal)
+   state is then not binding (oracle §9).
+3. **The global order parameter** (the replica-symmetric cavity's self-overlap, here: a rank-one spike in the
+   (2,2) fourth-cumulant slice), carried as a scale mixture: 1.4–2.2× at n = 1024. It is a fact about the
+   object: early it is a norm (variance) modulation; at depth it is a strongly non-Gaussian collective
+   coordinate along the Perron/mean direction (κ3 ≈ 0.7, κ4 ≈ 1 at layer 15, w128) that explains 95–97 % of Q.
+
+What would make it competitive (needs ≈ 40× in raw at ≈ 0.1 B):
+- **Old triple content of all ages** (reference mode with the full n³ tensor gave 1.3× over age-1 at w128;
+  heisenberg finds 18–23× at w64 for all ages vs ≤ 1). Within the Bethe dictionary the cheap carrier is the
+  *backward* contraction (heisenberg's pulled-back slices) or a CP form per source; both O(L² n³) as realised.
+- **A consistent collective-coordinate split at depth** (§11c): conditional cumulants given g as the state.
+  The non-Gaussian g-law carries the deep κ4 and the mean-direction drift; v5 failed only by double counting.
+- The κ4 node budget: with node (v, κ3, κ4) exact at every layer the w64 oracle reaches 9.4e-6 vs 1.65e-4
+  (17×); the order parameter recovers part of the κ4 gap, the rest is κ3 (rel. err. 0.3–0.6 along depth).
+
+**The deciding experiment:** at n = 1024, an oracle that injects the true node beliefs (v, κ3, κ4) at layers
+≥ 6 only (MC with 1e7 samples of one network suffices for v and κ3; κ4 to 10 %) into v4. If the final raw
+falls below ≈ 2e-8, the node-belief route (collective coordinate + old κ3 content) can reach the bar and is
+worth the O(L² n³) carriers; if it stays above 1e-7, the remaining error is in the means/edges and the
+pair-belief dictionary is exhausted at this order.
+
+Failures logged and charged to the realisation: c³-truncated edges (NaNs at w64; fixed by exact edges, little
+gain); node κ4 by two-site + tree terms alone (no gain: misses the order parameter); Q by pair Edgeworth
+(singular as ρ → 1; fixed by the scale mixture); Q fed back at small width (geometric over-amplification, n ≤ 128
+only); v5 collective split (double counting of the g-part).
