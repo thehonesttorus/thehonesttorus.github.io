@@ -467,3 +467,135 @@ a hook). They are not end-to-end MSEs. The tolerance used is region §4 (D21 to 
     (exact for the last k layers) interpolates to the exact value, and its curve in k would be more informative.
   - Proposition 1 bounds sketches with i.i.d. group-valued signs. Structured, non-i.i.d. or adaptive sketches are not
     covered.
+
+---
+
+## 6. Final (v1): no-go for three carrier classes, and the escape hatches left
+
+This section answers the coordinator's question (21:25 UTC): either a carrier for the signed remainder at O(n³) per
+layer, or a no-go for a class broad enough to say what the leaders must be doing. **No carrier was found. Below is a
+no-go for three classes that together cover every structure this domain offers. Each comes with an end-to-end or D21
+number at n = 1024, and the escape hatches are named.**
+
+### 6.1 New measurements (final)
+
+**Width test of Conjecture 1** (`t_width.py`, relative Frobenius error of the old (age ≥ 3) D21 of FC; *k = 3, 5 cuts
+apply only to sources older than k, so they are lower bounds*):
+
+WIDTH_TABLE
+
+Reading:
+- **The O(n)-invariant (mean-field/trace) defect is flat in width.** At t = 10 it is 0.44–0.54 at n = 256,
+  0.45–0.47 at n = 512 and 0.44 at n = 1024. At t = 14 it is 0.32–0.52, 0.39–0.42 and 0.40.
+- The (Z₂)ⁿ diagonal-chain defect falls from ≈ 0.62 to 0.48 and converges to it from above. That part is only the
+  self-averaging of the diagonal.
+- **Conjecture 1 is supported in its refined form**: the angle between the memory and the gauge-invariant subalgebra
+  stays open, at ≈ 0.40–0.45 of the norm, with no visible decay over 256 → 1024.
+
+**The cut curve: averaging only the last fresh layer equals averaging all of them.**
+- Cut at k = 1: 0.477 / 0.460 at n = 1024, against full Bethe 0.482 / 0.466. The same holds at 256 and 512.
+- Cut at k = 2 gives the same.
+- *Interpretation:* the signed sector is **regenerated at every fresh layer**. It is the degree-2 (ε_m ε_m′)
+  component of the newest gauge group, with coefficients equal to the full old legs. A diagonal pairing at layer t−1
+  makes all earlier pairings self-average.
+- So "local defect at the last layer ≈ global defect": the defects do not accumulate. Local-to-global holds here, but
+  in the wrong direction for us: it does not help, because the one local defect is already the whole defect.
+
+**Proposition 1, numerical check** (`t_prop1.py`, synthetic nearly orthogonal atoms, n = 48, T = 192):
+- One Haar-U(d) sample has relative variance **0.92 / 0.86 / 0.83×** that of d² scalar cube-root samples at equal
+  transport cost (d = 2 / 3 / 4).
+- It is unbiased (the mean of 400 samples matches var/400).
+- The algebra's readout costs d³ n² against d² n², so there is no net gain.
+
+**End-to-end** (`t_e2e.py`, bench w1024_d16, FC with slices and κ4-mf; old = age ≥ 3; raw = final MSE − truth noise):
+
+E2E_TABLE
+
+The Bethe (gauge-invariant) sector carries ≈ 80 % of the memory's energy. **It buys only ≈ 1.7× over dropping the
+memory, and leaves the estimator ≈ 30× above FC.** The signed 20 % of energy is what the score is made of.
+
+The interpolation stream's trace-channel closure TCX scores 1.05e-6, the same number as the Bethe-sector FC on MLP 0
+(1.05e-6). That is consistent with "trace channel = Bethe sector".
+
+### 6.2 The no-go (measured; each class with its number)
+
+A carrier of old content at ≤ 7 u per layer must not belong to any of the following classes.
+
+**(N-a) Gauge-invariant carriers.**
+- *Definition:* any carrier whose old-content state at a cut is invariant under the sign gauge (Z₂)ⁿ (a fortiori
+  under O(n) or B_n) of the next fresh layer. This covers Bethe, belief propagation and graph covers; trace channels
+  and mean-field or annealed transport of quadratic objects; the dilation charge (costate C6/C7); and any function of
+  row norms, Hadamard squares or gate probabilities.
+- *Ceiling:* old D21 error ≥ 0.40–0.48 at n = 1024, flat in width. End-to-end ≥ 1.05e-6 raw on MLP 0 (FC + Bethe
+  memory), against 3.2e-8 for FC.
+- *Why:* the memory is the non-trivial isotypic component, and a gauge-invariant state cannot represent it.
+
+**(N-b) Rank- or degree-limited carriers.**
+- *Definition:* Barvinok or Taylor expansion around any rank-k reference (Perron, Oseledets or Bethe), CP merge to R
+  atoms, and Tucker.
+- *Ceiling:* rank n/4 gives 0.09–0.11; rank n/8 gives 0.19–0.28 even after the Bethe sector is removed (T2). Region
+  CP R = n gives 2.0e-7 end-to-end.
+- *Why:* the signed sector is as high-rank as the whole (T2).
+
+**(N-c) Unbiased randomised carriers.**
+- *Definition:* Godsil–Gutman, Clifford, quaternion and Haar sketches of the atom sum, and input sampling (the same
+  estimator with x as the signs).
+- *Ceiling:* 1.5e9–4e9 samples for 5 %.
+- *Why:* additive structure, so the algebra gives no gain per cost (Proposition 1, proved and checked).
+
+**[syn] Together.** The memory is (i) gauge-non-invariant, (ii) of rank ≳ n/4 within each age, and (iii) needed
+deterministically. Any carrier at the leaders' cost must therefore hold, at each cut, a **sign-sensitive object of
+dimension ≳ n²/4 that aggregates all ages**. That is an n×n-sized signed state, not L of them. And its update must be
+a contraction with the actual fresh weights (to keep the ε_m ε_m′ components), at O(n³).
+
+### 6.3 Escape hatches (what the leaders could be doing; ranked by this team's credence)
+
+**1. A single aggregated signed n×n state per cut, approximate rather than exact.**
+- C2/C3 forbid an *exact* o(L n²) state. The cut curve shows the signed sector is regenerated each layer from the
+  full old legs, and that it decays: cuts at k = 3, 5 lose only 0.39 / 0.24, a lower bound.
+- So an approximate one-state recursion may exist if the signed contribution through a cut is dominated by its
+  *projection onto a fixed n²-dimensional quadratic statistic of the past*: for example the matrix
+  Σ_r w_r y′_r y′_rᵀ ⊙ (something one-dimensional in the third leg).
+- *Test:* regress the cut-1 off-diagonal term on such aggregates and measure R². A small, cheap next experiment.
+
+**2. Error budgeting across layers (region §6(b)).**
+- The D21 tolerance is 5–10 % only at layers 6–12 (K_off large).
+- A carrier accurate at those layers and crude elsewhere, plus inter-layer cancellation, is not excluded by any of
+  N-a to N-c.
+
+**3. Non-first-order representations.**
+- All of N-a to N-c are measured inside FC's first-order chaos frame.
+- A leader working in a different frame (for example per-neuron marginal laws with a K = 3 chain and regenerated
+  sources, as in the public chain) carries "old content" in a different basis, where the age split may not be the
+  natural cut.
+- *Risk:* our classes are basis-dependent in their proof but not in their measurements. The e2e numbers are
+  frame-independent statements about which *information* a carrier holds.
+
+**What is *not* an escape hatch:**
+- more positivity: Lorentzian fails at every layer (T4);
+- more symmetry: the dilation sector is worth ≈ 2× (costate);
+- noncommutative signs (Proposition 1).
+
+### 6.4 Final honest assessment
+
+- **Theorem:** I1–I5 as cited, and Proposition 1 (short proof; numerically confirmed).
+- **Measured at n = 1024 on bench networks:**
+  - Bethe/mean-field split (2 networks);
+  - width law (256/512/1024, 2 networks each);
+  - cut curve;
+  - T2 kill;
+  - Lorentzian failure;
+  - end-to-end Bethe-sector FC (E2E_NETS networks).
+- **Synthesis:**
+  - the gauge-group reading (Godsil–Gutman = (Z₂)ⁿ average; the fresh-weight lemma = O(n) average; memory = the
+    non-invariant isotypic part);
+  - "regenerated at the newest fresh layer";
+  - the three-structure classification.
+- **Conjecture:** Conjecture 1 (refined: the invariant-angle defect is O(1) in width). The evidence is flat over
+  256–1024 for the O(n)-invariant part.
+- **Risks:**
+  - all D21 measurements live in FC's first-order frame;
+  - the mean-field used is an oracle from the exact legs (the interpolation stream's recursion reproduces it to
+    R² ≈ 0.99);
+  - k = 3, 5 cut values exclude young-old sources;
+  - Proposition 1 covers i.i.d. group-valued signs only.
