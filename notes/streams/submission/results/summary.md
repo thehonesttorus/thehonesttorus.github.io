@@ -13,6 +13,26 @@
 | results/emul/v29_emul_r1.json | client/server | 6 | 0 | 0.26706 | 0.343, 0.392, 0.390, 0.379, 0.373, 0.378 | 107.3 | srv 5564 / cli 2454 | 5.3957e-08 | 1.7548e-08 |
 | results/emul/v29_emul_r2.json | client/server | 6 | 0 | 0.26706 | 0.321, 0.355, 0.350, 0.329, 0.355, 0.350 | 98.1 | srv 5567 / cli 2401 | 5.3957e-08 | 1.7548e-08 |
 | results/emul/v29orig_emul_r1.json | client/server | 6 | 0 | 0.26706 | 0.321, 0.348, 0.354, 0.349, 0.332, 0.329 | 99.1 | srv 5567 / cli 2473 | 5.3957e-08 | 1.7548e-08 |
+| results/emul/v29r2_emul_r1.json | client/server | 6 | 0 | 0.26706 | 0.325, 0.301, 0.286, 0.257, 0.258, 0.261 | 98.5 | srv 5566 / cli 2446 | 5.3957e-08 | 1.7548e-08 |
+| results/emul/v29r_emul_r1.json | client/server | 6 | 0 | 0.26706 | 0.334, 0.314, 0.301, 0.287, 0.287, 0.277 | 99.9 | srv 5562 / cli 2466 | 5.3957e-08 | 1.7548e-08 |
+| results/emul_ab/v29_ab_r1.json | client/server | 6 | 3 | 0.26706 | 0.372, 0.401, 0.402, 0.370, 0.389, 0.402 | 107.0 | srv 5560 / cli 2443 | 5.3957e-08 | 1.7548e-08 |
+| results/emul_ab/v29_ab_r2.json | client/server | 6 | 0 | 0.26706 | 0.349, 0.366, 0.387, 0.387, 0.398, 0.373 | 104.2 | srv 5572 / cli 2476 | 5.3957e-08 | 1.7548e-08 |
+| results/emul_ab/v29r2_ab_r1.json | client/server | 6 | 0 | 0.26706 | 0.350, 0.310, 0.287, 0.272, 0.273, 0.285 | 99.7 | srv 5562 / cli 2481 | 5.3957e-08 | 1.7548e-08 |
+| results/emul_ab/v29r2_ab_r2.json | client/server | 6 | 0 | 0.26706 | 0.329, 0.326, 0.293, 0.279, 0.293, 0.286 | 105.4 | srv 5566 / cli 2491 | 5.3957e-08 | 1.7548e-08 |
+| results/emul_ab/v29r3_ab_r1.json | client/server | 6 | 0 | 0.26706 | 0.317, 0.300, 0.295, 0.304, 0.291, 0.266 | 102.0 | srv 5573 / cli 2469 | 5.3957e-08 | 1.7548e-08 |
+| results/emul_ab/v29r3_ab_r2.json | client/server | 6 | 0 | 0.26706 | 0.276, 0.300, 0.288, 0.273, 0.266, 0.290 | 101.2 | srv 5562 / cli 2482 | 5.3957e-08 | 1.7548e-08 |
+| results/emul_r23/v29r2_emul_r1.json | client/server | 6 | 0 | 0.26706 | 0.334, 0.312, 0.300, 0.287, 0.287, 0.284 | 101.3 | srv 5571 / cli 2436 | 5.3957e-08 | 1.7548e-08 |
+| results/emul_r23/v29r2_emul_r2.json | client/server | 6 | 0 | 0.26706 | 0.350, 0.323, 0.316, 0.295, 0.285, 0.308 | 104.8 | srv 5563 / cli 2486 | 5.3957e-08 | 1.7548e-08 |
+| results/emul_r23/v29r_emul_r1.json | client/server | 6 | 0 | 0.26706 | 0.334, 0.319, 0.312, 0.327, 0.288, 0.298 | 101.9 | srv 5576 / cli 2436 | 5.3957e-08 | 1.7548e-08 |
+| results/emul_r23/v29r_emul_r2.json | client/server | 6 | 0 | 0.26706 | 0.351, 0.320, 0.311, 0.280, 0.282, 0.292 | 99.3 | srv 5562 / cli 2468 | 5.3957e-08 | 1.7548e-08 |
+| results/package/v25_packaged_emul_dev2.json | client/server | 2 | 0 | 0.36667 | 0.139, 0.128 | 41.2 | srv 1589 / cli 2090 | 5.4775e-08 | 1.1600e-08 |
+| results/package/v25_packaged_sub_d32.json | in-process subprocess | 1 | 0 | 0.12216 | 0.025 | 1.8 | 3148 | 1.1246e-05 | -5.8649e-07 |
+| results/package/v29_packaged_emul_dev2.json | client/server | 2 | 0 | 0.26706 | 0.347, 0.395 | 105.5 | srv 5568 / cli 2079 | 5.4761e-08 | 1.1586e-08 |
+| results/package/v29_packaged_sub_d32.json | in-process subprocess | 1 | 0 | 0.12216 | 0.026 | 1.9 | 3148 | 1.1246e-05 | -5.8649e-07 |
+| results/package/v29r2_packaged_emul_dev2.json | client/server | 2 | 0 | 0.26706 | 0.361, 0.309 | 99.9 | srv 5571 / cli 2093 | 5.4761e-08 | 1.1586e-08 |
+| results/package/v29r2_packaged_sub_d32.json | in-process subprocess | 1 | 0 | 0.12216 | 0.026 | 1.9 | 3147 | 1.1246e-05 | -5.8649e-07 |
+| results/package/v29r3_packaged_emul_dev2.json | client/server | 2 | 0 | 0.26706 | 0.279, 0.295 | 100.4 | srv 5560 / cli 2102 | 5.4761e-08 | 1.1586e-08 |
+| results/package/v29r3_packaged_sub_d32.json | in-process subprocess | 1 | 0 | 0.12216 | 0.023 | 1.7 | 3148 | 1.1246e-05 | -5.8649e-07 |
 | results/robust_contended/v25_rob_adv_abs.json | in-process subprocess | 1 | 0 | 0.10586 | 0.070 | 11.0 | 2390 | inf | inf |
 | results/robust_contended/v25_rob_adv_x10.json | in-process subprocess | 1 | 0 | 0.06266 | 0.020 | 2.0 | 1703 | 3.3731e+27 | 3.3731e+27 |
 | results/robust_contended/v25_rob_w1024_d16.json | in-process subprocess | 1 | 0 | 0.36666 | 0.204 | 36.0 | 2997 | 3.5843e-05 | 3.3478e-06 |
@@ -41,8 +61,27 @@
 | results/robust_contended/v29orig_rob_w1024_d4.json | in-process subprocess | 1 | 0 | 0.01448 | 0.069 | 11.0 | 2096 | 1.5875e-04 | 6.4122e-06 |
 | results/robust_contended/v29orig_rob_w256_d8.json | in-process subprocess | 1 | 0 | 0.00177 | 0.098 | 1.9 | 465 | 7.4852e-05 | -3.4674e-05 |
 | results/robust_contended/v29orig_rob_w512_d16.json | in-process subprocess | 1 | 0 | 0.05885 | 0.375 | 15.5 | 1595 | 1.9494e-05 | -8.2225e-06 |
+| results/robust_idle/v29r2_rob_adv_abs.json | in-process subprocess | 1 | 0 | 0.09051 | 0.121 | 21.7 | 4241 | inf | inf |
+| results/robust_idle/v29r2_rob_adv_x10.json | in-process subprocess | 1 | 0 | 0.10637 | 0.149 | 24.8 | 4327 | 3.3731e+27 | 3.3731e+27 |
+| results/robust_idle/v29r2_rob_w1024_d32.json | in-process subprocess | 1 | 0 | 0.12216 | 0.027 | 1.7 | 3148 | 1.1246e-05 | -5.8649e-07 |
+| results/robust_idle/v29r2_rob_w1024_d4.json | in-process subprocess | 1 | 0 | 0.01271 | 0.003 | 0.3 | 569 | 1.5600e-04 | 3.6625e-06 |
+| results/robust_idle/v29r2_rob_w256_d8.json | in-process subprocess | 1 | 0 | 0.00044 | 0.004 | 0.1 | 225 | 1.0154e-04 | -7.9900e-06 |
+| results/robust_idle/v29r2_rob_w512_d16.json | in-process subprocess | 1 | 0 | 0.00746 | 0.010 | 0.2 | 552 | 3.4559e-05 | 6.8430e-06 |
+| results/robust_idle/v29r3_rob_adv_abs.json | in-process subprocess | 1 | 0 | 0.09051 | 0.118 | 22.1 | 4241 | inf | inf |
+| results/robust_idle/v29r3_rob_adv_x10.json | in-process subprocess | 1 | 0 | 0.10637 | 0.143 | 26.1 | 4311 | 3.3731e+27 | 3.3731e+27 |
+| results/robust_idle/v29r3_rob_w1024_d32.json | in-process subprocess | 1 | 0 | 0.12216 | 0.023 | 1.7 | 3148 | 1.1246e-05 | -5.8649e-07 |
+| results/robust_idle/v29r3_rob_w512_d16.json | in-process subprocess | 1 | 0 | 0.00746 | 0.011 | 0.2 | 552 | 3.4559e-05 | 6.8430e-06 |
+| results/robust_idle/v29r_rob_adv_abs.json | in-process subprocess | 1 | 0 | 0.09051 | 0.117 | 21.1 | 4200 | inf | inf |
+| results/robust_idle/v29r_rob_adv_x10.json | in-process subprocess | 1 | 0 | 0.10637 | 0.155 | 26.0 | 4327 | 3.3731e+27 | 3.3731e+27 |
+| results/robust_idle/v29r_rob_w1024_d32.json | in-process subprocess | 1 | 0 | 0.12216 | 0.023 | 1.6 | 3148 | 1.1246e-05 | -5.8649e-07 |
+| results/robust_idle/v29r_rob_w512_d16.json | in-process subprocess | 1 | 0 | 0.00746 | 0.011 | 0.2 | 552 | 3.4559e-05 | 6.8430e-06 |
 
 ## Setup window
 
 | file | setup window per spawn (s) | max |
 |---|---|---|
+| results/setup/v25_setup_time.json | 1.02, 1.01, 1.04, 0.96, 0.94 | 1.04 |
+| results/setup/v29_setup_time.json | 0.99, 0.99, 1.08, 1.00, 0.99 | 1.08 |
+| results/setup/v29r2_setup_time.json | 1.20, 1.08, 1.18, 1.02, 1.01 | 1.20 |
+| results/setup/v29r3_setup_time.json | 1.04, 0.95, 1.07, 0.99, 0.99 | 1.07 |
+| results/setup/v29r_setup_time.json | 1.04, 1.00, 0.95, 0.97, 0.98 | 1.04 |

@@ -1,109 +1,163 @@
 # Submission stream: a validated fallback submission (504aldo V29 / V25)
 
-*Stream deliverable for the ARC White-Box Estimation Challenge 2026, Phase 2. Written 1 Oct 2026. Every number below is measured on this stream's box and comes from a JSON under `results/`. `results/summary.md` lists every run.*
+*Stream deliverable for the ARC White-Box Estimation Challenge 2026, Phase 2. Written 1 Oct 2026. Every number below is measured on this stream's box and comes from a JSON under `results/`. `results/summary.md` lists every run (regenerate it with `python3 scripts/summarize.py`).*
 
 ## Verdict
 
-| bundle | what it is | go/no-go | why |
+| package | what it is | go/no-go | key numbers |
 |---|---|---|---|
-| **`bundles/v29r2`** | V29 + robustness wrapper + view-memo residual cut (2 rounds) | **GO: primary upload** | Same arithmetic as the graded V29 (#330093: LB 5.40e-9, no failed MLP): 0 FLOP difference and bit-identical MSE on all 6 dev MLPs against the upstream file. It has the lowest V29 residual: 0.26 s steady state and 0.33 s on a worker's first MLP in grader-transport emulation, against 0.33–0.39 s for upstream V29. It passes every robustness case. |
-| `bundles/v25` | V25 + robustness wrapper | **GO: safe fallback** | 3× margin on the residual cap (0.11–0.13 s emulated, 0.19–0.23 s in-process), 3× on wall (33–39 s), 3.0 GB in-process. MSE equals V29's (1.757e-8 vs 1.755e-8 on dev, noise-subtracted), but C/B is 0.3667, so the expected LB is ≈ 7.8e-9 vs ≈ 5.4e-9. |
-| `bundles/v29r` | V29 + wrapper + view memo (round 1 only) | superseded by v29r2 | Steady residual 0.28–0.33 s. |
-| `bundles/v29` | V29 + robustness wrapper only | no-go (use v29r2) | Same residual as upstream (0.32–0.39 s emulated). Do not upload the **upstream** V29 or V25 files as they are: both fail the robustness cases (below). |
+| **`packages/v29r3.tar.gz`** | upstream V29 + robustness wrapper + residual cut (view memo, 3 rounds) | **GO: primary upload** | Arithmetic is the graded V29's (#330093: LB 5.40e-9, no failed MLP): 0 FLOP difference against v29 and bit-identical MSE on all 6 dev MLPs; upstream + 32,767 FLOPs, the finiteness check. In grader-transport emulation the residual is mean 0.289 s, max 0.317 s, against upstream-equivalent v29's 0.383 / 0.402 s in the same interleaved window. Passes every robustness case. C/B 0.2526 (first MLP of a worker 0.2671). Setup ≤ 1.07 s. |
+| `packages/v25.tar.gz` | upstream V25 + robustness wrapper | **GO: safe fallback** | Residual 0.11–0.13 s emulated, 0.19–0.23 s in-process (≥ 2× margin both ways). Wall 33–39 s, in-process RSS 3.0 GB. Same MSE as V29 (1.757e-8 vs 1.755e-8 on dev, noise-subtracted), but C/B 0.3667, so the expected LB is ≈ 7.8e-9 vs ≈ 5.4e-9. |
+| `packages/v29r2.tar.gz`, `bundles/v29r` | earlier residual-cut rounds | superseded by v29r3 | v29r2: mean 0.298 s, max 0.350 s (same A/B window). |
+| `packages/v29.tar.gz` | upstream V29 + robustness wrapper only | **no-go** | Residual equals upstream's: max 0.402 s, with 3 of 12 MLPs over the cap on this box in the A/B window. |
+| upstream `estimator_v29.py` / `estimator_v25.py` as published | | **no-go** | Both fail robustness: V29 runs out of memory at 1024×32, V25 exhausts the FLOP budget at 1024×32, and both raise on scaled or all-positive weights. Upstream V29 also sits at 0.32–0.40 s residual here. |
 
-**Upload order:** `packages/v29r2.tar.gz` first. If its graded run shows any failed MLP (`n_failed_mlps > 0`, most plausibly a 0.4 s residual breach on a slower grader box), upload `packages/v25.tar.gz` next and designate that one.
+**Upload order:** `v29r3` first. If its graded report shows any failed MLP (`n_failed_mlps > 0`, most plausibly a residual breach on a grader box slower than this one), upload `v25` next and designate that one.
 
-**Before uploading, a rules question the team must answer** (not a technical one): these bundles are team 504aldo's public, MIT-licensed code with small local changes. Attribution is kept: the LICENSE file and an in-file MIT notice ship in every package. Whether a team may submit another team's public code as its own entry (and designate it for the final private re-run) is for the team to check against the Rules page (§5 / single-submission clause), which could not be fetched from this container.
+**A rules question for the team before uploading:** these packages are team 504aldo's public, MIT-licensed code with local changes; the LICENSE file and an in-file MIT notice with attribution ship in every package. Whether a team may submit another team's public code as its own entry, and designate it for the final private re-run, has to be checked against the Rules page (not fetchable from this container).
 
 ## Question
 
-Can we have a submission ready to upload the moment aicrowd.com is reachable that is known not to fail on any MLP? The failure modes are the FLOP budget, the 120 s wall, the 0.4 s residual, the 5 s setup, 8 GB of memory, and crashes on off-suite or odd inputs. It should also score near the public 504aldo numbers (V29: 0.2526 B, raw 2.13e-8; V25: 0.3667 B).
+Can we have a submission ready to upload the moment aicrowd.com is reachable that is known not to fail on any MLP? The failure modes are the FLOP budget, the 120 s wall, the 0.4 s residual, the 5 s setup, 8 GB of memory, and crashes on the grader's non-suite smoke shapes or odd inputs. It should also score near the public 504aldo numbers (V29: 0.2526 B, raw 2.13e-8, LB 5.40e-9; V25: 0.3667 B).
 
 ## Method
 
-- **Candidates:** `estimators/estimator_v29.py` and `estimator_v25.py` from github.com/504aldo/whest-p2-cumulant-k3 @ `1a4083f` (MIT). Upstream sha256: V29 `86d9ca9b…8e27`, V25 `c0ae6f12…4b20`.
-- **Harness:** whestbench 0.16.1 + flopscope 0.12.1 (`/root/whest`), with the graded caps (2^41 FLOPs, 120 s wall, 0.4 s residual, 5 s setup) and `--max-threads 2`. `scripts/measure_run.py` wraps `whest run --format json --profile`. It also samples the worker's peak RSS from outside the process and subtracts the truth noise floor `avg_variance / N` from the final-layer MSE.
-- **Grader-transport emulation (`scripts/grader_emul.py`).** The grader runs the solution against **flopscope-client** while a **flopscope-server** backend holds the arrays and does the numpy work (2 vCPU solution / 14 vCPU backend). The emulator installs flopscope-client 0.12.1 in `/root/fcli` and runs flopscope-server 0.12.1 with 3 BLAS threads and the grader's 4 GiB per-array cap (the server's default of 100 MB breaks V29). The estimator runs in a 1-thread client, with setup and weight upload in their own sessions, mirroring `subprocess_worker`. Residual is the client's own `wall − dispatch` (flopscope-client `_decompose_timing`), the quantity the 0.4 s cap applies to on the grader. FLOPs and MSE agree with the in-process harness to the bit, apart from a +16.7M-FLOP client-side billing difference on V29 (0.0008% of C).
-- **Dev set:** `whest dataset bake --width 1024 --depth 16 --n-mlps 6 --n-samples 2000000`, seeds 7301001–7301006 (385 MB, not committed; rebuild with `scripts/` + the seeds). Truth noise floor 3.64e-8, larger than the estimators' error, hence the subtraction (standard error of the noise-subtracted 6-MLP mean ≈ 1e-9).
-- **Robustness sets:** 1 MLP each at 1024×32, 512×16, 1024×4 and 256×8, plus the 1024×16 MLP with W×10 and with |W| (all-positive); N = 2000, because only failures and caps matter here.
-- **Box:** 4 vCPU, 16 GB. "Idle" runs had nothing else running. The robustness sweep of the upstream files ran while a bake used 3 cores ("loaded").
+- **Candidates:** `estimators/estimator_v29.py` and `estimator_v25.py` from github.com/504aldo/whest-p2-cumulant-k3 @ `1a4083f` (MIT). Upstream sha256: V29 `86d9ca9b28e6…9d8e27`, V25 `c0ae6f12d27d…dd4b20`.
+- **Harness:** whestbench 0.16.1 + flopscope 0.12.1 (`/root/whest`), with the graded caps (2^41 FLOPs, 120 s wall, 0.4 s residual, 5 s setup) and `--max-threads 2`. `scripts/measure_run.py` wraps `whest run --format json --profile`. It also samples the worker's peak RSS from outside the process and subtracts the truth noise floor `avg_variance / N`.
+- **Grader-transport emulation (`scripts/grader_emul.py`).** The grader runs the solution against **flopscope-client** while a **flopscope-server** backend holds every array and does the numpy work (2 vCPU solution / 14 vCPU backend). The emulator runs flopscope-client 0.12.1 (`/root/fcli`) in a 1-thread client against flopscope-server 0.12.1 with 3 BLAS threads and the grader's 4 GiB per-array cap. Without that cap the server's default of 100 MB breaks V29 on its first large op. Setup, weight upload and fetch run in their own sessions, mirroring `subprocess_worker`. Residual is the client's `wall − dispatch` (flopscope-client `_decompose_timing`), the quantity the 0.4 s cap applies to on the grader. FLOPs and MSE agree with the in-process harness to the bit, apart from a +16.7M-FLOP client-side billing difference on V29 (0.003% of C).
+- **Dev set:** `whest dataset bake --width 1024 --depth 16 --n-mlps 6 --n-samples 2000000`, seeds `[7301001 … 7301006]`, 35 min on 3 threads, 385 MB (not committed). Truth noise floor 3.64e-8, larger than the estimators' error, hence the subtraction (standard error of the noise-subtracted 6-MLP mean ≈ 1e-9).
+- **Robustness sets:** 1 MLP each at 1024×32, 512×16, 1024×4 and 256×8 (seed 4242), plus the 1024×16 MLP with W×10 and with |W| (all-positive), N = 2000, because only failures and caps matter here. Built by `whest dataset bake` and a parquet edit (`scripts/make_adversarial.py`). `scripts/make_datasets.sh` rebuilds every dataset used here.
+- **Box:** 4 vCPU, 16 GB. "Idle" = nothing else running. The box's speed drifted by ~10% over the day, so residual comparisons that matter were run **interleaved in the same window** (section 3b).
 
 ## Results
 
 ### 1. Robustness (subprocess runner, RLIMIT_AS 8 GB; `results/robust_contended/`, `results/robust_idle/`)
 
-| set | V29 upstream | V25 upstream | v29 / v29r / v29r2 (patched) | v25 (patched) |
+| set | V29 upstream | V25 upstream | v29 / v29r / v29r2 / v29r3 | v25 |
 |---|---|---|---|---|
 | 1024×32 | **FAIL**: MemoryError (RSS 6.9 GB) | **FAIL**: FLOP budget (C/B 0.9985) | ok: fallback, C/B 0.122, res 0.02–0.03 s, wall 1.6–2.7 s | ok: C/B 0.122, res 0.03 s |
 | 512×16 | ok (res 0.375 s loaded; one earlier loaded run **FAILED** at 0.406 s) | ok (res 0.16 s) | ok: fallback, C/B 0.0075, res 0.01 s | ok: C/B 0.0075 |
 | 1024×4 | ok | ok | ok: C/B 0.013 | ok |
 | 256×8 | ok | ok | ok: C/B 0.0004 | ok |
-| 1024×16, W×10 | **FAIL**: SymmetryError (NaN) | **FAIL**: SymmetryError | ok: chain raises, fallback; C/B 0.106, res 0.15 s, wall 26 s | ok: C/B 0.063 |
+| 1024×16, W×10 | **FAIL**: SymmetryError (NaN) | **FAIL**: SymmetryError | ok: chain raises → fallback; C/B 0.106, res 0.14–0.15 s, wall 25–26 s | ok: C/B 0.063 |
 | 1024×16, \|W\| | **FAIL**: SymmetryError (NaN) | **FAIL**: SymmetryError | ok: fallback; C/B 0.091, res 0.12 s | ok: C/B 0.106 |
 
 The `inf` MSE on |W| is the harness squaring true means of order 1e23 in float32. It isn't an estimator failure (`n_failed = 0`, finite predictions).
 
 **The robustness patch (`scripts/patch_safe.py`, diffs in `patches/`)** renames the upstream `predict` to `_predict_main` and adds a new `predict`:
-- any shape other than 1024×16 (e.g. the grader's depth-32 smoke test) goes straight to `_safe_predict`, a float64 covariance propagation (ReLU Gaussian closure, ≈ 0.12 B at 1024×32, a few MB);
-- at 1024×16 the upstream chain runs unchanged. It falls back to `_safe_predict` only if the chain raises something other than a flopscope budget/time exhaustion, or returns non-finite values (one `isfinite` + `all` = 32,767 FLOPs, 0.000001% of C).
+- any shape other than 1024×16 (the grader's depth-32 smoke test, say) goes straight to `_safe_predict`, a float64 covariance propagation (ReLU Gaussian closure, ≈ 0.12 B at 1024×32, a few MB);
+- at 1024×16 the upstream chain runs unchanged. It falls back only if the chain raises something other than a flopscope budget/time exhaustion, or returns non-finite values (one `isfinite` + `all` = 32,767 FLOPs).
 
-### 2. Parity: patched bundles vs upstream (client/server emulation, dev set, 6 MLPs)
+### 2. Parity (client/server emulation, dev set, 6 MLPs)
 
 | pair | FLOPs difference per MLP | final-layer MSE |
 |---|---|---|
-| v29 vs V29 upstream | +32,767 (the finiteness check) on all 6 | bit-identical on all 6 |
+| v29 vs V29 upstream | +32,767 on all 6 | bit-identical on all 6 |
 | v25 vs V25 upstream | +32,767 on all 6 | bit-identical on all 6 |
-| v29r vs v29 | 0 on all 6 | bit-identical on all 6 |
-| v29r2 vs v29 | 0 on all 6 | bit-identical on all 6 |
+| v29r, v29r2, v29r3 vs v29 | 0 on all 6 | bit-identical on all 6 |
+| packaged (extracted tarball) vs bundle: v29, v29r2, v29r3, v25 | 0 (first 2 dev MLPs) | bit-identical; sha256 of the packaged `estimator.py` equals the bundle's |
 
-### 3. Dev set, grader-transport emulation (`results/emul/`, `results/emul_r23/`)
+### 3a. Dev set, grader-transport emulation, all runs (`results/emul/`, `results/emul_r23/`)
 
-| bundle (repeat) | fails | C/B (first MLP / steady) | residual per MLP (s), MLPs 1–6 | wall max (s) | server RSS | MSE − noise |
-|---|---|---|---|---|---|---|
-| V29 upstream | 0/6 | 0.2671 / 0.2526 | 0.321, 0.348, 0.354, 0.349, 0.332, 0.329 | 99 | 5.6 GB | 1.7548e-8 |
-| v29 (r1) | 0/6 | 0.2671 / 0.2526 | 0.343, 0.392, 0.390, 0.379, 0.373, 0.378 | 107 | 5.6 GB | 1.7548e-8 |
-| v29 (r2) | 0/6 | same | 0.321, 0.355, 0.350, 0.329, 0.355, 0.350 | 98 | 5.6 GB | 1.7548e-8 |
-| v29r (r1) | 0/6 | same | 0.334, 0.314, 0.301, 0.287, 0.288, 0.277 | 100 | 5.6 GB | 1.7548e-8 |
-| v29r (r2) | 0/6 | same | 0.334, 0.319, 0.312, 0.327, 0.288, 0.298 | 102 | 5.6 GB | 1.7548e-8 |
-| v29r (r3) | 0/6 | same | 0.351, 0.321, 0.311, 0.280, 0.282, 0.292 | 99 | 5.6 GB | 1.7548e-8 |
-| **v29r2 (r1)** | 0/6 | same | **0.325, 0.301, 0.286, 0.257, 0.258, 0.261** | 98 | 5.6 GB | 1.7548e-8 |
-| V25 upstream | 0/6 | 0.3667 | 0.112, 0.114, 0.120, 0.124, 0.121, 0.120 | 38 | 1.9 GB | 1.7566e-8 |
-| v25 (r1) | 0/6 | 0.3667 | 0.132, 0.122, 0.124, 0.129, 0.114, 0.122 | 39 | 1.9 GB | 1.7566e-8 |
-| v25 (r2) | 0/6 | 0.3667 | 0.119, 0.126, 0.123, 0.120, 0.117, 0.115 | 37 | 1.9 GB | 1.7566e-8 |
+| bundle (run) | fails | residual per MLP (s), MLPs 1–6 | wall max (s) | server RSS | MSE − noise |
+|---|---|---|---|---|---|
+| V29 upstream | 0/6 | 0.321, 0.348, 0.354, 0.349, 0.332, 0.329 | 99 | 5.6 GB | 1.7548e-8 |
+| v29 (2 runs) | 0/6 | 0.343–0.392 / 0.321–0.355 | 107 / 98 | 5.6 GB | 1.7548e-8 |
+| v29r (3 runs) | 0/6 | 0.277–0.334 / 0.288–0.334 / 0.280–0.351 | ≤ 102 | 5.6 GB | 1.7548e-8 |
+| v29r2 (3 runs) | 0/6 | 0.257–0.325 / 0.284–0.334 / 0.285–0.350 | ≤ 105 | 5.6 GB | 1.7548e-8 |
+| V25 upstream | 0/6 | 0.112–0.124 | 38 | 1.9 GB | 1.7566e-8 |
+| v25 (2 runs) | 0/6 | 0.114–0.132 / 0.115–0.126 | 39 / 37 | 1.9 GB | 1.7566e-8 |
 
-C/B is data-independent: steady 555,400,514,030 FLOPs = 0.25257 B. The first predict of a worker runs Strassen level 4 (upstream design) at 0.2671 B, and the second 0.2540 B (pool growth is billed). Wall: the emulated server had 3 BLAS threads; the grader's backend has 14. The 98–107 s wall is therefore a pessimistic bound, but it is the thinnest margin after the residual. V29 was graded on the real backend without a time failure.
+C/B is data-independent: steady state is 555,400,514,030 FLOPs = 0.25257 B. A worker's first predict runs Strassen level 4 (upstream design) at 0.2671 B, and its second 0.2540 B (pool growth is billed).
 
-### 4. Dev set, in-process harness (`results/dev6_idle/`; arrays live in the solution process)
+### 3b. Interleaved A/B, same time window (`results/emul_ab/`; order v29, v29r2, v29r3, then reversed)
+
+| bundle | residual, run 1 (s) | residual, run 2 (reverse order) (s) | mean of 12 | max | over 0.4 s |
+|---|---|---|---|---|---|
+| v29 (= upstream residual) | 0.372, 0.401, 0.402, 0.371, 0.389, 0.402 | 0.349, 0.366, 0.387, 0.387, 0.398, 0.373 | 0.383 | 0.402 | **3** |
+| v29r2 | 0.350, 0.310, 0.287, 0.272, 0.273, 0.285 | 0.329, 0.326, 0.293, 0.279, 0.293, 0.286 | 0.298 | 0.350 | 0 |
+| **v29r3** | 0.317, 0.300, 0.295, 0.304, 0.291, 0.266 | 0.276, 0.300, 0.288, 0.273, 0.266, 0.290 | **0.289** | **0.317** | 0 |
+
+Wall per MLP was 98–107 s with the emulated server's 3 BLAS threads, against the 120 s cap. The grader's backend has 14 threads, and V29's arithmetic was graded without a time failure. This is the second-thinnest margin and can't be measured more faithfully here.
+
+### 4. Dev set, in-process harness (`results/dev6_idle/`; every array lives in the solution process)
 
 | run | fails | residual per MLP (s) | wall (s) | peak RSS | MSE − noise |
 |---|---|---|---|---|---|
-| v25, subprocess r1/r2/r3 | 0/6 ×3 | 0.195–0.231 | 33–37 | 3.0 GB | 1.7564e-8 |
-| v29, subprocess r1 | **6/6** | 0.463–0.484 | 70–85 | 6.9 GB (2 MLPs killed by RLIMIT_AS → WORKER_EOF) | – |
-| v29, local r1 | **6/6** (all residual) | 0.475–0.520 | 77–87 | 6.3 GB | – |
+| v25 subprocess, 3 runs | 0/6 ×3 | 0.195–0.231 | 33–37 | 3.0 GB | 1.7564e-8 |
+| v29 subprocess | **6/6** | 0.463–0.484 | 70–85 | 6.9 GB (2 MLPs killed by RLIMIT_AS → WORKER_EOF) | – |
+| v29 local | **6/6** (all residual) | 0.475–0.520 | 77–87 | 6.3 GB | – |
 
-In-process, every basic slice is pure Python and lands in the residual, and every array counts against the 8 GB address-space limit. On the grader the arrays live in the flopscope server and a slice is a counted round trip. The in-process V29 numbers therefore do **not** predict the grader, and V29's graded run confirms that (no failure, 100 MLPs). They do show that V29 can't be validated with the stock local harness on this box. Use the emulator.
+In-process, every basic slice is pure Python and lands in the residual, and every array counts against the 8 GB address-space limit. On the grader the arrays live in the flopscope server and a slice is a counted round trip. **The stock local harness therefore can't validate V29-family bundles on this box** (V29's graded run shows the grader behaves like the emulator, not like this). Use `scripts/grader_emul.py`. In-process runs of v29r2/v29r3 were queued at the end; if they finish they are in `results/dev6_idle/` and `results/summary.md`.
 
 ### 5. Setup window (`results/setup/`)
 
-Worker spawn + imports + module load + `setup()`, as SubprocessRunner times it (5 spawns each): v25 ≤ 1.04 s, v29 ≤ 1.08 s, v29r ≤ 1.04 s, against the 5 s cap. `setup()` alone in client mode takes 0.10–0.13 s (V29's ~45 warm-up ops are round trips).
+Worker spawn + imports + module load + `setup()`, as SubprocessRunner times it (5 spawns each): v25 ≤ 1.04 s, v29 ≤ 1.08 s, v29r ≤ 1.04 s, v29r2 ≤ 1.20 s, v29r3 ≤ 1.07 s, against the 5 s cap. `setup()` alone in client mode takes 0.10–0.13 s.
 
-### 6. Residual margin and how v29r/v29r2 cut it (task 6)
+### 6. Residual margin and how it was cut (task 6)
 
-Profile of one steady V29 predict in client mode (`cProfile`, `scripts/grader_emul.py --profile-out`): 28,246 server round trips, of which 14,644 are basic slices (`__getitem__`). The estimator's own Python is ~0.14 s even under the profiler. The rest of the residual is per-call client bookkeeping outside the timed span (context-manager setup, frame checks, RemoteArray construction and its weakref finaliser). **So residual scales with the call count, and half the calls re-slice the same persistent pooled buffers.**
+A cProfile of one V29 predict in client mode (`grader_emul.py --profile-out`) shows 28,246 server round trips, 14,644 of them basic slices. The estimator's own Python is ~0.14 s even under the profiler. The rest of the residual is per-call client bookkeeping outside the timed dispatch span: context-manager setup, frame checks, RemoteArray construction and its weakref finaliser. **Residual therefore scales with the number of flopscope calls, and half of V29's calls re-slice the same persistent pooled buffers.** Three rounds, each the same ops in the same order (bit-identical, section 2):
 
-- **v29r** (`scripts/patch_views.py`): `_Strassen` memoizes the views of its own pooled buffers (batch prefixes, the 7 combo columns, quadrants, swapaxes, `[None]`, `[0]`). Only registered pool views are memoized; any other operand is sliced fresh. Any pool growth clears the memo. Round trips per steady predict fall from 28.2k to 20.2k.
-- **v29r2** (`scripts/patch_views2.py`): `_predict_core` / `_dslices` / `_hub2` hand the kernel memoized slices of the permanent `_Pool` buffers (leg slabs, factor slabs, `lap4`, hub, `abbuf` rows), so the kernel's memo also hits for top-level operands. Per-layer arrays (W, Qc, QU) are untouched.
-- Effect (client mode, this box): steady residual 0.33–0.39 s (v29) → 0.28–0.33 s (v29r) → 0.26 s (v29r2), and 0.32–0.35 s → 0.33–0.35 s → 0.325 s on a worker's first MLP. FLOPs and outputs are unchanged (section 2). The memo is fully warm only from a worker's 4th MLP: pools grow during MLPs 1–2 (first call at Strassen level 4, then level 5).
-- Margin left (worst MLP, this box): v29r2 0.325 s, i.e. 19% under the cap; V25 0.13 s, 69% under.
+| round | change | round trips / slices per predict (MLP 2) | A/B residual mean / max |
+|---|---|---|---|
+| (v29) | none | 28,246 / 14,644 | 0.383 / 0.402 s |
+| 1: v29r (`scripts/patch_views.py`) | `_Strassen` memoizes views of its own pooled buffers: batch prefixes, the 7 combo columns, quadrants, swapaxes, `[None]`, `[0]`. Only registered pool views are memoized; any other operand is sliced fresh. | 20,242 / 6,714 | (not in A/B) |
+| 2: v29r2 (`scripts/patch_views2.py`) | `_predict_core` / `_dslices` / `_hub2` pass memoized slices of the permanent `_Pool` buffers (leg and factor slabs, `lap4`, hub, `abbuf` rows), so top-level operands hit the memo too | 19,169 / 5,641 | 0.298 / 0.350 s |
+| 3: v29r3 (`scripts/patch_views3.py`) | per-key invalidation: the first allocation of a pool key no longer wipes the memo, and growing key K drops only K's views. Rounds 1–2 wiped everything 133 times in a worker's first predict and 37 times in its second. | 16,670 / 3,163 | **0.289 / 0.317 s** |
+
+Server peak RSS is unchanged (5.56–5.57 GB), so the memo retains no old buffers.
 
 ## Open issues
 
-1. **The grader's client speed is unknown.** Upstream V29 passed on the grader, and v29r2 does strictly less client-side work than upstream (same ops minus ~8k+ slice round trips). Absent grader drift, v29r2's grader residual is therefore below the graded V29's. A slower grader box would hit V29-family bundles first. V25 is the hedge.
-2. A worker's first MLP (0.33 s here) is now v29r2's worst. Further cuts would need the pools allocated in `setup()` (moves GBs of server-side allocation into a 5 s window that runs 5–15 times per submission: not worth the setup-timeout risk) or fewer compute ops (changes FLOPs).
-3. 120 s wall: 98–107 s in emulation with a 3-thread backend; the grader's 14-thread backend should be well under. Not independently verifiable here.
-4. The in-process local harness can't validate V29-family bundles on this box (residual and RLIMIT_AS). Use `scripts/grader_emul.py`.
-5. Rules question on submitting third-party MIT code (see Verdict).
+1. **The grader's client speed is unknown.** Upstream V29 passed on the grader. v29r3 issues the same compute ops with ~11.6k fewer slice round trips per predict, so its grader residual should sit below the graded V29's by roughly the 25% measured here. A grader box ≥ 25% slower than the one that graded #330093 could still breach on the V29 family. V25 is the hedge (≥ 3× margin in emulation).
+2. The 120 s wall (98–107 s emulated with a 3-thread backend) can't be measured faithfully here (section 3b).
+3. The stock in-process harness fails V29-family bundles on this box (residual, and RLIMIT_AS on the second predict). That is expected (section 4) but means local re-validation needs the emulator.
+4. Robustness sets used N = 2000 truth, so only failure flags are meaningful there, not MSE.
+5. The rules question on submitting third-party MIT code (see Verdict).
 
 ## Upload instructions
 
-(See the end of this file, updated with package hashes once `scripts/verify_package.sh` has run.)
+Prerequisites: the team is registered and frozen by **2 Oct 2026 23:59 UTC**; submissions close 17 Oct 23:59 UTC; 10 submissions per team per UTC day (failures count).
+
+```bash
+# 0. tools (any machine with Python 3.10+; the grader pins whestbench 0.16.0 / flopscope 0.12.0, the kit 0.16.1 / 0.12.1)
+python3 -m venv ~/whest && ~/whest/bin/pip install "whestbench==0.16.1" "flopscope==0.12.1"
+export PATH=~/whest/bin:$PATH
+cd notes/streams/submission
+
+# 1. check the committed archive is the validated one
+sha256sum packages/v29r3.tar.gz     # 331047facafc78d5f31a843e6271dc2f5851d26b6fc04b54bda5f624dded53f1
+whest validate-package packages/v29r3.tar.gz
+#    (or rebuild it: cd bundles/v29r3 && whest package --estimator . --output ../../packages/v29r3.tar.gz --yes;
+#     the manifest timestamp changes the tarball hash, the estimator.py sha256 stays 60fa9c12...b589)
+
+# 2. log in and submit (the API key is on the AIcrowd profile page; the challenge slug defaults to
+#    arc-white-box-estimation-challenge-2026)
+whest login --api-key "$AICROWD_API_KEY"
+whest submit packages/v29r3.tar.gz \
+    --description "K3 cumulant chain (504aldo V29, MIT) + robustness wrapper + residual cut" --watch --watch-timeout 1800
+#    equivalent from the folder (preview first; the dry run was checked: 2 files, 31.8 KB archive):
+#      (cd bundles/v29r3 && whest submit --estimator . --yes --dry-run)
+#      (cd bundles/v29r3 && whest submit --estimator . --yes --description "..." --watch --watch-timeout 1800)
+#    alternative: upload packages/v29r3.tar.gz through the challenge's Submissions page.
+
+# 3. read the graded report: expect n_failed_mlps = 0, mean_compute_utilization ~0.253-0.256,
+#    final_layer_mse ~2.1e-8, adjusted ~5.4e-9 (V29's graded #330093: 5.40e-9).
+#    If n_failed_mlps > 0: submit the fallback and designate it instead:
+sha256sum packages/v25.tar.gz       # 212e34e60f90c282c417b706c404583d067c47cf5374a46805ca53aec760f963
+whest submit packages/v25.tar.gz \
+    --description "K3 cumulant chain (504aldo V25, MIT) + robustness wrapper" --watch --watch-timeout 1800
+#    expected: n_failed_mlps = 0, utilization 0.3667, adjusted ~7.8e-9.
+
+# 4. designate the chosen submission for the final private re-run on the Submissions page (one per team).
+```
+
+Package contents (each): `estimator.py` (MIT notice + attribution in the header), `LICENSE` (504aldo, MIT), `manifest.json`. No data files, so whestbench issue #119 (assets dropped by packaging) does not apply.
+
+## Files
+
+- `bundles/{v29r3,v29r2,v29r,v29,v25}/`: estimator.py + LICENSE (upload folders).
+- `packages/*.tar.gz`: archives built by `whest package --estimator . --yes`, checked with `whest validate-package`, extracted and re-run.
+- `patches/`: unified diffs, upstream → each bundle and round to round.
+- `scripts/`: `patch_safe.py`, `patch_views{,2,3}.py` (all asserted textual patches, reproducible from upstream: `patch_safe.py UPSTREAM bundles/v29/estimator.py`, then `patch_views.py` v29→v29r, `patch_views2.py` v29r→v29r2, `patch_views3.py` v29r2→v29r3), `make_datasets.sh`, `make_adversarial.py`, `measure_run.py`, `grader_emul.py`, `robustness.sh`, `validate_dev*.sh`, `emul_dev.sh`, `setup_time.py`, `verify_package.sh`, `summarize.py`.
+- `results/`: every run's JSON (with per-MLP FLOPs, timings, MSE), `summary.md`.

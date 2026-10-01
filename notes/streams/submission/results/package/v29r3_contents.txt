@@ -1,0 +1,3 @@
+-rw-r--r-- root/root      1064 2026-10-01 19:31 LICENSE
+-rw-r--r-- root/root    100731 2026-10-01 19:31 estimator.py
+-rw-r--r-- 0/0             650 2026-10-01 20:36 manifest.json

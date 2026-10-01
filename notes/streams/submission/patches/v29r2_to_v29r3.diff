@@ -1,0 +1,92 @@
+--- bundles/v29r2/estimator.py
++++ bundles/v29r3/estimator.py
+@@ -472,15 +472,24 @@
+         self.bmax = int(bmax)
+         self.pool = {}
+         self._sc = {}   # residual cut: cached slices of pooled buffers
+-        self._vm = {}   # residual cut: id(view) -> (view, {tag: derived views}), pooled views only
++        self._vm = {}   # residual cut: id(view) -> (view, {tag: derived views}, owner pool key)
+         self._ext = {}  # residual cut (round 2): id(permanent pool buffer) -> (buffer, {key: view})
++        self._owned = {}  # round 3: pool key -> ids of memo entries viewing that key's buffer
++        self._sck = {}    # round 3: pool key -> its _sc keys
+ 
+-    def _reset_views(self):
+-        self._sc.clear()
+-        self._vm.clear()
+-
+-    def _reg(self, o):
+-        self._vm[id(o)] = (o, {})
++    def _purge(self, key):
++        """Round 3: pool `key` was reallocated -- forget only the views of its old buffer."""
++        for i in self._owned.pop(key, ()):
++            e = self._vm.get(i)
++            if e is not None and e[2] == key:
++                del self._vm[i]
++        for k in self._sck.pop(key, ()):
++            self._sc.pop(k, None)
++
++    def _reg(self, o, owner=None):
++        self._vm[id(o)] = (o, {}, owner)
++        if owner is not None:
++            self._owned.setdefault(owner, []).append(id(o))
+         return o
+ 
+     def _derived(self, X, tag, make):
+@@ -492,9 +501,9 @@
+             r = make()
+             if isinstance(r, tuple):
+                 for o in r:
+-                    self._reg(o)
++                    self._reg(o, e[2])
+             else:
+-                self._reg(r)
++                self._reg(r, e[2])
+             e[1][tag] = r
+         return r
+ 
+@@ -531,8 +540,9 @@
+         k = (key, sel)
+         s = self._sc.get(k)
+         if s is None or s[0] is not buf:
+-            s = (buf, self._reg(buf[0] if sel == 0 else buf[:sel]))
++            s = (buf, self._reg(buf[0] if sel == 0 else buf[:sel], key))
+             self._sc[k] = s
++            self._sck.setdefault(key, []).append(k)
+         return s[1]
+ 
+     def _buf(self, key, shape):
+@@ -541,10 +551,11 @@
+         stay within memory; a larger batch later simply reallocates once."""
+         b = self.pool.get(key)
+         if b is None or b.shape[0] < shape[0]:
++            if b is not None:
++                self._purge(key)
+             b = fnp.empty(shape, dtype=self.dtype)
+             fnp.copyto(b, 0.0)   # metered page touch (first-MLP residual, F80)
+             self.pool[key] = b
+-            self._reset_views()
+         return b
+ 
+     def _buf2(self, key, shape5):
+@@ -554,17 +565,19 @@
+         e = self.pool.get(key)
+         b = int(shape5[0])
+         if e is None or e[0].shape[0] < b:
++            if e is not None:
++                self._purge(key)
+             b5 = fnp.empty(shape5, dtype=self.dtype)
+             fnp.copyto(b5, 0.0)   # metered page touch (first-MLP residual, F80)
+             b4 = fnp.reshape(b5, (b, shape5[1] * shape5[2], shape5[3], shape5[4]))
+             e = (b5, b4)
+             self.pool[key] = e
+-            self._reset_views()
+         k = ("b2", key, b)
+         s = self._sc.get(k)
+         if s is None or s[0] is not e[0]:
+-            s = (e[0], self._reg(e[0][:b]), self._reg(e[1][:b]))
++            s = (e[0], self._reg(e[0][:b], key), self._reg(e[1][:b], key))
+             self._sc[k] = s
++            self._sck.setdefault(key, []).append(k)
+         return s[1], s[2]
+ 
+     def level(self, m, kd, w, lev):
