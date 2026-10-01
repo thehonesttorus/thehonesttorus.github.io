@@ -36,8 +36,10 @@ def mlps_from_seeds(seed0, count, width, depth):
         yield f"seed-{seed0 + i}", seed0 + i, W, None
 
 
-def atlas(W, n_samples, chunk, sample_seed, pairs=True, gates=True):
+def atlas(W, n_samples, chunk, sample_seed, pairs=True, gates=True, k3=False):
     L, n, _ = W.shape
+    if k3:
+        pre_M3 = np.zeros((L, n, n, n)); post_M3 = np.zeros((L, n, n, n))   # full raw third moments (small width only)
     pre_s = np.zeros((4, L, n)); post_s = np.zeros((4, L, n)); gate = np.zeros((L, n))
     if pairs:
         pM11 = np.zeros((L, n, n)); pM21 = np.zeros((L, n, n)); pM22 = np.zeros((L, n, n))
@@ -66,6 +68,12 @@ def atlas(W, n_samples, chunk, sample_seed, pairs=True, gates=True):
             if gates:
                 GG[l] += g.T @ g
                 GX[l] += g.T @ a_prev.astype(np.float64)
+            if k3:
+                # one GEMM per tensor: (n, m) @ (m, n*n); the (m, n, n) outer-product block is the memory limit,
+                # so k3 runs use a smaller chunk (see main)
+                # fp32 GEMM per chunk (chunk-level rounding ~1e-6 relative, far below the MC noise), fp64 accumulation
+                pre_M3[l] += (z.T @ (z[:, :, None] * z[:, None, :]).reshape(m, n * n)).reshape(n, n, n)
+                post_M3[l] += (a.T @ (a[:, :, None] * a[:, None, :]).reshape(m, n * n)).reshape(n, n, n)
             a_prev = a
         done += m
     N = float(n_samples)
@@ -76,6 +84,8 @@ def atlas(W, n_samples, chunk, sample_seed, pairs=True, gates=True):
                    post_M21=(aM21 / N).astype(np.float32))
     if gates:
         out.update(gate_GG=(GG / N).astype(np.float32), gate_GX=(GX / N).astype(np.float32))
+    if k3:
+        out.update(pre_M3=pre_M3 / N, post_M3=post_M3 / N)
     return out
 
 
@@ -86,17 +96,24 @@ def main():
     ap.add_argument("--width", type=int, default=128); ap.add_argument("--depth", type=int, default=16)
     ap.add_argument("--n-samples", type=int, default=1_000_000); ap.add_argument("--chunk", type=int, default=16384)
     ap.add_argument("--no-pairs", action="store_true"); ap.add_argument("--no-gates", action="store_true")
-    ap.add_argument("--limit", type=int, default=None)
+    ap.add_argument("--k3", action="store_true", help="also accumulate the full third-moment tensors (width <= 256)")
+    ap.add_argument("--limit", type=int, default=None, help="process only the first LIMIT MLPs (after --skip)")
+    ap.add_argument("--skip", type=int, default=0, help="skip the first SKIP MLPs of the source")
+    ap.add_argument("--sample-seed", type=int, default=20260824,
+                    help="base sample seed; two runs with different seeds give independent atlases of the same MLPs")
     ap.add_argument("--out", required=True)
     args = ap.parse_args()
     os.makedirs(args.out, exist_ok=True)
     src = mlps_from_dataset(args.dataset, args.split) if args.dataset else mlps_from_seeds(args.seeds, args.count, args.width, args.depth)
     for i, (name, seed, W, gt) in enumerate(src):
-        if args.limit is not None and i >= args.limit:
+        if i < args.skip:
+            continue
+        if args.limit is not None and i >= args.skip + args.limit:
             break
         t0 = time.time()
-        res = atlas(W, args.n_samples, args.chunk, sample_seed=20260824 ^ (i * 2654435761 % 2**63),
-                    pairs=not args.no_pairs, gates=not args.no_gates)
+        chunk = min(args.chunk, 1024) if args.k3 else args.chunk
+        res = atlas(W, args.n_samples, chunk, sample_seed=args.sample_seed ^ (i * 2654435761 % 2**63),
+                    pairs=not args.no_pairs, gates=not args.no_gates, k3=args.k3)
         res.update(name=name, mlp_seed=seed, weights=W)
         if gt is not None:
             res["gt_mean"] = gt
