@@ -244,7 +244,7 @@ def hermite_terms(C, mu, var, degree):
     return out
 
 
-def layer_terms(st, l, W, with_h8=True, log=None):
+def layer_terms(st, l, W, with_h8=True, log=None, gauss=None):
     """all candidate transported terms (n x n, D21(l+1) space) of layer l."""
     Wn = W[l + 1].astype(np.float64)
     n = Wn.shape[0]
@@ -268,10 +268,20 @@ def layer_terms(st, l, W, with_h8=True, log=None):
     wick = [Tri([Phi, Phi, w2], {(0, 2): C, (1, 2): C}), Tri([Phi, w2, Phi], {(0, 1): C, (1, 2): C.T}),
             Tri([w2, Phi, Phi], {(0, 1): C.T, (0, 2): C.T})]
     out["wick"] = T_ad(wick, Wn) + out["B0"]
-    out["H4"] = T_ad(hermite_terms(C, mu, var, 4), Wn)
-    out["H6"] = T_ad(hermite_terms(C, mu, var, 6), Wn)
-    if with_h8:
-        out["H8"] = T_ad(hermite_terms(C, mu, var, 8), Wn)
+    if gauss is not None and f"H4_{l}" in gauss:
+        # Gaussian Hermite terms depend only on (mu, var, C), whose replica noise is negligible: shared per MLP
+        for k in ("H4", "H6", "H8"):
+            if f"{k}_{l}" in gauss:
+                out[k] = gauss[f"{k}_{l}"]
+    else:
+        out["H4"] = T_ad(hermite_terms(C, mu, var, 4), Wn)
+        out["H6"] = T_ad(hermite_terms(C, mu, var, 6), Wn)
+        if with_h8:
+            out["H8"] = T_ad(hermite_terms(C, mu, var, 8), Wn)
+        if gauss is not None:
+            for k in ("H4", "H6", "H8"):
+                if k in out:
+                    gauss[f"{k}_{l}"] = out[k]
     if log:
         log(f"  layer {l}: gaussian terms {time.time()-t0:.0f}s")
     out["B1"] = T_ad(sym3([Tri([w2, Phi, w2], {(0, 2): D21z, (1, 2): Co})]), Wn)
@@ -343,11 +353,11 @@ def rel(a, b, off=False):
 COLS = ["memless", "wick", "herm2", "herm3", "herm4", "closure_noK4", "closure", "closure_reg", "fit", "fit_reg"]
 
 
-def ladder_single(st, W, cache=None, log=None, with_h8=True):
+def ladder_single(st, W, cache=None, log=None, with_h8=True, gauss=None):
     L = W.shape[0]
     rows = []
     for l in range(L - 1):
-        t = layer_terms(st, l, W, with_h8=with_h8, log=log)
+        t = layer_terms(st, l, W, with_h8=with_h8, log=log, gauss=gauss)
         if cache is not None:
             cache[l] = t
         coef, coef_r = fit_coef(t), fit_coef(t, reg=True)
@@ -375,6 +385,9 @@ def ladder_pair(tA, tB):
             r[k + "_xc"] = sqrt(max(ex ** 2 - e_noise ** 2, 0.0))
             cp = float(np.sum((mA[k] - DA) * (mB[k] - DB))) / den
             r[k + "_cp"] = np.sign(cp) * sqrt(abs(cp))
+            # replica noise of the model error itself (model and target share samples, so it is far below 'noise')
+            r[k + "_dn"] = float(np.sqrt(np.sum(((mA[k] - DA) - (mB[k] - DB)) ** 2) / 2.0 / den))
+            r[k + "_inA"] = rel(mA[k], DA)
         # noise of the transported Phi^3 kappa3(z) and kappa4 terms relative to ||D21||
         for k in ("B0", "B6"):
             r[k + "_noise"] = float(np.sqrt(np.sum((a[k] - b[k]) ** 2) / 2.0 / np.sum(DB ** 2)))
@@ -435,6 +448,7 @@ def main():
     v = sub.add_parser("verify"); v.add_argument("atlas"); v.add_argument("stats")
     g = sub.add_parser("ladder"); g.add_argument("stats", nargs="+"); g.add_argument("--no-h8", action="store_true")
     g.add_argument("--out", default=None, help="write a json of the rows")
+    g.add_argument("--gauss-cache", default=None, help="npz of the Gaussian Hermite terms of this MLP (read if present, else written)")
     args = ap.parse_args()
     log = lambda m: print(time.strftime("%H:%M:%S"), m, flush=True)
     if args.cmd == "stats":
@@ -446,7 +460,7 @@ def main():
     elif args.cmd == "verify":
         verify(args.atlas, args.stats)
     elif args.cmd == "ladder":
-        run_ladder(args.stats, with_h8=not args.no_h8, out=args.out, log=log)
+        run_ladder(args.stats, with_h8=not args.no_h8, out=args.out, log=log, gauss_path=args.gauss_cache)
 
 
 def load_stats(p):
@@ -456,11 +470,15 @@ def load_stats(p):
     return st, W
 
 
-def run_ladder(paths, with_h8=True, out=None, log=None):
+def run_ladder(paths, with_h8=True, out=None, log=None, gauss_path=None):
     import json
     stA, W = load_stats(paths[0])
+    gauss = dict(np.load(gauss_path)) if gauss_path and os.path.exists(gauss_path) else {}
+    had = len(gauss) > 0
     cA = {}
-    rows = ladder_single(stA, W, cache=cA, with_h8=with_h8, log=log)
+    rows = ladder_single(stA, W, cache=cA, with_h8=with_h8, log=log, gauss=gauss)
+    if gauss_path and not had:
+        np.savez(gauss_path, **gauss)
     print(f"\n{paths[0]}: width {W.shape[1]}, N = {int(stA['n_samples'])}  (single replica, within-sample eps)")
     cols = [c for c in COLS if c in rows[0]]
     print(f"{'l':>2} " + " ".join(f"{c:>12}" for c in cols) + "  fit coefficients B0..B6")
@@ -471,7 +489,7 @@ def run_ladder(paths, with_h8=True, out=None, log=None):
         stB, WB = load_stats(paths[1])
         assert np.array_equal(W, WB)
         cB = {}
-        ladder_single(stB, W, cache=cB, with_h8=with_h8, log=log)
+        ladder_single(stB, W, cache=cB, with_h8=with_h8, log=log, gauss=gauss)
         prow = ladder_pair(cA, cB)
         print(f"\npair {paths[0]} | {paths[1]}: noise-corrected eps of D21(l+1)")
         print("  _xc = model from A vs target B, target noise subtracted (oracle_k3 --pair convention)")
@@ -481,6 +499,9 @@ def run_ladder(paths, with_h8=True, out=None, log=None):
             print(f"{r['l']:>2} {r['noise']:6.4f} {r['B0_noise']:6.4f} {r['B6_noise']:6.4f} | " + " ".join(f"{r[c + '_cp']:11.4f}" for c in cols)
                   + " | xc: " + " ".join(f"{r[c + '_xc']:11.4f}" for c in cols)
                   + "  coefA " + " ".join(f"{c:+.2f}" for c in r["coefA"]), flush=True)
+        print("\nreplica noise of the model error delta = M - D, ||delta_A - delta_B|| / (sqrt2 ||D||), per column")
+        for r in prow:
+            print(f"{r['l']:>2} " + " ".join(f"{r[c + '_dn']:11.4f}" for c in cols), flush=True)
         res["pair"] = [{k: (v.tolist() if isinstance(v, np.ndarray) else v) for k, v in r.items()} for r in prow]
     if out:
         with open(out, "w") as f:
