@@ -677,3 +677,114 @@ def estimate_edge_info(Ws):
         prev = (spec, Wn)
         m = mu @ Wn; C = Wn.T @ Ca @ Wn; K = Kn; k4 = (Wn ** 4).T @ k4a
     return np.array(out), info
+
+
+# ------------------------------- v5: Bethe conditional on the collective (Perron) coordinate -------
+def quad_from_moments(M, K):
+    """Gauss quadrature (nodes, weights) for a law with raw moments M[0..2K-1] (Golub-Welsch via
+    Cholesky of the Hankel matrix)."""
+    H = np.array([[M[i + j] for j in range(K + 1)] for i in range(K + 1)])
+    R = np.linalg.cholesky(H + 1e-14 * np.eye(K + 1)).T
+    a = np.zeros(K); b = np.zeros(K - 1)
+    for j in range(K):
+        a[j] = R[j, j + 1] / R[j, j] - (R[j - 1, j] / R[j - 1, j - 1] if j > 0 else 0.0)
+    for j in range(K - 1):
+        b[j] = R[j + 1, j + 1] / R[j, j]
+    J = np.diag(a) + np.diag(b, 1) + np.diag(b, -1)
+    x, V = np.linalg.eigh(J)
+    return x, M[0] * V[0] ** 2
+
+
+def mixture_moments(mus, sig2, w, rmax):
+    """Raw moments 0..rmax of sum_i w_i N(mus_i, sig2_i)."""
+    out = []
+    for r in range(rmax + 1):
+        # E (mu + s xi)^r = sum_k C(r,2k) mu^{r-2k} s^{2k} (2k-1)!!
+        from math import comb
+        tot = 0.0
+        for k in range(r // 2 + 1):
+            df = np.prod(np.arange(2 * k - 1, 0, -2)) if k > 0 else 1.0
+            tot = tot + comb(r, 2 * k) * mus ** (r - 2 * k) * sig2 ** k * df
+        out.append(float(np.sum(w * tot)))
+    return np.array(out)
+
+
+def top_eig(C, u0=None, iters=30):
+    if C.shape[0] <= 512 or u0 is None:
+        ev, U = np.linalg.eigh(C); u = U[:, -1]
+    else:
+        u = u0
+        for _ in range(iters):
+            u = C @ u; u /= np.linalg.norm(u)
+    return u if u.sum() >= 0 else -u
+
+
+def estimate_v5(Ws, Kq=6, old=1, gtriples=True, verbose=False, glaw=None):
+    Ls, n, _ = Ws.shape
+    W = Ws[0].astype(np.float64)
+    m = np.zeros(n); C = W.T @ W; K = np.zeros((n, n)); k4 = np.zeros(n)
+    xg, wg = np.polynomial.hermite_e.hermegauss(Kq); wg = wg / wg.sum()   # g ~ N(0,1) at layer 1
+    out = []; prev = None; info = []; u = None
+    r_, c_ = (lambda x: x[:, None]), (lambda x: x[None, :])
+    for l in range(Ls):
+        u = top_eig(C, u)
+        if glaw is not None and glaw[l] is not None:
+            xg, wg = glaw[l]
+        s = np.sqrt(u @ C @ u)
+        ell = C @ u / s
+        Mg = np.array([np.sum(wg * xg ** r) for r in range(5)])
+        k3g = Mg[3] - 3 * Mg[1] * Mg[2] + 2 * Mg[1] ** 3
+        k4g = Mg[4] - 3 * Mg[2] ** 2      # (mean 0, var ~1)
+        v = np.diag(C).copy(); k3 = np.diag(K).copy()
+        Cr = C - np.outer(ell, ell)
+        vr = np.maximum(np.diag(Cr).copy(), 1e-6 * v)
+        cr = Cr.copy(); np.fill_diagonal(cr, 0.0)
+        k3r = k3 - ell ** 3 * k3g; k4r = k4 - ell ** 4 * k4g
+        Kr = K - np.outer(ell ** 2, ell) * k3g; np.fill_diagonal(Kr, 0.0)
+        Lm = None; E11 = 0.0; E21 = 0.0; condmu = []; condE11 = []; k4cond = 0.0
+        args = (r_(k3r), c_(k3r), r_(k4r), c_(k4r), Kr, Kr.T)
+        for x, w in zip(xg, wg):
+            mk = m + ell * x
+            Lk = ladder(mk, vr, k3r, k4r)
+            T = edge_table(mk, vr, cr, pmax=2)
+            e11 = pair_moment(T, 1, 1, *args); e21 = pair_moment(T, 2, 1, *args)
+            mu_k, var_k, _, k4_k = node_moments(Lk)
+            np.fill_diagonal(e11, var_k + mu_k ** 2)
+            E11 = E11 + w * e11; E21 = E21 + w * e21; k4cond = k4cond + w * k4_k
+            condmu.append(mu_k); condE11.append(e11)
+            Lm = {q: w * val for q, val in Lk.items()} if Lm is None else {q: Lm[q] + w * Lk[q] for q in Lm}
+        mu, var, k3a, k4a = node_moments(Lm)
+        Ca = E11 - np.outer(mu, mu); np.fill_diagonal(Ca, var)
+        Ka = E21 - np.outer(2 * Lm[2], mu) - 2 * mu[:, None] * Ca; np.fill_diagonal(Ka, 0.0)
+        L0, Lm1 = Lm[0], Lm[-1]
+        out.append(mu); info.append(dict(m=m, v=v, k3=k3, k4=k4, k3g=k3g, k4g=k4g, top=s * s / v.sum()))
+        if l + 1 == Ls:
+            break
+        Wn = Ws[l + 1].astype(np.float64)
+        M = cr * cr * (L0 ** 2)[:, None] * Lm1[None, :]
+        spec = (k3a, Ka - M, cr, L0, Lm1)
+        Kn = contract(*spec, Wn, Wn)
+        if gtriples:
+            for x, w, mk in zip(xg, wg, condmu):
+                dm = mk - mu
+                D = Wn.T @ dm
+                Kn += w * (np.outer(D * D, D) - np.outer((Wn * Wn).T @ (dm * dm), D))
+        if old and prev is not None:
+            pspec, Wl = prev
+            P = Wl @ (L0[:, None] * Wn)
+            Kz = K.copy(); k3z = np.diag(K).copy(); np.fill_diagonal(Kz, 0.0)
+            Kn = Kn + contract(*pspec, P, P) - contract(k3z * L0 ** 3, Kz * (L0 ** 2)[:, None] * L0[None, :],
+                                                      None, L0, Lm1, Wn, Wn)
+        prev = (spec, Wn)
+        mn = mu @ Wn; Cn = Wn.T @ Ca @ Wn
+        un = top_eig(Cn, u); sn = np.sqrt(un @ Cn @ un); y = Wn @ un
+        mus = np.array([y @ (mk - mu) for mk in condmu]) / sn
+        sig2 = np.array([y @ (e - np.outer(mk, mk)) @ y for mk, e in zip(condmu, condE11)]) / sn ** 2
+        Mom = mixture_moments(mus, np.maximum(sig2, 0), wg, 2 * Kq)
+        xg, wg = quad_from_moments(Mom, Kq)
+        ell_n = Cn @ un / sn
+        Mg = np.array([np.sum(wg * xg ** r) for r in range(5)])
+        k4gn = Mg[4] - 3 * Mg[2] ** 2
+        k4 = ell_n ** 4 * k4gn + (Wn ** 4).T @ k4cond
+        m = mn; C = Cn; K = Kn; u = un
+    return (np.array(out), info) if verbose else np.array(out)

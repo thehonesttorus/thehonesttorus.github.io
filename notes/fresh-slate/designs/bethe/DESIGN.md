@@ -191,3 +191,41 @@ Carrying Q^z as an edge belief (Q' = (W∘W)ᵀ(Q^a + diag κ4^a)(W∘W) + hub g
 tree terms) reproduces the mean node κ4 along depth (w64: 0.32/0.35/0.25/0.24/0.28 vs true
 0.32/0.32/0.22/0.19/0.23). Feeding Q into the pair map by Edgeworth is singular as ρ → 1 (the δ⊗δ term);
 treating it as a per-pair variance scale mixture (3-point Gauss–Hermite in η) is smooth.
+
+### 11b. Calibration of v4 (w128, MLPs 0–3, final MSE; v1 = edge: 4.2/5.8/7.4/8.7e-5)
+
+- Per-layer node errors vs MC (MLP 0): v4 is much better early (κ4 rel. err. 0.05 vs 0.39 at layer 1;
+  layer-2 mean MSE 3.0e-7 vs 1.5e-6; layer-3 1.9e-6 vs 4.5e-6), but the variance drifts from layer 7 on
+  (rel. err. 23 % at layer 15) and the final MSE is 10–30× worse.
+- Ablation: the drift comes from the pair mixture feeding C^a (the Cov_η(μ_a(η), μ_b(η)) term). Q fed
+  only to the node κ4: 5.9e-5 mean (10 % better than v1); Q scaled by ½: 5.7e-5, stable; Q into the
+  propagation but not into C^a: diverges. The Q → Q^a → Q loop over-amplifies (the truth grows roughly
+  linearly in depth; the carried Q grows geometrically once fed back). One overcount was fixed (a scale
+  mixture has κ22 = Var η (v_a v_b + 2c²), so q_ab = Q_ab / (v_a v_b + 2c²)); not enough.
+- Against MC, the edge chain *underestimates* the top eigenvalue of C (the mean-direction spike) by
+  3–8 % at layers 3–12; v4 corrects it at layer 3 and overshoots from layer 6.
+
+### 11c. What the order parameter is (w128, MLP 0, MC 4e5)
+
+| layer | top-PC variance fraction | κ3(g), κ4(g) of the top coordinate | rms Q | rms Q after removing ℓ g | + heteroscedastic slopes |
+|---|---|---|---|---|---|
+| 1 | 0.04 | 0.07, 0.10 | 0.048 | 0.043 | 0.043 |
+| 3 | 0.09 | 0.20, −0.01 | 0.047 | 0.040 | 0.037 |
+| 6 | 0.16 | 0.43, 0.24 | 0.032 | 0.021 | 0.014 |
+| 10 | 0.38 | 0.68, 0.76 | 0.070 | 0.007 | 0.003 |
+| 15 | 0.61 | 0.76, 0.98 | 0.137 | 0.004 | 0.002 |
+
+Two mechanisms: **at depth** the spike is the non-Gaussianity of one collective coordinate g along the
+Perron (mean) direction (foundations unlock 20): conditioning on g removes 95–97 % of Q. **Early** it is
+a variance modulation by a quadratic global statistic (the layer norm / input radius), not a linear
+coordinate; v4's scale mixture describes that regime correctly (layers 1–5).
+
+v5 (Bethe edges conditional on g, quadrature over g's 1-D law propagated by the conditional means and
+variances of g' given g) reproduces the top-PC variance fraction along depth (0.37/0.58 at layers
+10/15 vs 0.38/0.61 true) but **not g's non-Gaussianity** (κ3(g), κ4(g) stay ≈ 0): with a conditionally
+Gaussian, conditionally independent residual, g' = f(g) + CLT noise is nearly Gaussian; the truth's skew
+comes from coherent triple structure along the top direction. Injecting the true law of g (oracle)
+makes v5 *worse* (7–27e-5): the node κ3 and K already contain the g-part, so the split
+"collective + residual" double-counts. Charged to the realisation (how the residual is defined), not to
+the principle: a consistent split must define the residual cumulants as conditional cumulants given g,
+propagated as such.
