@@ -94,10 +94,10 @@ Each $\mathcal L_a$ is the [CKG] generator with the single coupling $A^a$. The t
 | 4 | Dirac operator | construction; trivially a spectral triple in finite dimension |
 | 5 | Connes metric, a Wasserstein-1 | metric exactly when the semigroup is primitive (elementary) |
 
-The **missing branch** is the Carlen–Maas Wasserstein-2 gradient-flow metric. It is constructed only for GNS-symmetric generators [CM20 §2.4], and the [CKG]/[CR] generators are KMS-symmetric but not GNS-symmetric (check K1).
+The **missing branch** is the Carlen–Maas Wasserstein-2 gradient-flow metric. It is constructed only for GNS-symmetric generators [CM20 §2.1, §2.4], and the [CKG]/[CR] generators are KMS-symmetric but not GNS-symmetric ([CKG] App. E; check K1 illustrates this on a member of the [DLL] family, not on the [CR] generator itself).
 
 **Verdict on the three intuitions.**
-1. *Gibbs/Markov and expanders share an essence.* This is right at exactly one place. Uniform coercivity of the "vertical" derivations on regions $A$ (a uniform local gap, equivalently a uniform Kazhdan-type constant for single-site generators) turns the proved local Markov property into the open global one ([CR] Cor B.2, Remark III.1.2). The Markov property itself is not an expansion property: [CR] and [Y] prove it with no gap.
+1. *Gibbs/Markov and expanders share an essence.* This is right at exactly one place. Uniform coercivity of the "vertical" derivations on regions $A$ (a uniform local gap; by ANALOGY with [Pet]'s Kazhdan-pair condition, which is stated for tracial finite factors, a uniform Kazhdan-type constant for single-site generators) turns the proved local Markov property into the open global one ([CR] Cor B.2, Remark III.1.2). The Markov property itself is not an expansion property: [CR] and [Y] prove it with no gap.
 2. *The time-averaged single-Pauli Lindbladian hides a deep analogue.* Yes, and it can be made a theorem inside the programme. The analogue is a **re-routing Lindbladian** on the complete-history corner, GNS-detailed-balanced for $\mathbb P_\beta$ with jumps the re-routing matrix units (§6.1, check K7). Its kernel is the face algebra $D_0$. Its Cesàro limit is the $\mathbb P_\beta$-preserving conditional expectation onto $D_0$. It recovers $\mathbb P_{\beta'}$ for all $\beta'$ iff the barycentre is sufficient, and the recovery error is bounded by $2\tanh(|\beta-\beta'|\,\mathrm{osc}F/4)$. This is the Chen–Rouzé construction with every approximation removed: Note 1's modular Hamiltonian is diagonal in the history basis, which is the "commuting case".
 3. *NCG ties these together.* Partly right. The shared object is a **first-order differential calculus**, a derivation into a Hilbert bimodule. It carries:
    - the Dirichlet form, as the $L^2$ energy;
@@ -140,8 +140,8 @@ A QMS is a semigroup $P_t=e^{t\mathcal L}$ of unital completely positive maps. I
 - **BKM detailed balance** is defined in the same way [CM20 Def 2.2].
 
 **Facts.**
-- [CM17 Thm 2.9; CM20 Lemma 2.1, credited to Alicki]. If a real map is self-adjoint for $\langle\cdot,\cdot\rangle_s$ for some $s\neq\tfrac12$, then it commutes with $\Delta_\sigma$ and is self-adjoint for every $s$, KMS included. Hence GNS implies KMS. The converse fails: [CM17 App. B] builds KMS-symmetric generators on $M_2$ that do not commute with $\Delta_\sigma$.
-- [CM20 Thm 2.9]. If an ergodic QMS's forward equation is the gradient flow of $\mathrm{Ent}_\sigma$ for some $C^1$ Riemannian metric, then each $P_t$ is BKM-symmetric. The BKM-symmetric class strictly contains the GNS class (§2.4). "Only when each $P_t$ is self-adjoint with respect to the GNS inner product do we have a construction of such a Riemannian metric."
+- [CM17 Lemma 2.5 and Thm 2.9; CM20 Lemma 2.1, credited to Alicki]. If a real map is self-adjoint for $\langle\cdot,\cdot\rangle_s$ for some $s\neq\tfrac12$, then it commutes with $\Delta_\sigma$ and is self-adjoint for every $s$, KMS included. Hence GNS implies KMS. The converse fails: [CM17 App. B] builds KMS-symmetric generators on $M_2$ that do not commute with $\Delta_\sigma$.
+- [CM20 Thm 2.9]. If an ergodic QMS's forward equation is the gradient flow of $\mathrm{Ent}_\sigma$ for some $C^1$ Riemannian metric, then each $P_t$ is BKM-symmetric. The BKM-symmetric class strictly contains the GNS class (§2.4). [CM20 §2.1]: "only when each $P_t$ is self-adjoint with respect to the GNS inner product do we have a construction of such a Riemannian metric."
 - [CKG App. E]. Take a transition part $\sum\alpha_{\nu_1\nu_2}A_{\nu_1}(\cdot)A_{\nu_2}^\dagger$. Detailed balance for the $s$-inner product forces $\alpha_{\nu_1,\nu_2}=\alpha_{-\nu_2,-\nu_1}e^{-\beta(1-s)\nu_1-\beta s\nu_2}$. For $s\neq\tfrac12$ and $\beta\neq0$ this forces $\alpha_{\nu_1\nu_2}=0$ whenever $\nu_1\ne\nu_2$ (E5). In their words: "the only existing Lindbladian that satisfies (E5) is the Davies' generator, which requires resolving the level spacing using a (exponentially) long Hamiltonian simulation time."
 
 **Structure theorem, GNS case** (Alicki; [CM17 Thm 3.1], [CM20 Thm 2.4]). $P_t$ satisfies GNS detailed balance iff
@@ -168,7 +168,7 @@ The condition on the jumps is equivalent to $\Delta^{-1/4}L_j$ being self-adjoin
    - implementing it "requires accurately resolving all the Bohr frequencies … impractically long Hamiltonian simulation time" ([DLL] Remark 7).
 
    For commuting $H$ it is local ([KB] Lemma 11(2)).
-2. **Heat-bath generator** [KB (34)]. $\mathcal L^H_A(f)=\sum_{k\in A}(E^\rho_k(f)-f)$ with $E^\rho_k(f)=\mathrm{tr}_k[\eta^\rho_kf\eta^{\rho\dagger}_k]$ and $\eta^\rho_k=(\mathrm{tr}_ke^{-\beta H})^{-1/2}e^{-\beta H/2}$. It is local for commuting potentials ([KB] Lemma 12).
+2. **Heat-bath generator** [KB (34)]. $\mathcal L^H_A(f)=\sum_{k\in A}(E^\rho_k(f)-f)$ with $E^\rho_k(f)=\mathrm{tr}_k[\eta^\rho_kf\eta^{\rho\dagger}_k]$ and $\eta^\rho_k=(\mathrm{tr}_ke^{-\beta H})^{-1/2}e^{-\beta H/2}$. It is local for commuting potentials ([KB] Lemma 12(2)).
 3. **The [CKG] sampler.** It uses the operator Fourier transform with Gaussian filter $f(t)\propto e^{-\sigma_E^2t^2}$, the Metropolis weight $\gamma(\omega)=\exp(-\beta\max(\omega+\tfrac1{2\beta},0))$ at $\sigma_E=1/\beta$, and a coherent term $B$; [arxiv-2609.38007.md](arxiv-2609.38007.md) §8.1 reproduces all of it.
    - [CKG] Thm I.1: exact KMS detailed balance, hence $\mathcal L_\beta[\rho_\beta]=0$.
    - [CKG] Thm I.2: $e^{\mathcal L_\beta t}$ is implementable at a cost of $\tilde O(t\beta)$ total Hamiltonian simulation time.
@@ -235,7 +235,7 @@ In their words, "it is the KMS inner product that is more natural: the Dirichlet
   2. $L$ lower semicontinuous;
   3. $\{L\le1\}$ totally bounded in $A/\mathbb Re$.
 
-  In finite dimension, $L(a)=\|[D,a]\|$ is a Lip-norm iff $[D,a]=0$ implies $a\in\mathbb CI$ [Rie §7].
+  In finite dimension, $L(a)=\|[D,a]\|$ is a Lip-norm iff $[D,a]=0$ implies $a\in\mathbb CI$ [Rie §7; stated there for $C(X)$ with $X$ finite, but the argument uses only finite dimensionality].
 - **Radius criterion** [Rie Prop 2.2]: $\rho_L\le2r$ on $S(A)$ iff $\|\tilde a\|^\sim\le rL(a)$ for all $a$, where $\|\tilde a\|^\sim=(\max a-\min a)/2$. The radius of the state space is the best constant in an "oscillation ≤ Lipschitz" inequality.
 - **Commutative case** [DM Prop 2.1]: on a complete Riemannian spin manifold, $d_D=W_1$ on all states, by Kantorovich duality.
 - **Noncommutative case** [DM]: pure states do not form a path metric space. On the other hand, $d_D(\varphi_s,\varphi_t)=|s-t|\,d_D(\varphi_0,\varphi_1)$ along segments of $S(A)$ (1.9).
@@ -249,13 +249,13 @@ In their words, "it is the KMS inner product that is more natural: the Dirichlet
   - $\phi_D=\mathrm{Tr}_\phi(e^{-\beta D/2}\cdot e^{-\beta D/2})$ is a weight whose modular group is implemented by $D$ and which is a trace on $N^\sigma$.
   - The spectral flow of "modular partial isometries" is a residue of a twisted cyclic cocycle (Thms 1.1–1.4).
   - Examples: on Cuntz $O_n$, $sf(S_\alpha S_\alpha^*D,S_\alpha S_\beta^*DS_\beta S_\alpha^*)=(|\beta|-|\alpha|)n^{-|\alpha|}$; on Araki–Woods factors, $sf=-n(1+e^\beta)^{-n}$.
-  - "For modular unitaries $u_v$, $sf_{\phi_D}(D,u_vDu_v^*)$ is just Araki's relative entropy of the two KMS weights $\phi_D$ and $\phi_D\circ\mathrm{Ad}\,u_v$."
+  - "For modular unitaries $u_v$, $sf_{\phi_D}(D,u_vDu_v^*)$ is just Araki's relative entropy of the two KMS weights $\phi_D$ and $\phi_D\circ\mathrm{Ad}\,u_v$." ([CNNR] §6 recall this as an observation of their ref. [9], Carey–Phillips–Rennie on Cuntz algebras.)
   - The graph-algebra case is Pask–Rennie [28 in CNNR], which I did not open.
 - **Spectral triples from Dirichlet forms** [CGIS].
   - Circle (Thm 3.8): $D_\alpha=\begin{pmatrix}0&\partial_\alpha\\\partial^*_\alpha&0\end{pmatrix}$ with $\partial^*_\alpha\partial_\alpha=\Delta^\alpha$ gives a spectral triple of dimension $1/\alpha$, and the energy $\mathcal E_\alpha$ is recovered from $D$ by a residue formula.
   - Sierpiński gasket, zeta function (Thm 4.3): $Z_D(s)=4\zeta(\alpha s)/(1-3\cdot2^{-s})$.
   - Sierpiński gasket, metric (Cor 5.3): $f\mapsto\|[D,f]\|$ is a Lip-norm in Rieffel's sense, and for $\beta>\alpha$ the Connes metric is bi-Lipschitz to $\rho_{\rm geo}^\beta$.
-  - Sierpiński gasket, energy (Thm 5.5): at the energy dimension $\delta_D=\max\{\alpha^{-1},2-\frac{\log5/3}{\beta\log2}\}$ the residue $\mathrm{Res}\,\mathrm{tr}(|D|^{-s/2}|[D,f]|^2|D|^{-s/2})$ equals a constant times the standard Dirichlet form. The energy dimension $d_E=\log(12/5)/\log2\approx1.26$ is smaller than $d_H=\log3/\log2\approx1.58$.
+  - Sierpiński gasket, energy (Thm 5.5; for $\beta>0$, $\tfrac12<\alpha\le\alpha_0=\log(10/3)/\log4$ and $\beta(2-\alpha^{-1})>\log(5/3)/\log2$): at the energy dimension $\delta_D=\max\{\alpha^{-1},2-\frac{\log5/3}{\beta\log2}\}$ the residue $\mathrm{Res}\,\mathrm{tr}(|D|^{-s/2}|[D,f]|^2|D|^{-s/2})$ equals a constant times the standard Dirichlet form. The energy dimension $d_E=\log(12/5)/\log2\approx1.26$ is smaller than $d_H=\log3/\log2\approx1.58$.
   - Thm 5.4: the Fredholm module pairs non-trivially with $K_1$.
 
 ### 2.7 Transport metrics (Source)
@@ -298,7 +298,7 @@ In their words, "it is the KMS inner product that is more natural: the Dirichlet
 
 - **Definition** [BST Defs 1.1–1.2]. $G=\frac1D\sum_dU_d\cdot U_d^\dagger$ is a $(N,D,\lambda)$ quantum expander if it fixes $\tilde I$ and $\|G(A)\|_2\le\lambda\|A\|_2$ on traceless $A$.
 - **Zig-zag** [BST] Thm 1: from a $(N_1,D_1,\lambda_1)$ and a $(D_1,D_2,\lambda_2)$ expander one gets a $(N_1D_1,D_2^2,\lambda_1+\lambda_2+\lambda_2^2)$ expander. Thm 2: explicit $(D^{8t},D^2,\lambda+O(\lambda^2))$ families.
-- **Existence** [BST] Thm 3, citing Hastings: a $(D^8,D,4\sqrt{D-1}/D)$ expander exists; footnote: $(1+O(D^{-16/15}\log D))\frac{2\sqrt{D-1}}D$.
+- **Existence** [BST] Thm 3, citing Hastings: there is $D_0$ such that for every $D>D_0$ a $(D^8,D,4\sqrt{D-1}/D)$ expander exists; footnote: $(1+O(D^{-16/15}\log D))\frac{2\sqrt{D-1}}D$.
 - **Harrow's construction** [Har] (3). $\mathcal E(\rho)=\frac1{|\Gamma|}\sum_{g\in\Gamma}r_\lambda(g)\rho r_\lambda(g)^\dagger$ on an irrep satisfies $\lambda_2(\mathcal E)\le\lambda_2(W_\Gamma)$, where $W_\Gamma$ is the Cayley walk. The proof decomposes $V_\lambda\otimes V_\lambda^*$ into irreps.
 - Hastings' random-unitary limit $2\sqrt{D-1}/D$ and the quantum Alon–Boppana bound are in [expanders.md](expanders.md) §9.10.
 
@@ -317,9 +317,9 @@ In their words, "it is the KMS inner product that is more natural: the Dirichlet
 | L3″ | An untwisted derivation into a Hilbert bimodule can fail to exist for non-tracial states | THEOREM | [Ver] Ex. 5.3 |
 | L4 | Derivation to Dirac operator: $D=\begin{pmatrix}0&\partial^*\\\partial&0\end{pmatrix}$, or $D=\bigoplus_j\begin{pmatrix}0&V_j\\V_j^*&0\end{pmatrix}$ for inner derivations | construction; spectral-triple axioms trivial in finite dimension (Mine); infinite-dimensional theorems only in examples | [CGIS] Thm 3.8, Cor 5.3, Thm 5.5 |
 | L5 | The Connes distance of that $D$ is a genuine metric on $S(A)$ iff the QMS is primitive | THEOREM (elementary, Mine) | [Rie §7] + [DLL] Lemma 3 / [CM20] Prop 4.11 |
-| L6 | A spectral gap $\lambda$ gives $d_D(\rho,\psi)\le\sqrt{N/(2\lambda\rho_{\min})}$ for all states $\psi$ | THEOREM (elementary, Mine) | §3.3; check K8 |
+| L6 | A spectral gap $\lambda$ gives $d_D(\rho,\psi)\le\sqrt{N/(\lambda\rho_{\min})}$ for all states $\psi$ ($N/2$ in place of $N$ for the continuous [CKG] case) | THEOREM (elementary, Mine) | §3.3; check K8 |
 | L7 | Connes distance = $W_1$ | THEOREM classically ([DM] Prop 2.1). Quantum: [RD]'s $W_1$ is Connes-type; at $\beta=0$ the single-Pauli Connes distance and the [DMTL] $W_1$ agree within factors $2/3$ and $3/2$ (Mine, check K6) | §3.4 |
-| L8 | Carlen–Maas $W_2$ / gradient-flow branch | THEOREM under GNS detailed balance ([CM17] Thm 7.6; [Wir] in the tracial case). **NOT AVAILABLE** for KMS-only generators: only the necessary condition (BKM) is known [CM20 Thm 2.9], and the [CKG]/[CR] generators are not GNS (K1) | §3.5 |
+| L8 | Carlen–Maas $W_2$ / gradient-flow branch | THEOREM under GNS detailed balance ([CM17] Thm 7.6; [Wir] in the tracial case). **NOT AVAILABLE** for KMS-only generators: only the necessary condition (BKM) is known [CM20 Thm 2.9], and the [CKG]/[CR] generators are not GNS ([CKG] App. E; K1 illustrates on a [DLL]-family member) | §3.5 |
 | L9 | MLSI ⇒ TC$_2$ ⇒ TC$_1$ ⇒ Gaussian concentration; TC$_2$ ⇒ Poincaré; $\alpha_1\le\lambda$ | THEOREM | [RD] Thms 3, 4, 6, 8; [KT] Thm 16 |
 
 ### 3.1 L1–L2
@@ -356,7 +356,7 @@ The kernel $g$ is the KMS-strip kernel; [Y] uses its relative $1/|\sinh\pi t|$ (
 
 **The finite spectral triple.** Take inner derivations $\partial_j=[V_j,\cdot]$ with $\{V_j\}=\{V_j^*\}$. Set $\mathcal H=\mathbb C^n\otimes\mathbb C^{2N}$, $\pi(a)=\bigoplus_j(a\oplus a)$ and $D=\bigoplus_j\begin{pmatrix}0&V_j\\V_j^*&0\end{pmatrix}$. Then
 $$\|[D,\pi(a)]\|=\max_j\max(\|[V_j,a]\|,\|[V_j^*,a]\|)=\max_j\|[V_j,a]\|.$$
-The spectral-triple axioms are automatic in finite dimension. For the [CKG] sampler, use the direct integral over modular time $D=\int^\oplus\tilde A_a(t)\,dt$. Then $\|[D,\pi(a)]\|=\operatorname{ess\,sup}_t\|[\tilde A_a(t),a]\|=\sup_t\|[\tilde A_a,\alpha_{-t}(a)]\|$: the Lipschitz seminorm is the sup over modular time of commutators with the filtered coupling.
+The spectral-triple axioms are automatic in finite dimension. For the [CKG] sampler, use the direct integral over modular time $D=\int^\oplus\tilde A_a(t)\,dt$. (Guard: this $D$ is bounded on the infinite-dimensional space $L^2(\mathbb R)\otimes\mathbb C^n$, so it does not have compact resolvent and is not a spectral triple in Connes' sense; only its commutator seminorm is used below.) Then $\|[D,\pi(a)]\|=\operatorname{ess\,sup}_t\|[\tilde A_a(t),a]\|=\sup_t\|[\tilde A_a,\alpha_{-t}(a)]\|$: the Lipschitz seminorm is the sup over modular time of commutators with the filtered coupling.
 
 **$L^2$ energy against $L^\infty$ Lipschitz.** The Dirichlet form is the $\ell^2$-over-jumps, KMS-$L^2$ energy of the same derivation whose $\ell^\infty$, operator-norm size is $\|[D,a]\|$. Since $\|Y\|_{\rm KMS}\le\|Y\|_\infty$ ([CR] Lemma II.1),
 $$\mathcal E(a)\le N\|[D,\pi(a)]\|^2,$$
@@ -382,7 +382,7 @@ $$
 $$
 Here $D_P=\bigoplus_{i,P}P_i$ on $\mathbb C^{2^n}\otimes\mathbb C^{3n}$, and $M(H)=\|[D_P,\pi(H)]\|$. On 200 random 3-qubit $H$ the ratio $\max_i\|H-E_iH\|/M(H)$ ranged over $[0.521,0.683]$.
 
-**Why this is the infinite-temperature chain.** At $\beta=0$ the [CR] generator is $\mathcal L_A(X)=\sum_{i\in A,P}(P_iXP_i-X)$. Its derivation is $([P_i,\cdot])$, so its Dirac operator is $D_P$. Hence:
+**Why this is the infinite-temperature chain.** As $\beta\to0$ (with $\sigma=1/\beta$) the [CR] generator tends, up to an overall positive constant, to $\mathcal L_A(X)=\sum_{i\in A,P}(P_iXP_i-X)$ (Mine: the Gaussian filter becomes flat on the Bohr scale and the coherent term's $\tanh(\beta\nu/4)$ weights vanish; [CR] state their results for $\beta>0$). Its derivation is $([P_i,\cdot])$, so its Dirac operator is $D_P$. Hence:
 - the Connes distance of the infinite-temperature single-Pauli Lindbladian is the [DMTL] quantum $W_1$, up to the factor $3/2$;
 - on diagonal states it is the Hamming $W_1$ (Ornstein's $\bar d$). For diagonal $f$, $\|[X_i,f]\|=\max_x|f(x)-f(x\oplus e_i)|$ and $[Z_i,f]=0$, so $M(f)$ is the Hamming-Lipschitz constant;
 - Marton's inequality and Gaussian concentration hold for it ([DMTL] Thms 2–3).
@@ -391,7 +391,7 @@ At $\beta>0$ the [CKG] dressing replaces $P_i$ by $\tilde P_i(t)$. I have not se
 
 ### 3.5 L8: the Wasserstein-2 branch is missing at $\beta>0$
 
-[CM17] and [CM20] build $W_{2,\mathcal L}$ only for GNS detailed balance. [CM20] Thm 2.9 shows that any gradient-flow structure forces BKM symmetry, and the BKM class strictly contains the GNS class; the gap between the two is open. Check K1 shows that the [DLL]/[CKG] generators used by [CR] do not commute with $\Delta_\rho$ (relative size of $[\mathcal L,\Delta]$ of order $10^3$). By [CM17] Thm 2.9 they are therefore not GNS-symmetric. **No Carlen–Maas metric is known for the time-averaged single-Pauli Lindbladian at $\beta>0$.** Only the $W_1$/Connes branch of the chain exists there. The GNS alternative, Davies, has a $W_2$ but is non-local ([DLL] Remark 7; [CKG] App. E).
+[CM17] and [CM20] build $W_{2,\mathcal L}$ only for GNS detailed balance. [CM20] Thm 2.9 shows that any gradient-flow structure forces BKM symmetry, and the BKM class strictly contains the GNS class; the gap between the two is open. For the [CKG]/[CR] generators this is a source statement: [CKG] App. E shows that $s$-detailed balance with $s\neq\tfrac12$ and $\beta\ne0$ forces $\alpha_{\nu_1\nu_2}=0$ for $\nu_1\neq\nu_2$, "which contradicts our construction". Check K1 illustrates the same phenomenon on a member of the [DLL] family (real Gaussian filter $q$, single-Pauli couplings; not the [CR] Metropolis generator itself): $[\mathcal L,\Delta_\rho]\neq0$, with $\|[\mathcal L,\Delta]\|/(\|\mathcal L\|\|\Delta\|)\approx0.2$ in 3 trials, whereas a GNS-symmetric generator commutes with $\Delta_\rho$ ([CM17] Lemma 2.5, Thm 2.9). **No Carlen–Maas metric is known for the time-averaged single-Pauli Lindbladian at $\beta>0$.** Only the $W_1$/Connes branch of the chain exists there. The GNS alternative, Davies, has a $W_2$ but is non-local ([DLL] Remark 7; [CKG] App. E).
 
 ---
 
@@ -440,34 +440,34 @@ $$\mathcal R_{A,t}[\cdot]=\frac1t\int_0^t\exp(s\mathcal L_A)[\cdot]\,ds,\qquad \
 
 **At $\beta>0$: the exact vertical structure is destroyed** (Mine; check K3). The [DLL] single-Pauli-on-$A$ generator ($n=3$, $A=\{0\}$, $\beta=1.3$) has kernel:
 - dimension **1** for random noncommuting $H$ (three trials), against $4^{n-1}=16$ at $\beta=0$;
-- dimension **8** for a commuting Ising $H$, consisting of operators diagonal on the boundary qubit, tensored with anything on the rest.
+- dimension **8** for a commuting Ising $H$: the operators that are trivial on $A$, diagonal on the boundary qubit 1 and arbitrary on qubit 2, i.e. $1_A\otimes D_{\{1\}}\otimes M_2$ (structure verified in K3).
 
-The commuting case is the classical Markov property seen as a fixed-point algebra: conditioning on the boundary configuration ([KB] Lemma 12, "locally primitive"). In the noncommuting case no exact "fibre over $A^c$" survives. [CR] therefore never use the kernel. They use approximate commutation with $P^1_A$ at finite $t$, together with quasi-locality (§4.6). This is the dynamical side of the sibling's B10. By Takesaki's theorem (*from memory*), no $\rho$-preserving conditional expectation onto $M_{A^c}$ exists, because $M_{A^c}$ is not modular-invariant.
+The commuting case is the classical Markov property seen as a fixed-point algebra: conditioning on the boundary configuration (Mine, from K3). [KB] prove the weaker "local primitivity" for their commuting-case samplers (Def. 5, Lemmas 11(3), 12(3): $\mathcal L_A(f)=0$ implies that $f$ acts trivially on $A$). In the noncommuting case no exact "fibre over $A^c$" survives. [CR] therefore never use the kernel. They use approximate commutation with $P^1_A$ at finite $t$, together with quasi-locality (§4.6). This is the dynamical side of the sibling's B10. By Takesaki's theorem (*from memory*), no $\rho$-preserving conditional expectation onto $M_{A^c}$ exists, because $M_{A^c}$ is not modular-invariant.
 
 ### 4.5 "on A": locality (Source)
 
 - [CR] Lemma VII.3: $\|\mathcal L^\dagger_{A,\ell}-\mathcal L^\dagger_A\|_{\infty\to\infty}\lesssim|A|(e^{-c'\ell/(d\beta)}+2^{-\ell})$ for $\ell\ge4e^2\beta d$.
-- Lemma VII.2: truncation errors grow at most linearly in $t$, "Thus, the quasi-locality holds for exponential times."
+- Lemma VII.2: truncation errors grow at most linearly in $t$; Remark VII.0.1: "Thus, the quasi-locality holds for exponential times."
 - Every $\mathcal L_a$ fixes $\rho_\beta$, so $\mathcal R_{A,t}[\rho_\beta]=\rho_\beta$.
 
 ### 4.6 The proof of [CR] Thm III.1 in derivation language (Mine, following [CR] §XI.A)
 
 1. **Twirl.** $\rho-\rho_{-A}=2^{-2|A|-1}\sum_{S\in P_A}[S,[S,\rho]]$. Hence $|\mathrm{Tr}[X\mathcal R(\rho-\rho_{-A})]|\le2^{-2|A|-1}\sum_S\|[S,[S,\mathcal R^\dagger X]]\|_\rho$, using stationarity and KMS Cauchy–Schwarz. In NCG terms the right-hand side is a second-order quantity in the *string* derivations $[S,\cdot]$.
-2. **Peeling the outer commutator** (Lemma IX.5 with the Gibbs-conjugation bound $\le2^{|A|}$ at $\beta_0=1/4d$). This reduces to first order.
+2. **Peeling the outer commutator** (Lemma IX.5 with the Gibbs-conjugation bound $\le2^{|A|}$ at $\beta_0=1/4d$, Cor IX.1). This reduces to first order at the cost of a Hölder exponent $4\beta_0/\beta$ (low temperature, $\beta>4\beta_0$).
 3. **Strings to single sites** (Cor VIII.1): $2^w$ and a Hölder exponent $16\beta_0^2/\beta^2$.
 4. **Commutator from the derivation** (Lemma X.4):
    $$\|[A,O]\|_\rho\lesssim d^2|A|\,(\cdots)\,\mathcal E(O)^{2\beta_0/(\beta+5\beta_0)} .$$
    The proof smears over Heisenberg time $|t|\le\epsilon$, cuts frequencies at $\Omega$ (because $1/h(\omega)=e^{\sigma^2\beta^2/8}e^{|\omega|\beta/2}$ diverges), and applies Cauchy–Schwarz against $g\,h$. In derivation language: **a single component of the derivation, evaluated at modular time $0$, is controlled by the total $L^2$ energy, at a Hölder cost.** That is a regularity statement about the derivation of §3.2.
 5. **Cesàro** (Cor VII.1): $\mathcal E_A(\mathcal R^\dagger_{A,t}X)\le2/t$.
-6. **Chain:** $|A|^2\,2^{2|A|}\,r\,t^{-\lambda}$ with $\lambda=\frac{128\beta_0^4}{\beta^3(\beta+5\beta_0)}$ at low temperature (exponent as in Thm III.1).
+6. **Chain:** $|A|^2\,2^{2|A|}\,r\,t^{-\lambda}$ with $\lambda=\frac{4\beta_0}{\beta}\cdot\frac{16\beta_0^2}{\beta^2}\cdot\frac{2\beta_0}{\beta+5\beta_0}=\frac{128\beta_0^4}{\beta^3(\beta+5\beta_0)}$ at low temperature $\beta>4\beta_0$, and $\lambda=\frac{2\beta_0}{\beta+5\beta_0}$ for $\beta\le4\beta_0$ (both as in Thm III.1).
 
 **What the argument is (Mine).** Steps 1–4 prove a **relative Poincaré-type inequality**: the distance of an observable from $1_A\otimes M_{A^c}$, measured through twirl commutators, is bounded by a power of the energy of the single-site derivation $\partial_A$. Note that $1_A\otimes M_{A^c}$ is not $\ker\partial_A$ at $\beta>0$ (K3). At $\beta=0$ this is Efron–Stein with exponent 1 and a polynomial constant (K5). At $\beta>0$, [CR] get exponent $\frac{128\beta_0^4}{\beta^3(\beta+5\beta_0)}\ll1$ and constant $2^{O(|A|)}$.
 
 ### 4.7 Role in approximate Markov properties, and where expansion enters (Source + Mine)
 
-- **Local Markov property.** $\mathcal R_{A,t}\circ(\tau_A\otimes\mathrm{Tr}_A)$ is a quasi-local approximate recovery map. With continuity, $I(A{:}C|B)\lesssim\log(\dim C)\sqrt\Delta$ ([CR] Cor III.2): CMI $\lesssim r'|A||C|\exp(\mu'\min(|A|,|C|)-\lambda'\mathrm{dist}(A,C))$.
+- **Local Markov property.** $\mathcal R_{A,t}\circ(\tau_A\otimes\mathrm{Tr}_A)$ is a quasi-local approximate recovery map. With continuity, $I(A{:}C|B)\lesssim\log(\dim C)\sqrt\Delta$ ([CR] proof of Cor III.2): for $\mathrm{dist}(A,C)\ge4e^2\beta d$, CMI $\lesssim r'|A||C|\exp(\mu'\min(|A|,|C|)-\lambda'\mathrm{dist}(A,C))$.
 - **Global Markov property under a gap.** [CR] Def B.1: $\mathcal L$ is $\lambda$-locally gapped if $-\lambda\langle X,\mathcal L^\dagger X\rangle_\rho\le\langle X,\mathcal L^{\dagger2}X\rangle_\rho$, uniformly for every restricted Gibbs state $\rho_X$. Cor B.2: a uniform local gap $c|A|^{-c'}$ implies CMI $\le\mathrm{Poly}(|A|,|C|)e^{-\mathrm{dist}(A,C)/\xi}$. Remark III.1.2: "If the present argument can be combined with a faster mixing time or spectral gap analysis, one might be able to improve the exponential dependence on |A|, hence establishing the global Markov property."
-- **Where expansion enters (Mine).** A uniform local gap is uniform coercivity of the vertical derivation $\partial_A$ off its kernel. In [Pet]'s language (§5.4) it is a *uniform Kazhdan constant* for the single-site generating set, acting on KMS-twisted bimodules. This is the one precise place where the expander essence enters the Markov theory. The Markov property itself needs no gap: [CR] use the Cesàro mean, [Y] uses the modular cocycle.
+- **Where expansion enters (Mine).** A uniform local gap is uniform coercivity of the vertical derivation $\partial_A$ off its kernel. By ANALOGY with [Pet]'s Kazhdan-pair condition (§5.4; Thm 3.2(b), proved there for separable finite factors and untwisted bimodules) it plays the role of a *uniform Kazhdan constant* for the single-site generating set, here acting on KMS-twisted bimodules; no theorem of this form is known in the KMS setting. This is the one precise place where the expander essence enters the Markov theory. The Markov property itself needs no gap: [CR] use the Cesàro mean, [Y] uses the modular cocycle.
 
 ### 4.8 The abstract template (Mine)
 
@@ -497,7 +497,7 @@ The construction depends only on the inclusion and the state, so it passes the d
 
 ### 5.3 Quantum expanders against Gibbs samplers (Source + Mine)
 
-[BST], [Har] and Hastings give quantum expanders: constant degree $D$, gap $\Omega(1)$ on $M_N$. [KT] (144) shows such maps have $\alpha_2=O(\log D\cdot\log\log N/\log N)$, so their mixing time is $\Omega(\log N)$.
+[BST], [Har] and Hastings give quantum expanders: constant degree $D$, gap $\Omega(1)$ on $M_N$. [KT] (144) shows such maps have $\alpha_2=O(\log D\cdot\log\log N/\log N)$. An upper bound on $\alpha_2$ does not by itself bound the mixing time from below; the lower bound comes from the rank argument inside the proof of [KT] Thm 26 (after $n$ steps of a $D$-regular channel the output rank is at most $D^n$, so $\chi^2$-mixing needs $n\gtrsim\log(3N/4)/\log D$). [KT] summarise this as "further evidence that the mixing time of a quantum expander cannot in general terms be faster than $O(\log(d))$".
 
 *Mine.* A local Gibbs sampler on $n$ qubits has $3n=O(\log N)$ jump families on $M_N$ with $N=2^n$. Its degree grows with $\log N$, and when it is gapped the gap is a *tensorization* (product-structure) gap, not an expander gap. The expander notion relevant to Gibbs sampling is the high-dimensional one: link spectra, spectral independence and local-to-global, as in [hdx-spectral-independence.md](hdx-spectral-independence.md). It is not the bounded-degree quantum expander. The bounded-degree object would matter only for a *design* question: sampling a *maximally mixed* fibre state with few Kraus operators.
 
@@ -533,8 +533,8 @@ $$
 
 **Claims.**
 - (a) $\mathcal L_\beta$ satisfies GNS (hence KMS) detailed balance for $\mathbb P_\beta$. This is Alicki's converse, [CM17] Thm 3.1. Check K7: KMS asymmetry $10^{-16}$, $[\mathcal L,\Delta]=4\cdot10^{-16}$.
-- (b) $\ker\mathcal L_\beta=\{e_{\mu\nu}\}'=\mathrm{span}\{p_\tau\}$, the endpoint face algebra $D_0$ restricted to the corner. Reason: the fibre matrix units generate $\bigoplus_\tau M_{h_\tau}$, whose commutant in $M_N$ is $\bigoplus_\tau\mathbb C1_\tau$. K7 finds dimension 3 for 3 endpoints.
-- (c) $\lim_t\frac1t\int_0^te^{s\mathcal L_\beta}ds=E$, with $E(X)=\sum_\tau\frac{\mathbb P_\beta(p_\tau X)}{\mathbb P_\beta(p_\tau)}p_\tau$ the $\mathbb P_\beta$-preserving (Takesaki) conditional expectation onto $D_0$. K7 error: $10^{-15}$.
+- (b) $\ker\mathcal L_\beta=\{e_{\mu\nu}\}'=\mathrm{span}\{p_\tau\}$, the endpoint face algebra $D_0$ restricted to the corner, **provided at most one endpoint fibre consists of a single history**. Reason: the fibre matrix units generate $\bigoplus_{h_\tau\ge2}M_{h_\tau}$, whose commutant in $M_N$ is $\bigoplus_{h_\tau\ge2}\mathbb C1_\tau\oplus M_s$, with $s$ the number of singleton fibres. For $s\ge2$ the kernel is strictly larger than $D_0$ (dimension $\#\text{fibres}-s+s^2$; checked for fibre sizes $(3,1,1,2)$ and $(2,1,1,1)$, giving 6 and 10). The recovery statements (e)–(f) are unaffected, since a singleton fibre has $\mathrm{osc}\,F=0$. K7 (sizes 3, 4, 2) finds dimension 3 for 3 endpoints.
+- (c) (under the proviso of (b)) $\lim_t\frac1t\int_0^te^{s\mathcal L_\beta}ds=E$, with $E(X)=\sum_\tau\frac{\mathbb P_\beta(p_\tau X)}{\mathbb P_\beta(p_\tau)}p_\tau$ the $\mathbb P_\beta$-preserving (Takesaki) conditional expectation onto $D_0$. K7 error: $10^{-15}$.
 - (d) $\mathcal E(X)=\sum c\,\|[e_{\mu\nu},X]\|^2_{\rm KMS}$, by [CM20] Prop 2.5. K7 error: $2\cdot10^{-16}$.
 - (e) For $\beta'\ne\beta$ the following are equivalent:
   - $\mathbb P_{\beta'}$ is stationary for $\mathcal L_\beta$;
@@ -567,9 +567,9 @@ So the time-averaged detailed-balanced Lindbladian is, in the programme, the dyn
 
 Note 1 §5 gives $\alpha^F_t=\mathrm{Ad}\,e^{itH}$ on the Toeplitz algebra $\mathcal T(\Lambda)=\bigoplus_\sigma M_{N(\sigma)}$ acting on $\ell^2(E^*)$, with $Hh_\lambda=F(\lambda)h_\lambda$. Let $\omega=\bigoplus_\sigma w_\sigma e^{-\beta H}|_\sigma/Z_\sigma$ with all $w_\sigma>0$; it is a faithful KMS$_\beta$ state. Then $\Delta_\omega s_\gamma=e^{-\beta F(\gamma)}s_\gamma$. By Alicki's converse, the jumps $\{s_\gamma,s_\gamma^*\}$ define a GNS-detailed-balanced QMS with $\omega_\gamma=\beta F(\gamma)$ and Dirichlet form $\sum_\gamma c_\gamma(\|[s_\gamma,X]\|_{\rm KMS}^2+\|[s^*_\gamma,X]\|_{\rm KMS}^2)$.
 - **Kernel.** Each $s_\gamma$ preserves the origin blocks. Within a block the restrictions generate the whole block, because $p_\sigma|_{\rm block}$ is the projection onto the trivial path. So the kernel is the **centre**, one scalar per origin: this "arrow walk" equilibrates everything except the origin face.
-- **Dirac operator.** Its $D$ (§3.3) is the direct-sum form of Note 1 §8's $D=\sum_\gamma\ell(\gamma)^{-1}(s_\gamma+s_\gamma^*)$. Its Connes distance is a metric on states with fixed origin weights, and by L6 its radius is controlled by the gap of the noncommutative quiver Laplacian.
+- **Dirac operator.** Its $D_\oplus=\bigoplus_\gamma\ell(\gamma)^{-1}\begin{pmatrix}0&s_\gamma\\s_\gamma^*&0\end{pmatrix}$ (§3.3) is the direct-sum counterpart of Note 1 §8's $D=\sum_\gamma\ell(\gamma)^{-1}(s_\gamma+s_\gamma^*)$. The Connes distance of $D_\oplus$ is a metric on states with fixed origin weights, and by L6 its radius is controlled by the gap of the noncommutative quiver Laplacian.
 
-This places Note 1 §8's optional metric layer inside the chain: it is the Connes metric of the arrow-Lindbladian's derivation.
+**The two operators are not the same, and neither are their metrics** (Mine; checked on a 7-face toy quiver). On the face algebra $D_0$, which is where Note 1 §8 uses its $D$, they are comparable: for $b\in D_0$, $[s_\gamma,b]=(b(s\gamma)-b(r\gamma))s_\gamma$, and $\max_\gamma\ell(\gamma)^{-1}|\delta b(\gamma)|=\|[D_\oplus,b]\|\le\|[D,b]\|\le2\sqrt{\text{max out-degree}}\,\max_\gamma\ell(\gamma)^{-1}|\delta b(\gamma)|$ (toy quiver: ratio in $[1.00,1.80]$, bound $3.46$). On all of $\mathcal T(\Lambda)$ they differ qualitatively: $D$ itself lies in $\mathcal T(\Lambda)$ and commutes with $D$ but not with the $s_\gamma$, so the sum-form $D$ gives infinite distance between states with equal origin weights that differ on $D$. So Note 1 §8's metric layer sits inside the chain only after replacing its $D$ by $D_\oplus$, or after restricting to $D_0$, where the two agree up to the degree factor above.
 
 ### 6.3 B-NC3, KNOWN-LINK + SPECULATION: modular spectral triples as the NCG home of Note 1's KMS structure
 
@@ -578,7 +578,7 @@ This places Note 1 §8's optional metric layer inside the chain: it is the Conne
   - For Note 1's plain gauge action ($F\equiv1$) the fixed-point algebra is the AF core $\mathrm{span}\{s_\mu s_\nu^*:|\mu|=|\nu|\}$.
   - On the complete-history corner the plain gauge action is trivial, since all complete histories have length $L$. The content is in a weighted $F$.
   - Integer-valued $F$ gives a circle action, to which [CNNR] applies verbatim. Real $F$ gives an $\mathbb R$-action, not covered by [CNNR].
-- **SPECULATION.** U5's "gap labelling of the sufficiency defect" might be a [CNNR] modular index pairing. [CNNR] identify $sf_{\phi_D}(D,uDu^*)$ with Araki relative entropy, and Note 1 §6 identifies insufficiency with a non-trivial modular cocycle. What must be true: a stationary Bratteli diagram (U5), an integer-valued action cocycle, and modular partial isometries implementing re-routings.
+- **SPECULATION.** U5's "gap labelling of the sufficiency defect" might be a [CNNR] modular index pairing. [CNNR] recall (from Carey–Phillips–Rennie, their ref. [9]) that $sf_{\phi_D}(D,uDu^*)$ is Araki's relative entropy for modular unitaries, and Note 1 §6 identifies insufficiency with a non-trivial modular cocycle. What must be true: a stationary Bratteli diagram (U5), an integer-valued action cocycle, and modular partial isometries implementing re-routings.
 
 ### 6.4 B-NC4, THEOREM (elementary, Mine) + ANALOGY with (T): sufficiency is innerness of the modular derivation by a face observable
 
@@ -632,7 +632,7 @@ Restricted to diagonal states, the β=0 single-Pauli chain gives Ornstein's $\ba
 | Gibbs samplers ↔ detailed balance | GNS-DB ⇔ Alicki form with Δ-eigen jumps; KMS-DB ⇔ [DLL] Thm 10 form; $s\neq1/2$ forces Davies (non-local) | [CM17] Thm 3.1; [DLL] Thm 10; [CKG] App. E | Fact |
 | Gibbs samplers ↔ Gibbs states | exact KMS-DB quasi-local Lindbladian for any $H$ | [CKG] Thm I.1; [DLL] Prop 20 | Fact |
 | Gibbs samplers ↔ Markov property | time-averaged single-Pauli KMS Lindbladian is a quasi-local recovery map; CMI decays exponentially in distance, with prefactor $e^{\mu|A|}$ | [CR] Thm III.1, Cor III.2 | Fact |
-| gap ↔ Markov property | uniform local gap ⇒ global Markov property | [CR] Def B.1, Cor B.2 | Fact |
+| gap ↔ Markov property | uniform local gap ⇒ global Markov property | [CR] Def B.1, Cor B.2 | Fact (stated as a corollary "by the same reasoning"; no separate proof is written out) |
 | gap ↔ clustering (commuting) | gap of Davies/heat-bath ⇔ strong clustering; 1D; high temperature | [KB] Thms 23, 26, 30, 31 | Fact |
 | gap/LSI ↔ mixing | $\sqrt{1/\sigma_{\min}}e^{-\lambda t}$, $\sqrt{2\log(1/\sigma_{\min})}e^{-\alpha_1t}$; $\alpha_1\le\lambda$; hypercontractivity ⇔ LS$_2$ | [KT] Thms 15, 16, 22 | Fact |
 | LSI ↔ transport ↔ concentration | MLSI ⇒ TC$_2$ ⇒ TC$_1$ ⇒ Gaussian concentration; TC$_2$ ⇒ PI | [RD] Thms 3, 4, 6, 8 | Fact |
@@ -658,7 +658,7 @@ Restricted to diagonal states, the β=0 single-Pauli chain gives Ornstein's $\ba
 **To prong 1 (theory).**
 1. **Record §6.1 as a Derivation in Note 1 §6.** A Lindbladian on the history corner whose jumps are re-routings over a fixed face is GNS-detailed-balanced for $\mathbb P_\beta$. Its Cesàro limit is the Takesaki expectation onto $D_0$, and it recovers $\mathbb P_{\beta'}$ exactly iff the barycentre is sufficient, with defect $\le2\tanh(|\beta-\beta'|\,\mathrm{osc}F/4)$. This gives the Jenčová–Petz criterion a dynamical form, and a Dirichlet form $\sum c\|[e_{\mu\nu},\cdot]\|^2$ whose kernel is exactly the face algebra.
 2. **Define the flip sub-family (§6.5)** and ask for the gap of its weighted fibre Laplacian. That gap is the programme's "uniform local gap", and the place where U3's coboundary expansion would enter.
-3. **Note 1 §8's Dirac operator is a choice of derivation (§6.2).** Its natural source is the arrow-jump Lindbladian, and its Connes metric is finite only on states with equal origin weights (L5). Keep the "time" derivation $\delta_F$, whose innerness by face observables is the sufficiency question (§6.4), separate from the "transport" derivations, which give metrics.
+3. **Note 1 §8's Dirac operator should be replaced by its direct-sum form $D_\oplus$ (§6.2).** $D_\oplus$ comes from the derivation of the arrow-jump Lindbladian, and its Connes metric is finite exactly on states with equal origin weights (L5). The sum form $D=\sum_\gamma\ell(\gamma)^{-1}(s_\gamma+s_\gamma^*)$ agrees with $D_\oplus$ on $D_0$ up to a factor $2\sqrt{\text{max out-degree}}$, but on all of $\mathcal T(\Lambda)$ its kernel is larger (it contains $D$), so its metric is degenerate there. Keep the "time" derivation $\delta_F$, whose innerness by face observables is the sufficiency question (§6.4), separate from the "transport" derivations, which give metrics.
 4. **Integer cocycles.** If $F$ is integer-valued (or rescaled to be), [CNNR]'s modular index theory applies to Note 1's data. That is the concrete version of U5's gap labelling to try first.
 
 **To prong 2 (bridge).**
