@@ -51,7 +51,7 @@ def mehler_cov(mu, C, R=6):
     return out
 
 
-def predict(W, mode="lin", R=6, use_k4=True, mean_var="edge", d21=False):
+def predict(W, mode="lin", R=6, use_k4=True, mean_var="edge", d21=False, win=1):
     """mode: 'gauss' (no kappa3/4), 'lin' (FBT: facet births on Gaussian input legs, all depths), 'mem' (one-step tree)."""
     W = np.asarray(W, dtype=np.float64)
     L, n, _ = W.shape
@@ -60,6 +60,7 @@ def predict(W, mode="lin", R=6, use_k4=True, mean_var="edge", d21=False):
     Px = [W[0]]                 # x-space face-averaged Jacobians of the linear part, P_{x->l}
     Pfrom = []                  # Pfrom[s] = P_{s->l} for the current l, s < l
     cs = []                     # facet coefficients per earlier layer
+    Cs = []; betas = []         # closure covariances and slopes per earlier layer
     k3 = np.zeros(n); k4 = np.zeros(n)
     for l in range(L):
         if l > 0:
@@ -67,11 +68,11 @@ def predict(W, mode="lin", R=6, use_k4=True, mean_var="edge", d21=False):
             C = W[l].T @ Ca @ W[l]
             Px.append((Px[-1] * beta[None, :]) @ W[l])
             Pfrom = [(P * beta[None, :]) @ W[l] for P in Pfrom] + [W[l]]
-            cs.append(cfac)
-            if mode == "lin":
+            cs.append(cfac); Cs.append(Cprev); betas.append(beta)
+            if mode in ("lin", "hyb"):
                 b = Px[l]
                 k3 = np.zeros(n); V = np.zeros((n, n)); D21 = np.zeros((n, n))
-                for s in range(l):
+                for s in range(l if mode == "lin" else max(l - win, 0)):
                     K = Px[s].T @ b                          # Cov of the linear legs, (k, j)
                     M = Pfrom[s] * cs[s][:, None] * K
                     k3 += 6 * (M * K).sum(0)
@@ -80,6 +81,16 @@ def predict(W, mode="lin", R=6, use_k4=True, mean_var="edge", d21=False):
                     if use_k4:
                         V += Px[s] @ M
                 k4 = 48 * (V * V).sum(0) if use_k4 else np.zeros(n)
+                if mode == "hyb":    # the win most recent births on renormalised legs (closure covariance of the birth layer)
+                    for s in range(max(l - win, 0), l):
+                        Pc = Pfrom[s] * cs[s][:, None]
+                        K = (Cs[s] * betas[s][None, :]) @ Pfrom[s]
+                        M = Pc * K
+                        k3 = k3 + 6 * (M * K).sum(0)
+                        if d21:
+                            D21 = D21 + 2 * (K * K).T @ Pc + 4 * M.T @ K
+                        if use_k4:
+                            k4 = k4 + 48 * (M * (Cs[s] @ M)).sum(0)
             elif mode == "mem":
                 K = (Cprev * beta[None, :]) @ W[l]          # Cov(z_{l-1,k}, linear image at l)
                 M = W[l] * cfac[:, None] * K
@@ -102,7 +113,7 @@ def predict(W, mode="lin", R=6, use_k4=True, mean_var="edge", d21=False):
         beta = ndtr(t)
         cfac = _phi(t) / (2 * s_)
         Ca = mehler_cov(mu, C, R)
-        if d21 and l > 0 and mode in ("lin", "mem"):
+        if d21 and l > 0 and mode in ("lin", "mem", "hyb"):
             # bivariate Edgeworth, leading order: dE[a_i a_k] = D21_ik phi_i Phi_k / (2 s_i) + D21_ki Phi_i phi_k / (2 s_k)
             A1 = (_phi(t) / s_)[:, None] * beta[None, :] * D21
             Ca = Ca + 0.5 * (A1 + A1.T)
@@ -134,3 +145,26 @@ def predict_mem21(W):
 
 def predict_lin21(W):
     return predict(W, mode="lin", d21=True)
+
+
+def predict_hyb21(W):
+    return predict(W, mode="hyb", d21=True)
+
+
+def predict_hyb21_w2(W):
+    return predict(W, mode="hyb", d21=True, win=2)
+
+
+def predict_hyb21_w3(W):
+    return predict(W, mode="hyb", d21=True, win=3)
+
+
+def _hyb(w):
+    def f(W):
+        return predict(W, mode="hyb", d21=True, win=w)
+    f.__name__ = f"predict_hyb21_w{w}"
+    return f
+
+
+for _w in (4, 6, 8, 12, 16):
+    globals()[f"predict_hyb21_w{_w}"] = _hyb(_w)
