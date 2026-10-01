@@ -143,16 +143,20 @@ v1 state: $(\mu_l,C_l)$ and the face-averaged arrows $P_{x\to l}$, $P_{s\to l}$.
 
 v2 ('21' modes) also computes the mixed slice $\kappa(z_j,z_j,z_m)=2b_j^\top Q_mb_j+4b_j^\top Q_jb_m$ and feeds it into $\mathrm{Cov}(a)$ by the leading bivariate Edgeworth term.
 
-Truth: widths 64 (bench set w64_d16, 8 MLPs, N = 1e7), 128 and 256 (own bakes with seeds 11–14, N = 1e7 and 5e6); depth 16. Raw = final-layer MSE − truth noise.
+Truth: shared bench sets w64_d16 and w128_d16 (8 MLPs each, N = 1e7) and my own bake at width 256 (seeds 11–14, N = 5e6; the bench w256 set was not yet available). Depth 16. Raw = final-layer MSE − truth noise. The earlier own-bake w128 numbers (seeds 11–14) are in `results/`; they are 25–35 % lower than the bench w128 set.
 
-| estimator | w64 | w128 | w256 | width slope | raw(1024) extrapolated | cost at 1024 (units) | adjusted(1024) |
+| estimator | w64 (bench) | w128 (bench) | w256 (own) | width slope | raw(1024) extrapolated (eval_q 1σ band) | cost at 1024 (units) | adjusted(1024) |
 |---|---|---|---|---|---|---|---|
-| Gaussian closure, face-measure Mehler covariance ('gauss') | 4.46e-4 | 1.97e-4 | 8.60e-5 | n^-1.19 | 1.66e-5 | ≈ 40 | 1.7e-6 |
-| + one-step facet tree κ3, κ4 ('mem') | 4.11e-4 | 1.86e-4 | 7.59e-5 | n^-1.22 | 1.43e-5 | ≈ 64 | 1.4e-6 |
-| + multi-depth facet births on input legs ('lin') | 4.71e-4 | 2.15e-4 | 6.98e-5 | n^-1.38 | 1.10e-5 | ≈ 380 (O(L²)) | 4.1e-6 |
-| 'mem' + (2,1) slice into Cov(a) ('mem21') | 2.75e-4 | 1.30e-4 | 6.29e-5 | n^-1.06 | 1.44e-5 | ≈ 100 | 1.4e-6 |
-| 'lin' + (2,1) slice into Cov(a) ('lin21') | 3.24e-4 | 1.22e-4 | 4.54e-5 | n^-1.42 | 6.4e-6 | ≈ 600 (O(L²)) | 3.8e-6 |
-| reference: plain MC at the 0.1 floor (bench) | 6.7e-6 | | | | | 102 | ≈ 1.2e-6 |
+| Gaussian closure, face-measure Mehler covariance ('gauss') | 4.46e-4 | 2.82e-4 | 8.60e-5 | n^-1.19 | 1.9e-5 (1.0–3.6e-5) | ≈ 40 | 1.9e-6 |
+| + one-step facet tree κ3, κ4 ('mem') | 4.11e-4 | 2.55e-4 | 7.59e-5 | n^-1.22 | 1.6e-5 (0.8–3.1e-5) | ≈ 64 | 1.6e-6 |
+| 'mem' + (2,1) slice into Cov(a) ('mem21') | 2.75e-4 | 1.82e-4 | 6.29e-5 | n^-1.06 | 1.6e-5 (0.9–2.9e-5) | ≈ 100 | 1.6e-6 |
+| multi-depth facet births on input legs + (2,1) slice ('lin21') | 3.24e-4 | 1.47e-4 | 4.54e-5 | n^-1.42 | 6.8e-6 (4.8–9.6e-6) | ≈ 600 (O(L²)) | 4.0e-6 |
+| reference: bench Gaussian closure (linearised) | 5.1e-4 | 2.9e-4 | | n^-0.82 | 5.2e-5 | 32 | 5.2e-6 |
+| reference: plain MC at the 0.1 floor (bench) | 6.7e-6 | 1.2e-5 | | | | 102 | ≈ 1.2e-6 |
+
+'lin' alone (no slice) on the own-bake sets: 4.7e-4 / 2.1e-4 / 7.0e-5, n^-1.38 → 1.1e-5.
+
+How the two binding facts (coordinator digest #1) are carried: (i) non-Gaussian corrections to the covariance propagation enter only through the (2,1) slice term of 'mem21'/'lin21'; this term is worth a factor 1.4–1.6 at widths 64–256; (ii) old content enters only through 'lin'/'lin21' (births at all depths, on input legs); this is worth a factor 1.2–1.4 at width 256 and gives the steeper width law.
 
 The width-fit bands quoted by `eval_q` are much narrower than the real uncertainty. I take ×2 on the extrapolated raw: three widths, 4–8 MLPs, s.e. 10–20 % per width.
 
@@ -162,7 +166,7 @@ The width-fit bands quoted by `eval_q` are much narrower than the real uncertain
 
 ## 9. Verdict
 
-**Projected at n = 1024**: best faces estimator 'mem21' (or 'mem'), raw ≈ 1.4e-5 (×2 band 0.7–3e-5), cost ≈ 0.1 B, adjusted ≈ 1.4e-6 (0.7–3e-6). The best raw, 'lin21' at 6.4e-6 (3–13e-6), costs O(L² n³) ≈ 0.6 B, so adjusted ≈ 4e-6. This sits at the level of plain Monte Carlo and about 10³ above the bar (1.6e-9 adjusted).
+**Projected at n = 1024** (bench sets): best adjusted faces estimator 'mem'/'mem21', raw ≈ 1.6e-5 (band 0.8–3e-5), cost ≈ 0.1 B, adjusted ≈ 1.6e-6 (0.8–3e-6). The best raw, 'lin21' at 6.8e-6 (4.8–9.6e-6), costs O(L² n³) ≈ 0.6 B, so adjusted ≈ 4e-6. This sits at the level of plain Monte Carlo and about 10³ above the bar (1.6e-9 adjusted).
 
 **What the principle delivered** (all exact and checked numerically, `check_exact.py`):
 - E1, transport of barycentres;
@@ -184,6 +188,10 @@ The structural findings:
 **Deciding experiment.** At width 256, measure the facet-conditional covariance shift for all facets of the last 4 layers by Monte Carlo. Test whether it is captured to ≤ 5 % by a rank-r expansion in outer products of facet normals $v_{s,k}v_{s,k}^\top$ with r ≤ 32 per layer. If yes, a face chain at O(r n² L) per layer is possible and the ladder's 2 % D21 target becomes reachable. If no (BRIEF §3 says the (2,1) slice has no low-rank form below 0.3 n, which predicts no), the faces principle offers no computational shortcut over the cumulant chains for this task. Its value is then the exact identities and the structural map above, which belong in the write-up.
 
 **Charged to the dictionary, not the theory.** The theory's objects are faces, arrows and conditional expectations. The realisation always read "face" as a gate pattern or a facet of a single neuron, and "arrow" as a face-averaged linear map. Neither sees how a facet of layer $s$ conditions the joint law of layer $l$. That is the missing coherence (the noncommutative part, in the note's language): the off-diagonal $\varphi(s_\mu s_\nu^*)$ between histories that arrive at the same face by different routes. A dictionary in which states keep these coherences between facets of different depths is the natural v3, but I found no way to make it cheaper than $n^3$ per layer.
+
+### 7.6 T5 (renormalised-leg tree against the exact per-age attribution) — `t5_fold.py`, logs `t5_n128_s11.log`, `t5_n128_s12.log`
+
+Per birth age, the scalar α in $T_s\approx\alpha\,T_s^{\rm tree}$ (renormalised legs $C_sD_\beta P_{s\to l}$), width 128, z-layer 16, two MLPs: α ≈ 1.1 at age 1, 1.0–1.5 at ages 2–5, 1.6–2.5 at ages 6–10, 3.4–15 at ages 11–15 (R² 0.4–0.9, one outlier at 0.02). The first-leg attribution of a birth also collects its credit as a *leg* of every later birth, so α grows with age. A per-age scalar does not describe the transport (R² often < 0.8), and the two MLPs disagree at the oldest ages (×1.2–2). No table of renormalised coefficients emerges at this resolution.
 
 ### Messages to the other prongs
 - To prong 1 (theory): the coboundary/sufficiency dichotomy has a measured realisation here. The own-face barycentre is not sufficient (T1: the gate field misses about 99 % of the skew). The insufficiency is not local in depth (T3: uniform age profile).
