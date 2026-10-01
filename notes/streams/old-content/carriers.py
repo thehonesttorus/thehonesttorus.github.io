@@ -214,6 +214,41 @@ def main():
                 state[(r, q)] = (Khat, In, lay[l]["Phi"])
             print(f"{l:>2} | " + " ".join(f"{v:5.3f}" for v in row), flush=True)
 
+    if "modesU" in which:
+        # shared-basis mode family: Old ~ sym3( sum_p v_p (x) U L_p U^T ), V (n x r) and ONE shared U (n x q) = a
+        # Tucker (r, q, q) form (HOSVD of the old tensor); transport = r + q vectors (q/n units) + r q x q cores, readout
+        # D21 = (2 v_a S_ab + v_b S_aa)/3 with S_p = U L_p U^T.  Static (re-fitted to Old_l) and dynamic (transported V, U
+        # and cores, incoming source added, HOSVD re-truncation) versions.
+        pairs = [(8, n // 8), (16, n // 8), (8, n // 4), (16, n // 4), (32, n // 4), (16, n // 2), (32, n // 2)]
+        def tucker_fit(K, r, q):
+            M1 = K.reshape(n, n * n)
+            V = np.linalg.eigh(M1 @ M1.T)[1][:, ::-1][:, :r]
+            M2 = K.transpose(1, 0, 2).reshape(n, n * n)
+            U = np.linalg.eigh(M2 @ M2.T)[1][:, ::-1][:, :q]
+            S = (V.T @ M1).reshape(r, n, n)
+            core = np.einsum("pij,ia,jb->pab", S, U, U, optimize=True)
+            Sq = np.einsum("ia,pab,jb->pij", U, core, U, optimize=True)
+            return V, 0.5 * (Sq + Sq.transpose(0, 2, 1))
+        print(f"\n(e) modesU (shared basis U, Tucker (r,q,q)): eps for (r, q) in {pairs}; static | dynamic")
+        state = {pq: None for pq in pairs}
+        for l, O, In in pool:
+            den = nrm(D21z[l]); st, dy = [], []
+            for (r, q) in pairs:
+                if nrm(O) == 0:
+                    st.append(0.0); dy.append(0.0); state[(r, q)] = None; continue
+                V, S = tucker_fit(O, r, q)
+                st.append(nrm(modes_d21(V, S) - d21(O)) / den)
+                if state[(r, q)] is None:
+                    Kh = O.copy()
+                else:
+                    Kprev, Inprev, Phi = state[(r, q)]
+                    Kh = T3(MASK(phi3(Kprev + Inprev, Phi)), W[l])
+                V, S = tucker_fit(Kh, r, q)
+                Khat = modes_dense(V, S)
+                dy.append(nrm(d21(Khat) - d21(O)) / den)
+                state[(r, q)] = (Khat, In, lay[l]["Phi"])
+            print(f"{l:>2} | " + " ".join(f"{v:5.3f}" for v in st) + " | " + " ".join(f"{v:5.3f}" for v in dy), flush=True)
+
     if "modesC" in which:
         print(f"\n(e) modes-C: v-space fixed to the top-r eigenvectors of C_l (and of Phi C Phi of layer l-1 transported);"
               f" S_r = Old(v_r,.,.); eps")
