@@ -33,44 +33,86 @@ def load_truth(d):
     return out
 
 
+_TRUTH_CACHE = {}
+
+
+def truth_objs(z):
+    key = id(z)
+    if key not in _TRUTH_CACHE:
+        L = z["weights"].shape[0]
+        objs = []
+        for l in range(L):
+            st = ch.atlas_state(z, l)
+            D3, D21, K4, K31, K22 = ch.slices_from_state(st)
+            objs.append(dict(var=st.var, D3=D3, D21=D21, K4=K4, K22=K22, Coff=ch.ok.offdiag(st.C)))
+        _TRUTH_CACHE.clear(); _TRUTH_CACHE[key] = objs
+    return _TRUTH_CACHE[key]
+
+
+def interface_errors(rec, T):
+    """per-layer relative rms errors of the chain's pre-activation objects vs the atlas (atlas noise included)."""
+    def rel(a, b):
+        return float(np.sqrt(np.sum((a - b) ** 2) / max(np.sum(b ** 2), 1e-300)))
+    out = {k: [] for k in ("var", "Coff", "D3", "D21", "K4", "K22")}
+    for l, r in enumerate(rec):
+        out["var"].append(rel(r["var"], T[l]["var"])); out["Coff"].append(rel(ch.ok.offdiag(r["C"]), T[l]["Coff"]))
+        for k in ("D3", "D21", "K4", "K22"):
+            out[k].append(rel(r[k], T[l][k]) if l else 0.0)
+    return out
+
+
 def run_variant(v, W, atlas=None, coefs=None):
     if v == "A0":
-        return ch.paper_k2(W)
+        return dict(means=ch.paper_k2(W), rec=[])
     if v == "A":
-        return ch.Chain(W, k3mode="k2", record=False).run()["means"]
-    base = dict(record=False)
+        return ch.Chain(W, k3mode="k2", record=False).run()
+    base = dict(record=atlas is not None)
+    if "@" in v:                      # perturbation @ base chain:  N<eps>@k3:k4 | F<l>@k3:k4 | FD<l>@k3:k4 | FA<l>@k3:k4
+        pert, b = v.split("@")
+        k3m, k4m = b.split(":")[:2]
+        kw = dict(k3mode=k3m, k4mode=k4m, coefs=coefs, atlas=atlas, **base)
+        if pert.startswith("N"):
+            eps, seed = (pert[1:].split("s") + ["1234"])[:2]
+            kw["d21_noise"] = (float(eps), int(seed))
+        elif pert.startswith("FD"):
+            kw["force"] = {int(pert[2:]): "k3d"}
+        elif pert.startswith("FA"):
+            kw["force"] = {int(pert[2:]): "all"}
+        elif pert.startswith("F"):
+            kw["force"] = {int(pert[1:]): "k3"}
+        return ch.Chain(W, **kw).run()
     if ":" in v:                      # generic  k3mode:k4mode[:order]
         parts = v.split(":")
         kw = dict(k3mode=parts[0], k4mode=parts[1], coefs=coefs, atlas=atlas)
         if len(parts) > 2:
             kw["order"] = int(parts[2])
-        return ch.Chain(W, **kw, **base).run()["means"]
+        return ch.Chain(W, **kw, **base).run()
     if v == "M":
-        return ch.Chain(W, k3mode="none", **base).run()["means"]
+        return ch.Chain(W, k3mode="none", **base).run()
     if v == "B":
-        return ch.Chain(W, k3mode="wick", **base).run()["means"]
+        return ch.Chain(W, k3mode="wick", **base).run()
     if v == "C":
-        return ch.Chain(W, k3mode="closure", **base).run()["means"]
+        return ch.Chain(W, k3mode="closure", **base).run()
     if v == "D":
-        return ch.Chain(W, k3mode="fit", coefs=coefs, **base).run()["means"]
+        return ch.Chain(W, k3mode="fit", coefs=coefs, **base).run()
     if v in ("C0", "B0", "M0", "D0"):
         mode = dict(C0="closure", B0="wick", M0="none", D0="fit")[v]
-        return ch.Chain(W, k3mode=mode, coefs=coefs, k4mode="zero", **base).run()["means"]
+        return ch.Chain(W, k3mode=mode, coefs=coefs, k4mode="zero", **base).run()
     if v == "C211":
-        return ch.Chain(W, k3mode="closure", k4mode="zero211", **base).run()["means"]
+        return ch.Chain(W, k3mode="closure", k4mode="zero211", **base).run()
     if v.startswith("CE-"):
-        return ch.Chain(W, k3mode="closure", k4mode=v[3:], atlas=atlas, **base).run()["means"]
+        return ch.Chain(W, k3mode="closure", k4mode=v[3:], atlas=atlas, **base).run()
     if v.startswith("DE-"):
-        return ch.Chain(W, k3mode="fit", coefs=coefs, k4mode=v[3:], atlas=atlas, **base).run()["means"]
+        return ch.Chain(W, k3mode="fit", coefs=coefs, k4mode=v[3:], atlas=atlas, **base).run()
     if v.startswith("FD"):
-        return ch.Chain(W, k3mode="closure", force={int(v[2:]): "k3d"}, atlas=atlas, **base).run()["means"]
+        return ch.Chain(W, k3mode="closure", force={int(v[2:]): "k3d"}, atlas=atlas, **base).run()
     if v.startswith("FA"):
-        return ch.Chain(W, k3mode="closure", force={int(v[2:]): "all"}, atlas=atlas, **base).run()["means"]
+        return ch.Chain(W, k3mode="closure", force={int(v[2:]): "all"}, atlas=atlas, **base).run()
     if v.startswith("F"):
-        return ch.Chain(W, k3mode="closure", force={int(v[1:]): "k3"}, atlas=atlas, **base).run()["means"]
+        return ch.Chain(W, k3mode="closure", force={int(v[1:]): "k3"}, atlas=atlas, **base).run()
     if v.startswith("N"):
         eps = float(v[1:])
-        return ch.Chain(W, k3mode="closure", d21_noise=(eps, 1234), **base).run()["means"]
+        return ch.Chain(W, k3mode="closure", d21_noise=(eps, 1234), **base).run()
     raise ValueError(v)
 
 
@@ -94,10 +136,14 @@ def main():
             if os.path.exists(fn):
                 continue
             t0 = time.time()
-            m = run_variant(v, W, atlas, coefs)
+            out = run_variant(v, W, atlas, coefs)
+            m = out["means"]
             mse = np.mean((m - gt) ** 2, axis=1)
-            json.dump(dict(variant=v, mlp=i, per_layer_mse=mse.tolist(), final_mse=float(mse[-1]),
-                           secs=time.time() - t0, means_final=m[-1].tolist()), open(fn, "w"))
+            res = dict(variant=v, mlp=i, per_layer_mse=mse.tolist(), final_mse=float(mse[-1]),
+                       secs=time.time() - t0, means_final=m[-1].tolist())
+            if atlas is not None and out.get("rec"):
+                res["eps"] = interface_errors(out["rec"], truth_objs(atlas))
+            json.dump(res, open(fn, "w"))
             print(f"mlp {i} {v:>10}: final {mse[-1]:.3e}  mean-over-layers {mse.mean():.3e}  ({time.time()-t0:.0f}s)", flush=True)
 
 

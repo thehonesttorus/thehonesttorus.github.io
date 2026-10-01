@@ -428,7 +428,8 @@ class Chain:
                 E = rng.standard_normal((n, n)) * eps * rms; np.fill_diagonal(E, 0.0)
                 # perturb kappa3(z)_{aab} and its symmetric images (the (2,1) slice) by E
                 K3z[idx, idx, :] += E; K3z[idx, :, idx] += E; K3z[:, idx, idx] += E.T
-            if self.k4mode == "dense":
+            if self.k4mode in ("dense", "dense2"):
+                self.k4_second = self.k4mode == "dense2"
                 K4z = self._dense_k4(st, mu_a, k4s, info, Wn)
                 idx = np.arange(n)
                 X = K4z[idx, idx, :, :].astype(np.float64)
@@ -444,7 +445,7 @@ def _dense_k4(self, st, mu_a, k4s, info, Wn):
     G, T, S = k4s
     f2 = F[2] - 2 * mu_a[None, :] * F[1]
     R = triple_engine(st, [f2, F[1], F[1]], emax_g=3, emax_h=1) - 2 * C_a[:, :, None] * C_a[:, None, :]
-    K = k4_alldistinct(st, F[1], F[1][1], F[1][2], F[1][3])
+    K = k4_alldistinct(st, F[1], F[1][1], F[1][2], F[1][3], second=getattr(self, "k4_second", False))
     K = set_k4_slices(K, G, T, S, R)
     return transport4(K, Wn)
 
@@ -559,48 +560,97 @@ def triple_engine(st, Fv, emax_g=4, emax_h=2, k3=True, k4=True):
     return out
 
 
-def k4_alldistinct(st, F1, Phi, w2, w3, dtype=np.float32):
+def _bview(arr, pos, n):
+    order = np.argsort(pos)
+    a = np.transpose(arr, order)
+    shape = [1, 1, 1, 1]
+    for q in sorted(pos):
+        shape[q] = n
+    return a.reshape(shape)
+
+
+def k4_alldistinct(st, F1, Phi, w2, w3, dtype=np.float32, second=False):
     """leading all-distinct kappa4(a)_{ijkl}: Phi^4 kappa4(z) + Gaussian trees (12 paths, 4 stars) + kappa3(z)
-    hyperedge with one C edge (12 terms).  Built in dtype (n^4)."""
+    hyperedge with one C edge (12 terms).  Built in dtype (n^4); entries with coincident indices are overwritten
+    later by set_k4_slices."""
+    from itertools import permutations
     n = st.mu.shape[0]
     Co = st.C.copy(); np.fill_diagonal(Co, 0.0)
-    P = Phi.astype(dtype); w2d = w2.astype(dtype); w3d = w3.astype(dtype); Cd = Co.astype(dtype)
+    P = Phi.astype(dtype); w2d = w2.astype(dtype); w3d = w3.astype(dtype)
+    E = (P[:, None] * Co).astype(dtype)                    # E_pq = Phi_p C_pq
+    M2 = (w2d[:, None] * Co * w2d[None, :]).astype(dtype)  # w2_q C_qr w2_r
     K = np.zeros((n, n, n, n), dtype=dtype)
+    buf = np.empty_like(K)
     if getattr(st, "K4full", None) is not None:
-        K += st.K4full * (P[:, None, None, None] * P[None, :, None, None] * P[None, None, :, None] * P[None, None, None, :])
-    from itertools import permutations
-    # paths p-q-r-s (each unordered path once: 12 = 4!/2)
+        P4 = P[:, None, None, None] * P[None, :, None, None] * P[None, None, :, None]
+        np.multiply(st.K4full, P4, out=buf); np.multiply(buf, P[None, None, None, :], out=buf); K += buf
     seen = set()
-    for perm in permutations(range(4)):
+    for perm in permutations(range(4)):                       # paths: positions of the path vertices p,q,r,s
         key = min(perm, perm[::-1])
         if key in seen:
             continue
         seen.add(key)
-        p, q, r, s = perm
-        A = (P[:, None] * Cd * w2d[None, :])      # Phi_p C_pq w2_q
-        B = Cd * w2d[None, :]                      # C_qr w2_r
-        D = Cd * P[None, :]                        # C_rs Phi_s
-        T = np.einsum("pq,qr,rs->pqrs", A, B, D, optimize=True)
-        K += np.einsum("pqrs->" + "".join("pqrs"[perm.index(t)] for t in range(4)), T)
-    # stars with centre c
-    for cidx in range(4):
-        A = w3d[:, None] * Cd * P[None, :]
-        T = np.einsum("ca,cb,cd->cabd", A, Cd * P[None, :], Cd * P[None, :], optimize=True)
-        order = [cidx] + [t for t in range(4) if t != cidx]   # T axes = (centre, leaf1, leaf2, leaf3)
-        K += np.einsum("wxyz->" + "".join("wxyz"[order.index(t)] for t in range(4)), T)
-    # kappa3 hyperedge on three vertices, the one of degree 2 joined by C to the fourth
-    if st.K3 is not None:
-        K3 = st.K3.astype(dtype)
-        for sidx in range(4):
-            for ridx in range(4):
-                if ridx == sidx:
+        p, q, r, s_ = perm
+        tmp = _bview(E, (p, q), n) * _bview(M2, (q, r), n)
+        np.multiply(tmp, _bview(E, (s_, r), n), out=buf); K += buf
+    Et = E.T.copy()                                           # Et_cx = C_cx Phi_x
+    for c in range(4):                                        # stars
+        x, y, w = [t for t in range(4) if t != c]
+        tmp = _bview(w3d[:, None] * Et, (c, x), n) * _bview(Et, (c, y), n)
+        np.multiply(tmp, _bview(Et, (c, w), n), out=buf); K += buf
+    if st.K3 is not None:                                     # kappa3 hyperedge (o1,o2,r) + edge r-s
+        K3w = (st.K3 * (P[:, None, None] * P[None, :, None] * w2d[None, None, :])).astype(dtype)
+        for s_ in range(4):
+            for r in range(4):
+                if r == s_:
                     continue
-                others = [t for t in range(4) if t not in (sidx, ridx)]
-                # T axes = (o1, o2, r, s): Phi_o1 Phi_o2 w2_r K3_{o1 o2 r} C_rs Phi_s
-                T = np.einsum("abr,rs->abrs", K3 * (P[:, None, None] * P[None, :, None] * w2d[None, None, :]),
-                              Cd * P[None, :], optimize=True)
-                order = others + [ridx, sidx]
-                K += np.einsum("wxyz->" + "".join("wxyz"[order.index(t)] for t in range(4)), T)
+                o1, o2 = [t for t in range(4) if t not in (s_, r)]
+                np.multiply(_bview(K3w, (o1, o2, r), n), _bview(Et, (r, s_), n), out=buf); K += buf
+    if second and st.K3 is not None:
+        # same-order terms: two kappa3 hyperedges (second order of the Edgeworth operator) and the (2,1,1) kappa4
+        # hyperedge with one C edge (first order)
+        K3 = st.K3.astype(dtype)
+        idx = np.arange(n)
+        D21 = st.K3[idx, idx, :].copy(); np.fill_diagonal(D21, 0.0); D21 = D21.astype(dtype)
+        pairs = [(a, b) for a in range(4) for b in range(a + 1, 4)]
+        A = K3 * P[:, None, None]                                     # (i, j, k): Phi_i kappa3_ijk
+        Aw = A * (w2d[None, :, None] * w2d[None, None, :])            # Phi_i w2_j w2_k kappa3_ijk
+        for J, Kp in pairs:                                           # (a) shared pair {J, K}
+            I, L = [t for t in range(4) if t not in (J, Kp)]
+            np.multiply(_bview(Aw, (I, J, Kp), n), _bview(A, (L, J, Kp), n), out=buf); K += buf
+        B3 = 0.5 * K3 * (P[:, None, None] * P[None, :, None] * w3d[None, None, :])   # Phi_i Phi_j w3_k kappa3_ijk / 2
+        Dl = D21 * P[None, :]                                         # D21_kl Phi_l
+        Dw = D21 * (w2d[:, None] * w2d[None, :]) * 0.5                # w2_i w2_j D21_ij / 2
+        Kpp = K3 * (P[None, :, None] * P[None, None, :])              # kappa3_jkl Phi_k Phi_l
+        for k_ in range(4):
+            for l_ in range(4):
+                if l_ == k_:
+                    continue
+                i_, j_ = [t for t in range(4) if t not in (k_, l_)]
+                np.multiply(_bview(B3, (i_, j_, k_), n), _bview(Dl, (k_, l_), n), out=buf); K += buf        # (b)
+                # (c): doubled vertex at position k_, its partner (the shared vertex) at l_
+                o1, o2 = i_, j_
+                np.multiply(_bview(Dw, (k_, l_), n), _bview(Kpp, (l_, o1, o2), n), out=buf); K += buf      # (c)
+        if st.X is not None:
+            X = st.X.astype(dtype)
+            Xd = 0.5 * X * (w3d[:, None, None] * P[None, :, None] * P[None, None, :])   # (k, i, j): X_kij w3_k Phi_i Phi_j / 2
+            Xe = 0.5 * X * (w2d[:, None, None] * w2d[None, :, None] * P[None, None, :])  # (i, j, k): X_ijk w2_i w2_j Phi_k / 2
+            for k_ in range(4):
+                for l_ in range(4):
+                    if l_ == k_:
+                        continue
+                    i_, j_ = [t for t in range(4) if t not in (k_, l_)]
+                    np.multiply(_bview(Xd, (k_, i_, j_), n), _bview(Et, (k_, l_), n), out=buf); K += buf    # (d)
+            for i_ in range(4):
+                for j_ in range(4):
+                    if j_ == i_:
+                        continue
+                    for l_ in range(4):
+                        if l_ in (i_, j_):
+                            continue
+                        (k_,) = [t for t in range(4) if t not in (i_, j_, l_)]
+                        np.multiply(_bview(Xe, (i_, j_, k_), n), _bview(Et, (j_, l_), n), out=buf); K += buf  # (e)
+    del buf
     return K
 
 
