@@ -138,9 +138,47 @@ Final-layer raw MSE (truth noise subtracted), 8 MLPs per width; Gaussian closure
 
 **How the design carries the two convergent items.** (i) Non-Gaussian covariance: the (2,1)-slice correction of the field, summed site by site (5 products per source per layer; it is the single largest lever, 6e-4 → 1e-4 at width 64). (ii) Old third-order content: carried exactly as per-source transports (P, K), 2 products per source per layer; dropping it (window 1) loses 3–6× in final MSE at width 128.
 
-## 9. Verdict (provisional until the width-256 point)
+## 9. Width 256 and verdict
 
-- **Projected adjusted MSE at n = 1024:** full-history MKV ≈ 2e-7 raw × 0.54 ≈ **1e-7 adjusted**, with an uncertainty of at least a decade either way: two widths only, and the 64→128 slope (n^-2.7) is steeper than any mechanism in §4 predicts, so it may flatten. Best case ~1e-8 adjusted; plausible 1e-7–1e-6. Window 4: ≈ 3e-6 raw × 0.28 ≈ 8e-7. At the 0.1 B floor (window 1) it is no better than Gaussian closure (≈ 4e-6 adjusted). The bar is 1.6e-9. **Not competitive by ≈ 2 decades.**
-- **Why, charged to the realisation first:** (a) the depth-cut CMI is large and has no cheap separator (§8), so history must be carried at O(L²) cost — 550 u; (b) every carried source needs ≈ 9 dense products per layer for its own cumulants plus the (2,1) covariance correction; (c) the remaining error at depth is accumulated error in the layer *means* (§7 item 8), which the site expansion only reaches through the covariance correction. The principle itself held where it was testable: the single-site formulas are exact for the ansatz (1e-16), the two-site κ4 trees and the per-site curvature passage are exactly the Markov-network corrections the CMI accounting points to, and P3 correctly predicted the price of each separator.
-- **What would make it competitive:** a ≈ 5× cheaper carried history at the same accuracy (e.g. batching all sources' (2,1) corrections into one product pair per layer instead of 5 per source), together with a width scaling at least as steep as n^-2 holding up to 1024. Both are needed: ≈ 100 u and raw ≈ 1e-8 at 1024.
-- **The deciding experiment:** full-history MKV at widths 256 and 512 on the bench (a 4-point width fit). If the slope stays ≤ −2.5, the next step is the cost reduction above; if it flattens to ≈ −1.5 (like window 4), the design is out.
+**Width scaling** (own truths, same generator; geometric means over w64: 4 MLPs, w128: 2, w256: 2; `results/q_w*.json`):
+
+| estimator | w64 | w128 | w256 | local slope 128→256 | cost @1024 |
+|---|---|---|---|---|---|
+| Gaussian closure | 4.8e-4 | 2.0e-4 | 4.8e-5 | n^-2.0 | ~19 u |
+| MKV window 4 | 1.7e-4 | 5.7e-5 | 1.1e-5 | n^-2.3 | 283 u |
+| MKV full history | 1.5e-4 | 3.1e-5 | 5.0e-6 | n^-2.6 | 550 u |
+| MKV-2 full (curvature passage) | 2.6e-4 | 3.2e-5 | 3.5e-6 | n^-3.2 | ≈ 500 u |
+
+The curvature repair diverges on some width-64 networks but wins at 256 (final 3.5e-6 vs 5.0e-6; all-layer 1.4e-6 / 2.1e-6 vs 2.5e-6 / 3.6e-6 per MLP): it is a small-width instability, not a wrong term. Ratio to Gaussian closure at 256: 0.10 (full) and 0.07 (MKV-2), falling by ≈ 2× per width doubling.
+
+**Projection to n = 1024, MKV-2 full history (≈ 500 u, multiplier ≈ 0.49):**
+- optimistic (local slope n^-3.2 holds): raw ≈ 3.5e-6 · 4^-3.2 ≈ 4e-8 → adjusted ≈ 2e-8;
+- anchored on the bench Gaussian closure at 1024 (5.2e-5) and the ratio halving per doubling (0.07 → 0.018): raw ≈ 1e-6 → adjusted ≈ 5e-7;
+- **projected adjusted MSE: ≈ 1e-7, range 2e-8 – 5e-7** (two networks at 256, no 512 point).
+- At the 0.1 B floor (window 1, ≈ 104 u) it is no better than Gaussian closure.
+
+**Verdict: not competitive.** The bar is 1.6e-9 adjusted; even the optimistic projection is ≈ 10× away and the central one ≈ 60×. Plain Monte Carlo at the floor beats it at widths 64 and 128.
+
+**Charged to the realisation first.**
+1. The depth-cut CMI is large, and no cheap separator for old content exists (§8: the top n/4 transported directions recover only half the log-gap). So history must be carried at O(L²) products.
+2. Each carried source costs ≈ 9 dense products per layer (transport and link 2, (2,1) covariance correction 5, two-site κ4 trees 2).
+3. The remaining error at depth is accumulated error in the layer means of nearly-always-on neurons, which the site expansion reaches only through the covariance correction.
+
+**What the principle delivered.**
+- Exact single-site formulas (1e-16).
+- The two-site κ4 trees as the minimal non-unary cliques. These are leading order for κ4 because they add coherently, and are absent for κ3.
+- The curvature passage as conditioning on each site's own scalar latent (a separator per site); it fixed the 16–20 % layer-3 κ3 shortfall.
+- P3 as an exact price list for separators, which correctly ruled out the cheap ones.
+
+**What would make it competitive:** both of
+1. a ≈ 5× cheaper carried history, e.g. stacking all sources' (2,1) corrections into one product pair per layer (left factors combined elementwise, inner dimension S·n — same FLOPs, so only a genuinely low-rank structure helps, and §8 says there is none below ≈ n/4);
+2. a width slope of n^-3 or steeper holding to 1024.
+
+I consider (1) unlikely on the evidence of §8.
+
+**The deciding experiment:** MKV-2 full history at widths 512 and 1024 on the bench (4–6 MLPs), to settle the slope. If raw(1024) > 1e-8 the design is out regardless of cost work; if it is ≈ 3e-9 or below, the cost reduction becomes worth attempting.
+
+## 10. Next experiments (if the stream continues)
+- Width 512 Stage Q for MKV-2 (numpy, ≈ 4 min per MLP).
+- Stabilise the curvature passage at small width (damp the quadratic Galerkin term when the per-site emission is large).
+- Price MKV-2 in flopscope calls: ≈ (9 per source + 10) × sources per layer, ≈ 1.5k calls for full history, under the 6–8k cap.
