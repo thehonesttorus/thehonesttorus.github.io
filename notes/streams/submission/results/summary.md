@@ -63,6 +63,9 @@
 | results/robust_contended/v29orig_rob_w1024_d4.json | in-process subprocess | 1 | 0 | 0.01448 | 0.069 | 11.0 | 2096 | 1.5875e-04 | 6.4122e-06 |
 | results/robust_contended/v29orig_rob_w256_d8.json | in-process subprocess | 1 | 0 | 0.00177 | 0.098 | 1.9 | 465 | 7.4852e-05 | -3.4674e-05 |
 | results/robust_contended/v29orig_rob_w512_d16.json | in-process subprocess | 1 | 0 | 0.05885 | 0.375 | 15.5 | 1595 | 1.9494e-05 | -8.2225e-06 |
+| results/robust_idle/v25_rob_w256_d32.json | in-process subprocess | 1 | 0 | 0.00191 | 0.021 | 0.3 | 363 | 1.6752e-04 | 1.2557e-04 |
+| results/robust_idle/v25orig_rob_w256_d32.json | in-process subprocess | 1 | 0 | 0.03677 | 0.260 | 5.6 | 500 | 5.1113e-05 | 9.1607e-06 |
+| results/robust_idle/v29orig_rob_w256_d32.json | in-process subprocess | 1 | 1 | 0.03107 | 0.487 | 17.2 | 1160 | 1.2722e+00 | 1.2721e+00 |
 | results/robust_idle/v29r2_rob_adv_abs.json | in-process subprocess | 1 | 0 | 0.09051 | 0.121 | 21.7 | 4241 | inf | inf |
 | results/robust_idle/v29r2_rob_adv_x10.json | in-process subprocess | 1 | 0 | 0.10637 | 0.149 | 24.8 | 4327 | 3.3731e+27 | 3.3731e+27 |
 | results/robust_idle/v29r2_rob_w1024_d32.json | in-process subprocess | 1 | 0 | 0.12216 | 0.027 | 1.7 | 3148 | 1.1246e-05 | -5.8649e-07 |
@@ -72,6 +75,7 @@
 | results/robust_idle/v29r3_rob_adv_abs.json | in-process subprocess | 1 | 0 | 0.09051 | 0.118 | 22.1 | 4241 | inf | inf |
 | results/robust_idle/v29r3_rob_adv_x10.json | in-process subprocess | 1 | 0 | 0.10637 | 0.143 | 26.1 | 4311 | 3.3731e+27 | 3.3731e+27 |
 | results/robust_idle/v29r3_rob_w1024_d32.json | in-process subprocess | 1 | 0 | 0.12216 | 0.023 | 1.7 | 3148 | 1.1246e-05 | -5.8649e-07 |
+| results/robust_idle/v29r3_rob_w256_d32.json | in-process subprocess | 1 | 0 | 0.00191 | 0.016 | 0.2 | 363 | 1.6752e-04 | 1.2557e-04 |
 | results/robust_idle/v29r3_rob_w512_d16.json | in-process subprocess | 1 | 0 | 0.00746 | 0.011 | 0.2 | 552 | 3.4559e-05 | 6.8430e-06 |
 | results/robust_idle/v29r_rob_adv_abs.json | in-process subprocess | 1 | 0 | 0.09051 | 0.117 | 21.1 | 4200 | inf | inf |
 | results/robust_idle/v29r_rob_adv_x10.json | in-process subprocess | 1 | 0 | 0.10637 | 0.155 | 26.0 | 4327 | 3.3731e+27 | 3.3731e+27 |

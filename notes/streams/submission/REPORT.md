@@ -2,6 +2,12 @@
 
 *Stream deliverable for the ARC White-Box Estimation Challenge 2026, Phase 2. Written 1 Oct 2026. Every number below is measured on this stream's box and comes from a JSON under `results/`. `results/summary.md` lists every run (regenerate it with `python3 scripts/summarize.py`).*
 
+## First: why "V29 patched, all dev MLPs failed" (16:00 status) and what fixed it
+
+V29 was never broken. The **stock local harness** was the wrong judge. In-process, flopscope keeps every array in the solution process and charges every basic slice as residual Python. Two things followed. First, on the idle box V29's residual was 0.46–0.52 s on every MLP, over the 0.4 s cap. Second, under the subprocess runner's 8 GB RLIMIT_AS the second predict ran out of memory: one MemoryError fell back, and the next MLP killed the worker (WORKER_EOF). The grader is client/server: arrays live in the flopscope backend, and a slice is a counted round trip. Under grader-transport emulation (`scripts/grader_emul.py`) the same patched V29 passes 6/6 MLPs with residual 0.32–0.40 s.
+
+**The fix for the thin residual margin** was to memoize views of pooled buffers (v29r3): round trips per MLP went from 28,246 to 16,670 (slices from 14,644 to 3,163), and residual from mean 0.383 / max 0.402 s to 0.289 / 0.317 s, with FLOPs and outputs bit-identical. Per call that is ≈ 0.012 → ≈ 0.017 s per 1k calls of client bookkeeping here (0.383 s / 28.2k vs 0.289 s / 16.7k). V29's published 13,121 "ops" counts compute ops only; slices are extra round trips.
+
 ## Verdict
 
 | package | what it is | go/no-go | key numbers |
@@ -40,6 +46,7 @@ Can we have a submission ready to upload the moment aicrowd.com is reachable tha
 | 1024×4 | ok | ok | ok: C/B 0.013 | ok |
 | 256×8 | ok | ok | ok: C/B 0.0004 | ok |
 | 1024×16, W×10 | **FAIL**: SymmetryError (NaN) | **FAIL**: SymmetryError | ok: chain raises → fallback; C/B 0.106, res 0.14–0.15 s, wall 25–26 s | ok: C/B 0.063 |
+| **256×32 (grader smoke shape, whestbench #149)** | **FAIL**: residual 0.487 s (in-process, idle) | ok: C/B 0.037, res 0.26 s | ok (v29r3): fallback, C/B 0.0019, res 0.016 s | ok: C/B 0.0019, res 0.021 s |
 | 1024×16, \|W\| | **FAIL**: SymmetryError (NaN) | **FAIL**: SymmetryError | ok: fallback; C/B 0.091, res 0.12 s | ok: C/B 0.106 |
 
 The `inf` MSE on |W| is the harness squaring true means of order 1e23 in float32. It isn't an estimator failure (`n_failed = 0`, finite predictions).
@@ -108,6 +115,18 @@ A cProfile of one V29 predict in client mode (`grader_emul.py --profile-out`) sh
 | 3: v29r3 (`scripts/patch_views3.py`) | per-key invalidation: the first allocation of a pool key no longer wipes the memo, and growing key K drops only K's views. Rounds 1–2 wiped everything 133 times in a worker's first predict and 37 times in its second. | 16,670 / 3,163 | **0.289 / 0.317 s** |
 
 Server peak RSS is unchanged (5.56–5.57 GB), so the memo retains no old buffers.
+
+## Grader lessons for any design
+
+1. **Validate under client/server, not only in-process.** The grader runs the solution on flopscope-client against a flopscope-server backend. In-process `whest run` mis-states both residual and memory: here, upstream V29 read 0.47–0.52 s in-process but 0.32–0.40 s emulated, and 6.9 GB in the solution process vs ~2.4 GB client + 5.6 GB server. `scripts/grader_emul.py` emulates it; set the server's `FLOPSCOPE_MAX_ARRAY_BYTES` to the grader's 4 GiB (the default of 100 MB kills large ops).
+2. **Residual ≈ (number of flopscope calls) × (client bookkeeping per call)**, about 10–17 µs per call on this box, not the estimator's own arithmetic. Every call counts, free views included: slices, `[None]`, swapaxes, reshape. Budget calls, not FLOPs. Keep views of persistent buffers and reuse them; write into pooled buffers with `out=`; disable `gc` inside `predict` (V29 does).
+3. **A worker's first and second predicts are the residual worst case** (pool allocation, cache warm-up, lazy library init). Each submission has 5–15 workers, so each pays this 5–15 times. Warm op signatures in `setup()` (cheap); don't allocate GBs there.
+4. **Memory:** in-process runs hit RLIMIT_AS 8 GB long before the grader would (arrays live server-side there). Still keep any single array under 4 GiB.
+5. **Setup:** the 5 s window includes interpreter spawn and imports (≈ 1.0 s measured here). `setup()` itself should only load and warm up.
+6. **Smoke shapes:** the grader also runs a non-suite MLP (256 wide × 32 deep, HF `aicrowd/whestbench-smoke-mlp`, whestbench #149). One failure there fails the whole submission, and `whest validate` doesn't catch it. Gate the suite-specific path on `(width, depth) == (1024, 16)` and send everything else to a cheap, shape-generic float64 path. Upstream V29 fails residual at 256×32 in-process; V25/V29 run out of FLOP budget or memory at 1024×32.
+7. **Fail soft at the suite shape:** wrap the main chain. On any exception other than flopscope budget/time exhaustion, or on a non-finite output, fall back to the cheap path. One zeroed MLP costs ≈ 9e-3 of mean score, i.e. everything.
+8. **Client parity traps:** no `x.shape = ...` (flopscope #267, raises on the grader; neither bundle here has it), arrays are immutable on the client (only `out=` writes), pass `str` paths, keep stdout clean (it is the IPC pipe).
+9. **Accounting hygiene (16 Sep fair-accounting rule):** V29's discounts are flopscope-validated symmetry tags (`as_symmetric` raises on a non-symmetric input; we saw it fire on NaN weights), the documented aliased-Gram 0.5× on layer 0's `W^T W`, and Strassen-Winograd as flopscope ops (permitted 11 Sep). No packing and no reliance on stale tags was found. A diagonal write voids a tag, so V29 re-tags after `fill_diagonal`.
 
 ## Open issues
 
