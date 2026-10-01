@@ -177,16 +177,16 @@ def analyse(cdir, outdir):
                     for m, p in pred.items():
                         eps_x[m][i, l] = corr(rel(p, tb), en)
         hdr = " l | noise | " + " ".join(f"{m:>6}" for m in MODELS)
-        lines.append(f"\n## held-out eps of D21(l+1), cross-evaluated on the pair atlas and noise-corrected; mean over the {len(Bp)} pair MLPs [max]")
+        lines.append(f"\n## held-out eps of D21(l+1), cross-evaluated on the pair atlas and noise-corrected; mean over the {len(Bp)} pair MLPs [max over MLPs of own ens ensD ensR ensRD]")
         lines.append(hdr)
         for l in range(L1):
             lines.append(f"{l:>2} | {np.nanmean(noise[:, l]):5.3f} | " + " ".join(f"{np.nanmean(eps_x[m][:, l]):6.3f}" for m in MODELS)
-                         + "   [" + " ".join(f"{np.nanmax(eps_x[m][:, l]):.3f}" for m in ("ens", "ensD", "ensR", "ensRD")) + "]")
-        lines.append(f"\n## held-out eps of D21(l+1), within-atlas (raw, includes the atlas's own transported noise), mean over all {len(seeds)} MLPs [max]")
+                         + "   [" + " ".join(f"{np.nanmax(eps_x[m][:, l]):.3f}" for m in ("own", "ens", "ensD", "ensR", "ensRD")) + "]")
+        lines.append(f"\n## held-out eps of D21(l+1), within-atlas (raw, includes the atlas's own transported noise), mean over all {len(seeds)} MLPs [max over MLPs of own ens ensD ensR ensRD]")
         lines.append(hdr)
         for l in range(L1):
             lines.append(f"{l:>2} | {'':5} | " + " ".join(f"{eps_raw[m][:, l].mean():6.3f}" for m in MODELS)
-                         + "   [" + " ".join(f"{eps_raw[m][:, l].max():.3f}" for m in ("ens", "ensD", "ensR", "ensRD")) + "]")
+                         + "   [" + " ".join(f"{eps_raw[m][:, l].max():.3f}" for m in ("own", "ens", "ensD", "ensR", "ensRD")) + "]")
         txt = "\n".join(lines)
         print(txt, flush=True)
         with open(os.path.join(outdir, f"width{w}.txt"), "w") as f:
@@ -194,6 +194,8 @@ def analyse(cdir, outdir):
         summary[w] = dict(n_mlps=len(seeds), n_pairs=len(Bp), noise=np.nanmean(noise, 0).tolist(),
                           eps_x={m: np.nanmean(eps_x[m], 0).tolist() for m in MODELS},
                           eps_raw={m: eps_raw[m].mean(0).tolist() for m in MODELS},
+                          eps_x_all={m: eps_x[m].tolist() for m in MODELS}, eps_raw_all={m: eps_raw[m].tolist() for m in MODELS},
+                          seeds=seeds, pair_seeds=sorted(Bp),
                           coef={k: v["ens"].tolist() for k, v in tabs.items()},
                           coef_sd={k: v["sd"].tolist() for k, v in tabs.items()},
                           coef_pairsd={k: v["pairsd"].tolist() for k, v in tabs.items()})
