@@ -1,0 +1,12 @@
+{
+ "estimator": "/home/user/thehonesttorus.github.io/notes/streams/submission/bundles/v29r/estimator.py",
+ "setup_window_s": [
+  1.044038123000064,
+  0.9989218739992793,
+  0.9540394449995802,
+  0.9682480190003844,
+  0.9795459499982826
+ ],
+ "max_s": 1.044038123000064,
+ "cap_s": 5.0
+}
