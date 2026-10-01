@@ -327,7 +327,7 @@ $$\lVert\mathcal R_{A,t}[\rho_{-A}]-\rho\rVert_1\le\sqrt{c_*/t}\;\chi_{\rm KMS}(
 - **C5** (Davies sampler with single-site Pauli jumps, 5-qubit rings, $\beta=1.5$). The $H^{-2}$ bound holds at $t=1,10,10^2,10^3$ with ratios actual/bound of $0.07$–$0.19$, and both bounds hold throughout.
   - Classical ring, $\lvert A\rvert=1$: $\lVert W\rVert_{H^{-2}}=4.39$; errors $0.313$, $0.036$, $3.6\cdot10^{-3}$, $3.6\cdot10^{-4}$.
   - Transverse-field ring: $\lVert W\rVert_{H^{-2}}=9.44$; errors $0.668$, $0.173$, $0.0175$, $1.75\cdot10^{-3}$.
-- **C9** (DLL/CKG-type Gaussian-filter sampler, open transverse-field chain, $\beta=1.3$, $t=100$). The (c) bound holds with errors $0.009$–$0.018$ against bounds $0.16$–$0.44$.
+- **C9** (DLL/CKG-type Gaussian-filter sampler, open transverse-field chain, $\beta=1.3$, $t=100$). For $\lvert A\rvert=1$, $n=3,4,5$, the (c) bound holds with errors $0.009$–$0.018$ against bounds $0.16$–$0.44$. At $n=5$, $\lvert A\rvert=2,3$ the errors are $0.025$–$0.086$ against bounds $0.59$–$2.7$: the bound loosens with $\chi_{\rm KMS}$ much faster than the error grows.
 
 **Reading** (DERIVED, from the corollary). The Cesàro mean makes the Dirichlet energy small for free (i). Everything hard about recovery is the **inverse-Dirichlet size of the defect $W$** in (b), or the relative coercivity $\kappa(A)$ times $\chi_{\rm KMS}$ in (c). The defect is exactly orthogonal to $N_A$; that is the content of exact recovery at $t=\infty$ ([D-CR] §6.1).
 
@@ -372,7 +372,7 @@ Readings of the table:
 - *What must be true:* the dressed single-site derivation controls, linearly, the KMS distance of any operator from the algebra $1_A\otimes M_{A^c}$. That is an exponent-one version of [CR] Lemma X.4 combined with the twirl.
 - *Evidence:* C9–C10, for $n\le5$ only. For the non-commuting chain, $\kappa$ decreases with $n$ by shrinking steps ($0.415$, $0.263$, $0.227$ for $n=3,4,5$, consistent with a positive limit) and does not decay with $\lvert A\rvert$ ($0.227$, $0.366$, $0.543$). For the commuting chain it falls with $\lvert A\rvert$ ($0.644$, $0.191$, $0.141$ for $\lvert A\rvert=1,2,3$; three points fix no rate) and does not depend on $n$.
 - *What it buys* (DERIVED from D-6(c)): recovery error $\le\sqrt{c_*/t}\,\chi_{\rm KMS}\,c_\beta^{-1/2}\lvert A\rvert^{p/2}$, i.e. the rate $t^{-1/2}$ in place of $t^{-\lambda}$, $\lambda\approx1/(2d^4\beta^4)$.
-- *What it does not buy:* $\chi_{\rm KMS}(\rho_{-A}\Vert\rho)$ grows by a factor of about 2–3.5 per site of $A$ in C10 (2.15→4.03→12.1 commuting, 3.25→8.92→30.8 non-commuting) and C11. Classically it is $\big(\sum_x\mu_{-A}(x)^2/\mu(x)-1\big)^{1/2}$, exponential in $\lvert A\rvert$ unless the conditional law on $A$ is uniform. So the $\chi^2$ route leaves an exponential prefactor in $\lvert A\rvert$, as an $L^2$ warm start does for Markov chains ([D-NC] §2.8, $\sqrt{1/\sigma_{\min}}$ against $\sqrt{2\log(1/\sigma_{\min})}$). With the gap-free rate $t^{-1/2}$ this prefactor costs a time $t\sim\chi_{\rm KMS}^2$, exponential in $\lvert A\rvert$; with an exponential rate $e^{-\kappa t}$ it would cost only a time $\log\chi_{\rm KMS}/\kappa$, polynomial in $\lvert A\rvert$ when $\kappa\ge c_\beta\lvert A\rvert^{-p}$.
+- *What it does not buy:* $\chi_{\rm KMS}(\rho_{-A}\Vert\rho)$ grows by a factor of about 2–3.5 per site of $A$ in C10 (2.15→4.03→12.1 commuting, 3.25→8.92→30.8 non-commuting) and C11. Classically it is $\big(\sum_x\mu_{-A}(x)^2/\mu(x)-1\big)^{1/2}$, typically exponential in $\lvert A\rvert$ (it vanishes only when the conditional law on $A$ is uniform). So the $\chi^2$ route leaves an exponential prefactor in $\lvert A\rvert$, as an $L^2$ warm start does for Markov chains ([D-NC] §2.8, $\sqrt{1/\sigma_{\min}}$ against $\sqrt{2\log(1/\sigma_{\min})}$). With the gap-free rate $t^{-1/2}$ this prefactor costs a time $t\sim\chi_{\rm KMS}^2$, exponential in $\lvert A\rvert$; with an exponential rate $e^{-\kappa t}$ it would cost only a time $\log\chi_{\rm KMS}/\kappa$, polynomial in $\lvert A\rvert$ when $\kappa\ge c_\beta\lvert A\rvert^{-p}$.
 
 **CONJECTURE C-2 (relative modified log-Sobolev ⇒ global Markov).** Suppose the entropy production of the region's semigroup dominates the relative entropy *conditional on $N_A$*:
 $$\mathrm{EP}_{\mathcal L_A}(\omega)\ge\alpha\,D_A(\omega\Vert\rho),\qquad D_A(\omega\Vert\rho)=D(\omega\Vert\rho)-D(\omega_{A^c}\Vert\rho_{A^c}),\qquad\alpha\ge c_\beta\lvert A\rvert^{-p}.$$
@@ -586,7 +586,7 @@ All numpy, run for this note; scratch scripts (the task allowed one file), with 
 | C6 | D-8 | $\mathcal E_{\rm str}/2=\mathrm{Var}_A$ to $10^{-14}$; Efron–Stein ratio $\le0.47$ |
 | C7 | §5.6 kernels | three Fourier identities to 8 digits (Yang's to $2\cdot10^{-5}$, grid) |
 | C8 | D-7 | non-commuting: gap $1.76\cdot10^{-2}$, $1.11\cdot10^{-3}$, $7.2\cdot10^{-5}$ ($n=3,4,5$), $\dim F_A=1$; commuting: $0.352$ constant, $\dim F_A=4^{n-1}/2$ |
-| C9 | D-6 (c), C-1 | $\kappa=0.415,0.263,0.227$ (non-commuting), $0.644$ (commuting); recovery errors $0.009$–$0.018\le$ bounds $0.16$–$0.44$ |
+| C9 | D-6 (c), C-1 | $\kappa=0.415,0.263,0.227$ (non-commuting), $0.644$ (commuting); recovery errors $0.009$–$0.018\le$ bounds $0.16$–$0.44$ ($\lvert A\rvert=1$); $0.025$–$0.086\le0.59$–$2.7$ ($n=5$, $\lvert A\rvert=2,3$) |
 | C10 | D-7, C-1, $\chi$ growth | gap a function of the distance to the far end only; $\kappa$ not decaying in $\lvert A\rvert$ (non-commuting); $\chi_{\rm KMS}$ $\times1.9$–$3.5$ per site of $A$ |
 | C11 | C-2 (i) | $D(\rho_{-A}\Vert\rho)$ linear in $\lvert A\rvert$ ($\approx0.7$–$1.0$ per site) and below $2\beta\sum\lVert h_\gamma\rVert$; $\chi_{\rm KMS}$ $\times2.2$–$2.5$ (commuting) and $\times2.9$–$3.2$ (non-commuting) per site ($n=6$, $\lvert A\rvert\le4$) |
 
@@ -657,3 +657,30 @@ All through the digests named in the header, at the sections cited in the text; 
 - Witsenhausen's maximal correlation (checked, C1);
 - the Diaconis–Saloff-Coste comparison theorem (name only; D-8 proves the comparison used);
 - Chebyshev acceleration (§5.7, name and rate only).
+
+---
+
+## Review log (critic 1, mathematical correctness; 2026-10-01)
+
+Every THEOREM, KNOWN-LINK and DERIVED claim was checked against the digest section it cites, and the proofs of D-1 to D-8, the corollaries of D-2 and D-6 and the bound of C-2 (i) were re-derived. Checks C1–C11 were re-run in independent scratch scripts and reproduce (random instances with fresh seeds). The deterministic values of C1, C4, C5 and C8–C11 match to the digits quoted, with one slip: $\chi_{\rm KMS}=12.1$, not $12.2$. New review checks: the 8-cycle for D-1(c), random Ising pairs for D-1(d), the modular-flow formula of §4.1, and the $\lvert A\rvert=2,3$ recovery errors of C9. Corrections made:
+- **A conjecture was listed as a theorem** (§0 item 7, §8 item 4). "[CR]'s local gap ⇒ global Markov, once the gap is made relative" was listed among things that are literally theorems. With the relative constant $\kappa(A)$, D-6(c) keeps the exponential $\chi_{\rm KMS}$ prefactor (§5.4), and the entropic version is CONJECTURE C-2. T13 is a theorem only with the literal gap, which D-7 rules out for non-commuting $H$ with trivial $F_A$.
+- **"Must be entropic"** (§0 item 5, §11). An exponential rate in $t$ would also absorb the $\chi^2$ start, at a time cost $\log\chi_{\rm KMS}/\kappa$. The text now names both routes, and the drift condition both need.
+- **The origin of [CR]'s $2^{2\lvert A\rvert}$** (§2.1, §4.3, §5.1, §6.2, §7). The note called it the Jones index in some places and a comparison constant in others. [D-Y] §8.8, the verified reading, traces it to per-string Gibbs-conjugation and Leibniz costs. It equals the index $d_A^2$ in value only; only D-5's factor is literally an index.
+- **D-1.** The proofs of (b) and (c) wrote $E_\emptyset$, the identity, for the mean. In (c) the edge law is not strictly positive: for bipartite $G$ the formula gives $1$, while the Friedrichs cosine of §1.3 relative to the true intersection is $\lvert\lambda_2\rvert/d$. In §0 and §8, $c$ on adjacent spins is now the largest conditional correlation, bounded by (not equal to) the geometric mean of the Dobrushin influences: on random Ising pairs, $0.475$ against $0.530$.
+- **§3.4, §8.** Positivity implies the intersection axiom; it is not the same thing. "Angle $<1$" is the lattice law, since in finite dimension the Friedrichs cosine relative to the true intersection is always $<1$.
+- **D-2.** Sharpness needs $U\ne V$, and the case $c=0$ needs its own argument.
+- **Labels.** §5.5: KNOWN-LINK became ANALOGY with a break, because [D-CHAT] §7.2 is an interpretation, not a published link. §5.6: KNOWN-LINK became DERIVED identities plus an ANALOGY with a break, because [D-Y] B14 is itself an ANALOGY. Takesaki and Kayalar–Weinert: KNOWN-LINK became THEOREM, *from memory*. §4.1: the dimension 96 is a numerical count, and the non-invariance now has a one-line proof. §5.3 title and §6.3: that the relative constant does not collapse is evidence at $n\le5$, not a derivation.
+- **Softened overstatements.**
+  - The first-order NCG ties (Kazhdan, Roe) are literal for groups and expanders and are ANALOGIES for the $\beta>0$ Markov problem (§0 item 6, §7).
+  - "The $W_2$ branch does not exist" became "is not available" ([D-NC] L8).
+  - "GNS with local jumps is impossible" became: GNS needs Bohr-eigenoperator jumps, and [CKG]'s construction cannot be GNS.
+  - "No locality estimate controls $\log\rho_{BC}$" became: Lieb–Robinson for $H$ does not.
+  - T5's "⇔" is now split into its two directions with their hypotheses. T12 needs girth $\to\infty$. T6 has an additive term and an $L^1\to L^\infty$ constant.
+- **Numbers.** $\chi_{\rm KMS}$ grows by a factor $1.9$–$3.5$ per site, not $e^{1.0\text{–}1.2\lvert A\rvert}$ or "$\times\approx3$". The commuting $\kappa(A)$ ($0.644$, $0.191$, $0.141$) does not "decay like $1/\lvert A\rvert$". The classical $\chi^2$ formula lacked its $-1$. The Rayleigh-quotient upper bound on the gap comes from min–max, not from D-7. C9's ranges hold for $\lvert A\rvert=1$ only.
+- **Other.**
+  - §9.1, defect II: for the pair $(\omega,\mathbb P_\beta)$ the size factor is a Rényi moment, not an index.
+  - The arrow is a linear layer with the ReLU before it, not the ReLU alone.
+  - The sigla now define [DLL], [HJPW], [CNNR] and [Pet], and flag the two meanings of [KB].
+  - The Lüders-compression claim was replaced by what [D-Y] B4 and [D-HC] B5 actually say.
+  - $F_A\subseteq N_A^\sigma$, not equal.
+  - The sign in $\phi_t(-\mathcal L^\dagger)$ is fixed, and the twirl over a unitary error basis is $S\cdot S^\dagger$.
