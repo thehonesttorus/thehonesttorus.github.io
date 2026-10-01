@@ -193,6 +193,7 @@ This replaces the width projections of §9. Those had been anchored on a Gaussia
 | MKV window 1 | 3.60e-6 ± 2.3e-7 | 1.93e-6 | 104 u | 0.102 | **3.7e-7** |
 | MKV window 4 | 1.26e-6 ± 7.0e-8 | 6.0e-7 | 283 u | 0.276 | **3.5e-7** |
 | MKV full history | 4.18e-7 ± 1.9e-8 | 3.3e-7 | 550 u | 0.537 | **2.2e-7** |
+| MKV-2 full (curvature passage) | 2.42e-7 ± 1.3e-8 | 2.3e-7 | ≈ 500 u | ≈ 0.49 | **≈ 1.2e-7** |
 
 (All-layer MSE includes the larger truth noise of early layers, ≈ 3.5e-7 at layer 1, so it is noise-dominated there.)
 
@@ -208,4 +209,4 @@ This replaces the width projections of §9. Those had been anchored on a Gaussia
 2. Carried history costs O(L²) dense products.
 3. Even with full history, the first-order Markov-network ansatz leaves raw 4e-7 at 1024.
 
-The leading remaining terms are the two-hyperedge chains: the curvature passage of §7, item 7, plus its higher orders. The MKV-2 run at 1024, which adds the curvature passage, was still running at the time of writing; if it completes, its result is in `results/bench1024_c16.json`. At width 256 it gained 1.4× over full-history MKV, which would leave it at raw ≈ 3e-7, so it cannot change the verdict.
+The curvature passage (MKV-2, §7, item 7) is the best measured variant: raw 2.42e-7 ± 1.3e-8 at n = 1024, 1.7× below full-history MKV, adjusted ≈ 1.2e-7, still ≈ 75× above the bar. The remaining leading terms are higher-order hyperedge chains, the next order of the same expansion. Their cost would add to the ≈ 500 u already spent, so on these numbers no completion of this expansion reaches raw ≈ 1e-8 at ≤ 0.1 B.
