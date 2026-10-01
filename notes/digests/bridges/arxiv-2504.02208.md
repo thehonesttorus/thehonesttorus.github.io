@@ -46,10 +46,10 @@
 - **Conjecture [KKB20]** as quoted: for short-range $H$ on a $D$-dimensional lattice at any $\beta$ and any tripartition $\Lambda=A\sqcup B\sqcup C$, $I(A:C|B)_{\rho_\beta}\le\mathcal D(\mathrm{dist}(A,C))$ with $\mathcal D$ superpolynomially decaying. The three versions: **pairwise** ($|A|,|C|=O(1)$), **local** ($\min(|A|,|C|)=O(1)$), **global** ($|A|,|C|=O(|\Lambda|)$).
 - Table I of the paper:
 
-| property | sufficient condition | bound on $I(A:C|B)$, $ABC=\Lambda$ |
+| property | sufficient condition | bound on $I(A:C\mid B)$, $ABC=\Lambda$ |
 |---|---|---|
-| pairwise | $D$-dim lattice, any $\beta$ [Kuw24] | $\exp(c|AC|-\mathrm{dist}/\xi)$ |
-| **local** | **degree $d$, any $\beta$ (Thm III.1)** | $|A||C|\exp(c\min(|A|,|C|)-\mathrm{dist}/\xi)$ |
+| pairwise | $D$-dim lattice, any $\beta$ [Kuw24] | $\exp(c\vert AC\vert -\mathrm{dist}/\xi)$ |
+| **local** | **degree $d$, any $\beta$ (Thm III.1)** | $\vert A\vert \vert C\vert \exp(c\min(\vert A\vert ,\vert C\vert )-\mathrm{dist}/\xi)$ |
 | global | commuting or classical, any $\beta$ | $0$ if $\mathrm{dist}\ge1$ |
 | global | 1-dim, any $\beta$ [KB19, Kuw24] | $\exp(-\mathrm{dist}/\xi)$ |
 
@@ -189,9 +189,9 @@ $$\|[A,O]\|_{\rho_\beta}\lesssim d^2|A|\Big(\tfrac{e^{\sigma^2\beta_0^2}}{\beta_
 | hypothesis | spent in |
 |---|---|
 | exact KMS detailed balance (CKG23) | fixed point in the duality step; $\mathcal E$ as a KMS quadratic form (Cor. VII.1); the explicit forms X.1–X.3 |
-| bounded degree $d$, $\|H_\gamma\|\le1$ | Lemma IX.3 (radius $1/2d$; it sets $\beta_0=1/4d$ and the $2^{|A|}$); Lemma X.4 step 1 ($d^2|A|$); Lemma A.1 path counting; $\ell\ge4e^2\beta d$ |
+| bounded degree $d$, $\Vert H_\gamma\Vert \le1$ | Lemma IX.3 (radius $1/2d$; it sets $\beta_0=1/4d$ and the $2^{\vert A\vert }$); Lemma X.4 step 1 ($d^2\vert A\vert $); Lemma A.1 path counting; $\ell\ge4e^2\beta d$ |
 | Gaussian filter width $\sigma$ ($=1/\beta$) | Lemma IX.2 (Gaussian beats exponential); Lemma A.2 time tail |
-| Metropolis weight | $h(\omega)\propto e^{-|\omega|\beta/2}$ (Lemma X.3), whose reciprocal forces the cut-off $\Omega$ |
+| Metropolis weight | $h(\omega)\propto e^{-\vert \omega\vert \beta/2}$ (Lemma X.3), whose reciprocal forces the cut-off $\Omega$ |
 | jumps $=\mathsf P^1_A$ | the twirl reduces recovery to commutators with $\mathsf P_A$; Cor. VIII.1 reduces to single sites; (4.1) puts the kernel inside $\mathbf 1_A\otimes B(\mathcal H_{A^c})$ |
 | time averaging | Lemma VII.1: $2/t$ with no gap |
 | full tripartition $ABC=\Lambda$, $A$ shielded | Cor. III.2: the recovery map must live on $AB$ and the state must be the global Gibbs state |
@@ -258,7 +258,7 @@ $$\|[A,O]\|_{\rho_\beta}\lesssim d^2|A|\Big(\tfrac{e^{\sigma^2\beta_0^2}}{\beta_
 
 | | Chen–Rouzé 2504.02208 | Yang 2609.38007 |
 |---|---|---|
-| object controlled | trace distance $\|\mathcal R_{A,t}[\rho_{-A}]-\rho\|_1$ (recovery) | $I(A:C|B)\le\delta_{AB}(\rho,\gamma_A\otimes\gamma_{BC})$ (relative-entropy loss) |
+| object controlled | trace distance $\Vert \mathcal R_{A,t}[\rho_{-A}]-\rho\Vert _1$ (recovery) | $I(A:C\mid B)\le\delta_{AB}(\rho,\gamma_A\otimes\gamma_{BC})$ (relative-entropy loss) |
 | logical direction | explicit recovery ⇒ CMI (continuity, loses $\log\dim C$) | CMI ⇒ recovery maps exist "through the recovery theorem" (Fawzi–Renner); none is constructed |
 | reference state | the erased state $\rho_{-A}=\tau_A\otimes\rho_{BC}$ | the cut Gibbs state $\gamma_A\otimes\gamma_{BC}$ |
 | what carries the decay | Dirichlet-form relaxation in Lindblad time, then Lieb–Robinson for the sampler | Lieb–Robinson for the **modular cocycle** in modular time, kernel $1/\lvert\sinh\pi t\rvert$ |
