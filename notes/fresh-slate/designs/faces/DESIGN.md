@@ -164,6 +164,34 @@ The width-fit bands quoted by `eval_q` are much narrower than the real uncertain
 
 **Why the face transport has a ceiling** (`diag_chaos.py`, log `diag_chaos.log`). The two quantities that face-averaged arrows carry exactly are the face-averaged gradient (first chaos in $x$) and the facet births on it (second chaos). At depth 16 they hold 18–23 % and 18–23 % of each neuron's variance, at widths 64, 128, 256 and 512 alike. About 60 % sits in chaos ≥ 3 (births of births). This is a width-independent property of deep ReLU kernels: depth spreads the kernel over high degrees, consistent with the Phase-1 finding that Hermite-exact rules buy little. Any fixed-order transport of facet data in input coordinates is capped. The renormalisation that per-layer chains do (legs taken from the current covariance) is needed. But renormalised legs plus transported old births over-count by ×(depth) (T2), because later facets fold old skew away. Getting the folding right is exactly the (2,1)/(2,1,1) cumulant transport of the existing chains.
 
+## 8b. Dictionary v3: facet births on renormalised legs over a depth window (`fbt.py`, mode 'hyb')
+
+The measurements in §8 pointed two ways. The one-step tree on renormalised legs ('mem') fixes the recent content, and births at every depth ('lin') carry the old content. v3 keeps every birth $s$ in a window of the last $w$ layers on **renormalised legs**: the birth layer's own closure covariance, transported by the face-averaged arrows, $K_{s\to l}=C_sD_{\beta_s}P_{s\to l}$. Births older than the window stay on the input-chaos legs. For each $(s,l)$ in the window the step computes:
+- $\kappa_3\mathrel{+}=6\sum_k(P_{s\to l})_{kj}c_{s,k}K_{kj}^2$;
+- $\kappa_4\mathrel{+}=48\,M_j^\top C_sM_j$ with $M=(P_{s\to l}\circ c_s)\circ K$;
+- the (2,1) slice $D21\mathrel{+}=2(K\circ K)^\top(P\circ c)+4M^\top K$, which enters $\mathrm{Cov}(a)$ by the leading bivariate Edgeworth term.
+
+This carries both binding facts: (i) the non-Gaussian covariance correction through $D21$, (ii) old content through the window.
+
+Bench sets (w64, w128: 8 MLPs, N = 1e7) and own bakes (w256: 4 MLPs, N = 5e6; w512: see below):
+
+| variant | w64 | w128 | w256 | w512 | width law | raw(1024) | cost (units) | adjusted(1024) |
+|---|---|---|---|---|---|---|---|---|
+| w = 1 ('hyb21') | 1.88e-4 | 9.88e-5 | 3.39e-5 | | n^-1.24 | 6.5e-6 | ≈ 140 | 9e-7 |
+| w = 2 | 1.68e-4 | 6.38e-5 | | | | | | |
+| w = 3 | 1.53e-4 | 4.37e-5 | | | | | | |
+| w = 4 | 1.48e-4 | 3.29e-5 | 1.38e-5 | W4_512 | n^-1.71 | 1.2e-6 | ≈ 300 | 3.4e-7 |
+| w = 6 | 1.55e-4 | 2.74e-5 | 9.89e-6 | W6_512 | n^-1.99 | 5.6e-7 | ≈ 410 | 2.2e-7 |
+| w = 8 | 1.61e-4 | 3.18e-5 | | | | | | |
+| w = 16 (all depths renormalised) | 1.90e-4 | 3.93e-5 | 8.68e-6 | W16_512 | n^-2.22 | 3.9e-7 | ≈ 630 | 2.4e-7 |
+| reference 'gauss' | 4.46e-4 | 2.82e-4 | 8.60e-5 | | n^-1.19 | 1.9e-5 | 40 | 1.9e-6 |
+
+Ablations of w = 16 at w128: dropping the (2,1) slice from Cov(a) gives 2.07e-4 (5×); dropping κ4 gives 9.48e-5 (2.4×). Adding (2,2) and (3,1) pair terms through the same tree, with the inner covariance taken diagonal and without the κ3² terms, makes it worse (5.6e-5): **failed and dropped**; the second-order Edgeworth terms of the same order are missing.
+
+**Why T2 seemed to forbid this.** T2 measured κ3 alone with oracle coefficients at width 64, and the renormalised legs over-counted κ3 at depth. In the full propagation the same legs also feed $D21$ and κ4 into the covariance, and the errors partly compensate. The gain grows with width: at w64 the optimum is w ≈ 4 and w = 16 is worse; at w256 w = 16 is best. The over-count is a finite-width effect (renormalised legs carry $O(n^{-1/2})$ correlations whose cross-birth folding is $O(n^{-1})$), so it shrinks faster than the signal. This is a hypothesis consistent with the slopes, not a derivation.
+
+Cost at n = 1024 (kit prices: dense f32 product 1 unit). Per $(s,l)$ in the window: propagator update 1, legs 1, two products for $D21$ 2, κ4 1 = 5 units. Per layer, the covariance arrow costs 2. w = 16: 120 pairs → 600 + 32 ≈ 630 units (0.62 B); w = 6: 75 pairs → ≈ 410 (0.40 B); w = 4: 54 pairs → ≈ 300 (0.29 B). Strassen L5 (0.56 units per product) would cut these by about 40 %. Wall: the float64 numpy prototype takes 16 s per MLP at n = 512, so ≈ 130 s at 1024 in float64. float32 is required to fit the 120 s cap.
+
 ## 9. Verdict
 
 **Projected at n = 1024** (bench sets): best adjusted faces estimator 'mem'/'mem21', raw ≈ 1.6e-5 (band 0.8–3e-5), cost ≈ 0.1 B, adjusted ≈ 1.6e-6 (0.8–3e-6). The best raw, 'lin21' at 6.8e-6 (4.8–9.6e-6), costs O(L² n³) ≈ 0.6 B, so adjusted ≈ 4e-6. This sits at the level of plain Monte Carlo and about 10³ above the bar (1.6e-9 adjusted).
