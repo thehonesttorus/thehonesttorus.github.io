@@ -459,7 +459,7 @@ def main():
     ap.add_argument("--r", type=int, default=8)
     ap.add_argument("--k", type=int, default=8)
     ap.add_argument("--legs", default=",".join(DEFAULT_LEGS))
-    ap.add_argument("--cov", default="sym3")
+    ap.add_argument("--cov", default="sym3", help="sym3 | einsum (= einsum_tagged) | strassen2 | factor | dense2")
     ap.add_argument("--births", type=int, default=1)
     ap.add_argument("--q", type=int, default=0, help="also price iii/iv with modes in a shared q-column basis")
     ap.add_argument("--layers", action="store_true")
@@ -469,6 +469,8 @@ def main():
         check()
         return
     legs = [x for x in a.legs.split(",") if x]
+    if a.cov == "einsum":          # the skeleton/REPORT name of the tagged 3-operand einsum covariance
+        a.cov = "einsum_tagged"
     rows = table(default_configs(a.lev, a.r, a.k, legs, a.cov, a.births, a.q))
     print(f"{'design':44s} {'units':>8s} {'C/B':>7s} {'calls':>7s} {'resid here':>11s} {'resid grader':>13s} {'mem GB':>7s}")
     for name, per, T, cb, C, rh, rg, mem in rows:

@@ -13,6 +13,8 @@
 #   (g) commuting H: F_A large and P_A acts as the identity on operators far from A (local);
 #       non-commuting H: F_A = C 1 here, so P_A is the global replacement channel (non-local)
 #   (h) ||R_{A,t}[rho_{-A}] - rho||_1 -> 0 as t grows (in finite dimension at rate ~ 1/(gap t))
+#   (i) CMI as a Petz sufficiency defect: I(A:C|B)_rho = D(rho||rho_{-A}) - D(rho_AB||(rho_{-A})_AB)   (own, 2 lines)
+#   (j) non-commuting case: the extra fixed point is the ring reflection fixing the site in A (a symmetry acting off A)
 import numpy as np
 np.set_printoptions(precision=3, suppress=True)
 X = np.array([[0, 1], [1, 0]], complex); Y = np.array([[0, -1j], [1j, 0]]); Z = np.diag([1., -1]).astype(complex); I2 = np.eye(2)
@@ -121,6 +123,41 @@ def run(name, n, g, beta=1.5, A=(0,), ts=(1, 10, 100, 1000, 10000)):
         errs.append(tracenorm((R@rho_mA.reshape(-1)).reshape(d, d) - rho))
     print(f"[{name}] (h) local gap above ker = {gap:.3e}; ||R_t[rho_-A]-rho||_1 at t={list(ts)}: {np.array(errs)}")
 
+def ptrace_keep(R, keep, n):
+    T = R.reshape([2]*(2*n)); idx = list(range(n)); out = list(range(n, 2*n))
+    letters = 'abcdefghijklmnopqrstuvwxyz'
+    a = [letters[i] for i in range(n)]; b = [letters[n+i] if i in keep else letters[i] for i in range(n)]
+    expr = ''.join(a)+''.join(b)+'->'+''.join(a[i] for i in keep)+''.join(b[i] for i in keep)
+    k = len(keep); return np.einsum(expr, T).reshape(2**k, 2**k)
+
+def vn(R):
+    w = np.linalg.eigvalsh((R+R.conj().T)/2); w = w[w > 1e-15]; return -(w*np.log(w)).sum()
+
+def relent(R, S):
+    def lg(M):
+        w, V = np.linalg.eigh((M+M.conj().T)/2); return (V*np.log(w))@V.conj().T
+    return np.trace(R@(lg(R)-lg(S))).real
+
+def cmi_check(n=5, g=0.9, beta=1.5):
+    d = 2**n; H = ham(n, g=g); w, V = np.linalg.eigh(H); rho = (V*np.exp(-beta*w))@V.conj().T; rho /= np.trace(rho)
+    A, B, C = [0], [1, n-1], [k for k in range(2, n-1)]
+    S = lambda keep: vn(ptrace_keep(rho, sorted(keep), n))
+    cmi = S(A+B) + S(B+C) - S(B) - S(A+B+C)
+    rho_mA = sum(op(P, 0, n)@rho@op(P, 0, n) for P in (I2, X, Y, Z))/4
+    delta = relent(rho, rho_mA) - relent(ptrace_keep(rho, sorted(A+B), n), ptrace_keep(rho_mA, sorted(A+B), n))
+    print(f"[TFIM n={n}] (i) I(A:C|B) = {cmi:.6e},  delta_AB(rho, rho_-A) = {delta:.6e},  diff = {abs(cmi-delta):.1e}")
+    # (j) reflection i -> -i mod n fixes site 0
+    perm = [(-i) % n for i in range(n)]
+    R = np.zeros((d, d))
+    for s in range(d):
+        bits = [(s >> (n-1-i)) & 1 for i in range(n)]
+        nb = [bits[perm[i]] for i in range(n)]
+        R[int(''.join(map(str, nb)), 2), s] = 1
+    jumps = [op(P, 0, n) for P in (X, Y, Z)]
+    Ldag = davies_heis(H, jumps, beta)
+    print(f"[TFIM n={n}] (j) ||[H,R]|| = {np.abs(H@R-R@H).max():.1e}, ||L_A^dag(R)|| = {np.abs(Ldag@R.reshape(-1).astype(complex)).max():.1e}")
+
 if __name__ == "__main__":
+    cmi_check()
     run("classical Ising ring, n=5", n=5, g=0.0)
     run("transverse-field Ising ring, n=5", n=5, g=0.9)

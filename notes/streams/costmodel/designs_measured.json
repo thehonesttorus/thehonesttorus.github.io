@@ -864,6 +864,50 @@
      1
     ]
    }
+  },
+  {
+   "name": "design iv k=4 L0",
+   "design": "iv",
+   "lev": 0,
+   "k": 4,
+   "cov": "sym3",
+   "units": 23.809,
+   "calls": 167,
+   "residual_ms": 8.93,
+   "wall_ms": 1047.0,
+   "note": "first run of probe_designs.py (same op stream; the rerun was OOM-killed before reaching it)"
+  },
+  {
+   "name": "design iv k=4 L5",
+   "design": "iv",
+   "lev": 5,
+   "k": 4,
+   "cov": "sym3",
+   "units": 13.526,
+   "calls": 817,
+   "residual_ms": 38.77,
+   "wall_ms": 7399.0,
+   "note": "first run of probe_designs.py (same op stream; the rerun was OOM-killed before reaching it)"
+  },
+  {
+   "name": "design iv k=8 L0",
+   "design": "iv",
+   "lev": 0,
+   "k": 8,
+   "cov": "sym3",
+   "units": 34.821,
+   "calls": 215,
+   "residual_ms": 8.9,
+   "wall_ms": 1116.0,
+   "note": "first run of probe_designs.py (same op stream; the rerun was OOM-killed before reaching it)"
+  },
+  {
+   "name": "design iii r=8 L5",
+   "design": "iii",
+   "lev": 5,
+   "r": 8,
+   "cov": "sym3",
+   "error": "OOM-killed at 5.6 GB RSS (unshared pools of 13-slot and 27-block families); design iv k=8 L5 likewise at 7.0 GB"
   }
  ]
 }

@@ -37,7 +37,7 @@
    | (iii)/(iv) with the 8 modes in a shared q = 256 basis | 137 | 0.134 | | |
    | (v) K=2 | 19 (26 dense) | | | |
 
-   Dense symmetric modes cost **1.57 units per mode-layer**: a 1.01 u sandwich plus a 0.503 u birth Gram. With eight of them the chain (280 u) already exceeds V29's whole bill. **Within the leaders' 0.145–0.16 B, a closure chain can afford the full first-order closure (104 u) plus about 45–60 u for old-source and κ₄ content. That fits modes kept in a shared basis, not dense modes.**
+   Dense symmetric modes cost **1.54 units per middle mode-layer** (22.0 u per mode over the chain): a 1.03 u sym3 sandwich plus a 0.503 u birth Gram. With eight of them the chain (280 u) already exceeds V29's whole bill. **Within the leaders' 0.145–0.16 B, a closure chain can afford the full first-order closure (104 u) plus about 45–60 u for old-source and κ₄ content. That fits modes kept in a shared basis, not dense modes.**
 6. **Residual time is the binding engineering constraint, not FLOPs.** Residual scales with the number of flopscope calls:
    - on this box: 0.042 ms per call. V29 itself measured **0.546 s here (over the 0.4 s cap)**, against 0.25–0.32 s on its author's box;
    - on the grader, scaled by V29: about 0.022 ms per call.
@@ -58,9 +58,9 @@
 | broadcast (n,n)@(k,n,n), or (n,n)@(n,kn) | same as batched | 1 | | |
 | einsum('ji,jk->ik', X, X), inner(X, X) (same object) | **0.5002** | 1 | 0.09 | symmetric output, tagged |
 | X.T @ X (view = another object) | 0.9995 | 1 | | no discount |
-| einsum('ji,j,jk->ik', G, d, G) (weighted alias) | **error** | | | `SymmetryError` (float32 check), unshippable |
+| einsum('ji,j,jk->ik', G, d, G) (weighted alias) | 0.5007 when it passes | 1 | | data-dependent `SymmetryError` (float32 check), the same hazard as the tagged sandwich: raises at G entry scale ≥ 0.3 with d ~ N(0,1) (the probe's O(1) G), passes at ≤ 0.1 (review re-run). Not safe in a submission |
 | weighted Gram Gᵀ diag(d) G, plain | 1.000 | 2 | | |
-| weighted Gram, **split-sign aliased** (gather rows with d > 0 and d ≤ 0, scale by √\|d\|, two aliased Grams) | **0.503** | 9 | 1.5 | the cheapest weighted Gram for sign-indefinite d |
+| weighted Gram, **split-sign aliased** (gather rows with d > 0 and d ≤ 0, scale by √\|d\|, two aliased Grams) | **0.503** | 9 | 1.5 | the cheapest *safe* weighted Gram for sign-indefinite d |
 | as_symmetric (n,n) | 0.0034 | 1 | 0.09 | 7n² − 1 |
 | symmetrize canonical-copy | 0.0005 | 1 | | |
 | **sandwich**: dense X.T @ (S @ X) | 1.9995 | 3 | 0.2 | |
@@ -86,7 +86,7 @@
 | rank-r family, batched M @ X then Xᵀ @ T | 2.0 r | 3 | 0.2–2.4 | |
 | rank-r family, batched einsum('ji,mjk,kl->mil') | 2.0 r | 2 | 0.1–1.0 | a (1,2)-tagged batch gives `ValueError: operands could not be broadcast` (flopscope) |
 | rank-r family in a shared q-column basis (transport U, r diagonal cores), q = 64/256 | 0.063/0.25 for any r ≤ 32 | 3 | 0.1 | |
-| norm.cdf / norm.pdf on (n,) (billed f64) | 1.0e-4 / 5.6e-5 | 1 | 0.05 | per-layer Gaussian weights Φ, φ, w2…w5, mean: **0.0001 u, 28 calls** |
+| norm.cdf / norm.pdf on (n,) (billed f64) | 4.6e-5 / 2.6e-5 | 1 | 0.05 | per-layer Gaussian weights Φ, φ, w2…w5, mean: **0.0001 u, 28 calls** |
 | norm.cdf / norm.pdf on (n,n) | 0.0469 / 0.0264 | 1 | | 96 / 54 FLOPs per element (f64) |
 | exp, arcsin on (n,n) f32 | 0.0078 | 1 | | 16 per element |
 | multiply, add, sqrt, copyto, sum(axis) on (n,n) | 0.0005 | 1 | 0.03–0.1 | 1 per element |
@@ -115,8 +115,8 @@ Everything lands in one matrix L, and **D21(s+1) = Lᵀ W is one product**. Per 
 | B3 sym[w5 D3z_i Φ Φ C_ij C_ik] (×1) | rides on (C,Φ): centre weight only | 0 | n² |
 | B5 sym[w3 w2 Φ K22_ij C_ik] (×1.5), K22 = λ C_off regenerated | leg (C_off, w2) | 2 | 1.11 / 2.0 |
 | B6 κ4(z)_(2,1,1) as the published r = 1 core u_i C_jk (×1.5) | v_a (W^TΦCΦW)_ab: v folds into the (C,Φ) Lt as a column scaling; the diagonal term is n² | **0** | n² |
-| B6 as a rank-r family Σ_m u^m_i M^m_jk | r sandwiches Wᵀ Φ Mᵐ Φ W. The same product transports the family and gives its D21 term (v^m_a S^m_ab + v^m_b S^m_aa at n²). r births (weighted Grams G_Cᵀ diag(d_m) G_C, which land directly in the pre-activation space of s+1) | r × (1 + ¾) + r Grams | dense modes: r × (1.01 + 0.503). Shared q = 256 basis: 1.4–3.2 per layer for r = 1–16 |
-| B0 Φ³κ3(z) all-distinct (old-source memory) | k carried covariance-response modes (x^m, N^m): N^m → Wᵀ Φ N^m Φ W, x^m → Wᵀ(Φx^m). D21 term at n². Births as above | k × (1 + ¾) + k Grams | as B6: 1.57 per mode-layer dense; 1.4–3.2 per layer in a q = 256 basis (k = 1–16) |
+| B6 as a rank-r family Σ_m u^m_i M^m_jk | r sandwiches Wᵀ Φ Mᵐ Φ W. The same product transports the family and gives its D21 term (v^m_a S^m_ab + v^m_b S^m_aa at n²). r births (weighted Grams G_Cᵀ diag(d_m) G_C, which land directly in the pre-activation space of s+1) | r × (1 + ¾) + r Grams | dense modes: r × (1.03 + 0.503) = 1.54 r. Shared q = 256 basis: 1.5–3.4 per layer for r = 1–16 |
+| B0 Φ³κ3(z) all-distinct (old-source memory) | k carried covariance-response modes (x^m, N^m): N^m → Wᵀ Φ N^m Φ W, x^m → Wᵀ(Φx^m). D21 term at n². Births as above | k × (1 + ¾) + k Grams | as B6: 1.54 per mode-layer dense; 1.5–3.4 per layer in a q = 256 basis (k = 1–16) |
 | B4 Gaussian ρ³ | path part: leg (C∘C, x). **Triangle ρ_ij ρ_jk ρ_ki: no star form, ≈ 2n⁴ FLOPs ≈ 1024 u per transition** | 2 (paths); triangle unaffordable | 1.11 / 2.0 for the paths. The oracle says the whole ρ³ term buys ≤ 1 point of ε: drop it |
 | final Lᵀ W | | 1 | 0.556 / 1.0 |
 | Gaussian weights Φ, φ, w2…w5 (n-vectors), mean | `stats.norm` (float64 billing) | 0 | 0.0001, 28 calls |
@@ -139,8 +139,11 @@ That gives four families per transition, about 113 calls each at L5. The metered
 | (ii) L5 | 7.167 | 7.188 | 611 + 40 / 656 | 28.6 ms |
 | (ii) Wick leg only, L5 | 3.819 | 3.838 | 581 + 40 / 620 | 24.1 ms |
 | (v) cov sym3 L5 / tagged einsum | 1.028 / 1.503 | 1.048 / 1.520 | 214 / 3 (+40) | 7.9 / 1.1 ms |
+| (iii) r = 1 / 4 / 8, dense (L0) | 14.532 / 19.801 / 26.827 | 14.549 / 19.805 / 26.814 | 127 / 154 / 190 metered | 5.4 / 9.5 / 7.6 ms |
+| (iii) r = 1 / 4, L5 | 8.199 / 11.295 | 8.216 / 11.299 | 665 / 692 metered | 26.5 / 31.2 ms |
+| (iv) k = 4 / 8 dense, k = 4 L5 (with births) | 21.814 / 30.853 / 13.307 | 23.809 / 34.821 / 13.526 | 167 / 215 / 817 metered | 8.9 / 8.9 / 38.8 ms |
 
-(The rows for designs iii and iv are in `designs_measured.json` and appear in `python cost.py --check`.)
+The (iii) skeletons carry no births. The (iv) skeletons run the births as a plain product family (d∘G)ᵀG: 1.0 u dense, 0.5555 u at L5. The calculator prices the cheaper split-sign aliased Gram at 0.503 u (measured, §2). The (iv) gaps are exactly k × (1.0 − 0.503) dense and k × (0.5555 − 0.503) at L5. The (iii) r = 8 and (iv) k = 8 skeletons at L5 were OOM-killed at 5.6 GB and 7.0 GB RSS. The skeleton gives each family its own pools; the calculator's memory column assumes pools shared by geometry, as in V29.
 
 ## 4. Design table
 
@@ -200,7 +203,7 @@ Without births, 8 dense modes cost 224.1 u.
 
 ### V29 check
 
-The metered ledger (`v29_ledger.json`) by family has young_transport 60.5, hub 54.8, shared 27.8, old_legs 27.8, j_rf 20.8, fb 10.1, j_rot 9.1, j_proj 7.5, cpre 7.1 and j_tier2 6.7 units, the same as the published §2.1 ledger.
+The metered ledger (`v29_ledger.json`) by family has young_transport 60.7, hub 54.9, shared 27.9, old_legs 27.9, j_rf 20.8, fb 11.45, j_rot 9.1, j_proj 7.5, cpre 7.1 and j_tier2 6.7 units, the same as the published §2.1 ledger.
 
 The replay prices each family from its shapes:
 
@@ -217,9 +220,9 @@ What the replay misses: 0.08–0.4 units at L01–L04 in young_transport, about 
 ## 5. What this means for a chain at the leaders' bill (0.145–0.16 B = 148–164 u)
 
 - **The full identified first-order closure is cheap: 104 u at L5, 126 u at L3.** Each leg type costs 1.11 u per layer at L5 (≈ 15.6 u over the chain). The leading-Wick-only chain is 59 u. The published chain spends 115.6 u on its young tier alone for what is, per the oracle ladder, essentially the same first-order content.
-- **Old-source content (design iv) and κ₄ beyond r = 1 (design iii) cannot be carried as dense symmetric modes.** At 1.57 u per mode-layer, 8 dense modes cost 176 u on top of (ii). In a shared q = 256 basis the marginal cost is 1.4 / 1.8 / 2.2 / 3.2 u per layer for r = 1 / 4 / 8 / 16 (33 u for 8 modes over the chain), which lands (iii-sb)/(iv-sb) at **0.134 B**, under the leaders' bill. Whether a shared q = 256 basis carries the content is the accuracy question for the oracle surface. The cost side says it is the only representation that fits.
+- **Old-source content (design iv) and κ₄ beyond r = 1 (design iii) cannot be carried as dense symmetric modes.** At 1.54 u per middle mode-layer (22.0 u per mode over the chain), 8 dense modes cost 176 u on top of (ii). In a shared q = 256 basis the marginal cost is 1.5 / 1.9 / 2.4 / 3.4 u per layer for r = 1 / 4 / 8 / 16 (33 u for 8 modes over the chain), which lands (iii-sb)/(iv-sb) at **0.134 B**, under the leaders' bill. Whether a shared q = 256 basis carries the content is the accuracy question for the oracle surface. The cost side says it is the only representation that fits.
 - **The r = 1 κ₄ core (B6) and B3 are free.** They ride on the (C,Φ) leg. The Gaussian ρ³ triangle is unaffordable at any form (≈ 1024 u per transition) and must stay dropped.
-- **Calls, not FLOPs, set the Strassen level.** (ii) at L5 needs 8,300 calls, 0.35 s on this box. Reaching the plan's 2× residual margin (≤ 0.2 s on the grader, i.e. ≤ about 9,000 calls at 0.022 ms; ≤ about 4,800 calls at this box's 0.042 ms) needs one of three things: L3–L4 (+9–22 u), merging families, or the tagged-einsum covariance (3 calls instead of 214; (ii) at L3 then needs 4,954 calls and 130 u). Recommended starting point: L3 with the einsum covariance.
+- **Calls, not FLOPs, set the Strassen level.** (ii) at L5 needs 8,300 calls, 0.35 s on this box. The plan's 2× residual margin is ≤ 0.2 s: ≤ about 9,000 calls at the grader-scale 0.022 ms (which (ii) at L5 already meets, with under 10 % headroom), ≤ about 4,800 calls at this box's 0.042 ms. Cutting calls needs L3–L4 (+9–22 u), merged families, or the tagged-einsum covariance (3 calls instead of 214). (ii) at L3 with the einsum covariance needs 4,954 calls and 130 u: about 2× headroom at grader scale, still just above the 4,800 this-box figure, so family merging is still needed for the full margin on a slow box. Recommended starting point: L3 with the einsum covariance.
 - **Memory.** A Strassen L5 slot costs about 0.23 GB of pooled scratch (0.12 GB at L3/L4). Every slot added to the largest family adds that, so dense-mode designs at L5 approach V29's 5.5 GB peak. The skeleton for (iv) k = 8 at L5, whose families do not share pools, was OOM-killed at 7.0 GB RSS.
 
 ## 6. Hazards found (report-worthy to flopscope)

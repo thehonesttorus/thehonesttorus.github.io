@@ -261,7 +261,7 @@ for lev in (0, 3, 4, 5):
     measure(f"design ii (closure births, 4 leg types) L{lev}", *skeleton("ii", lev), design="ii", lev=lev, cov="sym3")
     measure(f"design ii-wick (leading Wick leg only) L{lev}", *skeleton("ii", lev, wick_only=True), design="ii-wick", lev=lev, cov="sym3")
 for r in (1, 4, 8):
-    for lev in (0, 5):
+    for lev in ((0, 5) if r < 8 else (0,)):      # r = 8 at L5 was OOM-killed at 5.6 GB RSS (unshared pools)
         measure(f"design iii r={r} L{lev}", *skeleton("iii", lev, r=r), design="iii", lev=lev, r=r, cov="sym3")
 for k in (4, 8):
     for lev in ((0, 5) if k == 4 else (0,)):      # k = 8 at L5 exceeded this box's free memory next to other jobs
