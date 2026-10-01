@@ -19,6 +19,11 @@ Pure numpy (no scipy). Each check corresponds to a labelled statement in the dig
       unnormalised second argument carries the extra -1 + Tr T).
   H7  Junge-Renner-Sutter-Wilde-Winter Cor. 4.1: I(A:C|B) >= -2 log F(rho, R(rho_AB))
       for the beta_0-averaged rotated Petz map (log base 2).
+  H8  Quantitative intersection (digest Sec. 13, Mine): for h(b,c,d) = P(A=1|b,c,d),
+      ||h - E[h|C]|| <= (||h - E[h|C,D]|| + ||h - E[h|B,C]||) / (1 - c_F), with c_F the cosine
+      of the Friedrichs angle between L2(C,D) and L2(B,C) in L2(P_BCD) (the norm of the
+      two-block Gibbs sampler off the functions of C); c_F = 1 when the support is not
+      axis-connected (X_A = X_B = X_D), where intersection fails.
 Run:  python3 check_hammersley_clifford.py
 """
 import itertools
@@ -364,6 +369,60 @@ def check_H7():
     print(f"H7 JRSWW universal recovery: min over random states of I(A:C|B) - (-2 log2 F) = {worst:.3f} (>= 0)")
 
 
+def block_sampler_data(P):
+    """P: array over (a,b,c,d) binary. Returns h, weights and the operators on functions of (b,c,d)."""
+    pts = list(itertools.product([0, 1], repeat=3))           # (b,c,d)
+    w = np.array([P[:, b, c, d].sum() for b, c, d in pts])
+    h = np.array([P[1, b, c, d] / P[:, b, c, d].sum() if P[:, b, c, d].sum() > 0 else 0.0 for b, c, d in pts])
+    k = {pt: i for i, pt in enumerate(pts)}
+    def cond(keep):
+        M = np.zeros((8, 8))
+        for (b, c, d) in pts:
+            grp = [q for q in pts if all(q[t] == (b, c, d)[t] for t in keep)]
+            tot = sum(w[k[q]] for q in grp)
+            for q in grp:
+                M[k[(b, c, d)], k[q]] = w[k[q]] / tot if tot > 0 else 0.0
+        return M
+    E_notB = cond([1, 2])   # E[. | C, D]
+    E_notD = cond([0, 1])   # E[. | B, C]
+    E_C = cond([1])
+    return h, w, E_notB, E_notD, E_C
+
+
+def wnorm(f, w):
+    return float(np.sqrt(np.sum(w * f * f)))
+
+
+def check_H8():
+    worst = 0.0
+    for _ in range(200):
+        P = rng.random((2, 2, 2, 2)) ** 2 + 1e-3
+        P /= P.sum()
+        h, w, EB, ED, EC = block_sampler_data(P)
+        T = EB @ ED
+        W, Wi = np.diag(np.sqrt(w)), np.diag(1 / np.sqrt(w))
+        cF = np.linalg.norm(W @ T @ (np.eye(8) - EC) @ Wi, 2)
+        lhs = wnorm(h - EC @ h, w)
+        rhs = (wnorm(h - EB @ h, w) + wnorm(h - ED @ h, w)) / (1 - cF)
+        worst = max(worst, lhs / rhs)
+    # degenerate law: X_A = X_B = X_D uniform, C constant 0
+    P = np.zeros((2, 2, 2, 2)); P[0, 0, 0, 0] = P[1, 1, 0, 1] = 0.5
+    h, w, EB, ED, EC = block_sampler_data(P)
+    m = w > 0
+    T = EB @ ED
+    # restrict to the support of P_BCD
+    idx = np.where(m)[0]
+    Ts, ECs, ws = T[np.ix_(idx, idx)], EC[np.ix_(idx, idx)], w[idx]
+    Ws, Wsi = np.diag(np.sqrt(ws)), np.diag(1 / np.sqrt(ws))
+    cF_deg = np.linalg.norm(Ws @ Ts @ (np.eye(len(idx)) - ECs) @ Wsi, 2)
+    hs = h[idx]
+    viol = wnorm(hs - ECs @ hs, ws)
+    devB = wnorm(hs - EB[np.ix_(idx, idx)] @ hs, ws); devD = wnorm(hs - ED[np.ix_(idx, idx)] @ hs, ws)
+    print(f"H8 quantitative intersection: max lhs/rhs over 200 positive laws = {worst:.3f} (<= 1); "
+          f"degenerate law X_A=X_B=X_D: c_F = {cF_deg:.3f}, ||h-E[h|B,D-free]|| = {devB:.1e}, {devD:.1e}, "
+          f"but ||h - E[h|C]|| = {viol:.3f}")
+
+
 if __name__ == "__main__":
     check_H1_H2()
     check_H3()
@@ -371,3 +430,4 @@ if __name__ == "__main__":
     check_H5()
     check_H6()
     check_H7()
+    check_H8()

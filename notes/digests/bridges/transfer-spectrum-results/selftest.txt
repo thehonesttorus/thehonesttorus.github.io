@@ -1,0 +1,9 @@
+rot3 vs einsum 2.5e-14; d21_from_core vs explicit 1.4e-14
+Sym^2: singular values = s_i s_j (i <= j) to 7.1e-15; |eigenvalues| = |l_i l_j| to 2.5e-14
+ensemble formula k =  2: predicted 0.865 | Monte Carlo symmetric 0.869 | all-distinct 0.884
+ensemble formula k =  4: predicted 0.697 | Monte Carlo symmetric 0.694 | all-distinct 0.706
+ensemble formula k =  8: predicted 0.421 | Monte Carlo symmetric 0.422 | all-distinct 0.432
+ensemble formula k = 12: predicted 0.205 | Monte Carlo symmetric 0.206 | all-distinct 0.210
+ensemble formula k = 16: predicted 0.074 | Monte Carlo symmetric 0.074 | all-distinct 0.076
+free probability, product of 6 Gaussian 400 x 400 with 5 Bernoulli(1/2) masks: PR 31.6 vs n / r_pred 33.3 (Ginibre-only would be n / 7 = 57.1)
+SELFTEST PASSED

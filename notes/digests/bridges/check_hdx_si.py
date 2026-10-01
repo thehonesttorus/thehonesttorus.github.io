@@ -9,6 +9,11 @@ Pure numpy. Each check corresponds to a labelled statement in the digest:
       mu_{A^c} (x) unif_A back to mu exactly; it acts only through sigma_{boundary(A)}
       when mu is Markov; the time-averaged map has Dirichlet form <= c/t.
   C5  Alev-Lau bound and ALO Theorem 1.3 bound versus the true Glauber gap.
+  C6  Influence-matrix conventions: lambda_max of the correlation matrix Psi^cor of the
+      homogenization equals 1 + lambda_max(Psi_ALO); the multi-spin matrix of Chen-Liu-Vigoda
+      (zero same-site blocks) has the same top eigenvalue as Psi_ALO.
+  (C4 and C6 extended in review, 2026-10-01: C4 also reports the exact supremum of the Dirichlet
+   form of the time average over all unit f, by spectral calculus, next to the sampled maximum.)
 Run:  python3 check_hdx_si.py
 """
 import itertools
@@ -166,7 +171,14 @@ def check_recovery(n=6, beta=0.8):
             g = Rt @ f
             dir_form = -(g @ D @ LA @ g)
             worst = max(worst, dir_form)
-        out.append((t, worst, worst * t))
+        # exact supremum over all f with ||f||_{L2(mu)} = 1: max over eigenvalues -y of
+        # y * phi_t(-y)^2, phi_t(x) = (e^{tx}-1)/(tx)  (L_A is mu-reversible)
+        sq = np.sqrt(mu)
+        Ssym = np.diag(sq) @ LA @ np.diag(1 / sq)
+        ev = np.linalg.eigvalsh((Ssym + Ssym.T) / 2)
+        phi = np.array([1.0 if abs(e) < 1e-12 else (np.exp(t * e) - 1) / (t * e) for e in ev])
+        sup_exact = max(-e * p ** 2 for e, p in zip(ev, phi))
+        out.append((t, worst, worst * t, sup_exact * t))
     # locality: the limit map is E_A, which depends only on sigma at sites adjacent to A
     EA = expm(LA, 200.0)
     loc_ok = True
@@ -215,6 +227,42 @@ def glauber_gap_vs_bounds(n=6, beta=0.4):
     return gap, alo, etas
 
 
+# ---------------------------------------------------------------- C6
+def check_conventions(n=5, trials=3):
+    conf = subsets(n)
+    dev_cor, dev_clv = 0.0, 0.0
+    for _ in range(trials):
+        w = rng.random(len(conf)) ** 3
+        mu = dict(zip(conf, w / w.sum()))
+        def pr(cond):
+            return sum(p for s, p in mu.items() if cond(s))
+        P1 = np.array([pr(lambda s, i=i: s[i] == 1) for i in range(n)])
+        Psi = np.zeros((n, n))
+        for i in range(n):
+            for j in range(n):
+                if i != j:
+                    Psi[i, j] = (pr(lambda s: s[i] == 1 and s[j] == 1) / P1[i]
+                                 - pr(lambda s: s[i] == 0 and s[j] == 1) / (1 - P1[i]))
+        lam_alo = np.max(np.linalg.eigvals(Psi).real)
+        V = [(i, a) for i in range(n) for a in (1, 0)]
+        Pv = {(i, a): pr(lambda s, i=i, a=a: s[i] == a) for (i, a) in V}
+        cor = np.zeros((2 * n, 2 * n))
+        clv = np.zeros((2 * n, 2 * n))
+        for u, (i, a) in enumerate(V):
+            for v, (j, b) in enumerate(V):
+                if (i, a) == (j, b):
+                    cor[u, v] = 1 - Pv[(i, a)]
+                elif i != j:
+                    x = pr(lambda s: s[i] == a and s[j] == b) / Pv[(i, a)] - Pv[(j, b)]
+                    cor[u, v] = x
+                    clv[u, v] = x
+                else:
+                    cor[u, v] = -Pv[(j, b)]          # P[(i,b) | (i,a)] = 0 for b != a
+        dev_cor = max(dev_cor, abs(np.max(np.linalg.eigvals(cor).real) - 1 - lam_alo))
+        dev_clv = max(dev_clv, abs(np.max(np.linalg.eigvals(clv).real) - lam_alo))
+    return dev_cor, dev_clv
+
+
 if __name__ == "__main__":
     print("C1  ALO Thm 3.1 spectrum identity, max |difference| over 3 random laws on {0,1}^5:",
           f"{check_alo_spectrum():.2e}")
@@ -224,8 +272,12 @@ if __name__ == "__main__":
     print(f"C3  commuting-square defect: generic law {dP:.3e} ; its Markov projection {dQ:.3e}")
     err, out, loc_ok = check_recovery()
     print(f"C4  heat-bath on A=[2,3], t=200: ||recovered - mu||_1 = {err:.2e} ; limit depends only on sigma_(1,4): {loc_ok}")
-    for t, w, wt in out:
-        print(f"    time-average t={t:5.1f}: max Dirichlet form of R_t f over 50 sign vectors = {w:.4f}, times t = {wt:.3f}")
+    for t, w, wt, st in out:
+        print(f"    time-average t={t:5.1f}: max Dirichlet form of R_t f over 50 sign vectors = {w:.4f}, times t = {wt:.3f};"
+              f" exact sup over unit f, times t = {st:.3f} (gap-free bound 0.407)")
     gap, alo, etas = glauber_gap_vs_bounds()
     print(f"C5  Ising chain n=6: Glauber gap {gap:.4f} ; ALO Thm 1.3 lower bound {alo:.4f} ; eta_i = "
           + ", ".join(f"{e:.3f}" for e in etas))
+    dc, dl = check_conventions()
+    print(f"C6  |lambda_max(Psi^cor_hom) - 1 - lambda_max(Psi_ALO)| = {dc:.2e} ; "
+          f"|lambda_max(Psi_CLV) - lambda_max(Psi_ALO)| = {dl:.2e}  (3 random laws on {{0,1}}^5)")
