@@ -117,28 +117,47 @@ def residual_basis(o):
     B0  Phi_i Phi_j Phi_k kappa3(z)_{ijk}                        (all-distinct kappa3(z) hyperedge)
     B1  sym[ w2_i Phi_j w2_k D21z_{ik} C_jk ]                     ((i,i,k) hyperedge of kappa3(z) + C edge j-k)
     B2  sym[ w3_i Phi_j Phi_k D21z_{ik} C_ij ]                    ((i,i,k) hyperedge + C edge i-j)
-    B3  sym[ w2_i Phi_j w2_k D3z_i C_ij C_ik ] ?  -> replaced by: sym[ w3_i Phi_j Phi_k D3z_i C_ij C_ik ] (D3 hyperedge + two edges)
+    B3  sym[ w5_i Phi_j Phi_k D3z_i C_ij C_ik ]                   (D3 hyperedge + two edges on the same vertex)
     B4  Gaussian order-rho^3 terms (hermite degree 6 minus degree 4)
-    B5  sym[ w2_i w2_j Phi_k K22z_{ij} C_ik ]  with K22z the off-diagonal (2,2) cumulant slice of z  (kappa4 (i,i,j,j) + edge)
+    B5  sym[ w3_i w2_j Phi_k K22z_{ij} C_ik ]  with K22z the off-diagonal (2,2) cumulant slice of z  (kappa4 (i,i,j,j) + edge)
     B6  sym[ w2_i Phi_j Phi_k kappa4(z)_{iijk} ]  (the (2,1,1) fourth-cumulant hyperedge; needs an atlas built with --k4)
-    Coefficients are fitted; exact combinatorial constants are not needed for the oracle question."""
+    Coefficients are fitted in fit_residual; the leg-partition counting gives the exact ones used by closure_model:
+    B0 1, B1 3, B2 3, B3 1 (= 6 x 20/120 x ... see closure_model), B4 1, B5 1.5, B6 1.5  (relative to the sym3 bases)."""
     mu, var, C, K3z = o["mu"], o["var"], o["C"], o["K3z"]
     sig = np.sqrt(var); alpha = mu / sig
     phi = np.exp(-0.5 * alpha ** 2) / np.sqrt(2 * pi)
-    Phi = o["Phi"]; w2 = phi / sig; w3 = -alpha * phi / sig ** 2
+    Phi = o["Phi"]; w2 = phi / sig; w3 = -alpha * phi / sig ** 2; w5 = (alpha ** 3 - 3 * alpha) * (-1) * phi / sig ** 4
+    # w(d) = E[f^{(d)}(z)] for f = relu under the Gaussian closure: w(d) = He_{d-2}(-alpha) phi(alpha) / sigma^{d-1}
     D3z, D21z = slices(K3z)
     Co = offdiag(C)
     B = []
     B.append(np.einsum("i,j,k,ijk->ijk", Phi, Phi, Phi, K3z))
     B.append(sym3(np.einsum("i,j,k,ik,jk->ijk", w2, Phi, w2, D21z, Co)))
     B.append(sym3(np.einsum("i,j,k,ik,ij->ijk", w3, Phi, Phi, D21z, Co)))
-    B.append(sym3(np.einsum("i,j,k,i,ij,ik->ijk", w3, Phi, Phi, D3z, Co, Co)))
+    B.append(sym3(np.einsum("i,j,k,i,ij,ik->ijk", w5, Phi, Phi, D3z, Co, Co)))
     B.append(hermite_model(C, mu, var, 6) - hermite_model(C, mu, var, 4))
     if "K22" in o:
-        B.append(sym3(np.einsum("i,j,k,ij,ik->ijk", w2, w2, Phi, o["K22"], Co)))
+        B.append(sym3(np.einsum("i,j,k,ij,ik->ijk", w3, w2, Phi, o["K22"], Co)))
     if "K211" in o:
         B.append(sym3(np.einsum("i,j,k,ijk->ijk", w2, Phi, Phi, o["K211"])))
     return [all_distinct(b) for b in B]
+
+
+# exact coefficients of the residual basis from leg-partition counting (vertex of degree d carries w(d)/d!,
+# times the number of leg partitions with the diagram's shape; sym3 averages over 6 role assignments):
+#   B0 kappa3 hyperedge (1,1,1): 1                      B1 D21 hyperedge + edge j-k, degrees (2,1,2): 6 x 2/(2!2!) = 3
+#   B2 D21 hyperedge + edge i-j, degrees (3,1,1): 6 x 3/3! = 3   B3 D3 hyperedge + two edges, degrees (5,1,1): 6 x 20/5! = 1
+#   B4 Gaussian rho^3: 1                                 B5 K22 hyperedge + edge, degrees (3,2,1): 6 x 3/(3!2!) = 1.5
+#   B6 kappa4 (2,1,1) hyperedge, degrees (2,1,1): 3 x 1/2! x 2 (sym3 double-counts the j,k symmetric term) = 1.5
+CLOSURE_COEF = [1.0, 3.0, 3.0, 1.0, 1.0, 1.5, 1.5]
+
+
+def closure_model(o):
+    """the derived first-order closure of the all-distinct kappa3(a): leading Wick (Gaussian rho^2) + the residual
+    basis with its exact coefficients (all terms the atlas can supply)."""
+    Kw = hermite_model(o["C"], o["mu"], o["var"], 4)
+    B = residual_basis(o)
+    return Kw + sum(c * b for c, b in zip(CLOSURE_COEF, B))
 
 
 def fit_residual(R, basis):
@@ -250,7 +269,7 @@ def analyse(path, ranks=(8, 4, 2), sketch=(8, 16, 32), rng=np.random.default_rng
     L, n, _ = W.shape
     print(f"\n{path}: width {n}, depth {L}, N = {int(z['n_samples'])}")
     print(f"{'l':>2} {'transp':>6} {'R2(K22|C)':>9} {'R2+C*C':>7} {'d21n/8':>6} {'n/4':>5} {'n/2':>5} | {'memless':>7} {'off':>5} | {'wick':>5} {'off':>5} | "
-          f"{'herm2':>5} {'herm3':>5} {'herm4':>5} | " + " ".join(f"hub{n//r:>3}" for r in ranks) + " | " + " ".join(f"sk{s:>3}" for s in sketch) + f" | {'wick+hub':>8} | {'fitR2':>5} {'fit':>5} {'off':>5}  coefficients B0..B6")
+          f"{'herm2':>5} {'herm3':>5} {'herm4':>5} | " + " ".join(f"hub{n//r:>3}" for r in ranks) + " | " + " ".join(f"sk{s:>3}" for s in sketch) + f" | {'wick+hub':>8} | {'closure':>7} {'off':>5} | {'fitR2':>5} {'fit':>5} {'off':>5}  coefficients B0..B6")
     for l in range(L - 1):
         o = layer_objects(z, l)
         K3a, D21 = o["K3a"], o["D21"]
@@ -279,8 +298,10 @@ def analyse(path, ranks=(8, 4, 2), sketch=(8, 16, 32), rng=np.random.default_rng
         coef, fit, r2fit = fit_residual(Kd - Kw, residual_basis(o))
         Tf = transport_d21(K3m + Kw + fit, Wn)
         e_fit, e_fit_off = rel(Tf, D21), rel(Tf, D21, off=True)
+        Tc = transport_d21(K3m + closure_model(o), Wn)
+        e_cl, e_cl_off = rel(Tc, D21), rel(Tc, D21, off=True)
         print(f"{l:>2} {e_transport:6.3f} {r2a:9.3f} {r2b:7.3f} {spec[0]:6.3f} {spec[1]:5.3f} {spec[2]:5.3f} | {e_mem:7.3f} {e_mem_off:5.3f} | {e_wick:5.3f} {e_wick_off:5.3f} | "
-              + " ".join(f"{h:5.3f}" for h in herm) + " | " + " ".join(f"{h:6.3f}" for h in hub) + " | " + " ".join(f"{v:5.3f}" for v in sk) + f" | {e_wh:8.3f} | {r2fit:5.3f} {e_fit:5.3f} {e_fit_off:5.3f}  "
+              + " ".join(f"{h:5.3f}" for h in herm) + " | " + " ".join(f"{h:6.3f}" for h in hub) + " | " + " ".join(f"{v:5.3f}" for v in sk) + f" | {e_wh:8.3f} | {e_cl:7.3f} {e_cl_off:5.3f} | {r2fit:5.3f} {e_fit:5.3f} {e_fit_off:5.3f}  "
               + " ".join(f"{c:+.2f}" for c in coef), flush=True)
 
 
@@ -295,7 +316,7 @@ def analyse_pair(pa, pb):
     L, n, _ = W.shape
     print(f"\npair {pa} | {pb}: width {n}, depth {L}, N = {int(A['n_samples'])} + {int(B['n_samples'])}")
     print(f"{'l':>2} {'eps_noise':>9} {'off':>6} {'snr(Kd)':>8} | {'memless x':>9} {'corr':>6} {'off':>6} {'corr':>6} | {'wick x':>7} {'corr':>6} {'off':>6} {'corr':>6} | "
-          f"{'herm4 x':>7} {'corr':>6} | {'hub n/4 x':>9} {'corr':>6} | {'fit x':>6} {'corr':>6} {'off':>6} {'corr':>6}")
+          f"{'herm4 x':>7} {'corr':>6} | {'hub n/4 x':>9} {'corr':>6} | {'closure x':>9} {'corr':>6} {'off':>6} {'corr':>6} | {'fit x':>6} {'corr':>6} {'off':>6} {'corr':>6}")
     for l in range(L - 1):
         oa, ob = layer_objects(A, l), layer_objects(B, l)
         Wn = W[l + 1]
@@ -316,9 +337,12 @@ def analyse_pair(pa, pb):
         coef, fit, _ = fit_residual(Kda - Kw, residual_basis(oa))
         Tf = transport_d21(K3m + Kw + fit, Wn)
         e_fit, e_fit_off = rel(Tf, D21b), rel(Tf, D21b, off=True)
+        Tc = transport_d21(K3m + closure_model(oa), Wn)
+        e_cl, e_cl_off = rel(Tc, D21b), rel(Tc, D21b, off=True)
         print(f"{l:>2} {e_noise:9.3f} {e_noise_off:6.3f} {snr:8.2f} | {e_mem:9.3f} {corrected(e_mem, e_noise):6.3f} {e_mem_off:6.3f} {corrected(e_mem_off, e_noise_off):6.3f} | "
               f"{e_wick:7.3f} {corrected(e_wick, e_noise):6.3f} {e_wick_off:6.3f} {corrected(e_wick_off, e_noise_off):6.3f} | "
               f"{e_h4:7.3f} {corrected(e_h4, e_noise):6.3f} | {e_hub:9.3f} {corrected(e_hub, e_noise):6.3f} | "
+              f"{e_cl:9.3f} {corrected(e_cl, e_noise):6.3f} {e_cl_off:6.3f} {corrected(e_cl_off, e_noise_off):6.3f} | "
               f"{e_fit:6.3f} {corrected(e_fit, e_noise):6.3f} {e_fit_off:6.3f} {corrected(e_fit_off, e_noise_off):6.3f}", flush=True)
 
 
