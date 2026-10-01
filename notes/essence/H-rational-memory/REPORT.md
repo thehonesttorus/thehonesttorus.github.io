@@ -57,3 +57,31 @@ The histories go from 6n = 1,536 to n/4 = 64, a 24× reduction. For comparison, 
 ## Still running when written
 
 Width 512 fits (full window and window 2), and MLPs 1–2 at width 256. Results are appended below when they finish.
+
+## Appended 22:50 UTC: width 1024, and the causal incremental merge
+
+**7. Width 1024 (MLP 0, cut 8, ages ≥ 3: 6,144 histories), alternating fitter, 2 sweeps (113 passes).** Per-target readout rank for 99 % of the energy, targets 8 → 14: 116, 94, 78, 69, 58, 50, 43 (90 %: 21 … 2), so it grows roughly in proportion to width at the cut and more slowly later. Residual over the whole future:
+
+| merged histories | window: cut + 2 layers | whole-future fit |
+|---|---|---|
+| n/8 = 128 | 6.3 % | 4.2 % |
+| n/4 = 256 | 3.8 % | 1.9 % |
+
+So the residual at fixed R/n is similar to width 256 (slightly higher with this shorter fit), and the effect holds at the competition width.
+
+**8. The causal incremental merge (`incr.py`).** Young sources (ages 1 … AY) are exact. Each layer, the source that turns AY + 1 is folded into a merged set of R histories by an alternating fit warm-started from the previous merged set, using only the next three targets (window 2). Evaluated at every target against the exact old content. Width 256, MLP 0; the price-weighted total error is relative to the total priced D21 energy (young + old):
+
+| exact young ages | R | sweeps | total priced error (energy) | amplitude |
+|---|---|---|---|---|
+| 1–2 | n/4 | 2 | 1.84 % | 13.5 % |
+| 1–2 | n/4 | 4 | 1.58 % | 12.6 % |
+| 1–2 | n/2 | 2 | 1.02 % | 10.1 % |
+| 1–3 | n/4 | 2 | 0.88 % | 9.4 % |
+| 1–3 | n/2 | 2 | 0.47 % | 6.9 % |
+| 1–4 | n/4 | 2 | 0.43 % | 6.6 % |
+| 1–4 | n/2 | 3 | **0.18 %** | **4.3 %** |
+
+- **Errors do not accumulate.** With ages 1–2 exact and R = n/4, the residual on the old content stays at 3.6–6.7 % of its energy at every target from 3 to 14; it does not grow with the number of merges.
+- **Inside the tolerance.** Ages 1–4 exact plus n/2 merged histories puts the total priced error at 4.3 % in amplitude, inside region's 5–10 % tolerance (N2).
+- **The walls that remain.** (i) The exact young tier (ages 1–4) is the dominant cost (≈ 300 u dense at n = 1024 by team D's accounting); the merged old tier itself costs ≈ 7·R·n² per layer ≈ 3.5 u at R = n/2. (ii) The fit is still ≈ 100 passes per merge (≈ 1,000 passes per network), far too many; a frame-restricted fit that compares readouts only on their low-rank part (rank 43–116 at 99 % per target at n = 1024) should cut a pass by ≈ 50–100×, and the warm start should cut the number of passes. Untested.
+- **Running:** the same causal merge at width 1024 (ages 1–4 exact, R = n/2, 3 sweeps), `results/incr_w1024_mlp0_AY4_R0.5.log`.

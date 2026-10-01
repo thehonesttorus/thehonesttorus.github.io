@@ -1,0 +1,6 @@
+closure+legs 11s, atoms 6144
+per-target r90/r99: [(8, 21, 116), (9, 15, 94), (10, 11, 78), (11, 9, 69), (12, 5, 58), (13, 3, 50), (14, 2, 43)]
+R=128 fitwin=2: Z0 fit 0.0746 all 0.0911 p21 | Y0 fit 0.0518 all 0.0741 p46 | Z1 fit 0.0426 all 0.0683 p67 | Y1 fit 0.0366 all 0.0642 p92 | Z2 fit 0.0338 all 0.0626 p113 [16.4s]
+R=128 fitwin=99: Z0 fit 0.0829 all 0.0829 p21 | Y0 fit 0.0604 all 0.0604 p46 | Z1 fit 0.0510 all 0.0510 p67 | Y1 fit 0.0447 all 0.0447 p92 | Z2 fit 0.0418 all 0.0418 p113 [31.8s]
+R=256 fitwin=2: Z0 fit 0.0444 all 0.0604 p21 | Y0 fit 0.0256 all 0.0468 p46 | Z1 fit 0.0191 all 0.0420 p67 | Y1 fit 0.0150 all 0.0397 p92 | Z2 fit 0.0132 all 0.0384 p113 [23.4s]
+R=256 fitwin=99: Z0 fit 0.0531 all 0.0531 p21 | Y0 fit 0.0335 all 0.0335 p46 | Z1 fit 0.0261 all 0.0261 p67 | Y1 fit 0.0215 all 0.0215 p92 | Z2 fit 0.0194 all 0.0194 p113 [44.6s]
