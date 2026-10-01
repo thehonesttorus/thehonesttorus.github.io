@@ -7,5 +7,5 @@ for i in idx:
     if mode=='gauss':
         es=[bethe.estimate_gauss(W), bethe.localized(W, bethe.estimate_gauss, K=7)]
     else:
-        es=[bethe.localized(W, bethe.estimate_v4, K=int(sys.argv[3]))]
+        es=[bethe.localized(W, bethe.estimate_v4, K=int(sys.argv[3]), old=int(sys.argv[4]))]
     print(mode, i, ' '.join(f'{((e[-1]-T[-1])**2).mean()-nz:.3e}' for e in es), '%.0fs'%(time.time()-t0), flush=True)

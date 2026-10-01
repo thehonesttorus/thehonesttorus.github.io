@@ -305,3 +305,10 @@ final MSE), so these are noise floors, not limits: **with correct node beliefs a
 readout machinery is good to ≲ 4e-8 raw at n = 1024 (≥ 11× below v4).** The entire remaining error of the Bethe
 estimator is in the node beliefs (v, κ3, κ4) of the deep layers, which is where the non-Gaussian collective
 coordinate (§11c) lives. This is the positive branch of §13's test: the node-belief route is worth carrying.
+
+Separation (same network, true pieces injected at layers ≥ 6 only): v alone 2.33e-7; κ3 alone 2.51e-7; κ4 alone
+4.27e-7 (nothing); v + κ4 2.16e-7; κ3 + κ4 2.49e-7; **v + κ3 5.18e-8**; v + κ3 + κ4 3.85e-8. The deep-layer
+per-neuron variance and third cumulant are jointly binding (each ≈ half the error in log terms); κ4 is a
+small final factor (1.3×) once they are right. So the target of any next carrier is v and κ3 at depth, i.e.
+the covariance drift and the old third-order content — the same two binding facts every stream found, now
+measured inside the Bethe estimator at n = 1024.
