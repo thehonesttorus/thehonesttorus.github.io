@@ -66,10 +66,6 @@ def main():
         print(f"| {v} | {m} | {np.sqrt(np.mean(e**2)):.3f} | {np.sqrt(np.mean(ec**2)):.3f} | {j['final_mse']:.2e} |")
 
 
-if __name__ == "__main__":
-    main()
-
-
 def structured_fit(raw_dir="results/eps", k2_dir="results/raw"):
     """per MLP: least-squares final MSE = a + k eps^2 over the teacher-forced-kappa4 variants (eps = rms over layers of the
     per-layer D21 error, noise-corrected when a noise file exists); k is compared with the MLP's K=2 MSE."""
@@ -83,7 +79,7 @@ def structured_fit(raw_dir="results/eps", k2_dir="results/raw"):
                 continue
             e = np.array(j["eps"]["D21"][1:])
             nf = f"results/noise_mlp{m}.json"
-            if os.path.exists(nf):
+            if raw_dir == "results/eps" and os.path.exists(nf):
                 nz = np.array(json.load(open(nf))["D21"][1:]); e = np.sqrt(np.maximum(e ** 2 - nz ** 2, 0))
             xs.append(np.mean(e ** 2)); ys.append(j["final_mse"])
         if len(xs) < 3:
@@ -91,7 +87,7 @@ def structured_fit(raw_dir="results/eps", k2_dir="results/raw"):
         X = np.stack([np.ones(len(xs)), xs], 1)
         (a, k), *_ = np.linalg.lstsq(X, np.array(ys), rcond=None)
         r = np.corrcoef(xs, ys)[0, 1]
-        k2 = K2.get(("A", m), {}).get("final_mse", np.nan)
+        k2 = K2.get(("A", m), E.get(("k2:zero", m), {})).get("final_mse", np.nan)
         rows.append((m, a, k, r, k2))
     print("\n## (4) structured law per MLP: final MSE = a + k eps^2 over the kappa4-teacher-forced variants\n")
     print("| mlp | a | k | corr(MSE, eps^2) | K=2 MSE (variant A) | k / K2 MSE |")
@@ -115,5 +111,8 @@ def pivot(raw_dir="results/eps"):
 
 
 if __name__ == "__main__":
-    structured_fit()
-    pivot()
+    import sys
+    if len(sys.argv) > 1 and sys.argv[1] == "--dir":
+        structured_fit(sys.argv[2], sys.argv[2]); pivot(sys.argv[2])
+    else:
+        main(); structured_fit(); pivot()

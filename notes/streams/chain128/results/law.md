@@ -1,25 +1,25 @@
 ## (1) injected D21 noise at every layer, base fit:atlas
 
-| eps | dMSE final mlp0 | dMSE final mlp1 | k = dMSE/eps^2 (mean) | dMSE mean-over-layers / eps^2 |
-|---|---|---|---|---|
-| 0.02 | 5.26e-08 | 1.91e-06 | 2.45e-03 | 4.00e-04 |
-| 0.05 | 8.05e-07 | 9.69e-06 | 2.10e-03 | 3.76e-04 |
-| 0.1 | 3.93e-06 | 3.65e-05 | 2.02e-03 | 3.70e-04 |
-| 0.2 | 1.83e-05 | 1.51e-04 | 2.12e-03 | 3.77e-04 |
+| eps | dMSE final mlp0 | dMSE final mlp1 | dMSE final mlp2 | dMSE final mlp3 | k = dMSE/eps^2 (mean) | dMSE mean-over-layers / eps^2 |
+|---|---|---|---|---|---|---|
+| 0.02 | 5.26e-08 | 1.91e-06 | 1.08e-06 | 6.82e-07 | 2.33e-03 | 4.45e-04 |
+| 0.05 | 8.05e-07 | 9.69e-06 | 7.74e-06 | 2.95e-06 | 2.12e-03 | 4.37e-04 |
+| 0.1 | 3.93e-06 | 3.65e-05 | 3.22e-05 | 1.01e-05 | 2.07e-03 | 4.36e-04 |
+| 0.2 | 1.83e-05 | 1.51e-04 | 1.34e-04 | 3.79e-05 | 2.13e-03 | 4.45e-04 |
 
 ## (2) teacher forcing (kappa3(a_l) replaced by the atlas's)
 
-| variant | final mlp0 | final mlp1 | ratio to base (mean) |
-|---|---|---|---|
-| F1@fit:atlas | 1.78e-06 | 8.04e-06 | 0.95 |
-| F4@fit:atlas | 1.94e-06 | 8.03e-06 | 1.00 |
-| F8@fit:atlas | 1.49e-06 | 7.68e-06 | 0.86 |
-| F12@fit:atlas | 1.55e-06 | 5.12e-06 | 0.71 |
-| F14@fit:atlas | 1.81e-06 | 5.66e-06 | 0.81 |
-| FD4@fit:atlas | 1.95e-06 | 7.97e-06 | 0.99 |
-| FD8@fit:atlas | 1.86e-06 | 7.80e-06 | 0.96 |
-| FD12@fit:atlas | 2.02e-06 | 8.49e-06 | 1.04 |
-| fit:atlas (base) | 1.97e-06 | 8.01e-06 | 1 |
+| variant | final mlp0 | final mlp1 | final mlp2 | final mlp3 | ratio to base (mean) |
+|---|---|---|---|---|---|
+| F1@fit:atlas | 1.78e-06 | 8.04e-06 | 9.36e-06 | 5.27e-06 | 0.98 |
+| F4@fit:atlas | 1.94e-06 | 8.03e-06 | 8.68e-06 | 4.69e-06 | 0.95 |
+| F8@fit:atlas | 1.49e-06 | 7.68e-06 | 9.44e-06 | 3.87e-06 | 0.87 |
+| F12@fit:atlas | 1.55e-06 | 5.12e-06 | 7.00e-06 | 4.47e-06 | 0.76 |
+| F14@fit:atlas | 1.81e-06 | 5.66e-06 | 7.13e-06 | 4.92e-06 | 0.83 |
+| FD4@fit:atlas | 1.95e-06 | 7.97e-06 | 8.73e-06 | 4.59e-06 | 0.95 |
+| FD8@fit:atlas | 1.86e-06 | 7.80e-06 | 9.33e-06 | 4.11e-06 | 0.93 |
+| FD12@fit:atlas | 2.02e-06 | 8.49e-06 | 8.33e-06 | 4.67e-06 | 0.97 |
+| fit:atlas (base) | 1.97e-06 | 8.01e-06 | 9.35e-06 | 5.21e-06 | 1 |
 
 ## (3) across variants (teacher-forced kappa4): mean eps(D21) over layers 1-15 vs final MSE
 
@@ -86,7 +86,7 @@
 | engine:atlas_zero211 | 8.50e-06 | 3.35e-05 | 4.85e-05 | 2.51e-05 | 2.43e-05 (4) | 6.48e-06 |
 | engine:zero | 6.04e-06 | 4.83e-05 | 4.12e-05 | 4.18e-05 | 2.66e-05 (4) | 1.54e-05 |
 | closure:zero | 6.47e-06 | 4.87e-05 | 4.07e-05 | 4.71e-05 | 2.79e-05 (4) | 1.54e-05 |
-| engine:dense2 | 2.52e-06 | 8.29e-05 | — | — | 1.45e-05 (2) | 4.90e-06 |
+| engine:dense2 | 2.52e-06 | 8.29e-05 | 4.71e-05 | — | 2.14e-05 (3) | 6.38e-06 |
 | closure:atlas_zero211 | 1.69e-05 | 5.68e-05 | 8.95e-05 | 3.86e-05 | 4.27e-05 (4) | 9.90e-06 |
 | closure:mem | 7.19e-05 | 9.87e-05 | 1.14e-04 | 1.10e-04 | 9.71e-05 (4) | 2.47e-05 |
 | none:atlas | 1.01e-04 | 1.73e-04 | 2.35e-04 | 1.63e-04 | 1.61e-04 (4) | 5.96e-05 |

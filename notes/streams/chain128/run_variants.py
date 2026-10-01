@@ -130,6 +130,11 @@ def main():
         row = truth[i]
         W = np.asarray(row["weights"], dtype=np.float64)
         gt = np.asarray(row["all_layer_means"], dtype=np.float64)
+        if a.atlas:
+            fa = a.atlas.format(i=i)
+            while not os.path.exists(fa):          # atlases are written by a concurrent job
+                time.sleep(30)
+            time.sleep(5)
         atlas = np.load(a.atlas.format(i=i)) if a.atlas else None
         for v in a.variants.split(","):
             fn = os.path.join(a.out, f"{v}_mlp{i}.json")
