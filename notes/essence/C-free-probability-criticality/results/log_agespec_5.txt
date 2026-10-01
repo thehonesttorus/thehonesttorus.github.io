@@ -1,0 +1,16 @@
+layer 0 done 1s live=1
+layer 1 done 1s live=2
+layer 2 done 2s live=3
+layer 3 done 3s live=4
+layer 4 done 4s live=5
+layer 5 done 6s live=6
+layer 6 done 7s live=7
+layer 7 done 9s live=8
+layer 8 done 11s live=9
+layer 9 done 13s live=10
+layer 10 done 15s live=11
+layer 11 done 18s live=12
+layer 12 done 20s live=13
+layer 13 done 23s live=14
+layer 14 done 26s live=15
+wrote /home/user/thehonesttorus.github.io/notes/essence/C-free-probability-criticality/results/agespec_w1024_d16_5.json 28s
