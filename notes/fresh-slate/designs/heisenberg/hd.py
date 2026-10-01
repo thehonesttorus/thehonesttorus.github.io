@@ -313,7 +313,7 @@ def biv(G, i, j, K=14):
     return out
 
 
-def inject_full2(G, D, S, K4d, K22, K31, K=14):
+def inject_full2(G, D, S, K4d, K22, K31, K=14, k3sq=True):
     """Second-order Edgeworth on mean and the FULL covariance of a = ReLU(z).
     D: k3 diag, S[p,q] = k3(ppq), K4d: k4 diag, K22[p,q] = k4(ppqq), K31[p,q] = k4(pppq)."""
     from math import comb
@@ -327,7 +327,7 @@ def inject_full2(G, D, S, K4d, K22, K31, K=14):
     c4 = {4: K4d[:, None] * np.ones((1, n)), 3: K31, 2: K22, 1: K31.T, 0: np.ones((n, 1)) * K4d[None, :]}
     d += sum(comb(4, k) * c4[k] * E(k, 4 - k) for k in range(5)) / 24
     # kappa3^2
-    for k in range(7):
+    for k in (range(7) if k3sq else []):
         coef = 0
         for i in range(4):
             j = k - i
