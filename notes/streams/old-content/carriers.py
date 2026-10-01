@@ -26,7 +26,7 @@ import numpy as np
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 sys.path.insert(0, os.path.join(HERE, "..", "..", "experiments"))
-from tracker import load_atlas, old_pool, model_lay, T3, phi3, d21  # noqa: E402
+from tracker import load_atlas, load_pairs_atlas, old_pool, run_sources, model_lay, T3, phi3, d21  # noqa: E402
 from oracle_k3 import all_distinct, sym3  # noqa: E402
 
 
@@ -123,7 +123,10 @@ def main():
     ap.add_argument("--iters", type=int, default=30)
     ap.add_argument("--model", action="store_true", help="run on the noise-free closure chain driven by the atlas (tracker.model_lay)")
     args = ap.parse_args()
-    W, lay, N = load_atlas(args.atlas)
+    if "pre_M3" in np.load(args.atlas).files:
+        W, lay, N = load_atlas(args.atlas)
+    else:
+        W, lay, N = load_pairs_atlas(args.atlas); args.model = True
     if args.model:
         lay = model_lay(W, lay)
     L, n, _ = W.shape
@@ -226,6 +229,30 @@ def main():
                 row.append(f"{nrm(d21(T) - d21(O)) / den:5.3f}")
                 state[R] = ((A, B, C), In, lay[l]["Phi"])
             print(f"{l:>2} | " + " ".join(row), flush=True)
+
+    if "ageregress" in which:
+        # (c/d) the old pool's D21 regressed on the D21 of the exactly carried young sources (ages 1..w), and the
+        # 'geometric tail' (d): the chain carries one more source (age w+1) and the rest (ages >= w+2) is gamma_l x it
+        D, _, _ = run_sources(W, lay)
+        print(f"\n(c/d) old pool (age > w) D21 vs the young sources' D21 (per-layer in-sample least squares); eps rel ||D21(z_l)||")
+        print(f"{'l':>2} | {'none':>5} {'young':>6} {'young+T':>7} | tail: {'none':>5} {'gamma':>6} {'g,y':>6} | gamma")
+        for l in range(1, L):
+            den = nrm(D21z[l])
+            age = {l - s: D[s + 1, l] for s in range(0, l)}
+            tgt = sum((age[a] for a in age if a > args.w), np.zeros((n, n)))
+            if nrm(tgt) == 0:
+                continue
+            yf = [age[a] for a in range(1, args.w + 1) if a in age]
+            e_y, _ = regress_eps(tgt, yf, den)
+            e_yt, _ = regress_eps(tgt, yf + [y.T for y in yf], den)
+            tail = sum((age[a] for a in age if a > args.w + 1), np.zeros((n, n)))
+            if (args.w + 1) in age and nrm(tail) > 0:
+                f1 = age[args.w + 1]
+                e_g, cg = regress_eps(tail, [f1], den)
+                e_gy, _ = regress_eps(tail, [f1] + yf, den)
+                print(f"{l:>2} | {nrm(tgt)/den:5.3f} {e_y:6.3f} {e_yt:7.3f} | tail: {nrm(tail)/den:5.3f} {e_g:6.3f} {e_gy:6.3f} | {cg[0]:+.3f}", flush=True)
+            else:
+                print(f"{l:>2} | {nrm(tgt)/den:5.3f} {e_y:6.3f} {e_yt:7.3f} |", flush=True)
 
     if "regress" in which:
         print(f"\n(c) regression of D21(Old_l) on O(n^2) chain objects (in-sample, per layer); eps rel ||D21(z_l)||")

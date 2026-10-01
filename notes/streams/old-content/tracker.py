@@ -65,6 +65,41 @@ def load_atlas(path):
     return W, lay, int(z["n_samples"])
 
 
+def slice_tensor(D3, D21):
+    """the tensor whose only non-zero entries are the slices: (i,i,i) = D3_i, (i,i,j) = (i,j,i) = (j,i,i) = D21_ij."""
+    n = len(D3)
+    T = np.zeros((n, n, n)); idx = np.arange(n)
+    Do = D21.copy(); np.fill_diagonal(Do, 0.0)
+    T[idx, idx, :] = Do; T[idx, :, idx] = Do; T[:, idx, idx] = Do.T
+    T[idx, idx, idx] = D3
+    return T
+
+
+def load_pairs_atlas(path):
+    """layer objects from a pairs-only atlas (no --k3): mean, C, gates and the post-activation slices of kappa3(a)
+    (from post_M21 and the marginal moments), enough to drive the model chain at any width."""
+    z = np.load(path)
+    W = z["weights"].astype(np.float64)
+    L, n, _ = W.shape
+    pre_s, post_s = z["pre_s"], z["post_s"]
+    gate = z["gate_p"] if "gate_p" in z.files else None
+    lay = []
+    for l in range(L):
+        mu = pre_s[0, l]; var = pre_s[1, l] - mu ** 2
+        C = z["pre_M11"][l].astype(np.float64) - np.outer(mu, mu)
+        m1, m2, m3 = post_s[0, l], post_s[1, l], post_s[2, l]
+        A11 = z["post_M11"][l].astype(np.float64); A21 = z["post_M21"][l].astype(np.float64)
+        D21a = A21 - np.outer(m2, m1) - 2 * A11 * m1[:, None] + 2 * np.outer(m1 ** 2, m1)
+        D3a = m3 - 3 * m2 * m1 + 2 * m1 ** 3
+        if gate is not None:
+            Phi = gate[l].astype(np.float64)
+        else:
+            from math import erf
+            Phi = 0.5 * (1 + np.vectorize(erf)(mu / np.sqrt(var) / np.sqrt(2)))
+        lay.append(dict(mu=mu, var=var, C=C, Phi=Phi, D3a=D3a, D21a=D21a))
+    return W, lay, int(z["n_samples"])
+
+
 def merge_atlases(paths, out):
     """average of atlases of the same MLP = one atlas with the summed sample count (all fields are sample means)."""
     zs = [np.load(p) for p in paths]
@@ -110,7 +145,7 @@ def run_sources(W, lay, keep_tensors=False):
     return D, valid, hist
 
 
-def model_birth(o, K3z_chain, K3a_atlas):
+def model_birth(o, K3z_chain, K3a_atlas=None):
     """noise-free birth of the 'model' chain: all-distinct part = first-order closure without the old-content term
     (Gaussian rho^2 + rho^3 Wick, the D21(z)-hyperedge diagrams B1, B2 and the D3 diagram B3 with the leg-partition
     coefficients, all built from the chain's own kappa3(z)); slice entries = the atlas's slices of kappa3(a) minus the
@@ -119,7 +154,8 @@ def model_birth(o, K3z_chain, K3a_atlas):
     basis = residual_basis(oo)                      # B0..B4 (no K22 / K211 keys)
     ad = hermite_model(o["C"], o["mu"], o["var"], 4) + sum(CLOSURE_COEF[b] * basis[b] for b in (1, 2, 3, 4))
     old_full = phi3(K3z_chain, o["Phi"])
-    sl = (K3a_atlas - all_distinct(K3a_atlas)) - (old_full - all_distinct(old_full))
+    sl_a = (K3a_atlas - all_distinct(K3a_atlas)) if K3a_atlas is not None else slice_tensor(o["D3a"], o["D21a"])
+    sl = sl_a - (old_full - all_distinct(old_full))
     return all_distinct(ad) + sl
 
 
@@ -129,7 +165,7 @@ def model_states(W, lay):
     K = np.zeros((n, n, n)); Ks, Bs = [K], []
     for l in range(L - 1):
         o = dict(lay[l])
-        B = model_birth(o, K, lay[l]["K3a"])
+        B = model_birth(o, K, lay[l].get("K3a"))
         Bs.append(B)
         K = T3(all_distinct(phi3(K, o["Phi"])) + B, W[l + 1])
         Ks.append(K)
