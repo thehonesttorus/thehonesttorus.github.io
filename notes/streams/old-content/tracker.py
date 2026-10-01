@@ -34,9 +34,9 @@ from oracle_k3 import central3, all_distinct, slices, hermite_model, residual_ba
 def T3(K, W):
     """W^{(x)3} K: (W^T)_{ai} (W^T)_{bj} (W^T)_{ck} K_ijk."""
     n = K.shape[0]
-    T = (K.reshape(n * n, n) @ W).reshape(n, n, n)           # k -> c
-    T = np.einsum("ijc,jb->ibc", T, W, optimize=True)         # j -> b
-    return np.einsum("ibc,ia->abc", T, W, optimize=True)      # i -> a
+    T = (K.reshape(n * n, n) @ W).reshape(n, n, n)           # k -> c   (i, j, c)
+    T = np.matmul(T.transpose(0, 2, 1), W).transpose(0, 2, 1)  # j -> b   (i, b, c)
+    return (W.T @ T.reshape(n, n * n)).reshape(n, n, n)       # i -> a   (a, b, c)
 
 
 def phi3(K, Phi):
@@ -61,6 +61,8 @@ def load_atlas(path):
         mua = post_s[0, l]
         K3a = central3(z["post_M3"][l], z["post_M11"][l].astype(np.float64), mua)
         Ca = z["post_M11"][l].astype(np.float64) - np.outer(mua, mua)
+        if n >= 192:                                  # memory: keep the dense tensors in float32 at large width
+            K3z, K3a = K3z.astype(np.float32), K3a.astype(np.float32)
         lay.append(dict(mu=mu, var=var, C=C, Ca=Ca, K3z=K3z, K3a=K3a, Phi=z["gate_p"][l].astype(np.float64)))
     return W, lay, int(z["n_samples"])
 
