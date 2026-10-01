@@ -34,9 +34,11 @@ Gaussian are loopless hafnians of half-edges weighted by correlations), and the 
 
 ## Why, and what would make it competitive
 
-- The single step is good and gets better fast: from an exactly specified state (marginals, covariance, (2,1) slice),
-  one copula + hyperedge step has error 3.6e-5 at n = 128 and 2.55e-6 at n = 256 (≈ n^{-3.8}). If that holds, it is
-  ≈ 1e-8 at 1024. The **local rule** is not the bottleneck.
+- The single step gets better fast but not fast enough: from an exactly specified state (marginals, covariance,
+  (2,1) slice), one copula + hyperedge step has error 3.6e-5 / 2.55e-6 / 3.5e-7 at n = 128 / 256 / 512 (slope ≈ 3.8
+  then ≈ 2.9). That projects to ≈ 4–6e-8 at 1024, so the **local rule alone is ≈ 5× above target**. It needs the
+  second-order bivariate terms (pairwise fourth-order slices) as well. Drift over depth costs another ≈ 10× on top
+  (v1 3.76e-6 vs 3.5e-7 at 512).
 - The bottleneck is **drift of the carried state over depth**. The state v1 carries does not contain the third-order
   content born at earlier ReLUs (the all-distinct slice: ≈ 70 % missed by the copula's tree paths at layer 3), nor
   second-order pairwise structure. Its marginals (means, variances, shapes) drift layer by layer. Carrying diagonal
@@ -48,8 +50,9 @@ Gaussian are loopless hafnians of half-edges weighted by correlations), and the 
 
 ## The deciding experiment
 
-Teacher forcing at n = 512 and 1024 with high-N per-layer statistics, run two ways:
-(a) one step from the exact state, to confirm that the ≈ n^{-3.8} decay holds;
+Part (a) was run at 512 (above): the one-step decay slows to ≈ n^{-2.9}, projecting ≈ 5e-8 at 1024. What remains:
+(a) the same one-step test at 1024 with high-N statistics (≥ 1e7 samples, so oracle noise stays below 1e-8),
+    plus a version with the pairwise fourth-order slices injected, to see whether the local rule can reach ≲ 1e-8;
 (b) a single injection at layer k, then the measured drift per subsequent layer as a function of n.
 If (a) reaches ≈ 1e-8 at 1024 and (b) shows the drift is carried by a low-dimensional set of old sources, a copula +
 hyperedge step paired with a compressed source bank is worth a Stage P. If the drift needs ≳ 0.3 n modes (as the brief's

@@ -136,3 +136,16 @@ final step 15 → 16 computed by v1; MLP w128 seed 0)
 so the slope is uncertain to roughly ±1). Full v1 falls only as n^{-1.8}. At large width v1's error is therefore
 **accumulated drift of the carried per-neuron statistics** (means, variances and shapes all contribute; none dominates),
 not the closure of a single step.
+
+## Teacher forcing at width 512 (3e6-sample statistics; truth extended to N = 6e6; MLP w512 seed 0)
+
+| injected at every layer ≤ 15 | final raw MSE |
+|---|---|
+| nothing (v1) | 3.76e-6 |
+| marginals | 1.19e-6 |
+| marginals + covariance + D | 3.48e-7 |
+
+One step from an exact state: **3.6e-5 (128) → 2.55e-6 (256) → 3.5e-7 (512)**. The slope is ≈ 3.8, then ≈ 2.9 (one MLP
+per width; the oracle statistics' own noise may inflate the 512 value slightly). Extrapolated, ≈ 4–6e-8 at 1024.
+The local rule alone is therefore ≈ 5× above the raw ≈ 1e-8 target, and drift adds a further ≈ 10× (v1 3.76e-6 vs
+3.5e-7 at 512).
