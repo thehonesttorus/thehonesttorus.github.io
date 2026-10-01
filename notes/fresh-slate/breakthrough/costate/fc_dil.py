@@ -65,7 +65,7 @@ def relu_k4(mu, v):
     return c4 - 3 * c2 * c2
 
 
-def run(W, window=None, slices=False, young=None, rank=None, edge=True, readout=True, dtype=np.float32, trace=None, k4f=None, k4use=True, share=None, share_young=2, k4own=False, k4mf=False, prune=None, prune_slices=None, dil=None, A=None, instr=None):
+def run(W, window=None, slices=False, young=None, rank=None, edge=True, readout=True, dtype=np.float32, trace=None, k4f=None, k4use=True, share=None, share_young=2, k4own=False, k4mf=False, prune=None, prune_slices=None, dil=None, A=None, instr=None, capture=None, capA=2):
     L, n, _ = W.shape
     W64 = W.astype(np.float64)
     Wf = W.astype(dtype)
@@ -213,7 +213,7 @@ def run(W, window=None, slices=False, young=None, rank=None, edge=True, readout=
         if dil == 'gl' and vdil != 0.0:
             C = (1 + vdil) * C + vdil * np.outer(m, m)
         # ---- DIL: next-layer pre-activation stats and the dilation template K = 2 mu (x) S + diag(S) (x) mu
-        need_K = dil in ('oracle', 'gp', 'gl') or instr is not None
+        need_K = dil in ('oracle', 'gp', 'gl') or instr is not None or capture is not None
         if need_K:
             mu_n = m @ W64[l + 1]; S_n = W64[l + 1].T @ C @ W64[l + 1]
             Kt = 2 * mu_n[:, None] * S_n + mu_n[None, :] * np.diag(S_n)[:, None]
@@ -246,7 +246,7 @@ def run(W, window=None, slices=False, young=None, rank=None, edge=True, readout=
                 else:
                     Zs, Ts = Zf, T
                 Dsrc += (((Zs * Zs).T @ Ts) + 2 * ((Zs * Ts).T @ Zs)).astype(np.float64)
-            if instr is not None:
+            if instr is not None or capture is not None:
                 per_src.append((age, Dsrc))
             if A is not None and age > A and dil in ('gp', 'gl'):
                 gacc += float(np.sum(Kt * Dsrc) / KK)     # retire: project on the dilation template, carry the scalar
@@ -258,6 +258,11 @@ def run(W, window=None, slices=False, young=None, rank=None, edge=True, readout=
                 pass
             else:
                 D += Dsrc
+        if capture is not None:
+            Do_ = sum((Ds for a_, Ds in per_src if a_ > capA), np.zeros((n, n)))
+            capture[l + 1] = dict(Dold=Do_, mu=mu_n, S=S_n)
+            if l == 0:
+                capture[0] = dict(mu=np.zeros(n), S=W64[0].T @ W64[0])
         if dil in ('gp', 'gl'):
             sources = keep
         if dil == 'oracle':
