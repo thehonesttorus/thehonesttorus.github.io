@@ -21,7 +21,8 @@
    - For Gaussians, "a Markov network is the simultaneous degeneration of exchange relations" is a theorem.
    - Kenyon–Pemantle's cluster-type structure on principal and almost-principal minors goes further (hexahedron move = six cluster mutations):
      - a cube move replaces the conditioning sets of three partial correlations ("mutation = change of separator", DERIVED);
-     - Gaussian Markov chains are a coordinate stratum of its standard chart (DERIVED, C21).
+     - a Gaussian graphical model is a coordinate stratum of a chart iff some chart's conditioning sets separate every non-edge (DERIVED);
+     - by exhaustive search over all charts for n ≤ 6, this covers every chordal graph on ≤ 6 vertices and every connected graph on ≤ 6 vertices except the triangular prism (C21).
    - MTP₂ is not the positive part: it is not an orthant of a chart (C21), and Chepuri–George–Speyer Thm 5.1 rules out a sign match with Grassmannian positivity.
    - The identity does not extend to quasi-free fermions (C19).
    - The general question stays OPEN, now posed precisely (§2.3).
@@ -30,8 +31,8 @@
    - Marginals and efficient algorithms *do* need uniqueness (Weitz; Sly–Sun). The competition scores marginals.
    - Perfect matchings need expansion or large girth (ACFK; Gamarnik–Katz).
    - Separator bounds become vacuous on expanders for regions of size ≳ log n.
-   - The quantum half is stated as Conjecture QB, with a test (§3.5).
-   - Box spaces: expander ⟺ spectral gap of the profinite action (proved, §3.4).
+   - The quantum half is stated as Conjecture QB, with a test (§3.4).
+   - Box spaces: expander ⟺ spectral gap of the profinite action (proved, §3.3).
 5. **Idea C is well defined but has no route to the competition.**
    - It is well defined as automorphisms of the quantum torus and as unitary operators on L²(ℝ^I) built from Faddeev's Φ_b. Each layer is a set of commuting local gates.
    - It returns exactly, up to a phase that is 1 with tropical signs (Kashaev–Nakanishi).
@@ -51,7 +52,7 @@
   - §3: free energy versus marginals; uniqueness is needed for marginals.
 - [M] Signings: §1.2–1.4 (C8–C12, C13–C14).
 - [T] Tropical: §1.5 and §4 (C15–C17).
-- [H] Heisenberg: §3.5 and §4. Idea C is a Heisenberg-picture object.
+- [H] Heisenberg: §3.4 and §4. Idea C is a Heisenberg-picture object.
 - [K] Markov/CMI: §2 (Theorems A and A′, C1–C7, C18–C21) and §3.1.
 
 ---
@@ -411,7 +412,7 @@ What exists:
 - Read statistically (DERIVED here):
   - A face of a chart at vertex S for the pair (i, j) carries ±a_{ij|S}, i.e. the partial correlation ρ_{ij|S} up to a positive factor.
   - Each pair occurs exactly once per chart, so a chart is a choice of one conditioning set S_{ij} per pair.
-  - A cube move on [S, S ∪ {i,j,k}] replaces {ρ_{ij|S}, ρ_{ik|S}, ρ_{jk|S}} by {ρ_{ij|Sk}, ρ_{ik|Sj}, ρ_{jk|Si}}: **one composite mutation (six cluster mutations) changes the separators of three partial correlations.** This is the input's "mutation would mean changing a separator", made literal.
+  - A cube move on [S, S ∪ {i,j,k}] (i < j < k) replaces the faces (ij|S), (jk|S), (ik|S∪j) by (ik|S), (jk|S∪i), (ij|S∪k): **one composite mutation (six cluster mutations) changes the separators of three partial correlations.** This is the input's "mutation would mean changing a separator", made literal. For n = 3 it exchanges the charts {ρ₁₂, ρ₂₃, ρ_{13|2}} and {ρ₁₃, ρ_{23|1}, ρ_{12|3}}.
   - In the standard chart the faces are the contiguous minors a_{i,j|i+1..j−1}, a D-vine.
 - **Proposition (DERIVED; checked C21).** N(0, M) is a Markov chain on the path 1 − 2 − … − n iff every face of the standard chart with |i − j| ≥ 2 vanishes. So path Markov networks are a coordinate stratum of a chart, where the face relations degenerate to binomials.
   - Proof: (⇒) the global Markov property. (⇐) by contraction, x_n ⊥ x_{n−2} | x_{n−1} and x_n ⊥ x_{n−3} | x_{n−2}, x_{n−1} give x_n ⊥ x_{n−3}, x_{n−2} | x_{n−1}. Iterating gives x_n ⊥ x_{1..n−2} | x_{n−1}; then induct on n. ∎
@@ -427,9 +428,33 @@ Obstructions (DERIVED or THEOREM):
   - KP's sign twists make the hexahedron relation subtraction-free, at the price of the sign mismatch above.
 - Quasi-free fermions do not fit (C19).
 
-**OPEN question, made precise.** Is there, for every chordal graph G, a chart (or a cluster structure extending KP's) in which Gaussian Markov networks on G form a coordinate stratum? KP charts give only conditioning sets of pseudoline-arrangement type, so the first test is the star K_{1,3} (pairs of leaves conditioned on the centre).
+**Proposition A4′: which Markov networks are strata** (DERIVED, sketch; computer-checked for n ≤ 6).
 
-The positivity half of the input's question ("MTP₂ would be the positive part") is answered negatively for KP's structure and for the Grassmannian. The stratification half ("Markov networks are boundary strata where exchange relations collapse") holds for the path and stays open in general.
+*Statement.* Let G be a graph on [n]. The Gaussian graphical model of G is the PD part of a coordinate stratum of a KP chart T iff, for every non-edge ij of G, the chart's conditioning set S_ij(T) separates i from j in G. Relabelling the vertices is allowed, since charts depend on the order of the labels.
+
+*Proof sketch.*
+- (⇒) Generic MTP₂ points of the model are faithful (Fallat et al. Thm 6.1; C5). So a face vanishing on the whole model has a separating conditioning set. Counting dimensions forces exactly one vanishing face per non-edge.
+- (⇐) Separation gives model ⊆ stratum.
+  - In a chart, the vertex values along a path, together with all face values, are free coordinates (KP §5.2). The inverse map is polynomial in the face values and Laurent in principal minors: KP Prop 5.5 for the standard chart, then the Kashaev form (7)–(10) of cube moves, which divides only by vertex values.
+  - Hence the stratum is irreducible of dimension n(n+1)/2 − #non-edges = n + |E|, the dimension of the model. Both closures therefore coincide.
+  - PD points of that closure satisfy (Σ⁻¹)_ij = 0 on non-edges. ∎
+
+*Exhaustive search* over all 2, 8, 62 and 908 charts (n = 3, …, 6) and all connected graphs up to isomorphism:
+- every connected graph on ≤ 5 vertices is realised;
+- on 6 vertices, all 58 chordal graphs and 53 of the 54 non-chordal graphs are realised. The exception is the triangular prism C₃ □ K₂: all 60 of its labellings fail.
+
+*Local check (C21).* At random model points of a 6-path, a 6-star, a 4-cycle and a chordal 6-vertex graph:
+- the non-edge faces vanish (≤ 6e-20);
+- their Jacobian has full rank, so the stratum has dimension n + |E| and coincides locally with the model.
+
+**Answer to the input's open question (Gaussian case).**
+- *Stratification half* ("Markov networks are boundary strata where exchange relations collapse"): holds in KP's cluster-type structure for most graphs, including every chordal graph on ≤ 6 vertices. On each such stratum the Dodgson face relations of the vanishing faces degenerate to binomials. It fails for at least one graph, the prism.
+- *Mutation half* ("mutation = change of separator"): holds literally (cube moves).
+- *Positivity half* ("MTP₂ would be the positive part"): false, both for KP's structure and for Grassmannian signs.
+
+**CONJECTURE A4\*.** Every decomposable (chordal) Gaussian graphical model is a coordinate stratum of a KP chart under a suitable labelling. Evidence: all chordal graphs on ≤ 6 vertices. Test: the same search at n = 7 (rhombus tilings of the 14-gon).
+
+**OPEN.** Characterise the realised graphs (the prism is the smallest exception found), and find the analogue for quasi-free fermions (C19).
 
 ### 2.4 Status of Idea A
 
@@ -442,8 +467,10 @@ The positivity half of the input's question ("MTP₂ would be the positive part"
 | Markov network = simultaneous degeneration of square trinomials (A1–A2) | THEOREM |
 | MTP₂ = all almost-principal minors ≥ 0; strata = graphical models (A3) | THEOREM (BDKS Thm 5.6; Fallat et al. Thm 6.1) |
 | cube move = six mutations = change of three separators; path Markov chains = a coordinate stratum (A4) | DERIVED from Kenyon–Pemantle, checked C21 |
+| graphical models as coordinate strata of KP charts: criterion (Prop A4′); all chordal graphs on ≤ 6 vertices realised, the prism not | DERIVED (sketch), exhaustive search n ≤ 6 (C21) |
+| every chordal model is a stratum (A4*) | CONJECTURE |
 | MTP₂ is the positive part | false for KP's charts (C21) and for Grassmannian signs (CGS Thm 5.1) |
-| general chordal graphs as coordinate strata; quasi-free fermions | OPEN |
+| characterisation of realised graphs; quasi-free fermions | OPEN |
 
 ### 2.5 What Idea A gives an estimator [K, B, M]
 
@@ -458,5 +485,222 @@ The positivity half of the input's question ("MTP₂ would be the positive part"
   - compute the conditional canonical spectrum and k(ε) = min{k : residual ≤ ε};
   - compare the optimal modes with the top singular directions of the gated propagators, which BRIEF §3 reports as the carriers of old content.
 - **Expected outcome.** A flat spectrum (k(ε) ≈ 0.3 n) would confirm, in information units, that no low-rank Gaussian memory exists, and would charge the negative result to the dictionary: the separator is a whole layer.
+
+---
+
+## 3. Idea B: two local-to-global principles [B, K, H]
+
+The input's picture:
+- *separator-based* gluing screens a region by its boundary and is strong on amenable geometry;
+- *tree-based* gluing (Bethe, cavity, belief propagation) is strong on pseudorandom geometry while correlations decay, and breaks down where expansion creates glassiness;
+- expanders are the worst case for the first and the best case for the second.
+
+Below, each half is stated as theorems with hypotheses, followed by corrections and the quantum half.
+
+### 3.1 The separator principle
+
+- **S1, Hammersley–Clifford (THEOREM).** Let p be a *strictly positive* law on a finite product space. Then p factorises over the cliques of G ⟺ it satisfies the global Markov property ⟺ the local property ⟺ the pairwise property.
+  - Positivity is needed: Moussouris's counterexample (via Gandolfi–Lenarda Ex. 3.3; digest [hammersley-clifford.md](../digests/bridges/hammersley-clifford.md)).
+  - Brown–Poulin (1206.0755) Thm 1 states it in this form.
+- **S2, exact gluing cost (DERIVED; checked C6).** For any law and any junction tree, KL(p ‖ ∏p_C/∏p_S) = Σ_t I(C_t∖S_t : H_{t−1}∖S_t | S_t).
+  - The cost of separator gluing is exactly the sum of cut CMIs.
+  - For Gaussians it is the log-det gap (§2.1), costing O(s³) per separator of size s. For general laws it costs exp(s) (treewidth).
+- **S3, quantum, commuting (THEOREM).** Brown–Poulin:
+  - Thm 3: Gibbs states of commuting Hamiltonians whose terms sit on cliques are quantum Markov networks (I(A:C|B) = 0 when B separates A from C).
+  - Thm 4: the converse holds on triangle-free graphs; a triangular-lattice example shows it fails in general.
+  - Trees: Thm 5 (Poulin–Hastings).
+- **S4, quantum, all temperatures, local (THEOREM).**
+  - Yang (2609.38007) Thm II.1: finite-range Hamiltonians, bounded degree, *every* β > 0:
+
+    I(A:C|B) ≤ C_β exp(C_β g_{A|A^c} − c_β r),
+
+    with r = dist(A, C) and a boundary gain g ≤ C|∂_e A| on ℤ^D.
+  - Chen–Rouzé (2504.02208) Cor III.2, every β with dist(A, C) ≥ 4e²βd:
+
+    I(A:C|B) ≲ r′ |A||C| exp(μ′ min(|A|,|C|) − λ′ dist(A,C)).
+
+  - 1D, all temperatures: Kato–Brandão, C_β exp(−c_β √r) (as tabulated in Yang, Table I).
+  - Global Markovianity (|A|, |C| ∝ volume) at low temperature is open (both papers); Chen–Rouzé Cor B.2 obtains it under a uniform local gap.
+- **S5, where separators fail (DERIVED).**
+  - On an expander, |∂_e A| ≥ h|A|, so S4 gives I ≤ C exp(C′ h |A| − c r). This is vacuous unless r ≳ |A|.
+  - Diameters are O(log n), so separator screening says nothing for |A| ≳ log n. Classically, treewidth is Θ(n) on expanders, so exact separator gluing costs exp(Θ(n)).
+  - "Yang's bounds say little on expanders" is CORRECT (I65).
+
+### 3.2 The tree principle
+
+- **T1, trees (THEOREM, from memory: Pearl; Yedidia–Freeman–Weiss).** On a tree factor graph, belief propagation (BP) is exact and the Bethe free energy equals −log Z.
+- **T2, covers (THEOREM).**
+  - Permanents: per_B = lim sup_M (E per over M-covers)^{1/M} (Vontobel Thm 39).
+  - Random M-lifts converge locally to the universal cover, a tree, as M → ∞.
+  - Every factor graph: the analogous graph-cover characterisation of the Bethe partition function (Vontobel, "Counting in graph covers", 1012.0065; cited in the permanent paper, not opened).
+- **T3, free energies on locally tree-like graphs, with no uniqueness needed (THEOREM).**
+  - Dembo–Montanari (0804.4726) Thm 2.4: the ferromagnetic Ising model on uniformly sparse graph sequences converging locally to Galton–Watson trees. (1/n) log Z → the Bethe prediction for *all* β ≥ 0 and B ∈ ℝ. BP converges exponentially fast for B > 0 (Thm 2.6), and local marginals are approximated (Thm 2.7).
+  - Sly–Sun (1203.2602) Thm 4: for every two-spin model (antiferromagnetic Ising, hard-core) on random d-regular (bipartite) graphs, the free energy equals the Bethe prediction, also beyond uniqueness.
+  - Monomer–dimer at every activity: estimable on every BS-convergent sequence (ACFK Thm 1.2), with the tree value at large girth (C9).
+- **T4, marginals and algorithms need uniqueness (THEOREM).**
+  - Weitz: below the uniqueness threshold λ_c(Δ), strong spatial mixing makes marginals bounded-radius tree computations and gives an FPTAS (from memory; quoted by Sly–Sun).
+  - Sly–Sun Thms 1–2: above λ_c(d) = (d−1)^{d−1}/(d−2)^d, approximating the hard-core partition function on d-regular graphs is NP-hard.
+  - Sly–Sun Thm 5: on bipartite random regular graphs the law splits into ± phases, so a vertex marginal is not determined by its neighbourhood.
+- **T5, zero temperature (THEOREM).** Perfect matchings are not estimable (ACFK Thm 1.8). They are estimable on d-regular bipartite expanders (ACFK §1.3 with Gamarnik–Katz) and take the tree (Schrijver = Bethe) value at large girth (ACFK Thm 1.5).
+- **T6, glassiness (UNVERIFIED here, from memory).** In random constraint satisfaction problems past condensation, the replica-symmetric (Bethe) free energy is wrong and one-step replica symmetry breaking (1RSB) is needed (Krzakala et al.; Ding–Sly–Sun for k-SAT). The cause is frustration on locally tree-like graphs, not expansion as such: ferromagnets on the same expanders obey T3.
+
+### 3.3 Verdicts on Idea B (I58–I65)
+
+**I58.** "Separator-based (Hammersley–Clifford, Yang's CMI bounds) … strong on amenable geometry." **CORRECT** with S1's positivity hypothesis. Yang's bound decays in r only after paying exp(C|∂A|), which is small relative to volume only on amenable geometry.
+
+**I59.** "Tree-based … strong on pseudorandom geometry while correlations decay along the tree. It breaks down where expansion creates glassiness." **IMPRECISE.**
+- **Fix:**
+  - Free energies are Bethe-exact on locally tree-like graphs for unfrustrated models (ferromagnets, bipartite two-spin systems), *beyond* uniqueness (T3).
+  - Decay (uniqueness) is what marginals and worst-case algorithms need (T4).
+  - The breakdown comes from frustration (T6), not from expansion itself.
+- For the competition this matters: the score is a vector of marginals (per-neuron means), so a tree/cavity design needs a decay hypothesis along its computation trees, not only a correct free energy.
+
+**I60.** "Expanders are the worst case for the first principle and the best case for the second, and the permanent shows both behaviours." **IMPRECISE.**
+- Worst for separators: CORRECT (S5).
+- Best for trees only for unfrustrated models, or for zero-temperature counting with expansion (T3, T5). For frustrated models, expanders are bad for both principles.
+- The permanent shows both: CORRECT. Perfect matchings are rigid without expansion (ACFK Thm 1.7) and local with it (ACFK Thm 1.9 with Gamarnik–Katz).
+
+**I61.** "Substitution towers converge to the plane, which is amenable. Towers of graph covers converge to a tree, which is not." **IMPRECISE.**
+- **Fix:** a tower of finite covers G_k → G₀ converges locally to the universal cover (a tree) iff the girth (injectivity radius) tends to ∞. For normal towers, that means the corresponding subgroups of π₁(G₀) intersect trivially; otherwise the limit is an intermediate cover.
+- Substitution (inflation) towers of a tiling converge locally to the tiling space, an amenable unimodular limit.
+
+**I62.** "Bethe permanents are limits over covers, and Ramanujan graphs come from 2-lifts." **CORRECT**, with the cover limit a lim sup (Vontobel Thm 39) and the lifts as in MSS I §5.
+
+**I63–I64.** "Towers of finite quotients ('box spaces') are expanders exactly when the profinite action has a spectral gap. These are the same box spaces whose ghost projections break the coarse Baum–Connes conjecture." **CORRECT**, with the hypotheses below.
+
+*Box-space theorem* (proof here; standard).
+- *Setting.* Γ is generated by a finite symmetric set S. N₁ ⊇ N₂ ⊇ … are finite-index normal subgroups. K = lim← Γ/N_k carries Haar probability μ, and M = |S|⁻¹ Σ_{s∈S} π(s) is the Markov operator.
+- *Statement.* The Cayley graphs Cay(Γ/N_k, S) form an expander family iff Γ acting on L²₀(K, μ) has a spectral gap. Equivalently, Γ has property (τ) with respect to (N_k).
+- *Proof.*
+  - L²(K, μ) is the closure of ∪_k V_k, where V_k is the space of functions factoring through Γ/N_k, and V_k ≅ ℓ²(Γ/N_k) equivariantly.
+  - On V_k ⊖ ℂ, M is the random-walk operator of Cay(Γ/N_k, S).
+  - A uniform bound ⟨Mf, f⟩ ≤ (1−ε)‖f‖² on every V_k ⊖ ℂ extends to L²₀ by density. Conversely, each V_k ⊖ ℂ is an invariant subspace of L²₀.
+  - Expansion ⟺ a uniform one-sided gap (Cheeger / Alon–Milman). ∎
+- *Coarse Baum–Connes, the hypotheses actually proved.*
+  - Higson–Lafforgue–Skandalis (GAFA 12 (2002) 330–354; introduction opened): expanders give counterexamples.
+  - Willett–Yu (1012.4151): for expanders of large girth the *maximal* coarse assembly map is an isomorphism, while the ghost (Kazhdan-type) projection lies outside the image of the *reduced* one. So it is the reduced conjecture that fails. Also, geometric property (T) of a box space ⟺ property (T) of Γ.
+  - The ℓ^p paper ("Expanders are counterexamples to the ℓ^p coarse Baum–Connes conjecture", EMS Press): for box spaces of hyperbolic groups (for example free groups, SL₂(ℤ)) that are expanders, i.e. with (τ) relative to (N_k) and ∩N_k = {e}, the Kazhdan projection is not in the image of the ℓ^p assembly map.
+  - The general statement "every expander box space violates coarse Baum–Connes surjectivity" is from memory.
+
+**I65.** "The quantum frontier is a quantum Bethe theory for Gibbs states on expander interaction graphs, for example via the Markov entropy decomposition on random lifts." Stated precisely as Conjecture QB below.
+
+### 3.4 The quantum half
+
+**What is proved.**
+- High temperature: for β below the convergence radius of the cluster expansion (≈ 1/(e d J), from memory), local reduced states and free energy densities are analytic and determined by local structure on any bounded-degree graph. Random lifts converge locally to the d-regular tree T_d, so tree-determined limits follow. (Theorem-level; from memory.)
+- Commuting Hamiltonians: S3 (exact Markov structure; trees).
+- Local Markov at all temperatures: S4.
+- Variational side: Poulin–Hastings (1012.2050), the Markov entropy decomposition (MED), gives F_MED ≤ F, a lower bound on the free energy obtained by bounding entropy with conditional entropies over Markov shields. Its dual is a quantum belief propagation.
+
+**CONJECTURE QB (quantum Bethe exactness on random lifts).**
+- *Setting.* H₀ is a fixed finite d-regular base graph. h is a fixed local Hamiltonian density: two-qubit edge terms ‖h_e‖ ≤ J and one-site terms. G_N is a uniform random N-lift of H₀, H_N the lifted Hamiltonian and ρ_N = e^{−βH_N}/Z_N.
+- *Quantum tree uniqueness threshold.* β_u(d, h) is the supremum of β such that, on the depth-R ball of T_d, the root's reduced Gibbs state becomes independent of the boundary state on the leaves as R → ∞, uniformly over boundary states.
+- *Claims.* For β < β_u:
+  - (i) (1/N) log Z_N converges in probability to a deterministic f(β);
+  - (ii) one- and two-site reduced states of ρ_N converge to those of the tree with the unique boundary condition;
+  - (iii) the MED lower bound with radius-1 shields is asymptotically tight: F_MED/N → f.
+- *Expectation for β > β_u.* By analogy with T3 vs T4: (i) may survive for unfrustrated h (quantum ferromagnets), but (ii) fails.
+- *Evidence.*
+  - QB holds at high temperature, which is the cluster-expansion statement above.
+  - The commuting (classical) restrictions reduce to T3–T4 and Brown–Poulin.
+  - The CMI bounds S4 are vacuous on these graphs (S5), so they neither support nor contradict QB.
+- *Test, about a day.*
+  - System: transverse-field Ising, h_e = −J ZZ, h_v = −Γ X, on random 3-regular lifts with N = 12–20 (exact diagonalisation or typicality).
+  - Measure: (1/N) log Z, ⟨X_v⟩ and ⟨Z_u Z_v⟩ against β, over many lifts. Compare with an N → ∞ extrapolation and with the MED / quantum-cavity value.
+  - QB predicts convergence with corrections exponentially small in the girth below β_u, and lift-to-lift scatter of marginals above it.
+  - Caveat: at N ≤ 20 the girth is 3–5, so the test is indicative only.
+
+QB concerns Gibbs states on expanders. The network-facing quantum conjecture is a different one: Part 2 unlock 49, B-programme Conj 8.4, on CMI decay across depth windows for coherent histories. That is where the noncommutative direction would enter an estimator.
+
+### 3.5 Network reading (the realisation dictionary)
+
+Part 2 unlock 47 already applies the two principles to the network: separators along depth (exactly Markov at full resolution, unlock 44), trees across width (dense pseudorandom fresh weights, unlock 13). This note adds three precisions:
+- Per-neuron means are marginals, so the tree principle needs a decay hypothesis (T4), not only a correct free energy (T3).
+  - The operational test is to perturb an earlier layer and measure how a per-unit mean responds, as a function of depth.
+  - BRIEF §3 reports bounded spectral independence (η ≈ 2–8 at width 1024): bounded influence, which is weaker than decay.
+- The separator principle along depth is exact only for uncompressed separators; Theorem A′ prices compression exactly in the Gaussian channel (§2.5).
+- Expansion across width is what makes separators fail there (S5); "no low-rank old content" (BRIEF §3) is its expected signature.
+
+---
+
+## 4. Idea C: the quantum bipartite belt [H, T]
+
+### 4.1 The construction made precise (I66–I67)
+
+*Data.* A bipartite quiver with skew-symmetric exchange matrix B and vertex set I = white ⊔ black. There are no arrows inside a colour class, so b_ij = 0 there.
+
+*Quantum torus.* 𝒯_q is generated by Y_i^{±1} with Y_i Y_j = q^{2b_ij} Y_j Y_i. Use its skew field of fractions, or a completion.
+
+*Quantum mutation at k* (Kashaev–Nakanishi 1104.4630 Prop 3.1; Keller 1102.4148): μ_k = Ad(Ψ_q(Y_k^{ε})) ∘ τ_{k,ε}.
+- Ψ_q is the quantum dilogarithm.
+- τ_{k,ε} is a monomial (tropical) change of variables.
+- The result does not depend on the sign ε.
+
+*Layers.* μ_◦ = ∏_{k white} μ_k, and μ_• likewise.
+- Within a colour class the Y_k commute (b = 0), so the factors commute and each layer is well defined.
+- Ad Ψ_q(Y_k) moves only Y_k and its neighbours, so each gate is local in the Heisenberg picture.
+- "A brickwork circuit" is therefore **CORRECT** as a statement about automorphisms (μ_• μ_◦)^t of 𝒯_q.
+
+*Well-definedness at three levels.*
+1. **Formal** (|q| < 1, or q formal): μ_k is an automorphism of the completed quantum torus. Checked (C20) at q = 0.6 and q = 0.3 + 0.5i, to total degree 12–14:
+   - the pentagon identity — the A₂ case of quantum periodicity — E(V) E(U) = E(U) E(−UV) E(V) for VU = qUV, with E(x) = Σ xⁿ/(q;q)_n;
+   - Schützenberger's E(U) E(V) = E(U + V);
+   - all residuals ≤ 2e-14, while the sign variant E(U) E(−VU) E(V) fails by O(1).
+2. **Analytic** (|q| = 1, q = e^{iπb²}, b real): Fock–Goncharov's positive representations on L²(ℝ^I), with Y_k = e^{x̂_k}.
+   - Here μ_k is implemented by the unitary Φ_b(x̂_k) (Faddeev's non-compact dilogarithm) composed with a metaplectic (Gaussian) unitary for τ.
+   - KN Thm 4.6: the operator of a period is a scalar λ with |λ| = 1. Thm 4.7: λ = 1 when the period is written with the tropical sign sequence.
+   - So the circuit is a genuine unitary circuit on L²(ℝ^I): non-Gaussian single-quadrature gates and Gaussian couplers.
+   - It is *not* a finite-dimensional tensor-product circuit. At roots of unity there are finite-dimensional cyclic representations (from memory), with normalisation issues.
+3. **C\*-algebraic** (Connes' torus, see I71): μ_k is *not* an automorphism. For irrational θ the gauge action U ↦ zU makes spec(U) = 𝕋, so 1 + q^{2a−1}U is not invertible in A_θ.
+
+### 4.2 Periodicity (I68–I70)
+
+**I68.** "Periodicity transfers to the quantum Y-system through the same tropical data; this is how Kashaev and Nakanishi extract quantum dilogarithm identities." **CORRECT.**
+- KN Props 2.4 and 3.4: a sequence of mutations is a ν-period tropically ⟺ classically ⟺ quantum mechanically. ν-periods are allowed; KN's A₂ example is the 5-step period with ν a transposition and tropical signs ε = (+,+,−,−,−).
+- KN Thm 3.5: the product of quantum dilogarithms in tropical form equals 1.
+- Keller (1102.4148) corroborates.
+
+**I69.** "So this interacting circuit should be exactly periodic up to a phase, and by Chin its half-period acts as a permutation." **CORRECT** for the period; **CORRECT** classically for the half-period; quantum half-period DERIVED (sketch).
+- Period: KN Thm 4.6–4.7 (exact, phase 1 with tropical signs). Zamolodchikov periodicity of the classical system is Keller's theorem (from memory; used by Chin and KN).
+- Classical half-period: Chin Thm 1.1, checked in exact arithmetic on A_m ⊗ A_n T-systems with σ the 180° rotation (C17).
+- Quantum half-period: Chin's half-period is a σ-period at the tropical level, and KN Prop 3.4 transfers tropical ν-periods to quantum ones. So the half-period circuit is σ (a permutation of qubits/modes) times a phase.
+- Both ingredients are proved, but neither paper states the combination; that is why it is labelled DERIVED (sketch).
+
+**I70.** "Its classical shadow is a dilogarithm identity whose value is a central charge." **IMPRECISE.**
+- The classical limit is the dilogarithm identity of KN Thm 2.7: Σ over the period of Rogers' L equals (π²/6)·N₋, an integer multiple of π²/6.
+- Check (C16), A₂: (6/π²) Σ_{k=1}^{5} L(y_k/(1+y_k)) = 3.000000000000 and (6/π²) Σ L(1/(1+y_k)) = 2.000000000000 for random positive initial data.
+- Central charges are per-step values at the *constant* solution. At y = φ (the golden ratio), (6/π²) L(1/(1+φ)) = 0.4000000000, the Lee–Yang effective central charge 2/5 (from memory), and 5 × 2/5 = 2.
+- **Fix:** "a dilogarithm identity whose value is an integer multiple of π²/6, equal to (period) × (effective central charge of the constant solution)".
+
+**Entanglement and CMI (the input's open question).**
+- At the period the circuit is a phase times the identity (at the half period, times σ), so entanglement entropies and CMIs of any normalisable state return exactly.
+- In between, the Gaussian couplers generate entanglement and the Φ_b gates make it non-Gaussian.
+- The question is well posed in L²(ℝ^I), with normalisable inputs such as Gaussian wavepackets. It is SPECULATION whether the returning dynamics bounds the intermediate CMI.
+
+### 4.3 The noncommutative torus, Effros–Shen and Penrose (I71–I73)
+
+**I71.** "At irrational q the quantum torus is Connes' noncommutative torus." **IMPRECISE.**
+- For q = e^{2πiθ} with θ irrational, the Laurent algebra with *unitary* generators is the dense polynomial core of the rotation algebra A_θ.
+- But quantum cluster theory uses a different *-structure: self-adjoint, positive Y_k in Fock–Goncharov's representations.
+- Mutations do not act on A_θ (§4.1, level 3).
+- **Fix:** "The quantum torus has Connes' torus as one C*-completion (unitary *-structure), on which cluster mutations do not act. They act on its fraction field and in the positive representations."
+
+**I72.** "At the golden angle it embeds (Pimsner–Voiculescu) in the Effros–Shen AF algebra with matrix [[1,1],[1,0]]." **CORRECT.**
+- Pimsner–Voiculescu, J. Operator Theory 4 (1980) 201–210 (IMAR scan opened). Rieffel (Pacific J. Math. 93 (1981)) describes it: A_θ "can be embedded in one of the special AF algebras constructed by E. G. Effros and C. L. Shen whose K₀ group is Z + Zα, ordered as a subgroup of the real line".
+- The Effros–Shen Bratteli matrices are [[a_k, 1],[1, 0]] for θ = [0; a₁, a₂, …]. For θ = 1/φ all a_k = 1. For the golden angle 1/φ² = [0; 2, 1, 1, …] this holds from the second level on, which does not change the stable isomorphism class.
+
+**I73.** "… which is Morita-equivalent to the Penrose algebra." **CORRECT.**
+- Connes' *Noncommutative Geometry* (introduction, opened): the Penrose-tiling C*-algebra is AF with K₀ = ℤ² ordered by the golden-ratio half-plane.
+- Kellendonk–Lenz–Savinien (1412.5442) note that its paths are those of the Bratteli diagram with inclusion graph A₄.
+- Both dimension groups are order-isomorphic to ℤ + ℤφ ⊂ ℝ. By Elliott's classification of AF algebras they are stably isomorphic, hence strongly Morita equivalent (Brown–Green–Rieffel). Elliott and Brown–Green–Rieffel are from memory.
+
+### 4.4 Assessment
+
+- The construction is well defined (levels 1–2) and exactly periodic up to a phase.
+- It is a rare explicit example of an interacting (non-Gaussian) unitary dynamics with guaranteed exact return, which makes it of mathematical interest.
+- It does not touch the competition:
+  - its state space is L²(ℝ^I) (or a formal torus), not a law on faces;
+  - nothing in the network supplies a periodic exchange matrix.
+- Part 2 Appendix A ("SPECULATION; not used") stands for the competition. For the programme it is a THEOREM-level example of the Heisenberg-picture objects of stream [H].
 
 ---
