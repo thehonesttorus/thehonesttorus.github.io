@@ -49,7 +49,20 @@ def slice_exact(mu, S, P, m, nq=40):
     return K21, k3
 
 
-def run(W, window=None, slices=False, young=None, rank=None, edge=True, readout=True, dtype=np.float32, trace=None, k4f=None, k4use=True, share=None, share_young=2):
+def relu_k4(mu, v):
+    """Exact fourth cumulant of relu(z), z ~ N(mu, v) (truncated-normal moments)."""
+    s = np.sqrt(v); al = mu / s
+    P = ndtr(al); p = np.exp(-0.5 * al * al) / SQ2PI
+    I = [P, p, P - al * p, (al * al + 2) * p, -(al ** 3 + 3 * al) * p + 3 * P]
+    from math import comb
+    M = [None] + [sum(comb(k, j) * mu ** (k - j) * s ** j * I[j] for j in range(k + 1)) for k in range(1, 5)]
+    m = M[1]
+    c2 = M[2] - m * m
+    c4 = M[4] - 4 * m * M[3] + 6 * m * m * M[2] - 3 * m ** 4
+    return c4 - 3 * c2 * c2
+
+
+def run(W, window=None, slices=False, young=None, rank=None, edge=True, readout=True, dtype=np.float32, trace=None, k4f=None, k4use=True, share=None, share_young=2, k4own=False, k4mf=False, prune=None, prune_slices=None):
     L, n, _ = W.shape
     W64 = W.astype(np.float64)
     Wf = W.astype(dtype)
@@ -103,7 +116,7 @@ def run(W, window=None, slices=False, young=None, rank=None, edge=True, readout=
         for src in sources:
             src["Z"] = src["Z"] @ G                               # (n, n) or, rank-k, R = Q^T Z (k, n)
         w2 = (p / s)
-        new = dict(s=l, w2=w2.astype(dtype), Z=Wn.copy(), SP=(S * P[None, :]))
+        new = dict(s=l, w2=w2.astype(dtype), Z=Wn.copy(), SP=(S * P[None, :]), k4a=relu_k4(mu, v))
         if slices:
             K21x, k3x = slice_exact(mu, S, P, mG)
             # second-chaos (Wick) slices of the birth in a_l coordinates
@@ -150,6 +163,14 @@ def run(W, window=None, slices=False, young=None, rank=None, edge=True, readout=
                     trace[-1]['sl21'] = K21x + dk21; trace[-1]['sl3'] = k3x + dk3; trace[-1]['sl21G'] = K21x.copy(); trace[-1]['sl3G'] = k3x
             np.fill_diagonal(Dl, d3 / 3)
             new["Delta"] = Dl.astype(dtype)
+        if prune is not None:
+            nk = max(1, int(round(prune * n)))
+            score = w2 * np.diag(S) * np.sqrt((Wn.astype(np.float64) ** 2).sum(1))
+            new["Rw"] = np.sort(np.argsort(-score)[:nk])
+        if prune_slices is not None and "Delta" in new:
+            nk = max(1, int(round(prune_slices * n)))
+            score = np.sqrt((new["Delta"].astype(np.float64) ** 2).sum(1)) * (Wn.astype(np.float64) ** 2).sum(1)
+            new["Rs"] = np.sort(np.argsort(-score)[:nk])
         sources.append(new)
         if window is not None:
             sources = [x for x in sources if l + 1 - x["s"] <= window]
@@ -179,6 +200,7 @@ def run(W, window=None, slices=False, young=None, rank=None, edge=True, readout=
                     else:
                         src["Yp"] = ((src["Yp"] @ G) @ U) @ U.T
         # ---- D21 of z_{l+1}
+        D21_prev = D21
         D = np.zeros((n, n), dtype=np.float64)
         for src in sources:
             w = src["w2"]
@@ -188,11 +210,39 @@ def run(W, window=None, slices=False, young=None, rank=None, edge=True, readout=
             else:
                 Zf = src["Z"]; Y = src["Yp"] if "Yp" in src else src["SP"].astype(dtype) @ Zf
                 T = (src["Delta"] @ Zf) if "Delta" in src else None
-            D += (((Y * Y) * w[:, None]).T @ Zf).astype(np.float64)
-            D += (2 * (((Y * Zf) * w[:, None]).T @ Y)).astype(np.float64)
+            if "Rw" in src:
+                R = src["Rw"]; Yr, Zr, wr = Y[R], Zf[R], w[R]
+            else:
+                Yr, Zr, wr = Y, Zf, w
+            D += (((Yr * Yr) * wr[:, None]).T @ Zr).astype(np.float64)
+            D += (2 * (((Yr * Zr) * wr[:, None]).T @ Yr)).astype(np.float64)
             if T is not None:
-                D += (((Zf * Zf).T @ T) + 2 * ((Zf * T).T @ Zf)).astype(np.float64)
+                if "Rs" in src:
+                    R = src["Rs"]; Zs, Ts = Zf[R], T[R]
+                else:
+                    Zs, Ts = Zf, T
+                D += (((Zs * Zs).T @ Ts) + 2 * ((Zs * Ts).T @ Zs)).astype(np.float64)
         D21 = D
+        if k4mf:
+            import k4mf as KM
+            prev = k4f.get(l) if k4f is not None else None
+            k4z = prev[2] if prev is not None else np.zeros(n)
+            c22z = prev[0][0] if prev is not None else np.zeros(n)
+            k4n, c22n = KM.step(mu, S, D21_prev, k4z, c22z, W64[l + 1])
+            if k4f is None:
+                k4f = {}
+            k4f[l + 1] = (np.broadcast_to(c22n[None, :], (n, n)).copy(), np.zeros((n, n)), k4n)
+        if k4own:
+            c22 = np.zeros(n); k4d = np.zeros(n)
+            for src in sources:
+                Zf = (src["Q"] @ src["Z"]) if "Q" in src else src["Z"]
+                Z2 = (Zf.astype(np.float64)) ** 2
+                nu = Z2.sum(1)
+                c22 += (src["k4a"] * nu) @ Z2 / n
+                k4d += src["k4a"] @ (Z2 * Z2)
+            if k4f is None:
+                k4f = {}
+            k4f[l + 1] = (np.broadcast_to(c22[None, :], (n, n)).copy(), np.zeros((n, n)), k4d)
     return np.stack(outs)
 
 
