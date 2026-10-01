@@ -24,6 +24,13 @@ import sys; sys.path.insert(0, "../../fresh-slate/breakthrough/region")
 import gclose as g
 HOOK = None
 DIAG = False
+GS = []
+MFAGE = None   # sources of age >= MFAGE: Hadamard products of legs replaced by their rank-one mean-field (Bethe sector)
+
+
+def _mf(A):
+    A = A.astype(np.float64); tot = A.sum()
+    return np.outer(A.sum(1), A.sum(0)) / tot if tot != 0 else np.zeros_like(A)
 
 SQ2PI = np.sqrt(2 * np.pi)
 
@@ -119,6 +126,7 @@ def run(W, window=None, slices=False, young=None, rank=None, edge=True, readout=
         for src in sources:
             src["Z"] = src["Z"] @ G
             if DIAG: src["Z2"] = src["Z2"] @ (G * G)
+        if DIAG: GS.append(G)
         w2 = (p / s)
         new = dict(s=l, w2=w2.astype(dtype), Z=Wn.copy(), SP=(S * P[None, :]), k4a=relu_k4(mu, v))
         if DIAG: new['Z2'] = Wn * Wn
@@ -219,14 +227,21 @@ def run(W, window=None, slices=False, young=None, rank=None, edge=True, readout=
                 R = src["Rw"]; Yr, Zr, wr = Y[R], Zf[R], w[R]
             else:
                 Yr, Zr, wr = Y, Zf, w
-            D += (((Yr * Yr) * wr[:, None]).T @ Zr).astype(np.float64)
-            D += (2 * (((Yr * Zr) * wr[:, None]).T @ Yr)).astype(np.float64)
+            bethe = MFAGE is not None and (l + 1 - src["s"]) >= MFAGE
+            if bethe:
+                D += ((_mf(Yr * Yr) * wr[:, None]).T @ Zr) + 2 * ((_mf(Yr * Zr) * wr[:, None]).T @ Yr)
+            else:
+                D += (((Yr * Yr) * wr[:, None]).T @ Zr).astype(np.float64)
+                D += (2 * (((Yr * Zr) * wr[:, None]).T @ Yr)).astype(np.float64)
             if T is not None:
                 if "Rs" in src:
                     R = src["Rs"]; Zs, Ts = Zf[R], T[R]
                 else:
                     Zs, Ts = Zf, T
-                D += (((Zs * Zs).T @ Ts) + 2 * ((Zs * Ts).T @ Zs)).astype(np.float64)
+                if bethe:
+                    D += (_mf(Zs * Zs).T @ Ts) + 2 * (_mf(Zs * Ts).T @ Zs)
+                else:
+                    D += (((Zs * Zs).T @ Ts) + 2 * ((Zs * Ts).T @ Zs)).astype(np.float64)
         D21 = D
         if HOOK is not None and HOOK(l + 1, sources, D21):
             break

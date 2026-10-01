@@ -246,6 +246,48 @@ of per is hard.
 - *Corollary.* No algebra-valued random sketch makes the memory cheaper than its scalar counterpart. The cheap scalar
   version is measured to need ≥ 3.6e8 samples (§4).
 
+**The gauge-group form (the cleanest NC statement this team found) [syn, with measured angles].**
+
+*The groups and their averages.*
+- The weight law is invariant under a gauge group at every hidden layer t: W_{t+1} ↦ g·W_{t+1} with g in
+  - the diagonal sign group (Z₂)ⁿ,
+  - the hyperoctahedral group B_n = (Z₂)ⁿ ⋊ S_n,
+  - or the full O(n),
+
+  each acting on the row (hidden-neuron) index.
+- The network *function* is not invariant, so the scored means are not.
+- Averaging a quenched functional F(W) over the gauge group of layer t is a conditional expectation E_t. It is the
+  Haar average over the group, i.e. the projection onto the gauge-invariant part.
+- Different layers' gauge groups commute and are independent, so {E_S : S ⊆ layers} is a **lattice of commuting
+  conditional expectations**, a commuting-square lattice in Popa's sense.
+
+*Forget one piece, re-randomise.* Re-randomising the sign of one weight row is the down–up step of the brief, in its
+purest form.
+
+*How the existing objects sit in this lattice.*
+- **Godsil–Gutman signs are exactly the (Z₂)ⁿ gauge average.** Averaging over sign flips of the intermediate index
+  kills the off-diagonal path pairs. So the **Bethe value = E over the (Z₂)ⁿ gauges of all layers**.
+- **The region stream's fresh-weight lemma** ("Frobenius norms are the currency") is the O(n) average of the next
+  layer.
+- **The trace channel / mean-field** is the O(n)-invariant (trivial-isotypic) part of the squared leg in Sym²(ℝⁿ).
+
+*Where the memory sits.*
+- The memory is the **non-invariant isotypic part**: degree-2 characters ε_m ε_m′ for the sign group, the traceless
+  symmetric component of Sym² for O(n).
+- Measured angles at n = 1024 (relative Frobenius norm of D_old outside the invariant part):
+  - **0.47–0.48** for all-layer (Z₂)ⁿ;
+  - **0.40–0.45** for the O(n) trace part;
+  - **0.46–0.48** for (Z₂)ⁿ applied at the *last* layer only.
+- So averaging only the last fresh layer loses as much as averaging all of them (§4 cut curve).
+
+*The "next theorem" (Conjecture 1 below):*
+- the invariant/non-invariant angle of quenched third-order transport stays open as n → ∞;
+- the non-invariant part is regenerated at every fresh layer, as the degree-2 component of the most recent gauge
+  group, with coefficients equal to the full old leg.
+
+*Link to team B.* This is the abelian or orthogonal case of Fourier analysis on the gauge group, which is
+Jeronimo–Mittal–Roy's tool. The memory is exactly what lies off the trivial representation.
+
 **Conjecture 1 (the Bethe defect of quenched third-order transport is O(1) in width) [conj].**
 - *Setting.* Let J_a = G_1⋯G_a with G_i = diag(P_i)W_i, gated He-Gaussian layers with fresh weights. Let B_a be the
   diagonal-pairing value obtained by replacing (J_a)_{ra}² with ((G_1∘G_1)⋯(G_a∘G_a))_{ra}.
