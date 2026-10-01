@@ -85,3 +85,18 @@ Measured at n = 1024 (MLP 0 unless stated). Raw = final MSE minus truth noise.
 - **80 % of old energy is one channel.** Old D21 is 79–81 % constant in the repeated index (the dilation/norm channel), carried at O(n²) per layer. The irreducible object is the a-traceless remainder T° (≈ 45 % of the old tensor's norm), which loosens every merge tolerance ≈ 2.2×.
 - **Reading (coordinator note 2).** Freezing the polarization per age block makes the memory's commutator effectively finite rank (R ≈ n/4–n/8 per block), although it is not compact for the global gauge polarization; the per-age resolution law 2n/a makes the age grading Dixmier-critical (total ∝ n ln L).
 - **Open:** static bins for ages 3–4 and a cheaper core readout (region); T°-only bins (region); causal multiresolution with frozen dyadic frames (team D); a Hadamard-readout carrier of a few sandwich-transported symmetric matrices, the one untested class consistent with the leaders' cost (costate); width universality and the log-L lower bound (team G).
+
+## Round 3: the causal age-multiresolution carrier passes, its constant does not (21:35 UTC)
+
+| carrier inside FC, n = 1024 | raw, MLPs 0–5 | price | source |
+|---|---|---|---|
+| FC, all ages exact | 3.24, 1.81, 3.03, … ; mean 3.03e-8 | 0.85 B dense; 557 u wall-feasible | region |
+| causal QR-transported frames, k = 2n/age (one conversion SVD at age 3) | 3.40, 1.98, 3.28, 2.35, 4.05, 3.97e-8; mean 3.17e-8 | 0.57 B dense; ≈ 0.53 B wall-feasible | team D §3.8 |
+| same, k = 1.5n/age | 4.1e-8 (MLP 0) | 0.47 B dense; ≈ 0.43 B wall-feasible | team D §3.8 |
+| Bentley–Saxe odometer, shared dyadic frames at 2n/(youngest age in block) | 3.26e-8, 1.84e-8 (MLPs 0, 1) | ≈ as above | team D §3.8 |
+| odometer at n/(youngest age) | 6.8e-8 (fails) | — | team D §3.8 |
+
+- **Note 2's carrier is real and causal:** lossless, O(n³ log L), and the dyadic odometer works.
+- **Its constant is ≈ 3.5× too high for the leaders' price.** The atom form needs ≈ 9 products per unit of resolution (floor 7: four (n, n, k) contractions plus three full-coordinate materialisations forced by the Hadamard squares Y∘Y, Y∘Z, Z∘Z, Z∘T). Adjusted ≈ 1.7e-8, against FC's 2.6e-8, the public chain's 5.4e-9 and the leaders' 1.6e-9.
+- **Where the bill now sits.** Young ages 1–2 (always full rank) are 34 % of it. The binding consumer is FC's slice correction dk21, which needs the full D21 in the neuron basis every layer: the coordinatewise ReLU forces the Hadamard materialisations (note 2 §2(b)).
+- **Next lever:** a cheaper D21 readout from a factored source, and the young tier.
