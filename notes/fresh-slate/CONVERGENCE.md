@@ -135,3 +135,7 @@ Region REPORT §10 (MLPs 0–2; FC alone mean 2.69e-8 on these three):
 ## Depth 32 (team E G3, 22:00 UTC)
 
 At 256 × 32 the causal carrier at k = 2n/a is lossless at every layer (±3 %), and its cost grows ×2.72 from depth 16 to 32 (predicted ×2.69 for the critical 1/a profile, ×2.27 for geometric; FC grows ×4.1). The memory's age-graded rank class matches the Fibonacci/Penrose quasicrystal (log at 99 %), not Thue–Morse (team E §6).
+
+## Free products are two-dimensional (team B G1, 22:00 UTC)
+
+Team B proved that for walks on the d-torus the λ-term rank decays as Δ^{−d/2} and is Dixmier-critical exactly at Pólya's recurrence dimension d = 2 (measured rank·Δ = 12,000 ± 6 % over Δ = 4 … 512 at N = 4096, as predicted), with a log₂ T-frame blockwise estimator where truncation needs ≈ N ln(1/ε) steps. Free variance is additive under free multiplicative convolution, so free products are universally "d_eff = 2" (Ginibre PR·(a + 1)/n = 0.96–1.00): the reason the network sits on the wall. In FC at n = 1024, r₉₀·a/n = 0.58–0.63 for ages 4–14.
