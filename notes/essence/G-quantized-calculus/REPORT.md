@@ -295,10 +295,12 @@ v0's reading reversed).**
 | n·min(1, 6/a²) | 0.63 | 2.25 (1.74–2.70) | 2.68 (2.44–3.05) | 2.34 (2.17–2.51) |
 | n·max(2/a − 0.11, 1/64) | 0.68 | 1.39 (1.29–1.49) | 1.45 (1.28–1.58) | 1.30 (1.21–1.40) |
 | n·max(2/a − 0.07, 1/64) | 0.79 | 1.25 (1.02–1.47) | 1.34 (1.22–1.45) | 1.14 (1.12–1.16) |
-FLATTER_ROWS
+| *flatter:* n·min(1, 1.2/a^0.75) | 0.91 | 1.09 (0.87–1.26) | 1.41 (1.30–1.51; 2 nets) | — |
+| *flatter:* n·min(1, 1.15/a^0.5) | 1.35 | 1.36 (1.08–1.59) | 2.15 (2.13–2.16; 2 nets) | — |
 
-- **Reading.** The steeper the profile, the worse it does. Among these families the uniform-c (Dixmier) allocation is
-  the best tested at score level. By the Lagrange form of G7 (optimal k_a = n ln(θ η_a b_a)/(β(a + 1))), a uniform
+- **Reading.** Uniform c·n/a is beaten from neither side. Steeper profiles lose more the steeper they are, and the
+  flatter profiles (a^−0.75, a^−0.5) also lose, increasingly with width. Among power-law and linear-cut-off
+  families the exponent −1, the Dixmier allocation, is the score-level optimum (to ± ≈ 0.25 in the exponent). By the Lagrange form of G7 (optimal k_a = n ln(θ η_a b_a)/(β(a + 1))), a uniform
   c is optimal exactly when the *score-effective* weight of age a satisfies η_a^eff · b_a = const. So the error that an
   old age's truncation causes downstream decays like 1/a, even though its share of the next slice's Frobenius energy
   decays geometrically.
