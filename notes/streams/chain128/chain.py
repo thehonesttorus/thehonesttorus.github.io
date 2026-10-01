@@ -383,6 +383,13 @@ class Chain:
                     Xt = atlas_state(self.atlas, l, with_k3=False).X
                     if self.k4mode == "atlas":
                         st.X = Xt
+                    elif self.k4mode == "atlas_zero211":
+                        st.X = Xt - ok.all_distinct(Xt)
+                    elif self.k4mode == "atlas_reg211":
+                        K211 = ok.all_distinct(Xt)
+                        Co = ok.offdiag(st.C)
+                        u = np.einsum("ijk,jk->i", K211, Co) / float(np.sum(Co * Co))
+                        st.X = (Xt - K211) + ok.all_distinct(np.einsum("i,jk->ijk", u, Co))
                     elif self.k4mode == "atlas211":
                         st.X = (st.X - ok.all_distinct(st.X)) + ok.all_distinct(Xt)
                     elif self.k4mode == "reg211":
