@@ -1,0 +1,3 @@
+n=128 base      slope 0.802  relerr 0.240
+n=128 ng_site   slope 0.818  relerr 0.227
+n=128 no var21  slope 0.802  relerr 0.240

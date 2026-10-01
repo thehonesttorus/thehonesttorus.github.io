@@ -106,3 +106,15 @@ Predicted raw MSE(n) ≈ A n^{−1} (E2) + B n^{−2} (E1+E3) with A ∝ f(d)².
 | 64, bench w64_d16 (8 MLPs) | 5.1e-4 | | | | 3.3e-4 |
 
 The Markov projection of old content is not a good recovery map: content of age 2–4 still carries most of the gain. This is the brief's "40 % of the (2,1) slice is old" seen through P3: the cut CMI I(old : next | per-neuron state) is large and decays slowly with age.
+
+6. *Third failure — old content through a ReLU (leading order, charged to the realisation).* `checks/check_split3.py` (width 64, 2e7 MC samples) splits κ3(z_3) into the part produced by the layer-2 ReLU acting on a Gaussian z_2 with the true mean and covariance ("fresh") and the remainder ("old", content of layer 1 passing through the layer-2 ReLU):
+
+| | rms | MKV vs truth: rel. err | slope |
+|---|---|---|---|
+| fresh (MKV site formula fed the true C_2) | 0.120 | 0.051 | 0.990 |
+| old (MKV: linear transport through E φ') | 0.138 | 0.395 | 0.780 |
+| total | 0.225 | 0.255 | 0.843 |
+
+The site formula is right; what is wrong is that a site's residual crosses a later ReLU only through its linear response E φ'. Old and fresh content are the same size, so this is a leading-order defect. Non-Gaussian site marginals (slope 0.869) and the variance correction (no change) do not fix it. Power counting of individual terms called the missing curvature terms subleading; that counting ignored coherence across sites (terms that square a transport add with positive sign over the n sites), and the measurement overrules it. Width check in `results/l3_slope_w128.txt`.
+
+**The principled repair (MKV-2, not yet built).** Keep the Markov structure but let every site carry its whole downstream influence as a *function of its own scalar latent* ξ_s = standardised g_s: the emission of site s into neuron j of layer l is F_{s→j}(ξ_s) = Σ_{k=2..D} T^{(k)}_{sj} h_k(ξ_s) (normalised Hermite basis). Conditional on ξ_s (the separator — this is literally a junction tree with clique {ξ_s, z_l} and separator ξ_s) the rest of the layer is Gaussian, so crossing a ReLU is the exact Gaussian conditional expectation E[φ(z_b) | ξ_s], expanded in Δ = c_{sb} ξ + F_{sb}(ξ). Its first-order (linear) part is today's transport; its second-order part ½ψ''(2 c ξ F + F² − E F²) is the missing curvature passage, minus the Gaussian part that the fresh site at b already counts. Per-neuron cumulants come from the single-site formulas with F in place of pX (contractions with fixed Hermite triple/quadruple-product tables, n² work). Cost per source per layer: D − 1 products (one per Hermite channel, after combining the linear and quadratic terms elementwise) + 1 (K) + 2 (field correction from the He₁ channel) ≈ D + 2 products, i.e. 6 at D = 4 against 9 now. The double-counting bookkeeping against the fresh sites is the delicate part and was not finished in this session.
