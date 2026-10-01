@@ -626,7 +626,9 @@ def estimate_v4(Ws, old=1, qgen=True, verbose=False, pairmix=True, qscale=1.0, m
     for l in range(Ls):
         if node_oracle is not None and l >= oracle_from:
             t = node_oracle[l]
-            C = C.copy(); np.fill_diagonal(C, t['v']); K = K.copy(); np.fill_diagonal(K, t['k3']); k4 = t['k4']
+            if 'v' in t: C = C.copy(); np.fill_diagonal(C, t['v'])
+            if 'k3' in t: K = K.copy(); np.fill_diagonal(K, t['k3'])
+            if 'k4' in t: k4 = t['k4']
             if 'm' in t: m = t['m']
         mu, Ca, Ka, k3a, k4a, c, L, Q, R = relu_map_v4(m, C, K, k4, Qz * qscale, need4=(l + 1 < Ls), pairmix=pairmix, mixC=mixC)
         L0, Lm1 = L[0], L[-1]

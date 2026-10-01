@@ -290,3 +290,18 @@ Failures logged and charged to the realisation: c³-truncated edges (NaNs at w64
 gain); node κ4 by two-site + tree terms alone (no gain: misses the order parameter); Q by pair Edgeworth
 (singular as ρ → 1; fixed by the scale mixture); Q fed back at small width (geometric over-amplification, n ≤ 128
 only); v5 collective split (double counting of the g-part).
+
+## 14. The deciding experiment (n = 1024, MLP 0, MC 2e6 for the injected node beliefs)
+
+| v4 with … | final raw |
+|---|---|
+| nothing injected | 4.31e-7 |
+| true (m, v, κ3, κ4) at layers ≥ 1 | 4.09e-8 |
+| true (v, κ3, κ4) at layers ≥ 1 | 4.81e-8 |
+| **true (v, κ3, κ4) at layers ≥ 6** | **3.85e-8** |
+
+The injected node cumulants carry their own MC noise (κ3 noise ≈ 2e-3 per neuron at N = 2e6 → ≈ 4e-8 in the
+final MSE), so these are noise floors, not limits: **with correct node beliefs at layers ≥ 6, v4's pair, mean and
+readout machinery is good to ≲ 4e-8 raw at n = 1024 (≥ 11× below v4).** The entire remaining error of the Bethe
+estimator is in the node beliefs (v, κ3, κ4) of the deep layers, which is where the non-Gaussian collective
+coordinate (§11c) lives. This is the positive branch of §13's test: the node-belief route is worth carrying.
