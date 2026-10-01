@@ -120,6 +120,8 @@ Readings. (i) **The exact first-order co-state at n = 1024 measures raw 4.0e-7, 
 | A = 3, one scale scalar fitted | 6.08e-7 |
 | *non-oracle* A3gl_nc / A3gsl_nc (law-level scale) | 3.5e-7 / 3.25e-7 (6 nets) |
 
+*Anatomy at 1024* (`anatomy_w1024_mlp0_A1.txt`, network 0, A = 1). The scale mode (κ₃ template) holds 39 % → 79 % of the old slice's energy over depth, against 39 % → 91 % at w128. The residual is spread out (16 modes hold 43–63 %), but its left singular vector is still s / s² (cos 0.95–0.99) with a varying right vector. That is the signature of the correlated scale field, 2 C_pp h_q (§4.3), and it supports the next step in §6.
+
 At 1024, the diagonal plus a rank-1 spike gives about 80 % of the old content's MSE reduction at A = 1. The last 20 %, at Stein level, needs ≳ 32 modes (the old-content stream's growth with n, now in the readout metric). But **every Stein-level filter, even an oracle one, loses to the non-oracle law-level scale mode plus an exact window**. The scale mode's higher cumulants are worth more than all the remaining modes of the old (2,1) slice.
 
 **4.3 The spike is the global scale (dilation) mode.** If z = t·x with a scalar t (E t = 1, Var t = v) independent of x ~ N(m, C), then κ₃(z_p, z_p, z_q) = 2v (2 m_p C_pq + m_q C_pp) + O(v², κ₃(t)). Off the diagonal this is dominated by 2v s_p² m_q, rank one along (s², m), which is exactly the measured spike.

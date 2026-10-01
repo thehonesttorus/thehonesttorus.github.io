@@ -1,0 +1,6 @@
+L 4 gamma 0.0017 | scale-mode share of |S_old|^2: all 0.39 off 0.39 | residual off top1 0.22 top4 0.28 top16 0.43 | res u1/v1: one:0.98/0.03 m:0.02/0.00 s:0.99/0.03 s2:0.99/0.03 Ea:0.66/0.02 Phi:0.81/0.01 p0:0.83/0.02
+L 6 gamma 0.0030 | scale-mode share of |S_old|^2: all 0.56 off 0.56 | residual off top1 0.23 top4 0.30 top16 0.49 | res u1/v1: one:0.97/0.02 m:0.01/0.00 s:0.98/0.01 s2:0.98/0.01 Ea:0.60/0.02 Phi:0.77/0.02 p0:0.76/0.00
+L 8 gamma 0.0039 | scale-mode share of |S_old|^2: all 0.69 off 0.69 | residual off top1 0.19 top4 0.29 top16 0.53 | res u1/v1: one:0.95/0.02 m:0.08/0.02 s:0.96/0.02 s2:0.96/0.02 Ea:0.60/0.01 Phi:0.76/0.00 p0:0.66/0.00
+L10 gamma 0.0045 | scale-mode share of |S_old|^2: all 0.73 off 0.73 | residual off top1 0.14 top4 0.28 top16 0.55 | res u1/v1: one:0.93/0.00 m:0.02/0.06 s:0.94/0.00 s2:0.95/0.00 Ea:0.55/0.05 Phi:0.69/0.03 p0:0.58/0.01
+L12 gamma 0.0049 | scale-mode share of |S_old|^2: all 0.75 off 0.75 | residual off top1 0.12 top4 0.29 top16 0.59 | res u1/v1: one:0.80/0.05 m:0.11/0.26 s:0.82/0.05 s2:0.83/0.05 Ea:0.50/0.20 Phi:0.63/0.18 p0:0.50/0.03
+L14 gamma 0.0052 | scale-mode share of |S_old|^2: all 0.79 off 0.79 | residual off top1 0.12 top4 0.32 top16 0.63 | res u1/v1: one:0.60/0.04 m:0.02/0.67 s:0.61/0.04 s2:0.62/0.04 Ea:0.23/0.44 Phi:0.44/0.37 p0:0.45/0.00
