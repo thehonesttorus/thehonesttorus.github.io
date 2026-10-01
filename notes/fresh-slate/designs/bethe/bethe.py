@@ -536,7 +536,7 @@ def node_mixture_ladder(m, v, k3, k4, qmax=0.3):
     return Lm
 
 
-def relu_map_v4(m, C, K, k4, Qz, need4=True):
+def relu_map_v4(m, C, K, k4, Qz, need4=True, pairmix=True, mixC=True):
     """Pairs: E over a per-pair shared variance modulation (1 + eta), Var eta = q_ab = Q_ab/(v_a v_b),
     3-point Gauss-Hermite; inside each node the exact bivariate-Gaussian edge + node k3 + K Edgeworth."""
     v = np.diag(C).copy(); k3 = np.diag(K).copy()
@@ -544,8 +544,8 @@ def relu_map_v4(m, C, K, k4, Qz, need4=True):
     mu, var, k3a, k4a = node_moments(L)
     c = C.copy(); np.fill_diagonal(c, 0.0)
     Kab = K.copy(); np.fill_diagonal(Kab, 0.0)
-    q = Qz / np.outer(v, v); np.fill_diagonal(q, 0.0)
-    q = np.clip(q, 0.0, 0.3)
+    q = Qz / (np.outer(v, v) + 2 * c * c); np.fill_diagonal(q, 0.0)
+    q = np.clip(q, 0.0, 0.3) * (1.0 if pairmix else 0.0)
     r, cc = (lambda x: x[:, None]), (lambda x: x[None, :])
     keys = [(1, 1), (2, 1)] + ([(2, 2), (3, 1), (1, 2)] if need4 else [])
     Em = {k: 0.0 for k in keys}
@@ -586,6 +586,8 @@ def relu_map_v4(m, C, K, k4, Qz, need4=True):
         Ka = Em[(2, 1)] - np.outer(2 * L[2], mu) - 2 * mu[:, None] * Ca
         Q = R = None
     np.fill_diagonal(Ca, var); np.fill_diagonal(Ka, 0.0)
+    if not mixC and pairmix:
+        _, Ca, Ka, _, _, _, _, _, _ = relu_map_v4(m, C, K, k4, Qz, need4=False, pairmix=False)
     return mu, Ca, Ka, k3a, k4a, c, L, Q, R
 
 
@@ -616,13 +618,13 @@ def edge_table_pairs(m, va, vb, c, pmax=2, kmin=-4):
     return T
 
 
-def estimate_v4(Ws, old=1, qgen=True, verbose=False):
+def estimate_v4(Ws, old=1, qgen=True, verbose=False, pairmix=True, qscale=1.0, mixC=True):
     Ls, n, _ = Ws.shape
     W = Ws[0].astype(np.float64)
     m = np.zeros(n); C = W.T @ W; K = np.zeros((n, n)); k4 = np.zeros(n); Qz = np.zeros((n, n))
     out = []; prev = None; info = []
     for l in range(Ls):
-        mu, Ca, Ka, k3a, k4a, c, L, Q, R = relu_map_v4(m, C, K, k4, Qz, need4=(l + 1 < Ls))
+        mu, Ca, Ka, k3a, k4a, c, L, Q, R = relu_map_v4(m, C, K, k4, Qz * qscale, need4=(l + 1 < Ls), pairmix=pairmix, mixC=mixC)
         L0, Lm1 = L[0], L[-1]
         out.append(mu); info.append(dict(m=m, v=np.diag(C).copy(), k3=np.diag(K).copy(), k4=k4))
         if l + 1 == Ls:
