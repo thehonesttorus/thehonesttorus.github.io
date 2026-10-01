@@ -39,3 +39,40 @@ The true per-layer cumulants of z_l (diagonal κ₃, (2,1) slice, diagonal κ₄
 | **true (m, C) + true κ₃, κ₄ injection** | **2.8e-6** | **4.3e-6** |
 
 Readings. (i) HD's computed sources and transport are as good as the true κ₃ under the same injection (2.2e-4 vs 1.7e-4; 5.0e-5 vs 4.8e-4), so they are not the bottleneck at width 64. (ii) The bottleneck is **covariance drift**: the same injection with the true (m, C) is ≈ 1000× better than the reference. (iii) Second-order marginal terms fix the early layers (layer 2: 3.9e-6 → 1.0e-7) but not the deep ones; what is missing is second order on the **off-diagonal covariance** (joint κ₄ slices κ₄(ppqq), κ₄(pppq) and κ₃·κ₃ products). The readout variance wᵀ Cov(a) w sums n² entries, each with an O(ε²) error, coherently.
+
+## R3. Second-order oracle (`oracle2.py`, `oracle3.py`, width 64, N = 5e6): which second-order pieces matter
+
+True cumulants of z_l injected with the full second-order Stein/Edgeworth formula on the whole covariance (`inject_full2`: κ₃ diag + (2,1) slice; κ₄ diag, κ₄(pppq), κ₄(ppqq); κ₃² terms), own (m, C) chain.
+
+| injection | net 0 | net 1 |
+|---|---|---|
+| reference | 3.83e-3 | 1.15e-3 |
+| first order (true κ₃) | 1.74e-4 | 4.78e-4 |
+| **full second order (true κ₃, κ₄ slices)** | **2.25e-5** | **2.35e-5** |
+| same, without joint κ₄ (diag κ₄ + κ₃² only) | 2.6e-4 | NaN |
+| joint κ₄(ppqq) only | NaN | NaN |
+| joint κ₄(pppq) only | 9.8e-5 | 6.4e-5 |
+| both joint κ₄ slices, no off-diagonal κ₃² | 2.25e-5 | 3.1e-5 |
+| first order with true (m, C) | 3.0e-5 | 1.1e-5 |
+| full second order with true (m, C) | 2.8e-6 | 4.2e-6 |
+
+Reading: the joint fourth-cumulant slices κ₄(pppq) and κ₄(ppqq) are necessary at width 64 and must be used *together* (either alone destabilises the covariance); the off-diagonal κ₃² terms are negligible. With them the own-chain injection gains 50–170× over the reference.
+
+## R4. Stage Q, shared bench (first-order HD-∞: all ages, full κ₃ source series, first-order injection)
+
+| set | MLPs | reference raw | HD-∞ raw (± s.e.) | gain |
+|---|---|---|---|---|
+| w64_d16 | 8 | 4.46e-4 | 9.75e-5 ± 1.8e-5 | 4.6× |
+| w128_d16 | 8 | 2.82e-4 | 3.16e-5 ± 5.8e-6 | 8.9× |
+
+Width exponent of HD-∞ first order: raw ∝ n^{-1.6} between 64 and 128 (reference: n^{-0.66} on this pair). Extrapolated with p = 1.6 to 1024: raw ≈ 1.1e-6, far from the 1.5e-8 bar. First order alone is not competitive, consistent with R2–R3.
+
+## R5. Accuracy of the computed (age-0) joint κ₄ slices (`gen_k4_slices`, width 64, layer 7, vs MC with N = 4e6; MC-vs-MC noise 3–4e-4)
+
+| slice | corr | rms true | rms error |
+|---|---|---|---|
+| κ₄(pppq) | 0.973 | 7.3e-3 | 2.2e-3 |
+| κ₄(ppqq) | 0.909 | 5.4e-3 | 3.6e-3 |
+| κ₄ diag | 0.969 | 1.5e-2 | 4.7e-3 |
+
+Diagrams used: second-chaos chain (exact pair contractions), degree-3 star, exact single-site; adding the He₂ 4-cycle made no difference. The residual is truncation in ρ: at width 64 the mean |ρ| between pre-activations is 0.15 (layer 3) to 0.32 (layer 15). It falls as n^{-1/2}: 0.054–0.14 at width 512, so the diagram truncation improves with width.
