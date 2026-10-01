@@ -44,7 +44,7 @@ arbitrary age profiles), `run_g.py` (T3 sweep), `run_prof.py` (profiles), `analy
    the optimal total is O(n) in L.
    - The per-source D21 data (energy share falls ≈ geometrically) suggested that subcritical regime.
    - **But the score-level profile test reverses it.** At equal atom count, every steeper profile (n/a^1.5, n/a²,
-     linear cut-offs) loses 1.25–2.7× more than uniform c·n/a, at n = 256 and 512 (1024 below). So the
+     linear cut-offs) loses 1.25–2.7× more than uniform c·n/a, at n = 256, 512 and 1024. So the
      score-effective weight is ∝ 1/a, H3 holds, and the Dixmier bound applies at L = 16.
    - **The cost form Ω(n³ L log L) is false asymptotically** (§4.3): shared dyadic frames plus exact Tucker cores make
      the cost independent of the number of ages per block. At L = 16, n = 1024 this saves nothing
@@ -291,10 +291,10 @@ v0's reading reversed).**
 
 | profile (k(a) for a ≥ 3) | old atoms vs c = 2 | loss / uniform loss, n = 256 (4 nets) | n = 512 (4) | n = 1024 (2) |
 |---|---|---|---|---|
-| n·min(1, 3.46/a^1.5) | 0.78 | 1.96 (1.77–2.10) | 1.97 (1.74–2.24) | PROF1024_A |
-| n·min(1, 6/a²) | 0.63 | 2.25 (1.74–2.70) | 2.68 (2.44–3.05) | PROF1024_B |
-| n·max(2/a − 0.11, 1/64) | 0.68 | 1.39 (1.29–1.49) | 1.45 (1.28–1.58) | PROF1024_C |
-| n·max(2/a − 0.07, 1/64) | 0.79 | 1.25 (1.02–1.47) | 1.34 (1.22–1.45) | PROF1024_D |
+| n·min(1, 3.46/a^1.5) | 0.78 | 1.96 (1.77–2.10) | 1.97 (1.74–2.24) | 1.73 (1.70–1.75) |
+| n·min(1, 6/a²) | 0.63 | 2.25 (1.74–2.70) | 2.68 (2.44–3.05) | 2.34 (2.17–2.51) |
+| n·max(2/a − 0.11, 1/64) | 0.68 | 1.39 (1.29–1.49) | 1.45 (1.28–1.58) | 1.30 (1.21–1.40) |
+| n·max(2/a − 0.07, 1/64) | 0.79 | 1.25 (1.02–1.47) | 1.34 (1.22–1.45) | 1.14 (1.12–1.16) |
 FLATTER_ROWS
 
 - **Reading.** The steeper the profile, the worse it does. Among these families the uniform-c (Dixmier) allocation is
