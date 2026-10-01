@@ -397,3 +397,47 @@ remaining 29 s raises 337 of them to L4. The result is **≈ 557 u = 0.544 B**.
 **The raw an all-age FC would need to beat the bar at this price: ≤ 2.9e-9**, i.e. 10× below its present 3.0e-8 and
 2.5× above EscAI's exact-moment oracle. The hyperedge lever (§5) is predicted to reach ≈ 1e-8, not 3e-9. So FC stays a
 reference for accuracy and information, not a submission path.
+
+## 9. Escape hatch 1: merge old content once per age bin, then only transport (coordinator round 4; essence C §6.4)
+
+**Setup** (`fc.py` `bincut`, `run_bin.py`, `results/bin_*.json`).
+- At the cut m = 9, the four FC sources of ages 5–8 are taken out of FC: their Wick triplets and slice triplets, N = 24n
+  atoms in total.
+- They are compressed **once**, in the cut-layer frame. After that the bin is only transported linearly through the
+  gated propagators, with no re-merge. Transporting linearly in the cut frame is equivalent to reading a static tensor
+  through the moving frame Γ_t.
+- Two compressions:
+  - **"tucker"**: every leg mode is projected onto the top-R eigenvectors of its energy-weighted leg Gram (HOSVD-like,
+    one basis per mode, atoms kept);
+  - **"cp"**: a rank-R CP by 3 ALS sweeps.
+- D21 error of the bin is measured against an exact copy of the same sources carried alongside.
+
+| compression | R | MLPs | bin ε(D21) at t = 9 → 15 | bin share of ‖D21‖ (9 → 15) | raw (FC unmerged: 3.24 / 1.81 / 3.03e-8) |
+|---|---|---|---|---|---|
+| tucker | n/8 = 128 | 0, 1, 2 | 15–17 % → 9.5–11 % | 41–46 % → 22–30 % | 4.00 / 2.66 / 3.98e-8 (+30 %) |
+| tucker | n/4 = 256 | 0, 1, 2 | 3.9–4.5 % → 2.3–2.8 % | same | **3.34 / 1.81 / 3.05e-8 (lossless)** |
+| tucker | n/2 = 512 | 0 | 0.1 % | same | 3.23e-8 |
+| cp | n/8 | 0 | 39 % → 30 % | same | 8.8e-8 |
+| cp | n/4 | 0 | 30 % → 22 % | same | 6.1e-8 |
+
+**Verdict: not killed.** In the per-mode subspace form, R = n/4 is lossless and R = n/8 costs 30 %. A CP with the same
+R is 3–8× worse. So the static once-per-bin frame works where the moving per-layer frame failed. The contrast is with
+§5 (a shared subspace for all old ages, re-projected every layer: 6× worse at n/4) and §8 (CP re-merged every layer:
+6.7× worse at R = n).
+
+**Price per bin (units).**
+
+| R | projection (6 N R / n²) | core formation (N R³ / n³) | per layer after the cut: basis transport (6R/n) | per layer after the cut: core readout (R³ / n²) |
+|---|---|---|---|---|
+| n/8 | 18 | 48 | 0.75 | 2 |
+| n/4 | 36 | 384 | 1.5 | 16 |
+| n/2 | 72 | 3,072 | 3 | 128 |
+
+- At R = n/8 a bin costs ≈ 66 u once plus ≈ 2.75 u per later layer. A 15-layer chain needs ≈ 3 such bins: ≈ 250 u
+  for all content older than 4 layers.
+- At R = n/4, core formation and readout make it ≈ 3× dearer.
+
+**What remains.** The young tier (ages 1–4, exact pairs) still costs ≈ 4 × 15 × 7 ≈ 400 u and is now FC's dominant cost.
+Binning removes the L² scaling of the *old* content, not the bill. The next questions are:
+- (i) the same static-bin compression at ages 3–4;
+- (ii) a cheaper core readout: a CP of the R³ core, or a smaller per-mode R for the Z-leg.

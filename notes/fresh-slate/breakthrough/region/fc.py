@@ -110,11 +110,83 @@ def cp_merge(cp, src, R, sweeps, dtype, mstats=None):
     return (A, B, C)
 
 
-def run(W, window=None, slices=False, young=None, rank=None, edge=True, readout=True, dtype=np.float32, trace=None, k4f=None, k4use=True, share=None, share_young=2, k4own=False, k4mf=False, prune=None, prune_slices=None, merge=None, merge_young=2, sweeps=3, mstats=None):
+def src_triplets(src, dtype):
+    Z = src["Z"]; w = src["w2"]
+    Yl = src["SP"].astype(dtype) @ Z
+    Xs, Ys, Zs = [Yl * w[:, None], Yl * w[:, None], Z * w[:, None]], [Yl, Z, Yl], [Z, Yl, Yl]
+    if "Delta" in src:
+        T = src["Delta"] @ Z
+        Xs += [Z, Z, T]; Ys += [Z, T, Z]; Zs += [T, Z, Z]
+    return Xs, Ys, Zs
+
+
+def src_d21(src, dtype):
+    Xs, Ys, Zs = src_triplets(src, dtype)
+    return sum(((x * y).T @ z).astype(np.float64) for x, y, z in zip(Xs, Ys, Zs))
+
+
+def bin_compress(inbin, R, kind, dtype, binstats=None, sweeps=3):
+    """Compress the bin's triplets once. 'tucker': project every leg onto the top-R subspace of the weighted leg Gram
+    (HOSVD-like, one basis per mode); 'cp': rank-R CP by ALS (sweeps). Exact copies are kept for diagnostics only."""
+    import copy, time
+    t0 = time.time()
+    Xs, Ys, Zs = [], [], []
+    for src in inbin:
+        a, b, c = src_triplets(src, dtype); Xs += a; Ys += b; Zs += c
+    X = np.concatenate(Xs); Y = np.concatenate(Ys); Z = np.concatenate(Zs)
+    N, n = X.shape
+    exact = [dict(Z=src["Z"].copy(), w2=src["w2"], SP=src["SP"], **({"Delta": src["Delta"]} if "Delta" in src else {})) for src in inbin]
+    if kind == "tucker":
+        ny = (Y.astype(np.float64) ** 2).sum(1); nz = (Z.astype(np.float64) ** 2).sum(1); nx = (X.astype(np.float64) ** 2).sum(1)
+        def basis(L, wt):
+            Gm = (L.astype(np.float64) * wt[:, None]).T @ L.astype(np.float64)
+            ev, U = np.linalg.eigh(Gm); return U[:, ::-1][:, :R].astype(dtype)
+        Ux, Uy, Uz = basis(X, ny * nz), basis(Y, nx * nz), basis(Z, nx * ny)
+        X = (X @ Ux) @ Ux.T; Y = (Y @ Uy) @ Uy.T; Z = (Z @ Uz) @ Uz.T
+        units = 3 * N / n + 3 * N * R / n ** 2 * 2 + N * R ** 3 / n ** 3     # Grams + projections + core formation
+        read_units = (R / n) ** 3 * n / 1 / n ** 0 / n  # placeholder, priced in REPORT
+    else:
+        cp = cp_merge(None, dict(Z=np.zeros((0, n), dtype), w2=np.zeros(0, dtype), SP=np.zeros((0, 0))), R, 0, dtype) if False else None
+        sc = np.linalg.norm(X, axis=1) * np.linalg.norm(Y, axis=1) * np.linalg.norm(Z, axis=1)
+        idx = np.argsort(-sc)[:R]
+        A, B, C = X[idx].copy(), Y[idx].copy(), Z[idx].copy()
+        XA = X @ A.T; YB = Y @ B.T; ZC = Z @ C.T; nprod = 3
+        for it in range(sweeps):
+            for k in range(3):
+                if k == 0:
+                    M = X.T @ (YB * ZC); Gm = (B @ B.T) * (C @ C.T)
+                elif k == 1:
+                    M = Y.T @ (XA * ZC); Gm = (A @ A.T) * (C @ C.T)
+                else:
+                    M = Z.T @ (XA * YB); Gm = (A @ A.T) * (B @ B.T)
+                Gm = Gm.astype(np.float64); Gm += 1e-6 * np.trace(Gm) / len(Gm) * np.eye(len(Gm))
+                F = np.linalg.solve(Gm, M.T.astype(np.float64)).astype(dtype)
+                if k == 0:
+                    A = F; XA = X @ A.T
+                elif k == 1:
+                    B = F; YB = Y @ B.T
+                else:
+                    C = F; ZC = Z @ C.T
+                nprod += 2
+        # store symmetrised CP as 3 permuted triplet families
+        X = np.concatenate([A, A, B]); Y = np.concatenate([B, C, C]); Z = np.concatenate([C, B, A])
+        X = X / 3 * 3; units = nprod * N * R / n ** 2
+        X = np.concatenate([A, A, B]) / 3
+    if binstats is not None:
+        binstats.append(dict(cut_units=float(units), N=int(N), R=int(R), kind=kind, wall=time.time() - t0))
+    return dict(X=X, Y=Y, Z=Z, exact=exact)
+
+
+def bin_readout(b):
+    return ((b["X"] * b["Y"]).T @ b["Z"]).astype(np.float64)
+
+
+def run(W, window=None, slices=False, young=None, rank=None, edge=True, readout=True, dtype=np.float32, trace=None, k4f=None, k4use=True, share=None, share_young=2, k4own=False, k4mf=False, prune=None, prune_slices=None, merge=None, merge_young=2, sweeps=3, mstats=None, bincut=None, binstats=None):
     L, n, _ = W.shape
     W64 = W.astype(np.float64)
     Wf = W.astype(dtype)
     sources = []          # dicts: s, w2, Y, Z, (Delta), (Q)
+    binc = None           # once-compressed age bin: dict(exact=[sources], X, Y, Z) transported linearly
     cp = None             # merged old content: CP factors (A, B, C), each (R, n), in current layer coordinates
     outs = []
     D21 = None
@@ -166,6 +238,10 @@ def run(W, window=None, slices=False, young=None, rank=None, edge=True, readout=
             src["Z"] = src["Z"] @ G                               # (n, n) or, rank-k, R = Q^T Z (k, n)
         if cp is not None:
             cp = tuple(F @ G for F in cp)
+        if binc is not None:
+            binc["X"] = binc["X"] @ G; binc["Y"] = binc["Y"] @ G; binc["Z"] = binc["Z"] @ G
+            for src in binc["exact"]:
+                src["Z"] = src["Z"] @ G
         w2 = (p / s)
         new = dict(s=l, w2=w2.astype(dtype), Z=Wn.copy(), SP=(S * P[None, :]), k4a=relu_k4(mu, v))
         if slices:
@@ -259,6 +335,11 @@ def run(W, window=None, slices=False, young=None, rank=None, edge=True, readout=
                 else:
                     keep.append(src)
             sources = keep
+        # ---- once-per-bin compression at the cut (bincut = dict(m, lo, hi, R, kind))
+        if bincut is not None and l + 1 == bincut["m"]:
+            inbin = [x for x in sources if bincut["lo"] <= l + 1 - x["s"] <= bincut["hi"]]
+            sources = [x for x in sources if not (bincut["lo"] <= l + 1 - x["s"] <= bincut["hi"])]
+            binc = bin_compress(inbin, bincut["R"], bincut["kind"], dtype, binstats, sweeps)
         # ---- D21 of z_{l+1}
         D21_prev = D21
         D = np.zeros((n, n), dtype=np.float64)
@@ -282,6 +363,16 @@ def run(W, window=None, slices=False, young=None, rank=None, edge=True, readout=
                 else:
                     Zs, Ts = Zf, T
                 D += (((Zs * Zs).T @ Ts) + 2 * ((Zs * Ts).T @ Zs)).astype(np.float64)
+        if binc is not None:
+            Db = bin_readout(binc)
+            D += Db
+            if binstats is not None:
+                De = np.zeros((n, n))
+                for src in binc["exact"]:
+                    De += src_d21(src, dtype)
+                binstats.append(dict(t=l + 1, eps_bin=float(np.linalg.norm(Db - De) / np.linalg.norm(De)),
+                                     bin_share=float(np.linalg.norm(De) / np.linalg.norm(D - Db + De)),
+                                     eps_total=float(np.linalg.norm(Db - De) / np.linalg.norm(D - Db + De))))
         if cp is not None:
             A_, B_, C_ = cp
             D += ((((A_ * B_).T @ C_) + ((A_ * C_).T @ B_) + ((B_ * C_).T @ A_)) / 3).astype(np.float64)
