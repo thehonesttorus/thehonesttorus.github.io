@@ -123,6 +123,10 @@ Staging first: the public dataset (77 GB), keenanpepper's full-split joint momen
 
 ---
 
+## 6a. Fresh-slate pivot (1 Oct, 17:45 UTC)
+
+The user ruled that the competition system is to be designed from a fresh slate, with the programme's theoretical unlocks as the full driving force and no adaptation of existing estimators (adapting them "as an NCG add-on is always going to be heavily restricted and ruin our development of the abstract framework"). Lines A and B of this plan and the moment-chain work of sections 3.1 and 6b are therefore closed as design lines; their measurements stay as facts about the object. The design now runs as six parallel principle-driven streams with shared infrastructure; see [fresh-slate/BRIEF.md](fresh-slate/BRIEF.md) and [streams/README.md](streams/README.md). The validated V25 bundle remains only as insurance.
+
 ## 6b. Campaign status, 1 Oct 17:00 UTC (stream reports in [streams/](streams/))
 
 - **The D21 interface is solved at the real shape, given exact inputs** (oracle1024, preliminary: one MLP, N = 32k × 2 replicas, replica cross-product with jackknife errors; production N = 3.5e6 running). At width 1024 the leg-partition first-order closure, with no fitted coefficient, gives D21(l+1) errors of 0.8–1.0 % at layers 3–14, below the 2.2 % bar; the closure error falls as ≈ n^(−0.8) (deep layers 4.7 → 2.6 → 0.9 % at n = 128 → 256 → 1024) against n^(−0.25) for the leading Wick term. The fitted coefficients equal the leg-partition values within noise at every depth: the drift seen at width 128 is a finite-width effect, so no coefficient table is needed.
