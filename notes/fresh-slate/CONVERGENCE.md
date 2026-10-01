@@ -155,3 +155,33 @@ Correction to "Measured companions" above: the "subcritical (geometric), O(n) in
 - **Width-universal loss law.** δ(c)/δ_drop ≈ A e^{−4.6c} holds at all three widths. The c needed for a loss of 10 % of FC is 1.24 / 1.39 / 1.61 at n = 256 / 512 / 1024, a drift explained by δ_drop/FC = 8.6 / 24 / 61. At c = 2, n = 1024, raw is within +2 % of FC on all 6 networks.
 - **Status of G10.** It is a theorem for orthogonal layers (Connes 1989 checked) and a conjecture for gated Gaussian layers.
 - **Per-age weight, directly measured.** Team G inferred the score-effective 1/a weight from optimality. H §12 measures it directly for the slice legs: dropping slice legs older than 4 / 2 / 1 layers costs 1.6–3.5× / 3.6–7.6× / 5–12× in raw (MLPs 0–2, n = 1024). Old ages weigh far more at score level than their Frobenius share, consistent with the reversal.
+
+## Check-in 23:45 UTC: costate's two tests, and the sessions stopped by usage limits
+
+**Costate §8: the dilation sector inside FC** (n = 1024, MLPs 0–2):
+- *Frobenius vs readout.* The dilation (CAP) sector is 81–86 % of the old D21 energy at depth, but only ≈ 50 % of its readout value. Carrying it, as one conserved scalar at O(n²) per layer, halves the error at every window:
+
+  | exact window | × full FC raw | with the sector carried |
+  |---|---|---|
+  | ages ≤ 2 | 70 | 30 |
+  | ages ≤ 4 | 30 | 15 |
+  | ages ≤ 6 | 14 | 10 |
+  | ages ≤ 8 | 5.9 | 3.8 |
+
+- *The mixing remainder.* It decays geometrically at ≈ 0.62–0.76 per age, and it holds the other half of the readout. Reaching full FC within 2× still needs ≳ 90 of the 120 exact pairs, so the dilation sector saves ≲ 25 %.
+
+**Costate §9: team B's E2 (Hadamard readout of transported symmetric matrices) is killed.**
+- All 135 Hadamard pairs of 16 natural transported matrices leave 46–83 % of the traceless old fluctuation unexplained. This is a lower bound for any K.
+- The single dilation template already leaves 56–84 %, so the other 134 features add only 3–10 points.
+- If the leaders carry about 7 symmetric matrices per layer, those matrices are outside every natural object tested.
+
+**Wick legs vs slice legs at score level.** Costate's "ages ≤ 4 only" drops both leg types of older content and costs 30×. H §12's slice-only cut at the same age costs 1.6–3.5×. So the Wick legs carry most of the old memory's score weight, and the slice legs a smaller but non-negligible part.
+
+**Sessions.**
+- *Stopped on account usage limits* ("session limit" / "monthly spend limit"; nothing pushed since):
+  - region at 21:47, before finishing the combined design (young exact + team D frames + team F cohort);
+  - team A at 21:35, with its G4 loop-length script committed but not run;
+  - team C at 21:34, which also still needs the user's direct "go" for G2.
+- *Finished:* costate (§8, §9); teams B, E, F, G.
+- *Coordinator H:* finished (REPORT §10–12).
+- *Running:* nothing. Resuming region or team A is a spend decision for the user.

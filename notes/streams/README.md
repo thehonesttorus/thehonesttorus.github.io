@@ -60,3 +60,8 @@ Experiments running alongside: costate (dilation-sector share of the memory at n
 - **Coordinator experiments** (`notes/essence/H-rational-memory/`): response-matched merged histories reproduce the old memory's future at R = n/4 with ≈ 1 % residual energy (n = 256), where pruning leaves 79 % and tensor-norm CP fails; the fit cost is the open problem.
 - **Bench complete** (bench session): truth for w64 … w1024 (w1024_d16: 6 MLPs, N = 2e6, noise ≤ 4.4e-8) and the smoke shape w256_d32.
 - **Background workflows** (judge panel, foundations check, bridges-synthesis critic) stopped at ≈ 20:10 UTC; finished parts are in the repo.
+
+**Status at 23:45 UTC (1 Oct).**
+- *Stopped on account usage limits:* region (21:47, combined design unfinished), team A (21:35, G4 not run) and team C (21:34, G2 also awaits the user's "go").
+- *Finished:* costate (§8 dilation sector ≈ 50 % of the old readout; §9 Hadamard-readout carrier killed), teams B, E, F, G, and coordinator H (rational memory: REPORT §10–12).
+- *Running:* nothing.
