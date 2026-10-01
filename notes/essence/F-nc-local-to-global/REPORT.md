@@ -171,6 +171,39 @@ If c_Z = 1 (an angle-0 sector, i.e. a conserved quantity), no factorization cons
 
 This is the abstract reason that localization (Chen–Eldan, Bauerschmidt–Bodineau) and not factorization is the right tool for conserved or critical sectors. It is the shape used in T1.
 
+### 2.5 G5: Theorem F1 at the wall (Dixmier-critical trickle-down)
+
+Write ε_m := η_m/(m − 1) for the *local excess* at level m (m free pieces). Theorem F1(c) reads n·gap ≥ ∏_{m=2}^{n}(1 − ε_m). Since log(1 − x) ≥ −x − x² for 0 ≤ x ≤ ½:
+
+**Corollary F1-crit (proved).** If ε_m ≤ ½ for all m, then
+
+  n · gap ≥ exp(−Σ_{m≤n} ε_m − Σ_{m≤n} ε_m²).
+
+The global gap is therefore governed by **one number, the divergence of Σ_m ε_m**. This gives three regimes, which are exactly the three regimes of coordinator note 3.
+
+| regime | local excess ε_m | global gap | name |
+|---|---|---|---|
+| gapped | Σ ε_m < ∞ (e.g. η_m ≲ m^{−δ}, correlations decaying faster than the free region grows) | n·gap ≥ c > 0: optimal Θ(1/n) | geometric / summable |
+| **Dixmier-critical** | ε_m ~ η̄/m, i.e. η_m → η̄ (bounded spectral independence, local gaps closing like 1/m) | n·gap = n^{−η̄ + o(1)} | **the exponent of polynomial loss is the Dixmier trace** Tr_ω(diag ε_m) = lim (1/log n) Σ_{m≤n} ε_m |
+| sub-critical log | ε_m ~ c/(m log m) | n·gap ≳ (log n)^{−c} | the global gap closes only logarithmically |
+
+**Readings.**
+- **Wall ≡ L^{1,∞}.** In the Dixmier-critical row, the operator D_ε = diag(ε_m) lies in the weak trace class L^{1,∞}. The global loss is its Dixmier trace, which ignores every finite set of levels and sees only the scale-invariant tail. This is exactly the structure coordinator note 2 found for the age-graded memory: k(a) = 2n/a, total Σ_a k(a) ≈ 2n log L.
+  - So the answer to "does F1 have a Dixmier-critical analogue" is **yes, and it is F1 itself, read through the Dixmier trace**. Bounded spectral independence (the standard ALO hypothesis) *is* the critical case.
+  - The uniform-η form gives n^{−sup η}. The level-resolved form gives n^{−Tr_ω(ε)}, with Tr_ω(ε) = the log-average of η_m. That average is never larger than the sup and can be much smaller when η_m is large only on a bounded range of scales.
+- **Logarithmic closing** needs η_m ≈ c/log m. That means spectral independence must *improve* slowly with the size of the free region, which is the signature of a system sitting exactly at a threshold where correlation decay is marginal.
+- **Sharpness.** At β = 0 (product state) the product formula is exact (§2.1 table, 0.2500 = 0.2500), and Alev–Lau Prop 3.3 gives tightness in the complex setting. So the three regimes are not artefacts of the bound.
+- **Noncommutative validity.** Unchanged: the corollary is pure algebra on Theorem F1, which holds for any lattice of KMS-symmetric conditional expectations.
+
+**Which sampling or counting problem it would improve (Speculation, with the hypothesis made explicit).** The level-resolved exponent pays off at a **uniqueness threshold**, where the uniform bound sup_m η_m degrades but its log-average need not. The natural targets are:
+- the hardcore model at λ_c(Δ);
+- antiferromagnetic two-spin systems at the tree-uniqueness boundary on bounded-degree graphs;
+- the quantum analogue, Gibbs samplers at the threshold temperature of a commuting or weakly non-commuting Hamiltonian, through the noncommutative F1.
+
+If at the threshold the pinned-region influence bound behaves like η_m ≤ C + c log m (influence sums truncated by the free-region size), the uniform form gives nothing finite, while F1-crit gives n·gap ≥ n^{−C} e^{−(c/2) log² n}, i.e. quasi-polynomial. If η_m is bounded on average (finite log-mean), F1-crit gives a polynomial bound with the averaged exponent. Annealed counting (Štefankovič–Vempala–Vigoda) inherits whichever bound holds. **What must be checked** before any claim is the level-resolved influence profile η_m at the threshold. Recent threshold-mixing results should be read with this in mind; their constants were not verified here.
+
+**The competition reading.** Our free sector is Dixmier-critical in the age variable (rank 2n/a, team D; energy g³ per step, team C), and the measured carrier pays log L in leg dimension. S1 (§5.5) shows the same phenomenon from the carrier side: the shared rank needed falls faster than 2n/a once the content is old (64 dimensions for all ages ≥ 8). In F1-crit language, the old levels have *summable* excess, and only ages ≲ 8 are critical.
+
 ## 3. The dictionary, precise (seed 4)
 
 | role | object in the competition | statement | status |
@@ -355,6 +388,8 @@ Each filter keeps the exact diagonal and a part of the old off-diagonal slice, i
 | *causal* cohort k = 32, a_min = 8 | 4.27e-7 | 1.09 |
 | *causal* cohort k = 256, a_min = 4, cohorts of 4 layers | 4.12e-7 | 1.05 |
 | *causal* cohort k = 128, a_min = 4 | 5.51e-7 | 1.40 |
+| MLP 1: exact / shared k = 64, a_min = 8 | 4.03e-7 / 4.11e-7 | 1 / 1.02 |
+| MLP 1: causal k = 64, a_min = 8 / causal k = 32, a_min = 8 / causal k = 256, a_min = 4 | 4.18e-7 / 4.37e-7 / 4.03e-7 | 1.04 / 1.08 / 1.00 |
 
 *Causal* means: each source is projected once, when it reaches age a_min, onto its own top-k target directions. It joins the open cohort, whose older members are re-projected onto the newest member's basis (a k × k change on the cores). Nothing else is ever fitted, and transport is exact afterwards. Building the basis needs only a rank-k range finder of one n × n factor, O(k n²), not an oracle.
 
@@ -530,6 +565,25 @@ with R_t the readout map and T_t the exact (first-order chaos) transport. So the
   - The fresh-weight lemma *is* Jones' Markov-trace independence in the Brauer algebra of O(n), with index n².
 - **The competition side.** The frame reorganizes all of A–E into one two-sector picture whose numbers agree across five teams. It explains why every gauge-invariant or annealed carrier is capped (they are conditional expectations onto the cap) and why local errors do not compound (Theorem F1, η = 0). It turns "carry memory cheaply" into an approximate-commuting-square defect with a measured per-layer tolerance.
 - **What it did not buy.** A carrier. No measured construction has both an O(n²) state and a small free-sector defect. The live route is node sufficiency (Bethe's oracle) plus law-level cap pinning plus shared-basis free cores (S1).
+
+### 7.5 Check of coordinator notes 2–3 against F's dictionary
+
+**Ghost reading (note 3 §2).** The fact is correct: for a disjoint union of expanders, ⊕P_k (projections onto constants) is a non-compact ghost in the Roe algebra and obstructs coarse Baum–Connes (Higson; Higson–Lafforgue–Skandalis). Two corrections to the analogy:
+- **The HLS ghost exists *because* of the spectral gap.** P = f(Δ) for a function f isolating 0, which is possible only if the gap is uniform. Our memory sits at the wall with no gap (team D F9.2; team B λ_eff ≈ 1). So "a ghost of the same kind" holds only for the ghost *property* (entries → 0, not compact), not for the *mechanism*.
+- **The block ranks are not uniformly bounded.** The HLS blocks have rank 1 for every k. Our blocks have rank ≈ n/4 (ages 5–8, region §9) or 64 = n/16 (ages ≥ 8, F §5.5), growing with n. In coarse-geometric terms the memory is "blockwise finite rank" only at fixed n. The correct statement is **uniformly bounded rank per block relative to n**, a ratio, which is a weaker (L^{p,∞}-type) condition than HLS's.
+
+**Hyperfiniteness reading (note 3 §2).** Connes 1989 (*Compact metric spaces, Fredholm modules, and hyperfiniteness*): a finitely summable Fredholm module forces a hypertrace, so reduced group C*-algebras of non-amenable groups admit none. θ-summable ones can exist. Two flags:
+- At every finite n the layer algebras are finite-dimensional, hence trivially hyperfinite. The obstruction can only be **asymptotic**: in the n → ∞ limit fresh Gaussian layers generate a free semicircular family (the L(F_L) situation), and the statement must be that the summability degree p(n) of any global carrier diverges with n.
+- The age axis is ℤ (amenable). The proposed escape, AF/hyperfinite along age and free within a block, is consistent with F's two-sector picture: the cap sector is the amenable, invariant part, and the free sector is the non-amenable part, frozen blockwise.
+
+  Status: synthesis, plausible. It is not a theorem until the quantitative p(n) statement is formulated.
+
+**Note 2 (Fredholm).** Consistent with F's dictionary:
+- F = 2P − 1 with P the gauge average equals the cap/through-string split (P = E_W onto the Brauer invariants);
+- [F, a] ≠ compact is the statement that the free sector has no finite-rank image under the invariant projection;
+- "books close = D² over the layer filtration" is Theorem F1 at η = 0 (orthogonal martingale increments).
+
+The proposed Dixmier lower bound Ω(n³ L log L) for covariant linear carriers is F's Conjecture F4 in the same words. **S1's result constrains it.** The log is paid only over ages ≲ 8: beyond that, a shared 64-dimensional basis is lossless at n = 1024 (MLPs 0, 1). So any Dixmier lower bound must be stated over the critical age window, not over all of L.
 
 ## 8. Sources
 
