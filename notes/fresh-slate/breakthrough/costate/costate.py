@@ -47,6 +47,26 @@ def pair_slice(a2, U, V, X, dl, coinc=True):
     return S
 
 
+def Kh(C, h):
+    """(2,1) slice of the scale-field mode z = (1+zeta) x, Cov(zeta, x) = h:  2 C_pp h_q + 4 h_p C_pq."""
+    return 2 * np.diag(C)[:, None] * h[None, :] + 4 * h[:, None] * C
+
+
+def Kh_adj(C, X):
+    return 2 * np.diag(C) @ X + 4 * np.sum(C * X, axis=1)
+
+
+def fit_h(C, S, iters=40):
+    """Least-squares h for S ~ Kh(C, h), conjugate gradient on the normal equations (O(n^2) per iteration)."""
+    b = Kh_adj(C, S); h = np.zeros_like(b); r = b.copy(); p = r.copy(); rr = r @ r
+    for _ in range(iters):
+        Ap = Kh_adj(C, Kh(C, p)); a = rr / (p @ Ap); h += a * p; r -= a * Ap
+        rn = r @ r
+        if rn < 1e-24 * (b @ b): break
+        p = r + (rn / rr) * p; rr = rn
+    return h
+
+
 def filt(Sold, how, r=None):
     """Oracle filters on the exact old slice: what part of it does the readout need?"""
     if how == "diag":
@@ -61,7 +81,7 @@ def filt(Sold, how, r=None):
     raise ValueError(how)
 
 
-def predict(Ws, A=None, old="drop", rank=None, coinc=True, K=8, record=None, Ap=0, oldfilter=None, r=None, law=False):
+def predict(Ws, A=None, old="drop", rank=None, coinc=True, K=8, record=None, Ap=0, oldfilter=None, r=None, law=False, keep_old=False):
     """old: 'drop' | 'slice' (diagonal double edge only) | 'pool' (renewal: aged-out content is projected on its
     (2,1) slice at the current layer and re-emitted as a secondary form, transported exactly for Ap more layers
     (Ap=None: never re-projected); Ap=0 is the full coincident-support slice chain)."""
@@ -95,9 +115,18 @@ def predict(Ws, A=None, old="drop", rank=None, coinc=True, K=8, record=None, Ap=
         if old in ("gsm", "gsmslice") and gacc != 0.0 and not law:
             S += gacc * Kg
         if record is not None and Sfilt is not None and np.any(Sfilt):
-            record.append(dict(layer=l, gsm_oracle=float(np.sum(Kg * Sfilt) / np.sum(Kg * Kg)), gsm_pred=float(gacc)))
+            record.append(dict(layer=l, gsm_oracle=float(np.sum(Kg * Sfilt) / np.sum(Kg * Kg)), gsm_pred=float(gacc),
+                               Sold=Sfilt.copy() if keep_old else None, Kg=Kg.copy() if keep_old else None,
+                               vecs=dict(one=np.ones(n), m=G.m.copy(), s=G.s.copy(), s2=G.s ** 2, Ea=G.Ea.copy(),
+                                         Phi=G.Phi.copy(), p0=G.Ed[0].copy()) if keep_old else None))
         if Sfilt is not None and live and np.any(Sfilt):
-            if isinstance(oldfilter, str) and oldfilter.startswith("gsm"):
+            if oldfilter in ("hfit", "hfitd"):
+                h = fit_h(G.C, Sfilt)
+                Kf = Kh(G.C, h)
+                if oldfilter == "hfitd":
+                    Kf = Kf - np.diag(np.diag(Kf)) + np.diag(np.diag(Sfilt))
+                S += Kf
+            elif isinstance(oldfilter, str) and oldfilter.startswith("gsm"):
                 # Gaussian scale mixture z = (1+d) x: slice of 2 Var(d) (m (x) C)_sym, one scalar per layer fitted (oracle)
                 Kg = 2 * G.m[:, None] * G.C + (G.m[None, :] * np.diag(G.C)[:, None])
                 if oldfilter == "gsm_off":
