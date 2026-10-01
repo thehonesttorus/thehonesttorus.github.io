@@ -26,10 +26,11 @@ Gaussian are loopless hafnians of half-edges weighted by correlations), and the 
 |---|---|
 | v1 raw final MSE, widths 64/128/256/512 | 1.75e-4 / 6.8e-5 / 1.41e-5 / 5.1e-6 |
 | width slope | n^{-1.76 ± 0.12} |
-| **projected raw at 1024** | **1.4e-6** (fit 1σ 1.1–1.8e-6; up to ≈ 7e-6 if the extrapolation is as optimistic as it is for the Gaussian baseline) |
+| projected raw at 1024 (fit on 64–512) | 1.4e-6 (1σ 1.1–1.8e-6) |
+| **measured raw at 1024** (bench `w1024_d16`, MLPs 0–2, N = 2e6, noise subtracted) | **1.10e-6** (1.17 / 1.21 / 0.92 e-6); paired Gaussian closure 5.06e-6 (ratio 0.22). Numpy wall ≈ 45 s per MLP |
 | cost at 1024 (single-edge form, float32) | ≈ 18 units/layer (≈ 2 covariance, ≈ 6 cumulant contractions, ≈ 8 slice propagation, 2 coincidence corrections) → ≈ 190–260 units = 0.19–0.25 B; elementwise Mehler work < 0.2 units/layer |
-| **projected adjusted MSE at 1024** | **≈ 3e-7** (range 2e-7 – 2e-6) |
-| bar (1 Oct) | 1.6e-9 adjusted, so 200–1000× short. **Not competitive as built.** |
+| **adjusted MSE at 1024** | **≈ 2.4e-7** (measured raw × 0.19–0.25 cost factor: 2.1e-7 – 2.8e-7) |
+| bar (1 Oct) | 1.6e-9 adjusted, so ≈ 150× short (raw needs ≈ 1e-8; v1 is 110× above). **Not competitive as built.** |
 
 ## Why, and what would make it competitive
 

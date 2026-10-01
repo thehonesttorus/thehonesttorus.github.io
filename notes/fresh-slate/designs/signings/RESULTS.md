@@ -86,7 +86,11 @@ w64: shared bench `w64_d16` (8 MLPs, N = 1e7). w128/256/512: own bakes of `sampl
 | **v1** copula + carried (2,1) slice + hyperedge terms | 1.75e-4 ± 0.3e-4 | 6.8e-5 ± 1.7e-5 | 1.41e-5 ± 0.2e-5 | 5.1e-6 ± 0.7e-6 | **1.76 ± 0.12** | **1.4e-6 (1.1e-6 – 1.8e-6)** |
 | v1, single-edge paths (p = q = 1; the costed form) | 2.6e-4 | — | 1.43e-5 | 5.1e-6 | | same as v1 at n ≥ 256 |
 
-Calibration caveat: the brief quotes ≈ 4e-5 for Gaussian closure at 1024, while my extrapolation of the bench
+**Direct check at n = 1024** (shared bench `w1024_d16`, MLPs 0–2, paired): v1 raw 1.17e-6 / 1.21e-6 / 9.2e-7, mean 1.10e-6;
+Gaussian closure 5.24e-6 / 4.90e-6 / 5.06e-6. The fit projection (1.4e-6) held. The caveat below is obsolete: the brief's
+Gaussian-closure figure was corrected to 4.3e-6 at 1024.
+
+Calibration caveat (obsolete): the brief quotes ≈ 4e-5 for Gaussian closure at 1024, while my extrapolation of the bench
 Gaussian baseline gives 7e-6. If extrapolation from ≤ 512 is optimistic by the same factor (≈ 5×), v1 at 1024 is
 ≈ 7e-6. v1 is consistently 0.22–0.34 × the Gaussian baseline at n ≥ 128, which gives a second projection,
 0.25 × (7e-6 … 4e-5) = 2e-6 … 1e-5.
