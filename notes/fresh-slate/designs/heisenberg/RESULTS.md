@@ -152,3 +152,23 @@ Ablation at w256: dropping the exact coincident planes (5 instead of 7 products 
 **Cost (kit prices, Strassen L5 0.557 u per product).** Per (source, target) pair: 7 products (direction update, R, 2 star, plane product Δ₂U, 2 contractions with the diagonal merged in). All ages: 120 pairs × 7 × 0.557 + 16 × 1.03 (reference sandwich) ≈ **485 u = 0.47 B**. A = 7: 92 pairs ≈ **375 u = 0.37 B**. Batch each layer's pairs into one Strassen family: about 16 families × 79 calls ≈ 1.3k calls (needed for the residual cap).
 
 **Adjusted at 1024:** all ages 4.23e-7 × 0.47 ≈ **2.0e-7**; A = 7 4.90e-7 × 0.37 ≈ **1.8e-7**. For comparison, the Gaussian reference at the 0.1 floor is ≈ 4.1e-7.
+
+## R12. Exact coincident-pattern κ₃ transport ("re-birth"), `hdpull.py rebirth=True`, `k3err2.py`
+
+At every layer, the exact zero-correlation first-order response of the coincident patterns of κ₃(z) through the ReLU is added as a new pull-back source, minus the mean-gate response the transported directions already apply. Coefficients:
+- (2,1) pattern: Φ_q[Φ_p − E(a_p)φ_p/σ_p] instead of Φ_p²Φ_q. Derived here from the Edgeworth term and identical to the judge's theory.md §2.
+- diagonal: Φ + ½tφẽ₂ − ẽ₁φ − ẽ₁²tφ instead of Φ³. Verified against direct numerical integration to 1e-9 at four (μ, σ).
+
+The source has plane + diagonal structure, so it costs the same 3 products per (source, target) pair as the coincident planes.
+
+| | layer 2 slice rel. error | layer 8 | layer 15 |
+|---|---|---|---|
+| width 64 (N = 3e6, noise floor 0.02), mean gate → re-birth | 0.221 → 0.190 | 0.252 → 0.258 | 0.310 → 0.282 |
+| width 256 (N = 1e6, noise floor 0.12), mean gate → re-birth | 0.215 → 0.195 | 0.353 → 0.318 | 0.311 → 0.286 |
+
+| bench (paired) | mean-gate HD | re-birth HD |
+|---|---|---|
+| w256_d16 (8) | 5.17e-6 | 5.18e-6 |
+| w1024_d16 (6) | 4.23e-7 ± 2.1e-8 | **4.02e-7 ± 2.8e-8** (−5 %) |
+
+Reading: the zero-correlation coincident correction is right but small here. After subtracting the noise floor, most of the 20–30 % transported-slice error remains. That remainder is the O(ρ) part of the one-step response: joint gate law and δ-insertions with correlation edges, for distinct as well as coincident triples. The mean |ρ| between pre-activations is still 0.1–0.2 at widths 256–1024, so this part does not vanish at the competition width. The resummed pair-gate-covariance form (foundations-facts F6.8) is the next repair. It was not built here.
