@@ -23,9 +23,13 @@ eval_q.evaluate(predict, ["w64_d16", "w128_d16", "w256_d16"], units_1024=110)
 
 CLI: `python eval_q.py --module my.py --func predict --sets w64_d16,w128_d16 --units 110 --json out.json`.
 
-Sets (see `python bench.py`; 'q_' sets are the quick first bakes, replaced by higher-N bakes of the SAME seeds as they
-finish — the networks never change, only the truth noise falls):
+Sets (final; seeds consecutive from the first listed; w512/w1024 truth noise exceeds the best errors: compare paired):
 
 | name | width × depth | MLPs | seeds | N | truth noise |
 |---|---|---|---|---|---|
-| see `python bench.py` | | | | | |
+| w1024_d16 | 1024 × 16 | 6 | 7301001… | 2e+06 | ≤ 4.4e-08 |
+| w128_d16 | 128 × 16 | 8 | 128001… | 6e+07 | ≤ 4.0e-09 |
+| w256_d16 | 256 × 16 | 8 | 256001… | 2e+07 | ≤ 5.7e-09 |
+| w256_d32 | 256 × 32 | 2 | 256101… | 1e+07 | ≤ 6.6e-09 |
+| w512_d16 | 512 × 16 | 4 | 512001… | 2e+06 | ≤ 4.5e-08 |
+| w64_d16 | 64 × 16 | 8 | 64001… | 1e+08 | ≤ 1.1e-09 |
