@@ -420,7 +420,19 @@ costs more resolution, so it does not beat the causal per-source frames.
 - **Verdict on note 2's hypothesis.** The carrier is lossless and O(n³ log L), but its constant is 9, not 3. Landing in
   0.12–0.17 B needs ≈ 3.5× fewer products per unit of resolution *and* compression of ages 1–2. Neither is available in
   the (y, y, z) + (z, z, Δz) atom form, because the Hadamard squares force full-coordinate legs.
-- **The next lever is therefore a cheaper readout of D21 from a factored source.** One option is the Khatri–Rao form
+- - **Relation to region §9 and team G (added after their messages).**
+  - My frames are not re-fitted each layer. U ← QR(Gᵀ U) transports the *same* subspace exactly, so in the static
+    (Heisenberg) frame of coordinator note 1 it is a frozen frame. Only the truncation at age changes is a re-fit, and it
+    is nested: an SVD inside the current span.
+  - This matches region §9: ages 5–8 frozen once at a cut at R = n/4 are lossless, which is k = 2n/a at a = 5–8. The
+    earlier failures were different: moving shared frames re-fitted every layer, and fixed ranks for all ages.
+  - Team G's exact core identity carries a shared block frame as a k × k × k core C. Transport costs k⁴ and readout
+    costs n k³ + n² k per block, independent of the number of ages. It removes the log L in cost only once k ≲ n^{2/3},
+    which never happens at L = 16, n = 1024.
+  - Team B's report that ≈ 80 % of the old energy sits in a channel constant in the repeated index (one n-vector) would
+    shrink the norm the frames must carry. It would not shrink the rank of the remainder, which sets this carrier's cost.
+
+**The next lever is therefore a cheaper readout of D21 from a factored source.** One option is the Khatri–Rao form
   (Y∘Y) = (A_Y ⊙ A_Y)(U ⊙ U)ᵀ, which wins only for k ≲ √n ≈ 32. The other is a contraction that needs D21 only through
   E21w ∘ D21 and diag D21: the covariance arrow and the readout, about 2 n² numbers, rather than all of it. The slice
   corrections dk21 currently need full D21, and that is the binding consumer.
