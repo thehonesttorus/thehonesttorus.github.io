@@ -18,6 +18,10 @@ Single-atlas table (python oracle_k3.py A.npz [B.npz ...]), one row per layer:
               K=3 chain carries implicitly in O(n^3)):
                  kappa3(a)_{ijk} ~ sum_cyc Phi_i Phi_j w2_k C_ik C_jk + Phi_i Phi_j Phi_k kappa3(z)_{ijk}
               with Phi = P(z > 0) (atlas gate_p) and w2 = phi(alpha)/sigma (Gaussian density of z at 0)
+  herm2/3/4   eps of the Gaussian-input Hermite (Wick) expansion of the all-distinct part truncated at total
+              Hermite degree 4 / 6 / 8 (orders rho^2 / rho^3 / rho^4 in the correlations), using Gaussian
+              gate values Phi(alpha); each plus Phi^3 kappa3(z). Tells whether the residual after the
+              leading term is higher-order Gaussian structure (closes with order) or non-Gaussian (plateaus)
   hub n/r     eps when the all-distinct part is kept as the top n/r "hub columns" (SVD of the (n^2, n) unfolding)
   sketch s    eps when the all-distinct part is projected on a random s-dimensional subspace along two indices
   wick+hub    eps when the Wick closure is used and its residual is kept as top n/4 hub columns
@@ -103,9 +107,95 @@ def wick_model(C, Phi, w2, K3z):
     return all_distinct(T)
 
 
+def sym3(T):
+    """symmetrise a 3-tensor over the 6 index permutations."""
+    return (T + T.transpose(0, 2, 1) + T.transpose(1, 0, 2) + T.transpose(1, 2, 0) + T.transpose(2, 0, 1) + T.transpose(2, 1, 0)) / 6.0
+
+
+def residual_basis(o):
+    """candidate diagram tensors for the part of the all-distinct kappa3(a) beyond the leading Wick term:
+    B0  Phi_i Phi_j Phi_k kappa3(z)_{ijk}                        (all-distinct kappa3(z) hyperedge)
+    B1  sym[ w2_i Phi_j w2_k D21z_{ik} C_jk ]                     ((i,i,k) hyperedge of kappa3(z) + C edge j-k)
+    B2  sym[ w3_i Phi_j Phi_k D21z_{ik} C_ij ]                    ((i,i,k) hyperedge + C edge i-j)
+    B3  sym[ w2_i Phi_j w2_k D3z_i C_ij C_ik ] ?  -> replaced by: sym[ w3_i Phi_j Phi_k D3z_i C_ij C_ik ] (D3 hyperedge + two edges)
+    B4  Gaussian order-rho^3 terms (hermite degree 6 minus degree 4)
+    B5  sym[ w2_i w2_j Phi_k K22z_{ij} C_ik ]  with K22z the off-diagonal (2,2) cumulant slice of z  (kappa4 (i,i,j,j) + edge)
+    Coefficients are fitted; exact combinatorial constants are not needed for the oracle question."""
+    mu, var, C, K3z = o["mu"], o["var"], o["C"], o["K3z"]
+    sig = np.sqrt(var); alpha = mu / sig
+    phi = np.exp(-0.5 * alpha ** 2) / np.sqrt(2 * pi)
+    Phi = o["Phi"]; w2 = phi / sig; w3 = -alpha * phi / sig ** 2
+    D3z, D21z = slices(K3z)
+    Co = offdiag(C)
+    B = []
+    B.append(np.einsum("i,j,k,ijk->ijk", Phi, Phi, Phi, K3z))
+    B.append(sym3(np.einsum("i,j,k,ik,jk->ijk", w2, Phi, w2, D21z, Co)))
+    B.append(sym3(np.einsum("i,j,k,ik,ij->ijk", w3, Phi, Phi, D21z, Co)))
+    B.append(sym3(np.einsum("i,j,k,i,ij,ik->ijk", w3, Phi, Phi, D3z, Co, Co)))
+    B.append(hermite_model(C, mu, var, 6) - hermite_model(C, mu, var, 4))
+    if "K22" in o:
+        B.append(sym3(np.einsum("i,j,k,ij,ik->ijk", w2, w2, Phi, o["K22"], Co)))
+    return [all_distinct(b) for b in B]
+
+
+def fit_residual(R, basis):
+    X = np.stack([b.ravel() for b in basis], 1); y = R.ravel()
+    coef, *_ = np.linalg.lstsq(X, y, rcond=None)
+    fit = (X @ coef).reshape(R.shape)
+    r2 = 1.0 - float(np.sum((y - X @ coef) ** 2)) / float(y @ y)
+    return coef, fit, r2
+
+
 def gaussian_w2(mu, var):
     sig = np.sqrt(var); alpha = mu / sig
     return np.exp(-0.5 * alpha ** 2) / np.sqrt(2 * pi) / sig
+
+
+def _hermite_coeffs(mu, var, pmax):
+    """c_p(i) with relu(z_i) = sum_p c_p(i) He_p(u_i), u = (z - mu)/sigma, E[He_p He_q] = p! delta_pq:
+    c_1 = sigma Phi(alpha), c_p = sigma He_{p-2}(-alpha) phi(alpha) / p!  (p >= 2), alpha = mu/sigma."""
+    from numpy.polynomial.hermite_e import hermeval
+    from math import factorial
+    sig = np.sqrt(var); alpha = mu / sig
+    phi = np.exp(-0.5 * alpha ** 2) / np.sqrt(2 * pi)
+    Phi = 0.5 * (1.0 + np.vectorize(erf)(alpha / sqrt(2)))
+    c = {1: sig * Phi}
+    for p in range(2, pmax + 1):
+        c[p] = sig * hermeval(-alpha, [0] * (p - 2) + [1]) * phi / factorial(p)
+    return c
+
+
+def hermite_model(C, mu, var, max_total_degree, K3z=None):
+    """Gaussian-input Hermite (Wick) expansion of kappa3(a_i, a_j, a_k) on distinct indices:
+    sum over degrees p,q,r >= 1 with p+q+r <= max_total_degree of
+    p! q! r! / (al! be! ga!) c_p(i) c_q(j) c_r(k) rho_ij^al rho_jk^be rho_ik^ga,
+    al = (p+q-r)/2, be = (q+r-p)/2, ga = (p+r-q)/2 (non-negative integers), rho = correlation of z.
+    Optionally adds the leading non-Gaussian term Phi_i Phi_j Phi_k kappa3(z)_{ijk}."""
+    from math import factorial
+    n = len(mu)
+    sig = np.sqrt(var)
+    rho = C / np.outer(sig, sig); np.fill_diagonal(rho, 0.0)
+    pmax = max_total_degree - 2
+    c = _hermite_coeffs(mu, var, pmax)
+    powers = {0: np.ones_like(rho), 1: rho}
+    for e in range(2, max_total_degree // 2 + 1):
+        powers[e] = powers[e - 1] * rho
+    T = np.zeros((n, n, n))
+    for p in range(1, pmax + 1):
+        for q in range(1, pmax + 1):
+            for r in range(1, pmax + 1):
+                tot = p + q + r
+                if tot > max_total_degree or tot % 2:
+                    continue
+                al, be, ga = (p + q - r) // 2, (q + r - p) // 2, (p + r - q) // 2
+                if min(al, be, ga) < 0:
+                    continue
+                coef = factorial(p) * factorial(q) * factorial(r) / (factorial(al) * factorial(be) * factorial(ga))
+                T += coef * np.einsum("i,j,k,ij,jk,ik->ijk", c[p], c[q], c[r], powers[al], powers[be], powers[ga])
+    if K3z is not None:
+        Phi = c[1] / sig
+        T += np.einsum("i,j,k,ijk->ijk", Phi, Phi, Phi, K3z)
+    return all_distinct(T)
 
 
 def layer_objects(z, l):
@@ -121,7 +211,11 @@ def layer_objects(z, l):
     K3z1 = central3(z["pre_M3"][l + 1], z["pre_M11"][l + 1].astype(np.float64), mu1)
     D3_1, D21_1 = slices(K3z1)
     Phi = z["gate_p"][l].astype(np.float64)
-    return dict(mu=mu, var=var, C=C, K3z=K3z, K3a=K3a, D21=D21_1, Phi=Phi, w2=gaussian_w2(mu, var))
+    M21 = z["pre_M21"][l].astype(np.float64); M22 = z["pre_M22"][l].astype(np.float64)
+    Eu2u2 = (M22 - 2 * mu[None, :] * M21 - 2 * mu[:, None] * M21.T
+             + np.outer(m2, mu ** 2) + np.outer(mu ** 2, m2) + 4 * np.outer(mu, mu) * M11 - 3 * np.outer(mu ** 2, mu ** 2))
+    K22 = offdiag(Eu2u2 - np.outer(var, var) - 2 * C ** 2)
+    return dict(mu=mu, var=var, C=C, K3z=K3z, K3a=K3a, D21=D21_1, Phi=Phi, w2=gaussian_w2(mu, var), K22=K22)
 
 
 def k22_lambda_law(z, l1):
@@ -144,7 +238,7 @@ def analyse(path, ranks=(8, 4, 2), sketch=(8, 16, 32), rng=np.random.default_rng
     L, n, _ = W.shape
     print(f"\n{path}: width {n}, depth {L}, N = {int(z['n_samples'])}")
     print(f"{'l':>2} {'transp':>6} {'R2(K22|C)':>9} {'R2+C*C':>7} {'d21n/8':>6} {'n/4':>5} {'n/2':>5} | {'memless':>7} {'off':>5} | {'wick':>5} {'off':>5} | "
-          + " ".join(f"hub{n//r:>3}" for r in ranks) + " | " + " ".join(f"sk{s:>3}" for s in sketch) + f" | {'wick+hub':>8}")
+          f"{'herm2':>5} {'herm3':>5} {'herm4':>5} | " + " ".join(f"hub{n//r:>3}" for r in ranks) + " | " + " ".join(f"sk{s:>3}" for s in sketch) + f" | {'wick+hub':>8} | {'fitR2':>5} {'fit':>5} {'off':>5}  coefficients B0..B5")
     for l in range(L - 1):
         o = layer_objects(z, l)
         K3a, D21 = o["K3a"], o["D21"]
@@ -159,6 +253,7 @@ def analyse(path, ranks=(8, 4, 2), sketch=(8, 16, 32), rng=np.random.default_rng
         Kw = wick_model(o["C"], o["Phi"], o["w2"], o["K3z"])
         Tw = transport_d21(K3m + Kw, Wn)
         e_wick, e_wick_off = rel(Tw, D21), rel(Tw, D21, off=True)
+        herm = [rel(transport_d21(K3m + hermite_model(o["C"], o["mu"], o["var"], d, o["K3z"]), Wn), D21) for d in (4, 6, 8)]
         Kd = all_distinct(K3a)
         hub = [rel(transport_d21(K3m + hub_columns(Kd, n // r), Wn), D21) for r in ranks]
         sk = []
@@ -169,8 +264,12 @@ def analyse(path, ranks=(8, 4, 2), sketch=(8, 16, 32), rng=np.random.default_rng
             Ks = np.einsum("ijk,jm,kn->imn", Kd, P, P)
             sk.append(rel(transport_d21(K3m + Ks, Wn), D21))
         e_wh = rel(transport_d21(K3m + Kw + hub_columns(Kd - Kw, n // 4), Wn), D21)
+        coef, fit, r2fit = fit_residual(Kd - Kw, residual_basis(o))
+        Tf = transport_d21(K3m + Kw + fit, Wn)
+        e_fit, e_fit_off = rel(Tf, D21), rel(Tf, D21, off=True)
         print(f"{l:>2} {e_transport:6.3f} {r2a:9.3f} {r2b:7.3f} {spec[0]:6.3f} {spec[1]:5.3f} {spec[2]:5.3f} | {e_mem:7.3f} {e_mem_off:5.3f} | {e_wick:5.3f} {e_wick_off:5.3f} | "
-              + " ".join(f"{h:6.3f}" for h in hub) + " | " + " ".join(f"{v:5.3f}" for v in sk) + f" | {e_wh:8.3f}")
+              + " ".join(f"{h:5.3f}" for h in herm) + " | " + " ".join(f"{h:6.3f}" for h in hub) + " | " + " ".join(f"{v:5.3f}" for v in sk) + f" | {e_wh:8.3f} | {r2fit:5.3f} {e_fit:5.3f} {e_fit_off:5.3f}  "
+              + " ".join(f"{c:+.2f}" for c in coef), flush=True)
 
 
 def corrected(e, e_noise):
@@ -183,7 +282,8 @@ def analyse_pair(pa, pb):
     W = A["weights"].astype(np.float64)
     L, n, _ = W.shape
     print(f"\npair {pa} | {pb}: width {n}, depth {L}, N = {int(A['n_samples'])} + {int(B['n_samples'])}")
-    print(f"{'l':>2} {'eps_noise':>9} {'off':>6} {'snr(Kd)':>8} | {'memless x':>9} {'corr':>6} {'off':>6} {'corr':>6} | {'wick x':>7} {'corr':>6} {'off':>6} {'corr':>6} | {'hub n/4 x':>9} {'corr':>6}")
+    print(f"{'l':>2} {'eps_noise':>9} {'off':>6} {'snr(Kd)':>8} | {'memless x':>9} {'corr':>6} {'off':>6} {'corr':>6} | {'wick x':>7} {'corr':>6} {'off':>6} {'corr':>6} | "
+          f"{'herm4 x':>7} {'corr':>6} | {'hub n/4 x':>9} {'corr':>6} | {'fit x':>6} {'corr':>6} {'off':>6} {'corr':>6}")
     for l in range(L - 1):
         oa, ob = layer_objects(A, l), layer_objects(B, l)
         Wn = W[l + 1]
@@ -199,26 +299,39 @@ def analyse_pair(pa, pb):
         Kw = wick_model(oa["C"], oa["Phi"], oa["w2"], oa["K3z"])
         Tw = transport_d21(K3m + Kw, Wn)
         e_wick, e_wick_off = rel(Tw, D21b), rel(Tw, D21b, off=True)
+        e_h4 = rel(transport_d21(K3m + hermite_model(oa["C"], oa["mu"], oa["var"], 8, oa["K3z"]), Wn), D21b)
         e_hub = rel(transport_d21(K3m + hub_columns(Kda, n // 4), Wn), D21b)
+        coef, fit, _ = fit_residual(Kda - Kw, residual_basis(oa))
+        Tf = transport_d21(K3m + Kw + fit, Wn)
+        e_fit, e_fit_off = rel(Tf, D21b), rel(Tf, D21b, off=True)
         print(f"{l:>2} {e_noise:9.3f} {e_noise_off:6.3f} {snr:8.2f} | {e_mem:9.3f} {corrected(e_mem, e_noise):6.3f} {e_mem_off:6.3f} {corrected(e_mem_off, e_noise_off):6.3f} | "
-              f"{e_wick:7.3f} {corrected(e_wick, e_noise):6.3f} {e_wick_off:6.3f} {corrected(e_wick_off, e_noise_off):6.3f} | {e_hub:9.3f} {corrected(e_hub, e_noise):6.3f}")
+              f"{e_wick:7.3f} {corrected(e_wick, e_noise):6.3f} {e_wick_off:6.3f} {corrected(e_wick_off, e_noise_off):6.3f} | "
+              f"{e_h4:7.3f} {corrected(e_h4, e_noise):6.3f} | {e_hub:9.3f} {corrected(e_hub, e_noise):6.3f} | "
+              f"{e_fit:6.3f} {corrected(e_fit, e_noise):6.3f} {e_fit_off:6.3f} {corrected(e_fit_off, e_noise_off):6.3f}", flush=True)
 
 
-def selftest(n=3, N=4_000_000, seed=0):
-    """check the Wick closure's leading term on a correlated Gaussian triple with small correlations."""
+def selftest(n=3, q=80, seed=0):
+    """check the Hermite (Wick) expansion of the all-distinct kappa3(a) on a correlated Gaussian triple against
+    an exact 3-D Gauss-Hermite quadrature reference; the expansion must converge to it with the degree."""
     rng = np.random.default_rng(seed)
     A = rng.standard_normal((n, n)) / np.sqrt(n) * 0.25 + np.eye(n)
     C = A @ A.T
     mu = np.array([0.3, -0.2, 0.1])
-    z = rng.multivariate_normal(mu, C, size=N)
-    a = np.maximum(z, 0.0)
-    ac = a - a.mean(0)
-    K3a = np.einsum("mi,mj,mk->ijk", ac, ac, ac) / N
-    Phi = (z > 0).mean(0)
-    w2 = gaussian_w2(mu, np.diag(C))
-    Kw = wick_model(C, Phi, w2, np.zeros((n, n, n)))
-    print("selftest: all-distinct kappa3(a) by MC", K3a[0, 1, 2], " Wick leading order", Kw[0, 1, 2],
-          f" (relative gap {abs(K3a[0,1,2]-Kw[0,1,2])/abs(K3a[0,1,2]):.3f}; MC se ~ {np.sqrt(np.var(ac[:,0]*ac[:,1]*ac[:,2])/N):.2e})")
+    x, w = np.polynomial.hermite_e.hermegauss(q); w = w / w.sum()
+    Lc = np.linalg.cholesky(C)
+    U = np.stack(np.meshgrid(x, x, x, indexing="ij"), -1).reshape(-1, 3)
+    Wq = (w[:, None, None] * w[None, :, None] * w[None, None, :]).ravel()
+    Z = mu + U @ Lc.T
+    a = np.maximum(Z, 0.0)
+    m1 = Wq @ a
+    ac = a - m1
+    k3 = float(np.sum(Wq * ac[:, 0] * ac[:, 1] * ac[:, 2]))
+    Phi = 0.5 * (1 + np.vectorize(erf)(mu / np.sqrt(np.diag(C)) / sqrt(2)))
+    Kw = wick_model(C, Phi, gaussian_w2(mu, np.diag(C)), np.zeros((n, n, n)))
+    print(f"selftest (quadrature {q}^3): all-distinct kappa3(a) = {k3:.6e};  Wick leading order {Kw[0,1,2]:.6e}  relative gap {abs(k3-Kw[0,1,2])/abs(k3):.4f}")
+    for d in (4, 6, 8, 10, 12, 14):
+        Kh = hermite_model(C, mu, np.diag(C), d)
+        print(f"  hermite expansion to total degree {d:2d}: {Kh[0, 1, 2]:.6e}  relative gap {abs(k3-Kh[0,1,2])/abs(k3):.5f}")
 
 
 if __name__ == "__main__":
