@@ -87,8 +87,10 @@ Wall per MLP was 98–107 s with the emulated server's 3 BLAS threads, against t
 | v25 subprocess, 3 runs | 0/6 ×3 | 0.195–0.231 | 33–37 | 3.0 GB | 1.7564e-8 |
 | v29 subprocess | **6/6** | 0.463–0.484 | 70–85 | 6.9 GB (2 MLPs killed by RLIMIT_AS → WORKER_EOF) | – |
 | v29 local | **6/6** (all residual) | 0.475–0.520 | 77–87 | 6.3 GB | – |
+| v29r2 local | **6/6** (all residual) | 0.414–0.480 | 75–91 | 6.3 GB | – |
+| v29r3 local | **6/6** (all residual) | 0.407–0.455 | 73–89 | 6.3 GB | – |
 
-In-process, every basic slice is pure Python and lands in the residual, and every array counts against the 8 GB address-space limit. On the grader the arrays live in the flopscope server and a slice is a counted round trip. **The stock local harness therefore can't validate V29-family bundles on this box** (V29's graded run shows the grader behaves like the emulator, not like this). Use `scripts/grader_emul.py`. In-process runs of v29r2/v29r3 were queued at the end; if they finish they are in `results/dev6_idle/` and `results/summary.md`.
+In-process, every basic slice is pure Python and lands in the residual, and every array counts against the 8 GB address-space limit. On the grader the arrays live in the flopscope server and a slice is a counted round trip. **The stock local harness therefore can't validate V29-family bundles on this box** (V29's graded run shows the grader behaves like the emulator, not like this). Use `scripts/grader_emul.py`. The memo also cuts the in-process residual (v29 0.475–0.520 s → v29r3 0.407–0.455 s), but not below the cap: in-process, the ~13.5k compute ops alone cost more client-side Python than in client mode.
 
 ### 5. Setup window (`results/setup/`)
 

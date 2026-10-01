@@ -7,6 +7,8 @@
 | results/dev6_idle/v25_sub_r3.json | in-process subprocess | 6 | 0 | 0.36666 | 0.204, 0.208, 0.213, 0.206, 0.231, 0.214 | 36.9 | 3037 | 5.3974e-08 | 1.7564e-08 |
 | results/dev6_idle/v29_local_r1.json | in-process local | 6 | 6 | 0.26706 | 0.520, 0.497, 0.475, 0.483, 0.486, 0.508 | 86.8 | 6264 | 1.0006e+00 | 1.0006e+00 |
 | results/dev6_idle/v29_sub_r1.json | in-process subprocess | 6 | 6 | 0.30660 | 0.467, 0.484, 0.000, 0.463, 0.482, 0.000 | 84.5 | 6859 | 1.0006e+00 | 1.0006e+00 |
+| results/dev6_idle/v29r2_local_r1.json | in-process local | 6 | 6 | 0.26706 | 0.480, 0.458, 0.421, 0.414, 0.418, 0.444 | 90.5 | 6269 | 1.0006e+00 | 1.0006e+00 |
+| results/dev6_idle/v29r3_local_r1.json | in-process local | 6 | 6 | 0.26706 | 0.455, 0.443, 0.412, 0.415, 0.407, 0.416 | 88.7 | 6259 | 1.0006e+00 | 1.0006e+00 |
 | results/emul/v25_emul_r1.json | client/server | 6 | 0 | 0.36667 | 0.132, 0.122, 0.124, 0.129, 0.114, 0.122 | 38.7 | srv 1879 / cli 2371 | 5.3976e-08 | 1.7566e-08 |
 | results/emul/v25_emul_r2.json | client/server | 6 | 0 | 0.36667 | 0.119, 0.126, 0.123, 0.120, 0.117, 0.115 | 36.8 | srv 1869 / cli 2393 | 5.3976e-08 | 1.7566e-08 |
 | results/emul/v25orig_emul_r1.json | client/server | 6 | 0 | 0.36667 | 0.112, 0.114, 0.120, 0.124, 0.121, 0.120 | 38.3 | srv 1879 / cli 2391 | 5.3976e-08 | 1.7566e-08 |
