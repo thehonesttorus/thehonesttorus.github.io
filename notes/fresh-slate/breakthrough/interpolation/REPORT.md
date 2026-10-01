@@ -283,6 +283,27 @@ K₃ = E[(μ̂·ã)³], t·μ̂).
 inputs). In the chain with MC t, t^μ: conditioned diagonal injection 1.18 → 1.11e-6; adding the row-scaled (2,1)
 covariance term at first order makes it worse (3.5e-6). Marginal, and not pursued.
 
+## 8. Conditioning on the collective coordinate g (requested by the coordinating session; `t22_condg.py`)
+
+g_l = e1·(a_l − μ_l), e1 = top eigenvector of Cov(a_l) (MC, t15); MLP 0, n = 1024, N = 262k, 256 neurons of z_{l+1},
+statistics pooled over 8 quantile bins of g (within-bin noise: skew ≈ 0.005, kurtosis ≈ 0.01).
+
+| z layer | top-eigvec share of Cov | cos(e1, μ) | κ3(g), κ4(g) | per-neuron skew rms: all / within g | mean excess kurtosis: all / within g | rms corr(z_j, g) |
+|---|---|---|---|---|---|---|
+| 6 | 0.018 | 0.84 | 0.19, 0.05 | 0.038 / 0.025 | +0.031 / +0.014 | 0.13 |
+| 11 | 0.056 | 0.975 | 0.18, 0.04 | 0.077 / 0.033 | +0.048 / +0.012 | 0.23 |
+| 15 | 0.100 | 0.986 | 0.18, 0.04 | 0.101 / 0.039 | +0.053 / +0.012 | 0.30 |
+
+Reading. At n = 1024, g is the mean (Perron) direction (cos 0.98) and carries 10 % of the variance at depth, but it is
+far less non-Gaussian than at width 128 (κ3 ≈ 0.18, κ4 ≈ 0.04 here vs ≈ 0.7, ≈ 1 reported by bethe at 128).
+Conditioning on it removes ≈ 78 % of the coherent per-neuron excess kurtosis and ≈ 60 % of the per-neuron skew rms
+(variance ≈ 85 %). For the third cumulant the trace channel is better (93 % of variance, at no extra cost and no
+mixture); for the coherent fourth cumulant, conditioning on g and the scalar X channel are two handles on the same
+object (X oracle: 1.29 → 1.02e-6). A g-mixture closure (K bins, each with its own (m, C) — K sandwiches per layer,
+≈ 2K units/layer) is the natural construction; the double count bethe met in v5 is avoided if the trace channel and X
+are re-derived *conditionally* on g (chaos in the weights is unchanged; only the order-parameter traces become
+per-bin). Not built in this session.
+
 ## Files
 
 `common.py` (helpers), `t0_baselines.py` (closure, chi factor, tree cover, annealed variance), `t1_norm.py`
