@@ -196,12 +196,27 @@ Dirac operator D_age = N (the number operator a ↦ a).
 |---|---|---|---|---|---|---|
 | 256 (8) | 1.8–4.2e-6 | 4–14 | 0.028–0.062 | 0.002–0.008 | 1–6 e-4 | 0.22–0.39 / 0.020–0.046 / 0.002–0.006 |
 | 512 (4) | 2.5–3.7e-7 | 24–26 | 0.021 | 0.002–0.003 | 2–4 e-4 | 0.47–0.51 / 0.058–0.070 / 0.005–0.008 |
-| 1024 (team D, m0) | 3.24e-8 | (in flight) | — | — | — | ≈1.5 / ≈0.15 / ≈0.02 (raw differences) |
+| 1024 (6) | 1.8–4.0e-8 | 35–120 | 0.023–0.033 | 0.0029 (m0, m1) | 2.9–3.3 e-4 | 0.97–2.8 / 0.16–0.35 / 0.011–0.036 |
 
-- **Universal:** δ(c)/δ_drop ≈ A e^{−4.6c} at both widths (per Δc = 0.5 a factor ≈ 10).
-- **Not universal:** the dropped memory relative to FC's own error grows ≈ 3–5× per doubling of n, so the c needed for
-  fixed *relative-to-FC* accuracy drifts: c*(10 %) ≈ 1.24, 1.39, 1.58 at n = 256, 512, 1024.
-- **Dixmier coefficient per target at t = 16:** (2 + 1.881 c*)/ln 16 = 1.56 / 1.66 / 1.79 (with c = 2: 2.08).
+Raw at c = 2, n = 1024: 3.31 / 1.95 / 3.20 / 2.35 / 3.90 / 3.94 e-8, against FC 3.24 / 1.81 / 3.03 / 2.28 / 3.89 / 3.96
+e-8 (MLPs 0–5; +2 % on average). c = 3 is indistinguishable from FC (δ ≈ 5e-12).
+
+Per-network c*(10 %), i.e. the c at which the loss is 10 % of FC's raw (log-linear interpolation):
+
+| n | c* per MLP | mean c* | δ_drop/FC raw (mean) | Dixmier coefficient (2 + 1.881 c*)/ln 16 |
+|---|---|---|---|---|
+| 256 | 1.26 1.21 1.18 1.19 1.27 1.29 1.31 1.22 | 1.24 | 8.6 | 1.56 |
+| 512 | 1.41 1.37 1.38 1.39 | 1.39 | 23.9 | 1.66 |
+| 1024 | 1.60 1.77 1.59 1.64 1.53 1.51 | 1.61 | 61 | 1.81 |
+
+- **Universal (thm-shaped):** δ(c)/δ_drop ≈ A e^{−4.6c}, the same at n = 256, 512, 1024 on all 18 networks (a factor
+  ≈ 10 per Δc = 0.5; ≈ 0.028 at c = 1, ≈ 3·10⁻⁴ at c = 2, ≈ 3·10⁻⁶ at c = 3).
+- **Not universal, and explained:** δ_drop/FC raw grows ≈ 2.7× per doubling of n. So the c needed for fixed accuracy
+  *relative to FC* is c*(n) = [ln(δ_drop/FC raw) + ln 10 + ln A]/4.6. That predicts Δc* = ln(61/8.6)/4.6 = 0.43 from
+  256 to 1024; measured 0.37. Per-age resolution k(a)/n is a width-universal function of the *relative* accuracy, not
+  of the absolute one.
+- **Dixmier coefficient per target at t = 16:** 1.56 / 1.66 / 1.81 at n = 256 / 512 / 1024 (2.08 at c = 2).
+  Spread over networks at n = 1024: 1.75–1.92.
 
 ### 3.2 Per-source spectral diagnostic (pure diagnostic, exact contributions downstream)
 
@@ -214,6 +229,11 @@ the top-k right singular vectors of Z_s(t), on a grid k/n ∈ {1/64, …, 3/4}; 
 | 256, m1 | 0.50 / 0.46 / 0.38 / 0.28 | 1.31 / 1.24 / 0.91 / 0.42 | 0.053 / 0.018 / 0.009 / 0.006 |
 | 512, m0 | 0.50 / 0.49 / 0.44 / 0.34 | 1.19 / 0.97 / 0.57 / 0.27 | 0.053 / 0.019 / 0.009 / 0.005 |
 | 512, m1 | 0.50 / 0.49 / 0.43 / 0.33 | 1.31 / 1.22 / 0.83 / 0.41 | 0.058 / 0.020 / 0.010 / 0.006 |
+| 1024, m0 | 0.51 / 0.50 / 0.47 / — | 1.26 / 1.11 / 0.75 / 0.39 | 0.059 / 0.020 / 0.009 / 0.006 |
+| 1024, m1 | 0.51 / 0.50 / 0.48 / — | 1.29 / 1.15 / 0.77 / 0.33 | 0.061 / 0.020 / 0.009 / 0.005 |
+
+**The per-source profile is width-universal.** a·k_ε(a)/n and η_a agree across n = 256, 512, 1024 to within the
+network-to-network spread.
 
 (Grid floor k/n = 1/64 makes a·k/n ≥ a/64 at the oldest ages.)
 
