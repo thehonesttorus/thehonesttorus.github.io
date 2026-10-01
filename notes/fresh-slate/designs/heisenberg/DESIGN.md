@@ -1,4 +1,6 @@
-# Heisenberg–Duhamel estimator (design stream `heisenberg`) — DESIGN v0
+# Heisenberg–Duhamel estimator (design stream `heisenberg`) — DESIGN v0 → v1
+
+> **Status (end of session, 1 Oct):** first-order HD measured at widths 64, 128 and 256 (gain over the Gaussian reference 4.6×, 8.9×, 7.6×; raw ∝ n^{-2}). Projected at 1024: raw ≈ 5e-7, adjusted ≈ 1.3e-7 at 0.26 B. **Not competitive.** The second-order layer fails until κ₃ transport is made exact (22–31 % slice error from the first step). Verdict and next steps are in §6; numbers are in RESULTS.md.
 
 *Fresh-slate design stream, 1 Oct 2026. Principle: the Heisenberg picture on Gaussian space (Koopman pull-back of the readout, Ornstein–Uhlenbeck / heat semigroup, Stein–Malliavin integration by parts). This file is v0: principle, derivation, estimator, cost at n = 1024, error mechanism, falsification test. Measurements go in RESULTS.md; status labels: **Theorem** (proved here, elementary), **Approx** (a modelling step with a stated error), **Prediction**, **Measured**.*
 
