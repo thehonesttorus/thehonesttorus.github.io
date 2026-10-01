@@ -65,7 +65,7 @@ Staging first: the public dataset (77 GB), keenanpepper's full-split joint momen
 ## 5. Submission discipline
 
 - Every candidate runs on `mini`, on `full`, and on ≥ 200 fresh-seed MLPs with N ≥ 1e8 truth before a submission slot is spent; 10 slots per UTC day, failures count.
-- Every candidate passes: `whest validate`, the subprocess runner at the graded caps with `--max-threads 1`, a depth-32 and a width-4/depth-2 shape probe, a cold-start `setup()` timing under 2.5 s, peak memory under 6 GB, residual under 0.25 s on every MLP of `mini`.
+- Every candidate passes: `whest validate`, the subprocess runner at the graded caps with `--max-threads 1`, a depth-32 and a width-4/depth-2 shape probe, a cold-start `setup()` timing under 2.5 s, peak memory under 6 GB, residual under 0.2 s on every MLP of `mini` measured on an otherwise idle machine. (Measured here on 2026-10-01: the public V25 chain, whose author reports 0.28 s residual, read 0.396 s and 0.410 s on a 4-core box that was also running two bakes, and the second MLP was zeroed. The residual cap is a Python-speed cap; a 1.4× slower interpreter turns a rank-10 estimator into a failed one, so the margin must be at least 2×.)
 - Randomness only from `mlp.seed` / `ctx.seed`; no per-MLP adaptive constants fitted on in-sample statistics; every shipped table documented with what it absorbs.
 - The designated final submission is chosen on fresh-seed MSE, not on the public board.
 
