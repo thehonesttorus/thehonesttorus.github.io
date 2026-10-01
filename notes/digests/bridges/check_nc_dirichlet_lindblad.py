@@ -5,6 +5,9 @@ Pure numpy, finite dimensions. Each check corresponds to a labelled statement in
   K1  Ding-Li-Lin Theorem 10 construction (KMS-detailed-balanced Lindbladian from self-adjoint
       single-Pauli couplings on A, Gaussian weighting q): KMS symmetry, Gibbs stationarity,
       failure of GNS symmetry (no commutation with the modular operator) for noncommuting H.
+      NB: this is a member of the DLL family with a real Gaussian q, NOT the Chen-Rouze
+      generator itself (Metropolis weight, continuous family of filtered jumps); for that one the
+      failure of GNS symmetry is the source statement of Chen-Kastoryano-Gilyen App. E.
   K2  Derivation form of the Dirichlet form (Chen-Rouze Lemma X.1 / [RFA24, Lemma C.2], here
       in the Ding-Li-Lin parametrisation):
         E(X) = -<X, L X>_KMS
@@ -169,10 +172,14 @@ def check_dll(n=3, A=(0,), beta=1.3, trials=3):
         herm_err = np.abs(G - G.conj().T).max()
         # GNS symmetry would require commutation with modular operator Delta(X) = rho X rho^{-1}
         Delta = np.kron(np.linalg.inv(rho).T, rho)
-        gns_def = np.abs(S @ Delta - Delta @ S).max() / np.abs(S).max()
-        allok &= report(f"K1 trial {tr}", kms_err < 1e-10 and stat_err < 1e-10 and herm_err < 1e-12,
+        comm = S @ Delta - Delta @ S
+        gns_def = np.abs(comm).max() / np.abs(S).max()  # entrywise, normalised by L only (not scale-free)
+        gns_rel = np.linalg.norm(comm, 2) / (np.linalg.norm(S, 2) * np.linalg.norm(Delta, 2))  # scale-free
+        allok &= report(f"K1 trial {tr}", kms_err < 1e-10 and stat_err < 1e-10 and herm_err < 1e-12
+                        and gns_rel > 1e-6,
                         f"KMS asym {kms_err:.1e}, L*(rho) {stat_err:.1e}, G herm {herm_err:.1e}; "
-                        f"relative size of [L,Delta] = {gns_def:.2e} (nonzero, so KMS but not GNS)")
+                        f"[L,Delta]: max-entry/max|L| = {gns_def:.2e}, ||[L,Delta]||/(||L|| ||Delta||) = "
+                        f"{gns_rel:.2f} (nonzero, so KMS but not GNS)")
         # K2: Dirichlet form in derivation form, frequency and time domain
         sq = mfun(rho, np.sqrt)
         worst_f, worst_t = 0.0, 0.0
@@ -272,8 +279,19 @@ def check_dll(n=3, A=(0,), beta=1.3, trials=3):
     Wh = np.kron(mfun(rho_c, lambda w: w ** 0.25).T, mfun(rho_c, lambda w: w ** 0.25))
     Lh = Wh @ Sc @ np.linalg.inv(Wh)
     evc = np.linalg.eigvalsh((Lh + Lh.conj().T) / 2)
-    report("K3 commuting Ising H, beta>0", True,
-           f"dim ker = {int(np.sum(np.abs(evc) < 1e-8))} (compare 4^(n-|A|) = {4 ** (n - len(A))})")
+    # structure check (n = 3, A = {0}, nearest-neighbour Ising): ker = 1_A (x) diag(qubit 1) (x) M_2(qubit 2)
+    cand = []
+    for d1 in [np.diag([1.0, 0.0]), np.diag([0.0, 1.0])]:
+        for i in range(2):
+            for j in range(2):
+                E = np.zeros((2, 2)); E[i, j] = 1.0
+                cand.append(vec(kron(I2, d1.astype(complex), E.astype(complex))))
+    cand = np.array(cand).T
+    struct_ok = (n == 3 and tuple(A) == (0,) and np.abs(Sc @ cand).max() < 1e-9
+                 and int(np.sum(np.abs(evc) < 1e-8)) == np.linalg.matrix_rank(cand))
+    allok &= report("K3 commuting Ising H, beta>0", struct_ok,
+                    f"dim ker = {int(np.sum(np.abs(evc) < 1e-8))} (compare 4^(n-|A|) = {4 ** (n - len(A))}); "
+                    f"kernel = 1_A (x) diag(boundary qubit 1) (x) M_2(qubit 2): {struct_ok}")
     return allok
 
 
