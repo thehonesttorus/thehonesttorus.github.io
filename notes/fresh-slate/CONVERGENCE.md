@@ -15,7 +15,7 @@ Six fresh-slate design streams started from six different principles (faces and 
 |---|---|---|---|---|
 | heisenberg | first-order Heisenberg–Duhamel, all ages | ≈ 1e-7 (raw 4–7e-7) | ≈ 0.26 B | strongest; second order bounded 7–20× by oracle |
 | markov | MKV-2 full history | ≈ 1e-7 (range 2e-8 – 5e-7) | ≈ 0.49 B | closed: not competitive |
-| signings | copula v1 | ≈ 3e-7 | — | closed |
+| signings | copula v1 (non-Gaussian marginals, latent R by Mehler inversion, carried (2,1) slice, first-order hyperedges) | **measured at 1024 (MLPs 0–2): raw 1.10e-6 vs Gaussian closure 5.06e-6 → adjusted ≈ 2.4e-7** | 190–260 u | closed; one-step local rule ≈ 5× above target at 1024 (teacher forcing n^-3.8), drift adds ≈ 10×; old content not carried |
 | faces | 'mem' / 'lin21' | 1.6e-6 / 4e-6 (from small-width fits) | 0.1 / 0.6 B | direct 1024 run in flight; facet-conditional covariance test pending |
 | tropical | TCT-0 + T-extrapolation | ≈ 4e-7 | 0.02–0.04 B | closed: not competitive |
 | bethe | edge0: exact bivariate-Gaussian pair beliefs + (2,1) slice + fresh hub triples | **measured at 1024: raw 1.04e-6 ± 0.07e-6 → adjusted 1.07e-7** (Gaussian closure 4.10e-6 on the same 6 networks); + age-1 old triples raw 8.1e-7 at 0.19 B | ≈ 0.10 B | width law n^-2.0 holds from 64 to 1024; v3/v4 carry the node κ4 global mode |
