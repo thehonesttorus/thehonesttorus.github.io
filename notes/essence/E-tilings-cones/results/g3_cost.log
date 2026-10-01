@@ -1,0 +1,8 @@
+L=16: FC 120; critical 2n/a 61.2; fixed window 8 x 2n/a 56.0; fixed window 12 60.3; measured window 0.75t 55.1
+L=32: FC 496; critical 2n/a 164.7; fixed window 8 x 2n/a 126.9; fixed window 12 143.6; measured window 0.75t 149.7
+  ratio cost(32)/cost(16) FC: 4.13   (L^2 -> 4.1, L log L -> 2.5, L -> 2.07)
+  ratio cost(32)/cost(16) critical: 2.69   (L^2 -> 4.1, L log L -> 2.5, L -> 2.07)
+  ratio cost(32)/cost(16) window 8: 2.27   (L^2 -> 4.1, L log L -> 2.5, L -> 2.07)
+  ratio cost(32)/cost(16) 0.75 t: 2.72   (L^2 -> 4.1, L log L -> 2.5, L -> 2.07)
+wedge price at 256x32: layers >= 12 carry 95 % of the covariance price; layers < 8 carry 0.018
+  price-weighted critical carrier (all ages only at targets >= 12, 2 ages elsewhere): 146.3 vs critical 164.7

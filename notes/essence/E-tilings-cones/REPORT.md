@@ -335,3 +335,84 @@ The candidates are conic objects of *this* network, as opposed to their Sheppard
 - **Risks.**
   - T1 and T2 explain facts but do not lower cost.
   - T4 may fail for the reason region's pruning failed: atom completeness may hold across sources too.
+
+## 6. Round G3: summability exponent = carrier cost exponent? (coordinator notes 2–3; measured at 256 × 32)
+
+Scripts: `g3_carrier_d32.py` (team D's `fcs.run`, imported read-only, on bench set w256_d32, both MLPs), `g3_ranks.py`, `g3_cost.py`, `g3_tilings.py`. Logs and json are in `results/g3_*`.
+
+### 6.1 The module
+- **Julg–Valette on the dyadic age tree.** The vertices are dyadic age blocks [2^j, 2^{j+1}) and the edges are the odometer carries (two sibling blocks merging into the parent). F pairs each block with the edge to its parent, so F² = 1 off the root.
+- **Grading.** Weight block j by its frozen-frame resolution μ_j = r_j/n. Its summability exponent is p* = inf{s : Σ_a μ(a)^s < ∞} = 1/p when the per-age resolution law is μ(a) ∝ a^{−p}. The carrier cost per layer is n³ Σ_{a ≤ t} μ(a), so:
+  - p = 1 (Dixmier-critical): cost ∝ L log L;
+  - p > 1 (team G's subcritical, geometric energy): cost ∝ L;
+  - p < 1: cost ∝ L^{2−p}.
+- **The test** is therefore the measured p, and the measured needed window, at the depth where the profiles separate (L = 32).
+
+### 6.2 Measurements at 256 × 32
+**(a) Rank law of the gated propagators Z_s(t), all 496 pairs, MLP 0** (`g3_ranks`):
+
+| age a | 1 | 2 | 4 | 8 | 16 | 24 | 31 |
+|---|---|---|---|---|---|---|---|
+| PR/n | 0.50 | 0.25 | 0.12 | 0.059 | 0.023 | 0.009 | 0.006 |
+| k99/n | 0.77 | 0.48 | 0.29 | 0.17 | 0.086 | 0.053 | 0.031 |
+| Perron share (top singular value) | 0.015 | 0.03 | 0.07 | 0.14 | 0.34 | 0.65 | 0.83 |
+
+Power-law fits by age range:
+
+| quantity | p, ages 2–8 | p, ages 8–31 |
+|---|---|---|
+| PR | 1.04 (team C's n/(2(a+1)) law) | 1.76 |
+| k90 | 0.90 | 1.33 |
+| k99 | 0.76 | 1.09 |
+
+The steepening beyond age 8 is the Perron (dilation) outlier taking over: one direction holds 83 % at age 31. Rank decays faster than 1/a only *because* the content collapses onto the closed sector.
+
+**(b) Team D's causal carrier inside FC at depth 32** (MSE at layer t; FC = all ages dense):
+- **c = 2 (k = 2n/a)** is lossless at every layer to 32 on both MLPs (within ±3 %).
+- **c = 1** loses 13–60 % on MLP 1 at layers 8–24.
+- **Fixed window w on top of c = 2** (MSE relative to FC):
+
+| window w | MLP 1, t = 16 | MLP 1, t = 20 | MLP 1, t = 24 | MLP 0, t = 20 | MLP 0, t = 24 |
+|---|---|---|---|---|---|
+| 6 | 2.7× | 3.5× | 3.5× | 1.8× | 1.4× |
+| 8 | 1.8× | 2.1× | 1.8× | 1.3× | 1.2× |
+| 12 | 1.07 | 1.20 | 1.24 | 1.00 | 0.93 |
+| 16 | 1.01 | 1.00 | 1.03 | — | — |
+
+The window needed for ≤ 10 % loss grows with the target layer, about 12 at t = 16 and about 16 at t = 24, i.e. w*(t) ≈ 0.6–0.75 t. A fixed window, which a geometric (subcritical) profile predicts, fails.
+
+Caveat: at layers 28–32, FC's own error dominates at n = 256 (FC is only 4–12× better than the Gaussian closure there, against 13–27× at layer 16). There, truncation sometimes *lowers* the MSE, so layers ≤ 24 are the clean test.
+
+**(c) Cost predictions with both profiles** (`g3_cost`; units of one source carried at rank n for one layer):
+
+| carrier | L = 16 | L = 32 | ratio |
+|---|---|---|---|
+| FC (all pairs dense) | 120 | 496 | 4.13 (L²) |
+| critical, 2n/a, all ages | 61 | 165 | 2.69 |
+| measured: window 0.75 t × 2n/a | 55 | 150 | 2.72 |
+| geometric: fixed window 8 × 2n/a | 56 | 127 | 2.27 (≈ L) |
+
+Reference ratios: L log L → 2.5, L → 2.07.
+
+### 6.3 Verdict on G3
+- **At depth 32 the data support the critical (1/a, Dixmier) profile.** The needed resolution is 2n/a: 1·n/a is not lossless, and the needed age window grows ∝ t. Cost grows as L log L (measured ratio 2.72 against 2.5 for L log L and 2.07 for L).
+- **The summability exponent of the age module is 1 within the needed window** (p = 0.76–1.04 at ages 2–8, from the rank law).
+- **Team G's subcritical asymptotics are also visible.** Beyond age ≈ 8 the rank falls as a^{−1.1…−1.8} because the Perron/dilation outlier absorbs the content, so as L → ∞ the sum converges and the cost tends to O(n) per layer.
+- **The two are reconciled by the closed sector.** The *free* sector is critical (1/a) over the ages that matter at L ≤ 32. The *dilation* sector is rank one and closed (costate C6), so carrying it separately leaves a free remainder whose window grows ∝ t. At the competition depth (16) the profiles are indistinguishable (61 vs 56 units). At 32 they differ by only 18 %, so the asymptotic distinction does not matter for cost at these depths.
+- **Price weighting at 256 × 32.** The wedge price list puts 95 % of the covariance price on target layers ≥ 12, and layers < 8 carry 1.8 %. A carrier that keeps all ages only at targets ≥ 12 costs 146 instead of 165 units (−11 %).
+
+### 6.4 Note 3's tilings row: is Thue–Morse the right critical tiling? (`g3_tilings`; N = 2²¹)
+The memory at window A is the Toeplitz autocorrelation operator T_A = [C(i − j)] of the centred ±1 sequence. Its eigenvalues discretise the spectral measure at resolution 1/A. k_q(A) is the rank holding a fraction q of tr T_A:
+
+| sequence (spectral type) | k90(A), A = 32 → 1024 | k99(A) | growth exponent (A ≥ 128), k90 / k99 |
+|---|---|---|---|
+| Fibonacci (pure point) | 6, 7, 7, 7, 7, 7 | 21, 34, 50, 63, 68, 71 | 0.00 / 0.16 (bounded / ≈ log) |
+| Thue–Morse (singular continuous) | 14, 24, 40, 70, 120, 204 | 24, 42, 76, 135, 243, 433 | **0.78 / 0.84** (power law) |
+| Rudin–Shapiro (Lebesgue) | 29 → 922 | 32 → 1014 | 1.00 / 1.00 (full rank) |
+
+- **Spectral type predicts the memory's rank growth: 0, a fractal power, 1.** But Thue–Morse is **not** the analogue of our network: its cost grows as a power A^{0.8}, not logarithmically.
+- **Our network's log-growth, Dixmier-critical class is the pure-point-with-tail case**, i.e. Fibonacci at high accuracy (k99 ≈ log A). It sits at the edge of the exact-algebra regime, not in the singular-continuous one.
+- Rudin–Shapiro (pseudorandom) is full rank but needs nothing carried (C(a) = 0 for a ≠ 0). Our free sector is full-rank-like *and* needed, a combination no substitution sequence shows.
+- **The natural Fredholm module of a substitution tiling does not see spectral type.** Its summability is set by complexity and dimension, not spectrum. Spectral triples on the transversal of a 1-D linearly repetitive tiling are Dixmier-critical at p = 1 for Fibonacci, Thue–Morse and Rudin–Shapiro alike (Kellendonk–Savinien, Pearson–Bellissard; verify the exact statements).
+- **Answer.** The spectral type of a substitution's *transversal* Fredholm module does not predict carrier cost. The spectral measure of the *observable* (the pairing) does, through its rank growth exponent (≈ an upper dimension of the measure).
+- **Correction to note 3's table.** Move Thue–Morse from "critical (on the wall)" to a separate "fractal" row with cost A^{D}, 0 < D < 1. Put the critical (log) row at the pure-point boundary.
