@@ -7,7 +7,7 @@
 - *[local-to-global-unlocks.md](../../local-to-global-unlocks.md): the four-ingredient table of §4 and the unlocks U1, U3, U4, U5.*
 - *The sibling digests in this directory: [arxiv-2609.38007.md](arxiv-2609.38007.md) (§8 gives the Chen–Rouzé construction in full; bridges B5, B7–B10, B14), [expanders.md](expanders.md) (§9.9–9.11, §11.1, §11.5) and [hdx-spectral-independence.md](hdx-spectral-independence.md) (§4.4).*
 
-*Nothing below changes the objects of Note 1. Numerical checks: [check_nc_dirichlet_lindblad.py](check_nc_dirichlet_lindblad.py) (pure numpy; all pass, §10).*
+*Nothing below changes the objects of Note 1. Numerical checks: [check_nc_dirichlet_lindblad.py](check_nc_dirichlet_lindblad.py) (pure numpy; all pass, §10). A second-pass source check (same date) re-read the main sources and corrected the points listed in §12.*
 
 **Labels.** **Source** means stated in a text I retrieved in this session; theorem and equation numbers are the source's own. **Mine** means my derivation or interpretation. Bridges are labelled **THEOREM**, **KNOWN-LINK**, **ANALOGY** or **SPECULATION**. *From memory* marks a statement I did not open in this session.
 
@@ -98,7 +98,7 @@ The **missing branch** is the Carlen–Maas Wasserstein-2 gradient-flow metric. 
 
 **Verdict on the three intuitions.**
 1. *Gibbs/Markov and expanders share an essence.* This is right at exactly one place. Uniform coercivity of the "vertical" derivations on regions $A$ (a uniform local gap; by ANALOGY with [Pet]'s Kazhdan-pair condition, which is stated for tracial finite factors, a uniform Kazhdan-type constant for single-site generators) turns the proved local Markov property into the open global one ([CR] Cor B.2, Remark III.1.2). The Markov property itself is not an expansion property: [CR] and [Y] prove it with no gap.
-2. *The time-averaged single-Pauli Lindbladian hides a deep analogue.* Yes, and it can be made a theorem inside the programme. The analogue is a **re-routing Lindbladian** on the complete-history corner, GNS-detailed-balanced for $\mathbb P_\beta$ with jumps the re-routing matrix units (§6.1, check K7). Its kernel is the face algebra $D_0$. Its Cesàro limit is the $\mathbb P_\beta$-preserving conditional expectation onto $D_0$. It recovers $\mathbb P_{\beta'}$ for all $\beta'$ iff the barycentre is sufficient, and the recovery error is bounded by $2\tanh(|\beta-\beta'|\,\mathrm{osc}F/4)$. This is the Chen–Rouzé construction with every approximation removed: Note 1's modular Hamiltonian is diagonal in the history basis, which is the "commuting case".
+2. *The time-averaged single-Pauli Lindbladian hides a deep analogue.* Yes, and it can be made a theorem inside the programme. The analogue is a **re-routing Lindbladian** on the complete-history corner, GNS-detailed-balanced for $\mathbb P_\beta$ with jumps the re-routing matrix units (§6.1, check K7). Its kernel is the face algebra $D_0$ (when at most one endpoint fibre is a single history; see §6.1(b)). Its Cesàro limit is the $\mathbb P_\beta$-preserving conditional expectation onto $D_0$. It recovers $\mathbb P_{\beta'}$ for all $\beta'$ iff the barycentre is sufficient, and the recovery error is bounded by $2\tanh(|\beta-\beta'|\,\mathrm{osc}F/4)$. This is the Chen–Rouzé construction with every approximation removed: Note 1's modular Hamiltonian is diagonal in the history basis, which is the "commuting case".
 3. *NCG ties these together.* Partly right. The shared object is a **first-order differential calculus**, a derivation into a Hilbert bimodule. It carries:
    - the Dirichlet form, as the $L^2$ energy;
    - the Connes metric, through the $L^\infty$ Lipschitz seminorm;
@@ -260,7 +260,7 @@ In their words, "it is the KMS inner product that is more natural: the Dirichlet
 
 ### 2.7 Transport metrics (Source)
 
-**Carlen–Maas $W_2$** [CM17 Def 7.1, Thms 7.5–7.6].
+**Carlen–Maas $W_2$** [CM17 Defs 7.1–7.4, Thms 7.5–7.6; the distance is the geodesic distance of the metric $g_{\mathcal L}$, §8].
 - The "multiplication by $\rho$" operator is $[\rho]_\omega(A)=\int_0^1e^{\omega(1/2-s)}\rho^sA\rho^{1-s}ds$ ([RD] Lemma 2).
 - A path $\rho_t$ with velocity field $V$ satisfies the continuity equation $\dot\rho+\mathrm{div}([\rho]_{\vec\omega}V)=0$, and $W_{2,\mathcal L}$ is the Benamou–Brenier infimum of $\int_0^1\|V\|^2_{\mathcal L,\rho_t}dt$ over such paths.
 - Under GNS detailed balance, the forward equation is the gradient flow of $D(\cdot\|\sigma)$.
@@ -656,7 +656,7 @@ Restricted to diagonal states, the β=0 single-Pauli chain gives Ornstein's $\ba
 ## 8. Messages to the other prongs (programme rule C1)
 
 **To prong 1 (theory).**
-1. **Record §6.1 as a Derivation in Note 1 §6.** A Lindbladian on the history corner whose jumps are re-routings over a fixed face is GNS-detailed-balanced for $\mathbb P_\beta$. Its Cesàro limit is the Takesaki expectation onto $D_0$, and it recovers $\mathbb P_{\beta'}$ exactly iff the barycentre is sufficient, with defect $\le2\tanh(|\beta-\beta'|\,\mathrm{osc}F/4)$. This gives the Jenčová–Petz criterion a dynamical form, and a Dirichlet form $\sum c\|[e_{\mu\nu},\cdot]\|^2$ whose kernel is exactly the face algebra.
+1. **Record §6.1 as a Derivation in Note 1 §6.** A Lindbladian on the history corner whose jumps are re-routings over a fixed face is GNS-detailed-balanced for $\mathbb P_\beta$. Its Cesàro limit is the Takesaki expectation onto $D_0$, and it recovers $\mathbb P_{\beta'}$ exactly iff the barycentre is sufficient, with defect $\le2\tanh(|\beta-\beta'|\,\mathrm{osc}F/4)$. This gives the Jenčová–Petz criterion a dynamical form, and a Dirichlet form $\sum c\|[e_{\mu\nu},\cdot]\|^2$ whose kernel is exactly the face algebra when at most one endpoint fibre is a single history (otherwise the kernel also contains the matrix units among singleton histories; §6.1(b)).
 2. **Define the flip sub-family (§6.5)** and ask for the gap of its weighted fibre Laplacian. That gap is the programme's "uniform local gap", and the place where U3's coboundary expansion would enter.
 3. **Note 1 §8's Dirac operator should be replaced by its direct-sum form $D_\oplus$ (§6.2).** $D_\oplus$ comes from the derivation of the arrow-jump Lindbladian, and its Connes metric is finite exactly on states with equal origin weights (L5). The sum form $D=\sum_\gamma\ell(\gamma)^{-1}(s_\gamma+s_\gamma^*)$ agrees with $D_\oplus$ on $D_0$ up to a factor $2\sqrt{\text{max out-degree}}$, but on all of $\mathcal T(\Lambda)$ its kernel is larger (it contains $D$), so its metric is degenerate there. Keep the "time" derivation $\delta_F$, whose innerness by face observables is the sufficiency question (§6.4), separate from the "transport" derivations, which give metrics.
 4. **Integer cocycles.** If $F$ is integer-valued (or rescaled to be), [CNNR]'s modular index theory applies to Note 1's data. That is the concrete version of U5's gap labelling to try first.
@@ -730,3 +730,29 @@ These are checks of finite-dimensional identities and inequalities, not experime
 - Metadata only (MaRDI, Politecnico repository): F. Cipriani, *Noncommutative potential theory: a survey*, J. Geom. Phys. 105 (2016) 25–59.
 - Via the sibling digests in this directory (not re-read unless stated in §0): Yang arXiv:2609.38007; Rosa-Ruiz et al.; Liu–Mohanty–Raghavendra–Rajaraman–Wu; Hastings arXiv:0706.0556; Willett–Yu; Lubotzky; Alev–Lau; Anari–Liu–Oveis Gharan.
 - *From memory, not opened:* Takesaki's theorem on conditional expectations and modular invariance; the Delorme–Guichardet theorem for groups (the von Neumann-algebra version [Pet] was read); Popa's rigidity of inclusions (named in [Pet]).
+
+---
+
+## 12. Second-pass check (2026-10-01)
+
+The main sources were re-retrieved and compared with the text above: [CR], [CKG], [DLL], [VW], [Ver], [CM17], [CM20], [KB], [KT], [DMTL], [RD], [Wir], [CS17], [CGIS], [DM], [Rie], [CMo], [CNNR], [Voi], [BST], [Har] and [Pet] (msp.org text). The script was re-run; all numbers in §10 reproduce. Statements and equation numbers not listed below were found to match their sources. Corrections made:
+
+1. **Non-GNS-ness of the [CKG]/[CR] generators** (§1, L8, §3.5, K1). This was attributed to check K1. K1 tests a member of the [DLL] family with a real Gaussian filter, not the [CR] Metropolis generator. The statement for [CKG]/[CR] is now cited to [CKG] App. E. K1's "relative size $10^3$" was entry-wise and not scale-free; the scale-free ratio $\|[\mathcal L,\Delta]\|/(\|\mathcal L\|\|\Delta\|)$ is 0.18–0.23. The script now prints both.
+2. **Note 1 §8's Dirac operator** (§6.2, §8). The digest said it *is* the Connes metric of the arrow-Lindbladian's derivation. It is not. The derivation gives the direct-sum operator $D_\oplus$, while Note 1 uses the sum $D=\sum_\gamma\ell^{-1}(s_\gamma+s_\gamma^*)$. The two agree on $D_0$ up to a factor $2\sqrt{\text{max out-degree}}$. On $\mathcal T(\Lambda)$ the sum form has a strictly larger kernel, since it contains $D$ itself.
+3. **Kernel of the re-routing Lindbladian** (§6.1(b)–(c), §1, §8). $\ker\mathcal L_\beta=D_0$ fails when two or more endpoint fibres are single histories. The kernel dimension is then $\#\text{fibres}-s+s^2$, checked numerically. The recovery claims (e)–(f) are unaffected.
+4. **Expander mixing** (§5.3). The text inferred a mixing-time lower bound $\Omega(\log N)$ from an *upper* bound on $\alpha_2$, which does not follow. It now cites the rank argument in the proof of [KT] Thm 26 and [KT]'s own wording ("further evidence").
+5. **Kazhdan constants** (§1, §4.7). "A uniform local gap, equivalently a uniform Kazhdan-type constant" overstated [Pet]. [Pet] treats tracial finite factors and untwisted bimodules. The statement is relabelled ANALOGY.
+6. **β = 0 limit of the [CR] generator** (§3.4). It is $\sum(P_iXP_i-X)$ only up to an overall positive constant, and only as a limit $\beta\to0$ with $\sigma=1/\beta$.
+7. **Commuting-case kernel** (§4.4). The structure "diagonal on the boundary qubit" is now verified in K3 as $1_A\otimes D_{\{1\}}\otimes M_2$. [KB]'s "locally primitive" (Def. 5, Lemmas 11(3), 12(3)) is the weaker statement that the kernel acts trivially on $A$; it is no longer cited for the boundary-conditioning reading.
+8. **Smaller citation and precision fixes.**
+   - L6 table formula: $N$, not $N/2$, for discrete couplings.
+   - The direct-integral $D$ is not a spectral triple (bounded, so no compact resolvent).
+   - [CR]: the Hölder exponent $4\beta_0/\beta$ of the peeling step and the high-temperature exponent $2\beta_0/(\beta+5\beta_0)$ were added; the condition $\mathrm{dist}(A,C)\ge4e^2\beta d$ of Cor III.2 was added; the "exponential times" quote is from Remark VII.0.1.
+   - [CR] Cor B.2 is stated "by the same reasoning", without a written proof.
+   - [CM17] Lemma 2.5 is the $s\neq\frac12$ statement, alongside Thm 2.9.
+   - The [CM20] "only when … GNS" quote is from §2.1.
+   - [BST] Thm 3 holds for $D>D_0$.
+   - [CGIS] Thm 5.5 needs its parameter conditions.
+   - [Rie] §7 is stated for finite commutative $C(X)$.
+   - The [CNNR] relative-entropy remark is an observation of Carey–Phillips–Rennie, recalled in [CNNR].
+
