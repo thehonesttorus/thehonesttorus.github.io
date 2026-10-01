@@ -19,5 +19,8 @@ f = eval_q.scaling_fit(res["gauss"], units_1024=32.0)
 if "p" in f:
     lines += ["", f"gauss width fit (depth-16 sets): raw ∝ n^-{f['p']:.2f}, extrapolated raw(1024) = {f['raw_1024']:.2e}"
               + (f"; measured at 1024: {f['raw_1024_measured']:.2e}" if "raw_1024_measured" in f else "")]
+lines += ["", "Caution: a two-width power-law fit from widths 64–128 is NOT a reliable 1024 projection. For the Gaussian",
+          "closure it predicts 5.2e-5 while the measured 1024 value is 4.3e-6 (12x lower; the small widths are in a different",
+          "regime). Fit on the widest sets you can afford (256, 512) and check against w1024_d16 when possible."]
 open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "RESULTS.md"), "w").write("\n".join(lines) + "\n")
 print("\n".join(lines))
