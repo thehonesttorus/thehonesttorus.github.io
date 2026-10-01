@@ -1,4 +1,4 @@
-# Tropical / temperature design stream — DESIGN v0
+# Tropical / temperature design stream — DESIGN v1 (v0 + verdict, §6)
 
 *1 Oct 2026. Fresh-slate stream "tropical". Status: v0 (derivation, realisations, predictions, falsification tests). Results go in RESULTS.md as they land.*
 
@@ -137,3 +137,37 @@ At one upstream layer (k = l − 1), the transport correction for a jointly Gaus
 - E1 (phase diagram): hot fraction and ρ by layer at widths 64–1024. Done at 256: §2 P1.
 - E2 (where the zeroth-order error lives): at width 64–128, decompose truth − TCT-0 per layer into birth and transport errors via I2 (MC with exact gradients). If the transport error is dominated by k = l − 1 walls, TCT-1 is worth building. If it is spread over ages, TCT-1 caps far from the bar.
 - E3 (Stage Q): TCT-0 and TCT-1 at widths 64/128/256, depth 16, ≥ 4 MLPs, raw MSE minus truth noise, width-scaling fit, projection to 1024.
+
+## 6. Verdict (v1, 1 Oct evening)
+
+**Measured.** All in RESULTS.md.
+
+1. No zero-temperature small parameter exists at He init, L = 16: a quarter or more of the gates are thermal at every depth (R-P1).
+2. The Newton-polytope (P − Q) form has a 10²³-fold sign cancellation at n = 1024, growing ×√(4n/π) per layer (R-P5).
+3. The tropical-curvature identity I2 is exact (R-E0), but its natural split is non-perturbative: births and inherited transport each miss by O(1) and cancel (corr −1.00). The multiplicity E|∇z|² reaches 17 s² at depth 16 (R-E2).
+4. TCT-0, the only workable realisation, equals the Gaussian closure with an exact two-wall lift: raw 4.5e-4 (w64) and 2.8e-4 (w128) on the bench, projected raw ≈ 5–7e-5 at 1024, 19 u (R-Stage Q).
+5. Temperature as a deformation parameter makes the closure 400× more accurate at T ≈ 0.8, but the extrapolation back to T = 0 buys at most 1.6–2.5×, and only optimistically (R-E3).
+
+**Projected adjusted MSE at n = 1024 for the best tropical estimator:** (TCT-0 + T-extrapolation) ≈ 3e-6 (range 2e-6 to 7e-6). The cost is ≈ 20–40 u (several closure passes at different T), at the 0.1 floor. **This is roughly 2,000× above the bar of 1.6e-9. Not competitive.**
+
+**Charged to what.** Following the brief's rule 3, the failure is charged to the realisation, not to the theory. The tropical dictionary (fan, Newton polytopes, multiplicities, max-plus paths) describes the network exactly, but in *uncentred* coordinates:
+
+- the mean spike (ρ ≈ 0.9 of the second moment at depth) sits inside every tropical quantity;
+- the answer is a small difference of large tropical terms: walls vs transport, P vs Q, signed paths;
+- the network is in the high-temperature phase on both tropical axes (gates and paths).
+
+The one small parameter the picture yields is n^{-1/2}: upstream walls are microscopic and thermalise, and the neuron's own wall is the only macroscopic one. That collapses onto moment/diagram closures, which carry the joint, cross-layer, high-rank structure that the tropical picture does not compress.
+
+**What would make it competitive.** One of:
+
+- (i) a regime with frozen gates (hot fraction → 0 at the layers that dominate the error), e.g. much deeper or trained networks — not this task;
+- (ii) an independent, cheap estimate of the per-neuron wall densities p_{z}(0) and wall-conditional gradients. That is precisely the per-neuron law problem; given it, I2 and I4 become exact readouts;
+- (iii) a *centred* tropical calculus, i.e. a fan/Newton-polytope structure for a − (r/E r)·m, in which the cancellations are removed analytically. I know of no such construction.
+
+**Deciding experiment** (to reopen the route): measure the hot fraction and the I2 birth/transport error at n = 1024 on the layers where the closure error is born. If either shrinks with n, faster than the closure error itself, a tropical lift becomes perturbative there. Everything at 64–256 says it does not: R-E2 shows the cancellation is O(1) and grows with depth.
+
+**What this stream hands to the others:**
+
+- I2 as an exact consistency check: Σ walls = E a, i.e. (n − 1) × the spherical mean;
+- the exact two-wall (bivariate) lift in `tct0.py`, which beats the bench's linearised cross-covariance slightly;
+- the T-deformation fact that closure error collapses ~400× by T ≈ 0.8 s. Useful only to a design that can transfer finite-T accuracy without analytic continuation. Positivity along depth (the coordinator's suggestion (b)) has no concrete realisation from this principle: the path sum is signed (R-P5), so there is no positive transfer to exploit.

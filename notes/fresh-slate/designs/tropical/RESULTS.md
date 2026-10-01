@@ -79,3 +79,32 @@ TCT-0 (= Gaussian field + exact one/two-wall cone lift, float64, `tct0.py`, `sta
 - The exact bivariate (two-wall) lift is slightly better than the bench's linearised cross-covariance, but the difference is inside the s.e.
 
 This is the zeroth order of every tropical realisation (§2 of DESIGN.md).
+
+## R-E3: temperature as a deformation parameter (e3_temperature.py, e3b_extrapolants.py)
+
+The softplus_T network, with ReLU at T = 0. G(T) is the Gaussian closure at T (Hermite/Mehler; at T = 0 it reproduces TCT-0 to 2e-7). F(T) is MC truth, N = 2e6, common random numbers.
+
+w64_d16, MLP 0:
+
+| T | 0 | 0.05 | 0.1 | 0.2 | 0.3 | 0.4 | 0.6 | 0.8 |
+|---|---|---|---|---|---|---|---|---|
+| closure error mse(G − F) | 3.4e-4 | 3.2e-4 | 2.8e-4 | 1.3e-4 | 3.7e-5 | 7.3e-6 | 1.4e-6 | 7.8e-7 |
+| rms(F(T) − F(0)) | 0 | 0.003 | 0.013 | 0.066 | 0.16 | 0.30 | 0.63 | 1.02 |
+
+The closure becomes 400× more accurate by T ≈ 0.8: smoothing the walls kills the non-Gaussian births. But over the same window the target moves by O(1).
+
+Extrapolating G(T) back to T = 0 tells us little:
+
+- Near 0, e(T) = e(0) + O(T²), so small-T Richardson only returns G(0).
+- Any gain must come from analytic continuation across the window where e(T) collapses.
+
+E3b scanned windows, degrees and T vs T² polynomials over all 16 bench MLPs, *selecting the best against the truth* (an optimistic bound):
+
+| set | closure T = 0 | best extrapolant | gain |
+|---|---|---|---|
+| w64_d16 | 4.43e-4 | 2.84e-4 (T², [0.2, 0.4], deg 3) | 1.6× |
+| w128_d16 | 2.87e-4 | 1.15e-4 (T², [0.025, 1.2], deg 4) | 2.5× |
+
+The best family differs between the two widths, so the gain is not robust.
+
+Integrating dF/dT along the T-homotopy with the closure supplying the derivative returns G(0) + e(T_max), i.e. no gain. The small-T derivative is a wall-density functional (I4) and carries the same bias. **The temperature route carries at most ~2× and cannot be the lift.**
