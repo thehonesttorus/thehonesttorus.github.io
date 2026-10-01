@@ -1,0 +1,11 @@
+## predict_mem21
+  w1024_d16 mlp 0: mse 2.9280e-06  raw 2.8843e-06  all-layer 1.512e-06  5.2s
+  w1024_d16 mlp 1: mse 3.0816e-06  raw 3.0389e-06  all-layer 1.416e-06  4.9s
+  w1024_d16 mlp 2: mse 2.6986e-06  raw 2.6630e-06  all-layer 1.316e-06  4.8s
+  w1024_d16 mlp 3: mse 2.1817e-06  raw 2.1487e-06  all-layer 1.223e-06  4.5s
+  w1024_d16 mlp 4: mse 2.5462e-06  raw 2.5106e-06  all-layer 1.258e-06  4.6s
+  w1024_d16 mlp 5: mse 2.2911e-06  raw 2.2632e-06  all-layer 1.233e-06  4.9s
+| set | MLPs | N | final MSE | truth noise | raw | ± s.e. | all-layer MSE |
+|---|---|---|---|---|---|---|---|
+| w1024_d16 | 6 | 2e+06 | 2.621e-06 | 3.6e-08 | 2.585e-06 | 1.4e-07 | 1.326e-06 |
+measured raw at 1024: 2.585e-06

@@ -1,2 +1,11 @@
 ## predict_win6
   w1024_d16 mlp 0: mse 5.0298e-07  raw 4.5925e-07  all-layer 3.160e-07  11.2s
+  w1024_d16 mlp 1: mse 5.3448e-07  raw 4.9185e-07  all-layer 2.985e-07  11.2s
+  w1024_d16 mlp 2: mse 4.7202e-07  raw 4.3645e-07  all-layer 2.882e-07  9.8s
+  w1024_d16 mlp 3: mse 3.6061e-07  raw 3.2756e-07  all-layer 2.645e-07  10.0s
+  w1024_d16 mlp 4: mse 5.9899e-07  raw 5.6340e-07  all-layer 3.298e-07  9.4s
+  w1024_d16 mlp 5: mse 4.2013e-07  raw 3.9223e-07  all-layer 2.922e-07  9.7s
+| set | MLPs | N | final MSE | truth noise | raw | ± s.e. | all-layer MSE |
+|---|---|---|---|---|---|---|---|
+| w1024_d16 | 6 | 2e+06 | 4.815e-07 | 3.6e-08 | 4.451e-07 | 3.3e-08 | 2.982e-07 |
+measured raw at 1024: 4.451e-07

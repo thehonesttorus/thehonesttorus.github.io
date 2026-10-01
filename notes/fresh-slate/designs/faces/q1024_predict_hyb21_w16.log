@@ -1,0 +1,11 @@
+## predict_hyb21_w16
+  w1024_d16 mlp 0: mse 3.7594e-07  raw 3.3222e-07  all-layer 2.896e-07  13.3s
+  w1024_d16 mlp 1: mse 4.2670e-07  raw 3.8407e-07  all-layer 2.831e-07  12.8s
+  w1024_d16 mlp 2: mse 2.7222e-07  raw 2.3664e-07  all-layer 2.486e-07  12.3s
+  w1024_d16 mlp 3: mse 3.1682e-07  raw 2.8377e-07  all-layer 2.469e-07  13.2s
+  w1024_d16 mlp 4: mse 4.7150e-07  raw 4.3591e-07  all-layer 3.102e-07  13.7s
+  w1024_d16 mlp 5: mse 3.0138e-07  raw 2.7348e-07  all-layer 2.612e-07  12.8s
+| set | MLPs | N | final MSE | truth noise | raw | ± s.e. | all-layer MSE |
+|---|---|---|---|---|---|---|---|
+| w1024_d16 | 6 | 2e+06 | 3.608e-07 | 3.6e-08 | 3.243e-07 | 3.1e-08 | 2.733e-07 |
+measured raw at 1024: 3.243e-07

@@ -198,30 +198,40 @@ Ablations of w = 16 at w128: dropping the (2,1) slice from Cov(a) gives 2.07e-4 
 
 Cost at n = 1024 (kit prices: dense f32 product 1 unit). Per $(s,l)$ in the window: propagator update 1, legs 1, two products for $D21$ 2, κ4 1 = 5 units. Per layer, the covariance arrow costs 2. w = 16: 120 pairs → 600 + 32 ≈ 630 units (0.62 B); w = 6: 75 pairs → ≈ 410 (0.40 B); w = 4: 54 pairs → ≈ 300 (0.29 B). Strassen L5 (0.56 units per product) would cut these by about 40 %. Wall: the float64 numpy prototype takes 16 s per MLP at n = 512, so ≈ 130 s at 1024 in float64. float32 is required to fit the 120 s cap.
 
-## 9. Verdict
+## 9. Verdict (after the direct width-1024 run)
 
-**Projected at n = 1024** (bench sets): best adjusted faces estimator 'mem'/'mem21', raw ≈ 1.6e-5 (band 0.8–3e-5), cost ≈ 0.1 B, adjusted ≈ 1.6e-6 (0.8–3e-6). The best raw, 'lin21' at 6.8e-6 (4.8–9.6e-6), costs O(L² n³) ≈ 0.6 B, so adjusted ≈ 4e-6. This sits at the level of plain Monte Carlo and about 10³ above the bar (1.6e-9 adjusted).
+**Measured on the bench set w1024_d16** (6 MLPs, N = 2e6, truth noise 3.6e-8 subtracted; logs `q1024_*.log`; numpy float64, 10–14 s per MLP):
 
-**What the principle delivered** (all exact and checked numerically, `check_exact.py`):
-- E1, transport of barycentres;
-- E2, barycentres as facet integrals and $\mathbb Ef=\mathbb E\Delta f$;
-- E3/E4, the barycentric decomposition;
-- E5, the facet-birth telescoping $\tilde z_l=xP_{x\to l}+\sum_s\nu_sP_{s\to l}$;
-- the radial factorisation $a(x)=R\,b(\theta)$;
-- the degree-0 Gram transport $G_{l+1}=W^\top DGDW$;
-- the exact age attribution of the final-layer skew.
+| estimator | raw at 1024 ± s.e. | vs Gaussian | cost (units) | multiplier | adjusted |
+|---|---|---|---|---|---|
+| Gaussian closure, face-measure Mehler ('gauss') | 4.10e-6 ± 0.33e-6 | 1 | ≈ 40 | 0.1 | 4.1e-7 |
+| one-step facet tree + (2,1) slice ('mem21') | 2.59e-6 ± 0.14e-6 | 1.6× | ≈ 100 | 0.1 | 2.6e-7 |
+| facet births, renormalised legs, window 6 ('win6') | 4.45e-7 ± 0.33e-7 | 9.2× | ≈ 410 | 0.40 | 1.8e-7 |
+| facet births, renormalised legs, all depths ('w16') | **3.24e-7 ± 0.31e-7** | **12.7×** | ≈ 630 | 0.62 | 2.0e-7 |
 
-The structural findings:
-1. Non-Gaussianity is carried by facets (codimension 1), not by faces (codimension 0). At $p=1/2$ the gate field is exactly symmetric.
-2. The final-layer third cumulant is born roughly uniformly over all 15 earlier layers plus the input (T3). The most recent facets contribute about nothing net, so memoryless gluing is impossible in principle.
-3. Old births do not accumulate: later facets fold them away.
-4. At depth only ~40 % of the variance is in chaos ≤ 2 of the input, independent of width.
+The 64–256 fits were wrong at 1024, as the coordinator warned, but in the optimistic direction for the old designs: 'gauss' was projected at 1.9e-5 and measured 4.1e-6. 'w16' was projected at 3.9e-7 and measured 3.2e-7. The facet-birth gain over Gaussian closure grows with width (×2.2 at 64, ×7 at 128, ×10 at 256, ×12 at 512, ×12.7 at 1024), so most of the gain is real large-n structure.
 
-**What would make it competitive.** A face-native carrier of the folding: the facet-conditional covariance $\mathrm{Cov}(z_l\mid z_{s,k}=0)-\mathrm{Cov}(z_l)$, i.e. how crossing the facet of neuron $(s,k)$ changes the layer's covariance. This is the face reading of the (2,1) and (2,1,1) slices. It would need a representation of size ≪ $n^3$ in the dictionary of facet normals $v_{s,k}$ (the face-averaged gradients). All four dictionaries tested here (gate field, hub-face regression, facet births on input legs, face-wise Gram) fail before that object.
+**Projected adjusted at 1024: ≈ 2e-7 (1.5–2.5e-7)** for the current numpy realisation. With Strassen-Winograd products (0.56 units each) 'w16' costs ≈ 360 units (0.35 B), giving ≈ 1.1e-7. That is about 70× above the bar (1.6e-9) and in the same band as the bethe stream (1.07e-7 adjusted).
 
-**Deciding experiment.** At width 256, measure the facet-conditional covariance shift for all facets of the last 4 layers by Monte Carlo. Test whether it is captured to ≤ 5 % by a rank-r expansion in outer products of facet normals $v_{s,k}v_{s,k}^\top$ with r ≤ 32 per layer. If yes, a face chain at O(r n² L) per layer is possible and the ladder's 2 % D21 target becomes reachable. If no (BRIEF §3 says the (2,1) slice has no low-rank form below 0.3 n, which predicts no), the faces principle offers no computational shortcut over the cumulant chains for this task. Its value is then the exact identities and the structural map above, which belong in the write-up.
+**What the principle contributed in an essential way.**
+1. The facet (codimension-1) reading of non-Gaussianity: births $\nu_s$ live at the facets, with coefficient = facet density (E2).
+2. The face-averaged arrows $P_{s\to l}=W D_\beta\cdots W$, the linear map on a face averaged over faces, as the transport of old content (E5, exact telescoping).
+3. The finding that the final-layer skew is born uniformly over depth (T3). This is why the window must be long: w = 1 → 16 is a factor 8 at 1024.
 
-**Charged to the dictionary, not the theory.** The theory's objects are faces, arrows and conditional expectations. The realisation always read "face" as a gate pattern or a facet of a single neuron, and "arrow" as a face-averaged linear map. Neither sees how a facet of layer $s$ conditions the joint law of layer $l$. That is the missing coherence (the noncommutative part, in the note's language): the off-diagonal $\varphi(s_\mu s_\nu^*)$ between histories that arrive at the same face by different routes. A dictionary in which states keep these coherences between facets of different depths is the natural v3, but I found no way to make it cheaper than $n^3$ per layer.
+The bookkeeping (Mehler, bivariate Edgeworth) is standard.
+
+**Why it is not yet competitive, and what would make it so.**
+- Accuracy: it needs another ≈ 20–30× in raw at ≤ 0.1–0.2 B.
+- The ablations name the next terms. The pair fourth-order terms (2,2)/(3,1) together with the κ3² second-order Edgeworth terms are needed in Cov(a); my diagonal-inner-covariance attempt failed (§8b). After those, the folding of old births by later facets (cross-birth cumulants, T2/T5).
+- Cost: the $O(L^2)$ pair loop dominates. A depth window of 6 keeps 70 % of the gain at 65 % of the cost. Recursive updates of $K_{s\to l}$ and products shared across $s$ are the obvious levers.
+
+**Deciding experiment (revised).** On w1024_d16, run 'w16' with oracle injection layer by layer. Replace in turn (a) the closure covariance, (b) the per-neuron κ3/κ4 and (c) the (2,1) slice by Monte Carlo truth at every layer, and measure which injection removes the remaining 3.2e-7.
+- If (a) dominates, the next step is the pair fourth-order terms in Cov(a).
+- If (c) dominates, it is the folding of old births: the facet-conditional covariance $\mathrm{Cov}(z_l\mid z_{s,k}=0)$ in the facet-normal dictionary that §9 v2 proposed.
+
+At width 256 the same oracle ladder costs minutes and answers which object to build next. I did not finish it in this session.
+
+**Charged to the dictionary.** v0 (gate field), the hub-face regression and the degree-0 Gram failed because they read "face" at codimension 0 or decoupled gates from gradients. v1–v2 failed because they kept facet births on input-chaos legs, which carry only ~40 % of the variance at depth. v3 works because it renormalises the legs at the birth layer while keeping the transport along face-averaged arrows. The remaining error is in objects that a single facet does not see: pair fourth-order terms, and coherences between facets of different depths.
 
 ### 7.6 T5 (renormalised-leg tree against the exact per-age attribution) — `t5_fold.py`, logs `t5_n128_s11.log`, `t5_n128_s12.log`
 
