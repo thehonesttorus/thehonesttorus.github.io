@@ -1,0 +1,104 @@
+--- upstream/estimators/estimator_v29.py
++++ bundles/v29/estimator.py
+@@ -1,3 +1,33 @@
++# ---------------------------------------------------------------------------------------
++# Estimator by team 504aldo, https://github.com/504aldo/whest-p2-cumulant-k3 (commit 1a4083f),
++# used under the MIT License:
++#
++# MIT License
++#
++# Copyright (c) 2026 504aldo
++#
++# Permission is hereby granted, free of charge, to any person obtaining a copy
++# of this software and associated documentation files (the "Software"), to deal
++# in the Software without restriction, including without limitation the rights
++# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
++# copies of the Software, and to permit persons to whom the Software is
++# furnished to do so, subject to the following conditions:
++#
++# The above copyright notice and this permission notice shall be included in all
++# copies or substantial portions of the Software.
++#
++# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
++# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
++# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
++# SOFTWARE.
++#
++# Local modification (robustness wrapper only, see `predict` / `_safe_predict` at the end of
++# the Estimator class): off-suite shapes and any failure of the main chain fall back to a
++# float64 covariance propagation. The suite-shape arithmetic is unchanged.
++# ---------------------------------------------------------------------------------------
+ """K3-simple factored cumulant propagation + MEMORYLESS KAPPA4 REGENERATION (V17)
+ + D21 FEEDBACK THIN LEGS (V18, 2026-09-02, F69)
+ + FINAL-LAYER TRIM (V19, 2026-09-03)
+@@ -735,7 +765,7 @@
+                 pass
+ 
+     # ------------------------------------------------------------------
+-    def predict(self, mlp: MLP, budget: int) -> fnp.ndarray:
++    def _predict_main(self, mlp: MLP, budget: int) -> fnp.ndarray:
+         was = _gc.isenabled()
+         _gc.disable()
+         try:
+@@ -1515,6 +1545,58 @@
+         return out
+ 
+     # ------------------------------------------------------------------
++    # ---- robustness wrapper (local modification, see the header) ----------------------
++    SUITE_SHAPE = (1024, 16)
++
++    def predict(self, mlp: MLP, budget: int) -> fnp.ndarray:
++        n = mlp.width
++        L = len(mlp.weights)
++        if (n, L) != self.SUITE_SHAPE:
++            return self._safe_predict(mlp)
++        try:
++            out = self._predict_main(mlp, budget)
++        except (flops.BudgetExhaustedError, flops.TimeExhaustedError):
++            raise
++        except Exception:  # noqa: BLE001  any chain failure -> fallback, never a zeroed MLP
++            return self._safe_predict(mlp)
++        try:
++            ok = bool(fnp.all(fnp.isfinite(out)))
++        except Exception:  # noqa: BLE001
++            ok = False
++        return out if ok else self._safe_predict(mlp)
++
++    def _safe_predict(self, mlp: MLP) -> fnp.ndarray:
++        """float64 covariance propagation: z ~ N(m, S) per layer, ReLU moments in closed form,
++        post-ReLU covariance = d(Phi) S_off d(Phi) + d(Var relu)."""
++        f64 = fnp.float64
++        n = mlp.width
++        rows = []
++        h_mu = None
++        h_C = None
++        for li, w in enumerate(mlp.weights):
++            w64 = w.astype(f64)
++            if li == 0:
++                m = fnp.zeros(n, dtype=f64)
++                S = fnp.einsum("ia,ib->ab", w64, w64)           # W^T W, input x ~ N(0, I)
++            else:
++                m = h_mu @ w64
++                S = w64.T @ (h_C @ w64)
++            var = fnp.maximum(fnp.diagonal(S), 1e-300)
++            s = fnp.sqrt(var)
++            a = m / s
++            Phi = flops.stats.norm.cdf(a)
++            phi = flops.stats.norm.pdf(a)
++            mean = m * Phi + s * phi
++            second = (m * m + var) * Phi + m * s * phi
++            vrelu = fnp.maximum(second - mean * mean, 0.0)
++            rows.append(mean.astype(fnp.float32))
++            if li < len(mlp.weights) - 1:
++                h_C = S * Phi[:, None]
++                h_C = h_C * Phi[None, :]
++                fnp.fill_diagonal(h_C, vrelu)
++                h_mu = mean
++        return fnp.stack(rows, axis=0)
++
+     def _dslices(self, A_st, P_st, Z_st, L_st, w2b_list, s_list, e_list,
+                  c1_list, c2_list, y_list, n, bufs, rres, rfb, Zf_st, R1T_st, R2T_st,
+                  need_d21=True, ka=0, FAo=None, FPo=None, Qc=None,
