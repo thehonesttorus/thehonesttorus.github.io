@@ -115,3 +115,20 @@ final step 15 → 16 computed by v1; MLP w128 seed 0)
   (5.3e-3 → 9.6e-4). The rest is second-order bivariate structure (pairwise fourth-order slices κ(z_a,z_a,z_b,z_b),
   κ(z_a,z_a,z_a,z_b), and Δ² terms), which v1 neither carries nor generates;
 - κ3(z') is off by 15–30 % in the same step, split between the {2,1} sector (K21 of a, 10 % off) and the all-distinct sector.
+
+## Teacher forcing at width 256 (same protocol, 1.5e6-sample statistics; MLP w256 seed 0)
+
+| injected at every layer ≤ 15 | final raw MSE |
+|---|---|
+| nothing (v1) | 2.05e-5 |
+| variance only | 1.68e-5 |
+| variance + mean | 6.2e-6 |
+| standardized shape (κ3, κ4) only | 9.5e-6 |
+| marginals (m, var, κ3, κ4) | 4.3e-6 |
+| marginals + D | 2.7e-6 |
+| marginals + covariance + D | 2.55e-6 |
+
+**One step out of an exact state: 3.6e-5 (n = 128) → 2.55e-6 (n = 256)**, a factor 14, ≈ n^{-3.8} (one MLP per width,
+so the slope is uncertain to roughly ±1). Full v1 falls only as n^{-1.8}. At large width v1's error is therefore
+**accumulated drift of the carried per-neuron statistics** (means, variances and shapes all contribute; none dominates),
+not the closure of a single step.

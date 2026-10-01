@@ -3,7 +3,8 @@ w, seed = int(sys.argv[1]), int(sys.argv[2])
 W = np.load(f"/root/sg/truth/W_w{w}_s{seed}.npy").astype(float)
 d = np.load(f"/root/sg/truth/w{w}_s{seed}.npz"); N = int(d['n']); mean = d['S'] / N; noise = (d['Q'] / N - mean ** 2) / N
 O = dict(np.load(f"/root/sg/layerstats_w{w}_s{seed}.npz"))
-for use in [(), ('D',), ('marg',), ('marg', 'D'), ('cov',), ('cov', 'D'), ('marg', 'cov'), ('marg', 'cov', 'D')]:
+import ast
+for use in (ast.literal_eval(sys.argv[3]) if len(sys.argv) > 3 else [(), ('D',), ('marg',), ('marg', 'D'), ('cov',), ('cov', 'D'), ('marg', 'cov'), ('marg', 'cov', 'D')]):
     cfg = {'oracle': dict(O, use=use)} if use else {}
     est = copula1.estimate(W, cfg)
     err = ((est - mean) ** 2).mean(1) - noise.mean(1)

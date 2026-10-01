@@ -7,6 +7,7 @@ first-order hyperedge (Edgeworth) term, evaluated in the same Mehler/hafnian bas
 """
 import numpy as np
 from numpy.polynomial import polynomial as P
+import copula
 from copula import HE, FACT, K, PQ, upper_moments, positive_intervals, fleishman, latent_corr
 
 FULL = upper_moments(-np.inf, 40)
@@ -155,6 +156,18 @@ def estimate(W, cfg=None, return_diag=False):
                 if 'marg' in o:
                     m = O['mz'][l + 1]; s = np.sqrt(O['var'][l + 1])
                     a = fleishman(np.clip(O['k3'][l + 1] / s ** 3, -1.5, 1.5), np.clip(O['k4'][l + 1] / s ** 4, -1, 4))
+                if 'var' in o or 'k34' in o:              # partial marginal forcing
+                    vv = O['var'][l + 1] if 'var' in o else s ** 2
+                    g = np.stack([a[:, 0], a[:, 1], a[:, 2]], 1)
+                    e = copula.gauss_poly_moments(g, 4)
+                    g1, g2 = e[2], e[3] - 3 * e[1] ** 2              # current standardized cumulants
+                    if 'k34' in o:
+                        sv = np.sqrt(O['var'][l + 1]); g1, g2 = O['k3'][l + 1] / sv ** 3, O['k4'][l + 1] / sv ** 4
+                        # keep the estimator's variance but the true standardized shape
+                    s = np.sqrt(vv); a = fleishman(np.clip(g1, -1.5, 1.5), np.clip(g2, -1, 4))
+                    if 'mean' in o: m = O['mz'][l + 1]
+                    t = np.stack([s * a[:, 0], 2 * s * a[:, 1], 6 * s * a[:, 2]], 1)
+                    R = latent_corr(dg['Cz'], t)
                 if 'D' in o:
                     D = O['D'][l + 1].copy()
                 if 'cov' in o or 'marg' in o:
