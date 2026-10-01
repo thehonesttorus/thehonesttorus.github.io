@@ -68,3 +68,52 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+def structured_fit(raw_dir="results/eps", k2_dir="results/raw"):
+    """per MLP: least-squares final MSE = a + k eps^2 over the teacher-forced-kappa4 variants (eps = rms over layers of the
+    per-layer D21 error, noise-corrected when a noise file exists); k is compared with the MLP's K=2 MSE."""
+    E = load(raw_dir)
+    K2 = load(k2_dir)
+    rows = []
+    for m in sorted({m for (_, m) in E}):
+        xs, ys = [], []
+        for (v, mm), j in E.items():
+            if mm != m or "eps" not in j or not v.endswith(("atlas", "atlas_reg211", "atlas_zero211")):
+                continue
+            e = np.array(j["eps"]["D21"][1:])
+            nf = f"results/noise_mlp{m}.json"
+            if os.path.exists(nf):
+                nz = np.array(json.load(open(nf))["D21"][1:]); e = np.sqrt(np.maximum(e ** 2 - nz ** 2, 0))
+            xs.append(np.mean(e ** 2)); ys.append(j["final_mse"])
+        if len(xs) < 3:
+            continue
+        X = np.stack([np.ones(len(xs)), xs], 1)
+        (a, k), *_ = np.linalg.lstsq(X, np.array(ys), rcond=None)
+        r = np.corrcoef(xs, ys)[0, 1]
+        k2 = K2.get(("A", m), {}).get("final_mse", np.nan)
+        rows.append((m, a, k, r, k2))
+    print("\n## (4) structured law per MLP: final MSE = a + k eps^2 over the kappa4-teacher-forced variants\n")
+    print("| mlp | a | k | corr(MSE, eps^2) | K=2 MSE (variant A) | k / K2 MSE |")
+    print("|---|---|---|---|---|---|")
+    for m, a, k, r, k2 in rows:
+        print(f"| {m} | {a:.2e} | {k:.2e} | {r:.3f} | {k2:.2e} | {k/k2:.2f} |")
+
+
+def pivot(raw_dir="results/eps"):
+    E = load(raw_dir)
+    vs = sorted({v for (v, _) in E}, key=lambda v: np.mean([E[(v, m)]["final_mse"] for (vv, m) in E if vv == v]))
+    mlps = sorted({m for (_, m) in E})
+    print("\n## (5) all recorded variants on the atlas MLPs: final MSE per MLP | geometric mean | mean-over-layers (mean)\n")
+    print("| variant | " + " | ".join(f"mlp{m}" for m in mlps) + " | geo-mean final | mean over layers |")
+    print("|---|" + "---|" * len(mlps) + "---|---|")
+    for v in vs:
+        vals = [E[(v, m)]["final_mse"] if (v, m) in E else np.nan for m in mlps]
+        ml = [np.mean(E[(v, m)]["per_layer_mse"]) for m in mlps if (v, m) in E]
+        ok_ = [x for x in vals if x == x]
+        print(f"| {v} | " + " | ".join("—" if x != x else f"{x:.2e}" for x in vals) + f" | {np.exp(np.mean(np.log(ok_))):.2e} ({len(ok_)}) | {np.mean(ml):.2e} |")
+
+
+if __name__ == "__main__":
+    structured_fit()
+    pivot()
