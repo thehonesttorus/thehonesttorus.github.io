@@ -46,3 +46,9 @@ The age-graded memory operator of a local-move system has singular values μ_a (
 ## 5. Honest status
 
 Sections 1–2 combine published facts (labelled) with measured campaign numbers; the regime table and the ghost and hyperfiniteness readings are synthesis. Section 3 is a conjecture schema supported by three measurements on one problem. Section 4 states targets; none is a result yet. The claim that this generalises beyond existing unlocks stands or falls with G1–G3: a second domain where the blockwise frozen-frame carrier works on the wall would establish it.
+
+## Corrections (22:00 UTC)
+
+- **The "on the wall" row is for rank, not energy.** Team G (T3/T4) and team C: the free sector's energy decays geometrically; only its rank follows n/(2a). The memory's total resolution is therefore subcritical in energy terms, and the log-L lower bound holds only under a 1/a energy profile (team G's conditional theorem). The three-regime table should be read with rank as the graded quantity.
+- **The ghost reading needs the corrected commutator.** [F, X] is finite rank (≤ 2n); the width-flat quantity is its value on the state (team G). The Higson–Lafforgue–Skandalis analogy is about that value being carried by blockwise finite-rank pieces, which still matches the carriers that work (team D's frozen frames; team F's cohort bases).
+- **Team F's carrier makes the deep end cheap.** One transported basis per age cohort, members' cores added without fitting, commutes exactly with transport (an approximate commuting square whose only defect is at bin entry): k = 64 for all ages ≥ 8 costs ≈ 1–2 u per layer at 1.01× (inside costate's first order). The bill is ages 1–7.
