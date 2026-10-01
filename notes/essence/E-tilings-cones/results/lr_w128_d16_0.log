@@ -1,0 +1,15 @@
+w128_d16 mlp 0 l 0: Kmean 1.549e-01 Koff 2.320e-06
+w128_d16 mlp 0 l 1: Kmean 2.115e-02 Koff 4.527e-06
+w128_d16 mlp 0 l 2: Kmean 1.392e-01 Koff 1.165e-05
+w128_d16 mlp 0 l 3: Kmean 5.261e-02 Koff 5.296e-06
+w128_d16 mlp 0 l 4: Kmean 6.497e-02 Koff 6.050e-06
+w128_d16 mlp 0 l 5: Kmean 3.965e-01 Koff 1.550e-05
+w128_d16 mlp 0 l 6: Kmean 4.732e-01 Koff 1.607e-05
+w128_d16 mlp 0 l 7: Kmean 1.296e-01 Koff 5.184e-05
+w128_d16 mlp 0 l 8: Kmean 6.191e-01 Koff 2.872e-05
+w128_d16 mlp 0 l 9: Kmean 6.873e-01 Koff 4.117e-05
+w128_d16 mlp 0 l 10: Kmean 3.648e-01 Koff 4.354e-05
+w128_d16 mlp 0 l 11: Kmean 3.757e-01 Koff 5.443e-05
+w128_d16 mlp 0 l 12: Kmean 6.884e-01 Koff 4.120e-05
+w128_d16 mlp 0 l 13: Kmean 1.007e+00 Koff 4.172e-05
+w128_d16 mlp 0 l 14: Kmean 8.092e-01 Koff 2.403e-05
