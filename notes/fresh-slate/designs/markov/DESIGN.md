@@ -86,3 +86,23 @@ Predicted raw MSE(n) ≈ A n^{−1} (E2) + B n^{−2} (E1+E3) with A ∝ f(d)².
 
 ## 6. Code
 `bake.py` (truth), `mkv.py` (estimator), `checks/` (exactness), `stageq.py` (Stage Q driver), results in `results/`.
+
+---
+
+## 7. Realisation log (what was built, what failed, why)
+
+**v0 → v0.3 (1 Oct, hours 1–3).** `mkv.py`, numpy float64.
+1. *F0 exactness* (`checks/check_f0_exact.py`): with independent sites (W_1 diagonal) the single-site formulas reproduce κ3, κ4 of z_2 to 2e-16 / 6e-16 relative. The Mehler-series bivariate ReLU covariance matches MC within 1.7 s.e.
+2. *First failure — variance drift (charged to the realisation, not the principle).* v0 put the non-Gaussian structure only into per-neuron cumulants and kept the field's off-diagonal covariance Gaussian. Per-neuron variance then drifts by 3 % at layer 3 and 30 % by layer 9 (width 64), and MKV was barely better than Gaussian closure. Fix: the (2,1)-slice correction δCov(a_c, a_d) = ½(E φ''_c E φ'_d κ(z_c,z_c,z_d) + (c↔d)), with κ(z_c,z_c,z_d) summed site by site (exact for the ansatz). Diagonal only: final MSE 6e-4 → 6e-4 (no gain); full matrix: → 1e-4 (width 64, 2 MLPs). **The field's off-diagonal non-Gaussian correction is the main lever**, as the brief's facts predict (the (2,1) slice is the interface).
+3. *Second failure — κ4 at layer 2 off by 26 % at every width (a leading-order omission in the realisation).* Power counting showed that for κ4 the two-site tree diagrams (two residual sites joined by one covariance edge c–d: {c,c,d,d} with E(X²)'·E(X²)', {c,c,d,Y}, {c,d,Y,Y}) carry positive weights p_c² p_d² and add coherently, so they are the same order as the single-site terms; for κ3 every two-site tree vanishes because E X' = 0. With them: layer-2 κ4 error 26 % → 4 %. In Markov language: the unary-site ansatz is not closed at fourth order; the minimal Markov network must contain pairwise *non-Gaussian* cliques (X_c², X_d²) along every covariance edge. Effect on the final layer at width 64 is small.
+4. *Non-Gaussian node marginals for the site potentials* (Gram–Charlier-weighted coefficients): no gain (slightly worse at depth); kept off.
+5. *Depth window (the cut-CMI test).* Final-layer MSE vs window w (sources tracked exactly for w layers, then replaced by their per-neuron Markov projection):
+
+| width, MLP | Gauss closure | w=1 | w=2 | w=4 | w=16 (all) |
+|---|---|---|---|---|---|
+| 64, own seed 1 | 6.3e-4 | 6.2e-4 | 2.9e-4 | — | 7.9e-5 |
+| 64, own seed 2 | — | 2.6e-4 | 2.2e-4 | — | 1.3e-4 |
+| 128, own seed 1 | 1.3e-4 | 1.2e-4 | 1.4e-4 | 5.1e-5 | 2.8e-5 |
+| 64, bench w64_d16 (8 MLPs) | 5.1e-4 | | | | 3.3e-4 |
+
+The Markov projection of old content is not a good recovery map: content of age 2–4 still carries most of the gain. This is the brief's "40 % of the (2,1) slice is old" seen through P3: the cut CMI I(old : next | per-neuron state) is large and decays slowly with age.
