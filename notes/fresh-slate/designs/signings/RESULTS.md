@@ -149,3 +149,14 @@ One step from an exact state: **3.6e-5 (128) → 2.55e-6 (256) → 3.5e-7 (512)*
 per width; the oracle statistics' own noise may inflate the 512 value slightly). Extrapolated, ≈ 4–6e-8 at 1024.
 The local rule alone is therefore ≈ 5× above the raw ≈ 1e-8 target, and drift adds a further ≈ 10× (v1 3.76e-6 vs
 3.5e-7 at 512).
+
+## Final: direct Stage Q at n = 1024 (shared bench `w1024_d16`, all 6 networks, N = 2e6, truth noise subtracted, paired)
+
+| network | 0 | 1 | 2 | 3 | 4 | 5 | mean ± s.e. |
+|---|---|---|---|---|---|---|---|
+| Gaussian closure | 5.24e-6 | 4.90e-6 | 5.06e-6 | 3.54e-6 | 3.96e-6 | 3.11e-6 | **4.30e-6 ± 0.36e-6** |
+| v1 (single-edge form; also the best variant) | 1.17e-6 | 1.21e-6 | 9.2e-7 | 1.10e-6 | 1.06e-6 | 7.8e-7 | **1.04e-6 ± 0.07e-6** |
+
+v1 / Gaussian ≈ 0.24 on every network. Adjusted score at v1's cost (≈ 190–260 units, factor 0.19–0.25):
+**≈ 2.3e-7 (range 1.9e-7 – 2.6e-7)**. The bar is 1.6e-9, so this is ≈ 140× short. (v0 and v2 are worse than v1 at every width
+measured; v2 is unstable, so it was not run at 1024.)
