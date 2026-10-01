@@ -31,19 +31,24 @@ arbitrary age profiles), `run_g.py` (T3 sweep), `run_prof.py` (profiles), `analy
    birth times; a sound version merges blocks with a delay (§2.1).
 6. **T3 (measured, widths 256 and 512; 1024 in flight).**
    - The *relative* truncation loss δ(c)/δ_drop is width-universal: ≈ 0.03 at c = 1, ≈ 0.003 at c = 1.5, ≈ 3·10⁻⁴ at
-     c = 2, at both n = 256 (8 networks) and n = 512 (4). It decays like e^{−4.6c}.
-   - The participation ratio of an age-a propagator is n/(2a) at both widths (a·PR/n = 0.50 ± 0.03 for a = 3–10).
-   - But the c needed for "lossless" (loss ≤ 10 % of FC's raw) drifts up with width: c* ≈ 1.24 (n = 256), 1.39 (512),
-     ≈ 1.58 (1024, team D's points). FC's own error falls faster with n than the dropped memory does, so the ratio
-     to be resolved grows by ≈ e^{0.8} per doubling.
-   - Dixmier coefficient at t = L = 16 (young ages 1–2 at full rank): (2 + 1.881c*)/ln 16 = 1.56 / 1.66 / 1.79.
+     c = 2, at n = 256 (8 networks), 512 (4) and 1024 (6). It decays like e^{−4.6c}.
+   - The per-source spectral profile is width-universal: PR(Z) = n/(2a), and a·k_ε(a)/n and the energy share η_a agree
+     at all three widths.
+   - The c needed for "lossless" (loss ≤ 10 % of FC's raw) drifts up with width: mean c* = 1.24 (n = 256), 1.39 (512),
+     1.61 (1024; per network 1.51–1.77). This is explained: FC's own error falls faster with n than the dropped
+     memory does (δ_drop/FC raw = 8.6 / 24 / 61), and c* = [ln(δ_drop/FC raw) + const]/4.6.
+   - Dixmier coefficient at t = L = 16 (young ages 1–2 at full rank): (2 + 1.881c*)/ln 16 = 1.56 / 1.66 / 1.81.
 7. **T4.** Conditional theorem (§4.1): under exponential spectral tails with rate ∝ (a + 1)/n, additive age losses
    and a 1/a energy profile, Σ_a k(a) ≥ (n/β) ln(1/ε)(H_{L+1} − 1), sharp. **Converse (§4.2): the Dixmier law is
-   forced only by the 1/a energy profile.** With geometric or faster-than-1/a energy decay, the optimal total is O(n)
-   in L, and the per-source data (a·k_ε(a)/n falls linearly in a, energy share falls ≈ geometrically) say we are in the
-   subcritical regime. **The cost form Ω(n³ L log L) is false asymptotically** (§4.3): shared dyadic frames plus exact
-   Tucker cores make cost independent of the number of ages per block. At L = 16, n = 1024 neither escape saves
-   much: Σ_{a=3}^{16} 1/a = 1.88.
+   forced only by the 1/a energy profile.** With geometric or faster-than-1/a decay of the *score-effective* energy,
+   the optimal total is O(n) in L.
+   - The per-source D21 data (energy share falls ≈ geometrically) suggested that subcritical regime.
+   - **But the score-level profile test reverses it.** At equal atom count, every steeper profile (n/a^1.5, n/a²,
+     linear cut-offs) loses 1.25–2.7× more than uniform c·n/a, at n = 256 and 512 (1024 below). So the
+     score-effective weight is ∝ 1/a, H3 holds, and the Dixmier bound applies at L = 16.
+   - **The cost form Ω(n³ L log L) is false asymptotically** (§4.3): shared dyadic frames plus exact Tucker cores make
+     the cost independent of the number of ages per block. At L = 16, n = 1024 this saves nothing
+     (Σ_{a=3}^{16} 1/a = 1.88).
 
 ## 1. The dictionary made rigorous
 
@@ -276,11 +281,35 @@ k_a = (n/(β(a+1))) ln(μ η_a b_a)₊ (μ fixed by the constraint), which vanis
 profile η_a = 1/L the optimum is ≈ (n/(2β)) ln²(H_L/ε): still o(n ln L). So the n ln L law needs exactly the 1/a energy
 profile (or a tail rate that does not grow with age).
 
-**What the data say (§3.2).** η_a falls ≈ geometrically, and the per-source tail rate grows faster than linearly in a.
-Both push to the subcritical side of G7/G8: **the measured c·n/a law is an over-resolution of old ages, not a
-Dixmier-critical necessity.** The uniform-c law works because it equalises per-age loss, not because it is optimal.
-Profiles that resolve old ages less (k = n max(2/a − γ, 1/64), k = c n/a^p with p = 1.5, 2) are being run at
-n = 256, 512, 1024 (`run_prof.py`; 22–37 % fewer old atoms than c = 2).
+**What the data say: the D21-level and score-level profiles disagree, and the score decides (measured;
+v0's reading reversed).**
+- *At D21 level (§3.2).* The per-source energy share η_a falls ≈ geometrically, and the per-source tail rate grows
+  faster than linearly in a. Taken at face value, both put the problem on the subcritical side of G7, and v0
+  concluded that c·n/a over-resolves old ages.
+- *At score level (`run_prof.py`, `compare_prof.py`).* Each profile below is compared with the uniform law at the
+  same old-atom count (the uniform loss interpolated from the T3 sweep). All the steeper profiles lose:
+
+| profile (k(a) for a ≥ 3) | old atoms vs c = 2 | loss / uniform loss, n = 256 (4 nets) | n = 512 (4) | n = 1024 (2) |
+|---|---|---|---|---|
+| n·min(1, 3.46/a^1.5) | 0.78 | 1.96 (1.77–2.10) | 1.97 (1.74–2.24) | PROF1024_A |
+| n·min(1, 6/a²) | 0.63 | 2.25 (1.74–2.70) | 2.68 (2.44–3.05) | PROF1024_B |
+| n·max(2/a − 0.11, 1/64) | 0.68 | 1.39 (1.29–1.49) | 1.45 (1.28–1.58) | PROF1024_C |
+| n·max(2/a − 0.07, 1/64) | 0.79 | 1.25 (1.02–1.47) | 1.34 (1.22–1.45) | PROF1024_D |
+FLATTER_ROWS
+
+- **Reading.** The steeper the profile, the worse it does. Among these families the uniform-c (Dixmier) allocation is
+  the best tested at score level. By the Lagrange form of G7 (optimal k_a = n ln(θ η_a b_a)/(β(a + 1))), a uniform
+  c is optimal exactly when the *score-effective* weight of age a satisfies η_a^eff · b_a = const. So the error that an
+  old age's truncation causes downstream decays like 1/a, even though its share of the next slice's Frobenius energy
+  decays geometrically.
+- **Why the two levels can disagree (synthesis).** Old content is the coherent, Perron-aligned part of the memory
+  (team D §1.4, team B: 79–81 % in the dilation/norm channel). Its errors sit in the conserved (unit-eigenvalue)
+  sector, so they are not damped by g³ per layer as free-sector errors are. A per-slice Frobenius share undercounts
+  them by the accumulated downstream gain.
+- **Status of T4 at L = 16.** H3 holds in its score-effective form (measured), so G7's lower bound applies. Any
+  linear-frame carrier at the accuracy of c ≈ 1.6 (lossless at n = 1024) needs Σ_a k(a) ≈ 1.81·n·ln L per target.
+  The converse (§4.2, first paragraph) remains true but is not the regime we are in. Caveat: only ages ≤ 15 are
+  observable at depth 16, so "1/a" is tested over one decade of age.
 
 ### 4.3 The cost form is false asymptotically (thm, construction)
 
@@ -375,8 +404,16 @@ age block j (rank r_j, transported within the block).
   G6, G7 (conditional) and its converse, the cost construction, G10 (finite-n no-go for static gradings; the G6
   target). **Failures recorded:** note 2's "not Fredholm"
   (wrong diagnosis), (c) carries no information beyond Pythagoras, (d) at degree 2.
-- **Measured:** T3 at n = 256 (8 nets) and 512 (4); n = 1024 in flight. The universal object is the relative loss
-  law δ(c)/δ_drop ≈ A e^{−4.6c}; k(a)/n at fixed relative-to-FC accuracy is *not* width-universal (drifts ≈ +0.17 in c
-  per doubling).
-- **Risk:** the per-source diagnostic measures D21-level loss, not score-level; the score-level profile runs decide.
-  Widths ≤ 512 are pre-asymptotic per the brief.
+- **Measured:** T3 on 18 networks at n = 256 / 512 / 1024.
+  - The universal objects are the relative loss law δ(c)/δ_drop ≈ A e^{−4.6c} and the per-source spectral profile.
+  - k(a)/n at fixed accuracy *relative to FC* is not width-universal: c* = 1.24 / 1.39 / 1.61, with the drift
+    explained by δ_drop/FC raw.
+  - Score-level profile tests make the uniform c·n/a (Dixmier) allocation the best of the families tried, so H3 holds
+    in its score-effective form.
+- **Corrected on the way:** v0's "subcritical, over-resolved" reading came from the D21-level energy share. The
+  score-level test reverses it; the per-slice Frobenius share is not the price of an old age.
+- **Risks.**
+  - Depth 16 shows only one decade of age, so "1/a" versus "1/a^{1±0.2}" is not resolved.
+  - G10 is proved for orthogonal layers; the Gaussian gated case is a conjecture.
+  - The score-effective weight is inferred from optimality among the families tried, not measured directly. A
+    per-age score-level ablation would measure it.
