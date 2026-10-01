@@ -30,6 +30,8 @@ Pair mode (python oracle_k3.py --pair A.npz B.npz) needs two atlases of the SAME
 different --sample-seed; it measures the Monte Carlo noise floor of every quantity and re-evaluates
 the representations fitted on A against the independent target of B, noise-corrected:
   eps_noise   relative noise of one atlas's D21 (all entries / off-diagonal), = rel(D21_A, D21_B)/sqrt(2)
+  tnoise      the noise one atlas's all-distinct kappa3(a) tensor carries into the transported D21, relative to
+              ||D21||: ||T(Kd_A) - T(Kd_B)|| / (sqrt(2) ||D21_B||); the floor of every model built from Kd_A (hub, fit)
   snr         signal-to-noise energy ratio of the all-distinct kappa3(a) tensor, <A,B>/(mean(|A|^2,|B|^2) - <A,B>)
   memless x   eps of A's slices-only model against B's D21, raw and after subtracting B's noise energy
   wick x      the same for the Wick closure built from A
@@ -315,7 +317,7 @@ def analyse_pair(pa, pb):
     W = A["weights"].astype(np.float64)
     L, n, _ = W.shape
     print(f"\npair {pa} | {pb}: width {n}, depth {L}, N = {int(A['n_samples'])} + {int(B['n_samples'])}")
-    print(f"{'l':>2} {'eps_noise':>9} {'off':>6} {'snr(Kd)':>8} | {'memless x':>9} {'corr':>6} {'off':>6} {'corr':>6} | {'wick x':>7} {'corr':>6} {'off':>6} {'corr':>6} | "
+    print(f"{'l':>2} {'eps_noise':>9} {'off':>6} {'tnoise':>6} {'snr(Kd)':>8} | {'memless x':>9} {'corr':>6} {'off':>6} {'corr':>6} | {'wick x':>7} {'corr':>6} {'off':>6} {'corr':>6} | "
           f"{'herm4 x':>7} {'corr':>6} | {'hub n/4 x':>9} {'corr':>6} | {'closure x':>9} {'corr':>6} {'off':>6} {'corr':>6} | {'fit x':>6} {'corr':>6} {'off':>6} {'corr':>6}")
     for l in range(L - 1):
         oa, ob = layer_objects(A, l), layer_objects(B, l)
@@ -326,6 +328,7 @@ def analyse_pair(pa, pb):
         Kda, Kdb = all_distinct(oa["K3a"]), all_distinct(ob["K3a"])
         cross = float(np.sum(Kda * Kdb)); self_ = 0.5 * (float(np.sum(Kda ** 2)) + float(np.sum(Kdb ** 2)))
         snr = cross / max(self_ - cross, 1e-300)
+        tnoise = float(np.sqrt(np.sum((transport_d21(Kda - Kdb, Wn)) ** 2) / 2.0 / np.sum(D21b ** 2)))
         K3m = slices_only(oa["K3a"])
         Tm = transport_d21(K3m, Wn)
         e_mem, e_mem_off = rel(Tm, D21b), rel(Tm, D21b, off=True)
@@ -339,7 +342,7 @@ def analyse_pair(pa, pb):
         e_fit, e_fit_off = rel(Tf, D21b), rel(Tf, D21b, off=True)
         Tc = transport_d21(K3m + closure_model(oa), Wn)
         e_cl, e_cl_off = rel(Tc, D21b), rel(Tc, D21b, off=True)
-        print(f"{l:>2} {e_noise:9.3f} {e_noise_off:6.3f} {snr:8.2f} | {e_mem:9.3f} {corrected(e_mem, e_noise):6.3f} {e_mem_off:6.3f} {corrected(e_mem_off, e_noise_off):6.3f} | "
+        print(f"{l:>2} {e_noise:9.3f} {e_noise_off:6.3f} {tnoise:6.3f} {snr:8.2f} | {e_mem:9.3f} {corrected(e_mem, e_noise):6.3f} {e_mem_off:6.3f} {corrected(e_mem_off, e_noise_off):6.3f} | "
               f"{e_wick:7.3f} {corrected(e_wick, e_noise):6.3f} {e_wick_off:6.3f} {corrected(e_wick_off, e_noise_off):6.3f} | "
               f"{e_h4:7.3f} {corrected(e_h4, e_noise):6.3f} | {e_hub:9.3f} {corrected(e_hub, e_noise):6.3f} | "
               f"{e_cl:9.3f} {corrected(e_cl, e_noise):6.3f} {e_cl_off:6.3f} {corrected(e_cl_off, e_noise_off):6.3f} | "
