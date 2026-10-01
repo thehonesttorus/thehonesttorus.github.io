@@ -1,0 +1,465 @@
+# Phase 1 SOLUTION, ideas for Phase 2 and the honest public frontier (all methods combined and explained) - ARC White-Box Estimation Challenge 2026 - AIcrowd Forum
+URL: https://discourse.aicrowd.com/t/phase-1-solution-ideas-for-phase-2-and-the-honest-public-frontier-all-methods-combined-and-explained/18193
+Published: 2026-08-20
+
+Phase 1 SOLUTION, ideas for Phase 2 and the honest public frontier (all methods combined and explained) - ARC White-Box Estimation Challenge 2026 - AIcrowd Forum
+
+# Phase 1 SOLUTION, ideas for Phase 2 and the honest public frontier (all methods combined and explained) 
+
+ thylinao August 20, 2026, 12:42pm 1 
+
+I’ve spent the last 2 weeks gathering all topics and discussion from the forums and combined with my own 1.5 months long research I want to publish this page dedicated to explaining everything that was used in a beginner-friendly manner, suitable for someone who wants to understand it from 0 to where the current public knowledge frontier is. I’ve created animations, interactive figures, code samples and more for it to be engaging and accessible. On top of that many interesting levers emerged from posts and my own notes that I wanted to present them to everyone to test in Phase 2. All can be found below.
+
+If I missed or misrepresented your method please let me know and I will edit it. All credits are given to the authors (if you want me to change the name I will happily do so).
+
+### Estimating a random network without running it
+
+The ARC White-Box Estimation Challenge 2026, explained from zero, with the field's collected techniques.
+
+Many thanks to everybody!
+
+ Cipo August 21, 2026, 4:30pm 2 
+
+Thanks a lot for the report! I skimmed it and have one quick question: can I ask again how are you using the two observations of the section “What actually happens to the correlations” for your results? Or are they just observations?
+
+Because my understanding was that the high correlations at deeper and deeper layers were pointing to a common mean vector: h_L(x)=\\mu_L+r_L(x) , a symptom of ReLU stacking funneling activations into some \\mu_L (indeed this is valid not only for opposite inputs). And the variance would live in r_L (this is what the estimator would try to capture well).
+
+The second observation is: having rank of around 2, does not mean your error, measured from the variance, lives in a low dimensional space. If you want to get something competitive with sampling you would need many modes, say that capture 99.99% or 99.999% of the variance, in the classical sense.
+
+Example of plot below to show that by just considering 99%:
+
+Perhaps you used a different rank definition?
+
+These were some of my thoughts, thinking about how to exploit these observations (and this would mean centered activation might be a better way to probe the structure of activations). However, I am curious about your thoughts!
+
+I am happy to clear any of my misunderstandings/errors, so happy for clarifications.
+
+ thylinao August 22, 2026, 10:15am 3 
+
+Thanks for reading it properly, and for the plot. You are right on both counts. I have fixed the page.
+
+## Are you using those two observations?
+
+No, with one exception. They are there to explain why the closure fails, not to produce a number. The estimator is a scrambled Sobol sampler with no closure, no correction and no learned component in the scored path. Nothing in it looks at the correlations or the rank.
+
+What actually drives the design is the oracle table just above that section. Give the estimator perfect marginals at every layer and leave only the correlations approximate, and it still cannot get below 7.07e-07. That is what says “spend the budget on samples”.
+
+The one exception: the arc-cosine map is what killed antithetic sampling for me. Pairing x with -x is capped at 1.10x, and on a scrambled net it measured 0.93x, so it actually hurts.
+
+## The common mean vector
+
+You are right.
+
+Write h = mu + r. For a symmetric input distribution:
+
+```
+C = F + (1 - F) * rho
+
+```
+
+C is the antipodal cosine. F is the mean’s share of the activation energy. rho is the correlation between the two residuals.
+
+Measured on ten fresh networks (256 wide, 32 deep, 131,072 samples each): F = 0.946, rho is about -0.08. So C and F agree to within 0.006.
+
+In other words, “the correlations saturate near one” and “the activations are dominated by a common mean” are the same fact said twice. Yours is the better way to say it.
+
+That also explains the antithetic result. The only thing antithetic sampling can harvest is the small (1 - F) * rho term, and it is tiny because almost everything the two vectors share is the mean.
+
+One caveat on your framing. Here mu is not a nuisance, it is the answer, since the target is E[h_32]. The sampler’s error is trace(Cov_32) / (256 N). So r is the noise to average away, not the thing to model.
+
+## The rank definition
+
+The 2.2 is a participation ratio, and your curve reproduces it:
+
+| | mine | yours |
+| --- | --- | --- |
+| participation ratio, first post-ReLU layer | 165 | ~165 |
+| participation ratio, scored layer | 2.4 | ~2 |
+| 99% count, first post-ReLU layer | 246 | ~245 |
+| 99% count, scored layer | 56 | ~60 |
+
+But the page called it “effective rank”, which is a different statistic. On the same spectra:
+
+| statistic | value |
+| --- | --- |
+| participation ratio (this is the 2.2) | 2.4 |
+| effective rank, Roy and Vetterli, on eigenvalues | 5.9 |
+| the same, on singular values | 64 |
+| stable rank | 1.6 |
+
+So a perfectly defensible “effective rank” lands at 64, which is essentially your number. Most of the apparent disagreement was naming.
+
+Your criticism of the sentence stands anyway. A participation ratio is dominated by the top eigenvalue and says little about how far the spectrum reaches. You can build spectra with a participation ratio of 2.4 whose 99% count is anything from single digits to over 200. Reaching 99% here takes 56 directions out of 256, and 99.99% takes 155. “Living on a two-dimensional object” is gone, with those counts in its place.
+
+## Needing many modes
+
+Agreed, with one refinement. That ladder prices an oracle nobody can buy.
+
+Capturing a mode means knowing E[v . h_32] along that eigendirection. Those are k of the 256 numbers the competition is asking you to produce. Knowing Cov_32 exactly buys nothing on its own, because the sampler’s error is just the sample mean of a mean-zero variable.
+
+So the modes have to come from a surrogate whose mean you know in closed form. trim_qewas (18182) measured that whole class saturating at 0.47 of the variance, however many directions you add.
+
+## Centered activations
+
+Agreed. Uncentered, the participation ratio is 1.04, which is near rank one only because the mean dominates, so it tells you nothing. Batch whitening is top of my Phase 2 list at a reported 2.06x to 2.34x.
+
+## What changed on the page
+
+1. The rank sentence, as above.
+2. The 0.982 cosine. It was compared against a theoretical value for a different quantity: 0.982 averages per-pair cosines, while the map predicts a ratio of expectations. That measures 0.941 against 0.973 from the map, so the map overpredicts the collapse rather than under.
+
+Thanks for taking the time and the feedback!
+
+ Cipo August 22, 2026, 1:54pm 4 
+
+Thanks for your reply and checking stuff out.
+
+Note, I never said \mu_L is not important or not useful. Just that in principle we care about residuals more for our current goals. I think.
+
+One last thing:
+
+> What actually drives the design is the oracle table just above that section. Give the estimator perfect marginals at every layer and leave only the correlations approximate, and it still cannot get below 7.07e-07. That is what says “spend the budget on samples”.
+
+Which marginals are you talking about?
+
+I think others as well me used keenan’s dataset to check oracle limits.
+
+For example:
+
+Using pre-activation cumulants and going through the ReLU (ignore red dashed line). In principle, there is a lot of info to be gained by going beyond Gaussian.
+
+If you do marginals I guess you are doing post-ReLU? Because marginals pre-ReLU would not work well, as a non-linear function will mix modes, and you need full objects.
+
+ thylinao August 23, 2026, 6:59am 5 
+
+Fair point on μ_L and agreed that the residual is what matters for the current goal.
+
+Which marginals: post-ReLU as you mentioned. The row says “true per-layer marginal mean and standard deviation after every ReLU, keeping the closure’s own correlations.” So at every layer, the estimator gets the exact post-ReLU mean and SD for each neuron. The only thing still being approximated is the cross-neuron dependence. Pre-ReLU marginals wouldn’t be a clean oracle for exactly the reason you mentioned.
+
+Your plot and my table are two different oracles, and they agree where they overlap. Yours is a readout experiment: exact moments at a layer, then pass them through the ReLU. Mine has a readout row too, and the numbers line up:
+
+| | Yours | Mine |
+| --- | --- | --- |
+| Gaussian closure, exact μ and σ | ~1e-6 | 9.33e-07 |
+| + third and fourth cumulant Edgeworth | ~2e-8 | 1.5e-08 to 2.2e-08 |
+
+So I agree there is real information beyond Gaussian in the readout. It’s worth roughly 50×, and it’s also i think the least controversial number in my table.
+
+The catch is what happens when you also have to propagate. My 7.07e-07 row already uses a true-cumulant Edgeworth readout on top of exact post-ReLU marginals at every layer. That’s essentially your green curve applied at every layer, and the chain still bottoms out at 7.07e-07. The fact that the readout is nearly solved is precisely why I interpret the remaining error as dependence rather than marginal shape.
+
+That also gives us a way to measure your “you need the full objects” point. Exact post-ReLU marginals at layer l don’t determine the pre-activation distribution at layer l+1, because that depends on the joint distribution. If you hand over every marginal for free and leave only the correlations approximate, you get 2.11e-06. Amalgonim’s shuffle oracle gets 9.2643e-07 from the other direction, which is in the same ballpark.
+
+On the instrument: I didn’t use Keenan’s dataset. Mine was 500 self-generated networks, with the 2.00e-06 result replicated on a separate 150-network instrument. That i think is a main difference from what you and the others ran, and probably the most likely source of any disagreement in the absolute level.
+
+Happy to rerun the two propagation rows on Keenan’s set so we’re comparing the same thing directly, if that’s useful. Thank you!
+
+# A technique census of Phase 1: what the mathematics is doing, what walls it hit, and what's still open - ARC White-Box Estimation Challenge 2026 - AIcrowd Forum
+URL: https://discourse.aicrowd.com/t/a-technique-census-of-phase-1-what-the-mathematics-is-doing-what-walls-it-hit-and-whats-still-open/18157
+Published: 2026-08-13
+
+A technique census of Phase 1: what the mathematics is doing, what walls it hit, and what's still open - ARC White-Box Estimation Challenge 2026 - AIcrowd Forum
+
+# A technique census of Phase 1: what the mathematics is doing, what walls it hit, and what's still open 
+
+ jamesrahenry August 13, 2026, 4:28pm 1 
+
+Phase 1 is closed, and it looks like those who are going to publish a public write-up have done so. Here I present a census of the estimation techniques this problem admits, with measured verdicts. This post is an attempt to organize that census by what the mathematics is doing — techniques first, authors as citations.
+
+Two scoping notes up front. First, this maps the published field only, and that is a heavily selected sample: one write-up reports scanning 1,405 graded submissions and finding 864 scoring better than its own, nearly all undocumented (amalgonim’s appendix, 18151) — score prizes reward silence, contribution prizes reward publishing, and the field split accordingly. Even the write-ups withhold components (jamesrahenry’s excludes a sampling-family estimator during the competition; konstantin_baltsat’s deliberately omits his public rank), so read each as a floor on what its authors know, and this census as a floor on what the field knows. Second, every claim below carries its source topic; corrections from the authors are welcome and half the point of posting.
+
+The ARC problem. Given the weights of a random He-initialized ReLU MLP (width 256, depth 32, no biases), estimate the per-neuron final-layer mean E[h(X)] under X ~ N(0, I), scored by MSE against a Monte-Carlo reference, under a FLOP budget with dtype-aware pricing and a wall-time term. Two structural facts shape everything: ReLU’s positive homogeneity (radius and direction separate exactly), and the He-critical initialization (the network sits at the edge of chaos by construction).
+
+The census at a glance.
+
+1. Parametric distribution propagation (moment/cumulant closures) — closed as a competitor: floor ~8.6–9.3e-7, mechanism understood from five directions (1a–1g)
+2. Monte Carlo + variance reduction — owns the published frontier; each gain priced (2a–2e)
+3. Deterministic spherical cubature — the angular problem effectively solved (Kerdock 5-design, two independent builds) (3a–3d)
+4. Structure exploitation — dead/on/kink routing; best published raw MSE (4a–4d)
+5. Control variates & blending — the most actionable open direction, priced at 3–5× (5a–5h)
+6. Metering, score, and benchmark mathematics — the instrument facts everything else depends on (6a–6h)
+7. Learned corrections — work as trajectory-fitted system components, die as local patches (7a–7c)
+
+Then: convergences (C1–C5), the open mathematics (O1–O5), and what the census can’t see.
+
+Technique 1 — Parametric distribution propagation (moment/cumulant closures).
+
+The math: push a parametric family (Gaussian, or Gaussian + low cumulants) through affine maps and the ReLU nonlinearity, layer by layer, using closed-form rectified-Gaussian moments. The measured verdict: the family is closed as a competitor, with the mechanism now understood from five directions.
+
+- 1a. The two-moment readout has a floor at ~8.6–9.3e-7 — budget-independent, and in raw MSE ~40× worse than plain MC on identical draws (amalgonim, 18151). Error localization: the propagated mean carries essentially all of it (true mean + propagated variance scores 1.37e-6; the reverse, 7.07e-5).
+- 1b. Why the mean drifts: mean propagation is a unit-gain feedback loop — ∂M₁/∂μ ≈ 1 at criticality, so per-layer closure error is neither damped nor amplified, just carried and accumulated across all 32 layers (hyojun_kwon, 18154).
+- 1c. Why corrections inside the chain backfire: the chain is an error-compensating dynamical system — layerwise errors anticorrelate and partially cancel, so zero-mean perturbations damp while coherent injected corrections amplify at a measured ~16:1 (jamesrahenry, 18097; independently confirmed and credited in amalgonim’s appendix, 18151).
+- 1d. The k=2 closure’s dominant correctable error is a single multiplicative scale bias: optimal factor 0.9921 ± 0.0001 cross-validated, one scalar multiply, ~3× MSE reduction, and it matches full third-cumulant propagation at 1/500th the cost at this depth (pscamillo, 18063). No closed-form derivation of the 0.992 saturation exists — named there as an open problem.
+- 1e. Higher orders don’t rescue it: the organizers’ own k=3 reference collapses from 46× gain at depth 4 to 1.3× (and unstable) at depth 32, with error growing at an increasing rate per depth doubling (3.1× → 7.9× → 11.8×); k=4 exhausts 61.5 GB at depth 16 and SIGKILLs 122 GB at depth 32 (kwon, 18154). Exact-moment readouts bottom out at 1.47e-8 at order 4, then hurt — an asymptotic series (amalgonim appendix, 18151).
+- 1f. One important correction to the field’s folklore: several “Edgeworth makes it worse” readout numbers trace to a sign error in the standard derivation (the third-cumulant term of the rectified mean is −(g₁/6)aφ(a), not +); with the correct sign and true cumulants, the readout improves ~10× (8.85e-8), while in-chain injection still degrades for the compensation-dynamics reason above (amalgonim appendix, 18151, crediting jamesrahenry’s 18097). Two distinct effects, previously conflated — earlier exact-moment readout negatives (e.g. pscamillo’s, 18063) may be worth re-checking against the sign.
+- 1g. Certificate-grade version of the same wall: an exact full-covariance Gaussian recurrence, enclosure-certified per call, still sits 340× short of budget-matched sampling (jonah_butterbaugh, 18147).
+
+Technique 2 — Monte Carlo and its variance-reduction mathematics.
+
+The math: unbiased sampling, improved by structure — antithetic pairing (annihilates all odd harmonics, which also forces any control variate to be an even function — amalgonim appendix, 18151), randomized quasi-Monte-Carlo (randomly-shifted rank-1 lattices with a tent/baker fold; scrambled Sobol), input whitening, and Rao-Blackwellization of the exact first layer via homogeneity. The measured verdict: this family owns the honest frontier, and each gain has a measured price (amalgonim, 18151):
+
+- 2a. float32 casting: 2.00× (mandatory — float64 bills double)
+- 2b. randomly-shifted lattice + tent fold: 1.73×
+- 2c. input whitening: 1.05×
+- 2d. exact first layer (homogeneity identity): 1.055×
+- 2e. antithetic pairing alone: 1.007–1.05× (an earlier claim that antithetic loses was retracted as a measurement bug — equal-cost antithetic is bounded below at 0.5×, and measured ρ ≈ −0.03 to −0.05 makes it a small gain)
+
+An unbiasedness-preserving frontier claim from the RQMC side: beating the lattice materially “seems to require a biased learned corrector” (evaaaz, 18053). A useful score identity: above the multiplier floor, adjusted score ≈ per-sample variance × per-sample cost — sample count cancels; only the product moves (amalgonim, 18151, item 5).
+
+Technique 3 — Deterministic spherical cubature.
+
+The math: homogeneity makes the radial integral exact in closed form, leaving a finite angular average; replace random directions with a spherical 5-design — 66,048 directions from 128 Kerdock/mutually-unbiased bases plus the coordinate basis, antipodal — certified by a fourth-moment identity, and evaluated at the first layer by signed fast Walsh–Hadamard transforms (eight butterfly stages) instead of a matmul. The measured verdict: for practical purposes the angular problem is solved, with two measured limits.
+
+- 3a. Two teams converged on the identical construction independently: graded raw 2.4258e-7 / adjusted 1.4391e-7 (konstantin_baltsat, 18149) and graded adjusted 1.55e-7 (skye_nygaard, 18145). A third stack reports the same family of banks (Cipo, 18152).
+- 3b. A basis-count ablation shows MSE ~ k^(−1.2) in the number of bases — the exponent exceeds 1, so under an adjusted score you never subsample the design (nygaard, 18145). A separate near-optimality claim rests on a computer-assisted certificate its own author quarantines as unreviewed.
+- 3c. The edge over the structure-aware sampler (Technique 4) is compute, not raw accuracy — its raw MSE is ~11% worse; the win is a cheaper carrier (baltsat, 18149).
+- 3d. A 5-design is still a degree-5 moment matcher, and one oracle analysis argues that alone cannot reach the leaderboard front (amalgonim appendix, 18151).
+
+Technique 4 — Structure exploitation: classification, routing, sparsity.
+
+The math: ReLU is piecewise linear, so a cheap diagonal-Gaussian pass over α = μ/σ classifies neurons as dead (α < −3: output exactly zero), on (α > 3: locally linear — propagate exactly), or kink (uncertain: spend the samples there), with pilot samples refining boundaries. Downstream, dead coordinates compact out of the matmuls, saturated regions linearize, and the remaining dense blocks take Strassen–Winograd (1.95× fewer multiplies) or row-bucketing. Measured: graded raw 2.18e-7 / adjusted 1.551e-7 — the best published raw MSE on the board (Team SOX: natasha_stewart and yangxinyu_xie, 18106, submission 319341; cross-checked by baltsat’s comparison arithmetic, 18149). The anatomy findings this technique surfaced:
+
+- 4a. The always-on neurons — the “easy” ones — carry 74.4% of final-layer squared error, as pure sampling variance (SOX, 18106).
+- 4b. Near-threshold neurons cross the kink together (cross-correlations growing with depth) — a joint event that independent-marginal propagation cannot represent (SOX, 18106).
+- 4c. From the closure side: ~97.5% of closure error concentrates in the ~66 neurons within 2σ of the kink; the costly non-Gaussianity is created by the first rectifier and never grows (amalgonim appendix §14.9, 18151).
+- 4d. 65% of the pair-block error is a lookup on (c_i, c_j, ρ) that saturates at 12 cells per axis and is identical across networks — a universal correction table may be buildable (amalgonim appendix, 18151).
+
+Technique 5 — Control variates and analytic/sampler blending.
+
+The math: report X − β(Y − E[Y]) where Y correlates with the sampler’s fluctuations and E[Y] is known analytically; variance falls by 1 − ρ². The census across write-ups yields a control-depth curve no single team measured:
+
+- 5a. layer-1 exact controls: ≈0.93× — a loss; shallow controls decorrelate (amalgonim appendix §7.20, 18151)
+- 5b. generic low-order controls: 1.0–1.2× (evaaaz, 18053; pscamillo, 18063)
+- 5c. inter-layer fluctuation-map controls: ~2× (Cipo, 18152)
+- 5d. mid-network activation control at layer 6, analytic propagation supplying its mean: 2.39× held-out (kwon, 18154). The same team’s oracle measurement prices a perfect penultimate control at 110×.
+
+The design rules, all measured:
+
+- 5e. Deployable variance reduction is bounded by the analytic mean’s fidelity — “a bias problem wearing a variance-reduction costume” (kwon, 18154).
+- 5f. Under antithetic pairing, controls must be even functions — any linear control variate is identically zero (amalgonim appendix, 18151).
+- 5g. The control target must be deterministic: moments measured on the same rows are correlated with the error they’d correct, closing that route exactly (amalgonim appendix, 18151).
+- 5h. Per-MLP adaptive levers (control-layer choice, adaptive n, per-MLP fusion weights) are measured transfer traps — in-sample wins evaporate or invert held-out (kwon, 18154).
+
+The endpoint of this spectrum — substituting the analytic close for the sampler at the final layer outright — was also built and graded: RQMC through 31 layers with a closure + Edgeworth + ridge close at the end scored 4.98e-7 after regrade, behind the plain unbiased samplers (radiant-allomancer, 18085); measured inside another participant’s sampler, the analytic last-layer close was 1.35× worse than the plain sample mean (jamesrahenry, 18097). The optimum is a blend, not a substitution.
+
+The valuation that makes this line actionable: a mean-propagator faithful to b² ≈ 1e-6, blended with a frontier sampler, is priced at 3–5× on the score (“the largest number anywhere in this write-up”), and the deterministic pair-map chain needed to attempt it runs at 0.79% of budget. Accuracy, not cost, is the open problem (amalgonim appendix, 18151).
+
+Technique 6 — Metering, score, and benchmark mathematics.
+
+The score is part of the problem statement, and a sub-community measured it to instrument grade (amalgonim, 18151, with prior art credited to mliston 18108, ndrew1337 18101, brayden_siew 18092/18093, arianvassili 18105, and nkosi_ndwandwe 18127):
+
+- 6a. Residual wall time is a real compute channel: ~0.6M FLOP-equivalents per call on the grading stack (1–6M on typical hardware). Views/slices are free.
+- 6b. Concatenate carries residue 2.7× its own billed cost; `fnp.block` beats nested concat.
+- 6c. Row-bucketing beats Strassen once residuals count — and they are substitutes, worse combined.
+- 6d. Dtype pricing is 2×/1×/1× for f64/f32/f16 — f16 buys nothing and runs 16× slower on the backend, uncharged.
+- 6e. `flopscope.stats` silently promotes float32 to float64 (nkosi_ndwandwe, 18127); one three-operand einsum cannot run in float32 at all — the meter’s symmetry validation fails after 19 layers of cancellation (kwon, 18154).
+- 6f. Exact compiler-style rewrites with bitwise-identical outputs bought +3.1% adjusted in one graded pair (baltsat, 18149).
+- 6g. The ground truth was reverse-engineered: layer-0 closed forms let two teams infer the label set is a baked N ≈ 1e9 Monte-Carlo (radiant-allomancer, 18085; amalgonim’s appendix agrees on N but reports a label noise floor of ~6.1e-11 at the scored layer versus radiant-allomancer’s ~2e-10 — a public discrepancy the two might resolve between them; picked back up as O5 below).
+- 6h. The benchmark’s population was measured too: the 50 leaderboard MLPs are very unlikely to be a plain random draw of the full split — 0.19% of 20,000 bootstrap resamples land at or below the observed leaderboard-set mean — and the excluded upper tail carries ~36% of full-split error (keenanpepper, 18141). Whatever distribution the private re-evaluation draws from, the number the public board shows is not the number estimators will face.
+
+Public ranks moved substantially in the endgame while regrades under v0.10.0 and a wave of dtype-aware resubmissions were both in flight, so read the final public standings loosely. (baltsat, 18149, reports dropping 16→40 while improving) Correction (2026-08-14, per baltsat’s reply below): the 16→40 was rank drift across evaluator epochs (WhestBench 0.13.0/FlopScope 0.9.1 → 0.14.0/0.10.0), not a same-evaluator experiment; the same frozen estimator replayed on the current stack went 1.4854e-7 → 1.4391e-7 (the 6f compiler result is the correct apples-to-apples number).
+
+Technique 7 — Learned corrections.
+
+The math: fit a parametric corrector — ridge or linear heads on features the estimator already computes — against reference targets, then deploy it frozen. More teams touched this than any technique above, and the verdict splits cleanly on how the fit is done:
+
+- 7a. Fitted at scale on the corrected system’s own rolled-forward trajectory, it works as a system component: a per-layer stabilizer over the closure chain, ~8.4× over its baseline (jamesrahenry, 18097); an amortized per-layer ridge on the propagated mean (kwon, 18154); an offline ridge close on a sampler (radiant-allomancer, 18085).
+- 7b. Bolted on locally, it dies at validation: learned sign/scale models and weight features with no complete-score value (nygaard, 18145); local nonlinear residual heads 3.5× worse off-validation, alpha-tail ridge failing at 1.92×, global alpha calibration non-promotable (baltsat, 18149, Table 4); a learned bias-corrector reaching 2.3× where ~17× is needed (evaaaz, 18053); leave-networks-out gradient boosting on the final layer slightly worsening the residual, with a shuffled-label audit showing no generalizable signal (pscamillo, 18063).
+- 7c. The governing rules appear elsewhere in this census: fit on the corrected system’s own trajectory — 1c’s compensation dynamics is why anything else diverges — and treat per-MLP adaptivity as a transfer trap until proven otherwise (5h). Predictability itself decays with depth (τ ≈ 5.1 layers; pscamillo, 18063): whatever a cheap corrector can learn is gone by the scored layer unless the correction participates in the propagation.
+
+> The measured verdict: a trajectory-fitted corrector is a working component; a local patch is a validation casualty.
+
+The convergences, compressed.
+
+- C1. The same closure wall was hit and measured five independent ways (pscamillo 18063, jamesrahenry 18097, butterbaugh 18147, amalgonim 18151, kwon 18154).
+- C2. Two teams built the identical 66,048-direction Kerdock 5-design (nygaard 18145, baltsat 18149).
+- C3. Four teams independently reassigned the analytic chain from predictor to infrastructure, into three jobs: router (SOX, 18106), control variate (Cipo, 18152; kwon, 18154), subtraction control/null — “effective as a control for subtraction but fails as a direct predictor” (butterbaugh, 18147).
+- C4. Three teams’ ground-truth sections run on the same public datasets of baked higher moments (jamesrahenry’s locked test set, 18097; pscamillo’s exact-moment tests, 18063; and a third team’s suite per its PDF) — which makes those datasets, published mid-competition by keenanpepper, the most load-bearing artifact in the census.
+- C5. The error-compensation account of why chained closures resist correction (jamesrahenry, 18097) was independently adopted by others’ falsification logs (amalgonim appendix, 18151).
+
+The open mathematics.
+
+- O1. A closed-form derivation of the 0.992 mean-drift saturation from the propagation recurrence (named open by pscamillo, 18063).
+- O2. A mechanism theorem for the anticorrelated error dynamics — the unit-gain result (kwon, 18154) covers the mean channel; the covariance-channel compensation (jamesrahenry’s 16:1, 18097) has no derivation.
+- O3. The joint law of near-threshold neurons — multivariate probit is suggested by SOX (18106); the (c_i, c_j, ρ) universality in amalgonim’s appendix (18151) suggests it’s tabulable.
+- O4. Satisfying the oracle-derived necessary conditions for any deterministic method at the leaderboard front: layer-30 mean already at target accuracy, a non-moment readout, and a carried joint object of dimension ≥64 (amalgonim appendix, 18151) — no published technique satisfies all three.
+- O5. The label-floor discrepancy (6.1e-11 vs 2e-10) that bounds how far this benchmark can honestly be pushed.
+
+What the census cannot see. The leaderboard’s front (raw MSE in the low 1e-9s) published nothing, and the strongest public forensics (amalgonim appendix, 18151) rule out moment propagation, low-rank quadrature, plain sampling, and CV/learned-corrector constructions, while showing public-half memorization is arithmetically insufficient. At that accuracy an estimate is within a few × of the baked ground truth’s own noise floor — the regime where estimating true means and matching the grader’s particular Monte-Carlo draw begin to blur. Whether the front is a technique missing from this census or something the fresh-MLP private re-evaluation will reframe is the most interesting open question Phase 1 leaves behind.
+
+Method note. Corpus: all 53 topics in the challenge’s forum category as of 2026-08-13, enumerated with a per-topic attachment scan. Primary sources: the seven write-up PDFs attached in-forum, read in full (including one 115-page appendix); forum post text where no PDF exists. One write-up (topic 18147) is known to exist as a fuller PDF sent only to the organizers and is represented here by its forum abstract — the census’s one known coverage gap. The digestion was LLM-assisted and human-directed, like much of the literature it reviews.
+
+ konstantin_baltsat August 13, 2026, 5:36pm 2 
+
+Thanks — this synthesis is useful.
+
+One small temporal correction to the opening note: topic 18149 now reports the public-rank trajectory. The #16 observation came from e141 submission 320227 under the then-active WhestBench 0.13.0 / FlopScope 0.9.1 stack. After the evaluator changed, the same frozen estimator replayed as submission 324216 at adjusted `1.4854216318155364e-7`; final submission 326680 preserved its raw MSE exactly and reached `1.43914441754321e-7` on that same current stack, a 3.115% reduction, while the final public board showed #40.
+
+So item 6f’s “+3.1%” is the correct apples-to-apples compiler result. The #16 → #40 line describes rank drift across evaluator epochs, not a same-evaluator rank experiment. I tightened the wording in my topic accordingly.
+
+ bgrubbs1984 August 13, 2026, 7:16pm 3 
+
+I’m going to publish one a bit later, I just had to get a few clarifications first. Excellent writeup by the way, thanks for posting, all of them have been very insightful, i’m glad they encouraged the knowledge sharing, learning alot.
+
+ jamesrahenry August 14, 2026, 2:57pm 4 
+
+Thanks both.
+
+@konstantin_baltsat — correction applied above (strikethrough, with the evaluator-epoch explanation); the 6f number stands as the apples-to-apples result.
+
+Since the write-up window runs through Aug 17 and more entries are clearly coming (looking forward to yours, @bgrubbs1984!) I’ll do a consolidated update pass on this census after the 17th rather than editing piecemeal. If your write-up lands before then and you want it represented a particular way, note it here and I’ll fold it in.
+
+If anyone else has any corrections for the post itself, let me know and I’ll post edits.
+
+ bgrubbs1984 August 14, 2026, 5:26pm 5 
+
+Your welcome, and sorry for the delay, I reached out to get clarification if i could grab all of the data for everyone and include it in a github index or even here so everyone could explain history of what was tried and what results were for submissions and why it happened that way. I am hoping for approval, doing it manually isn’t terrible for yourself but for all of the submissions a bit of automation would be needed. I think this is in line with the census you are considering.
+
+An idea that i’m kind of considering of making visuals for a notebook post, not sure if anyone else is a fan, they already have professional visuals but if you can explain complex problems in a simple (and entertaining) way tht even a child can understand it can help with your own understanding and help the idea stream. 
+
+ Phase 1 Report, Submission 327801 
+
+ konstantin_baltsat August 14, 2026, 7:56pm 6 
+
+@bgrubbs1984 I liked the visual-notebook suggestion, so I turned my public-safe atlas into a five-map executable companion: How 203 experiments reached public #16: five maps of Phase 1.
+
+It separates historical rank from evaluator epoch, maps accuracy against compute, shows where the 56 post-frontier ideas stopped, and includes the proof pipeline. The Kaggle version executes without challenge data or network access. If the census gets a consolidated post-Aug-17 pass, feel free to link whichever map is most useful.
+
+ bgrubbs1984 August 15, 2026, 11:05am 7 
+
+Nice! Ill check it out. I felt i could have contributed more in my me-ai team. My ai setup (codex v claude --at timess when im token poor v opencode ) ) did the bulk of the work, if i personally could have more easily visualized in my mind what the concepts were, not in a mathematical or written but what it physically means, i believe I could have potentially considered fresh concepts outside of computer science/machine learning/etc. moreso than just asking claude hey if found these 200 ideas lets give them all a go. I was kind of worthless this phase 1, i think just using my typical 2 ai-fact checking each other trick (which i didn’t for the creation of that table that needed a bit of editing, which probably explains why it wasn’t as correct as it should have been, codex generated it for me with context of the project and feeding the additional papers in) is pretty decent (and now the /goal function in codex which also worked well, I ran out of tokens a few times with it but that seems exceptionally strong and can do mostly what i’m going for (I built my app in my bio using it, not a plug bc i made it free and it doesn’t have ads, just felt it’s something that needed to exist, feel free to try, or take the concept and improve too)), Im trying to fix a few issues, the research and things i told it to read/injest was garbage this phase 1, it very clearly didn’t review quite a bit i wanted it to and it fell through the cracks. I do think it was the /goals function if i remember correctly in codex that pushed it to make the big leap in progress it was like a 10-15 spot on the board bump, it reset and pushed past the things myself and claude had been trying all week, i was impressed and wlll try to factually articulate a response to your question in the other post as far as what it did, but that itself is what physically happend. The prizes would be nice but contributing something likethis would be even nicer i think: Claude Fable 5 AI finds a tiny formula that topples an 87-year-old math conjecture | ScienceDaily
+
+ jamesrahenry August 18, 2026, 3:40am 8 
+
+**The consolidated update pass, as promised — with Phase 1 now closed.** The challenge page marks Phase 1 concluded following a final public rescore, though the held-out results have not yet been announced. The rescore’s visible effect on the public board was surgical: the two anomalous entries at the extreme front — the 9.5e-11 and 1.5e-9 adjusted scores whose raw MSEs sat below anything any published technique can explain — were **removed**, one author’s fallback entry landing mid-board at an ordinary 1.34e-7; one other entry moved ~3%; and every remaining score is unchanged (147 of 147 overlapping rows within 2%, several spot-checked exactly). So the board this update reads is the final public state of Phase 1, and the census’s biggest open question — what the silent front was — has an administrative answer rather than a technical one: *it was removed, not explained*. More on what that leaves standing at the front in part 3.
+
+**Fourteen write-up topics arrived after the corpus cutoff.** The census (posted 2026-08-13) covered the 53 topics then in the category. Fourteen more landed 2026-08-14 → 18: mliston (18170, #327723), the baltsat visual notebook (18163) and bgrubbs1984’s companion site (18169), then the wave of 2026-08-16/17 — pranay212 (18173, #327651), kaileh57 (18171, #327786), nitiz_khanal (18174, #326960), Team Puffi’s two-paper drop (Cipo, 18175: #327950/#328046 plus the SSC estimator #327725), ely2sh (18176, #327749), keenanpepper (18177, #327838), qi_zhang5 (18179, #326954), violeta (18180), omer_kiraz (18181, #327792), trim_qewas (18182, #326725) — and finally andrei_bulzan’s 82-page report (18183, #327801). They move specific census items. Deltas below, keyed to the original item labels.
+
+**New source: pranay212, topic 18173 (submission 327651; public adjusted 1.23e-7, final-layer MSE 1.55e-7).** A hybrid of Techniques 3 and 4: a **BCH strength-4 orthogonal-array** angular design (coordinates indexed by GF(256), columns [1, a, a³], antithetic quotient leaving 65,536 line representatives, of which a fixed target-independent prefix of **56,000 pairs** is used) mounted on the SOX dead/on/kink execution chassis (explicitly credited to 18106), with exact FWHT layer-0 evaluation, an exact antithetic layer-1 fold (h₀(−u)W₁ = h₀(u)W₁ − u(W₀W₁)), Winograd/Strassen, and layer-0 mean transport into a layer-1 bias (covariance transport helped an earlier sampling chassis but *hurt* the fixed-radius design). Item-level effects:
+
+- **3a/4 (amended).** The best published **raw** MSE moves: 1.546e-7 (pranay212) vs the previous best 2.18e-7 (SOX, 18106). And **3c is now moot as stated**: the cubature family’s edge over structure-aware sampling was “compute, not raw accuracy” — the hybrid takes both, because it *is* both. This is also the first published estimator assembled substantially from other teams’ published parts (SOX chassis + the census-documented cubature line): the Phase 1 literature is compounding, which is what a literature is for.
+
+- **3b (amended).** “Under an adjusted score you never subsample the design” (nygaard’s k^−1.2 ablation) gains a practical exception: pranay212 subsampled 65,536 → 56,000 pairs **for watchdog safety, not score** — the complete table was locally more accurate but left no budget margin on hard MLPs, and a 62k FWHT variant hit watchdog failures. His stated rule: “one failed MLP is much worse than a small average gain.” So: never subsample for score; do subsample for the timeout tail.
+
+- **6f (reinforced).** Another compiler-class result: a final exact-algebra pass (one-write assembly, Winograd formulas, sparse packing) cut billed FLOPs ~6.7% mean across four MLPs (192.566B → 178.923B on the representative one) with raw MSE unchanged to ~0.1%, worth **+7.5% adjusted** with no raw-MSE change across the checkpoint pair.
+
+- **1e-adjacent.** His discovery path independently replays the closure story: started at cumulant propagation, found partial k=3 corrections can be worse than the Gaussian closure at depth — consistent with the census’s C1 wall.
+
+**New source: kaileh57 (Kellen Heraty), topic 18171 (submission 327786; public adjusted 9.686e-8, raw 2.088e-7).** A complete randomly-rotated 66,048-point Kerdock rule — the **third independent build of the C2 construction** — plus network-adaptive pruning (activation-column dropping at a 0.02 relative threshold; two-stage dead-output testing with 516 nomination + 516 disjoint confirmation rows and a 32-row sentinel), exact FWHT/Strassen/sparse-prefix algebra, and a final-layer-only output policy. The paper’s center of mass is theory, and it upgrades two census verdicts from “measured” to “proved”:
+
+- **3 (verdict upgraded).** The census said the angular problem was “effectively solved”; there is now a **certificate**. Theorem: for the depth-32 NNGP (iterated arc-cosine) kernel, *every* fixed nonnegative spherical rule with ≤66,048 support points has normalized discrepancy within **0.0233188%** of the complete Kerdock rule’s — i.e. fixed positive sampling at this support budget is nearly saturated. The engine is a Delsarte/Cohn–Kumar-style LP bound built on a genuinely new analytic fact (their Theorem 1): the **sixth derivative of every finite iterate of the dual-ReLU map is positive** on (−1,1), so a degree-5 Hermite minorant at three double nodes is global at every depth. The algebra is audited over the rationals and the depth-32 instance is certified with 256-bit interval arithmetic (Arb), with proof-check commands and SHA-256 manifests in a public release. This stands beside the closure floor (1a) as the field’s second proved wall: **raw-risk reduction inside the fixed-positive class is closed** — what remains is cheaper evaluation, signed/adaptive/network-dependent rules, or hybrids. It also supersedes the quarantined near-optimality claim noted in 3b with a reviewable artifact. Two calibration numbers worth keeping: the Kerdock rule is **32.9% below** iid antipodal sampling’s expected risk at equal support, and the public raw MSE (2.088e-7) runs ~14% *below* the idealized ensemble prediction (2.429e-7) — finite width, suite variation, numerical QR, and pruning all live in that gap.
+
+- **5f (sharpened to a theorem).** The census’s control-variate design rule was “under antithetic pairing, controls must be even.” Their Theorem 3 (degree-five control inertness) is much stronger for the cubature family: on the complete Kerdock cloud, every fixed-radius, sphere-centered, input-polynomial control of total degree ≤5 is **pathwise identically zero** — not merely mean-zero — for every rotation and radius, and this survives their column pruning. Degree six is the first live harmonic band and carries only **13.93%** of the remaining discrepancy (consistent with amalgonim’s 3d oracle argument); their 128-feature degree-six ridge dictionary measured a pooled-oracle R² of 0.2351% against a 4.05% cost surcharge — dead. The explicit carve-outs matter as much as the theorem: Gaussian-centered controls (‖x‖² has sampled value μ_R² but Gaussian mean 256), row reweighting, and **controls of intermediate activations** are all outside it. Read together with 5d (kwon’s 2.39× mid-network control), the control frontier for cubature carriers is now provably *not* at the input — the mid-network channel is the only live one.
+
+- **5h (confirmed again).** Their pruning-threshold campaign is textbook transfer-trap discipline: α = 0.035 saved 2.3% arithmetic but cost 13.3% MSE (product 10.6% worse); a frozen screen on 24 fresh networks showed thresholds 0.022–0.025 produced development-only gains that reversed held-out; 0.020 retained. Their negative-results table (a second Kerdock rotation: <0.26% modeled headroom; two added optimized lines: ratio 1.0000203, with the optimizer returning **no negative weights**; shared-prefix multifidelity: correlation arrives more slowly than work is spent) all dies honestly.
+
+- **6-adjacent.** One more compiler-class item: caching contiguous FWHT workspaces with ping-pong reuse removed 319,029,248 metered operations per test with bitwise-equal outputs. And a provenance observation the metering crew should see: **AIcrowd publishes no server-side artifact hash**, so a retained local upload cannot be cryptographically tied to the graded copy — their SHA-256 manifest is the best a participant can currently do.
+
+- **Scoping honesty worth naming:** the certificate was derived after submission, covers only the unpruned core, and “does not explain the leaderboard score.” The write-up also connects the challenge to the external literature (Wu, Lecomte, Winer, Robinson, Hilton & Christiano, arXiv:2605.05179) — the first in-forum write-up to do so.
+
+**New source: nitiz_khanal, topic 18174 (submission 326960; official adjusted 1.7275e-7, 50/50 graded, zero failures).** A structure-aware Monte Carlo sampler — centered/whitened antithetic Gaussian cloud, the exact first-layer antithetic identity ReLU(−z) = ReLU(z) − z, a pilot-frozen dead-row mask (1,024-sample lead block; rows kept iff they fired at least once), SOX-style terminal stable-on/stable-off/kink classification at a 1.0-column-σ margin, and two-level Strassen/Winograd applied only above residual-aware size cutoffs. Individually these are census-known parts; the write-up’s value is in three places:
+
+- **A new design framing: “private-safe.”** This is the first write-up organized around surviving the fresh-draw private re-evaluation rather than the public board: no public-instance identification or answer tables, the pruning mask frozen *before* production samples, sample count sized against a conservative **no-pruning** worst-case cost model, and a terminal classification that deliberately retains uncertain columns rather than forcing a call. It is 5h’s transfer-trap discipline promoted from a validation rule to the architecture itself.
+
+- **6a/6c (reinforced with a clean instance).** A level-three Strassen recursion reduced nominal FLOPs but lost in paired tests on residual runtime — and his graded checkpoint pair makes the same point at the score level: a more conservative recursion cutoff (#326963) improved the local FLOP proxy yet graded *worse* than the selected build (1.7292e-7 vs 1.7275e-7). “A lower local cost proxy did not transfer to a better official score.”
+
+- **4 (the chassis is now standard).** With explicit citation of “publicly documented structural pruning and terminal classification, independently integrated and validated,” this is the second post-cutoff write-up to build on the SOX execution pattern — dead/on/kink routing has become the field’s shared execution layer, not a team’s technique.
+
+His rejected-ablation table is the familiar honest ledger (bigger lead block: no gain; tighter margin: weaker conservatism for negligible benefit; earlier split: worse held-out; Cholesky whitening: cheaper and plausible but unshipped), and control variates, higher-order closures, and alternative sampling tables were all tried and not promoted — consistent with the census’s Technique 1 and 5 verdicts.
+
+**New source: Team Puffi (Cipo), topic 18175 — two papers.** The census cited Cipo’s in-forum notes (18152); these are the formal write-ups, and they are the most substantial of this batch.
+
+*Paper 1 — the score stack (submissions #327950, adj 9.0914e-8 / raw 1.8945e-7, and a lower-compute alternative #328046).* The carrier is the complete MUB-129 bank (128 Kerdock bases + identity, 66,048 antipodal directions — the **fourth complete build of the C2 construction**), with a three-basis probe (1,536 rows) for pruning and omitted-mean fill, prefix-based sparse execution, and a positive-stable terminal bypass. Item-level effects:
+
+- **3a (extended with the first published quadrature-rule ladder).** Measured final-layer MSE relative to Kerdock frames on a matched panel: i.i.d. Gaussian 2.36×, Owen–Sobol + antipodes 1.39×, rotated simplex 1.35×, signed-Hadamard frames 1.02×, Kerdock 1.00×, **complete real MUB-129 0.81×** — the identity basis is worth 19% and is nearly free at layer 0. No previous write-up ranked the alternatives head-to-head.
+
+- **5c/5d (the mid-network control variate, now fully documented at the published frontier).** The census recorded Cipo’s “~2×” inter-layer fluctuation-map control from forum notes; the paper gives the deployed construction: a shallow analytical reference (“A716” — a fitted finite closure through post-ReLU layer 9 carrying mean, full covariance, marginal third/fourth cumulants, a paired (2,2) fourth, and an eight-generation mixed (2,1) history, with 90 frozen fitted coefficients; layer-9 MSE ratio **0.511 vs Wu K=3**) supplies the layer-9 discrepancy, a ridge-fitted per-network response transports it to the final layer, and a 0.75-shrunk correction is subtracted from the final sampled mean. Measured: **17.6% final-MSE reduction** (paired-bootstrap 95% CI [7.8%, 26.3%]), winning on 34/50 networks, deployed at the best published-write-up-family rank. Their own framing is exactly the census’s: “model-assisted rather than a textbook unbiased control variate,” with the error identity ‖e_CV‖² = ‖e₃₁‖² − 2ρ·(alignment) + ρ²·(quadratic) stated rather than assumed. This is 7a (fit at scale, freeze) and 5d (mid-network control) composed and graded.
+
+- **6 (a new score identity).** With per-network error e and multiplier q, the published score is S = ē·q̄ + Cov(e,q) — the error–multiplier covariance is a real score channel (for #327950: S/ē = 0.4799 vs q̄ = 0.4830). Nobody had written that term down.
+
+- **An instrument fact the metering crew should have:** the grading platform executed **100 MLPs; fifty formed the public scoring panel; the other fifty were gated evaluation cases not included in the public score.** That is a direct statement that a hidden 50-network panel is already being run per submission — relevant to 6h’s leaderboard-population analysis and to what the private re-evaluation will draw from.
+
+- **New open problem (frame selection).** Retrospective oracles show small Kerdock subsets can be excellent (a greedy target-using 38-frame oracle hits 5.47e-8), but every target-free selection rule tried — including herding on observable features — failed to transfer: herding reduced the discrepancy it optimized without consistently reducing final MSE, because “later nonlinear layers can rotate or regenerate error that was reduced at the selection layer.” A mechanistic, fixed-before-evaluation frame-selection rule is named as their main open problem (forum note: they hope it reaches 0.1–0.2 multiplier).
+
+*Paper 2 — the mechanistic estimator (submission #327725, “SSC”: separate-universe response closure; adj 1.6533e-6 / raw 2.6597e-6).* The first structural advance in Technique 1 since the census closed the family:
+
+- **1 (the projection step, not the order, is the live variable).** SSC keeps the Wu-et-al. K=3 cumulant backbone but replaces the fourth-cumulant projection: κ₄ is regenerated each layer from ≤4 live covariance-response modes coupled by a small fitted (indefinite) Λ — the super-sample-covariance algebra from cosmology (Takada–Hu), with the n⁴ tensor never formed. On a matched 30-network panel it cuts layer-32 MSE **77.2% vs factorized K=3 and 48.2% vs factorized K=4**, at 0.501B ledger versus K=4’s ~10²B, and flattens the depth-error exponent to **2.21 (vs 2.69 for K=3, 4.13 for K=4)**. A matched ablation isolates the response branch: disabling it raises layer-32 MSE 2.728e-6 → 7.698e-6.
+
+- **The wall still stands — and they say so.** SSC’s layer-32 MSE remains 7.94× worse than Kerdock QMC on the same panel, and the graded submission (1.65e-6 adjusted) does not approach the closure family’s ~8.6–9.3e-7 readout floor (1a), which SSC’s compressed fourth order does not carry enough joint state to break (compare O4’s “carried joint object of dimension ≥64” — SSC carries four modes). But 1e said higher orders don’t rescue the family because cost explodes and the series is asymptotic; SSC is the first measured answer of a different kind: **compress the order you keep instead of adding one**, beating full factorized K=4 at roughly 1/200th its cost. The census’s “closed as a competitor” verdict survives; its “mechanism understood, nothing left to try” reading does not.
+
+- **Useful taxonomy.** The paper names the whole Technique-1 family “deduction–projection estimators” (exact deduction advances the state, a projection compresses it) — a cleaner frame than “closures” for where the error actually enters, and it locates 1b–1e as facts about particular projections.
+
+- **7a discipline, again:** coefficients fitted on 160 public networks, checked on 16 held-out, evaluated on 30 fresh independently generated networks; everything frozen before evaluation. A post-submission audit (refitting the response to target the consumed mean correction rather than κ₄ marginals: 13.6% further MSE reduction on the predecessor baseline) is reported as unintegrated future work rather than folded into claims.
+
+*[continued in the next post — parts 2 and 3 cover the remaining nine sources and the item-keyed census deltas]*
+
+census_update_2026-08-18.pdf (129.9 KB)
+
+ jamesrahenry August 18, 2026, 3:42am 9 
+
+**New source: ely2sh, topic 18176 (submission 327749; adjusted 1.08164e-7, raw 2.30406e-7).** The best-titled paper of the batch — “The missing basis was not the mechanism” — and the second theorem-bearing one. The author audited the standard 128-basis Kerdock carrier, found it is **not** a tight spherical 5-design (the complete construction in dimension 256 has 129 bases; the coordinate basis was missing from their asset), and then discovered the correction barely matters — which forced a better explanation of why the carrier works at all:
+
+- **3 (a second, complementary theorem).** Theorem 1: for equal-weight antipodal unions of B ≥ 2 orthonormal bases in R^d, under the infinite-width He-ReLU (NNGP) kernel at **every positive depth**, quadrature risk is minimized exactly when every pair of bases is mutually unbiased (proof via the ReLU kernel’s nonnegative power series, strict convexity, and Jensen — equality iff all cross-Gram entries square to 1/d). Read with kaileh57’s result, Technique 3 now has both halves: **within the basis-union class, MUBs are exactly optimal at every depth (ely2sh); over all fixed nonnegative rules at this support, the complete construction is within 0.0233% of optimal (kaileh57)** — posted within a day of each other. The mechanism is *pairwise mutual unbiasedness*, not 5-design exactness: adding the missing basis (making the rule a true 5-design) buys only a predicted 1.00930× / lockbox-measured 1.00907×, while the MUB property over Haar / random-flat / Owen–Sobol controls is worth a measured 1.286–1.391× at matched paths.
+
+- **A public discrepancy worth the authors’ attention (the batch’s version of 6g’s label-floor disagreement):** Team Puffi’s quadrature ladder (18175) prices completing MUB-129 at **~19%** over bare Kerdock frames; ely2sh’s paired completion study prices the same missing basis at **~0.9%** (and only ~0.1–0.5% path-normalized). Different panels, corrections, and protocols — but the two numbers cannot both describe the same object, and both teams have the artifacts to resolve it.
+
+- **2e (strengthened).** Removing antipodes was measured **119× worse** in a matched raw-cost product — the strongest published number for why antipodal pairing is non-negotiable on deterministic carriers.
+
+- **4/6 (a causal cost ladder and a support cliff).** A 1,024-path gate-support pilot removes ~8.3% of effective compute at **0.07%** raw-MSE change (isolated as its own causal step in a live A→B→C ladder, +1.089× adjusted). But a threshold sweep shows a **sharp support-removal cliff**: pilot firing thresholds 1→8 leave raw MSE near 2.3e-7 while trimming width ~215→205; threshold 16 costs 2.08× the MSE for only 7.2% more narrowing, and 64 is catastrophic (1.3e-5). “Rarely firing units carry disproportionate downstream value” — the routing family’s version of 4c’s kink-mass concentration, and a measured warning for every pruning-style estimator in this census.
+
+- **A new mechanism tool (path compatibility).** An Euler–Stein facet identity (E h(X) as a sum over activation-cone facets) explains *which* interventions are safe: exact identities and support-certified removal preserve trajectories; anything that **moves paths** — covariance whitening (2.65× worse), gate-level cubature replacement (~26× worse), barycentric fusion (catastrophic) — crosses facets and dies. This unifies several previously separate negatives, including pranay212’s covariance-transport regression (18173) and the census’s 1c/5-family chain-surgery failures.
+
+- **A measurement-noise warning every small ablation should heed:** one network’s MSE varied **2.9–5.4× across ten global orientations**, with split-half rank correlation of rotation rankings −0.358. Their answer — 16 fixed global realizations × 400 networks (200 validation + 200 untouched lockbox), gates predeclared — is the strictest experimental protocol in the published field, and it implies single-rotation ablation numbers elsewhere carry more noise than their error bars admit.
+
+**New source: qi_zhang5, topic 18179 (submission 326954; adjusted 1.46e-7 — forum text only, no PDF).** A Sobol-family RQMC estimator whose write-up contributes calibration and two negative confirmations:
+
+- **2/6 (the plateau, calibrated).** Working identity: raw × F = V_iid · c / g (per-sample IID variance scale × billed cost per effective sample ÷ variance gain vs same-N IID). Calibrating V_iid ≈ 0.0405 on public MLPs predicts the pure-sampling plateau at 6.24e-7 vs 6.47e-7 observed (3.7% off), with their production point consistent. This is the floor-bet thread’s arithmetic (organizer-confirmed) now carrying a measured calibration.
+
+- **5b/5e (independently confirmed).** A cross-fitted linear control variate worth 1.42× under IID retains only **1.04× under Sobol** — the RQMC carrier already absorbs the low-order variance the control would remove. An independent replication of kwon’s fusion observation (18154), and the sampling-side twin of kaileh57’s degree-≤5 inertness theorem: on a good carrier, the cheap channels are already spent.
+
+- **6 (an arbitrage audit, negative).** A direct audit of the v0.10 cost model found **no billing arbitrage**: matmul/einsum/tensordot routes all bill at 1.000, fp16 = fp32, fp64 = 2×, and comparisons/where/take/concatenate are all priced. “Whatever the frontier is doing, it isn’t metering tricks” — which further narrows the hypothesis space for the silent front (see below).
+
+**New source: trim_qewas, topic 18182 (submission 326725; adjusted 1.855e-7) — the heavyweight of the batch.** Their score is mid-pack and they say so; the contribution is a **protocol**: replace one internal quantity of a running estimator with its ground-truth value and measure — the result upper-bounds every idea whose effect passes through that quantity, including ideas nobody has written yet. Fifty-four method families closed this way (each ~15 GPU-minutes), with a 27-page companion registry (“The Compendium”) holding every stand, seal, and control; 396 recorded findings of which 113 correct earlier conclusions and 51 are outright self-refutations. The census-moving results:
+
+- **1 (the closure story is now complete, and quantified at the top).** A *perfect* two-moment closure — true m and true C at every layer — scores **5.5e-8 adjusted, about 5th place**: the entire two-moment class is exhausted before the podium (×7.7 short of #2). A **full moment oracle** (exact m, C, per-neuron γ₃, γ₄) lands **8.16e-9 — level with #2 at best, ×5.4 short of #1**. So no moment-based state reaches the front, measured rather than argued. Their §4.1 also gives 1c its sharpest form yet: a model predicts the closure’s per-step σ error at R² = 0.836, and correcting it buys *exactly nothing* (optimal coefficient 0.00); substituting the true covariance diagonal makes the answer **8.5× worse**. “A tuned closure is a balanced system of cancelling errors” — substituting truth into one channel measures the other constants’ staleness, not the substitution.
+
+- **A smoothness ceiling that closes six approximation theories at once.** 10–16% of the variance sits at Hermite degrees ≥ 7 with a power-law tail (a kinked function’s Gibbs phenomenon), so a method exact through *arbitrarily* high degree still saturates at **×7–9** — a ceiling on smoothness itself. And the natural counter-move (work *with* the singularities) is closed from the opposite side: the median distance from a sample to the nearest switching surface is **1.1e-4** and 99.1% of probability mass lies within 1e-3 of one — **the kinks are a dense medium, not localizable features**. Softplus-β control: at β = 4 the function is still 55–66% nonlinear but the high-degree tail has already collapsed 3–7×.
+
+- **4/7-adjacent mechanism results:** the answer is **born early** (layers 0–7 carry 50.1% of the final mean via an exact per-layer covariance identity) while the **error is made late** (84% is accumulation; the backward operator has effective rank 2.74, condition number ~1e31 — state reconstruction from the output is numerically impossible); 95% of a step’s error is the previous step’s error transported (one object on one shaft — which kills per-layer independent corrections structurally); 68% of the final error lives in a **6-dimensional Lyapunov subspace computable from the weights alone**; and the closure error is a **finite-width 1/n fluctuation of the particular W** (exponent ≈ −1, three independent constructions), not a missing term in any moment expansion.
+
+- **A flat-budget theorem (6-family).** Above the floor, a pure Monte-Carlo estimator’s score is *budget-independent* (their seal: N = 65,000 at u = 1 and N = 6,500 at u = 0.1 grade identically), the better your deterministic branch the stricter the optimal budget floor, and the analytic advantage is a **small-sample phenomenon**: honestly re-fitted at ×64 budget the optimal analytic weight is exactly zero and the method degenerates to Monte Carlo. The competition sits exactly in the regime where analytics pay — a design property of the benchmark, worth reading against 6h.
+
+- **§7: what the numbers exclude about the top of the board.** From oracle measurements plus a leading entry’s public panel: the front is **not moment-based** (the full oracle is ×5.4 above #1), **not layer-wise** (its layer-0 error equals the ground truth’s own layer-0 noise floor, 6.77e-10 — layers 1–30 are not computed at all), **not pair-coordinate**, is **deterministic** (vs-sampling ratio 1782×, per-network spread 9.6), and **can afford algebra** (2.61e10 effective FLOPs — 15.7× their closure). This is the strongest public forensics on the silent front since amalgonim’s appendix, and it points the same direction: a deterministic, non-moment, angular/algebraic object. Their honest hint: an oracle on the *angular* factor alone reaches 0.2778% closure error — 1.83× better than their entire closure — “if a better class exists, its state is probably angular rather than moment-based.”
+
+- Plus a per-instance impossibility (§4.7: the optimal per-network constant depends linearly on the realised noise; every statistic computable inside the estimator is quadratic in it — the signal is **unobservable from inside**, which upgrades 5h’s transfer-trap from “measured” to “mechanistic”), GOE level statistics ruling out hidden conserved structure, a weight-quantization rate-distortion curve (b ≥ 5 bits suffices; transfer constant D/Δw = 3.05), and the field’s most complete instrument-failure taxonomy (§6.1: six ways a measurement lies, with counts — a companion piece to the census’s production- modes aside).
+
+**New source: keenanpepper, topic 18177 (submission 327838; raw 1.50e-5 / adjusted 1.95e-6) — the bitter-lesson arm, measured to its ceiling.** Co-credited to Claude Opus 5 as a listed author. A fully sampling-free learned propagator (mean, second moment, an O(N²) third-cumulant *plane* standing in for the O(N³) tensor whose exact transport bills 1.4–3.4× the entire budget, plus a recurrent latent), trained end-to-end by backprop through the 32-layer recursion on a 499k-MLP corpus:
+
+- **The headline negative is self-ablation:** the learned attention closure the architecture was designed around is **numerically inert** — deleting it changes predictions in the fifth significant figure while consuming **61% of billed cost**; the bit-identical lean rebuild lands under the multiplier floor and would have scored 1.50e-6 adjusted, a 1.30× improvement by deleting code. Roughly ninety numbered experiments went into a mechanism that trained itself to zero. (“Ablate the shipped artifact, not the design.”)
+
+- **The ceiling result the census should carry (O4-adjacent, agrees with 18182):** inject *true* means and covariance at every layer and the recursion bottoms out at **8.1e-7 raw** — an oracle state genuinely beats sampling at equal arithmetic (4.7×), but both methods sit near the multiplier floor, so it converts to only **1.4–2.0× on the scored metric**. “The entire remaining research program is worth about a factor of two.” Note the convergence: keenanpepper’s (μ, M₂) oracle at 8.1e-7 raw and trim_qewas’s allm at 5.5e-8 adjusted are the same wall measured through two different instruments.
+
+- **Wu et al.'s crossover, located:** Wu et al. beat sampling at sufficient width to depth 12; this measures the program losing at width 256 / depth 32. Whether that’s a width, depth, or width/depth effect is named as the measurement they most want — **and it is now DONE** (jamesrahenry, in-thread reply 2026-08-17, analytic-baseline-vs-plain-MC version): a 7-depth × 5-width median-based grid (48 nets/cell deep rows, FLOP-matched at n = 2w) shows **both effects are real and width dominates monotonically**, with crossover depth d*(w) rising from <24 at w=64 to ≥48 at w=1024 — and the Phase 1 operating point (256, 32) sitting at **median parity** (ratio 1.04, bootstrap 95% CI [0.75, 1.38]). Consistency anchors hold: at d=12 the analytic floor wins at every width (matching Wu), and fitted corrections shift ratios 5–10× down, so the corrected-analytic crossover sits deeper than this floor contour. Code and per-cell data public (`arc-whitebox-replication/analytic_vs_sampling`).
+
+- **Infrastructure (C4-class):** two public HF datasets — `whestbench-relu-mlp- means-500k` (500k MLPs, per-layer mean targets, seed-regenerable, validation noise ~7.5e-10 matching official eval targets) and `whestbench-relu-mlp- moments-10k` (weights + pairwise moments to 4th order at N=1e8). Cipo and bgrubbs1984 already credit them in replies. Also the second independent statement that the suite is **50 public + 50 sealed with per-MLP seeds identical across submissions**, and prizes decided on a fresh re-evaluation with unseen seeds.
+
+- Five measured “walls” for learned correctors (teacher-forced R² is not a gate — fidelity and value dissociate in both directions; corrections convert only where the residual is low-rank; the one converting write is a co-adapted *compensator*, not a corrector — injecting truth into the trained stack makes it *worse*), which sharpen the census’s 7b/7c with mechanism.
+
+**New source: mliston, topic 18170 (submission 327723; adjusted 1.334e-7, raw 1.218e-6 at 10.95% utilization).** The census’s 5d line (kwon’s bias–variance control-depth tradeoff) built into a full submission, plus the batch’s most important integrity disclosure:
+
+- **5d, engineered:** a cumulant-aware closure through layer 18 (rank-capped third-order carriers + per-neuron κ₄) anchors a control at **layer 22 with strength 0.6**; the residual is transported through the actual weights and observed gate fractions. The oracle diagnostic that motivated it reproduces kwon’s law exactly: with an *effectively exact* center, a layer-24 control removes 45.2% of raw MSE and deeper is monotonically better; with the plain closure center, deeper is monotonically *worse*. Centering accuracy, not correlation with the output, is the bottleneck (5e verbatim).
+
+- **7a, upgraded to a sequence model:** a frozen ~52k-parameter GRU, trained offline on thousands of MLPs to predict the closure’s centering error from the moment state the anchor already tracks (deliberately excluding the sampled-mean gap so it can’t erase the control’s signal), cuts raw MSE 17–19% held-out. A later diagnostic measures the residual contamination mechanism the census’s 5g warned about: same-batch features let the learned correction align with layer-22 sample noise at ρ = 0.885, and an (unavailable) across-batch average would improve MSE a further 22.6% — the cleanest measurement yet of *why* controls must be deterministic.
+
+- **6 (a real billing bug, disclosed):** `fnp.tensordot` with contracted rank
+
+> 52 bills multiplies only — the adds in each FMA are free, ≈ 2× effective
+
+sample budget. mliston’s public-board best (8.62e-8, our census rank 11, sub 327734) **uses this bug, is disclosed as invalid, and was not among their selections**; AIcrowd/@mohanty are aware. Read with qi_zhang5’s no-arbitrage audit (which checked standard routes at rank ≤ 52 and found ratio 1.000): the audit and the bug are compatible — the arbitrage lives past the audit’s rank horizon. **Census consequence: the frozen public board’s rank 11 is admitted-invalid**, and any “documented field reaches rank N” arithmetic should skip it.
+
+**New source: violeta, topic 18180 (no PDF — post + GitHub repo `01-1/arc-wbe`).** Sixty-nine closed research directions with the measurements that closed them, and three census-grade items:
+
+- **amalgonim’s score identity (18151 item 5), finally tested rather than assumed:** four paired 100-MLP ladders at n = 4k…32k fit MSE = F + c·n^(−α) with **α = 1.039** (90% CI [0.840, 1.240]) and floor F bounded below 1.5e-7, consistent with zero — *for a sampler whose only closure sits at layer 1*. Read against amalgonim’s 8.8e-7 closure-family floor, the synthesis is sharp: **the floor tracks where the analytic approximation sits — closure at the readout floors; closure at the first layer inside a sampler doesn’t.** Predictions were computed from the three-point fit before the fourth point ran; three points admitted three different verdicts (“fitting three parameters to three points identifies nothing”).
+
+- **A screening rule cheaper than any gate:** convert a candidate’s variance saving into the bias budget it can afford (3.2% variance saving tolerates b² < 8.9e-9 at full budget). Their odd-state Rao–Blackwell had genuinely 0.564× the variance and still died at 2,000× its bias allowance.
+
+- **A bug warning for everyone running replicate gates:** three of their gate aggregators mislabeled M₃ (MSE of the replicate mean) as b²; the correct three-replicate
