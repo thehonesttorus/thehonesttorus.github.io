@@ -1,0 +1,298 @@
+{
+ "tag": "v29orig_rob_adv_x10",
+ "cmd": [
+  "whest",
+  "run",
+  "--estimator",
+  "/tmp/claude-0/sub/orig/v29/estimator.py",
+  "--runner",
+  "subprocess",
+  "--format",
+  "json",
+  "--profile",
+  "--max-threads",
+  "1",
+  "--wall-time-limit",
+  "600.0",
+  "--dataset",
+  "/tmp/claude-0/sub/rob_adv_x10"
+ ],
+ "harness_wall_s": 62.11,
+ "peak_rss_mb_tree": 4806,
+ "peak_rss_mb_worker": 4332,
+ "rc": 1,
+ "nproc": 4,
+ "loadavg_at_end": [
+  4.08642578125,
+  3.6708984375,
+  2.1572265625
+ ],
+ "summary": {
+  "adjusted_final_layer_score": 7.797765448215824e+31,
+  "final_layer_mse": 7.797765448215824e+31,
+  "all_layers_mse": 4.9217120036635446e+30,
+  "mean_effective_compute": 0.0,
+  "mean_compute_utilization": 0.0,
+  "n_failed_mlps": 1,
+  "mean_score_multiplier": 1.0,
+  "C_over_B_max": 0.0,
+  "C_over_B_mean": 0.0,
+  "residual_max_s": 0.0,
+  "residual_mean_s": 0.0,
+  "residual_list_s": [
+   0.0
+  ],
+  "wall_max_s": 0.0,
+  "wall_mean_s": 0.0,
+  "n_failed_rows": 1,
+  "truth_noise_floor": 3.249533862154888e-05,
+  "final_mse_minus_noise": 7.797765448215824e+31,
+  "truth_n_samples": 2000.0
+ },
+ "per_mlp": [
+  {
+   "mlp_index": 0,
+   "final_layer_mse": 7.797765448215824e+31,
+   "all_layers_mse": 4.9217120036635446e+30,
+   "flops_used": 0,
+   "wall_time_s": 0.0,
+   "residual_wall_time_s": 0.0,
+   "flopscope_backend_time_s": 0.0,
+   "flopscope_overhead_time_s": 0.0,
+   "budget_exhausted": false,
+   "time_exhausted": false,
+   "residual_wall_time_exhausted": false,
+   "error_code": "PREDICT_ERROR",
+   "adjusted_final_layer_score": 7.797765448215824e+31
+  }
+ ],
+ "report": {
+  "schema_version": "1.1",
+  "mode": "agent",
+  "results": {
+   "adjusted_final_layer_score": 7.797765448215824e+31,
+   "final_layer_mse": 7.797765448215824e+31,
+   "all_layers_mse": 4.9217120036635446e+30,
+   "per_layer_mse": [
+    31.835634231567383,
+    5081.38818359375,
+    571269.25,
+    58866364.0,
+    6710507008.0,
+    779268915200.0,
+    72711783055360.0,
+    7408171119280128.0,
+    7.645034914932326e+17,
+    7.983652445523385e+19,
+    8.28865668959347e+21,
+    7.672101740887456e+23,
+    8.062378237041274e+25,
+    8.043471062235484e+27,
+    7.61612914929886e+29,
+    7.797765448215824e+31
+   ],
+   "best_mlp_adjusted_final_layer_score": 7.797765448215824e+31,
+   "worst_mlp_adjusted_final_layer_score": 7.797765448215824e+31,
+   "mean_score_multiplier": 1.0,
+   "mean_compute_utilization": 0.0,
+   "n_failed_mlps": 1,
+   "mean_effective_compute": 0.0,
+   "failure_breakdown": {
+    "budget_exhausted": 0,
+    "time_exhausted": 0,
+    "residual_wall_time_exhausted": 0,
+    "combined_budget_exhausted": 0,
+    "error": 1
+   },
+   "per_mlp": [
+    {
+     "mlp_index": 0,
+     "mlp_name": "karen-cervantes",
+     "error": "Tensor not symmetric along axes (0, 1): max deviation = nan (tolerance: atol=1e-06, rtol=1e-05). See: https://aicrowd.github.io/flopscope/docs/guides/symmetry",
+     "error_code": "PREDICT_ERROR",
+     "traceback": "Traceback (most recent call last):\n  File \"/root/whest/lib/python3.11/site-packages/whestbench/subprocess_worker.py\", line 73, in _handle_predict\n    predictions = estimator.predict(mlp, budget)\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/claude-0/sub/orig/v29/estimator.py\", line 742, in predict\n    return self._predict_core(mlp, budget)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/claude-0/sub/orig/v29/estimator.py\", line 1405, in _predict_core\n    C = flops.as_symmetric(C, symmetry=(0, 1))\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/root/whest/lib/python3.11/site-packages/flopscope/_budget.py\", line 1208, in wrapped\n    return inner_fn(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/root/whest/lib/python3.11/site-packages/flopscope/_symmetric.py\", line 1148, in as_symmetric\n    _validate_and_charge_symmetry(array, group, op_name=\"as_symmetric\")\n  File \"/root/whest/lib/python3.11/site-packages/flopscope/_symmetric.py\", line 369, in _validate_and_charge_symmetry\n    validate_symmetry_groups(array, [group])\n  File \"/root/whest/lib/python3.11/site-packages/flopscope/_symmetric.py\", line 336, in validate_symmetry_groups\n    raise SymmetryError(axes=tuple(axes), max_deviation=max_dev)\nflopscope.errors.SymmetryError: Tensor not symmetric along axes (0, 1): max deviation = nan (tolerance: atol=1e-06, rtol=1e-05). See: https://aicrowd.github.io/flopscope/docs/guides/symmetry\n",
+     "final_layer_mse": 7.797765448215824e+31,
+     "all_layers_mse": 4.9217120036635446e+30,
+     "per_layer_mse": [
+      31.835634231567383,
+      5081.38818359375,
+      571269.25,
+      58866364.0,
+      6710507008.0,
+      779268915200.0,
+      72711783055360.0,
+      7408171119280128.0,
+      7.645034914932326e+17,
+      7.983652445523385e+19,
+      8.28865668959347e+21,
+      7.672101740887456e+23,
+      8.062378237041274e+25,
+      8.043471062235484e+27,
+      7.61612914929886e+29,
+      7.797765448215824e+31
+     ],
+     "adjusted_final_layer_score": 7.797765448215824e+31,
+     "flops_used": 0,
+     "effective_compute": 0.0,
+     "budget_exhausted": false,
+     "time_exhausted": false,
+     "residual_wall_time_exhausted": false,
+     "combined_budget_exhausted": false,
+     "wall_time_s": 0.0,
+     "flopscope_backend_time_s": 0.0,
+     "flopscope_overhead_time_s": 0.0,
+     "residual_wall_time_s": 0.0,
+     "breakdowns": {
+      "estimator": null
+     }
+    }
+   ],
+   "breakdowns": {
+    "sampling": {
+     "flop_budget": 1000000000000000,
+     "flops_used": 67348620288,
+     "flops_remaining": 999932651379712,
+     "wall_time_s": 0.7762239369999975,
+     "flopscope_backend_time_s": 0.6822879300002853,
+     "flopscope_overhead_time_s": 0.08493247299986706,
+     "residual_wall_time_s": 0.009003533999845104,
+     "by_namespace": {
+      "sampling.sample_layer_statistics": {
+       "flops_used": 67348620288,
+       "calls": 198,
+       "flopscope_backend_time_s": 0.6822879300002853,
+       "flopscope_overhead_time_s": 0.08470077599983483,
+       "operations": {
+        "zeros": {
+         "flop_cost": 0,
+         "calls": 17,
+         "flopscope_backend_time_s": 0.00010195800004453304,
+         "flopscope_overhead_time_s": 0.00103074199998332
+        },
+        "random.Generator.standard_normal": {
+         "flop_cost": 32768000,
+         "calls": 2,
+         "flopscope_backend_time_s": 0.0,
+         "flopscope_overhead_time_s": 0.028791737000005924
+        },
+        "array": {
+         "flop_cost": 2048000,
+         "calls": 2,
+         "flopscope_backend_time_s": 0.0020880779999856713,
+         "flopscope_overhead_time_s": 0.0004286470000351983
+        },
+        "matmul": {
+         "flop_cost": 67076096000,
+         "calls": 32,
+         "flopscope_backend_time_s": 0.5944653449999464,
+         "flopscope_overhead_time_s": 0.011149374000154921
+        },
+        "maximum": {
+         "flop_cost": 32768000,
+         "calls": 32,
+         "flopscope_backend_time_s": 0.02420303700003501,
+         "flopscope_overhead_time_s": 0.010541571999965527
+        },
+        "asarray": {
+         "flop_cost": 69666816,
+         "calls": 36,
+         "flopscope_backend_time_s": 0.04109018600010472,
+         "flopscope_overhead_time_s": 0.005158202999950845
+        },
+        "sum": {
+         "flop_cost": 69562368,
+         "calls": 34,
+         "flopscope_backend_time_s": 0.018200923000080138,
+         "flopscope_overhead_time_s": 0.01558226199983892
+        },
+        "add": {
+         "flop_cost": 69632,
+         "calls": 34,
+         "flopscope_backend_time_s": 0.0002679360000286124,
+         "flopscope_overhead_time_s": 0.009941474999976663
+        },
+        "power": {
+         "flop_cost": 65568768,
+         "calls": 3,
+         "flopscope_backend_time_s": 0.0017243560000110847,
+         "flopscope_overhead_time_s": 0.0008456930000022567
+        },
+        "stack": {
+         "flop_cost": 32768,
+         "calls": 1,
+         "flopscope_backend_time_s": 6.121300000927477e-05,
+         "flopscope_overhead_time_s": 0.0001739739999777612
+        },
+        "true_divide": {
+         "flop_cost": 34816,
+         "calls": 2,
+         "flopscope_backend_time_s": 2.9824000023381814e-05,
+         "flopscope_overhead_time_s": 0.0004445959999657134
+        },
+        "copy": {
+         "flop_cost": 1024,
+         "calls": 1,
+         "flopscope_backend_time_s": 6.248999994795668e-06,
+         "flopscope_overhead_time_s": 9.679300001153024e-05
+        },
+        "subtract": {
+         "flop_cost": 2048,
+         "calls": 1,
+         "flopscope_backend_time_s": 3.15700000896868e-06,
+         "flopscope_overhead_time_s": 0.0001843879999796627
+        },
+        "mean": {
+         "flop_cost": 2048,
+         "calls": 1,
+         "flopscope_backend_time_s": 4.566800001271076e-05,
+         "flopscope_overhead_time_s": 0.0003313199999865901
+        }
+       }
+      }
+     },
+     "time_source": "bake"
+    },
+    "estimator": null
+   }
+  },
+  "run_meta": {
+   "run_started_at_utc": "2026-10-01T15:26:08.373100+00:00",
+   "run_finished_at_utc": "2026-10-01T15:26:08.373124+00:00",
+   "run_duration_s": 52.14320993423462,
+   "host": {
+    "hostname": "vm",
+    "os": "Linux",
+    "os_release": "6.18.44-fc-v50",
+    "platform": "Linux-6.18.44-fc-v50-x86_64-with-glibc2.39",
+    "machine": "x86_64",
+    "python_version": "3.11.15",
+    "cpu_brand": "x86_64",
+    "cpu_count_logical": 4,
+    "cpu_count_physical": 4,
+    "ram_total_bytes": 16876515328,
+    "ram_available_bytes": 14630563840,
+    "numpy_version": "2.4.6",
+    "flopscope_version": "0.12.1"
+   }
+  },
+  "run_config": {
+   "n_mlps": 1,
+   "width": 1024,
+   "depth": 16,
+   "seed": null,
+   "flop_budget": 2199023255552,
+   "setup_timeout_s": 5.0,
+   "wall_time_limit_s": 600.0,
+   "residual_wall_time_limit_s": 0.4,
+   "lambda_flops_per_second": 0.0,
+   "dataset": {
+    "path": "/tmp/claude-0/sub/rob_adv_x10",
+    "sha256": "cb1994cc28cd03c313f8113b5cfb2fa67a1ed531b3c06df31a50dc905d8fa400",
+    "seed": null,
+    "n_mlps": 1
+   }
+  },
+  "whestbench_version": "0.16.1"
+ },
+ "stderr_tail": "1 of 1 MLP(s) raised during predict; rerun with --debug for tracebacks. Use --fail-fast to stop on first error.\n"
+}

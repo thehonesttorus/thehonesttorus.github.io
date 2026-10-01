@@ -1,0 +1,330 @@
+{
+ "tag": "v29orig_rob_w1024_d32",
+ "cmd": [
+  "whest",
+  "run",
+  "--estimator",
+  "/tmp/claude-0/sub/orig/v29/estimator.py",
+  "--runner",
+  "subprocess",
+  "--format",
+  "json",
+  "--profile",
+  "--max-threads",
+  "1",
+  "--wall-time-limit",
+  "600.0",
+  "--dataset",
+  "/tmp/claude-0/sub/rob_w1024_d32"
+ ],
+ "harness_wall_s": 115.52,
+ "peak_rss_mb_tree": 7639,
+ "peak_rss_mb_worker": 6909,
+ "rc": 1,
+ "nproc": 4,
+ "loadavg_at_end": [
+  4.02490234375,
+  3.451171875,
+  1.89111328125
+ ],
+ "summary": {
+  "adjusted_final_layer_score": 0.6305630207061768,
+  "final_layer_mse": 0.6305630207061768,
+  "all_layers_mse": 0.6958947777748108,
+  "mean_effective_compute": 0.0,
+  "mean_compute_utilization": 0.0,
+  "n_failed_mlps": 1,
+  "mean_score_multiplier": 1.0,
+  "C_over_B_max": 0.0,
+  "C_over_B_mean": 0.0,
+  "residual_max_s": 0.0,
+  "residual_mean_s": 0.0,
+  "residual_list_s": [
+   0.0
+  ],
+  "wall_max_s": 0.0,
+  "wall_mean_s": 0.0,
+  "n_failed_rows": 1,
+  "truth_noise_floor": 1.1832625476799446e-05,
+  "final_mse_minus_noise": 0.6305511880807,
+  "truth_n_samples": 2000.0
+ },
+ "per_mlp": [
+  {
+   "mlp_index": 0,
+   "final_layer_mse": 0.6305630207061768,
+   "all_layers_mse": 0.6958947777748108,
+   "flops_used": 0,
+   "wall_time_s": 0.0,
+   "residual_wall_time_s": 0.0,
+   "flopscope_backend_time_s": 0.0,
+   "flopscope_overhead_time_s": 0.0,
+   "budget_exhausted": false,
+   "time_exhausted": false,
+   "residual_wall_time_exhausted": false,
+   "error_code": "PREDICT_ERROR",
+   "adjusted_final_layer_score": 0.6305630207061768
+  }
+ ],
+ "report": {
+  "schema_version": "1.1",
+  "mode": "agent",
+  "results": {
+   "adjusted_final_layer_score": 0.6305630207061768,
+   "final_layer_mse": 0.6305630207061768,
+   "all_layers_mse": 0.6958947777748108,
+   "per_layer_mse": [
+    0.31878355145454407,
+    0.5101953744888306,
+    0.5728374719619751,
+    0.5902941823005676,
+    0.6724081039428711,
+    0.7791158556938171,
+    0.7266961336135864,
+    0.7391279935836792,
+    0.7623633146286011,
+    0.7958016395568848,
+    0.8266794681549072,
+    0.7648911476135254,
+    0.8048676252365112,
+    0.8025888204574585,
+    0.7600334882736206,
+    0.777692437171936,
+    0.8049341440200806,
+    0.7906657457351685,
+    0.7864354252815247,
+    0.6811364889144897,
+    0.6470792293548584,
+    0.7689488530158997,
+    0.778550922870636,
+    0.707963228225708,
+    0.6186655759811401,
+    0.5909121036529541,
+    0.5995664000511169,
+    0.6789280772209167,
+    0.6655981540679932,
+    0.6943227052688599,
+    0.6199862360954285,
+    0.6305630207061768
+   ],
+   "best_mlp_adjusted_final_layer_score": 0.6305630207061768,
+   "worst_mlp_adjusted_final_layer_score": 0.6305630207061768,
+   "mean_score_multiplier": 1.0,
+   "mean_compute_utilization": 0.0,
+   "n_failed_mlps": 1,
+   "mean_effective_compute": 0.0,
+   "failure_breakdown": {
+    "budget_exhausted": 0,
+    "time_exhausted": 0,
+    "residual_wall_time_exhausted": 0,
+    "combined_budget_exhausted": 0,
+    "error": 1
+   },
+   "per_mlp": [
+    {
+     "mlp_index": 0,
+     "mlp_name": "karen-cervantes",
+     "error": "Unable to allocate 56.0 MiB for an array with shape (7, 1024, 1024) and data type float64",
+     "error_code": "PREDICT_ERROR",
+     "traceback": "Traceback (most recent call last):\n  File \"/root/whest/lib/python3.11/site-packages/whestbench/subprocess_worker.py\", line 73, in _handle_predict\n    predictions = estimator.predict(mlp, budget)\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/claude-0/sub/orig/v29/estimator.py\", line 742, in predict\n    return self._predict_core(mlp, budget)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/claude-0/sub/orig/v29/estimator.py\", line 1083, in _predict_core\n    D3, D21 = self._dslices(A_st, P_st, Z_st, L_st, w2b_list, s_list, e_list,\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/claude-0/sub/orig/v29/estimator.py\", line 1562, in _dslices\n    D3 = (fnp.einsum(\"kij,kij,kij->i\", A_st, A_st, T) * 3.0\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/root/whest/lib/python3.11/site-packages/flopscope/_budget.py\", line 1208, in wrapped\n    return inner_fn(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/root/whest/lib/python3.11/site-packages/flopscope/_einsum.py\", line 787, in einsum\n    info = _resolve_cost_and_output_symmetry(subscripts, *operands, optimize=optimize)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/root/whest/lib/python3.11/site-packages/flopscope/_einsum.py\", line 689, in _resolve_cost_and_output_symmetry\n    _get_path_info(subscripts, operands, optimize)\n  File \"/root/whest/lib/python3.11/site-packages/flopscope/_einsum.py\", line 488, in _get_path_info\n    path_info = _rebuild_cache(\n                ^^^^^^^^^^^^^^^\n  File \"/root/whest/lib/python3.11/site-packages/flopscope/_einsum.py\", line 111, in _rebuild\n    dummy_ops: list = [_np.empty(sh) for sh in shapes]\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/root/whest/lib/python3.11/site-packages/flopscope/_einsum.py\", line 111, in <listcomp>\n    dummy_ops: list = [_np.empty(sh) for sh in shapes]\n                       ^^^^^^^^^^^^^\nnumpy._core._exceptions._ArrayMemoryError: Unable to allocate 56.0 MiB for an array with shape (7, 1024, 1024) and data type float64\n",
+     "final_layer_mse": 0.6305630207061768,
+     "all_layers_mse": 0.6958947777748108,
+     "per_layer_mse": [
+      0.31878355145454407,
+      0.5101953744888306,
+      0.5728374719619751,
+      0.5902941823005676,
+      0.6724081039428711,
+      0.7791158556938171,
+      0.7266961336135864,
+      0.7391279935836792,
+      0.7623633146286011,
+      0.7958016395568848,
+      0.8266794681549072,
+      0.7648911476135254,
+      0.8048676252365112,
+      0.8025888204574585,
+      0.7600334882736206,
+      0.777692437171936,
+      0.8049341440200806,
+      0.7906657457351685,
+      0.7864354252815247,
+      0.6811364889144897,
+      0.6470792293548584,
+      0.7689488530158997,
+      0.778550922870636,
+      0.707963228225708,
+      0.6186655759811401,
+      0.5909121036529541,
+      0.5995664000511169,
+      0.6789280772209167,
+      0.6655981540679932,
+      0.6943227052688599,
+      0.6199862360954285,
+      0.6305630207061768
+     ],
+     "adjusted_final_layer_score": 0.6305630207061768,
+     "flops_used": 0,
+     "effective_compute": 0.0,
+     "budget_exhausted": false,
+     "time_exhausted": false,
+     "residual_wall_time_exhausted": false,
+     "combined_budget_exhausted": false,
+     "wall_time_s": 0.0,
+     "flopscope_backend_time_s": 0.0,
+     "flopscope_overhead_time_s": 0.0,
+     "residual_wall_time_s": 0.0,
+     "breakdowns": {
+      "estimator": null
+     }
+    }
+   ],
+   "breakdowns": {
+    "sampling": {
+     "flop_budget": 1000000000000000,
+     "flops_used": 134588654592,
+     "flops_remaining": 999865411345408,
+     "wall_time_s": 1.37833492499999,
+     "flopscope_backend_time_s": 1.2333252710001545,
+     "flopscope_overhead_time_s": 0.12909916599957683,
+     "residual_wall_time_s": 0.015910488000258738,
+     "by_namespace": {
+      "sampling.sample_layer_statistics": {
+       "flops_used": 134588654592,
+       "calls": 374,
+       "flopscope_backend_time_s": 1.2333252710001545,
+       "flopscope_overhead_time_s": 0.12886067999957618,
+       "operations": {
+        "zeros": {
+         "flop_cost": 0,
+         "calls": 33,
+         "flopscope_backend_time_s": 0.00020163500005310198,
+         "flopscope_overhead_time_s": 0.0035240489999921465
+        },
+        "random.Generator.standard_normal": {
+         "flop_cost": 32768000,
+         "calls": 2,
+         "flopscope_backend_time_s": 0.0,
+         "flopscope_overhead_time_s": 0.028930311999999958
+        },
+        "array": {
+         "flop_cost": 2048000,
+         "calls": 2,
+         "flopscope_backend_time_s": 0.002092736000008699,
+         "flopscope_overhead_time_s": 0.00036240900001871523
+        },
+        "matmul": {
+         "flop_cost": 134152192000,
+         "calls": 64,
+         "flopscope_backend_time_s": 1.0690586100002122,
+         "flopscope_overhead_time_s": 0.01829018299957852
+        },
+        "maximum": {
+         "flop_cost": 65536000,
+         "calls": 64,
+         "flopscope_backend_time_s": 0.050423881999932973,
+         "flopscope_overhead_time_s": 0.018607147999944118
+        },
+        "asarray": {
+         "flop_cost": 135235584,
+         "calls": 68,
+         "flopscope_backend_time_s": 0.0777194980000786,
+         "flopscope_overhead_time_s": 0.012399051999977928
+        },
+        "sum": {
+         "flop_cost": 135032832,
+         "calls": 66,
+         "flopscope_backend_time_s": 0.03055230299997902,
+         "flopscope_overhead_time_s": 0.03056029900011481
+        },
+        "add": {
+         "flop_cost": 135168,
+         "calls": 66,
+         "flopscope_backend_time_s": 0.0004628489999163321,
+         "flopscope_overhead_time_s": 0.01413187499997548
+        },
+        "power": {
+         "flop_cost": 65568768,
+         "calls": 3,
+         "flopscope_backend_time_s": 0.0026065679999760505,
+         "flopscope_overhead_time_s": 0.0007937119999894549
+        },
+        "stack": {
+         "flop_cost": 65536,
+         "calls": 1,
+         "flopscope_backend_time_s": 0.00011928200001420919,
+         "flopscope_overhead_time_s": 0.00019866799999590512
+        },
+        "true_divide": {
+         "flop_cost": 67584,
+         "calls": 2,
+         "flopscope_backend_time_s": 3.794499997411549e-05,
+         "flopscope_overhead_time_s": 0.0004151920000197151
+        },
+        "copy": {
+         "flop_cost": 1024,
+         "calls": 1,
+         "flopscope_backend_time_s": 5.082000001266351e-06,
+         "flopscope_overhead_time_s": 9.628399999428439e-05
+        },
+        "subtract": {
+         "flop_cost": 2048,
+         "calls": 1,
+         "flopscope_backend_time_s": 3.3059999964279996e-06,
+         "flopscope_overhead_time_s": 0.0001879699999847162
+        },
+        "mean": {
+         "flop_cost": 2048,
+         "calls": 1,
+         "flopscope_backend_time_s": 4.1575000011562224e-05,
+         "flopscope_overhead_time_s": 0.0003635269999904267
+        }
+       }
+      }
+     },
+     "time_source": "bake"
+    },
+    "estimator": null
+   }
+  },
+  "run_meta": {
+   "run_started_at_utc": "2026-10-01T15:24:11.877721+00:00",
+   "run_finished_at_utc": "2026-10-01T15:24:11.877747+00:00",
+   "run_duration_s": 93.58723211288452,
+   "host": {
+    "hostname": "vm",
+    "os": "Linux",
+    "os_release": "6.18.44-fc-v50",
+    "platform": "Linux-6.18.44-fc-v50-x86_64-with-glibc2.39",
+    "machine": "x86_64",
+    "python_version": "3.11.15",
+    "cpu_brand": "x86_64",
+    "cpu_count_logical": 4,
+    "cpu_count_physical": 4,
+    "ram_total_bytes": 16876515328,
+    "ram_available_bytes": 14491832320,
+    "numpy_version": "2.4.6",
+    "flopscope_version": "0.12.1"
+   }
+  },
+  "run_config": {
+   "n_mlps": 1,
+   "width": 1024,
+   "depth": 32,
+   "seed": null,
+   "flop_budget": 2199023255552,
+   "setup_timeout_s": 5.0,
+   "wall_time_limit_s": 600.0,
+   "residual_wall_time_limit_s": 0.4,
+   "lambda_flops_per_second": 0.0,
+   "dataset": {
+    "path": "/tmp/claude-0/sub/rob_w1024_d32",
+    "sha256": "21547d1c20a2e8df6179bed9611b14233423f8348949acbe5bfda93c14ab452c",
+    "seed": null,
+    "n_mlps": 1
+   }
+  },
+  "whestbench_version": "0.16.1"
+ },
+ "stderr_tail": "1 of 1 MLP(s) raised during predict; rerun with --debug for tracebacks. Use --fail-fast to stop on first error.\n"
+}
