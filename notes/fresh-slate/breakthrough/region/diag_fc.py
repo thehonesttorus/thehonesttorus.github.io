@@ -6,6 +6,26 @@ import bench, fc, mc_analyse as ma
 
 def main(i, path, **kw):
     S = bench.load_set('w1024_d16'); W = bench.weights(S, i); T = S['means'][i]
+    if kw.pop('k4tf', False):
+        DD = np.load(path); k4f = {}
+        for l in range(1, W.shape[0]):
+            cA = ma.central(DD, 'A', l); cB = ma.central(DD, 'B', l)
+            k4f[l] = (0.5 * (cA['K22'] + cB['K22']), 0.5 * (cA['K31'] + cB['K31']), 0.5 * (cA['k4'] + cB['k4']))
+        mode = kw.pop('k4mode', 'full')
+        for l in list(k4f):
+            K22, K31, k4 = k4f[l]
+            if mode == 'nooff':
+                K22 = 0 * K22; K31 = 0 * K31
+            elif mode == 'colmean':      # keep only the coherent column sums: K_ik -> mean_i' K_i'k
+                K22 = np.broadcast_to(K22.mean(0, keepdims=True), K22.shape).copy(); K31 = np.broadcast_to(K31.mean(0, keepdims=True), K31.shape).copy()
+            elif mode == 'diagonly':
+                K22 = 0 * K22; K31 = 0 * K31
+            elif mode.startswith('scale'):
+                x = float(mode[5:]); K22 = x * K22; K31 = x * K31
+            elif mode == 'nodiag':
+                k4 = 0 * k4
+            k4f[l] = (K22, K31, k4)
+        kw['k4f'] = k4f
     tr = []; p = fc.run(W, trace=tr, **kw)
     D = np.load(path)
     out = []

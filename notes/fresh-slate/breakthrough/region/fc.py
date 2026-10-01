@@ -49,7 +49,7 @@ def slice_exact(mu, S, P, m, nq=40):
     return K21, k3
 
 
-def run(W, window=None, slices=False, young=None, rank=None, edge=True, readout=True, dtype=np.float32, trace=None):
+def run(W, window=None, slices=False, young=None, rank=None, edge=True, readout=True, dtype=np.float32, trace=None, k4f=None, k4use=True):
     L, n, _ = W.shape
     W64 = W.astype(np.float64)
     Wf = W.astype(dtype)
@@ -73,6 +73,18 @@ def run(W, window=None, slices=False, young=None, rank=None, edge=True, readout=
                 dm = D3 / 6 * w3
                 m = mG + dm
                 var = var + D3 * p / (3 * s) - 2 * mG * dm
+            if k4f is not None and l in k4f and k4use:
+                K22z, K31z, k4z = k4f[l]
+                w4 = (al * al - 1) * p / s ** 3
+                if readout:
+                    dm4 = k4z / 24 * w4
+                    var = var + k4z / 24 * 2 * w3 - 2 * m * dm4
+                    m = m + dm4
+                if edge:
+                    X4 = 0.25 * np.outer(w2_, w2_) * K22z if False else 0.25 * np.outer(p / s, p / s) * K22z
+                    X4 = X4 + (1 / 6) * (K31z * (w3[:, None] * P[None, :]))
+                    X4 = X4 + X4.T - 0.25 * np.outer(p / s, p / s) * K22z
+                    C += X4
             if edge:
                 cs = S.copy(); np.fill_diagonal(cs, 0)
                 va = v[:, None]; condv = np.maximum(v[None, :] - cs * cs / va, 1e-12 * v[None, :])
@@ -117,9 +129,25 @@ def run(W, window=None, slices=False, young=None, rank=None, edge=True, readout=
                     + (D3z * w3)[:, None] * M1[None, :] / 6 + M1[:, None] * (D3z * w3)[None, :] / 6
                 dk21 = (dE2k - 2 * (dEik * M1[:, None] + Eik * dM1[:, None]) - (dM2[:, None] * M1[None, :] + M2[:, None] * dM1[None, :])
                         + 2 * (2 * (M1 * dM1)[:, None] * M1[None, :] + (M1 ** 2)[:, None] * dM1[None, :]))
+                if k4f is not None and l in k4f:
+                    K22z, K31z, k4z = k4f[l]
+                    K22z = K22z.copy(); np.fill_diagonal(K22z, 0); K31z = K31z.copy(); np.fill_diagonal(K31z, 0)
+                    w4 = (al * al - 1) * p / s ** 3
+                    e1 = k4z * w4 / 24; e2 = k4z * w3 / 12; e3 = k4z * w2 / 4
+                    dE2k4 = K31z * (w2[:, None] * P[None, :]) / 3 + 0.5 * K22z * (P[:, None] * w2[None, :]) \
+                        + K31z.T * (M1[:, None] * w3[None, :]) / 3 + (k4z * w3 / 12)[:, None] * M1[None, :] \
+                        + M2[:, None] * (k4z * w4 / 24)[None, :]
+                    dEik4 = K31z * (w3[:, None] * P[None, :]) / 6 + K31z.T * (P[:, None] * w3[None, :]) / 6 \
+                        + 0.25 * K22z * np.outer(w2, w2) + (k4z * w4 / 24)[:, None] * M1[None, :] + M1[:, None] * (k4z * w4 / 24)[None, :]
+                    dm4 = e1; dM24 = e2; dM34 = e3
+                    dk21 = dk21 + (dE2k4 - 2 * (dEik4 * M1[:, None] + Eik * dm4[:, None]) - (dM24[:, None] * M1[None, :] + M2[:, None] * dm4[None, :])
+                                   + 2 * (2 * (M1 * dm4)[:, None] * M1[None, :] + (M1 ** 2)[:, None] * dm4[None, :]))
+                    dk3 = dk3 + dM34 - 3 * (dm4 * M2 + M1 * dM24) + 6 * M1 ** 2 * dm4
                 np.fill_diagonal(dk21, 0)
                 Dl = Dl + dk21 - (P[:, None] ** 2) * P[None, :] * Dz
                 d3 = d3 + dk3 - P ** 3 * D3z
+                if trace is not None:
+                    trace[-1]['sl21'] = K21x + dk21; trace[-1]['sl3'] = k3x + dk3; trace[-1]['sl21G'] = K21x.copy(); trace[-1]['sl3G'] = k3x
             np.fill_diagonal(Dl, d3 / 3)
             new["Delta"] = Dl.astype(dtype)
         sources.append(new)
