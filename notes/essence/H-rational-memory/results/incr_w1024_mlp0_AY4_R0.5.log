@@ -1,0 +1,11 @@
+t= 5 old-rel 0.0165 total-rel 0.0003 (old share 0.02) passes so far 124
+t= 6 old-rel 0.0126 total-rel 0.0007 (old share 0.06) passes so far 248
+t= 7 old-rel 0.0099 total-rel 0.0010 (old share 0.10) passes so far 372
+t= 8 old-rel 0.0099 total-rel 0.0017 (old share 0.17) passes so far 496
+t= 9 old-rel 0.0171 total-rel 0.0040 (old share 0.23) passes so far 620
+t=10 old-rel 0.0234 total-rel 0.0070 (old share 0.30) passes so far 744
+t=11 old-rel 0.0307 total-rel 0.0107 (old share 0.35) passes so far 868
+t=12 old-rel 0.0306 total-rel 0.0116 (old share 0.38) passes so far 992
+t=13 old-rel 0.0371 total-rel 0.0145 (old share 0.39) passes so far 1116
+t=14 old-rel 0.0426 total-rel 0.0181 (old share 0.42) passes so far 1240
+{"set": "w1024_d16", "mlp": 0, "AY": 4, "R": 512, "WIN": 2, "sweeps": 3, "priced_total_rel": 0.006921180060035401, "passes": 1240, "sec": 477.5}

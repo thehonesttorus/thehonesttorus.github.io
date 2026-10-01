@@ -139,3 +139,10 @@ At 256 × 32 the causal carrier at k = 2n/a is lossless at every layer (±3 %), 
 ## Free products are two-dimensional (team B G1, 22:00 UTC)
 
 Team B proved that for walks on the d-torus the λ-term rank decays as Δ^{−d/2} and is Dixmier-critical exactly at Pólya's recurrence dimension d = 2 (measured rank·Δ = 12,000 ± 6 % over Δ = 4 … 512 at N = 4096, as predicted), with a log₂ T-frame blockwise estimator where truncation needs ≈ N ln(1/ε) steps. Free variance is additive under free multiplicative convolution, so free products are universally "d_eff = 2" (Ginibre PR·(a + 1)/n = 0.96–1.00): the reason the network sits on the wall. In FC at n = 1024, r₉₀·a/n = 0.58–0.63 for ages 4–14.
+
+## Rational memory at width 1024, and the cost floor (coordinator H, 23:00 UTC)
+
+- **Causal merge at n = 1024** (ages 1–4 exact, R = n/2 merged histories, window 2): price-weighted error 0.69 % of D21 energy (8.3 % amplitude), against 0.18 % (4.3 %) at n = 256. The old-content residual grows slowly with merges at 1024 (≈ 1 % → 4.3 %) where it is flat at 256. This is at the edge of region's tolerance (H REPORT §10).
+- **Same curve, not a new one.** At ≈ 4.5 n atoms per deep target the merge is a different point on the resolution–loss curve of team G's c·n/a frames (c = 1.5 ≈ 4.7 n, c = 2 ≈ 5.6 n), and it needs a fit the frames do not.
+- **The young pairs set a cost floor.** Ages 1–2 exact are 29 pairs at 6–7 products, ≈ 125 u wall-feasible; with the covariance arrow that is ≈ 0.14 B before any older content. At FC's raw that floors adjusted at ≈ 4.2e-9 (public chain 5.4e-9, leaders 1.6e-9).
+- **What would move the score** (H §11): a representation of ages 1–2 that avoids the per-source Hadamard materialisations, or a cut of the per-pair constant (7 → 4, slice legs only where their score weight is large); and FC's raw accuracy.

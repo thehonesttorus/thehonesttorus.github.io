@@ -85,3 +85,63 @@ So the residual at fixed R/n is similar to width 256 (slightly higher with this 
 - **Inside the tolerance.** Ages 1–4 exact plus n/2 merged histories puts the total priced error at 4.3 % in amplitude, inside region's 5–10 % tolerance (N2).
 - **The walls that remain.** (i) The exact young tier (ages 1–4) is the dominant cost (≈ 300 u dense at n = 1024 by team D's accounting); the merged old tier itself costs ≈ 7·R·n² per layer ≈ 3.5 u at R = n/2. (ii) The fit is still ≈ 100 passes per merge (≈ 1,000 passes per network), far too many; a frame-restricted fit that compares readouts only on their low-rank part (rank 43–116 at 99 % per target at n = 1024) should cut a pass by ≈ 50–100×, and the warm start should cut the number of passes. Untested.
 - **Running:** the same causal merge at width 1024 (ages 1–4 exact, R = n/2, 3 sweeps), `results/incr_w1024_mlp0_AY4_R0.5.log`.
+
+**9. A cheaper fitter (swap and solve).** No gradient steps: at each merge, replace the weakest fraction of the merged histories by the new source's strongest histories, then re-solve all third legs by one conjugate-gradient least-squares solve. Width 256, MLP 0, window 2:
+
+| exact young ages | R | swap | CG steps | passes per network | total priced error (energy) | amplitude |
+|---|---|---|---|---|---|---|
+| 1–4 | n/2 | 1/8 | 15 | 232 | 0.79 % | 8.9 % |
+| 1–4 | n/2 | 1/4 | 15 | 232 | 0.70 % | 8.4 % |
+| 1–4 | n/2 | 1/4 | 30 | 412 | 0.45 % | 6.7 % |
+| 1–3 | n/2 | 1/4 | 15 | 248 | 1.31 % | 11.4 % |
+| 1–4 | n/2 | ALS, 3 sweeps (for comparison) | | 1,240 | 0.18 % | 4.3 % |
+
+About 5× fewer passes buys 2.5–4× more error energy: the accuracy-for-work curve is the object to improve, not one setting.
+
+## Appended 23:00 UTC: the causal merge at width 1024, and what it can buy
+
+**10. Width 1024, causal merge (MLP 0; ages 1–4 exact, R = n/2 = 512, window 2, 3 alternating sweeps; 1,240 passes, 478 s).** Price-weighted total error **0.69 %** of the D21 energy (**8.3 %** amplitude). At width 256 the same settings gave 0.18 % (4.3 %).
+
+| target t | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 |
+|---|---|---|---|---|---|---|---|---|---|---|
+| old-content residual, n = 1024 | 1.65 % | 1.26 % | 0.99 % | 0.99 % | 1.71 % | 2.34 % | 3.07 % | 3.06 % | 3.71 % | 4.26 % |
+| old-content residual, n = 256 | 0.55 % | 0.63 % | 0.54 % | 0.68 % | 0.77 % | 1.04 % | 1.16 % | 1.17 % | 1.25 % | 1.14 % |
+| old share of D21, n = 1024 | 0.02 | 0.06 | 0.10 | 0.17 | 0.23 | 0.30 | 0.35 | 0.38 | 0.39 | 0.42 |
+
+- At width 1024 the residual on the old content grows slowly with the number of merges (≈ 1 % → 4.3 %). At width 256 it is flat. The old share is also larger at 1024 (0.42 against 0.31 at t = 14).
+- Two readings, not yet separated:
+  1. the fit is less converged at width 1024 with the same iteration budget (15 CG steps on a 512 × 1024 least squares);
+  2. the rank needed grows faster than n.
+  The whole-future ALS test (§7) gave similar residuals at fixed R/n at the two widths, which favours (1).
+- **Edge of tolerance.** The result sits at the edge of region's 5–10 % amplitude tolerance, not comfortably inside it.
+
+**11. What the merged-history carrier can buy in the competition (cost arithmetic).**
+
+Cost model. Total D21 cost ≈ (number of targets, 15) × (resolution per target, in units of n atoms) × (products per unit of resolution) × (Strassen factor, ≈ 0.66 for FC's mix).
+
+- FC's constant is 7 products per unit (6 at age 1). It is 4 without the slice legs.
+- For the score bar's price (≤ 0.1 B ≈ 100 u), resolution × constant must stay ≤ ≈ 10 per target.
+
+Comparison with the age-graded frames at equal resolution, width 1024:
+
+| carrier | resolution per deep target | measured loss |
+|---|---|---|
+| this one: ages 1–4 exact + R = n/2 | 4.5 n | 8.3 % amplitude on priced D21 (score level not measured) |
+| team G's uniform law k(a) = c·n/a, ages 1–2 exact, c = 1.5 | ≈ 4.7 n | +16–35 % on FC raw |
+| same, c = 2 | ≈ 5.6 n | +1–4 % on FC raw |
+| team D's frames, k = 2n/a | ≈ 5.6 n | lossless |
+
+The merge packs everything older than four layers into n/2 atoms, where c = 2 spends ≈ 2.5 n on ages ≥ 5. But it needs a fit that the frames do not, and its score-level loss is unmeasured. It is a different point on the same curve, not a new curve.
+
+**The binding cost is the young pairs, not the memory.**
+- Ages 1–2 exact are 29 (source, target) pairs. At FC's constant (6–7 products) that is ≈ 190 u dense, ≈ 125 u wall-feasible.
+- Adding the covariance arrow (30 u dense, ≈ 20 u wall-feasible) gives ≈ 145 u ≈ 0.14 B, *before any older content*, even if memory compression were free.
+- At FC's raw (3.0e-8) that floors the adjusted score at ≈ 4.2e-9: below the public chain's 5.4e-9, but ≈ 2.6× the leaders' 1.6e-9.
+- For comparison, the public chain's young pairs cost 2.17 u each wall-feasible (≈ 4 dense products), against FC's ≈ 4.3.
+
+**Verdict on the rational-memory direction.**
+- **What it establishes.**
+  - The old memory has a small continuation space at every target: per-target readout rank 43–116 at 99 % at n = 1024.
+  - That space can be carried causally by response-matched merged histories without error accumulation at width 256, and with slow growth at width 1024.
+- **What it does not establish.** The competition wall has moved: to the per-pair constant of the exact young tier, and to FC's raw accuracy (2–3× the leaders' raw). The merged-history carrier attacks neither.
+- **What would move the score.** A representation of ages 1–2 that does not materialise the Hadamard squares (Y∘Y, Y∘Z, Z∘Z, Z∘T) per source per target, or a cut of the per-pair constant (7 → 4 by dropping or sketching the slice legs where their score-level weight is small). Both are measurable inside FC on the six networks.

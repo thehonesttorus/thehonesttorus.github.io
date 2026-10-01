@@ -21,7 +21,7 @@ def step(Y, Z, st, t, W):  # transport legs from target t to t+1
     G = (np.ones(1) * st[t]["P"])[None, :]
     return (Y * G) @ W[t + 1], (Z * G) @ W[t + 1]
 
-def run(set_name, mlp, AY=2, R_frac=0.25, WIN=2, sweeps=2, cg_iters=15, gd_iters=20, tstart=None, log=print):
+def run(set_name, mlp, AY=2, R_frac=0.25, WIN=2, sweeps=2, cg_iters=15, gd_iters=20, tstart=None, log=print, mode='als', swap=0.125):
     S = bench.load_set(set_name)
     W, st = rmem.closure_states(bench.weights(S, mlp))
     L, n, _ = W.shape
@@ -60,7 +60,19 @@ def run(set_name, mlp, AY=2, R_frac=0.25, WIN=2, sweeps=2, cg_iters=15, gd_iters
                 c = np.cbrt(win_)[:, None]
                 nrm = np.sum((Yin * c) ** 2, 1) * np.sum((Zin * c) ** 2, 1)
                 idx = np.argsort(nrm)[::-1][:R]; Yh0, Zh0 = (Yin * c)[idx], (Zin * c)[idx]
-            Yh, Zh, passes = als_fit(W, st, t, targets, Qs, Yin, Zin, win_, Yh0.copy(), Zh0.copy(), sweeps, cg_iters, gd_iters)
+            if mode == 'als' or merged is None or merged[0].shape[0] != R:
+                Yh, Zh, passes = als_fit(W, st, t, targets, Qs, Yin, Zin, win_, Yh0.copy(), Zh0.copy(), sweeps, cg_iters, gd_iters)
+            else:
+                # zonly: swap the k weakest merged histories for the new source's k strongest atoms, then LS for third legs
+                k = max(1, int(round(swap * R)))
+                Ym, Zm = merged
+                strength = np.sum(Ym ** 2, 1) * np.sum(Zm ** 2, 1)
+                keep = np.argsort(strength)[::-1][:R - k]
+                c = np.cbrt(wn)[:, None]
+                nrm = np.sum((Yn * c) ** 2, 1) * np.sum((Zn * c) ** 2, 1)
+                top = np.argsort(nrm)[::-1][:k]
+                Yh0 = np.vstack([Ym[keep], (Yn * c)[top]]); Zh0 = np.vstack([Zm[keep], (Zn * c)[top]])
+                Yh, Zh, passes = als_fit(W, st, t, targets, Qs, Yin, Zin, win_, Yh0.copy(), Zh0.copy(), 0, cg_iters, 0)
             work_passes += passes
             merged = (Yh, Zh)
         # evaluate carried old content at t
@@ -127,9 +139,10 @@ if __name__ == "__main__":
     ap.add_argument("--win", type=int, default=2); ap.add_argument("--sweeps", type=int, default=2)
     ap.add_argument("--cg", type=int, default=15); ap.add_argument("--gd", type=int, default=20)
     ap.add_argument("--out", default="")
+    ap.add_argument("--mode", default="als"); ap.add_argument("--swap", type=float, default=0.125)
     a = ap.parse_args()
     t_ = time.time()
-    res = run(a.set, a.mlp, a.AY, a.R, a.win, a.sweeps, a.cg, a.gd, log=lambda s: print(s, flush=True))
+    res = run(a.set, a.mlp, a.AY, a.R, a.win, a.sweeps, a.cg, a.gd, log=lambda s: print(s, flush=True), mode=a.mode, swap=a.swap)
     res["sec"] = round(time.time() - t_, 1)
     print(json.dumps({k: v for k, v in res.items() if k != "rows"}), flush=True)
     if a.out: json.dump(res, open(a.out, "w"), indent=1)
