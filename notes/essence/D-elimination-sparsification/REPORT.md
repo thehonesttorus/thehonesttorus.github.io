@@ -1,7 +1,8 @@
 # Team D: elimination, sparsification and scaling
 
-*Status: final (1 Oct 2026, ≈ 22:00 UTC). Theory for §1–2. Four transfers measured at n = 1024 on the bench (§4): resampling,
-spike projection and two age-merge oracles. Two more are analysed but not run. Every number is at n = 1024, depth 16, on `w1024_d16`, inside the region stream's
+*Status: final (1 Oct 2026, ≈ 22:00 UTC). Theory for §1–2. Five transfers measured at n = 1024 on the bench (§4): resampling,
+spike projection, two age-merge oracles and (after coordinator note 1) an age-multiresolution oracle (§3.7), the one
+positive result. Two more are analysed but not run. Every number is at n = 1024, depth 16, on `w1024_d16`, inside the region stream's
 FC estimator (raw 3.24e-8 on MLP 0, 1.81e-8 on MLP 1, reproduced here). Code: `fcs.py` (FC plus unbiased atom
 resampling, atom-Gram diagnostics and oracle projections), `run_d.py`, `probe_coh.py`. Results: `results/*.json`.*
 
@@ -29,6 +30,12 @@ resampling, atom-Gram diagnostics and oracle projections), `run_d.py`, `probe_co
 
    Whatever the leaders do changes the *object*, not its representation. The only representation-level option not
    killed here is a full CP re-fit (region §6), and the measured multilinear structure gives it a poor prior.
+6. **One positive structural law (§3.7).** The resolution the memory needs falls like the participation ratio. Reading
+   each source of age a in the top k(a) = 2n/a right singular directions of its own propagator is lossless: 3.31e-8 vs
+   3.24e-8 on MLP 0, 1.95e-8 vs 1.81e-8 on MLP 1. k = 1.5n/a costs 14 % and k = n/a costs 2.5×.
+   - This halves the atom count (0.51 of FC at k = 2n/a).
+   - It is a harmonic Σ_a 2n/a ≈ 2n ln t, not O(n): **O(n³ log L) per layer, not O(n³)**.
+   - The basis is an oracle, but a causal factored transport (§3.7) has the same cost law.
 
 ## 1. Instances
 
@@ -305,6 +312,44 @@ For each: the objects in each role, why it is not the per-neuron drawing, predic
     (n/2)^{⊗3} has CP rank ≈ n²/12 ≫ n.
   - The 0.7–1.4 % merges at widths 64–128 (old-content stream) are pre-asymptotic.
 
+### 3.7 Age multiresolution matched to the participation ratio (coordinator note 1, §4 seed; oracle measured, positive)
+
+- **Objects.** Each source s of age a = t − s, read in the top-k(a) right singular subspace U_s(t) of its own gated
+  propagator Z_s(t) (target space).
+  - All three legs lie exactly in Z's row space: Y = S_s P_s Z and T = Δ Z. So one projection compresses the whole
+    source consistently.
+  - This is the fast-multipole / H-matrix shape of the coordinator's §2: a static sum of rank-one tensors read through
+    frames whose participation ratio falls like n/(2a) (F9.1). Here the resolution per age bin is set by that ratio.
+- **Not the neuron drawing.** The carrier is indexed by (age, Oseledets direction), not by neurons or layers.
+- **Prediction.** If resolution follows the participation-ratio law, k(a) = c·n/a with c a small multiple of ½ suffices.
+- **Test.** An oracle that projects at readout only, at every target, with an exact SVD of Z_s(t). Young ages 1–2 stay
+  exact. Code: `fcs.run(agek=c)`.
+
+| k(a) | MLP 0 (FC 3.24e-8) | MLP 1 (FC 1.81e-8) | old + young atoms, relative to FC (Σ over targets) |
+|---|---|---|---|
+| 2n/a | **3.31e-8** (+2 %) | **1.95e-8** (+8 %) | 0.51 |
+| 1.5n/a | 3.71e-8 (+14 %) | — | 0.44 |
+| n/a | 8.02e-8 (2.5×) | — | 0.38 |
+| n/4 for every age > 2, shared (region §5) | 2.3e-7 | — | — |
+
+- **Reading.** The memory's resolution requirement is the participation-ratio law with constant ≈ 4 × n/(2a). An
+  age-*dependent* resolution succeeds where every fixed one below n/2 failed: the young-old ages 3–5 need nearly full
+  rank, and age 12 needs only ≈ n/6.
+- **Cost.**
+  - Atoms: Σ_t [2 + Σ_{a=3}^{t} 2/a]·n against FC's Σ_t t·n, i.e. 0.51 at L = 16. Per target the count grows like
+    2n ln t, not like t n.
+  - Causal version: carry Z_s(t) ≈ A_s(t) U_s(t)ᵀ with U transported as Gᵀ U, re-orthonormalised by QR (n × k), and
+    truncated when the age bin changes (an SVD of an n × k factor). Transport then costs ≈ 2kn² per source.
+  - The readout still needs the Hadamard square Y ∘ Y, so the contraction costs ≈ 2kn² + n²k, i.e. ≈ 4k n² per
+    source.
+  - Expected total ≈ 0.5 × 840 ≈ 420 u dense, ≈ 250 u with Strassen. That is 2–3× short of the leaders' ≤ 154 u.
+- **Kill (causal version, not yet run).** Raw > 5e-8 with a causal QR-transported basis at k = 2n/a. A further log is
+  available only if the bins also share bases across ages (one basis per dyadic bin, multipole-style). That is the next
+  test; the Oseledets alignment of old propagators (§4.2) makes it plausible for ages ≥ 6.
+- **Explains.** F9.1's participation ratio is not just descriptive: it is, up to a factor ≈ 4, the resolution the
+  score needs. It also explains why the region's fixed-rank row basis (k = 256 for all ages > 2) and shared n/4 subspace
+  failed: they starve ages 3–5.
+
 ## 4. Tests run (n = 1024, bench `w1024_d16`, FC with slices = 2 and κ4 mean-field; truth noise subtracted)
 
 ### 4.1 Atom coherence and the variance law (MLP 0; old = age ≥ 3; `results/diag_m0.json`)
@@ -368,6 +413,8 @@ Readings:
 - **Synthesis.**
   - "The tracial state is why this whole domain does not pay" (D1 plus conjecture D4).
   - "The absence of a spectral gap is the memory" (KLR reading of F9.1–F9.2).
+- **Measurement, oracle only.** §3.7's positive law uses an exact per-source SVD at readout. The causal transported-basis
+  version has the same cost law on paper but is not run.
 - **Speculation.** The sandwich-transport of the Perron part (3.3) as a cost device, if a future object makes the Perron
   part sufficient.
 - **Risks.**

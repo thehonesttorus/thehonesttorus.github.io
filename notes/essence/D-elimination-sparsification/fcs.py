@@ -92,7 +92,7 @@ def poisson_q(sc, k):
 
 
 def run(W, window=None, slices=False, young=None, rank=None, edge=True, readout=True, dtype=np.float32, trace=None, k4f=None, k4use=True, share=None, share_young=2, k4own=False, k4mf=False, prune=None, prune_slices=None,
-        sample=None, sample_young=2, seed=0, diag=None, diag_fracs=(0.5, 0.25), imp='norm', diag_store=None, oldproj=None, projsrc='prop', merge_age=None, merge_rep='oldest'):
+        sample=None, sample_young=2, seed=0, diag=None, diag_fracs=(0.5, 0.25), imp='norm', diag_store=None, oldproj=None, projsrc='prop', merge_age=None, merge_rep='oldest', agek=None, agek_min=3):
     rng = np.random.default_rng(seed)
     L, n, _ = W.shape
     W64 = W.astype(np.float64)
@@ -285,6 +285,21 @@ def run(W, window=None, slices=False, young=None, rank=None, edge=True, readout=
                     q = src["qd"][f]; drec["var"][f] += float(((1 / q - 1) * a2).sum())
                     drec["varopt"][f].append(a2)
                 D += Ds
+                continue
+            age_ = l + 1 - src["s"]
+            if agek is not None and age_ >= agek_min and "Q" not in src and "Yp" not in src:
+                # oracle age multiresolution: read source s at resolution k(age) = agek * n / age in the top right singular
+                # subspace of its own propagator Z_s(t) (all legs Y = SP Z, Z, Delta Z lie in Z's row space)
+                k_ = int(min(n, round(agek * n / age_)))
+                Zf = src["Z"]; Y = src["SP"].astype(dtype) @ Zf; T = (src["Delta"] @ Zf) if "Delta" in src else None
+                if k_ < n:
+                    _, _, Vt = np.linalg.svd(Zf.astype(np.float64), full_matrices=False)
+                    U = Vt[:k_].T.astype(dtype)
+                    Zf = (Zf @ U) @ U.T; Y = (Y @ U) @ U.T; T = ((T @ U) @ U.T) if T is not None else None
+                D += (((Y * Y) * w[:, None]).T @ Zf).astype(np.float64)
+                D += (2 * (((Y * Zf) * w[:, None]).T @ Y)).astype(np.float64)
+                if T is not None:
+                    D += (((Zf * Zf).T @ T) + 2 * ((Zf * T).T @ Zf)).astype(np.float64)
                 continue
             if "Q" in src:
                 Zf = src["Q"] @ src["Z"]; Y = src["A"] @ src["Z"]
