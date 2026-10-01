@@ -384,8 +384,14 @@ def ladder_pair(tA, tB):
             ex = rel(mA[k], DB)
             r[k + "_x"] = ex
             r[k + "_xc"] = sqrt(max(ex ** 2 - e_noise ** 2, 0.0))
-            cp = float(np.sum((mA[k] - DA) * (mB[k] - DB))) / den
+            prod = (mA[k] - DA) * (mB[k] - DB)
+            cp = float(np.sum(prod)) / den
             r[k + "_cp"] = np.sign(cp) * sqrt(abs(cp))
+            # delete-one-block jackknife over 32 blocks of output columns b: standard error of eps^2
+            nb = 32; num = np.array([prod[:, j::nb].sum() for j in range(nb)]); dd = np.array([(DA * DB)[:, j::nb].sum() for j in range(nb)])
+            jk = (num.sum() - num) / (dd.sum() - dd)
+            r[k + "_cp2_se"] = float(np.sqrt((nb - 1) / nb * np.sum((jk - jk.mean()) ** 2)))
+            r[k + "_cp2"] = cp
             # replica noise of the model error itself (model and target share samples, so it is far below 'noise')
             r[k + "_dn"] = float(np.sqrt(np.sum(((mA[k] - DA) - (mB[k] - DB)) ** 2) / 2.0 / den))
             r[k + "_inA"] = rel(mA[k], DA)
@@ -500,6 +506,9 @@ def run_ladder(paths, with_h8=True, out=None, log=None, gauss_path=None):
             print(f"{r['l']:>2} {r['noise']:6.4f} {r['B0_noise']:6.4f} {r['B6_noise']:6.4f} | " + " ".join(f"{r[c + '_cp']:11.4f}" for c in cols)
                   + " | xc: " + " ".join(f"{r[c + '_xc']:11.4f}" for c in cols)
                   + "  coefA " + " ".join(f"{c:+.2f}" for c in r["coefA"]), flush=True)
+        print("\ncross-product eps^2 x 1e4 +- jackknife standard error (32 column blocks)")
+        for r in prow:
+            print(f"{r['l']:>2} " + " ".join(f"{1e4 * r[c + '_cp2']:6.1f}+-{1e4 * r[c + '_cp2_se']:5.1f}" for c in cols), flush=True)
         print("\nreplica noise of the model error delta = M - D, ||delta_A - delta_B|| / (sqrt2 ||D||), per column")
         for r in prow:
             print(f"{r['l']:>2} " + " ".join(f"{r[c + '_dn']:11.4f}" for c in cols), flush=True)
