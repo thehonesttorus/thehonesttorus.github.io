@@ -30,19 +30,31 @@ def powfit(ns, es):
 
 L1 = len(S[str(widths[0])]["noise"])
 print(f"widths {widths}; MLPs per width " + ", ".join(f"{w}: {S[str(w)]['n_mlps']} ({S[str(w)]['n_pairs']} pairs)" for w in widths))
-for key, label in [("eps_x", "noise-corrected cross-evaluated eps (pair MLPs)"), ("eps_raw", "within-atlas eps (all MLPs, includes MC noise)")]:
-    print(f"\n## {label}: per width, then fit eps ~ n^-p and the value at n = {N_EXT}")
+def floorfit(ns, es):
+    """eps = a + b / sqrt(n): a floor plus the O(rho) term; the conservative extrapolation"""
+    ns, es = np.array(ns, float), np.array(es, float)
+    ok = np.isfinite(es)
+    if ok.sum() < 2:
+        return np.nan
+    X = np.stack([np.ones(ok.sum()), 1 / np.sqrt(ns[ok])], 1)
+    (a, b), *_ = np.linalg.lstsq(X, es[ok], rcond=None)
+    return float(a + b / np.sqrt(N_EXT))
+
+
+for key, label in [("eps_rep", "representation error eps_rep (pair MLPs; target and model-input MC noise subtracted)"),
+                   ("eps_raw", "within-atlas eps (all MLPs, includes MC noise)")]:
+    print(f"\n## {label}: per width, then fit eps ~ n^-p and the value at n = {N_EXT}; last column the floor model a + b/sqrt(n) at {N_EXT}")
     for m in MODELS:
         print(f"\n### {m}")
-        print(" l | " + " ".join(f"n={w:<4d}" for w in widths) + " |     p  eps(1024)")
+        print(" l | " + " ".join(f"n={w:<4d}" for w in widths) + " |     p  eps(1024) floor(1024)")
         for l in range(L1):
             es = [S[str(w)][key][m][l] for w in widths]
             p, e = powfit(widths, es)
-            print(f"{l:>2} | " + " ".join(f"{v:6.3f}" for v in es) + f" | {p:5.2f}  {e:7.4f}")
+            print(f"{l:>2} | " + " ".join(f"{v:6.3f}" for v in es) + f" | {p:5.2f}  {e:7.4f}  {floorfit(widths, es):7.4f}")
         for lo, hi in [(1, 3), (4, 9), (10, 14)]:
             es = [np.sqrt(np.mean(np.square(S[str(w)][key][m][lo:hi + 1]))) for w in widths]
             p, e = powfit(widths, es)
-            print(f"rms {lo}-{hi} | " + " ".join(f"{v:6.3f}" for v in es) + f" | {p:5.2f}  {e:7.4f}")
+            print(f"rms {lo}-{hi} | " + " ".join(f"{v:6.3f}" for v in es) + f" | {p:5.2f}  {e:7.4f}  {floorfit(widths, es):7.4f}")
 
 for tab in ["tensor", "D21", "tensor_reg", "D21_reg"]:
     print(f"\n## ensemble coefficients ({tab} fit) per width, and c(n) = c_inf + a/sqrt(n) evaluated at n = {N_EXT}")
