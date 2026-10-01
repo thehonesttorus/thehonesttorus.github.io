@@ -94,7 +94,7 @@ def main():
     ap.add_argument("--width", type=int, default=1024)
     ap.add_argument("--depth", type=int, default=16)
     ap.add_argument("--runner", default="local", help="local: fast, in-process; subprocess: the grader's transport (adds ~30 s per run)")
-    ap.add_argument("--extra", default="", help="extra args passed verbatim to `whest run`")
+    ap.add_argument("--extra", default="", help="extra args passed verbatim to `whest run`; write it as --extra=\"--profile --n-mlps 4\" (the = matters when the value starts with a dash)")
     ap.add_argument("--keep", action="store_true")
     args = ap.parse_args()
     t0 = time.time()

@@ -104,7 +104,7 @@ def cmd_submit(args):
                        f"--shard {shlex.quote(blob_url(e, e['CONTAINER_DATASET'], s, sas_data))} --split {args.split} "
                        f"--out {shlex.quote(out)} --tag {tag} --wall-time-limit {args.wall_time_limit} "
                        f"--max-threads {e['VCPU_PER_TASK']} --runner {args.runner}" + (f" --n-mlps {args.n_mlps}" if args.n_mlps else "")
-                       + (f" --extra {shlex.quote(args.extra)}" if args.extra else ""))
+                       + (f" --extra={shlex.quote(args.extra)}" if args.extra else ""))
             tasks.append({"id": f"{tag[:30]}-{sname}"[:64].replace("_", "-"),
                           "commandLine": f"/bin/bash -c {shlex.quote(cmdline)}",
                           "containerSettings": {"imageName": image, "containerRunOptions": "--rm"},
