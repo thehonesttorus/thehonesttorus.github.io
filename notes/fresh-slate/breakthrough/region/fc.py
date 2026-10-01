@@ -49,7 +49,7 @@ def slice_exact(mu, S, P, m, nq=40):
     return K21, k3
 
 
-def run(W, window=None, slices=False, young=None, rank=None, edge=True, readout=True, dtype=np.float32, trace=None, k4f=None, k4use=True):
+def run(W, window=None, slices=False, young=None, rank=None, edge=True, readout=True, dtype=np.float32, trace=None, k4f=None, k4use=True, share=None, share_young=2):
     L, n, _ = W.shape
     W64 = W.astype(np.float64)
     Wf = W.astype(dtype)
@@ -165,6 +165,19 @@ def run(W, window=None, slices=False, young=None, rank=None, edge=True, readout=
                     src["Z"] = (Q.T @ src["Z"].astype(np.float64)).astype(dtype)
                     if "Delta" in src:
                         src["DQ"] = (src["Delta"].astype(np.float64) @ Q).astype(dtype)
+        # ---- shared Oseledets subspace for old content: U_{l+1} = top-q right singular subspace of the oldest
+        #      propagator; old sources (age > share_young) keep only the components of their legs inside it (dynamic)
+        if share is not None:
+            Zold = sources[0]["Z"].astype(np.float64)
+            _, _, Vt = np.linalg.svd(Zold, full_matrices=False)
+            U = Vt[:share].T.astype(dtype)                          # (n, q) basis of layer l+1 space
+            for src in sources:
+                if l + 1 - src["s"] > share_young:
+                    src["Z"] = (src["Z"] @ U) @ U.T
+                    if "Yp" not in src:
+                        src["Yp"] = (src["SP"].astype(dtype) @ src["Z"])
+                    else:
+                        src["Yp"] = ((src["Yp"] @ G) @ U) @ U.T
         # ---- D21 of z_{l+1}
         D = np.zeros((n, n), dtype=np.float64)
         for src in sources:
@@ -173,7 +186,7 @@ def run(W, window=None, slices=False, young=None, rank=None, edge=True, readout=
                 Zf = src["Q"] @ src["Z"]; Y = src["A"] @ src["Z"]
                 T = (src["DQ"] @ src["Z"]) if "DQ" in src else None
             else:
-                Zf = src["Z"]; Y = src["SP"].astype(dtype) @ Zf
+                Zf = src["Z"]; Y = src["Yp"] if "Yp" in src else src["SP"].astype(dtype) @ Zf
                 T = (src["Delta"] @ Zf) if "Delta" in src else None
             D += (((Y * Y) * w[:, None]).T @ Zf).astype(np.float64)
             D += (2 * (((Y * Zf) * w[:, None]).T @ Y)).astype(np.float64)

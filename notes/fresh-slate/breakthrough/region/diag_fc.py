@@ -16,6 +16,14 @@ def main(i, path, **kw):
             K22, K31, k4 = k4f[l]
             if mode == 'nooff':
                 K22 = 0 * K22; K31 = 0 * K31
+            elif mode.startswith('colmean') and mode != 'colmean':   # colmean*x / colmean_no31 / colmean_no22
+                K22 = np.broadcast_to(K22.mean(0, keepdims=True), K22.shape).copy(); K31 = np.broadcast_to(K31.mean(0, keepdims=True), K31.shape).copy()
+                if '*' in mode:
+                    x = float(mode.split('*')[1]); K22 = x * K22; K31 = x * K31
+                if mode.endswith('no31'):
+                    K31 = 0 * K31
+                if mode.endswith('no22'):
+                    K22 = 0 * K22
             elif mode == 'colmean':      # keep only the coherent column sums: K_ik -> mean_i' K_i'k
                 K22 = np.broadcast_to(K22.mean(0, keepdims=True), K22.shape).copy(); K31 = np.broadcast_to(K31.mean(0, keepdims=True), K31.shape).copy()
             elif mode == 'diagonly':
