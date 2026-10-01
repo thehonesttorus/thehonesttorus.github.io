@@ -245,3 +245,77 @@ The no-coincidence variants use 4 instead of 7 products per pair (U and V propag
 - `run.py`, `summarize.py`, `rebuild.py`: runs and tables (`results/*.jsonl`; rows of the w1024 scale batch rebuilt from saved predictions after a git incident, exact).
 - `oracle2nd.py`, `table2nd.py`: the second-order oracle (true MC κ₃/κ₄ slices, own chain, rank filters) and its table. `hybrid.py`: computed co-state + true κ₄ (rank-filtered) on top. `k4anatomy.py`: top κ₄ modes against scale templates.
 - `spike.py`, `anatomy.py`: old-slice anatomy. `renorm.py`: the ensemble-renormalisation test (cosine of the slice-chain and true old corrections 0.6–0.7 at w128; one fitted factor does not close the gap).
+
+## 8. The decisive dilation-sector experiment inside FC at n = 1024 (2 Oct, requested by the coordinating session)
+
+**Setup.** `fc_dil.py` is a copy of region's FC (first-order chaos sources, exact slices, mean-field κ4: raw 3.0e-8). Its only additions are per-source instrumentation and three replacements of the old content; with no replacement it reproduces FC exactly (difference 0.0).
+- *Conventions.* Age = t − s, for a birth at a_s read in D21(z_t); age 1 is the freshest. "Old" means age > A, with A = 2, 4, 6, 8.
+- *Dilation sector.* The C6 sector: the projection of a D21 contribution onto the scale-mixture template K_t = 2 μ_t ⊗ S_t + diag(S_t) ⊗ μ_t at the target layer (one scalar per layer). The μ-direction rank-one share (s² ⊗ μ, off-diagonal) and the top-1 / top-8 SVD shares are reported alongside.
+- *Replacements of old content.*
+  - `drop`: removed.
+  - `oracle`: replaced by the exact projection of the old D21 onto K_t.
+  - `gp` / `gl`: each source is retired at age A + 1. Its contribution is projected onto K and accumulated as a conserved scalar γ, an O(n²)-per-layer state. It is then used either as a first-order D21 injection γ K_t (gp) or at law level with Var t = γ/2 (gl, de-scaled covariance).
+
+**1. Share of ‖D21_old‖²_F in the dilation sector** (bench w1024_d16, MLPs 0–2, `analyse_dil.py`):
+
+| t | age>2: K-template | (s2,mu) rank-1 off-diag | top-1 off-diag | top-8 off-diag | age>4: K-template | (s2,mu) | top-1 |
+|---|---|---|---|---|---|---|---|
+| 1 | — | — | — | — | — | — | — |
+| 2 | — | — | — | — | — | — | — |
+| 3 | 0.25 | 0.24 | 0.42 | 0.49 | — | — | — |
+| 4 | 0.51 | 0.49 | 0.65 | 0.70 | — | — | — |
+| 5 | 0.64 | 0.62 | 0.75 | 0.79 | 0.31 | 0.30 | 0.50 |
+| 6 | 0.71 | 0.68 | 0.78 | 0.83 | 0.57 | 0.54 | 0.71 |
+| 7 | 0.75 | 0.72 | 0.80 | 0.85 | 0.69 | 0.66 | 0.80 |
+| 8 | 0.79 | 0.76 | 0.82 | 0.87 | 0.76 | 0.73 | 0.83 |
+| 9 | 0.81 | 0.78 | 0.83 | 0.88 | 0.80 | 0.76 | 0.85 |
+| 10 | 0.82 | 0.78 | 0.83 | 0.89 | 0.81 | 0.78 | 0.85 |
+| 11 | 0.83 | 0.79 | 0.84 | 0.89 | 0.84 | 0.80 | 0.86 |
+| 12 | 0.82 | 0.78 | 0.83 | 0.90 | 0.84 | 0.80 | 0.86 |
+| 13 | 0.84 | 0.80 | 0.84 | 0.91 | 0.86 | 0.81 | 0.87 |
+| 14 | 0.84 | 0.80 | 0.85 | 0.91 | 0.85 | 0.81 | 0.86 |
+| 15 | 0.85 | 0.81 | 0.85 | 0.92 | 0.86 | 0.82 | 0.87 |
+
+
+At depth (t ≥ 8) **81–86 % of the old D21 energy is in the dilation sector** (ages > 2, and likewise > 4). The μ-direction rank-one form holds about 3 points less. Early layers are lower: 24 % at t = 3, 49 % at t = 4.
+
+**2. Raw final MSE** (MLPs 0 / 1 / 2; ratio = geometric mean over the three networks against full FC):
+
+| variant | MLP 0 | MLP 1 | MLP 2 | mean | × full FC |
+|---|---|---|---|---|---|
+| **full FC (all ages)** | 3.24e-8 | 1.81e-8 | 3.03e-8 | **2.69e-8** | 1 |
+| ages ≤ 2 only (drop) | 1.77e-6 | 2.07e-6 | 1.66e-6 | 1.83e-6 | 70 |
+| ages ≤ 2 + oracle dilation projection of the rest | 7.67e-7 | 9.00e-7 | 6.77e-7 | 7.82e-7 | 30 |
+| ages ≤ 2 + carried scalar, law level (gl, O(n²)) | 8.19e-7 | 9.11e-7 | 7.55e-7 | 8.28e-7 | 32 |
+| ages ≤ 2 + carried scalar, first order (gp) | 9.05e-7 | 9.58e-7 | 8.56e-7 | 9.06e-7 | 35 |
+| ages ≤ 4 only | 7.79e-7 | 7.83e-7 | 8.05e-7 | 7.89e-7 | 30 |
+| ages ≤ 4 + oracle | 3.84e-7 | 4.03e-7 | 3.79e-7 | 3.89e-7 | 15 |
+| ages ≤ 4 + gl / gp | 4.35e-7 / 3.71e-7 | 4.82e-7 / 4.23e-7 | 4.69e-7 / 3.81e-7 | 4.62e-7 / 3.92e-7 | 18 / 15 |
+| ages ≤ 6 only / + gl | 3.53e-7 / 2.47e-7 | 3.48e-7 / 2.64e-7 | 3.74e-7 / 2.57e-7 | 3.58e-7 / 2.56e-7 | 14 / 10 |
+| ages ≤ 8 only / + oracle / + gl | 1.55e-7 / 1.07e-7 / 1.29e-7 | 1.40e-7 / 8.71e-8 / 1.16e-7 | 1.64e-7 / 1.02e-7 / 1.25e-7 | 1.53e-7 / 9.86e-8 / 1.23e-7 | 5.9 / 3.8 / 4.7 |
+
+**3. Age spectrum of the remainder** (mean over t ≥ 8 and MLPs 0–2):
+
+### age spectrum (mean over target layers t >= 8 and MLPs): ||D_s||^2, remainder after the dilation projection, dilation amplitude
+| age | ||D_age||_F^2 | remainder ||D - a K||^2 | remainder share | dilation amplitude a (×1e3) |
+|---|---|---|---|---|
+| 1 | 1.455e+00 | 1.261e+00 | 0.87 | +0.93 |
+| 2 | 1.165e+00 | 9.630e-01 | 0.83 | +0.94 | (rem ratio to previous age 0.76)
+| 3 | 8.844e-01 | 6.998e-01 | 0.79 | +0.91 | (rem ratio to previous age 0.73)
+| 4 | 6.736e-01 | 5.023e-01 | 0.75 | +0.88 | (rem ratio to previous age 0.72)
+| 5 | 5.119e-01 | 3.449e-01 | 0.67 | +0.87 | (rem ratio to previous age 0.69)
+| 6 | 3.934e-01 | 2.336e-01 | 0.59 | +0.86 | (rem ratio to previous age 0.68)
+| 7 | 2.804e-01 | 1.480e-01 | 0.53 | +0.81 | (rem ratio to previous age 0.63)
+| 8 | 1.897e-01 | 9.207e-02 | 0.49 | +0.71 | (rem ratio to previous age 0.62)
+| 9 | 1.357e-01 | 5.850e-02 | 0.43 | +0.66 | (rem ratio to previous age 0.64)
+| 10 | 1.017e-01 | 3.744e-02 | 0.37 | +0.62 | (rem ratio to previous age 0.64)
+| 11 | 7.846e-02 | 2.375e-02 | 0.30 | +0.58 | (rem ratio to previous age 0.63)
+| 12 | 6.100e-02 | 1.483e-02 | 0.24 | +0.54 | (rem ratio to previous age 0.62)
+| 13 | 4.197e-02 | 9.360e-03 | 0.22 | +0.46 | (rem ratio to previous age 0.63)
+| 14 | 2.372e-02 | 5.246e-03 | 0.22 | +0.36 | (rem ratio to previous age 0.56)
+| 15 | 1.030e-02 | 2.692e-03 | 0.26 | +0.25 | (rem ratio to previous age 0.51)
+
+**Reading, in the language of essence BRIEF §2 item 8.**
+- **The critical (unipotent) sector is real and carried exactly.** Every source deposits a near-constant dilation amplitude (0.9 × 10⁻³ at age 1, still 0.6 × 10⁻³ at age 11) that does not decay with age. These deposits add coherently: the conserved charge grows linearly with depth. The carried scalar reproduces the oracle projection: gp4 equals oracle4, and gl is within 1.2×.
+- **The mixing sector decays geometrically, but too slowly to drop and with too much readout weight.** The remainder after projection decays as ≈ 0.62–0.76 per age (≈ e^−0.35 per layer; faster at older ages). Its share of each source falls from 0.87 at age 1 to ≈ 0.22 by age 12. Yet carrying the dilation sector only halves the error at every window (70 → 30, 30 → 15, 14 → 10, 5.9 → 3.8×). In Frobenius it is 81–86 % of the old content; **in the readout metric at FC's accuracy it is ≈ 50 %**. The mixing sector's ≈ 15 % of the energy holds the other half.
+- **Verdict on D1.** The dilation sector is not a cheap carrier of memory at the FC accuracy level. Reaching full FC within 2× needs the exact window to extend past age 8 even with the sector carried, i.e. ≳ 90 of the 120 (source, target) pairs, so the saving is ≲ 25 %. The memory that binds is the mixing sector. It decays geometrically at ≈ 0.35 per layer, which by itself is too slow for a short window, and it is readout-heavy. A cheap carrier must represent that mixing sector, which the C3 double-edge obstruction makes pair-priced unless it is compressed in some other basis. (MLPs 3–5 were not run: the three networks agree to within 15 % on every ratio.)
