@@ -1,8 +1,9 @@
 import sys, os, json, numpy as np, collections
 HERE = os.path.dirname(os.path.abspath(__file__))
-for fn in sorted(os.listdir(os.path.join(HERE, "results"))):
+D = "results_live" if os.path.isdir(os.path.join(HERE, "results_live")) else "results"
+for fn in sorted(os.listdir(os.path.join(HERE, D))):
     if not fn.endswith(".jsonl"): continue
-    rows = [json.loads(l) for l in open(os.path.join(HERE, "results", fn))]
+    rows = [json.loads(l) for l in open(os.path.join(HERE, D, fn))]
     by = collections.OrderedDict()
     for r in rows: by.setdefault(r["variant"], {})[r["mlp"]] = r
     print(f"## {fn[:-6]}")

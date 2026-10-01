@@ -35,8 +35,8 @@ ap.add_argument("--mlps", default=None)
 a = ap.parse_args()
 S = bench.load_set(a.set)
 mlps = range(len(S["seeds"])) if a.mlps is None else [int(x) for x in a.mlps.split(",")]
-os.makedirs(os.path.join(HERE, "results"), exist_ok=True)
-fn = os.path.join(HERE, "results", f"{a.set}{os.environ.get('RES_SUFFIX', '')}.jsonl")
+os.makedirs(os.path.join(HERE, "results_live"), exist_ok=True)
+fn = os.path.join(HERE, "results_live", f"{a.set}{os.environ.get('RES_SUFFIX', '')}.jsonl")
 for i in mlps:
     W = bench.weights(S, i).astype(np.float64)
     truth = S["means"][i]

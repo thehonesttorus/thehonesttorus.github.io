@@ -4,15 +4,22 @@
 
 ## 0. Answer in brief
 
-1. **The co-state the readout needs is small and exactly closed** (Theorem C1). To first order in the local non-Gaussianity it is the n readout cotangents G_{l,j} = E_ν ∇³ g_{l,j} / 6. Their values are n numbers per layer, and they obey an exact backward recursion G_l = T_l* G_{l+1} + J_{l+1}: pull-back through the linear-response arrow plus a local kink term.
-2. **Being small is not the same as being cheap to evaluate** (Theorems C2, C3). The co-state tensors G_{l,j} have CP rank Θ((L−l) n) each, and any exact evaluation of their pairing with the sources goes through the **double edge**: the Hadamard square (U_{s→k} ∘ V_{s→k}) of a source-to-kink propagator, where two legs of a source atom land on the same kink neuron. The double edge factors through an intermediate layer only via the n²-dimensional second chaos: (UM) ∘ (VM) = (U ⊙ V)(M ⊙ M). Consequences:
-   - the minimal exactly closed forward state at a cut m is the set of all future (2,1) slices, (L − m) n² numbers;
-   - first order costs Θ(n³) per (source, kink) pair, Θ(L² n³) in total, in every contraction order (forward over pairs, or backward through per-readout Hessians, Θ(L n⁴));
-   - there is **no closed n²-per-layer co-state** for the old content.
-3. **The natural n² closures are measured directly at n = 1024**, together with the exact first-order co-state (§4). The (2,1)-slice chain keeps only the diagonal a = b of the double edge, i.e. it averages over the newest weights; age truncation; Tucker truncation of old propagators. Tucker truncation cannot save cost anyway: a rank-d propagator's double edge has rank d², so it is cheaper only when d < √(n/2) ≈ 22 (Theorem C4).
-4. **Second order** (the δ-insertion of old κ₃ into joint κ₄, which the Heisenberg oracle says is needed for the bar) has, in the same pull-back form, one more interior Hadamard vertex. It costs Θ(L³ n³) (Theorem C5).
+1. **The co-state the readout needs is small and exactly closed, but not cheap to evaluate** (C1–C3). To first order it is the n readout cotangents, whose values satisfy an exact backward recursion. Evaluating them, though, needs the double edge (U_{s→k} ∘ V_{s→k}): two legs of a source atom meeting at one kink neuron. That factors through an intermediate layer only via the n²-dimensional second chaos, so exact first order costs Θ(n³) per (source, kink) pair, Θ(L² n³) in total, and second order Θ(L³ n³) (C5). No closed n²-per-layer co-state exists for old content in general. Every causal n² closure measured (diagonal slice chain, (2,1)-support renewal, Tucker truncation) loses a large part of the old content at n = 1024 (§4.1).
+2. **But the readout reads old content through a much smaller object than the forward state** (§4.2, oracle). With young content (age ≤ 1) exact, the old (2,1) slice is needed only through its diagonal plus a rank-1 spike: 4.6e-5 against 3.1e-5 for all of it, at w128. Rank 8 is enough. The spike lies along (s², m) and is the **dilation (global scale) mode**. Positive homogeneity makes that mode an **exactly conserved charge** of the true dynamics: Theorem C6, F#(P ⋆ ν) = P ⋆ F#ν. It is also the only exactly closed symmetry sector for generic weights (C7). This is the same object as the bethe stream's "global order parameter", seen here from the readout side in κ₃.
+3. **Carrying it costs one scalar per layer.** Content of age > A is projected onto the scale-mixture slice when it retires (an O(n²) dot product). The accumulated scale variance v is used at law level (ReLU moments from the de-scaled covariance, scale re-added: exact by homogeneity). **Measured directly on all six w1024_d16 networks:**
 
-**Verdict v0**: the readout does read old content only through known contractions, but those contractions contain a squared propagator. That squared propagator is what makes the cost quadratic in depth. The deciding experiment is §4 (does an n² closure lose the old content at n = 1024?).
+| variant | raw (6 nets, paired) | vs Gaussian | products | units (dense / Strassen L3) |
+|---|---|---|---|---|
+| Gaussian closure | 4.10e-6 | 1 | 30 | 0.03 B |
+| exact first-order co-state (all 120 pairs) | 4.23e-7 ± 0.21e-7 | 9.7× | 855 | 0.83 / 0.57 B |
+| A = 1, old dropped | 1.90e-6 | 2.2× | 218 | |
+| **A = 1 + scale law (A1gl)** | **6.34e-7 ± 0.71e-7** | 6.5× | **218** | 0.21 / 0.15 B |
+| A = 2 + scale law (A2gl) | 4.96e-7 ± 0.38e-7 | 8.3× | 309 | 0.30 / 0.21 B |
+| A = 3 + scale law (A3gl) | 4.24e-7 ± 0.29e-7 | 9.7× | 393 | 0.38 / 0.26 B |
+| **A = 3 + scale law + slice-chain residual (A3gsl)** | **3.91e-7 ± 0.22e-7** | **10.5×** | 435 | 0.42 / 0.29 B |
+
+   The scale-mode co-state matches the exact all-pairs first order at **46 % of its products** (A3gl), and A3gsl edges below it (ratio 0.68–1.11 per network, mean 0.93). At w128 the law-level scale mode even beats all pairs by 1.2×: A3gsl 2.64e-5 against 3.13e-5, which is the mode's own second-order (κ₄-spike) content.
+4. **Verdict.** The co-state lens answers the dossier's question (ii) **positively in effect and negatively in principle**. Old third-order content is not O(L n³) as an exact object. Its *readout-relevant* part, however, is one conserved scalar (the dilation charge) plus a residual that a short exact window (A ≤ 3) and the slice chain absorb, which takes it from O(L² n³) to O(A L n³). But the first-order co-state itself sits at raw ≈ 4e-7 at n = 1024, about 40× above the bar's raw ≈ 1e-8. Adjusted ≈ 9e-8 – 1.1e-7 at 0.15–0.29 B is on par with the other fresh designs (faces 3.2e-7 raw, markov 2.4e-7 raw, bethe 1.04e-6), and 60× short of 1.6e-9. What is missing is **not old content any more**: the remaining error is the first-order model error (decoupled gates, first-order Stein, local κ₄), i.e. the second-order Duhamel term of the non-scale content.
 
 ## 1. Setting and the co-state
 
@@ -121,4 +128,36 @@ Extra cost over A-truncation: O(n²) per layer for gp/gl, 2 products per layer f
 
 Projecting at age 0 is wrong: the source has not yet turned into the scale mode, and A0gp is worse than A0. From age 1 on, the projection works. Over a fitted scalar at first order (A1gsm oracle 5.25e-5), the law-level version gains another 1.4×, and gl/gsl beat the exact all-pairs first order at a quarter to half of its products. That is direct evidence that the scale mode carries the second-order content: its κ₄ spike, which is coherent.
 
-**4.5 Width 1024 (the decisive set).** In progress: A1gl, A2gl, A1gsl, A3gsl, A3gl, paired with gauss / full / A1 / A1gp / A3gs on all six networks. First number, MLP 0: **A1gl raw 7.8e-7** (A1 2.09e-6, all pairs 3.9e-7).
+**4.5 Width 1024 (the decisive set; six networks, paired, truth noise subtracted).** Table in §0. Further readings:
+- A first-order scalar (gp) recovers half of the old content: A1gp 9.4e-7 against A1 1.90e-6. The law-level treatment of the same scalar recovers most of the rest (A1gl 6.3e-7). The difference is the mode's κ₄ (and higher) content, which homogeneity gives exactly.
+- Per network, A3gsl / all pairs = 1.11, 0.97, 1.10, 0.68, 0.83, 0.91.
+- (Per-layer MSEs in the result files include the per-layer truth noise Var(a_l)/N. That is 3.4e-7 at layer 1, where every method is exact, and it falls with depth to 3.6e-8 at layer 16. Read only the final layer.)
+
+**Theorem C7 (uniqueness of the exactly closed symmetry sector, sketch).** Suppose a family of invertible maps g_l intertwines the arrows, F_l ∘ g_l = g_{l+1} ∘ F_l, with F_l = ReLU then W_{l+1}. Commuting with the coordinatewise ReLU (and preserving the orthant structure on which it is linear) forces g_l to be a positive diagonal scaling composed with a permutation. Intertwining a dense W with i.i.d. continuous entries (W g = g′ W) then forces g = c I almost surely. So the dilations are the only continuous symmetry of a generic network, and the scale-mixture law is the only exactly closed sector of the co-state beyond the n readout values themselves. Everything else in the old content must be paid for in pairs, or approximated.
+
+## 5. Cost at n = 1024 and grader notes for the best variants
+
+| variant | products | dense f32 | Strassen L3 (0.683 u, ≈ 70 ms/product batched) | wall (L3) | raw | adjusted (L3) |
+|---|---|---|---|---|---|---|
+| A1gl | 218 | 0.21 B | 149 u = 0.15 B | ≈ 15 s | 6.3e-7 | ≈ 9.2e-8 |
+| A2gl | 309 | 0.30 B | 211 u = 0.21 B | ≈ 22 s | 5.0e-7 | ≈ 1.0e-7 |
+| A3gsl | 435 | 0.42 B | 297 u = 0.29 B | ≈ 30 s | 3.9e-7 | ≈ 1.1e-7 |
+| all pairs | 855 | 0.83 B | 584 u = 0.57 B | ≈ 60 s | 4.2e-7 | ≈ 2.4e-7 |
+
+The no-coincidence-atom variants (4 instead of 7 products per pair) are measured in §4.6. Calls: per layer, one stacked propagation family ([U; V; X] of all live pairs times Φ_k W_{k+1}) and one hub-sum family for the slices, ≈ 2.1k calls in total. The scale-mode bookkeeping is O(n²) elementwise: a handful of calls per layer. Memory: (A + 1) × 3 n×n per live pair, ≤ 100 MB.
+
+## 6. Verdict and the deciding experiment
+
+**Verdict.** 
+- (a) **Closure, exact: disproved** for any co-state of o(L n²) numbers per cut that a causal forward pass could carry (C2). The obstruction is the double edge, which closes only in the second chaos (C3). The readout co-state is exactly closed (C1), but evaluating it costs Θ(L² n³) at first order and Θ(L³ n³) at second order (C5).
+- (b) **Closure, readout-weighted: established empirically for the old content.** The readout reads old κ₃ through one conserved scalar, the dilation charge (C6, unique by C7), plus a residual that a window of three ages and the slice chain absorb. This turns O(L² n³) into O(A L n³) with A = 1–3 at no loss at n = 1024, and is measured.
+- (c) **The co-state lens alone does not reach the bar.** The exact first order is ≈ 4e-7 raw at 1024, and every cheap closure of the old content can at best reproduce it.
+
+**Deciding experiment for what comes next** (one step beyond this stream's question). The second-order Duhamel term of the *non-scale* content: joint κ₄(pppq), κ₄(ppqq) from δ-insertion of young κ₃ (the heisenberg oracle's covariance drift). The analysis here predicts its readout-relevant part is also concentrated, and cheap to test: run the w128 filter oracle on true (MC) κ₄ slices after removing their scale-mode part (the bethe Q spike, already carried exactly by the scale law). If the remainder of the true κ₄ slices, injected on top of A3gsl, gains ≥ 5× at w128 and its readout-relevant part is rank ≤ 8, then a second-order co-state of O(A² L n³) exists and is the path to raw ≈ 1e-8. If it gains < 3×, this line stops at ≈ 4e-7.
+
+## 7. Files
+
+- `costate.py`: the estimator. Pull-back source atoms (star + exact coincidences); per-pair slices; closures `old = drop | slice | pool | gsm | gsmslice`; `law=True` for the law-level scale mode; oracle filters (`oldfilter = diag | off | rank | gsm | gsm_off | hfit | hfitd`).
+- `validate.py`: pull-back = full-tensor HD to 5e-15.
+- `run.py`, `summarize.py`, `rebuild.py`: runs and tables (`results/*.jsonl`; rows of the w1024 scale batch rebuilt from saved predictions after a git incident, exact).
+- `spike.py`, `anatomy.py`: old-slice anatomy. `renorm.py`: the ensemble-renormalisation test (cosine of the slice-chain and true old corrections 0.6–0.7 at w128; one fitted factor does not close the gap).
