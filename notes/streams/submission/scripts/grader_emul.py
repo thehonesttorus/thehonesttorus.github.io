@@ -54,7 +54,13 @@ def client_main(a):
         ctx = flops.BudgetContext(flop_budget=2 ** 41, quiet=True)
         try:
             with ctx:
-                pred = est.predict(mlp, 2 ** 41)
+                if a.profile_out and i == nrows - 1:   # profile the last (steady-state) MLP only
+                    import cProfile
+                    prof = cProfile.Profile()
+                    pred = prof.runcall(est.predict, mlp, 2 ** 41)
+                    prof.dump_stats(a.profile_out)
+                else:
+                    pred = est.predict(mlp, 2 ** 41)
                 arr = fnp.asarray(pred, dtype=fnp.float32)
                 del pred
                 fl = ctx.flops_used
@@ -81,6 +87,8 @@ def run_main(a):
     senv = dict(os.environ)
     for k in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS"):
         senv[k] = str(a.server_threads)
+    # the grader caps a single array at 4 GiB (starter kit); the server's own default is 100 MB
+    senv.setdefault("FLOPSCOPE_MAX_ARRAY_BYTES", str(4 * 1024 ** 3))
     srv = subprocess.Popen([sys.executable, "-m", "flopscope_server", "--url", url, "--timeout", "900"],
                            env=senv, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, text=True)
     for _ in range(100):
@@ -93,7 +101,7 @@ def run_main(a):
         cenv[k] = "1"
     t0 = time.time()
     cli = subprocess.Popen([a.client_python, os.path.abspath(__file__), "client", "--estimator", os.path.abspath(a.estimator),
-                            "--dataset", os.path.abspath(a.dataset), "--t0", repr(t0)] + (["--n-mlps", str(a.n_mlps)] if a.n_mlps else []),
+                            "--dataset", os.path.abspath(a.dataset), "--t0", repr(t0)] + (["--profile-out", a.profile_out] if a.profile_out else []) + (["--n-mlps", str(a.n_mlps)] if a.n_mlps else []),
                            env=cenv, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     peak = {"server": 0, "client": 0}
     stop = threading.Event()
@@ -161,6 +169,7 @@ def main():
     ap.add_argument("--url", default=URL_DEFAULT)
     ap.add_argument("--server-threads", type=int, default=3)
     ap.add_argument("--client-python", default="/root/fcli/bin/python")
+    ap.add_argument("--profile-out", default=None, help="client mode: cProfile the last MLP's predict() into this file")
     a = ap.parse_args()
     if a.mode == "client":
         client_main(a)
