@@ -8,7 +8,8 @@ import math
 import numpy as np
 from numpy.polynomial import polynomial as P
 
-K = 8          # Mehler truncation (edge multiplicity)
+import os
+K = int(os.environ.get("MEHLER_K", 8))  # Mehler truncation (edge multiplicity)
 PQ = 3         # max edge multiplicity in path sectors
 
 

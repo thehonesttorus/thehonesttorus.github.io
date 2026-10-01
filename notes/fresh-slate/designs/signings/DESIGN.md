@@ -146,3 +146,43 @@ A 2-lift (random signing of the layer weights) of the network kills exactly the 
 signed holonomy; averaging the copula estimator over signed lifts versus the quenched network isolates the
 loop (old-content) part as a difference of two cheap evaluations — a candidate correction to test once the
 size of the copula defect is known.
+
+---
+
+## 8. Addendum after the first measurements (v1, v2; see RESULTS.md)
+
+**What was measured.** (i) The Mehler/hafnian generators are exact (T0); (ii) the loop sectors decay ≥ n^{-1.5}
+(T1), so the step sums are tree sums; (iii) the Gaussian-copula state is exact for one step and wrong from the
+second step on: the dropped content is the third-order structure born at earlier ReLUs (the all-distinct slice is
+≈ 70 % missed, the (2,1) slice ≈ 22 % after the hyperedge correction).
+
+**v1 (implemented).** State = copula (T, R) + the carried pairwise slice D_ac = κ(z_a, z_a, z_c). Every bivariate
+expectation in the step gets the first-order *hyperedge* term in the same Mehler basis:
+E[φ] += Δ_ac/2 · E_cop[∂_a²∂_c φ] + Δ_ca/2 · E_cop[∂_a∂_c² φ], Δ = D − D_cop, with the ReLU's δ and indicator
+profiles (closed forms from the roots of the marginal transport). D' is propagated by the tree diagrams with legs
+(j, j, k), including the coincident-index terms. In diagram language this is "trees + at most one cumulant
+hyperedge": the hafnian of half-edges where one 3-hyperedge is allowed besides the pairings.
+
+**v2 (implemented, unstable).** + the all-distinct content as rank-n CP sources per birth layer
+(β_i = κ3(a_i) minus the transported diagonal, factors transported by diag(P(z>0)) then W). Recovers ≈ 20 % of the
+missing all-distinct sector at width 64 and becomes unstable over depth.
+
+**Where signings could enter, and why they do not.**
+1. Determinantal resummation (P3 i) of cycles: by T1 the cycles that carry fresh weights are n^{-3/2} or smaller.
+   Nothing to resum.
+2. Godsil–Gutman / Z/2 signed averages (P3 ii): averaging over a Z/2 gauge annihilates every odd-degree term. The
+   content the problem needs beyond the covariance is *odd* (third cumulants, the (2,1) and (1,1,1) slices). A
+   Z/2 signing therefore removes exactly the needed information. This is structural, not a tuning problem.
+3. Z/3 gauge (cube roots of unity ω_s): E_ω[(Σ_s β_s^{1/3} ω_s u_s·w)^3] = Σ_s β_s (u_s·w)^3 exactly, so one combined
+   vector per sample sketches a whole CP source bank unbiasedly. But the cross terms do not cancel per sample:
+   measured samples for 10 % accuracy grow from 1.6e3 (S = 16 sources) to 7e4 (64), 1.9e7 (256) and 3.5e8 (1024).
+   The bank has S ≈ n per birth layer, so this is far worse than a matmul. Dead.
+4. Graph covers / Bethe (Vontobel): the M → ∞ cover of the layered network is the independent-input model. Its loop
+   corrections are exactly the covariance (shared-ancestry 4-cycles) and old content, i.e. everything that matters.
+   The cover limit is the wrong end of the expansion here.
+
+**What the principle does deliver.** It gives a clean organisation (weight matchings fix the order of every sector;
+trees and not loops; content = hyperedges carried by linear chains), an exact closed-form generator of joint
+cumulants from (T, R), and closed-form hyperedge corrections. It gives no cheaper evaluation of the hard part, which
+is carrying old third-order content across depth. That is the brief's "old content" problem, and signings are blind
+to it by parity.

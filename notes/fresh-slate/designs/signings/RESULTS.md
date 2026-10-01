@@ -73,3 +73,45 @@ ages is unstable at width 64 (the carried slice drifts, the hyperedge correction
 | v1 copula + carried (2,1) slice + hyperedge correction | 1.75e-4 | 2.9e-5 | 1.11e-4 |
 | v1 with single-edge paths only (p = q = 1) | 2.65e-4 | 5.8e-5 | 1.34e-4 |
 | v2 (v1 + CP sources, all ages) | unstable (NaN on 2/8) | | |
+
+## Stage Q, widths 64–512, depth 16 (final-layer raw MSE, truth noise subtracted; mean ± s.e. over MLPs)
+
+w64: shared bench `w64_d16` (8 MLPs, N = 1e7). w128/256/512: own bakes of `sample_mlp(width, 16, seed=s)` weights
+(`truth.py`; N = 8e6 / 3e6 / 1.5e6; truth noise ≤ 8e-8, subtracted per MLP).
+
+| estimator | 64 (8) | 128 (4) | 256 (4) | 512 (3) | fit slope p (raw ∝ n^-p) | raw at 1024 (fit, 1σ) |
+|---|---|---|---|---|---|---|
+| Gaussian closure (bench `baseline_gauss`) | 5.1e-4 ± 0.9e-4 | 3.2e-4 ± 0.8e-4 | 6.1e-5 ± 0.9e-5 | 2.1e-5 | 1.62 ± 0.23 | 7.3e-6 (4.8e-6 – 1.1e-5) |
+| v0 copula (marginals + latent R) | 3.8e-4 ± 0.6e-4 | 2.2e-4 ± 0.5e-4 | 5.1e-5 ± 0.9e-5 | 1.3e-5 (1) | 1.66 ± 0.21 | 4.9e-6 (3.3e-6 – 7.2e-6) |
+| **v1** copula + carried (2,1) slice + hyperedge terms | 1.75e-4 ± 0.3e-4 | 6.8e-5 ± 1.7e-5 | 1.41e-5 ± 0.2e-5 | 5.1e-6 ± 0.7e-6 | **1.76 ± 0.12** | **1.4e-6 (1.1e-6 – 1.8e-6)** |
+| v1, single-edge paths (p = q = 1; the costed form) | 2.6e-4 | — | 1.43e-5 | 5.1e-6 | | same as v1 at n ≥ 256 |
+
+Calibration caveat: the brief quotes ≈ 4e-5 for Gaussian closure at 1024, while my extrapolation of the bench
+Gaussian baseline gives 7e-6. If extrapolation from ≤ 512 is optimistic by the same factor (≈ 5×), v1 at 1024 is
+≈ 7e-6. v1 is consistently 0.22–0.34 × the Gaussian baseline at n ≥ 128, which gives a second projection,
+0.25 × (7e-6 … 4e-5) = 2e-6 … 1e-5.
+
+Layer profile (v1, width 512): L2 ≈ 0 (at noise), L4 4.5e-7, L8 2.2e-6, L16 5.1e-6: error is born from layer 3 on and
+accumulates.
+
+## Teacher forcing at width 128 (`ablate.py`, MC statistics of every z_l from 3e6 samples injected at layers ≤ 15,
+final step 15 → 16 computed by v1; MLP w128 seed 0)
+
+| injected at every layer ≤ 15 | final raw MSE |
+|---|---|
+| nothing (v1) | 1.23e-4 |
+| D (true (2,1) slice) | 1.53e-4 |
+| true covariance | 1.06e-4 |
+| true marginals (m, var, κ3, κ4) | 3.6e-5 |
+| marginals + D | 3.1e-5 |
+| marginals + covariance + D | 3.7e-5 |
+
+**A single step out of an exactly specified state (marginals, covariance, (2,1) slice) has error 3.6e-5 at width
+128**, about 1/3 of v1's accumulated error. Decomposition of that step (`ablate2.py`, `margtest.py`):
+- the marginal transport is not the problem: a 4-cumulant (Fleishman) marginal fed with exact cumulants reproduces
+  E a to 5e-4 rms and κ3(a) to 0.5 % at depth 15 (skew 0.48);
+- the next-layer variance is off by 0.5–0.9 % (relative), almost all of it from the **off-diagonal Cov(a)**: rms entry error
+  9.6e-4 on 0.11. The first-order hyperedge term already removes ≈ 80 % of the copula's bivariate defect
+  (5.3e-3 → 9.6e-4). The rest is second-order bivariate structure (pairwise fourth-order slices κ(z_a,z_a,z_b,z_b),
+  κ(z_a,z_a,z_a,z_b), and Δ² terms), which v1 neither carries nor generates;
+- κ3(z') is off by 15–30 % in the same step, split between the {2,1} sector (K21 of a, 10 % off) and the all-distinct sector.

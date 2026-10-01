@@ -69,6 +69,7 @@ def layer_step(m, s, a, R, D, W, cfg, U=None, beta=None):
     DeltaT = Delta.T
     # covariance of a
     Ca = M(h, h, R0) + 0.5 * Delta * M(dl, Hd, R0, 0) + 0.5 * DeltaT * M(Hd, dl, R0, 0)
+    Ca0 = M(h, h, R0)
     Ca[np.diag_indices(n)] = var
     # (2,1) slice of a
     hm = h - mu[:, None] * Hd
@@ -134,7 +135,7 @@ def layer_step(m, s, a, R, D, W, cfg, U=None, beta=None):
     an = fleishman(g1, g2)
     t = np.stack([sz * an[:, 0], 2 * sz * an[:, 1], 6 * sz * an[:, 2]], 1)
     Rn = latent_corr(Cz, t)
-    return mu, (mz, sz, an, Rn, Dn, U, beta), dict(s3=k3a @ W3, s21=3 * np.sum(W2 * K21W, 0), s111=3 * t111, K21=K21, k3=k3z, k4=k4z, vz=vz, Cz=Cz, D=Dn)
+    return mu, (mz, sz, an, Rn, Dn, U, beta), dict(Ca=Ca, Ca0=Ca0, s3=k3a @ W3, s21=3 * np.sum(W2 * K21W, 0), s111=3 * t111, K21=K21, k3=k3z, k4=k4z, vz=vz, Cz=Cz, D=Dn)
 
 
 def estimate(W, cfg=None, return_diag=False):
@@ -148,6 +149,17 @@ def estimate(W, cfg=None, return_diag=False):
     for l in range(L):
         if l < L - 1:
             mu, (m, s, a, R, D, U, beta), dg = layer_step(m, s, a, R, D, W[l + 1].astype(float), cfg, U, beta)
+            O = cfg.get('oracle')
+            if O is not None and l + 1 <= O.get('upto', L - 2):   # teacher forcing with MC statistics of z_{l+2}
+                o = O['use']
+                if 'marg' in o:
+                    m = O['mz'][l + 1]; s = np.sqrt(O['var'][l + 1])
+                    a = fleishman(np.clip(O['k3'][l + 1] / s ** 3, -1.5, 1.5), np.clip(O['k4'][l + 1] / s ** 4, -1, 4))
+                if 'D' in o:
+                    D = O['D'][l + 1].copy()
+                if 'cov' in o or 'marg' in o:
+                    t = np.stack([s * a[:, 0], 2 * s * a[:, 1], 6 * s * a[:, 2]], 1)
+                    R = latent_corr(O['Cz'][l + 1] if 'cov' in o else dg['Cz'], t)
             diags.append(dg)
         else:
             mu = ext_profiles(m, s, a, dmax=0)['h'][:, 0]
