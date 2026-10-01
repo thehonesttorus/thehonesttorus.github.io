@@ -92,7 +92,12 @@ def poisson_q(sc, k):
 
 
 def run(W, window=None, slices=False, young=None, rank=None, edge=True, readout=True, dtype=np.float32, trace=None, k4f=None, k4use=True, share=None, share_young=2, k4own=False, k4mf=False, prune=None, prune_slices=None,
-        sample=None, sample_young=2, seed=0, diag=None, diag_fracs=(0.5, 0.25), imp='norm', diag_store=None, oldproj=None, projsrc='prop', merge_age=None, merge_rep='oldest', agek=None, agek_min=3):
+        sample=None, sample_young=2, seed=0, diag=None, diag_fracs=(0.5, 0.25), imp='norm', diag_store=None, oldproj=None, projsrc='prop', merge_age=None, merge_rep='oldest', agek=None, agek_min=3, causal=None, dense_frac=0.75, odo=None):
+    # odo: c -> Bentley-Saxe age odometer: births enter at age agek_min as blocks of size 1 (own frame); two sibling blocks of
+    # equal size merge (carry) into one shared frame; every block is read at k = c n / (age of its youngest member)
+    blocks = []
+    # causal: c -> carry every source of age >= agek_min as Z ~ A_Z U^T, Y ~ A_Y U^T, T ~ A_T U^T with a transported
+    # orthonormal frame U (n x k), U <- QR(G^T U), truncated to k(a) = c n / a by an SVD of the n x k factor A_Z
     rng = np.random.default_rng(seed)
     L, n, _ = W.shape
     W64 = W.astype(np.float64)
@@ -144,7 +149,22 @@ def run(W, window=None, slices=False, young=None, rank=None, edge=True, readout=
         # ---- chaos sources: birth at layer l, transport all to layer l + 1
         Wn = Wf[l + 1]
         G = (P.astype(dtype)[:, None] * Wn)                      # diag(P_l) W_{l+1}
+        for b in blocks:
+            Qf, Rf = np.linalg.qr(G.T @ b["U"]); b["U"] = Qf.astype(dtype)
+            for src in b["mem"]:
+                for key in ("AZ", "AY", "AT"):
+                    if src.get(key) is not None:
+                        src[key] = (src[key] @ Rf.T).astype(dtype)
         for src in sources:
+            if "blk" in src:
+                continue
+            if "U" in src:                                        # causal frame: U <- QR(G^T U), A <- A R^T
+                Qf, Rf = np.linalg.qr(G.T @ src["U"])
+                src["U"] = Qf.astype(dtype)
+                for key in ("AZ", "AY", "AT"):
+                    if src.get(key) is not None:
+                        src[key] = (src[key] @ Rf.T).astype(dtype)
+                continue
             if "Zs" in src:                                       # sampled old source: transport only its k rows
                 src["Zs"] = src["Zs"] @ G; src["Ys"] = src["Ys"] @ G
                 if src.get("Ts") is not None:
@@ -235,6 +255,74 @@ def run(W, window=None, slices=False, young=None, rank=None, edge=True, readout=
                         src["Yp"] = (src["SP"].astype(dtype) @ src["Z"])
                     else:
                         src["Yp"] = ((src["Yp"] @ G) @ U) @ U.T
+        # ---- causal age frames: convert at age agek_min, truncate as k(a) falls
+        if causal is not None:
+            for src in sources:
+                age = l + 1 - src["s"]
+                if age < agek_min:
+                    continue
+                k_ = int(min(n, round(causal * n / age)))
+                if "U" not in src:
+                    if k_ >= dense_frac * n:
+                        continue                                  # still carried densely
+                    Zf = src["Z"].astype(np.float64)
+                    _, _, Vt = np.linalg.svd(Zf, full_matrices=False)
+                    U = Vt[:k_].T
+                    src["U"] = U.astype(dtype); src["AZ"] = (Zf @ U).astype(dtype)
+                    src["AY"] = (src["SP"].astype(np.float64) @ src["AZ"].astype(np.float64)).astype(dtype)
+                    src["AT"] = (src["Delta"].astype(np.float64) @ src["AZ"].astype(np.float64)).astype(dtype) if "Delta" in src else None
+                    del src["Z"]
+                elif src["U"].shape[1] > k_:
+                    P_, sv, Vt = np.linalg.svd(src["AZ"].astype(np.float64), full_matrices=False)
+                    V = Vt[:k_].T
+                    src["U"] = (src["U"].astype(np.float64) @ V).astype(dtype)
+                    for key in ("AZ", "AY", "AT"):
+                        if src.get(key) is not None:
+                            src[key] = (src[key].astype(np.float64) @ V).astype(dtype)
+        if odo is not None:
+            def refit(b, k_, Bq=None):
+                # shared frame of block b re-fitted to rank k_ from the members' Z-leg Gram (optionally first re-expressed in Bq)
+                if Bq is not None:
+                    for m_ in b["mem"]:
+                        Pm = (m_["Uo"].astype(np.float64).T @ Bq)
+                        for key in ("AZ", "AY", "AT"):
+                            if m_.get(key) is not None:
+                                m_[key] = (m_[key].astype(np.float64) @ Pm)
+                    U0 = Bq
+                else:
+                    U0 = b["U"].astype(np.float64)
+                Gm = sum(m_["AZ"].astype(np.float64).T @ m_["AZ"].astype(np.float64) for m_ in b["mem"])
+                ev, V = np.linalg.eigh(Gm); V = V[:, ::-1][:, :min(k_, V.shape[1])]
+                b["U"] = (U0 @ V).astype(dtype)
+                for m_ in b["mem"]:
+                    for key in ("AZ", "AY", "AT"):
+                        if m_.get(key) is not None:
+                            m_[key] = (m_[key].astype(np.float64) @ V).astype(dtype)
+            for src in sources:
+                if l + 1 - src["s"] == agek_min and "blk" not in src:
+                    k_ = int(min(n, round(odo * n / agek_min)))
+                    Zf = src["Z"].astype(np.float64)
+                    _, _, Vt = np.linalg.svd(Zf, full_matrices=False); U = Vt[:k_].T
+                    src["AZ"] = (Zf @ U).astype(dtype)
+                    src["AY"] = (src["SP"].astype(np.float64) @ src["AZ"].astype(np.float64)).astype(dtype)
+                    src["AT"] = (src["Delta"].astype(np.float64) @ src["AZ"].astype(np.float64)).astype(dtype) if "Delta" in src else None
+                    del src["Z"]; src["blk"] = True
+                    blocks.append(dict(U=U.astype(dtype), mem=[src], size=1))
+                    while len(blocks) >= 2 and blocks[-1]["size"] == blocks[-2]["size"]:
+                        b2 = blocks.pop(); b1 = blocks.pop()
+                        for bb in (b1, b2):
+                            for m_ in bb["mem"]:
+                                m_["Uo"] = bb["U"]
+                        Bq, _ = np.linalg.qr(np.concatenate([b1["U"], b2["U"]], 1).astype(np.float64))
+                        nb = dict(mem=b1["mem"] + b2["mem"], size=b1["size"] + b2["size"])
+                        youngest = min(l + 1 - m_["s"] for m_ in nb["mem"])
+                        refit(nb, int(min(n, round(odo * n / youngest))), Bq)
+                        blocks.append(nb)
+            for b in blocks:
+                youngest = min(l + 1 - m_["s"] for m_ in b["mem"])
+                k_ = int(min(n, round(odo * n / youngest)))
+                if b["U"].shape[1] > k_:
+                    refit(b, k_)
         # ---- unbiased Poisson resampling of old atoms (Kyng-Sachdeva analogue): at age sample_young + 1 keep row r with
         #      probability q_r = min(1, c ||A_r||_F) (sum q = f n), reweight by 1/q_r, then transport only kept rows
         if sample is not None or diag is not None:
@@ -259,8 +347,21 @@ def run(W, window=None, slices=False, young=None, rank=None, edge=True, readout=
         D = np.zeros((n, n), dtype=np.float64)
         Dold = np.zeros((n, n)) if diag is not None else None
         drec = dict(l=l + 1, E=0.0, sumA=0.0, var={f: 0.0 for f in diag_fracs}, varopt={f: [] for f in diag_fracs}, gsrc=[], nold=0)
+        for b in blocks:                                          # odometer readout: one U^T per block
+            U = b["U"]; Mb = None
+            for src in b["mem"]:
+                w = src["w2"]; AZ, AY, AT = src["AZ"], src["AY"], src["AT"]
+                Zf = AZ @ U.T; Y = AY @ U.T
+                M = (((Y * Y) * w[:, None]).T @ AZ) + 2 * (((Y * Zf) * w[:, None]).T @ AY)
+                if AT is not None:
+                    T = AT @ U.T
+                    M = M + (Zf * Zf).T @ AT + 2 * ((Zf * T).T @ AZ)
+                Mb = M if Mb is None else Mb + M
+            D += (Mb @ U.T).astype(np.float64)
         snaps = []
         for src in sources:
+            if "blk" in src:
+                continue
             if merge_age is not None:
                 snaps.append(D.copy())
             w = src["w2"]
@@ -285,6 +386,15 @@ def run(W, window=None, slices=False, young=None, rank=None, edge=True, readout=
                     q = src["qd"][f]; drec["var"][f] += float(((1 / q - 1) * a2).sum())
                     drec["varopt"][f].append(a2)
                 D += Ds
+                continue
+            if "U" in src:                                        # lean factored readout: 4 (n,n,k) + 1 (n,k,n) + 3 materialisations
+                U = src["U"]; AZ, AY, AT = src["AZ"], src["AY"], src["AT"]
+                Zf = AZ @ U.T; Y = AY @ U.T
+                M = (((Y * Y) * w[:, None]).T @ AZ) + 2 * (((Y * Zf) * w[:, None]).T @ AY)
+                if AT is not None:
+                    T = AT @ U.T
+                    M = M + (Zf * Zf).T @ AT + 2 * ((Zf * T).T @ AZ)
+                D += (M @ U.T).astype(np.float64)
                 continue
             age_ = l + 1 - src["s"]
             if agek is not None and age_ >= agek_min and "Q" not in src and "Yp" not in src:

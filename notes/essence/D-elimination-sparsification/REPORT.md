@@ -1,8 +1,9 @@
 # Team D: elimination, sparsification and scaling
 
-*Status: final (1 Oct 2026, ≈ 22:00 UTC). Theory for §1–2. Five transfers measured at n = 1024 on the bench (§4): resampling,
-spike projection, two age-merge oracles and (after coordinator note 1) an age-multiresolution oracle (§3.7), the one
-positive result. Two more are analysed but not run. Every number is at n = 1024, depth 16, on `w1024_d16`, inside the region stream's
+*Status: final (1 Oct 2026, ≈ 22:00 UTC). Theory for §1–2. Six transfers measured at n = 1024 on the bench (§4): resampling,
+spike projection, two age-merge oracles, an age-multiresolution oracle (§3.7) and, after coordinator notes 1–2, its
+**causal** version and a Bentley–Saxe age odometer (§3.8). The causal carrier is the one positive result: it passes on
+all 6 MLPs. §3.8 gives its T2 price. Two more are analysed but not run. Every number is at n = 1024, depth 16, on `w1024_d16`, inside the region stream's
 FC estimator (raw 3.24e-8 on MLP 0, 1.81e-8 on MLP 1, reproduced here). Code: `fcs.py` (FC plus unbiased atom
 resampling, atom-Gram diagnostics and oracle projections), `run_d.py`, `probe_coh.py`. Results: `results/*.json`.*
 
@@ -35,7 +36,12 @@ resampling, atom-Gram diagnostics and oracle projections), `run_d.py`, `probe_co
    3.24e-8 on MLP 0, 1.95e-8 vs 1.81e-8 on MLP 1. k = 1.5n/a costs 14 % and k = n/a costs 2.5×.
    - This halves the atom count (0.51 of FC at k = 2n/a).
    - It is a harmonic Σ_a 2n/a ≈ 2n ln t, not O(n): **O(n³ log L) per layer, not O(n³)**.
-   - The basis is an oracle, but a causal factored transport (§3.7) has the same cost law.
+   - **Causal version (§3.8): passes the kill on all 6 MLPs.** Each age frame is transported by QR(Gᵀ U) and truncated
+     as k(a) falls. It scores 3.17e-8 against FC's 3.03e-8 (mean of 6). The Bentley–Saxe odometer with shared dyadic
+     frames scores 3.26e-8 / 1.84e-8 on MLPs 0 / 1.
+   - **Price (T2):** ≈ 9 products per unit of resolution, with a floor of 7 for this atom form. The carrier costs
+     0.57 B at c = 2 and 0.47 B at c = 1.5 (raw 4.1e-8). That is ≈ 1.5–1.8× cheaper than FC, but 3–4× above the
+     leaders' 0.11–0.15 B. Coordinator note 2's "lean 3" is not reachable with this atom form.
 
 ## 1. Instances
 
@@ -350,6 +356,75 @@ For each: the objects in each role, why it is not the per-neuron drawing, predic
   score needs. It also explains why the region's fixed-rank row basis (k = 256 for all ages > 2) and shared n/4 subspace
   failed: they starve ages 3–5.
 
+### 3.8 The causal age-multiresolution carrier and the age odometer (T1 and T2 of coordinator note 2; measured)
+
+**Causal carrier (`fcs.run(causal=c)`).** Each source is carried densely while k(a) = c·n/a ≥ 0.75 n. When it first drops
+below that (at age 3 for c = 2), it is converted once by an SVD of Z_s(t). From then on it is carried as
+Z ≈ A_Z Uᵀ, Y ≈ A_Y Uᵀ and T ≈ A_T Uᵀ, with U orthonormal (n × k):
+- **Transport.** U ← Q from QR(Gᵀ U), and A ← A Rᵀ.
+- **Truncation.** As k(a) falls, an SVD of the n × k factor A_Z truncates the frame.
+- **Readout.** M = (Y∘Y)ᵀ diag(w2) A_Z + 2 (Y∘Z)ᵀ diag(w2) A_Y + (Z∘Z)ᵀ A_T + 2 (Z∘T)ᵀ A_Z, then D += M Uᵀ.
+
+Nothing uses the full Z_s(t) after conversion: the discarded directions are lost and never re-grow.
+
+**Age odometer (`fcs.run(odo=c)`).** This is note 2's §3 design:
+- Births enter at age 3 as blocks of size 1, each with its own frame.
+- Two blocks of equal size merge (a Bentley–Saxe carry) into one shared frame. The frame is re-fitted from the members'
+  Z-leg Gram in the span of both parents' frames.
+- Each block is read at k = c·n / (age of its youngest member). Transport, QR and the final Uᵀ are done once per block.
+
+| carrier | MLP 0 | MLP 1 | MLP 2 | MLP 3 | MLP 4 | MLP 5 | mean |
+|---|---|---|---|---|---|---|---|
+| FC (dense, all ages) | 3.24e-8 | 1.81e-8 | 3.03e-8 | 2.28e-8 | 3.89e-8 | 3.96e-8 | 3.03e-8 |
+| oracle k = 2n/a (§3.7) | 3.31e-8 | 1.95e-8 | — | — | — | — | — |
+| **causal, k = 2n/a** | **3.40e-8** | **1.98e-8** | **3.28e-8** | **2.35e-8** | **4.05e-8** | **3.97e-8** | **3.17e-8** |
+| causal, k = 1.5n/a | 4.11e-8 | — | — | — | — | — | — |
+| odometer, k = 2n/(youngest age) | 3.26e-8 | 1.84e-8 | — | — | — | — | — |
+| odometer, k = n/(youngest age) | 6.80e-8 | — | — | — | — | — | — |
+
+- **Kill rule** (raw > 5e-8): passed by causal k = 2n/a (6/6), causal 1.5n/a and the odometer at 2n. Failed by the
+  odometer at n.
+- The causal transported frames lose only 1–8 % against FC: the lost directions do not re-grow. This is the
+  Oseledets/participation-ratio picture working causally.
+
+**T2: the cost constant and its price** (`price_d.py`; units = dense 1024³ f32 products, L = 16).
+
+Per source and target, at resolution x = k/n:
+- 3 materialisations (Z, Y, T = A Uᵀ);
+- 4 contractions of shape (n, n, k);
+- 1 final (n, k, n) product;
+- frame transport Gᵀ U;
+- QR of n × k (≈ 1.33 x² u from the kit);
+- A Rᵀ for 3 factors (3x²).
+
+That totals ≈ 9x + 4.3x², i.e. **≈ 9 products per unit of resolution** (8.5 at c = 1.5).
+
+The floor for this atom form is 7 (4 contractions + 3 materialisations), which is FC's own dense constant. Each atom
+contributes four rank-one outer products to D21, and the Hadamard squares (Y∘Y, Y∘Z, Z∘Z, Z∘T) need the legs in full
+coordinates. The odometer saves only the per-block transport and the final Uᵀ, and reading blocks at their youngest age
+costs more resolution, so it does not beat the causal per-source frames.
+
+| carrier | memory products | total resolution (units of n, Σ over targets) | per unit resolution | + covariance arrow | B (dense) | raw |
+|---|---|---|---|---|---|---|
+| FC | 840 | 120 | 7.0 | 870 u | 0.85 | 3.03e-8 |
+| causal c = 2 | 553 | 61.2 | 9.0 | 583 u | **0.57** | 3.17e-8 |
+| causal c = 1.5 | 454 | 53.1 | 8.5 | 484 u | **0.47** | 4.1e-8 (MLP 0) |
+| odometer c = 2 | 613 | 72.4 | 8.5 | 643 u | 0.63 | 3.3e-8 (MLP 0) |
+
+- **Where the bill is.** At c = 2 the young ages 1–2, always full rank, cost 196 u (34 %). Ages 3–5 at k ≥ 0.4 n cost most
+  of the rest. The log-tail (ages ≥ 6) is cheap.
+- **Wall-feasible Strassen.** The rectangular (n, n, k) products are outside the kit's Strassen engine. Square products
+  at L1/L2 cost 16/31 calls each against a residual budget of ≈ 6–8k calls, so at most ≈ 200–250 of the ≈ 580 products
+  can be Strassen'd. That saves 0.12–0.23 u each, ≈ 40 u in all: **≈ 0.53 B (c = 2) / ≈ 0.43 B (c = 1.5)**.
+- **Adjusted.** ≈ 3.17e-8 × 0.53 ≈ 1.7e-8 (FC: 2.6e-8). The public chain is 5.4e-9 and the bar 1.6e-9.
+- **Verdict on note 2's hypothesis.** The carrier is lossless and O(n³ log L), but its constant is 9, not 3. Landing in
+  0.12–0.17 B needs ≈ 3.5× fewer products per unit of resolution *and* compression of ages 1–2. Neither is available in
+  the (y, y, z) + (z, z, Δz) atom form, because the Hadamard squares force full-coordinate legs.
+- **The next lever is therefore a cheaper readout of D21 from a factored source.** One option is the Khatri–Rao form
+  (Y∘Y) = (A_Y ⊙ A_Y)(U ⊙ U)ᵀ, which wins only for k ≲ √n ≈ 32. The other is a contraction that needs D21 only through
+  E21w ∘ D21 and diag D21: the covariance arrow and the readout, about 2 n² numbers, rather than all of it. The slice
+  corrections dk21 currently need full D21, and that is the binding consumer.
+
 ## 4. Tests run (n = 1024, bench `w1024_d16`, FC with slices = 2 and κ4 mean-field; truth noise subtracted)
 
 ### 4.1 Atom coherence and the variance law (MLP 0; old = age ≥ 3; `results/diag_m0.json`)
@@ -413,8 +488,9 @@ Readings:
 - **Synthesis.**
   - "The tracial state is why this whole domain does not pay" (D1 plus conjecture D4).
   - "The absence of a spectral gap is the memory" (KLR reading of F9.1–F9.2).
-- **Measurement, oracle only.** §3.7's positive law uses an exact per-source SVD at readout. The causal transported-basis
-  version has the same cost law on paper but is not run.
+- **Measurement.** §3.7's law is an oracle. Its causal version (§3.8) is measured on all 6 MLPs with one conversion
+  SVD per source, which costs ≈ 13 u each if billed (15 sources: ≈ 200 u). A randomized range finder (n × k QR) would
+  replace it at ≈ 1 u, which is assumed in the price but not tested.
 - **Speculation.** The sandwich-transport of the Perron part (3.3) as a cost device, if a future object makes the Perron
   part sufficient.
 - **Risks.**
