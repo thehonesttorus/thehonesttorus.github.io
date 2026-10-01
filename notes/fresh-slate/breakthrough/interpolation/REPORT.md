@@ -75,7 +75,7 @@ It is **not** a path to 1e-8 alone: the remainder is chaos ≥ 2, old, and quenc
 norm kurtosis before any compression of old content is attempted; (ii) the chi factor; (iii) the warning that
 self-averaging (trained) corrections have nothing left to learn once t is carried.
 
-**Deciding experiment (for whoever continues).** Run the dossier's best old-content machinery (HD first order, or the
+**Deciding experiment (for whoever continues; first piece in §7: at n = 256 the spike is ⅔ of the (2,1) slice).** Run the dossier's best old-content machinery (HD first order, or the
 moment chain) with the trace channel subtracted from its sources and transported analytically, and measure (1) the
 participation ratio / rank of the remaining (2,1) old content and (2) the final MSE vs the same machinery without
 the subtraction, at n = 1024. If subtraction lowers the rank needed by ≥ 3× at equal accuracy, the expensive
@@ -260,6 +260,28 @@ including ≈ 1e-7 of truth and MC noise, so the readout is not the floor.
 **Trace channel scale.** With exact-centred MC t as input, the derived transport coefficient is right to 2 %; the
 self-consistent t's 0.71× scale deficit at depth comes from the Gaussian source (fitted coefficient 1.04–1.13 per
 layer), i.e. from non-Gaussian corrections to the source that the recursion omits. Worth ≤ 9 % of the MSE.
+
+## 7. The (2,1) slice and Bolthausen conditioning of the columns (first piece of the deciding experiment)
+
+**Spike share (`t19_spike.py`, own net n = 256, depth 16, exact-centred MC N = 1M).** Off-diagonal (2,1) slice
+D21_ab = κ3(z_a, z_a, z_b):
+
+| z layer | 6 | 10 | 14 | 16 |
+|---|---|---|---|---|
+| energy in the rank-one trace part σ²(Wᵀt)_b | 0.72 | 0.67 | 0.67 | 0.65 |
+| participation ratio of D21 (singular values) | 29.6 | 17.7 | 15.4 | 13.1 |
+| PR after removing it | 71.0 | 33.1 | 27.2 | 21.4 |
+| top singular share of the residual | 0.20 | 0.58 | 0.60 | 0.70 |
+
+About two thirds of the (2,1) slice is the free trace spike. The residual's top component is again Wᵀt on the column
+side (corr 0.97–0.99) with a row amplitude tracking |m_a| (corr 0.45–0.83): the shape that Bolthausen-conditioning
+each column on its revealed m_a = μ·w_a predicts (w = (m/|μ|²)μ + w⊥ brings in t^μ = E[(μ̂·ã)²ã] and the scalars
+K₃ = E[(μ̂·ã)³], t·μ̂).
+
+**Conditioned trace channel at n = 1024 (`t20_cond.py`, `t21_condinject.py`).** κ3(z_a) ≈ r³K₃ + 3r²(t^μ·w⊥) +
+3rσ²(t·μ̂ − K₃) + 3σ²(t − t^μ)·w⊥, r = m_a/|μ|: explained variance of per-neuron κ3 92.9 → 94.4 % at layer 16 (MC
+inputs). In the chain with MC t, t^μ: conditioned diagonal injection 1.18 → 1.11e-6; adding the row-scaled (2,1)
+covariance term at first order makes it worse (3.5e-6). Marginal, and not pursued.
 
 ## Files
 
