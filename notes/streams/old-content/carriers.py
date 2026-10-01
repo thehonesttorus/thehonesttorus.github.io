@@ -121,6 +121,7 @@ def main():
     ap.add_argument("--cpranks", default="32,64,128,256")
     ap.add_argument("--cplayers", default="", help="layers for cp-static (default all)")
     ap.add_argument("--iters", type=int, default=30)
+    ap.add_argument("--noad", action="store_true", help="published-chain source convention (no AD mask on transported sources)")
     ap.add_argument("--model", action="store_true", help="run on the noise-free closure chain driven by the atlas (tracker.model_lay)")
     args = ap.parse_args()
     if "pre_M3" in np.load(args.atlas).files:
@@ -134,8 +135,10 @@ def main():
     ranks = [int(x) for x in args.ranks.split(",")]
     cpranks = [int(x) for x in args.cpranks.split(",")]
     cplayers = set(int(x) for x in args.cplayers.split(",")) if args.cplayers else None
-    print(f"{args.atlas}{' [MODEL chain]' if args.model else ''}: width {n}, depth {L}, N = {N}, young window w = {args.w}", flush=True)
-    pool = list(old_pool(W, lay, args.w))      # (l, Old_l, In_l), l = 1..L-1
+    print(f"{args.atlas}{' [MODEL chain]' if args.model else ''}: width {n}, depth {L}, N = {N}, young window w = {args.w}{', no-AD sources' if args.noad else ''}", flush=True)
+    global MASK
+    MASK = (lambda K: K) if args.noad else all_distinct
+    pool = list(old_pool(W, lay, args.w, ad=not args.noad))      # (l, Old_l, In_l), l = 1..L-1
     D21z = {l: d21(lay[l]["K3z"]) for l in range(L)}
 
     print(f"\nold share: ||D21(Old_l)|| / ||D21(z_l)||")
@@ -185,7 +188,7 @@ def main():
                     Kh = O.copy()                         # first layer with a non-empty pool: start exact
                 else:
                     Kprev, Inprev, Phi = state[r]
-                    Kh = T3(all_distinct(phi3(Kprev + Inprev, Phi)), W[l])
+                    Kh = T3(MASK(phi3(Kprev + Inprev, Phi)), W[l])
                 V, S = modes_fit(Kh, r)
                 Khat = modes_dense(V, S)
                 row.append(f"{nrm(d21(Khat) - d21(O)) / den:5.3f}")
@@ -219,7 +222,7 @@ def main():
                     (A, B, C), Inprev, Phi = state[R]
                     # exact transport of the previous carrier (+ incoming) with the AD projection, then refit;
                     # warm start = the carrier's own transported legs
-                    tgt = T3(all_distinct(phi3(cp_dense(A, B, C) + Inprev, Phi)), W[l])
+                    tgt = T3(MASK(phi3(cp_dense(A, B, C) + Inprev, Phi)), W[l])
                     M = W[l].T * Phi[None, :]
                     init = (M @ A, M @ B, M @ C)
                 if np.linalg.norm(tgt) == 0:
@@ -233,7 +236,7 @@ def main():
     if "ageregress" in which:
         # (c/d) the old pool's D21 regressed on the D21 of the exactly carried young sources (ages 1..w), and the
         # 'geometric tail' (d): the chain carries one more source (age w+1) and the rest (ages >= w+2) is gamma_l x it
-        D, _, _ = run_sources(W, lay)
+        D, _, _ = run_sources(W, lay, ad=not args.noad)
         print(f"\n(c/d) old pool (age > w) D21 vs the young sources' D21 (per-layer in-sample least squares); eps rel ||D21(z_l)||")
         print(f"{'l':>2} | {'none':>5} {'young':>6} {'young+T':>7} | tail: {'none':>5} {'gamma':>6} {'g,y':>6} | gamma")
         for l in range(1, L):

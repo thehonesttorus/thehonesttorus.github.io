@@ -116,22 +116,23 @@ def merge_atlases(paths, out):
     np.savez(out, **res)
 
 
-def run_sources(W, lay, keep_tensors=False):
+def run_sources(W, lay, keep_tensors=False, ad=True):
     """exact per-source recursion. Returns
        D[s+1, l] = D21 of X_{s,l} (s = -1..L-2; row 0 = input-noise source), shape (L, L, n, n)
        X[l] = dict s -> X_{s,l} if keep_tensors (only the current layer is kept otherwise)
        valid[l] = (tensor rel err, D21 rel err) of sum_s X_{s,l} vs atlas kappa3(z_l)"""
     L, n, _ = W.shape
     D = np.zeros((L, L, n, n))
-    cur = {-1: lay[0]["K3z"].copy()}
+    mask = all_distinct if ad else ident
+    cur = {-1: np.asarray(lay[0]["K3z"], dtype=np.float64).copy()}
     D[0, 0] = d21(cur[-1])
     valid = [(0.0, 0.0)]
     hist = [dict(cur)] if keep_tensors else None
     for l in range(L - 1):
         Phi = lay[l]["Phi"]
-        Ol = all_distinct(phi3(lay[l]["K3z"], Phi))
+        Ol = mask(phi3(lay[l]["K3z"], Phi))
         Bl = lay[l]["K3a"] - Ol
-        nxt = {s: T3(all_distinct(phi3(X, Phi)), W[l + 1]) for s, X in cur.items()}
+        nxt = {s: T3(mask(phi3(X, Phi)), W[l + 1]) for s, X in cur.items()}
         nxt[l] = T3(Bl, W[l + 1])
         cur = nxt
         tot = sum(cur.values())
@@ -179,26 +180,38 @@ def model_lay(W, lay):
     for l in range(len(lay)):
         d = dict(lay[l]); d["K3z"] = Ks[l]
         if l < len(Bs):
-            d["K3a"] = all_distinct(phi3(Ks[l], d["Phi"])) + Bs[l]
+            d["K3a"] = (all_distinct(phi3(Ks[l], d["Phi"])) + Bs[l]).astype(np.float32)
+            Bs[l] = None
+        Ks[l] = None
+        d["K3z"] = d["K3z"].astype(np.float32)
         out.append(d)
     return out
 
 
-def old_pool(W, lay, w, include_noise=False):
+def ident(K):
+    return K
+
+
+def old_pool(W, lay, w, include_noise=False, ad=True):
     """generator over layers l = 1..L-1 of (Old_l, In_l): Old_l = sum of sources of age > w at layer l (true tensors),
     In_l = the source of age exactly w at layer l (it joins the old pool at l+1).  Recursion used by the carriers:
-        Old_{l+1} = W_{l+1}^{(x)3} AD( Phi_l^3 . (Old_l + In_l) )."""
+        Old_{l+1} = W_{l+1}^{(x)3} MASK( Phi_l^3 . (Old_l + In_l) ),  MASK = AD (ad=True, this note's convention) or
+    the identity (ad=False: the published chain's convention, sources transported with the full Phi^3 weighting and
+    the slice corrections absorbed into each birth, B'_l = kappa3(a_l) - Phi_l^3 . kappa3(z_l)).  Memory: w + 1 tensors."""
     L, n, _ = W.shape
-    cur = {-1: lay[0]["K3z"].copy()} if include_noise else {}
+    mask = all_distinct if ad else ident
+    young = {-1: np.asarray(lay[0]["K3z"], dtype=np.float64)} if include_noise else {}
+    old = np.zeros((n, n, n))
     for l in range(L - 1):
         Phi = lay[l]["Phi"]
-        Ol = all_distinct(phi3(lay[l]["K3z"], Phi))
-        Bl = lay[l]["K3a"] - Ol
-        cur = {s: T3(all_distinct(phi3(X, Phi)), W[l + 1]) for s, X in cur.items()}
-        cur[l] = T3(Bl, W[l + 1])
+        Bl = lay[l]["K3a"] - mask(phi3(lay[l]["K3z"], Phi))
+        old = T3(mask(phi3(old, Phi)), W[l + 1])
+        young = {s: T3(mask(phi3(X, Phi)), W[l + 1]) for s, X in young.items()}
+        young[l] = T3(Bl, W[l + 1])
         lp = l + 1
-        old = sum((X for s, X in cur.items() if lp - s > w), np.zeros((n, n, n)))
-        inc = sum((X for s, X in cur.items() if lp - s == w), np.zeros((n, n, n)))
+        for s in [s for s in young if lp - s > w]:
+            old = old + young.pop(s)
+        inc = young.get(lp - w, np.zeros((n, n, n)))
         yield lp, old, inc
 
 
@@ -215,6 +228,7 @@ def main():
     ap.add_argument("atlas")
     ap.add_argument("--save", default=None)
     ap.add_argument("--model", action="store_true", help="track the noise-free closure chain driven by the atlas instead")
+    ap.add_argument("--noad", action="store_true", help="published-chain source convention (no AD mask on transported sources)")
     args = ap.parse_args()
     W, lay, N = load_atlas(args.atlas)
     L, n, _ = W.shape
@@ -225,7 +239,7 @@ def main():
         print(" ".join(f"{l}:{np.linalg.norm(d21(mlay[l]['K3z']) - d21(lay[l]['K3z'])) / np.linalg.norm(d21(lay[l]['K3z'])):.3f}"
                        for l in range(1, L)), flush=True)
         lay = mlay
-    D, valid, hist = run_sources(W, lay, keep_tensors=False)
+    D, valid, hist = run_sources(W, lay, keep_tensors=False, ad=not args.noad)
     ranks = (1, 2, 4, 8, 16, 32, 64)
     print(f"{'l':>2} {'valid K3':>8} {'D21':>8} | {'src-1':>6} | " + " ".join(f"age{a:<2d}" for a in range(1, 7))
           + f" {'old7+':>6} | {'old>1':>6} {'old>4':>6} | spec(old>1) r=" + ",".join(str(r) for r in ranks))
@@ -245,7 +259,7 @@ def main():
     # spectra of the old pool (age > 1) and of single sources by age, from the recursion
     print("\nunfolding spectra (energy captured by top r modes):  old = age>1 pool, inc = the age-1 source, ages 2/4/8 single sources")
     print(f"{'l':>2} {'what':>5} | " + " ".join(f"r={r:<3d}" for r in ranks))
-    gen = old_pool(W, lay, 1)
+    gen = old_pool(W, lay, 1, ad=not args.noad)
     for l, old, inc in gen:
         rows = [("old", old), ("inc", inc)]
         for nm, K in rows:
