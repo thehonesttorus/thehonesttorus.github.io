@@ -18,9 +18,13 @@ Six fresh-slate design streams started from six different principles (faces and 
 | signings | copula v1 | ≈ 3e-7 | — | closed |
 | faces | 'mem' / 'lin21' | 1.6e-6 / 4e-6 (from small-width fits) | 0.1 / 0.6 B | direct 1024 run in flight; facet-conditional covariance test pending |
 | tropical | TCT-0 + T-extrapolation | ≈ 4e-7 | 0.02–0.04 B | closed: not competitive |
-| bethe | v1/v2 node + pair beliefs | pending | ≈ 0.10 B (+ old triples) | v2 in progress |
+| bethe | edge0: exact bivariate-Gaussian pair beliefs + (2,1) slice + fresh hub triples | **measured at 1024: raw 1.04e-6 ± 0.07e-6 → adjusted 1.07e-7** (Gaussian closure 4.10e-6 on the same 6 networks); + age-1 old triples raw 8.1e-7 at 0.19 B | ≈ 0.10 B | width law n^-2.0 holds from 64 to 1024; v3/v4 carry the node κ4 global mode |
 
 For comparison: the public moment chain reaches raw 2.1e-8 at 0.25 B (adjusted 5.4e-9); the leaders raw 1.5e-8 at 0.11 B (1.6e-9) and raw 1.14e-8 at 0.15 B; an oracle with exact per-neuron moments to fourth order at every layer reaches raw 1.17e-9. The best fresh design is 30–60× short of the bar.
+
+## A third binding fact (bethe, 19:12 UTC)
+
+The bethe oracle at width 64 finds that, after the pairs are handled, the binding object is the per-neuron (node) fourth cumulant, which is large and coherently positive because of a global order parameter: a rank-one spike in κ(z_a, z_a, z_b, z_b), seeded by the input radius and amplified with depth. Exact background: with no biases a_l(x) = R · b_l(θ) with R = ‖x‖ independent of the direction θ, so every joint moment factorises into a moment of R (chi law, known exactly) times a spherical-input moment; at depth the layer norm plays the same role. A global scalar mode is cheap to carry (one scalar law per layer), so this may be the first structural fact that a representation can exploit at O(n²) per layer.
 
 ## The open question for the next round
 
