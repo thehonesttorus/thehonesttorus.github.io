@@ -1,0 +1,10 @@
+
+## eps_rep (noise-corrected representation error) of the ensemble table, tensor-space fit, fitted at width w' (columns; 'pool' = all widths) and evaluated on the pair MLPs of width w; rms over layers 1-3 / 4-9 / 10-14
+ w \ w' |             64 |             96 |           pool
+      64 | 0.038/0.046/0.033 | 0.039/0.047/0.032 | 0.038/0.046/0.031
+      96 | 0.034/0.030/0.032 | 0.033/0.030/0.030 | 0.034/0.030/0.031
+
+## eps_rep (noise-corrected representation error) of the ensemble table, D21-space fit, fitted at width w' (columns; 'pool' = all widths) and evaluated on the pair MLPs of width w; rms over layers 1-3 / 4-9 / 10-14
+ w \ w' |             64 |             96 |           pool
+      64 | 0.039/0.047/0.032 | 0.039/0.047/0.031 | 0.038/0.047/0.031
+      96 | 0.034/0.031/0.031 | 0.034/0.030/0.030 | 0.034/0.030/0.031

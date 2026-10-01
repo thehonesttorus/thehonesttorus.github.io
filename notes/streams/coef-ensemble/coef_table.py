@@ -223,14 +223,116 @@ def analyse(cdir, outdir):
         json.dump(summary, f)
 
 
+def transfer(cdir, outdir):
+    """eps_rep of each width's pair MLPs when the ensemble table (tensor space and D21 space, true (2,1,1) slice) is
+    fitted on all MLPs of another width w' (rows: evaluated width, columns: table width; the diagonal is leave-one-out).
+    Also the 'pooled' table: fitted on all widths together."""
+    caches = [dict(np.load(f)) for f in sorted(glob.glob(os.path.join(cdir, "*.npz")))]
+    widths = sorted({int(c["width"]) for c in caches})
+    A, Bp = {}, {}
+    for c in sorted(caches, key=lambda c: int(c["sample_seed"])):
+        k = (int(c["width"]), int(c["mlp_seed"]))
+        if k in A:
+            Bp[k] = c
+        else:
+            A[k] = c
+    L1 = caches[0]["D21"].shape[0]
+    out = []
+    for space in ("T", "D"):
+        out.append(f"\n## eps_rep (noise-corrected representation error) of the ensemble table, {'tensor' if space == 'T' else 'D21'}-space fit, "
+                   "fitted at width w' (columns; 'pool' = all widths) and evaluated on the pair MLPs of width w; rms over layers 1-3 / 4-9 / 10-14")
+        cols = widths + ["pool"]
+        out.append(" w \\ w' | " + " | ".join(f"{str(c):>14}" for c in cols))
+        for w in widths:
+            ev = [k for k in Bp if k[0] == w]
+            if not ev:
+                continue
+            row = []
+            for wt in cols:
+                eps = np.full((len(ev), L1), np.nan)
+                for i, k in enumerate(ev):
+                    tr = [t for t in A if (wt == "pool" or t[0] == wt) and t != k]
+                    for l in range(L1):
+                        if space == "T":
+                            cf = tensor_fit([A[t]["G"][l] / A[t]["rr"][l] for t in tr], [A[t]["b"][l] / A[t]["rr"][l] for t in tr], IDX)
+                        else:
+                            cf = d21_fit([A[t] for t in tr], l, IDX)
+                        pa, pb = predict(A[k], l, cf, IDX), predict(Bp[k], l, cf, IDX)
+                        tb = Bp[k]["D21"][l]
+                        en = rel(A[k]["D21"][l], tb) / np.sqrt(2)
+                        mn = np.linalg.norm(pa - pb) / np.linalg.norm(tb) / np.sqrt(2)
+                        eps[i, l] = corr(corr(rel(pa, tb), en), mn)
+                m = np.nanmean(eps, 0)
+                row.append("/".join(f"{np.sqrt(np.mean(m[a:b + 1] ** 2)):.3f}" for a, b in [(1, 3), (4, 9), (10, 14)]))
+            out.append(f"{w:>8} | " + " | ".join(f"{r:>14}" for r in row))
+    txt = "\n".join(out)
+    print(txt)
+    with open(os.path.join(outdir, "transfer.txt"), "w") as f:
+        f.write(txt + "\n")
+
+
+def ablate(cdir, outdir):
+    """which coefficients carry the gain of the ensemble table over the leg-partition values?  eps_rep (layers 1-3 /
+    4-9 / 10-14, rms) on each width's pair MLPs for: the leave-one-out ensemble table (tensor space); the same with
+    coefficient k reset to its leg-partition value; the leg-partition closure with ONLY coefficient k taken from the
+    table; and a smooth table (per coefficient a quadratic in l fitted to the per-layer table over layers 1-14)."""
+    caches = [dict(np.load(f)) for f in sorted(glob.glob(os.path.join(cdir, "*.npz")))]
+    widths = sorted({int(c["width"]) for c in caches})
+    A, Bp = {}, {}
+    for c in sorted(caches, key=lambda c: int(c["sample_seed"])):
+        k = (int(c["width"]), int(c["mlp_seed"]))
+        (Bp if k in A else A)[k] = c
+    L1 = caches[0]["D21"].shape[0]
+    variants = ["ens", "leg"] + [f"ens-{k}" for k in range(7)] + [f"leg+{k}" for k in range(7)] + ["smooth"]
+    out = ["variants: ens-k = table with coefficient k at its leg value; leg+k = leg values with only k from the table; "
+           "k = " + ", ".join(f"{k}:{n}" for k, n in enumerate(NAMES))]
+    for w in widths:
+        ev = [k for k in Bp if k[0] == w]
+        if not ev:
+            continue
+        eps = {v: np.full((len(ev), L1), np.nan) for v in variants}
+        for i, k in enumerate(ev):
+            tr = [t for t in A if t[0] == w and t != k]
+            tab = np.array([tensor_fit([A[t]["G"][l] for t in tr], [A[t]["b"][l] for t in tr], IDX) for l in range(L1)])
+            ls = np.arange(1, L1)
+            smooth = tab.copy()
+            for j in range(7):
+                smooth[1:, j] = np.polyval(np.polyfit(ls, tab[1:, j], 2), ls)
+            for l in range(L1):
+                cfs = {"ens": tab[l], "leg": LEG, "smooth": smooth[l]}
+                for j in range(7):
+                    a = tab[l].copy(); a[j] = LEG[j]; cfs[f"ens-{j}"] = a
+                    b = LEG.copy(); b[j] = tab[l, j]; cfs[f"leg+{j}"] = b
+                tb = Bp[k]["D21"][l]
+                en = rel(A[k]["D21"][l], tb) / np.sqrt(2)
+                for v, cf in cfs.items():
+                    pa, pb = predict(A[k], l, cf, IDX), predict(Bp[k], l, cf, IDX)
+                    mn = np.linalg.norm(pa - pb) / np.linalg.norm(tb) / np.sqrt(2)
+                    eps[v][i, l] = corr(corr(rel(pa, tb), en), mn)
+        out.append(f"\n## width {w} ({len(ev)} pair MLPs): eps_rep rms over layers 1-3 / 4-9 / 10-14")
+        for v in variants:
+            m = np.nanmean(eps[v], 0)
+            out.append(f"{v:>8} | " + " / ".join(f"{np.sqrt(np.mean(m[a:b + 1] ** 2)):.3f}" for a, b in [(1, 3), (4, 9), (10, 14)]))
+    txt = "\n".join(out)
+    print(txt)
+    with open(os.path.join(outdir, "ablate.txt"), "w") as f:
+        f.write(txt + "\n")
+
+
 def main():
     ap = argparse.ArgumentParser()
     sp = ap.add_subparsers(dest="cmd", required=True)
     a = sp.add_parser("cache"); a.add_argument("atlas"); a.add_argument("out")
     b = sp.add_parser("analyse"); b.add_argument("cachedir"); b.add_argument("--out", default=os.path.join(HERE, "results"))
+    t = sp.add_parser("transfer"); t.add_argument("cachedir"); t.add_argument("--out", default=os.path.join(HERE, "results"))
+    a2 = sp.add_parser("ablate"); a2.add_argument("cachedir"); a2.add_argument("--out", default=os.path.join(HERE, "results"))
     args = ap.parse_args()
     if args.cmd == "cache":
         cache(args.atlas, args.out)
+    elif args.cmd == "ablate":
+        ablate(args.cachedir, args.out)
+    elif args.cmd == "transfer":
+        transfer(args.cachedir, args.out)
     else:
         analyse(args.cachedir, args.out)
 
