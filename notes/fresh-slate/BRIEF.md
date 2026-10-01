@@ -9,7 +9,7 @@ The user's instruction (1 Oct, verbatim): "The system for the competition should
 - One forward pass costs about 2^25 FLOPs, so B buys about 65,536 forward passes and the 0.1 floor about 6,554. Unit used in our notes: 1 unit = one (1024 × 1024) @ (1024 × 1024) product = 2^31 FLOPs; B = 1024 units.
 - Metering (flopscope 0.12.1, every array operation is billed): dense matmul 2mkn − mn; float64 costs 2× float32; exp/log/x**2 16 per element; norm.cdf 48 per element (float32); same-object Gram (X.T@X written as one operand) half price; Strassen–Winograd written as flopscope ops is permitted. A fair-accounting rule (16 Sep) says a score benefit must come from the estimation method; packing values is banned.
 - Grader limits per MLP: 120 s wall, 0.4 s Python-side residual time (time outside flopscope ops; ≈ 0.02–0.04 ms per flopscope call), 8 GB RAM, 2 vCPU; setup() ≤ 5 s; the smoke test runs a 256-wide, 32-deep MLP; any failure zeroes the MLP with multiplier 1.0 (catastrophic).
-- Where the bar is (1 Oct): best adjusted 1.6e-9 (raw 1.5e-8 at 0.11 B); best raw 1.14e-8 at 0.151 B. At the 0.1 floor, beating 1.6e-9 needs raw < 1.6e-8; raw 5e-9 at 0.1 B would score 5e-10. Gaussian (covariance) closure scores raw ≈ 4e-5; plain sampling ≈ 1.2e-6 adjusted. Submissions close 17 Oct 23:59 UTC.
+- Where the bar is (1 Oct): best adjusted 1.6e-9 (raw 1.5e-8 at 0.11 B); best raw 1.14e-8 at 0.151 B. At the 0.1 floor, beating 1.6e-9 needs raw < 1.6e-8; raw 5e-9 at 0.1 B would score 5e-10. **Correction (18:55 UTC): the Gaussian (covariance) closure scores raw ≈ 4.3e-6 at n = 1024, measured on the bench set w1024_d16** (an earlier version of this brief said 4e-5, a factor-10 error); the target raw ≈ 1e-8 is therefore ≈ 400× below the Gaussian closure. Plain sampling at the 0.1 floor is ≈ 1.2e-5 raw. Submissions close 17 Oct 23:59 UTC.
 
 ## 2. Fresh-slate rules
 
@@ -31,6 +31,7 @@ The user's instruction (1 Oct, verbatim): "The system for the competition should
 
 ## 4. Evaluation protocol (two stages)
 
+- **Width scaling is pre-asymptotic at small widths (measured 18:55 UTC):** the Gaussian closure's error falls as n^-0.82 between widths 64 and 128 but as ≈ n^-2 between 128 and 1024, so a fit on widths 64–128 over-predicts its width-1024 error 12×. Fit on 256/512 and check directly at 1024 (bench set w1024_d16: numpy predictors are feasible at n = 1024 — `eval_q` on that set, or `run_p_inproc.py`).
 - Stage Q (quick, hours): a numpy prototype of the estimator; widths 64, 128, 256 (512 if feasible), depth 16, ≥ 4 MLPs per width; truth from `whest dataset bake` (choose N so the truth noise avg_variance/N is well below the errors you measure, or subtract it). Report raw final-layer MSE (and all layers), its width scaling, the projected cost at n = 1024 in units (notes/streams/costmodel/cost.py has measured prices), and the projected adjusted MSE at n = 1024. The shared benchmark under notes/fresh-slate/bench/ (being built) will provide standard seeds, truth and an evaluator; use it when it appears, bake your own until then.
 - Stage P (proper, days): a flopscope implementation at 1024 × 16 through `whest run` with the grader caps, scored against high-N truth; the scaffold under notes/fresh-slate/scaffold/ (being built) gives a grader-safe template.
 
