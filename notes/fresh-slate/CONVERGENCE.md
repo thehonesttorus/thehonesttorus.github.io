@@ -100,3 +100,17 @@ Measured at n = 1024 (MLP 0 unless stated). Raw = final MSE minus truth noise.
 - **Its constant is ≈ 3.5× too high for the leaders' price.** The atom form needs ≈ 9 products per unit of resolution (floor 7: four (n, n, k) contractions plus three full-coordinate materialisations forced by the Hadamard squares Y∘Y, Y∘Z, Z∘Z, Z∘T). Adjusted ≈ 1.7e-8, against FC's 2.6e-8, the public chain's 5.4e-9 and the leaders' 1.6e-9.
 - **Where the bill now sits.** Young ages 1–2 (always full rank) are 34 % of it. The binding consumer is FC's slice correction dk21, which needs the full D21 in the neuron basis every layer: the coordinatewise ReLU forces the Hadamard materialisations (note 2 §2(b)).
 - **Next lever:** a cheaper D21 readout from a factored source, and the young tier.
+
+## Round 3: the combined static-bin design is closed on cost (21:40 UTC)
+
+Region REPORT §10 (MLPs 0–2; FC alone mean 2.69e-8 on these three):
+
+| design | raw mean | dense cost | wall-feasible |
+|---|---|---|---|
+| ages ≤ 4 exact + static Tucker bins every 2 layers, R = n/4 | 3.05e-8 (+13 %) | ≈ 2,190 u (cuts 1,230: core formation 192 per cut; core readout and transport ≈ 525) | ≥ 2 B (the Tucker core work is a 3-way einsum, not Strassen-able) |
+| same, R = n/8 | 5.9e-8 | ≈ 863 u | ≈ 0.7–0.8 B |
+| ages ≤ 3 exact, R = n/4 | 3.5e-8 | — | — |
+| ages ≤ 2 exact, R = n/4 / n/8 | 5.6e-8 / 2.2e-7 | — | — |
+
+- Static bins solve the *accuracy* of old content but not its cost; team D's causal per-age carrier (≈ 0.53 B wall-feasible, lossless) is the cheaper realisation of the same law.
+- **The exact young tier (ages ≤ 4) costs ≈ 400 u dense, 2.6× the leaders' whole bill (≈ 154 u).** A design at ≤ 0.15 B needs a new representation of ages 1–4 as well as of old content. For comparison, the public chain's young tier costs 116 u at Strassen L5 (4 sources × 2.17 u per layer), about half of FC's per-pair constant.
