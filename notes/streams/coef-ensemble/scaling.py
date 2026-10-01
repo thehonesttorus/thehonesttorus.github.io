@@ -56,6 +56,21 @@ for key, label in [("eps_rep", "representation error eps_rep (pair MLPs; target 
             p, e = powfit(widths, es)
             print(f"rms {lo}-{hi} | " + " ".join(f"{v:6.3f}" for v in es) + f" | {p:5.2f}  {e:7.4f}  {floorfit(widths, es):7.4f}")
 
+# same-seed comparison: only the MLP seeds that have a pair atlas at every width (removes MLP-sampling noise between
+# widths, at the cost of fewer MLPs)
+common = sorted(set.intersection(*[set(S[str(w)]["pair_seeds"]) for w in widths]))
+print(f"\n## eps_rep on the MLP seeds with a pair at every width: {common}; band rms of the per-seed mean, fit n^-p, value at {N_EXT}")
+for m in MODELS:
+    rows = []
+    for w in widths:
+        sd = S[str(w)]["seeds"]
+        E = np.array(S[str(w)]["eps_rep_all"][m], float)
+        rows.append(np.nanmean(E[[sd.index(c) for c in common]], 0))
+    for lo, hi in [(1, 3), (4, 9), (10, 14)]:
+        es = [np.sqrt(np.mean(r[lo:hi + 1] ** 2)) for r in rows]
+        p, e = powfit(widths, es)
+        print(f"{m:>6} {lo}-{hi} | " + " ".join(f"{v:6.3f}" for v in es) + f" | {p:5.2f}  {e:7.4f}  {floorfit(widths, es):7.4f}")
+
 for tab in ["tensor", "D21", "tensor_reg", "D21_reg"]:
     print(f"\n## ensemble coefficients ({tab} fit) per width, and c(n) = c_inf + a/sqrt(n) evaluated at n = {N_EXT}")
     nm = NAMES[:6] + (["B6 K211"] if "reg" not in tab else ["B6 uC"])
