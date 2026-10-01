@@ -21,7 +21,7 @@ VARIANTS = {
     "A0gsm": dict(A=0, oldfilter="gsm"), "A0gsmoff": dict(A=0, oldfilter="gsm_off"), "A3gsm": dict(A=3, oldfilter="gsm"),
     "A0R1": dict(A=0, oldfilter="rank", r=1), "A0R8": dict(A=0, oldfilter="rank", r=8), "A1oldOff": dict(A=1, oldfilter="off"),
     "A1oldR1": dict(A=1, oldfilter="rank", r=1), "A1oldR8": dict(A=1, oldfilter="rank", r=8),
-    "A1oldR64": dict(A=1, oldfilter="rank", r=64), "A1oldR256": dict(A=1, oldfilter="rank", r=256),
+    "A1oldR64": dict(A=1, oldfilter="rank", r=64), "A1oldR32": dict(A=1, oldfilter="rank", r=32), "A3oldR8": dict(A=3, oldfilter="rank", r=8), "A3gsm": dict(A=3, oldfilter="gsm"), "A1oldR256": dict(A=1, oldfilter="rank", r=256),
     "A0p0": dict(A=0, old="pool", Ap=0), "A0p1": dict(A=0, old="pool", Ap=1), "A0p3": dict(A=0, old="pool", Ap=3),
     "A1p0": dict(A=1, old="pool", Ap=0), "A1p1": dict(A=1, old="pool", Ap=1), "A1p3": dict(A=1, old="pool", Ap=3),
     "A3p0": dict(A=3, old="pool", Ap=0), "A3p3": dict(A=3, old="pool", Ap=3),

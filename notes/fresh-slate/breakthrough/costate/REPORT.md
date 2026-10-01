@@ -16,10 +16,13 @@
 | **A = 1 + scale law (A1gl)** | **6.34e-7 ± 0.71e-7** | 6.5× | **218** | 0.21 / 0.15 B |
 | A = 2 + scale law (A2gl) | 4.96e-7 ± 0.38e-7 | 8.3× | 309 | 0.30 / 0.21 B |
 | A = 3 + scale law (A3gl) | 4.24e-7 ± 0.29e-7 | 9.7× | 393 | 0.38 / 0.26 B |
-| **A = 3 + scale law + slice-chain residual (A3gsl)** | **3.91e-7 ± 0.22e-7** | **10.5×** | 435 | 0.42 / 0.29 B |
+| A = 3 + scale law + slice-chain residual (A3gsl) | 3.91e-7 ± 0.22e-7 | 10.5× | 435 | 0.42 / 0.29 B |
+| A = 2 + scale law, no coincidence atoms (A2gl_nc) | 4.33e-7 ± 0.25e-7 | 9.5× | 183 | 0.18 / 0.12 B |
+| A = 3 + scale law, no coincidence atoms (A3gl_nc) | 3.48e-7 ± 0.20e-7 | 11.8× | 231 | 0.23 / 0.15 B |
+| **A3gsl, no coincidence atoms (A3gsl_nc)** | **3.25e-7 ± 0.17e-7** | **12.6×** | **273** | **0.27 / 0.18 B** |
 
-   The scale-mode co-state matches the exact all-pairs first order at **46 % of its products** (A3gl), and A3gsl edges below it (ratio 0.68–1.11 per network, mean 0.93). At w128 the law-level scale mode even beats all pairs by 1.2×: A3gsl 2.64e-5 against 3.13e-5, which is the mode's own second-order (κ₄-spike) content.
-4. **Verdict.** The co-state lens answers the dossier's question (ii) **positively in effect and negatively in principle**. Old third-order content is not O(L n³) as an exact object. Its *readout-relevant* part, however, is one conserved scalar (the dilation charge) plus a residual that a short exact window (A ≤ 3) and the slice chain absorb, which takes it from O(L² n³) to O(A L n³). But the first-order co-state itself sits at raw ≈ 4e-7 at n = 1024, about 40× above the bar's raw ≈ 1e-8. Adjusted ≈ 9e-8 – 1.1e-7 at 0.15–0.29 B is on par with the other fresh designs (faces 3.2e-7 raw, markov 2.4e-7 raw, bethe 1.04e-6), and 60× short of 1.6e-9. What is missing is **not old content any more**: the remaining error is the first-order model error (decoupled gates, first-order Stein, local κ₄), i.e. the second-order Duhamel term of the non-scale content.
+   The scale-mode co-state matches the exact all-pairs first order at **46 % of its products** (A3gl), and A3gsl edges below it (ratio 0.68–1.11 per network, mean 0.93). **Without the coincidence atoms (at 1024 they are a 1/n effect, and with the scale law they hurt) it is better and cheaper: A3gsl_nc beats the exact all-pairs first order on all six networks (ratio 0.69–0.91) at 32 % of its products.** Best adjusted: A3gsl_nc ≈ 3.25e-7 × 0.18 ≈ 5.9e-8 and A2gl_nc ≈ 4.3e-7 × 0.12 ≈ 5.2e-8 with Strassen L3. These are the best adjusted numbers of the fresh designs measured so far (faces ≈ 1.1e-7, bethe 1.07e-7). At w128 the law-level scale mode even beats all pairs by 1.2×: A3gsl 2.64e-5 against 3.13e-5, which is the mode's own second-order (κ₄-spike) content.
+4. **Verdict.** The co-state lens answers the dossier's question (ii) **positively in effect and negatively in principle**. Old third-order content is not O(L n³) as an exact object. Its *readout-relevant* part, however, is one conserved scalar (the dilation charge) plus a residual that a short exact window (A ≤ 3) and the slice chain absorb, which takes it from O(L² n³) to O(A L n³). But the first-order co-state itself sits at raw ≈ 4e-7 at n = 1024, about 40× above the bar's raw ≈ 1e-8. Best adjusted ≈ 5–6e-8 at 0.12–0.18 B (A2gl_nc, A3gsl_nc; raw 3.3–4.3e-7). That is ahead of or level with the other fresh designs (faces raw 3.2e-7, markov raw 2.4e-7, bethe raw 1.04e-6), and ≈ 35× short of 1.6e-9. What is missing is **not old content any more**: the remaining error is the first-order model error (decoupled gates, first-order Stein, local κ₄), i.e. the second-order Duhamel term of the non-scale content.
 
 ## 1. Setting and the co-state
 
@@ -142,9 +145,12 @@ Projecting at age 0 is wrong: the source has not yet turned into the scale mode,
 | A1gl | 218 | 0.21 B | 149 u = 0.15 B | ≈ 15 s | 6.3e-7 | ≈ 9.2e-8 |
 | A2gl | 309 | 0.30 B | 211 u = 0.21 B | ≈ 22 s | 5.0e-7 | ≈ 1.0e-7 |
 | A3gsl | 435 | 0.42 B | 297 u = 0.29 B | ≈ 30 s | 3.9e-7 | ≈ 1.1e-7 |
+| A2gl_nc | 183 | 0.18 B | 125 u = 0.12 B | ≈ 13 s | 4.3e-7 | ≈ 5.2e-8 |
+| A3gl_nc | 231 | 0.23 B | 158 u = 0.15 B | ≈ 16 s | 3.5e-7 | ≈ 5.4e-8 |
+| A3gsl_nc | 273 | 0.27 B | 186 u = 0.18 B | ≈ 19 s | 3.25e-7 | ≈ 5.9e-8 |
 | all pairs | 855 | 0.83 B | 584 u = 0.57 B | ≈ 60 s | 4.2e-7 | ≈ 2.4e-7 |
 
-The no-coincidence-atom variants (4 instead of 7 products per pair) are measured in §4.6. Calls: per layer, one stacked propagation family ([U; V; X] of all live pairs times Φ_k W_{k+1}) and one hub-sum family for the slices, ≈ 2.1k calls in total. The scale-mode bookkeeping is O(n²) elementwise: a handful of calls per layer. Memory: (A + 1) × 3 n×n per live pair, ≤ 100 MB.
+The no-coincidence variants use 4 instead of 7 products per pair (U and V propagation, two star contractions). Calls: per layer, one stacked propagation family ([U; V; X] of all live pairs times Φ_k W_{k+1}) and one hub-sum family for the slices, ≈ 2.1k calls in total. The scale-mode bookkeeping is O(n²) elementwise: a handful of calls per layer. Memory: (A + 1) × 3 n×n per live pair, ≤ 100 MB.
 
 ## 6. Verdict and the deciding experiment
 
