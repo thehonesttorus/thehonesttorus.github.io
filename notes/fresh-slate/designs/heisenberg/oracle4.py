@@ -2,7 +2,7 @@
 from a Gaussian with the true (m, C) of z_{k-1} (MC)."""
 import numpy as np, sys
 sys.path.insert(0,'/root/hdw'); sys.path.insert(0,'/home/user/thehonesttorus.github.io/notes/fresh-slate/designs/heisenberg')
-from oracle2 import passes, Gauss, inject, inject_full2
+from oracle2 import passes
 from hd import *
 def gen_slices(m,C,W,N,seed,chunk=50000):
     n=len(m); rng=np.random.default_rng(seed); Lc=np.linalg.cholesky(C+1e-10*np.eye(n)); done=0

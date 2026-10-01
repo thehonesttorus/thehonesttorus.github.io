@@ -31,10 +31,12 @@ def run(Ws,st,mode):
         Ea=G.Ea+dEa; res.append(Ea)
         if l+1<L: Ca=G.cov_a()+dC; m=Ea@Ws[l+1]; C=Ws[l+1].T@Ca@Ws[l+1]
     return np.array(res)
-n=int(sys.argv[1]); N=int(float(sys.argv[2])); L=16
-for seed in range(2):
-    rng=np.random.default_rng(100+seed); Ws=rng.normal(size=(L,n,n))*np.sqrt(2/n)
-    p1=passes(Ws,N,seed+50); st=passes(Ws,N,seed+60,mean=p1['m']); st['m']=p1['m']; tr=p1['a']
-    for mode in ['closure','first','full2','first_trueC','full2_trueC']:
-        e=((run(Ws,st,mode)-tr)**2).mean(1)
-        print(seed,"%-12s final %.3e layers"%(mode,e[-1])," ".join("%.1e"%x for x in e[[1,3,7,11,15]]),flush=True)
+if __name__=="__main__":
+    n=int(sys.argv[1]) if __name__=="__main__" else 0; N=int(float(sys.argv[2])); L=16
+    for seed in range(2):
+        rng=np.random.default_rng(100+seed); Ws=rng.normal(size=(L,n,n))*np.sqrt(2/n)
+        p1=passes(Ws,N,seed+50); st=passes(Ws,N,seed+60,mean=p1['m']); st['m']=p1['m']; tr=p1['a']
+        for mode in ['closure','first','full2','first_trueC','full2_trueC']:
+            e=((run(Ws,st,mode)-tr)**2).mean(1)
+            print(seed,"%-12s final %.3e layers"%(mode,e[-1])," ".join("%.1e"%x for x in e[[1,3,7,11,15]]),flush=True)
+    
