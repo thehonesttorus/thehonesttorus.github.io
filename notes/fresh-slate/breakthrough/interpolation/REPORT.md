@@ -27,8 +27,9 @@ v0 (≈ 2 h in). Code in this directory; results in `results/`.
    Var τ_l grows linearly with depth, ≈ 2.1 × (2/n) per layer (35 × chi at layer 16, s.d. 0.26), layer-to-layer
    correlation 0.97, about twice what the Gaussian closure's own covariance predicts. **But the mixture readout is no
    better than the Gaussian one at exact moments** (rms one-step defect 4.3e-4 Gaussian vs 4.6–5.5e-4 mixture at layer
-   16): the norm fluctuation is anisotropic (it lives in the collapsed top covariance directions, which the closure's C
-   carries), not isotropic as annealed conditioning assumes. Negative, precise.
+   16). Part of the reason is a double count in that test (it mixed with the *total* norm variance, whose Gaussian part
+   2‖C‖² is not kurtosis); the correct chaos-0 kurtosis uses the excess X only and gives a modest gain (item 7). The
+   lasting use of the order parameter is item 5: its covariance with each neuron is the trace channel.
 3. **(c) Covers: precisely negative.** A lift that shares the input is function-identical to the base network (each
    copy receives identical pre-activations by induction), so it carries no information; a lift that also lifts the
    input thins every loop through the input with probability ½ per 2-lift, and the tower converges to the tree, whose
@@ -160,20 +161,65 @@ the quenched mean only) 2.61e-4; Gaussian closure 4.30e-6. Covers remove precise
 answer (48×). The Bethe-on-covers principle does not apply to a network whose computation is a deterministic function
 of a shared input.
 
-## 5. Next (in progress)
+## 5. The trace channel: chaos 1 of the third cumulant, and the TC estimator
 
-1. **In-chain self-averaging correction (the deciding experiment for this stream).** Apply ē_l(f) at every layer
-   (to μ_l, and to the variance/diagonal of C_l), each fitted on training networks with teacher-forced targets, so
-   the correction removes drift where it is born instead of at the readout. Prediction: if the self-averaging fraction
-   of drift is ≈ 60 % per layer as at the readout, the final MSE falls well below 1.4e-6.
-2. **On top of a κ3 reference.** Does the residual of a first-order (old-content) chain keep a large self-averaging
-   fraction? If yes, the corrections compose (orthogonal error parts); if no, self-averaging is exhausted by the
-   Gaussian level.
-3. **Theory of ē.** The chaos-0 parts of the κ4-driven corrections are traces (Σ_pq κ4(ppqq) is exactly the order-
-   parameter excess measured in T1), i.e. scalar recursions at O(n²) per layer: a derived, not fitted, ē.
+**Theorem T (chaos split of a projected cumulant).** For z = aW with columns w_p i.i.d. N(0, σ²I) independent of the law
+of a, and κ = κ3(a), the Hermite (Wick) decomposition of w_iw_jw_k gives, exactly,
+
+  κ3(z_p) = κ[w_p, w_p, w_p] = 3σ² (Wᵀt)_p + κ[:w_p w_p w_p:],  t_c = Σ_i κ_iic = E[|ã|²ã_c] = Cov(|ã|², a_c),
+
+and for the (2,1) slice, a ≠ b: κ3(z_a, z_a, z_b) = σ²(Wᵀt)_b + (chaos 2 in w_a) ⊗ (chaos 1 in w_b). The chaos-1
+parts are the only parts that survive averaging over all columns but one; they are carried by the single vector t.
+The (2,1) slice's chaos-1 part is rank one (all rows equal Wᵀt): it is the "spike" that the dossier saw emerging with
+depth, and it should be removed before any low-rank compression of old content. ∎
+
+**Measured fraction (t5, t9; MLP 0, n = 1024, exact-centred two-pass MC, N = 131 072).**
+
+| z layer | 2 | 4 | 6 | 8 | 10 | 12 | 14 | 16 |
+|---|---|---|---|---|---|---|---|---|
+| var(κ3(z_p)) explained by 3σ²(Wᵀt)_p | 0.44 | 0.78 | 0.87 | 0.90 | 0.92 | 0.92 | 0.93 | 0.92 |
+
+**Recursion (derived; `t6_recursion.py`).** With f_a = (ReLU(z_a) − μ_a)², g_c = ReLU(z_c), first-order Edgeworth in
+κ3(z) for Cov(f_a, g_c) (pure terms cancel against marginals) and the chaos-0 contraction of the transport Gram
+W diag(γ) Wᵀ ≈ σ²(Σγ)I:
+
+  t_{l+1,c} = Σ_a Cov_G(f_a, g_c) + ½σ²(Σ_aγ_a) Φ_c(Wᵀt_l)_c + ½σ²(t_l·W u) φ_c/s_c,
+  γ_a = E f_a'' = 2Φ_a − 2μ_aφ_a/s_a,  u_a = E f_a' = 2μ_a(1 − Φ_a),
+
+with the Gaussian source Σ_a Cov_G(f_a, g_c) = Σ_k Σ_{a≠c} E[f_a He_k]E[g_c He_k] ρ_ac^k/k! + E_G[ã_c³] (Mehler,
+O(Kn²)). Against MC t_l as input, R² of t_{l+1} = 0.94 (layer 2), 0.98–0.99 (3–5), 0.993–0.998 (6–16); the fitted
+coefficient of the transport term exceeds the derived one by 3–6 % per layer. Self-consistently propagated, t has
+correlation 0.98–0.995 with the exact-centred MC t at every layer but its scale drifts to 0.71× by depth (the 3–6 %
+per layer compounding: an O(ε) term missing from the transport coefficient, not yet identified). Injecting the MC t
+instead improves the final MSE by only 9 % (1.29 → 1.18e-6), so this is not the bottleneck.
+
+**Estimator TC (`tc.py`).** Gaussian closure with Hermite-order-2 covariance; per layer y = Wᵀt_{l−1};
+κ3(z_p) = 3σ²y_p injected (first-order Edgeworth) into E a = ψ − κ3 αφ/(6s²) and E a² (+κ3 φ/(3s)); the chaos-1 (2,1)
+slice σ²y_b injected into Cov(a) as the rank-2 update ½σ²[(φ/s) ⊗ (Φy) + (Φy) ⊗ (φ/s)]; then t_l by the recursion.
+Cost over the closure: O(Kn²) per layer (one matvec Wᵀt and the Mehler source), i.e. nothing at n = 1024.
+
+| set | closure (K=2) | TC mean only | **TC** | TC + chi | gain |
+|---|---|---|---|---|---|
+| w64_d16 (8) | 4.50e-4 | 8.64e-4 | 4.53e-4 | 4.58e-4 | 1.0× |
+| w128_d16 (8) | 2.82e-4 | 2.65e-4 | 1.15e-4 | 1.09e-4 | 2.5× |
+| w256_d32 (2) | 1.21e-4 | 1.49e-4 | 5.28e-5 | 5.07e-5 | 2.3× |
+| **w1024_d16 (6)** | 4.10e-6 | 3.60e-6 | **1.45e-6** | **1.31e-6** | 3.1× |
+
+(The bench's linearised closure is 4.30e-6 at 1024.) The covariance injection is essential (mean-only injection is
+worse than nothing at small width). Per-layer MSE, MLP 0: closure grows 4e-7 → 5.0e-6 over 16 layers; TC 3.3e-7 →
+1.6e-6 — the trace channel removes most of the depth growth.
+
+## 6. Next (in progress)
+
+1. **Locate TC's remainder** (`t13_hiN.py`, N = 2M): oracle per-neuron z variances vs oracle κ3 in the TC chain.
+2. **Is the non-trace 7 % of κ3 young?** (`t14_age0.py`): correlation of the chaos ≥ 2 residual with the age-0
+   Gaussian source. If yes, TC + the age-0 star diagram (≈ 3 products per layer) completes the per-neuron κ3.
+3. **The matrix trace of κ4.** κ4(z_p,z_p,z_q,z_q) and κ4(z_p,z_p,z_p,z_q) have chaos-0/2 parts carried by the scalar
+   X = Σ_ij κ4_iijj (tested as oracle: 1.29 → 1.02e-6) and the matrix M = Σ_i κ4(a)_{ii··} = κ3(τ, a, a) − 2C²,
+   which a chain can carry with one extra sandwich per layer (≈ 1 unit).
 
 ## Files
 
 `common.py` (helpers), `t0_baselines.py` (closure, chi factor, tree cover, annealed variance), `t1_norm.py`
 (order parameters, mixture readouts), `t2_closures.py` (Hermite-order-K Gaussian closure), `t3_selfavg.py`
-(self-averaging split), `gen_train.py` (training networks). Results: `results/*.json|log`.
+(self-averaging split), `gen_train.py` (training networks), `tc.py` (trace-channel closure), `t4`–`t14` (tests, see headers). Results: `results/*.json|log`.

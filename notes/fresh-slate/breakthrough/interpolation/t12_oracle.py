@@ -6,9 +6,10 @@ from t2_closures import hk
 import tc
 S_ = bench.load_set("w1024_d16"); W = bench.weights(S_, 0).astype(np.float64); T = S_["means"][0]; nz = S_["noise"][0]
 d = np.load(sorted(glob.glob("results/t9_w1024_d16_0_N*.npz"))[-1]); L, n = 16, 1024; sig2 = 2.0 / n
-def run(var=False, k3o=False, mo=False):
+def run(var=False, k3o=False, mo=False, tmc=False):
     out = []; mu = None; C = None; t = np.zeros(n)
     _, ts = tc.predict(W, ret_state=True)
+    if tmc: ts = d['t']
     for l in range(L):
         Wl = W[l]
         if l == 0: m = np.zeros(n); S = Wl.T @ Wl; y = np.zeros(n)
@@ -24,5 +25,5 @@ def run(var=False, k3o=False, mo=False):
         u1 = p / s; Cn += 0.5 * sig2 * (np.outer(u1, P * y) + np.outer(P * y, u1))
         np.fill_diagonal(Cn, sec - mu_n ** 2); mu, C = mu_n, Cn; out.append(mu)
     return np.stack(out) * chi_mean_ratio(n)
-for kw in [dict(), dict(var=True), dict(k3o=True), dict(var=True, k3o=True), dict(var=True, k3o=True, mo=True)]:
+for kw in [dict(), dict(tmc=True), dict(tmc=True, var=True), dict(var=True), dict(k3o=True), dict(var=True, k3o=True), dict(var=True, k3o=True, mo=True)]:
     p = run(**kw); print(kw, f"final raw {((p[-1]-T[-1])**2).mean()-nz:.3e}", " per-layer:", " ".join(f"{x:.1e}" for x in ((p-T)**2).mean(1)[[3,7,11,15]]), flush=True)

@@ -18,7 +18,7 @@ def _He(K):
 def predict(W, Ksrc=6, inject=True, cov_inject=True, chi=False, Bterm=True, ret_state=False, ret_feats=False, X4=None, ret_C=False):
     W = W.astype(np.float64); L, n, _ = W.shape; sig2 = 2.0 / n
     He = _He(Ksrc); fact = np.cumprod([1.0] + list(range(1, Ksrc + 1)))
-    out = []; t = np.zeros(n); mu = None; C = None; ts = []; Cs = []
+    out = []; t = np.zeros(n); mu = None; C = None; ts = []; Cs = []; states = []
     for l in range(L):
         Wl = W[l]
         if l == 0: m = np.zeros(n); S = Wl.T @ Wl; y = np.zeros(n)
@@ -39,7 +39,7 @@ def predict(W, Ksrc=6, inject=True, cov_inject=True, chi=False, Bterm=True, ret_
         if l > 0 and X4 is not None:
             u4 = (p / s) * sig2 * np.sqrt(max(X4[l - 1], 0.0)) / 2; Cn += np.sign(X4[l - 1]) * np.outer(u4, u4)
         np.fill_diagonal(Cn, np.maximum(sec - mu_new * mu_new, 1e-12))
-        Cs.append(Cn)
+        Cs.append(Cn); states.append((m, S))
         # trace channel of a_l
         zq = s[:, None] * (a[:, None] + _xg[None, :]); r = np.maximum(zq, 0)
         f = (r - muG[:, None]) ** 2
@@ -56,6 +56,7 @@ def predict(W, Ksrc=6, inject=True, cov_inject=True, chi=False, Bterm=True, ret_
         t = tn; mu = mu_new; C = Cn; out.append(mu); ts.append(t)
     out = np.stack(out)
     if chi: out = out * chi_mean_ratio(n)
+    if ret_C == 'states': return out, states, np.stack(ts)
     if ret_C: return out, Cs
     if ret_feats: return out, a, s
     return (out, np.stack(ts)) if ret_state else out
