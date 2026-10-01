@@ -26,15 +26,15 @@ These map onto the programme's labels as Fact = THEOREM / KNOWN-LINK, Derivation
 | R2 | Corrected statement: $F$ is a coboundary iff the pair is sufficient **and** the induced function $\Phi(s,r)$ on the reachability graph $R\subseteq K_0\times K_L$ is a coboundary there. Note 1's equivalence holds for every $F$ iff the bigons span the cycle space, $p(B)=Z_1(\Gamma)$; this holds when $R$ is a forest (one input face, as in dictionary v1, or one output face) and when each component of $R$ has a waist face (any complete layered quiver of depth $\ge2$) | DERIVED | 3.2–3.3 |
 | R3 | The endpoint statistic depends on how the Gibbs family is normalised. For the globally normalised family Note 1 is right. With fixed origin weights $w$ (Note 1 §5.2's corner KMS family) and two or more input faces, the endpoint face is sufficient iff $F=\delta U$ **and** the law of $U(r(\mu))$ under uniform counting of the histories from $s$ is the same for any two origins sharing an endpoint. "$U=0$ on the input layer" is neither necessary nor sufficient there | DERIVED | 3.4 |
 | R4 | "The face is Markov" and "the face is sufficient for the Gibbs family" are both Petz sufficiency of a face subalgebra, for two different families (the past as parameter, the temperature as parameter). They are logically independent: every Gibbs law is Markov, few are sufficient | DERIVED | 4 |
-| R5 | For re-routing jumps inside a depth window $W$, reversibility of the jump process with respect to $P$ is exactly the KMS$_\beta$ quasi-invariance of $P$ with Radon–Nikodym cocycle $e^{-\beta c_F}$. The Cesàro mean of the window dynamics converges to the window's conditional expectation, which recovers $P$ from its restriction outside $W$, iff the window fibres are flip-connected. For Gibbs laws this recovery is exact and has zero radius | DERIVED | 5 |
-| R6 | **Positivity quantified gives a uniform local gap.** For a positive chain, the projective (cross-ratio) diameter $\Delta_\ell$ of each layer kernel is invariant under every conditioning. The single-site window sampler has absolute spectral gap $\ge(1-2\tanh(\Delta/4))/w$ for every window length $w$ and boundary condition. For every $\Delta<\infty$, block samplers of length $b>e^{\Delta/2}-1$ have gap $\ge(b-(e^{\Delta/2}-1))/(w+b-1)$ | DERIVED | 6.2 |
-| R7 | U1 of the local-to-global note becomes a theorem in the commutative resolution: the KMS state's restriction to the first $t$ layers depends on the terminal condition at most through $\prod_{\ell\ge t}\tanh(\Delta_\ell/4)$ in total variation (kernel $A_\ell$ joins layers $\ell,\ell+1$). In the stationary case the normalised transfer operator has $\lvert\lambda_2\rvert\le\tanh(\Delta/4)$ | DERIVED | 6.3 |
+| R5 | For re-routing jumps inside a depth window $W$, reversibility of the jump process with respect to $P$ is exactly the KMS$_\beta$ quasi-invariance of $P$ with Radon–Nikodym cocycle $e^{-\beta c_F}$. The Cesàro mean of the window dynamics converges to the window's conditional expectation, which recovers $P$ from its restriction outside $W$, iff the jumps connect each window class (for square-flip jumps: iff the window fibres are flip-connected). For Gibbs laws this recovery is exact and has zero radius | DERIVED | 5 |
+| R6 | **Positivity quantified gives a uniform local gap.** For a positive chain, the projective (cross-ratio) diameter $\Delta_\ell$ of each layer kernel is invariant under every conditioning. The single-site window sampler has absolute spectral gap $\ge(1-2\tanh(\Delta/4))/w$ for every window length $w$ and boundary condition. For every $\Delta<\infty$, block samplers of length $b>e^{\Delta/2}-1$ have gap $\ge(b-(e^{\Delta/2}-1))/(w+b-1)$. The single-site case is Dobrushin's condition on a path run through the Dyer–Goldberg–Jerrum path coupling, with the classical projective-diameter bound on the influences | DERIVED (single-site case: KNOWN-LINK, Dobrushin–DGJ) | 6.2 |
+| R7 | Forgetting with a local certificate: the KMS state's restriction to the first $t$ layers depends on the terminal condition at most through $\prod_{\ell\ge t}\tanh(\Delta_\ell/4)$ in total variation (kernel $A_\ell$ joins layers $\ell,\ell+1$). In the stationary case the normalised transfer operator has $\lvert\lambda_2\rvert\le\tanh(\Delta/4)$. Both are classical contraction statements (Birkhoff). This has the shape of U1 of the local-to-global note but is not U1: U1's link-spectral hypothesis plays no role, and its literal conclusion is trivial for Markov laws | DERIVED; reading as U1: ANALOGY | 6.3 |
 | R8 | Quantitative sufficiency: $\mathrm{Var}_\beta(F\mid s,r)\le S^2/(2\,\mathrm{gap})$, with $S$ the largest square defect. The relative-entropy sufficiency defect is $\le\frac{(\beta'-\beta)^2}2\max\mathrm{Var}$, and the exact Fisher-information loss is $\mathbb E_\beta\mathrm{Var}_\beta(F\mid s,r)$ | DERIVED | 6.4 |
 | R9 | **Two halves of one class.** On a complete layered quiver, $H^1(\Gamma)$ is an extension of the layerwise zigzag part $\bigoplus_\ell H^1(\Gamma_\ell)$ by a mismatch part $M\cong\bigoplus_{0<\ell<L}\mathbb R^{K_\ell}/\mathbb R$. Mixing (the projective diameters) sees only the zigzag image, $\Delta_\ell=\lvert\beta\rvert Z_\ell$. Sufficiency sees the whole class. Vanishing square defects imply vanishing zigzags ($Z_\ell\le2S$), but rank-one transfer (perfect mixing) does not imply sufficiency | DERIVED | 6.5 |
 | R10 | U3 in $\ell^2$ form: if $H^1(X_\square)=0$, then $\mathrm{dist}_2(F,B^1)\le\lVert\delta_\square F\rVert_2/\sqrt{\mu_1}$ and the fibre oscillation is $\le2\sqrt L\,\lVert\delta_\square F\rVert_2/\sqrt{\mu_1}$. U3's own hypothesis already forces $p(B)=Z_1(\Gamma)$. Measured: $\mu_1=n^2$ for complete layered quivers of width $n$, at every depth tried | DERIVED; depth-independence CONJECTURE | 7 |
 | R11 | Yang's Lemma III.4 holds for any subalgebra with a trace-preserving conditional expectation. In the commutative (Gibbs-on-histories) resolution it is dominated by R8: it loses at least one power of $\lvert\beta'-\beta\rvert$ | THEOREM + DERIVED | 8.1–8.2 |
-| R12 | Two conjectures say where Chen–Rouzé and Yang would carry real content: CMI decay across a depth buffer for coherent (non-diagonal) KMS states, and a noncommutative uniform local gap | CONJECTURE | 8.3–8.5 |
-| R13 | Bounded *unpinned* spectral independence $\eta_0$ of a state on the face algebra gives exactly one thing: every linear observable $\sum_ua_ue_u$, the face dimension included, has variance at most $(1+\eta_0)$ times its product-state value. Mixing needs all pinnings (U6), and at the measured $\eta\approx7$ the resulting gap is formally polynomial but numerically vacuous | DERIVED | 9 |
+| R12 | A conjecture and a speculation say where Chen–Rouzé and Yang would carry real content: CMI decay across a depth buffer for coherent (non-diagonal) KMS states, and a noncommutative uniform local gap | CONJECTURE (8.4); SPECULATION (8.5) | 8.3–8.5 |
+| R13 | Bounded *unpinned* spectral independence $\eta_0$ of a state on the face algebra gives exactly one thing: every linear observable $\sum_ua_ue_u$, the face dimension included, has variance at most $(1+\eta_0)$ times its product-state value. Mixing needs all pinnings (U6), and ALO's product bound needs in addition a cap $\eta_i\le\theta(n-i-1)$, $\theta<1$, on the deepest pinnings: a uniform $\eta_i\le\eta$ alone does not give $n^{-(1+\eta)}$ (counterexample in §9). With the cap, at $\eta\approx7$ and $n=1024$ the bound is $10^{-21}$–$10^{-34}$: numerically vacuous | DERIVED (Prop 9.1); THEOREM (ALO, with the cap) | 9 |
 
 The verdict on the user's intuition, in the programme's terms, is §10.
 
@@ -154,7 +154,7 @@ Sufficiency means this vanishes on the interval.
 
 *Examples* (§12, C5).
 - Depth 1, origins $s,s'$ each joined to $t_1,t_2$, $U(t_1)=0$, $U(t_2)=1$, $U(s)=0$, $U(s')=5$: sufficient for $P^w$ and **not** for $P^{\rm gl}$.
-- Origins $s\to\{t_1,t_2\}$ and $s'\to\{t_1\}$, $F=\delta U$, $U|_{K_0}=0$: sufficient for $P^{\rm gl}$ and **not** for $P^w$.
+- Origins $s\to\{t_1,t_2\}$ and $s'\to\{t_1\}$, $F=\delta U$, $U|_{K_0}=0$, $U(t_1)\neq U(t_2)$: sufficient for $P^{\rm gl}$ and **not** for $P^w$. (With $U(t_1)=U(t_2)$ it is sufficient for both; re-checked in the critique pass.)
 - On 263 random quivers with random coboundaries, the criterion (b) predicted sufficiency correctly in all 263.
 
 ### 3.5 Consequences
@@ -189,7 +189,7 @@ $$
 
 **DERIVED (Corollary 4.2).** For the Gibbs families, (i) holds at every layer, for every $F$ and every $\beta$ (THEOREM: Note 1 §5.3, where $P_\beta$ is the Doob chain), while endpoint sufficiency for $\{P_\beta\}$ holds only as in Theorem 3.4. So "the face is sufficient for the past" and "the face is sufficient for the scale $\beta$ of the cocycle" are independent. Both are instances of Jenčová–Petz, applied to two different families. They are exactly the "two different failures of sufficiency" of [mlp-bridge.md](../../mlp-bridge.md) §3.2: memory, and a non-coboundary kernel.
 
-**THEOREM ([hdx-spectral-independence.md](../../digests/bridges/hdx-spectral-independence.md) §6.4, U7; checked there, C2).** $D(P\Vert Q_{\rm Markov})=\sum_iI(\sigma_{i+1};\sigma_{<i}\mid\sigma_i)$, and this equals the relative-entropy distance of $P$ from the closure of the KMS family. With Proposition 4.1, measured memory is therefore a sum of Petz sufficiency defects, one per layer.
+**THEOREM ([hdx-spectral-independence.md](../../digests/bridges/hdx-spectral-independence.md) §6.4, U7; checked there, C2; for three variables it is Ibinson–Linden–Winter's identity, [hammersley-clifford.md](../../digests/bridges/hammersley-clifford.md) §5.3(i)).** $D(P\Vert Q_{\rm Markov})=\sum_iI(\sigma_{i+1};\sigma_{<i}\mid\sigma_i)$, and this equals the relative-entropy distance of $P$ from the closure of the KMS family. With Proposition 4.1, measured memory is therefore a sum of Petz sufficiency defects, one per layer.
 
 ---
 
@@ -209,7 +209,7 @@ Fix a window $W=\{a+1,\dots,b-1\}$ of inner layers. The *window re-routing relat
 - (a) $\mathcal R_t\to\Pi$, where $\Pi f(\mu)=\mathbb E_P[f\mid\text{jump-component of }\mu]$.
 - (b) $\Pi=\mathbb E_P[\,\cdot\mid\text{outside }W]$ iff every class of $G_W$ is connected by jumps. In that case, for **every** law $Q$ with $Q|_{\text{outside }W}=P|_{\text{outside }W}$, one has $Q\Pi=P$: exact recovery.
 - (c) If $P=P_\beta$, then $\mathbb E_P[\,\cdot\mid\text{outside }W]$ depends only on the two faces $\sigma_a,\sigma_b$ adjacent to $W$. The recovery map is local, with zero radius.
-- (d) [THEOREM, cited] $\mathcal E(\mathcal R_tf)\le0.41\,t^{-1}\lVert f\rVert^2$ with no gap. This is derived in [expanders.md](../../digests/bridges/expanders.md) §9.9 and checked in [nc-dirichlet-lindblad.md](../../digests/bridges/nc-dirichlet-lindblad.md) K4; the constant is $\sup_u(1-e^{-u})^2/u\approx0.4073$.
+- (d) [DERIVED] $\mathcal E(\mathcal R_tf)\le0.41\,t^{-1}\lVert f\rVert^2$ with no gap: with $x\ge0$ the spectral variable of $-\mathcal L$ in $L^2(P)$, $\mathcal E(\mathcal R_tf)=\int x\big(\tfrac{1-e^{-tx}}{tx}\big)^2d\mu_f(x)\le t^{-1}\sup_u\tfrac{(1-e^{-u})^2}{u}\lVert f\rVert^2$. The same derivation is in [expanders.md](../../digests/bridges/expanders.md) §9.9 and is checked in [nc-dirichlet-lindblad.md](../../digests/bridges/nc-dirichlet-lindblad.md) K4; [CR] Cor. VII.1 is the operator-norm version, $\le2/t$. The constant is $\sup_u(1-e^{-u})^2/u\approx0.4073$.
 
 *Proof.*
 - (a) Reversibility makes $\mathcal L$ self-adjoint in $L^2(P)$. Then $\mathcal Lf=0$ iff $\mathcal E(f,f)=0$ iff $f$ is constant across every jump. The mean ergodic theorem does the rest.
@@ -222,11 +222,11 @@ Fix a window $W=\{a+1,\dots,b-1\}$ of inner layers. The *window re-routing relat
 |---|---|---|---|
 | erase $A$: $\rho_{-A}=\mathrm{Tr}_A\rho\otimes\tau_A$ | any $Q$ agreeing with $P$ outside $W$ | DERIVED (5.2b) | — |
 | single-site Paulis generate $B(\mathcal H_A)$ | square flips generate $G_W$ iff the window fibres are flip-connected | DERIVED (5.2b) | a quiver whose window fibres are not flip-connected (the two-route example of [expanders.md](../../digests/bridges/expanders.md) §11.1) makes recovery *fail*, not merely slow |
-| KMS detailed balance, exact thanks to a coherent term | reversibility ⇔ KMS quasi-invariance on $G_W$ (5.1); KMS = GNS because the state is diagonal ([nc-dirichlet-lindblad.md](../../digests/bridges/nc-dirichlet-lindblad.md) §6.1) | DERIVED | no coherent correction is needed: the modular flow $\alpha^F_{-\beta t}$ preserves every window algebra ([arxiv-2609.38007.md](../../digests/bridges/arxiv-2609.38007.md) B10) |
-| Cesàro mean, Dirichlet form $\le2/t$ with no gap | the same (5.2d) | THEOREM (cited) | unnecessary under positivity: §6 gives exponential convergence |
+| KMS detailed balance, exact thanks to a coherent term | reversibility ⇔ KMS quasi-invariance on $G_W$ (5.1); the re-routing jumps $e_{\mu\nu}$ are eigenvectors of the modular operator of a state diagonal in the history basis, so Alicki's construction is GNS-, hence KMS-, detailed-balanced ([nc-dirichlet-lindblad.md](../../digests/bridges/nc-dirichlet-lindblad.md) §6.1). Diagonality alone would not give GNS: every state is diagonal in its eigenbasis, and KMS-but-not-GNS generators exist on $M_2$ (Carlen–Maas App. B, ibid. §2.2) | DERIVED | no coherent correction is needed: the modular flow $\alpha^F_{-\beta t}$ preserves every window algebra ([arxiv-2609.38007.md](../../digests/bridges/arxiv-2609.38007.md) B10) |
+| Cesàro mean, Dirichlet form $\le2/t$ with no gap | the same (5.2d) | DERIVED | unnecessary under positivity: §6 gives exponential convergence of the heat-bath window dynamics |
 | quasi-locality from Lieb–Robinson | exact locality: $\Pi$ sees only $\sigma_a,\sigma_b$ (5.2c) | THEOREM (Markov) | the main difficulty of [CR] is absent |
 | $e^{\mu\lvert A\rvert}$ from Pauli word length and Gibbs conjugation | the flip-graph diameter, and the block length $b>e^{\Delta/2}-1$ of Theorem 6.4 | ANALOGY | a different mechanism: a projective-diameter cost (temperature × zigzag class), not a word-length cost |
-| a uniform local gap would give global Markov (Cor. B.2) | positivity ⇒ uniform local gap (Thm 6.4) ⇒ forgetting (Cor 6.5) and quantitative sufficiency (Thm 6.7); global Markov is free | DERIVED | in the programme the gap is a theorem under positivity, not a hypothesis |
+| a uniform local gap would give global Markov (Cor. B.2) | positivity ⇒ a uniform local gap (Thm 6.4), forgetting (Cor 6.5) and quantitative sufficiency (Thm 6.7); global Markov is free | DERIVED | in the programme the gap is a theorem under positivity, not a hypothesis |
 
 **DERIVED (summary of 5.1–5.2 and §6).** In the diagonal KMS family of Note 1 the construction is **exact and local, and its content reduces to the gap.** **SPECULATION.** Its genuinely noncommutative content (an approximate conditional expectation where no exact one exists) would appear only once the state has coherences between histories (§8).
 
@@ -235,6 +235,8 @@ Fix a window $W=\{a+1,\dots,b-1\}$ of inner layers. The *window re-routing relat
 ## 6. Positivity quantified: a uniform local gap, forgetting, and quantitative sufficiency
 
 This section is the programme's answer to "a trickle-down theorem for local gaps of KMS samplers is the missing piece". **DERIVED (Theorem 6.4).** In the commutative resolution the piece is not missing. It is supplied by a one-dimensional path-coupling argument whose only certificate is the projective diameter of each layer kernel, which is Hammersley–Clifford's positivity hypothesis made quantitative.
+
+**KNOWN-LINK (the ingredients are classical).** For $b=1$, Theorem 6.4 is Dobrushin's uniqueness condition on a path graph, run through the Dyer–Goldberg–Jerrum path coupling ([expanders.md](../../digests/bridges/expanders.md) §9.2: contraction $1-(1-\lVert R\rVert)/n$ per step; §11.1 there already proposes this reduction for the re-routing chain), with the influences of a site on its two neighbours bounded by Lemma 6.2. Lemma 6.2 is the classical bound of the Dobrushin coefficient by Birkhoff's contraction coefficient $\tanh(\Delta/4)$ (from memory). Lemma 6.3 is the contraction-to-gap theorem that [expanders.md](../../digests/bridges/expanders.md) §11.1 cites from memory (Chen 1998; Levin–Peres–Wilmer Thm 13.1). The proofs are given in full below. What is the programme's own is the reading of the certificate as the projective diameter of a layer kernel, and the use made of it in §§6.3–6.6.
 
 Setting for §§6.1–6.4: a *positive chain* $x_0,\dots,x_m$ with finite state spaces and law
 $$P(x)\propto w(x_0)\prod_{\ell=0}^{m-1}A_\ell(x_\ell,x_{\ell+1})\,v(x_m),\qquad A_\ell>0 .$$
@@ -286,7 +288,7 @@ The bound is uniform in the window length $w$ (as $c/w$) and in the boundary con
 - **Every other $t$.** Identical laws; the distance stays $1$.
 - **Assembly.** $\mathbb E\,d'\le\big[2(1+\sum_k\delta^k)+(w+b-1-b-2)\big]/(w+b-1)=1-\kappa_b$. For $b=1$, keep the separate $t_{j-1},t_j$. Lemma 6.3 finishes. $\square$
 
-*Checked* (§12, G2–G3): the absolute gap was $\ge\kappa_1$ on all 47 random chains with $\kappa_1>0$ (smallest ratio 1.001), and $\ge\kappa_b$ for blocks at $\Delta\in[2.4,3.3]$, beyond the single-site threshold.
+*Checked* (§12, G2–G3): the absolute gap was $\ge\kappa_1$ on all 47 random chains with $\kappa_1>0$ (smallest ratio 1.001), and $\ge\kappa_b$ for blocks at $\Delta\in[2.4,3.3]$, beyond the single-site threshold. Re-checked in the critique pass with independent code: 238/238 random chains (smallest ratio 1.0001), adversarial two-state chains near $\Delta=2\log3$ (smallest ratio 1.025), and 28/28 block cases.
 
 ### 6.3 Forgetting: U1 as a theorem
 
@@ -301,7 +303,7 @@ and symmetrically the law of the late layers forgets the origin weights.
 - Each $B_\ell$ contracts total variation by $\le t_\ell$ (Lemma 6.2).
 - The joint law of $x_0,\dots,x_t$ is the law of $x_t$ pushed through further kernels that are common to both chains, so its total variation is at most that of $x_t$. $\square$
 
-*Reading for the programme* (DERIVED, by the same argument). In Note 1 §5.3 the Doob walk depends on the output condition only through the backward partition function $Z$, and that dependence decays at the rate $\tanh(\Delta_\ell/4)$ per layer. U1 of [local-to-global-unlocks.md](../../local-to-global-unlocks.md) §5 ("the KMS state is determined up to $\lambda^t$ by the statistics of histories of length $t$") therefore holds in the commutative resolution, with $\lambda=\max_\ell\tanh(\Delta_\ell/4)$. Its certificate is local (one layer pair at a time), and no link spectra are needed.
+*Reading for the programme* (DERIVED for the forgetting statement; ANALOGY for its identification with U1). In Note 1 §5.3 the Doob walk depends on the output condition only through the backward partition function $Z$, and that dependence decays at the rate $\tanh(\Delta_\ell/4)$ per layer, with a certificate that is local (one layer pair at a time). This is the *shape* U1 of [local-to-global-unlocks.md](../../local-to-global-unlocks.md) §5 asks for, but it is not U1. *Where it breaks:* U1's hypothesis (one-sided local spectral expansion of the layer and history complexes) plays no role here, and U1's literal conclusion ("the KMS state is determined up to $\lambda^t$ by the statistics of histories of length $t$") is exact and trivial for KMS states, which are Markov and hence determined by their consecutive-pair statistics. What holds is forgetting of boundary conditions at rate $\lambda=\max_\ell\tanh(\Delta_\ell/4)$, a classical contraction statement. U1 as stated stays open.
 
 **DERIVED (Corollary 6.6, the stationary Perron gap).** If $A_\ell=A>0$ for all $\ell$ (the repeated pattern of U5), then $\lvert\lambda_2(A)\rvert/\rho(A)\le\tanh(\Delta(A)/4)$.
 
@@ -311,7 +313,7 @@ and symmetrically the law of the late layers forgets the origin weights.
 - On complex zero-mass measures, $\lVert P^n\rVert\le2\delta^n$. Gelfand's formula then bounds the spectral radius on that subspace by $\delta$.
 - Left eigenvectors with $\lambda\ne1$ have zero mass, and $\mathrm{spec}(P)=\mathrm{spec}(A)/\rho(A)$. $\square$
 
-This is the total-variation form of the Birkhoff–Hopf contraction, which [transfer-spectrum-measurement.md](../../digests/bridges/transfer-spectrum-measurement.md) §6 lists as a fact from memory (KNOWN-LINK: Birkhoff's sharper statement in Hilbert's projective metric). *Drag test, the Penrose diagram* (DERIVED, checked in §12):
+This is the total-variation form of the Birkhoff–Hopf contraction, which [transfer-spectrum-measurement.md](../../digests/bridges/transfer-spectrum-measurement.md) §6 lists as a fact from memory (KNOWN-LINK, from memory and not opened: Birkhoff's theorem is the contraction in Hilbert's projective metric with the same coefficient $\tanh(\Delta/4)$, and the eigenvalue bound follows from it). *Drag test, the Penrose diagram* (DERIVED, checked in §12):
 - the Fibonacci incidence matrix $A=\begin{pmatrix}1&1\\1&0\end{pmatrix}$ has a zero, but $A^2=\begin{pmatrix}2&1\\1&1\end{pmatrix}>0$ has $\Delta=\log2$;
 - so the central measure of Connes's Penrose AF algebra is approached from any terminal condition at rate $\le\tanh(\log2/4)=0.172$ per two levels;
 - the exact rate is $\varphi^{-4}=0.146$.
@@ -322,7 +324,7 @@ Setting: a single-arrow positive quiver, or more generally a positive chain with
 
 **DERIVED (Theorem 6.7, R8).**
 - (a) *Exact.* The Fisher information about $u$ lost by keeping only the ends is $I_{\rm full}(u)-I_{\rm ends}(u)=\mathbb E_u\,\mathrm{Var}_u(F\mid\text{ends})$.
-- (b) $\mathrm{Var}_u(F\mid a,c)\le S^2/(2\,\mathrm{gap}(Q_1))\le S^2/(2\kappa_1(u))$, where $\kappa_1(u)$ is computed from $\Delta(e^{-ug_\ell})=\lvert u\rvert Z_\ell$, with $Z_\ell$ the largest alternating 4-cycle (zigzag) sum of $g_\ell$.
+- (b) $\mathrm{Var}_u(F\mid a,c)\le S^2/(2\,\mathrm{gap}(Q_1))$, and $\le S^2/(2\kappa_1(u))$ when $\kappa_1(u)>0$, where $\kappa_1(u)$ is computed from $\Delta(e^{-ug_\ell})=\lvert u\rvert Z_\ell$, with $Z_\ell$ the largest alternating 4-cycle (zigzag) sum of $g_\ell$.
 - (c) For $\beta<\beta'$, the relative-entropy sufficiency defect satisfies
 $$\delta_{\rm ends}(\beta,\beta'):=\mathbb E_{P_\beta}D\big(P_\beta(\cdot\mid\text{ends})\,\Vert\,P_{\beta'}(\cdot\mid\text{ends})\big)\le\tfrac{(\beta'-\beta)^2}{2}\sup_{u\in[\beta,\beta']}\max_{\rm ends}\mathrm{Var}_u(F\mid\text{ends}).$$
 - (d) The defects in (a) and (c) vanish iff $F$ is constant on every fibre; when the fibres are flip-connected (for instance when every layer pair is positive) this is $S=0$.
@@ -341,9 +343,9 @@ $$\delta_{\rm ends}(\beta,\beta'):=\mathbb E_{P_\beta}D\big(P_\beta(\cdot\mid\te
 - **(a)** There is an exact sequence
 $$0\to M\to H^1(\Gamma)\to\textstyle\bigoplus_\ell H^1(\Gamma_\ell)\to0,\qquad M\cong\bigoplus_{0<\ell<L}\mathbb R^{K_\ell}/\mathbb R .$$
 The middle map is restriction. $M$ is spanned by the *mismatch functions* $m_\ell=a_{\ell-1}-b_\ell$ of layerwise coboundaries $F|_{\Gamma_\ell}=a_\ell(\tau)-b_\ell(\sigma)$. The dimensions are $\sum_\ell(n_\ell-1)(n_{\ell+1}-1)$ and $\sum_{0<\ell<L}(n_\ell-1)$.
-- **(b)** $\Delta(A_\ell)=\lvert\beta\rvert Z_\ell$, where $Z_\ell=\max\lvert F(\sigma\tau)+F(\sigma'\tau')-F(\sigma\tau')-F(\sigma'\tau)\rvert$ is a norm on $H^1(\Gamma_\ell)$. Mixing sees only the image of $[F]$ in $\bigoplus_\ell H^1(\Gamma_\ell)$.
+- **(b)** $\Delta(A_\ell)=\lvert\beta\rvert Z_\ell$, where $Z_\ell=\max\lvert F(\sigma\tau)+F(\sigma'\tau')-F(\sigma\tau')-F(\sigma'\tau)\rvert$ is a norm on $H^1(\Gamma_\ell)$. The projective diameters, and hence the certificates of Theorem 6.4 and Corollary 6.5, see only the image of $[F]$ in $\bigoplus_\ell H^1(\Gamma_\ell)$. The exact gap does depend on the mismatch part, which enters the fibre law as single-site fields $e^{-\beta m_\ell(\sigma_\ell)}$ (§12, M: with every $\Delta_\ell$ fixed, the fibre gap moved from 0.133 to 0.250 as the fields grew).
 - **(c)** $Z_\ell\le2S$, because each zigzag is the difference of two squares through a neighbouring layer pair.
-- **(d)** $S=0$ ⇔ $F$ is a coboundary ⇔ pair sufficiency (and endpoint sufficiency for $P^{\rm gl}$ under Theorem 3.4(a)).
+- **(d)** $S=0$ ⇔ $F$ is a coboundary ⇔ pair sufficiency. Endpoint sufficiency for $P^{\rm gl}$ needs in addition $U$ constant on the input layer (Theorem 3.4(a)), so with two or more input faces it is strictly stronger than $S=0$.
 - **(e)** $Z\equiv0$ ⇔ every $A_\ell$ has rank one; then the faces of different layers are independent under $P^w_\beta$ and under every pinning: perfect one-step decorrelation, a transfer kernel that is a conditional expectation onto the constants. Perfect decorrelation is **strictly weaker** than (d). If $Z\equiv0$, then $\mathrm{Var}_\beta(F\mid\text{ends})=\sum_{0<\ell<L}\mathrm{Var}_{\propto e^{-\beta m_\ell}}(m_\ell)$, which is non-zero as soon as one mismatch is non-constant.
 - **(f)** If $\lvert\beta\rvert S<\log3$, then
 $$\mathrm{gap}\ \ge\ \frac{1-2\tanh(\lvert\beta\rvert S/2)}{L-1},\qquad \mathrm{Var}_\beta(F\mid s,r)\ \le\ \frac{(L-1)S^2}{2\big(1-2\tanh(\lvert\beta\rvert\max_\ell Z_\ell/4)\big)} .$$
@@ -359,7 +361,7 @@ $$\mathrm{gap}\ \ge\ \frac{1-2\tanh(\lvert\beta\rvert S/2)}{L-1},\qquad \mathrm{
 *Checked* (§12, C4): squares span $Z_1$ and $Z_\ell\le2S$ held on complete quivers of shapes $[2,2,2]$ through $[4,3,2,3,2]$.
 
 **This is the precise sense in which sufficiency and expansion are two halves of one mechanism.** One cochain, $\delta F$ evaluated on the 4-cycles of the quiver, carries both:
-- its *zigzag* part (cycles alternating inside one layer pair) is a projective diameter, so it governs mixing, forgetting and the local gap;
+- its *zigzag* part (cycles alternating inside one layer pair) is a projective diameter, so it governs the certificates for mixing, forgetting and the local gap (the exact gap also feels the mismatch part, as single-site fields, (b));
 - the whole class, including the *mismatch* part, governs sufficiency;
 - the bound (f) puts the whole class in the numerator and only the zigzag part in the denominator.
 
@@ -369,7 +371,7 @@ $$\mathrm{gap}\ \ge\ \frac{1-2\tanh(\lvert\beta\rvert S/2)}{L-1},\qquad \mathrm{
 - (i) The coarse face process $x_k=\sigma_{kr}$ is a positive chain with kernels $A^{(r)}_k$, so Theorem 6.4 and Corollaries 6.5–6.6 apply to it.
 - (ii) Write $\mathrm{seg}_k$ for the part of the history between layers $(k-1)r$ and $kr$. Then
 $$\mathrm{Var}_\beta(F\mid s,r)=\sum_k\mathbb E\,\mathrm{Var}_\beta\big(F(\mathrm{seg}_k)\mid x_{k-1},x_k\big)+\mathrm{Var}_\beta\Big(\sum_k\bar g_k(x_{k-1},x_k)\,\Big|\,s,r\Big),$$
-with $\bar g_k(\sigma,\tau)=\mathbb E_\beta[F(\mathrm{seg}_k)\mid\sigma,\tau]$. The first sum is bounded by the oscillation of $F$ over $r$-step bigons; the second by Theorem 6.7(b) on the coarse chain.
+with $\bar g_k(\sigma,\tau)=\mathbb E_\beta[F(\mathrm{seg}_k)\mid\sigma,\tau]$. The first sum is bounded by the oscillation of $F$ over $r$-step bigons; the second by the Poincaré step of Theorem 6.7(b) on the coarse chain (Theorem 6.4 for its gap), with $S$ replaced by the largest single-site change of $\sum_k\bar g_k$. Since $\bar g_k$ is not the coarse chain's energy, the Fisher-information reading of Theorem 6.7(a) does not transfer.
 - (iii) With $r=1$ and parallel arrows, the first sum is the length-1 bigon (parallel-arrow) variance. In that case $\Delta(A_\ell)$ is $\lvert\beta\rvert$ times the zigzag norm of the *face-pair free energy* $\bar F_\beta(\sigma,\tau)=-\beta^{-1}\log\sum_{\gamma:\sigma\to\tau}e^{-\beta F(\gamma)}$. As $\beta\to0$, $\Delta(A_\ell)$ tends to the largest $\lvert\log\rvert$ of the cross-ratios of the multiplicities, a purely combinatorial (entropic) zigzag.
 
 *Proof.*
@@ -379,9 +381,9 @@ with $\bar g_k(\sigma,\tau)=\mathbb E_\beta[F(\mathrm{seg}_k)\mid\sigma,\tau]$. 
 
 ### 6.7 What §6 does and does not do
 
-- **ANALOGY (trickle-down).** In the Anari–Liu–Oveis Gharan complex $X_\mu$ of the face process (parts = layers), links are pinnings ([hdx-spectral-independence.md](../../digests/bridges/hdx-spectral-independence.md) §3.2). By Lemma 6.2, every pinned chain carries the same cross-ratios, so heredity costs nothing. Theorem 6.4 then replaces trickle-down by direct one-dimensional path coupling. The single-site threshold $\tanh(\Delta/4)<\tfrac12$ has the same form as the top-link hypothesis $\gamma\le\tfrac12$ of Oppenheim's trickle-down ([local-to-global-unlocks.md](../../local-to-global-unlocks.md) §2.2). *Where it breaks:* trickle-down acts on all links of a high-dimensional complex and needs spectral data on them. Here the depth direction is one-dimensional, which is why the elementary argument suffices. The identification of the top-link eigenvalue with $\tanh(\Delta/4)$ would need Birkhoff–Hopf's bound on maximal correlation, quoted from memory only, so it is not claimed.
-- **Scope: positivity.** If $A_\ell$ has a zero (a sparse layer pair), then $\Delta_\ell=\infty$ and the statements of §6 do not apply at that resolution, though Proposition 6.9 may apply at a coarser one. This is Hammersley–Clifford's positivity condition ([hammersley-clifford.md](../../digests/bridges/hammersley-clifford.md) §1.2, §4) in quantitative form: a safe symbol makes the support a product, and a finite projective diameter makes it a product with bounded distortion. **KNOWN-LINK** ([hammersley-clifford.md](../../digests/bridges/hammersley-clifford.md) §13 B3): positivity versus a quantitative gap is the same hypothesis at two resolutions; there it appears as the Friedrichs angle of the two-block sampler, here as the projective diameter.
-- **Low temperature. DERIVED (from Theorem 6.4).** $\Delta=\lvert\beta\rvert Z$ grows with $\beta$, so the block length needed grows like $e^{\Delta/2}$; at every finite $\beta$ the window gap stays $\ge c(\Delta)/w$, but $c$ deteriorates. **ANALOGY:** this matches the expander guard that low temperature is where expansion fails ([expanders.md](../../digests/bridges/expanders.md) §9.7). *Where it breaks:* in one dimension there is no phase coexistence, so the gap never becomes exponentially small in the size, as it does on expanders.
+- **ANALOGY (trickle-down).** In the Anari–Liu–Oveis Gharan complex $X_\mu$ of the face process (in its multi-spin form, Chen–Liu–Vigoda; parts = layers), links are pinnings ([hdx-spectral-independence.md](../../digests/bridges/hdx-spectral-independence.md) §3.2). By Lemma 6.2, every pinned chain carries the same cross-ratios, so heredity costs nothing. Theorem 6.4 then replaces trickle-down by direct one-dimensional path coupling. The single-site threshold $\tanh(\Delta/4)<\tfrac12$ has the same form as the top-link hypothesis $\gamma\le\tfrac12$ of Oppenheim's trickle-down ([local-to-global-unlocks.md](../../local-to-global-unlocks.md) §2.2); its exact counterpart is classical, Dobrushin's condition $t_{j-1}+t_j<1$ on the total influence on a site (§6.2). *Where it breaks:* trickle-down acts on all links of a high-dimensional complex and needs spectral data on them. Here the depth direction is one-dimensional, which is why the elementary argument suffices. The identification of the top-link eigenvalue with $\tanh(\Delta/4)$ would need Birkhoff–Hopf's bound on maximal correlation, quoted from memory only, so it is not claimed.
+- **Scope: positivity.** If $A_\ell$ has a zero (a sparse layer pair), then $\Delta_\ell=\infty$ and the statements of §6 do not apply at that resolution, though Proposition 6.9 may apply at a coarser one. This is Hammersley–Clifford's positivity condition ([hammersley-clifford.md](../../digests/bridges/hammersley-clifford.md) §1.2, §4) in quantitative form: positivity in Besag's sense makes the support a product (a safe symbol, the weaker hypothesis the Hammersley–Clifford proof actually uses, only makes it closed under switching sites to the vacuum, [hammersley-clifford.md](../../digests/bridges/hammersley-clifford.md) §1.2), and a finite projective diameter makes it a product with bounded distortion. **ANALOGY** (the reading of [hammersley-clifford.md](../../digests/bridges/hammersley-clifford.md) §13 B3, whose inequality is that digest's own elementary theorem, not a published link): positivity versus a quantitative gap is the same hypothesis at two resolutions; there it appears as the Friedrichs angle of the two-block sampler, here as the projective diameter. *Where it breaks:* B3 bounds a two-block intersection defect on a general graph by a Friedrichs angle, Theorem 6.4 bounds a many-site gap on a path by projective diameters, and no theorem here relates the two constants.
+- **Low temperature. DERIVED (from Theorem 6.4).** $\Delta=\lvert\beta\rvert Z$ grows with $\beta$, so the block length needed grows like $e^{\Delta/2}$. At every finite $\beta$ the block sampler with $b=\lceil e^{\Delta/2}\rceil$ has gap $>1/(w+e^{\Delta/2})$, so what deteriorates is the block length (the cost of one exact block update) and, once $w\lesssim e^{\Delta/2}$, the gap itself; the single-site certificate is lost beyond $\Delta=2\log3$. **ANALOGY:** this matches the expander guard that low temperature is where expansion fails ([expanders.md](../../digests/bridges/expanders.md) §9.7). *Where it breaks:* in one dimension there is no phase coexistence, so the gap never becomes exponentially small in the size, as it does on expanders.
 
 ---
 
@@ -399,13 +401,13 @@ with $\bar g_k(\sigma,\tau)=\mathbb E_\beta[F(\mathrm{seg}_k)\mid\sigma,\tau]$. 
 
 *Checked* (§12, H): the oscillation bound held with ratio $\le0.453$ over 200 random cochains.
 
-**CONJECTURE (7.2).** For the complete layered quiver of uniform width $n$ and every depth $L\ge2$, $\mu_1(X_\square)=n^2$.
-- Measured: $\mu_1=4.000$ for $n=2$ and $9.000$ for $n=3$, at every $L=2,\dots,8$.
+**CONJECTURE (7.2).** For the complete layered quiver of uniform width $n$ and every depth $L\ge2$, $\mu_1(X_\square)=n^2$, with one 2-cell per unordered pair of length-2 paths (D4) and unweighted inner products (with ordered pairs every value doubles).
+- Measured: $\mu_1=4.000$ for $n=2$ and $9.000$ for $n=3$, at every $L=2,\dots,8$. Re-measured in the critique pass with independent code: $16.000$ for $n=4$ ($L=2,\dots,5$) and $25.000$ for $n=5$ ($L=2,\dots,4$).
 - For nine non-uniform shapes (depth 2–4) $\mu_1$ took values from 6 to 16, depending on the widths; depth-independence was tested only for uniform widths.
 
 If true, the $\ell^2$ coboundary expansion of the square complex is depth-uniform, and Theorem 7.1 gives a sufficiency defect linear in $L$ from square data alone, with no gap hypothesis. This complements Theorem 6.7, which needs positivity but is pointwise in $S$.
 
-**CONJECTURE (7.3, a Garland-type bound for square complexes).** For trimmed layered quivers, $\mu_1(X_\square)$ is bounded below by a function of local data: the spectra of the links of faces in $X_\square$ (the graph of squares through a face) and the flip-connectivity of length-2 fibres. *What must be true:* a localisation identity of Garland type for cube-like 2-complexes ([hdx-spectral-independence.md](../../digests/bridges/hdx-spectral-independence.md) §2.1 gives the simplicial one). This would make U3 local in the sense prong 3 asked for; it is the open half of U3.
+**SPECULATION (7.3, a Garland-type bound for square complexes; not yet a precise statement, since "a function of local data" is not specified).** For trimmed layered quivers, $\mu_1(X_\square)$ is bounded below by a function of local data: the spectra of the links of faces in $X_\square$ (the graph of squares through a face) and the flip-connectivity of length-2 fibres. *What must be true:* a localisation identity of Garland type for cube-like 2-complexes ([hdx-spectral-independence.md](../../digests/bridges/hdx-spectral-independence.md) §2.1 gives the simplicial one). This would make U3 local in the sense prong 3 asked for; it is the open half of U3.
 
 ---
 
@@ -413,7 +415,7 @@ If true, the $\ell^2$ coboundary expansion of the square complex is depth-unifor
 
 ### 8.1 Yang's localisation lemma for an arbitrary subalgebra
 
-**THEOREM** ([arxiv-2609.38007.md](../../digests/bridges/arxiv-2609.38007.md) §5.4–5.5, Yang Lemma III.4 and Cor. III.5). For faithful $\rho,\sigma$ and the tensor subalgebra $B(\mathcal H_R)\otimes1$,
+**THEOREM** ([arxiv-2609.38007.md](../../digests/bridges/arxiv-2609.38007.md) §5.4–5.5, Yang Lemma III.4 and Cor. III.5). For faithful $\rho,\sigma$, the tensor subalgebra $B(\mathcal H_R)\otimes1$ and $0<\alpha\le1$,
 $$\delta_R\le(\tfrac1\alpha+3)[\mathrm{Tr}\rho^{1+\alpha}\sigma^{-\alpha}]^{1/(1+\alpha)}\mathfrak q_R^{2\alpha/(1+\alpha)},$$
 where $\mathfrak q_R=\frac12\int\eta_R(t)\,dt/\lvert\sinh\pi t\rvert$ is the modular-time leakage of the Connes cocycle $u_t=\sigma^{it}\rho^{-it}$.
 
@@ -446,9 +448,9 @@ where $\mathcal H^{<}_\sigma$ is spanned by prefixes ending at $\sigma$ and $\ma
 - Note 1's modular Hamiltonian $H_F=\mathrm{diag}F(\mu)$ acts on each block as $H^<_\sigma\otimes1+1\otimes H^>_\sigma$, since $F$ is additive over arrows.
 - Its Gibbs state is therefore a classical mixture over the cut face of product states. This is the history-space form of "exactly Markov" (Note 1 §5.3; [arxiv-2609.38007.md](../../digests/bridges/arxiv-2609.38007.md) B10). $\square$
 
-**CONJECTURE (8.4, coherent window Markov property).** Let $H=H_F+V$, $V=\sum_XV_X$, where each $V_X$ is self-adjoint and lies in the span of matrix units $e_{\mu\nu}$ with $\mu,\nu$ differing only in the layers of a depth window $X$. Assume $\lvert X\rvert\le R_0$, $\lVert V_X\rVert\le J$, and that each layer meets at most $d$ windows. Let $\rho=e^{-\beta H}/Z$. Cut depth into $A$ = layers $<a$, a buffer $B$ = layers $a..b$, and $C$ = the rest. Then
+**CONJECTURE (8.4, coherent window Markov property).** Let $H=H_F+V$, $V=\sum_XV_X$, where each $V_X$ is self-adjoint and lies in the span of matrix units $e_{\mu\nu}$ with $\mu,\nu$ differing only in the layers of a depth window $X$. Assume $\lvert X\rvert\le R_0$, $\lVert V_X\rVert\le J$, and that each layer meets at most $d$ windows. Let $\rho=e^{-\beta H}/Z$. Cut depth into $A$ = layers $<a$, a buffer $B$ = layers $a..b$, and $C$ = the rest, and assume that $V$ commutes with the face projections at layers $a$ and $b$. Then, with $C_\beta,c_\beta$ depending only on $\beta,J,R_0,d$ and the largest face count,
 $$I_\rho(A:C\mid B)\le C_\beta\exp\big(C_\beta\,g-c_\beta(b-a)\big),\qquad g=\sum_{X\cap A\neq\emptyset\neq X\setminus A}\lVert V_X\rVert ,$$
-where the conditional mutual information is defined blockwise through Lemma 8.3: the cut faces are classical registers.
+where the conditional mutual information is defined blockwise through Lemma 8.3. That is legitimate because the commutation hypothesis keeps the cut faces classical registers for $\rho$. Without it, a window term that changes a cut face creates coherences between different summands of Lemma 8.3, no canonical algebra of "layers $\le b$" contains them, and the CMI would first have to be defined (the direct-sum guard).
 
 *What must be true:*
 - (i) Yang's cut comparison (Lemma III.1) for the reference $e^{-\beta(H-V_{\rm cut})}$, which factorises across the cut conditionally on the cut face by Lemma 8.3;
@@ -457,10 +459,10 @@ where the conditional mutual information is defined blockwise through Lemma 8.3:
 
 *Consistency:* at $V=0$ the CMI is $0$ (Lemma 8.3). This is the setting in which the "memory as noncommutativity" bridge of [arxiv-2609.38007.md](../../digests/bridges/arxiv-2609.38007.md) B13 would become a statement.
 
-**CONJECTURE (8.5, noncommutative uniform local gap).** For $\rho$ as in 8.4, consider the KMS-symmetric window Lindbladians with square-flip couplings, built by the Ding–Li–Lin / Chen–Kastoryano–Gilyén construction ([nc-dirichlet-lindblad.md](../../digests/bridges/nc-dirichlet-lindblad.md) §2.3). Suppose the layer-transfer completely positive maps of $\rho$ have finite projective diameter in the noncommutative Hilbert metric. Then window generators of length $w$ have gap $\ge c/w$ uniformly over boundary conditions, for blocks of length depending only on that diameter.
+**SPECULATION (8.5, noncommutative uniform local gap; not a precise statement until the "layer-transfer completely positive maps of $\rho$" are defined, e.g. for a finitely correlated structure along depth).** For $\rho$ as in 8.4, consider the KMS-symmetric window Lindbladians with square-flip couplings, built by the Ding–Li–Lin / Chen–Kastoryano–Gilyén construction ([nc-dirichlet-lindblad.md](../../digests/bridges/nc-dirichlet-lindblad.md) §2.3). Suppose the layer-transfer completely positive maps of $\rho$ have finite projective diameter in the noncommutative Hilbert metric. Then window generators of length $w$ have gap $\ge c/w$ uniformly over boundary conditions, for blocks of length depending only on that diameter.
 
 *Status:*
-- at $V=0$ this is Theorem 6.4 (proved);
+- at $V=0$ the state is diagonal. The diagonal (classical) sector of these generators is a single-flip jump process with filtered Metropolis rates, whose gap follows from Theorem 6.4 only after a comparison of Dirichlet forms with the heat-bath sampler, with a constant depending on $\Delta$ and the face counts. The off-diagonal (dephasing) sector is not covered by Theorem 6.4. Neither step is written out here;
 - the noncommutative Hilbert-metric contraction theory (Reeb–Kastoryano–Wolf, cited from memory, not read) would replace Lemma 6.2;
 - no $k$-level noncommutative local-to-global theorem was found in the literature searched ([hdx-spectral-independence.md](../../digests/bridges/hdx-spectral-independence.md) §4.5: only the two-level approximate tensorization of Bardet–Capel–Rouzé).
 
@@ -479,12 +481,14 @@ A state $\omega$ on the face algebra $D_0(K)\cong C(K)$ of a layer (Note 2 §1.1
 *Proof.* $\omega(e_v\mid e_u=1)-\omega(e_v\mid e_u=0)=\mathrm{Cov}_{uv}/\mathrm{Var}_u$. Moreover $D^{-1}\mathrm{Cov}$ is similar to $\mathrm{Cor}$, and $a^{\rm T}\mathrm{Cov}\,a\le\lambda_{\max}(\mathrm{Cor})\,a^{\rm T}Da$. $\square$
 
 *Applied to the measurement* ([transfer-spectrum-measurement.md](../../digests/bridges/transfer-spectrum-measurement.md) §3.5; I re-derived the definition used there, $\eta_0=\lambda_{\max}(\mathrm{Cor})-1$):
-- the measured $\eta_0\approx1.7$–$8$ says every linear statistic of the barycentre's included-vertex pattern, on the uncertain units the measurement used, fluctuates at most $2.7$–$9$ times as much as under the product state with the same marginals;
+- the measured $\eta_0\approx1.7$–$8$ says every linear statistic of the barycentre's included-vertex pattern, on the uncertain units the measurement used, has variance at most $2.7$–$9$ times its value under the product state with the same marginals;
 - that is all *unpinned* spectral independence gives.
 
-**THEOREM** ([hdx-spectral-independence.md](../../digests/bridges/hdx-spectral-independence.md) §6.2 via ALO Thm 1.3). If every iterated Lüders pinning has $\eta_i\le\eta$, the single-vertex walk has gap at least $n^{-(1+\eta)}$ (the Alev–Lau form quoted in [hdx-spectral-independence.md](../../digests/bridges/hdx-spectral-independence.md) §3.5). **DERIVED (arithmetic):** at $\eta\approx7$ and $n=1024$ this is about $10^{-24}$: polynomial in form, vacuous in practice.
+**THEOREM** (ALO Thm 1.3, as quoted in [hdx-spectral-independence.md](../../digests/bridges/hdx-spectral-independence.md) §3.5 and §6.2, re-read in the critique pass). If $\omega$ and its iterated Lüders pinnings have $\eta_i\le\eta_i^*$, the single-vertex walk has spectral gap at least $\frac1n\prod_{i=0}^{n-2}\big(1-\frac{\eta_i^*}{n-i-1}\big)$.
 
-So even a confirmed pinned bound at the measured level would make U6 a qualitative statement only. The optimal Chen–Liu–Vigoda route needs bounded degree, which the dense face law lacks.
+**DERIVED (correction).** A uniform bound $\eta_i\le\eta$ alone does **not** give $n^{-(1+\eta)}$: when $n-i-1\le\eta$ the factors may vanish. Counterexample (§12, A): the law on $\{0,1\}^4$ with mass $\propto1$ on $0000$ and $1111$ and $\propto\varepsilon$ elsewhere has $\max_i\eta_i\to3$, so the claimed bound would be $4^{-4}\approx3.9\cdot10^{-3}$, while its Glauber gap is $6\cdot10^{-7}$ at $\varepsilon=10^{-6}$. ALO's Remark 1.7 states the form $1-1/d^{1+\alpha}$ loosely: it follows from their product formula only while every factor stays positive, and then only up to a constant depending on $\alpha$. Their hardcore bound uses a cap on the deepest pinnings, $\eta_i\le\theta(n-i-1)$ with $\theta=\lambda/(1+\lambda)<1$ (ALO Thm 1.8, Rem 1.10). In general, single-site marginals in $[b,1-b]$ under all pinnings give the cap with $\theta=1-2b$, and under a cap $\theta<1$ the product bound is at least a constant depending on $\eta$ and $\theta$ times $n^{-(1+\eta)}$. **DERIVED (arithmetic):** with $\eta_i\le\min(7,\theta(n-i-1))$ and $n=1024$ the product bound is $10^{-21.0}$, $10^{-27.4}$ and $10^{-34.4}$ for $\theta=0.5$, $0.9$, $0.99$: polynomial in form, vacuous in practice.
+
+So even a confirmed pinned bound at the measured level, with the cap, would make U6 a qualitative statement only. The optimal Chen–Liu–Vigoda route needs bounded degree, which the dense face law lacks.
 
 **ANALOGY (two Markov random fields; do not conflate).**
 - The history law is a one-dimensional field over *layers*, with huge spin spaces (faces). Under positivity Theorem 6.4 governs it.
@@ -499,10 +503,10 @@ So even a confirmed pinned bound at the measured level would make U6 a qualitati
 |---|---|---|---|
 | Gibbs states on histories are Markov random fields | literally a theorem, for every $F$ and $\beta$ (Doob chain). Conversely every positive Markov chain on the quiver is a KMS state for some $F$ | THEOREM (Note 1 §5.3; [hdx-spectral-independence.md](../../digests/bridges/hdx-spectral-independence.md) U7) | 4 |
 | the Markov property is an expansion property | **false**: it holds with $\Delta=\infty$ (hard constraints) and at every temperature, while expansion degrades with $\beta\times$zigzag | DERIVED | 4, 6.7 |
-| Hammersley–Clifford positivity and an expander gap share an essence | **a theorem here**: a finite projective diameter (positivity quantified) gives a uniform local gap and exponential forgetting with explicit constants, and it is inherited by every conditioning | DERIVED (Lemma 6.2–Cor 6.6); KNOWN-LINK ([hammersley-clifford.md](../../digests/bridges/hammersley-clifford.md) B3) | 6 |
-| the sufficiency of the barycentre (the NCG/Petz side) and expansion are one essence | **two halves of one class**: the zigzag image of $[F]$ controls expansion and the whole class controls sufficiency. On complete quivers sufficiency implies perfect expansion, not conversely | DERIVED (6.8) | 6.5 |
-| the time-averaged detailed-balanced single-Pauli Lindbladian hides an analogue | yes: the window re-routing sampler. KMS = detailed balance; Cesàro limit = the window conditional expectation; single Paulis ↔ square flips. In the diagonal KMS family it is exact and local, so it is trivial there; its substance appears only for coherent states | DERIVED (5.1–5.2) + CONJECTURE (8.4–8.5) | 5, 8 |
-| a trickle-down theorem for local gaps of KMS samplers is the missing piece | in the commutative positive case **not missing**: the one-dimensional path coupling of Theorem 6.4 supplies it. Missing for coherent states and for dense face laws | DERIVED + CONJECTURE | 6.7, 8.5, 9 |
+| Hammersley–Clifford positivity and an expander gap share an essence | **a theorem here**: a finite projective diameter (positivity quantified) gives a uniform local gap and exponential forgetting with explicit constants, and it is inherited by every conditioning | DERIVED (Lemma 6.2–Cor 6.6; classical in substance: Dobrushin–DGJ path coupling and Birkhoff contraction, §6.2); the two-resolutions reading of [hammersley-clifford.md](../../digests/bridges/hammersley-clifford.md) B3 is ANALOGY | 6 |
+| the sufficiency of the barycentre (the NCG/Petz side) and expansion are one essence | **two halves of one class**: the zigzag image of $[F]$ controls the expansion certificates (the projective diameters; the exact gap also feels the mismatch part) and the whole class controls sufficiency. On complete quivers sufficiency implies perfect expansion, not conversely | DERIVED (6.8) | 6.5 |
+| the time-averaged detailed-balanced single-Pauli Lindbladian hides an analogue | yes: the window re-routing sampler. KMS = detailed balance; Cesàro limit = the window conditional expectation; single Paulis ↔ square flips. In the diagonal KMS family it is exact and local, so it is trivial there; its substance appears only for coherent states | DERIVED (5.1–5.2) + CONJECTURE (8.4) + SPECULATION (8.5) | 5, 8 |
+| a trickle-down theorem for local gaps of KMS samplers is the missing piece | in the commutative positive case **not missing**: the one-dimensional path coupling of Theorem 6.4 (Dobrushin's condition in one dimension) supplies it. Missing for coherent states and for dense face laws | DERIVED (classical: Dobrushin–DGJ) + SPECULATION (8.5) | 6.7, 8.5, 9 |
 | expansion of the quiver itself would help | beside the point: what matters is the projective diameter of the transfer kernels. The quiver graph's expansion is the "other expander" of [hdx-spectral-independence.md](../../digests/bridges/hdx-spectral-independence.md) §6.5 | ANALOGY (guard) | 6.7 |
 | NCG ties it together | yes at the operator-algebra and measure layer: groupoid KMS cocycles, Petz–Jenčová sufficiency, conditional expectations, Dirichlet forms as derivations, and now the cohomology of the arrow cocycle on the quiver's square complex. No spectral-triple or K-theory statement arises in this angle | KNOWN-LINK + DERIVED | 3, 4, 7, 8 |
 
@@ -513,9 +517,9 @@ So even a confirmed pinned bound at the measured level would make U6 a qualitati
 **To prong 1 (theory).**
 1. **Two corrections to Note 1 §6.** Replace the second bullet by Theorem 3.2, recording $O(\Lambda)=Z_1(\Gamma)/p(B)$ and its sufficient conditions (Corollary 3.3). State which family the first bullet and the chain of equivalences refer to: correct for $P^{\rm gl}$ and for one input face; for $P^w$ with several input faces use Theorem 3.4(b) and Corollary 3.5(ii).
 2. Record Proposition 4.1: Markov and barycentre sufficiency are both Jenčová–Petz sufficiency, for different families.
-3. Record Lemmas 6.1–6.3, Theorem 6.4, Corollaries 6.5–6.6, Theorem 6.7 and Propositions 6.8–6.9 as Derivations. The new definitions are the projective diameter of a layer kernel, the zigzag and mismatch parts of $[F]$, and $r$-primitivity.
-4. Define $X_\square$ and record Theorem 7.1. Open: Conjectures 7.2–7.3.
-5. Lemma 8.3 is the structure of the history space across a depth cut; Conjectures 8.4–8.5 are where Chen–Rouzé and Yang would carry real content.
+3. Record Lemmas 6.1–6.3, Theorem 6.4, Corollaries 6.5–6.6, Theorem 6.7 and Propositions 6.8–6.9 as Derivations, citing Dobrushin–DGJ and Birkhoff alongside Lemmas 6.2–6.3 and the single-site case of Theorem 6.4, which are classical. The new definitions are the projective diameter of a layer kernel, the zigzag and mismatch parts of $[F]$, and $r$-primitivity.
+4. Define $X_\square$ and record Theorem 7.1. Open: Conjecture 7.2 and Speculation 7.3.
+5. Lemma 8.3 is the structure of the history space across a depth cut; Conjecture 8.4 and Speculation 8.5 are where Chen–Rouzé and Yang would carry real content.
 
 **To prong 2 (bridge).**
 1. Dictionary v1's fitted kernels have many zero transitions, so $\Delta_\ell=\infty$ at a single layer. Report the onset depth $r$ at which multi-step kernels become positive, and their projective diameters $\Delta^{(r)}$. These are the coordinate-free certificates of Theorem 6.4 and Corollary 6.5.
@@ -525,8 +529,8 @@ So even a confirmed pinned bound at the measured level would make U6 a qualitati
 5. Corrections 1–2 above do not affect E3, which used a single input face.
 
 **To prong 3 (unlocks).**
-- **U1:** now a theorem in the commutative resolution under ($r$-)positivity, with certificate $\max_\ell\tanh(\Delta_\ell/4)$ (Corollary 6.5).
-- **U3:** what square sums control is pair sufficiency; the coboundary condition additionally needs $O(\Lambda)=0$. The $\ell^2$ form is proved (Theorem 7.1); the local (Garland) half is open (Conjecture 7.3).
+- **U1:** its conclusion type, forgetting of boundary conditions at a geometric rate, holds in the commutative resolution under ($r$-)positivity with the local certificate $\max_\ell\tanh(\Delta_\ell/4)$ (Corollary 6.5, classical). U1 as stated (link spectra ⇒ transfer gap) is not proved here, and its literal conclusion is trivial for Markov laws (§6.3).
+- **U3:** what square sums control is pair sufficiency; the coboundary condition additionally needs $O(\Lambda)=0$. The $\ell^2$ form is proved (Theorem 7.1); the local (Garland) half is open (Speculation 7.3).
 - **U6:** unchanged ([hdx-spectral-independence.md](../../digests/bridges/hdx-spectral-independence.md) §6.2), with Proposition 9.1 as the only consequence of the present measurement.
 - **New reduction**, in the format of the unlocks note: *global object*: the forgetting of boundary conditions, the window recovery, the sufficiency defect; *local certificate*: the projective diameter of one layer kernel; *explicit bound*: Theorem 6.4, Corollary 6.5, Theorem 6.7; *cost*: block length $e^{\Delta/2}$.
 - **New guard:** positivity. A transfer with zeros or signs is outside every statement of §6.
@@ -542,7 +546,7 @@ So even a confirmed pinned bound at the measured level would make U6 a qualitati
 
 ## 12. Numerical checks
 
-All checks were run in the session scratchpad. The compact script in the appendix reproduces C1, C2, G2/G4 and G5. Pure numpy.
+All checks were run in the session scratchpad. The compact script in the appendix reproduces C1, C2, G2/G4 and G5. Pure numpy. Entries marked "critique pass" were run by the correctness critic with independent code.
 
 | id | statement | result |
 |---|---|---|
@@ -550,14 +554,16 @@ All checks were run in the session scratchpad. The compact script in the appendi
 | C2 | Lemma 3.1 and Theorem 3.2(b) on random trimmed quivers with parallel arrows | $p(\ker\partial_h)=Z_1$ and $\dim\ker\partial_h/B=\dim Z_1(R)$: 243/243; for pair-sufficient $F$, coboundary ⇔ $\Phi\in B^1(R)$: 243/243 |
 | C3 | when Note 1's equivalence holds | $Z_1=p(B)$ in 217/243; $R$ a forest ⇒ holds in all cases; where it fails, generic pair-sufficient $F$ is never a coboundary; waist in every component ⇒ holds: 270/270 |
 | C4 | complete layered quivers | squares span $Z_1$ ($\dim$ 3, 6, 12, 17 for four shapes); $\max Z_\ell\le2S$ in all four |
-| C5 | Theorem 3.4 | the two examples of §3.4 as stated; criterion (b) right on 263/263 random quivers with random coboundaries |
+| C5 | Theorem 3.4 | the two examples of §3.4 as stated (the second needs $U(t_1)\neq U(t_2)$, critique pass); criterion (b) right on 263/263 random quivers with random coboundaries (critique pass, independent code: 263/263, and criterion (a) 263/263) |
 | G1 | Lemma 6.1 | max TV$/\tanh(D/4)=1.0000$ over 20,000 pairs (attained) |
-| G2 | Theorem 6.4, $b=1$ | absolute gap $\ge\kappa_1$ on 47/47 chains with $\kappa_1>0$; median gap$/\kappa_1=1.37$ |
+| G2 | Theorem 6.4, $b=1$ | absolute gap $\ge\kappa_1$ on 47/47 chains with $\kappa_1>0$; median gap$/\kappa_1=1.37$ (critique pass: 238/238, smallest ratio 1.0001) |
 | G3 | Theorem 6.4, blocks | $\Delta\in[2.43,3.32]$ (beyond $2\log3=2.197$): smallest $b$ with $\kappa_b>0$ is 2–3, and the absolute gap $\ge\kappa_b$ in 10/10 |
 | G4 | Theorem 6.7 | Var$\,\le S^2/(2\,$gap$)$ always (max ratio 0.175); KL defect below its bound in 8/8 |
 | G5 | Corollary 6.5 | max TV$/\prod\tanh(\Delta/4)=0.62$ over 200 chains |
-| H | Theorem 7.1 and Conjecture 7.2 | $\mu_1=4.000$ ($n=2$) and $9.000$ ($n=3$) for $L=2..8$; oscillation bound ratio $\le0.453$ |
+| H | Theorem 7.1 and Conjecture 7.2 | $\mu_1=4.000$ ($n=2$) and $9.000$ ($n=3$) for $L=2..8$; oscillation bound ratio $\le0.453$ (critique pass: $\mu_1=16.000$ for $n=4$, $L\le5$, and $25.000$ for $n=5$, $L\le4$) |
 | P | Corollary 6.6, Penrose | $\tanh(\log2/4)=0.1716\ge\varphi^{-4}=0.1459$ |
+| M | Proposition 6.8(b): what the gap sees | complete quiver of width 3 and depth 5, zigzag part fixed (every $\Delta_\ell$ unchanged), mismatch fields scaled by 0, 1, 3, 6: fibre gap 0.133, 0.133, 0.150, 0.250 (critique pass) |
+| A | §9, ALO product form | $\{0,1\}^4$, mass on $0000,1111$ and $\varepsilon$ elsewhere: $\max_i\eta_i=2.78$, $3.00$, $3.00$ and Glauber gap $5.9\cdot10^{-3}$, $6.0\cdot10^{-5}$, $6.0\cdot10^{-7}$ at $\varepsilon=10^{-2},10^{-4},10^{-6}$, against the claimed $n^{-(1+\eta)}\approx3.9\cdot10^{-3}$ (critique pass) |
 
 These are checks of algebra and of the stated inequalities on small instances, not experiments on any network.
 
@@ -675,7 +681,7 @@ Output of this script (seed 0): C1 pair-sufficient True, coboundary False; C2 16
 
 Read for this note: the eight bridge digests and five programme notes listed in the header, all in full; [competition-plan.md](../../competition-plan.md) §§0, 3, 3.1, 6b, 7; the stream reports in [streams/](../); and `notes/checks/graph_algebra_checks.py` (to fix which Gibbs family Note 1 §9 tested).
 
-No primary paper was opened for this note. Every published theorem used is quoted from the digest section cited at its use, where its source was read:
+No primary paper was opened for the first version of this note; the critique pass opened one (below). Every published theorem used is quoted from the digest section cited at its use, where its source was read:
 - Yang Lemma III.4: [arxiv-2609.38007.md](../../digests/bridges/arxiv-2609.38007.md) §5;
 - Chen–Rouzé: [arxiv-2504.02208.md](../../digests/bridges/arxiv-2504.02208.md);
 - Hammersley–Clifford and its positivity analyses: [hammersley-clifford.md](../../digests/bridges/hammersley-clifford.md);
@@ -684,6 +690,29 @@ No primary paper was opened for this note. Every published theorem used is quote
 - Vernooij–Wirth, Carlen–Maas, Alicki: [nc-dirichlet-lindblad.md](../../digests/bridges/nc-dirichlet-lindblad.md);
 - Renault/Neshveyev and Jenčová–Petz: Note 1 §§5.2, 6.
 
-From memory, flagged where used and not relied on for any DERIVED statement: Birkhoff–Hopf contraction in Hilbert's projective metric (§6.3, §6.7) and the noncommutative Hilbert-metric theory of Reeb–Kastoryano–Wolf (Conjecture 8.5).
+Opened in the critique pass: N. Anari, K. Liu, S. Oveis Gharan, arXiv:2001.00303v3 (via alphaXiv): Defs 1.1–1.2, Thm 1.3, Thms 1.5–1.6, Rem 1.7, Thm 1.8, Lemma 1.12.
+
+From memory, flagged where used and not relied on for any DERIVED statement: Birkhoff–Hopf contraction in Hilbert's projective metric (§6.3, §6.7); the bound of the Dobrushin coefficient by Birkhoff's coefficient (§6.2; Lemma 6.2 proves the form used); the contraction-to-gap theorem as cited from memory in [expanders.md](../../digests/bridges/expanders.md) §11.1 (§6.2; Lemma 6.3 proves it); and the noncommutative Hilbert-metric theory of Reeb–Kastoryano–Wolf (Speculation 8.5).
 
 Not retrieved: the ChatGPT conversation behind arXiv:2609.38007; the local `expander_survey.pdf`.
+
+---
+
+## Critique log (correctness pass, 2026-10-01)
+
+Every DERIVED proof was re-derived, and the finite statements were re-checked with independent code: Lemma 3.1, Theorem 3.2, Corollary 3.3 (333 random quivers), Theorem 3.4 (263/263), Proposition 4.1, Lemmas 6.1–6.3, Theorem 6.4 (238 random and adversarial chains, 28 block cases), Corollaries 6.5–6.6, Theorem 6.7(a) for both families, Proposition 6.8, Theorem 7.1, Conjecture 7.2 (now also $n=4,5$), Remark 8.2 (defect $\propto\Delta\beta^2$, bound $\propto\Delta\beta$) and Proposition 9.1. They hold. Corrected:
+
+1. **§9, the ALO bound.** "$\eta_i\le\eta$ for every pinning ⇒ gap $\ge n^{-(1+\eta)}$" is false: the product factors can vanish at the deepest pinnings (counterexample, §12 A). Replaced by ALO's product form plus the cap $\eta_i\le\theta(n-i-1)$, with the arithmetic redone ($10^{-21}$–$10^{-34}$ at $\eta=7$, $n=1024$).
+2. **§6.7, positivity.** "A safe symbol makes the support a product" is false; a safe symbol only gives closure under switching to the vacuum ([hammersley-clifford.md](../../digests/bridges/hammersley-clifford.md) §1.2). Besag's positivity gives the product.
+3. **§6.5(b), what mixing sees.** The projective diameters see only the zigzag image of $[F]$, but the exact gap also depends on the mismatch part (single-site fields; §12 M). The text now says "certificates".
+4. **§5 table, KMS and GNS.** "KMS = GNS because the state is diagonal" is not a valid reason. The reason is that the re-routing jumps are modular eigenvectors.
+5. **§3.4, example 2** needs $U(t_1)\neq U(t_2)$. **§6.5(d)**: endpoint sufficiency for $P^{\rm gl}$ is stronger than $S=0$ when there are several input faces. **§6.7**: the low-temperature statement ("$c$ deteriorates") is replaced by what Theorem 6.4 gives. **§6.6(ii)** and **§6.4(b)**: missing hypotheses added. **§8.1**: $0<\alpha\le1$. **§9**: "fluctuates" made "variance".
+
+Labels changed:
+
+- **R7, §6.3, §11 (U1).** "U1 becomes a theorem" was inflated. The forgetting bound is DERIVED (and classical). Its identification with U1 is ANALOGY: U1's hypothesis is unused, and U1's literal conclusion is trivial for Markov laws.
+- **§6.2, R6, §10.** Theorem 6.4 for $b=1$ and Lemmas 6.2–6.3 are classical (Dobrushin–DGJ path coupling, Birkhoff's coefficient, contraction ⇒ gap). They are now credited as a KNOWN-LINK; the proofs stay.
+- **§6.7, §10 row 3.** The citation of [hammersley-clifford.md](../../digests/bridges/hammersley-clifford.md) B3 changed from KNOWN-LINK to ANALOGY, because B3 is that digest's own derivation, not a published link.
+- **§5.2(d).** Changed from THEOREM (cited) to DERIVED, with the one-line proof.
+- **7.3 and 8.5.** Changed from CONJECTURE to SPECULATION: neither is a precise statement yet. Speculation 8.5's "at $V=0$ this is Theorem 6.4" is replaced by what is actually covered.
+- **Conjecture 8.4.** Now assumes that $V$ commutes with the cut-face projections, so that its CMI is defined, and names what its constants depend on.
