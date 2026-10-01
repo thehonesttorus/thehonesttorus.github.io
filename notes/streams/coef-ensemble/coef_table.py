@@ -154,34 +154,52 @@ def analyse(cdir, outdir):
         # ---- leave-one-out
         eps_raw = {m: np.zeros((len(seeds), L1)) for m in MODELS}
         eps_x = {m: np.full((len(seeds), L1), np.nan) for m in MODELS}
+        eps_rep = {m: np.full((len(seeds), L1), np.nan) for m in MODELS}
         noise = np.full((len(seeds), L1), np.nan)
         for i, s in enumerate(seeds):
             tr = [t for t in seeds if t != s]
             c = A[s]
             for l in range(L1):
-                pred = {"wick": c["Tm"][l] + c["Twick"][l],
-                        "leg": predict(c, l, LEG, IDX), "legR": predict(c, l, LEG, IDXR),
-                        "own": predict(c, l, tensor_fit([c["G"][l]], [c["b"][l]], IDX), IDX),
-                        "ownD": predict(c, l, d21_fit([c], l, IDX), IDX)}
+                ens = {}
                 if tr:
-                    pred["ens"] = predict(c, l, tensor_fit([A[t]["G"][l] for t in tr], [A[t]["b"][l] for t in tr], IDX), IDX)
-                    pred["ensD"] = predict(c, l, d21_fit([A[t] for t in tr], l, IDX), IDX)
-                    pred["ensR"] = predict(c, l, tensor_fit([A[t]["G"][l] for t in tr], [A[t]["b"][l] for t in tr], IDXR), IDXR)
-                    pred["ensRD"] = predict(c, l, d21_fit([A[t] for t in tr], l, IDXR), IDXR)
+                    ens["ens"] = (tensor_fit([A[t]["G"][l] for t in tr], [A[t]["b"][l] for t in tr], IDX), IDX)
+                    ens["ensD"] = (d21_fit([A[t] for t in tr], l, IDX), IDX)
+                    ens["ensR"] = (tensor_fit([A[t]["G"][l] for t in tr], [A[t]["b"][l] for t in tr], IDXR), IDXR)
+                    ens["ensRD"] = (d21_fit([A[t] for t in tr], l, IDXR), IDXR)
+
+                def preds(c):
+                    p = {"wick": c["Tm"][l] + c["Twick"][l],
+                         "leg": predict(c, l, LEG, IDX), "legR": predict(c, l, LEG, IDXR),
+                         "own": predict(c, l, tensor_fit([c["G"][l]], [c["b"][l]], IDX), IDX),
+                         "ownD": predict(c, l, d21_fit([c], l, IDX), IDX)}
+                    for m, (cf, ix) in ens.items():
+                        p[m] = predict(c, l, cf, ix)
+                    return p
+                pred = preds(c)
                 for m, p in pred.items():
                     eps_raw[m][i, l] = rel(p, c["D21"][l])
                 if s in Bp:
                     tb = Bp[s]["D21"][l]
                     en = rel(c["D21"][l], tb) / np.sqrt(2)
                     noise[i, l] = en
+                    predB = preds(Bp[s])
                     for m, p in pred.items():
                         eps_x[m][i, l] = corr(rel(p, tb), en)
+                        # MC noise of the model's own inputs (C, kappa3(z), kappa4 slice, slices of kappa3(a)), from the
+                        # spread of the same model built on the two atlases; subtracted too -> pure representation error
+                        mn = rel(p, predB[m]) * np.linalg.norm(predB[m]) / np.linalg.norm(tb) / np.sqrt(2)
+                        eps_rep[m][i, l] = corr(eps_x[m][i, l], mn)
         hdr = " l | noise | " + " ".join(f"{m:>6}" for m in MODELS)
         lines.append(f"\n## held-out eps of D21(l+1), cross-evaluated on the pair atlas and noise-corrected; mean over the {len(Bp)} pair MLPs [max over MLPs of own ens ensD ensR ensRD]")
         lines.append(hdr)
         for l in range(L1):
             lines.append(f"{l:>2} | {np.nanmean(noise[:, l]):5.3f} | " + " ".join(f"{np.nanmean(eps_x[m][:, l]):6.3f}" for m in MODELS)
                          + "   [" + " ".join(f"{np.nanmax(eps_x[m][:, l]):.3f}" for m in ("own", "ens", "ensD", "ensR", "ensRD")) + "]")
+        lines.append(f"\n## held-out representation error: as above with the model-input MC noise also subtracted (eps_rep); mean over pair MLPs [max]")
+        lines.append(hdr)
+        for l in range(L1):
+            lines.append(f"{l:>2} | {'':5} | " + " ".join(f"{np.nanmean(eps_rep[m][:, l]):6.3f}" for m in MODELS)
+                         + "   [" + " ".join(f"{np.nanmax(eps_rep[m][:, l]):.3f}" for m in ("own", "ens", "ensD", "ensR", "ensRD")) + "]")
         lines.append(f"\n## held-out eps of D21(l+1), within-atlas (raw, includes the atlas's own transported noise), mean over all {len(seeds)} MLPs [max over MLPs of own ens ensD ensR ensRD]")
         lines.append(hdr)
         for l in range(L1):
@@ -194,6 +212,8 @@ def analyse(cdir, outdir):
         summary[w] = dict(n_mlps=len(seeds), n_pairs=len(Bp), noise=np.nanmean(noise, 0).tolist(),
                           eps_x={m: np.nanmean(eps_x[m], 0).tolist() for m in MODELS},
                           eps_raw={m: eps_raw[m].mean(0).tolist() for m in MODELS},
+                          eps_rep={m: np.nanmean(eps_rep[m], 0).tolist() for m in MODELS},
+                          eps_rep_all={m: eps_rep[m].tolist() for m in MODELS},
                           eps_x_all={m: eps_x[m].tolist() for m in MODELS}, eps_raw_all={m: eps_raw[m].tolist() for m in MODELS},
                           seeds=seeds, pair_seeds=sorted(Bp),
                           coef={k: v["ens"].tolist() for k, v in tabs.items()},
