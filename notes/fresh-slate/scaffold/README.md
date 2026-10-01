@@ -1,7 +1,7 @@
 # Fresh-slate scaffold: grader-safe template, porting kit, residual budget
 
-*Status: first usable version (2026-10-01). Template verified end to end; the cost tables in KIT.md and
-RESIDUAL.md are being filled in by `probe_kit.py` / `probe_residual.py`.*
+*Status: usable (2026-10-01). Template verified end to end (local subprocess runner and client/server emulation);
+KIT.md and RESIDUAL.md hold measured prices.*
 
 Design-agnostic infrastructure for the fresh-slate design streams (notes/fresh-slate/BRIEF.md). Nothing here
 encodes an estimation method: the placeholder `design()` in the template is the Gaussian covariance
@@ -14,6 +14,7 @@ closure, a baseline that only exercises the frame.
 | `KIT.md` | measured unit and call prices of the kit's primitives at n = 1024 and batched small sizes |
 | `RESIDUAL.md` | the residual-time budget model: seconds per flopscope call (idle box, 2 threads) |
 | `verify.sh`, `run_summary.py` | end-to-end check with `whest run` under the graded caps on a baked 1024×16 set, the 256×32 smoke shape and 512×16 |
+| `probe_kit.py`, `probe_residual.py`, `results/` | the probes behind KIT.md and RESIDUAL.md, and their JSON outputs |
 
 ## Using the template
 
@@ -65,8 +66,13 @@ Verified with the placeholder design (2026-10-01, this box, 4 vCPU, nothing else
   On the grader (client/server) even a basic slice is a round trip: cache slices of persistent buffers too.
 - **Memory.** 8 GB; on the grader arrays live in the flopscope server, in local emulation in the worker.
 
-## Status of the other deliverables
+## Headline numbers (details in KIT.md / RESIDUAL.md)
 
-- `kit.py`: written; the Strassen engine is the one measured in notes/streams/est-cost (same products as
-  504aldo's V29, 79 calls per L5 family instead of 113).
-- `KIT.md`, `RESIDUAL.md`: being measured (next push).
+- Residual per flopscope call: ≈ 0.025 ms in-process, ≈ 0.014 ms client/server plus 0.0125 ms per basic slice
+  (a round trip). A 0.2 s budget (2× margin) is ≈ 6,000–8,000 calls.
+- Dense 1024³ product 1.0 u; same-object Gram 0.5 u; Strassen L5 0.557 u per product in 79 calls per family
+  (any batch) but 13× the BLAS wall time; Cholesky 0.167 u, slogdet 0.333 u, solve (n rhs) 1.33 u, QR 1.33 u,
+  eigh 4.5 u, svd 13 u; batched small factorizations nearly free.
+- The tagged 3-operand sandwich einsum raised SymmetryError even on an SPD input at n = 1024: do not use it.
+- For the grader-transport emulator use notes/streams/submission/scripts/grader_emul.py (client venv must contain
+  flopscope-client only; see RESIDUAL.md).

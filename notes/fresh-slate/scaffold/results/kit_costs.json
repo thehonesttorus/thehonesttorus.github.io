@@ -1,0 +1,624 @@
+{
+ "matmul (n,n)@(n,n) f32": {
+  "units": 0.99951171875,
+  "calls": 1,
+  "resid_ms": 0.10928299980150769,
+  "backend_ms": 20.8900820002782,
+  "overhead_ms": 1.097780999771203,
+  "ops": [
+   "matmul"
+  ]
+ },
+ "matmul out= pooled": {
+  "units": 0.99951171875,
+  "calls": 1,
+  "resid_ms": 0.09221300024364609,
+  "backend_ms": 20.97100800028784,
+  "overhead_ms": 1.1507459994390956,
+  "ops": [
+   "matmul"
+  ]
+ },
+ "matmul f64": {
+  "units": 1.9990234375,
+  "calls": 1,
+  "resid_ms": 0.12782699968738598,
+  "backend_ms": 43.80433799997263,
+  "overhead_ms": 1.0749100001703482,
+  "ops": [
+   "matmul"
+  ]
+ },
+ "matmul f32 @ f64 (promotes)": {
+  "units": 1.9990234375,
+  "calls": 1,
+  "resid_ms": 0.975447000200802,
+  "backend_ms": 63.08944699958374,
+  "overhead_ms": 1.1499580004965537,
+  "ops": [
+   "matmul"
+  ]
+ },
+ "matmul (n,n)@(n,64)": {
+  "units": 0.062469482421875,
+  "calls": 1,
+  "resid_ms": 0.09132000013778452,
+  "backend_ms": 2.266006000354537,
+  "overhead_ms": 0.7173009994403401,
+  "ops": [
+   "matmul"
+  ]
+ },
+ "matmul (n,n)@(n,256)": {
+  "units": 0.2498779296875,
+  "calls": 1,
+  "resid_ms": 0.09015500017994782,
+  "backend_ms": 5.185600000004342,
+  "overhead_ms": 0.9199049995913811,
+  "ops": [
+   "matmul"
+  ]
+ },
+ "matvec (n,n)@(n,)": {
+  "units": 0.0009760856628417969,
+  "calls": 1,
+  "resid_ms": 0.0677779999023187,
+  "backend_ms": 0.22368500003722147,
+  "overhead_ms": 0.5630120003843331,
+  "ops": [
+   "matmul"
+  ]
+ },
+ "batched (8,n,n)@(8,n,n)": {
+  "units": 7.99609375,
+  "calls": 1,
+  "resid_ms": 0.6151520001367317,
+  "backend_ms": 187.44385900026828,
+  "overhead_ms": 0.8725389998289756,
+  "ops": [
+   "matmul"
+  ]
+ },
+ "batched small (4096,8,8)@(4096,8,8)": {
+  "units": 0.0018310546875,
+  "calls": 1,
+  "resid_ms": 0.06151199977466604,
+  "backend_ms": 0.9545839998281735,
+  "overhead_ms": 0.6149060004645435,
+  "ops": [
+   "matmul"
+  ]
+ },
+ "batched small (1024,32,32)@(1024,32,32)": {
+  "units": 0.03076171875,
+  "calls": 1,
+  "resid_ms": 0.12036999987685704,
+  "backend_ms": 2.2820029998911195,
+  "overhead_ms": 0.8157679999385437,
+  "ops": [
+   "matmul"
+  ]
+ },
+ "A.T @ A (view: full price)": {
+  "units": 0.99951171875,
+  "calls": 1,
+  "resid_ms": 0.1312200001848396,
+  "backend_ms": 17.69514000034178,
+  "overhead_ms": 0.8815749993118516,
+  "ops": [
+   "matmul"
+  ]
+ },
+ "gram_same einsum('ji,jk->ik',A,A)": {
+  "units": 0.5002439022064209,
+  "calls": 1,
+  "resid_ms": 1.4540230004058685,
+  "backend_ms": 19.453492000138795,
+  "overhead_ms": 45.61935799983985,
+  "ops": [
+   "einsum"
+  ]
+ },
+ "sandwich W^T C W (2 dense)": {
+  "units": 1.9990234375,
+  "calls": 2,
+  "resid_ms": 0.16065499949036166,
+  "backend_ms": 39.92074500047238,
+  "overhead_ms": 1.9202429998586013,
+  "ops": [
+   "matmul"
+  ]
+ },
+ "diag_sandwich": {
+  "units": 1.0004878044128418,
+  "calls": 3,
+  "resid_ms": 0.13291699997353135,
+  "backend_ms": 11.565146000975801,
+  "overhead_ms": 2.2076969989939244,
+  "ops": [
+   "matmul",
+   "multiply",
+   "sum"
+  ]
+ },
+ "tagged einsum sandwich (SPD C)": {
+  "error": "SymmetryError: Tensor not symmetric along axes (0, 1): max deviation = inf (tolerance: atol=1e-06, rtol=1e-05). See: https://aicrowd.github.io/flopscope/docs/guides/symmetry"
+ },
+ "Strassen L1 one product": {
+  "units": 0.8768310546875,
+  "calls": 16,
+  "resid_ms": 0.7941350004330161,
+  "backend_ms": 22.794348001298204,
+  "overhead_ms": 5.029919998378318,
+  "ops": [
+   "add",
+   "copyto",
+   "matmul",
+   "subtract"
+  ]
+ },
+ "Strassen L2 one product": {
+  "units": 0.771514892578125,
+  "calls": 31,
+  "resid_ms": 1.4541609989464632,
+  "backend_ms": 47.33680999925127,
+  "overhead_ms": 9.935623001638305,
+  "ops": [
+   "add",
+   "copyto",
+   "matmul",
+   "subtract"
+  ]
+ },
+ "Strassen L3 one product": {
+  "units": 0.6829147338867188,
+  "calls": 46,
+  "resid_ms": 2.805797999826609,
+  "backend_ms": 103.86179099759829,
+  "overhead_ms": 18.977629002620233,
+  "ops": [
+   "add",
+   "copyto",
+   "matmul",
+   "subtract"
+  ]
+ },
+ "Strassen L4 one product": {
+  "units": 0.6096420288085938,
+  "calls": 64,
+  "resid_ms": 3.6678350002148363,
+  "backend_ms": 158.4950230007962,
+  "overhead_ms": 26.027125999007694,
+  "ops": [
+   "add",
+   "copyto",
+   "matmul",
+   "subtract"
+  ]
+ },
+ "Strassen L5 one product": {
+  "units": 0.5566501617431641,
+  "calls": 79,
+  "resid_ms": 5.543978997138765,
+  "backend_ms": 266.86237199965035,
+  "overhead_ms": 31.655375003083464,
+  "ops": [
+   "add",
+   "copyto",
+   "matmul",
+   "subtract"
+  ]
+ },
+ "Strassen L5 batch 4 (shared left)": {
+  "units": 2.180788516998291,
+  "calls": 79,
+  "resid_ms": 5.94089599826475,
+  "backend_ms": 1093.2656689988107,
+  "overhead_ms": 42.22575200265055,
+  "ops": [
+   "add",
+   "copyto",
+   "matmul",
+   "subtract"
+  ]
+ },
+ "Strassen L3 batch 4 (shared left)": {
+  "units": 2.7167587280273438,
+  "calls": 46,
+  "resid_ms": 3.172216998791555,
+  "backend_ms": 284.55731500071124,
+  "overhead_ms": 21.562146000178473,
+  "ops": [
+   "add",
+   "copyto",
+   "matmul",
+   "subtract"
+  ]
+ },
+ "Strassen hub L5 sum_4 X_k Y_k^T": {
+  "units": 2.1870012283325195,
+  "calls": 87,
+  "resid_ms": 5.732993004130549,
+  "backend_ms": 968.8621140026044,
+  "overhead_ms": 41.29052099324326,
+  "ops": [
+   "add",
+   "copyto",
+   "matmul",
+   "subtract",
+   "sum",
+   "swapaxes"
+  ]
+ },
+ "add (n,n) out=": {
+  "units": 0.00048828125,
+  "calls": 1,
+  "resid_ms": 0.03470700039542862,
+  "backend_ms": 1.244359999873268,
+  "overhead_ms": 0.36832799969488406,
+  "ops": [
+   "add"
+  ]
+ },
+ "multiply (n,n) by row vector out=": {
+  "units": 0.00048828125,
+  "calls": 1,
+  "resid_ms": 0.04489799994189525,
+  "backend_ms": 0.9271259996239678,
+  "overhead_ms": 0.38251800015132176,
+  "ops": [
+   "multiply"
+  ]
+ },
+ "add (n,n) fresh result": {
+  "units": 0.00048828125,
+  "calls": 1,
+  "resid_ms": 0.03769100021600025,
+  "backend_ms": 1.0326790002181951,
+  "overhead_ms": 0.34147499991377117,
+  "ops": [
+   "add"
+  ]
+ },
+ "exp (n,n)": {
+  "units": 0.0078125,
+  "calls": 1,
+  "resid_ms": 0.031009999929665355,
+  "backend_ms": 0.948340999912034,
+  "overhead_ms": 0.2716190001592622,
+  "ops": [
+   "exp"
+  ]
+ },
+ "sqrt (n,)": {
+  "units": 9.5367431640625e-07,
+  "calls": 2,
+  "resid_ms": 0.03881499969793367,
+  "backend_ms": 0.005957000212220009,
+  "overhead_ms": 0.3022060004695959,
+  "ops": [
+   "abs",
+   "sqrt"
+  ]
+ },
+ "norm.cdf (n,) +astype": {
+  "units": 4.673004150390625e-05,
+  "calls": 2,
+  "resid_ms": 0.11426400033087702,
+  "backend_ms": 0.006922000011400087,
+  "overhead_ms": 0.5921590000070864,
+  "ops": [
+   "astype",
+   "stats.norm.cdf"
+  ]
+ },
+ "norm.pdf (n,) +astype": {
+  "units": 2.6702880859375e-05,
+  "calls": 2,
+  "resid_ms": 0.058845999774348456,
+  "backend_ms": 0.005370000053517288,
+  "overhead_ms": 0.39143799995144946,
+  "ops": [
+   "astype",
+   "stats.norm.pdf"
+  ]
+ },
+ "norm.cdf (n,n)": {
+  "units": 0.046875,
+  "calls": 1,
+  "resid_ms": 2.0709559994429583,
+  "backend_ms": 0.0,
+  "overhead_ms": 111.52131900053064,
+  "ops": [
+   "stats.norm.cdf"
+  ]
+ },
+ "relu_moments (n,)": {
+  "units": 8.0108642578125e-05,
+  "calls": 18,
+  "resid_ms": 0.837388999570976,
+  "backend_ms": 0.10113300095326849,
+  "overhead_ms": 5.667898999490717,
+  "ops": [
+   "abs",
+   "add",
+   "astype",
+   "maximum",
+   "multiply",
+   "sqrt",
+   "stats.norm.cdf",
+   "stats.norm.pdf",
+   "true_divide"
+  ]
+ },
+ "sum axis 0 (n,n)": {
+  "units": 0.0004878044128417969,
+  "calls": 1,
+  "resid_ms": 0.06203800012372085,
+  "backend_ms": 0.6247169999369362,
+  "overhead_ms": 0.8392300001105468,
+  "ops": [
+   "sum"
+  ]
+ },
+ "einsum 'ij,ij->i'": {
+  "units": 0.0009760856628417969,
+  "calls": 1,
+  "resid_ms": 0.05670200016538729,
+  "backend_ms": 0.932401999762078,
+  "overhead_ms": 0.48394399982498726,
+  "ops": [
+   "einsum"
+  ]
+ },
+ "take rows (n idx)": {
+  "units": 0.001953125,
+  "calls": 1,
+  "resid_ms": 0.06946299981791526,
+  "backend_ms": 0.7853490001252794,
+  "overhead_ms": 0.2411519999441225,
+  "ops": [
+   "take"
+  ]
+ },
+ "reshape (n,n)->(2,512,2,512)": {
+  "units": 0.00048828125,
+  "calls": 1,
+  "resid_ms": 0.03419600034249015,
+  "backend_ms": 0.004690999958256725,
+  "overhead_ms": 0.17779299969333806,
+  "ops": [
+   "reshape"
+  ]
+ },
+ "transpose view": {
+  "units": 0.0,
+  "calls": 1,
+  "resid_ms": 0.034949000109918416,
+  "backend_ms": 0.0035110001590510365,
+  "overhead_ms": 0.1546379999126657,
+  "ops": [
+   "transpose"
+  ]
+ },
+ "diagonal view": {
+  "units": 0.0,
+  "calls": 1,
+  "resid_ms": 0.03155100012008916,
+  "backend_ms": 0.0037670001802325714,
+  "overhead_ms": 0.1431389996469079,
+  "ops": [
+   "diagonal"
+  ]
+ },
+ "copyto (n,n)": {
+  "units": 0.00048828125,
+  "calls": 1,
+  "resid_ms": 0.07122200031517423,
+  "backend_ms": 0.9679419999883976,
+  "overhead_ms": 0.3461819997028215,
+  "ops": [
+   "copyto"
+  ]
+ },
+ "cholesky n f32": {
+  "units": 0.16666666651144624,
+  "calls": 1,
+  "resid_ms": 0.11528799996085581,
+  "backend_ms": 34.691153000039776,
+  "overhead_ms": 0.8061540002017864,
+  "ops": [
+   "linalg.cholesky"
+  ]
+ },
+ "cholesky n f64": {
+  "units": 0.3333333330228925,
+  "calls": 1,
+  "resid_ms": 0.05646699992212234,
+  "backend_ms": 31.955637999999453,
+  "overhead_ms": 0.39181100009955117,
+  "ops": [
+   "linalg.cholesky"
+  ]
+ },
+ "eigh n f32": {
+  "units": 4.5,
+  "calls": 1,
+  "resid_ms": 0.0746690002415562,
+  "backend_ms": 215.62743300000875,
+  "overhead_ms": 0.520093999512028,
+  "ops": [
+   "linalg.eigh"
+  ]
+ },
+ "eigvalsh n f32": {
+  "units": 0.6666666665114462,
+  "calls": 1,
+  "resid_ms": 0.07537000010415795,
+  "backend_ms": 123.246150000341,
+  "overhead_ms": 0.4723039996861189,
+  "ops": [
+   "linalg.eigvalsh"
+  ]
+ },
+ "qr n f32 (reduced)": {
+  "units": 1.333333333954215,
+  "calls": 1,
+  "resid_ms": 0.07437299927914864,
+  "backend_ms": 217.3762259999421,
+  "overhead_ms": 0.5561520006267529,
+  "ops": [
+   "linalg.qr"
+  ]
+ },
+ "qr (n,256) f32": {
+  "units": 0.11458333395421505,
+  "calls": 1,
+  "resid_ms": 0.07183199932114803,
+  "backend_ms": 46.409028000198305,
+  "overhead_ms": 0.44397500050763483,
+  "ops": [
+   "linalg.qr"
+  ]
+ },
+ "solve n, n rhs f32": {
+  "units": 1.3333333330228925,
+  "calls": 1,
+  "resid_ms": 0.05896900029256358,
+  "backend_ms": 120.83950099986396,
+  "overhead_ms": 0.470374999622436,
+  "ops": [
+   "linalg.solve"
+  ]
+ },
+ "solve n, 1 rhs f32": {
+  "units": 0.3343098955228925,
+  "calls": 1,
+  "resid_ms": 0.06471300002885982,
+  "backend_ms": 33.52059399958307,
+  "overhead_ms": 0.4657890003727516,
+  "ops": [
+   "linalg.solve"
+  ]
+ },
+ "slogdet n f32": {
+  "units": 0.33334191609174013,
+  "calls": 1,
+  "resid_ms": 0.07006400028330972,
+  "backend_ms": 33.35931599985997,
+  "overhead_ms": 0.43536500015761703,
+  "ops": [
+   "linalg.slogdet"
+  ]
+ },
+ "slogdet n f64": {
+  "units": 0.6666838321834803,
+  "calls": 1,
+  "resid_ms": 0.09327700036010356,
+  "backend_ms": 33.42345600003682,
+  "overhead_ms": 0.4828989995075972,
+  "ops": [
+   "linalg.slogdet"
+  ]
+ },
+ "det n f32": {
+  "units": 0.3333338098600507,
+  "calls": 1,
+  "resid_ms": 0.07211599995571305,
+  "backend_ms": 34.298411999770906,
+  "overhead_ms": 0.4868360001637484,
+  "ops": [
+   "linalg.det"
+  ]
+ },
+ "inv n f32": {
+  "units": 1.0,
+  "calls": 1,
+  "resid_ms": 0.0581569997848419,
+  "backend_ms": 100.22187899994606,
+  "overhead_ms": 0.4107620002287149,
+  "ops": [
+   "linalg.inv"
+  ]
+ },
+ "svd n f32": {
+  "units": 13.0,
+  "calls": 1,
+  "resid_ms": 0.06248800036701141,
+  "backend_ms": 614.5304740002757,
+  "overhead_ms": 0.44794299947170657,
+  "ops": [
+   "linalg.svd"
+  ]
+ },
+ "slogdet batched (4096,8,8)": {
+  "units": 0.0009250640869140625,
+  "calls": 1,
+  "resid_ms": 0.05989600003886153,
+  "backend_ms": 3.7259299997458584,
+  "overhead_ms": 0.3973790003328759,
+  "ops": [
+   "linalg.slogdet"
+  ]
+ },
+ "cholesky batched (4096,8,8)": {
+  "units": 0.000324249267578125,
+  "calls": 1,
+  "resid_ms": 0.050647000080061844,
+  "backend_ms": 2.5573330003680894,
+  "overhead_ms": 0.3416279996599769,
+  "ops": [
+   "linalg.cholesky"
+  ]
+ },
+ "solve batched (4096,8,8)@(4096,8,8)": {
+  "units": 0.0026035308837890625,
+  "calls": 1,
+  "resid_ms": 0.05957099983788794,
+  "backend_ms": 11.972780999712995,
+  "overhead_ms": 0.645036000150867,
+  "ops": [
+   "linalg.solve"
+  ]
+ },
+ "eigh batched (1024,32,32)": {
+  "units": 0.140625,
+  "calls": 1,
+  "resid_ms": 0.06298200014498434,
+  "backend_ms": 165.7146989996363,
+  "overhead_ms": 0.4201880005894054,
+  "ops": [
+   "linalg.eigh"
+  ]
+ },
+ "slogdet batched (1024,32,32)": {
+  "units": 0.010691165924072266,
+  "calls": 1,
+  "resid_ms": 0.07098900050550583,
+  "backend_ms": 16.95292199974574,
+  "overhead_ms": 0.4596399999172718,
+  "ops": [
+   "linalg.slogdet"
+  ]
+ },
+ "cholesky batched (64,128,128)": {
+  "units": 0.020833313465118408,
+  "calls": 1,
+  "resid_ms": 0.08372499996767147,
+  "backend_ms": 25.030278000031103,
+  "overhead_ms": 0.48382000022684224,
+  "ops": [
+   "linalg.cholesky"
+  ]
+ },
+ "eigh batched (64,128,128)": {
+  "units": 0.5625,
+  "calls": 1,
+  "resid_ms": 0.07314699996641139,
+  "backend_ms": 151.74989000024652,
+  "overhead_ms": 0.4458459998204489,
+  "ops": [
+   "linalg.eigh"
+  ]
+ }
+}

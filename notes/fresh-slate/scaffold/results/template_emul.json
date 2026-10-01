@@ -1,0 +1,58 @@
+{
+ "tag": "template_emul",
+ "mode": "client-server emulation",
+ "server_threads": 2,
+ "client_threads": 1,
+ "setup_window_s": 4.83756422996521,
+ "setup_only_s": 0.08507156372070312,
+ "peak_rss_mb_server": 206,
+ "peak_rss_mb_client": 2125,
+ "summary": {
+  "n_mlps": 2,
+  "n_errors": 0,
+  "C_over_B_max": 0.030299060046218074,
+  "C_over_B_mean": 0.030297622084162867,
+  "final_layer_mse": 4.959999387210701e-06,
+  "truth_noise_floor": 3.5307851273506184e-06,
+  "residual_max_s": 0.013542551000000014,
+  "residual_list_s": [
+   0.0129,
+   0.0135
+  ],
+  "wall_max_s": 1.306834376,
+  "n_over_residual_cap": 0,
+  "n_over_wall_cap": 0,
+  "n_nonfinite": 0,
+  "final_mse_minus_noise": 1.4292142598600823e-06
+ },
+ "per_mlp": [
+  {
+   "mlp_index": 0,
+   "mlp_seed": 4356376570579900857,
+   "noise": 3.0890418699211044e-06,
+   "ok": true,
+   "flops_used": 66628337663,
+   "finite": true,
+   "final_layer_mse": 3.384674528206233e-06,
+   "wall_time_s": 1.306834376,
+   "backend_s": 0.860472881,
+   "overhead_s": 0.43350882700000004,
+   "residual_wall_time_s": 0.012852668000000067
+  },
+  {
+   "mlp_index": 1,
+   "mlp_seed": 3106808413793395686,
+   "noise": 3.972528384780132e-06,
+   "ok": true,
+   "flops_used": 66622013439,
+   "finite": true,
+   "final_layer_mse": 6.535324246215168e-06,
+   "wall_time_s": 1.147425335,
+   "backend_s": 0.673800616,
+   "overhead_s": 0.4600821680000001,
+   "residual_wall_time_s": 0.013542551000000014
+  }
+ ],
+ "client_stderr_tail": "{\"mlp_index\": 0, \"mlp_seed\": 4356376570579900857, \"noise\": 3.0890418699211044e-06, \"ok\": true, \"flops_used\": 66628337663, \"finite\": true, \"final_layer_mse\": 3.384674528206233e-06, \"wall_time_s\": 1.306834376, \"backend_s\": 0.860472881, \"overhead_s\": 0.43350882700000004, \"residual_wall_time_s\": 0.012852668000000067}\n{\"mlp_index\": 1, \"mlp_seed\": 3106808413793395686, \"noise\": 3.972528384780132e-06, \"ok\": true, \"flops_used\": 66622013439, \"finite\": true, \"final_layer_mse\": 6.535324246215168e-06, \"wall_time_s\": 1.147425335, \"backend_s\": 0.673800616, \"overhead_s\": 0.4600821680000001, \"residual_wall_time_s\": 0.013542551000000014}\n",
+ "server_stderr_tail": "[flopscope-server] binding to ipc:///tmp/fs-emul.sock  (timeout=900.0s)\n<frozen runpy>:88: FlopscopeWarning: stats.norm.cdf promoted its float32 input to float64 to match scipy.stats. If float64 output was not intended, cast the result back with result.astype(np.float32) before downstream operations; float64 operations are billed at twice the float32 dtype rate.\n<frozen runpy>:88: FlopscopeWarning: stats.norm.pdf promoted its float32 input to float64 to match scipy.stats. If float64 output was not intended, cast the result back with result.astype(np.float32) before downstream operations; float64 operations are billed at twice the float32 dtype rate.\n"
+}

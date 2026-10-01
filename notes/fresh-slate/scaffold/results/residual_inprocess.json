@@ -1,0 +1,52 @@
+{
+ "vector add out= (n,)": {
+  "resid_ms_per_call": 0.02187048949599557,
+  "wall_ms_per_call": 0.22031457549996958,
+  "logged_ops_per_call": 1.0
+ },
+ "vector add fresh (n,)": {
+  "resid_ms_per_call": 0.024321428499888498,
+  "wall_ms_per_call": 0.22767379500010065,
+  "logged_ops_per_call": 1.0
+ },
+ "small matmul out= (64,64)": {
+  "resid_ms_per_call": 0.027332265501854636,
+  "wall_ms_per_call": 0.26113955599998917,
+  "logged_ops_per_call": 1.0
+ },
+ "(n,n) add out=": {
+  "resid_ms_per_call": 0.030542770504325745,
+  "wall_ms_per_call": 1.129548876499939,
+  "logged_ops_per_call": 1.0
+ },
+ "(n,n) add fresh": {
+  "resid_ms_per_call": 0.03614342099922396,
+  "wall_ms_per_call": 1.2865054674998646,
+  "logged_ops_per_call": 1.0
+ },
+ "strided-slab add out=, prebuilt views": {
+  "resid_ms_per_call": 0.02420659249946766,
+  "wall_ms_per_call": 0.2905578610000248,
+  "logged_ops_per_call": 1.0
+ },
+ "strided-slab add out=, slicing in the call": {
+  "resid_ms_per_call": 0.03142633400284467,
+  "wall_ms_per_call": 0.27399245900005553,
+  "logged_ops_per_call": 1.0
+ },
+ "basic slice only (no op)": {
+  "resid_ms_per_call": 0.001187717499988139,
+  "wall_ms_per_call": 0.0011844494999877497,
+  "logged_ops_per_call": 0.0
+ },
+ "reshape (logged view)": {
+  "resid_ms_per_call": 0.01957144499738206,
+  "wall_ms_per_call": 0.10517777900008696,
+  "logged_ops_per_call": 1.0
+ },
+ "vector norm.cdf + astype": {
+  "resid_ms_per_call": 0.05710401300189005,
+  "wall_ms_per_call": 0.5059708114999921,
+  "logged_ops_per_call": 2.0
+ }
+}
