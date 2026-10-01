@@ -1,6 +1,6 @@
 # oracle1024: the K = 3 closure ladder at the real shape (width 1024, depth 16)
 
-Status: **in progress** (method verified; width-1024 runs pending).
+Status: **in progress** — method verified; preliminary width-1024 ladder at N = 32k (one MLP); production runs (2 MLPs × 2 replicas × N = 3.5e6) running.
 
 ## Question
 
@@ -57,4 +57,47 @@ better than the oracle's tensor-space fit, as it must be (it minimises the repor
 
 ## Results
 
-(pending)
+### Noise at width 1024, and what it means for the estimate
+
+One replica's D21(l+1) is far noisier at width 1024 than at 128: at N = 32 768 its relative noise is
+0.88 (layer 1), 0.49 (5), 0.28 (10), 0.20 (15), i.e. ε_noise ≈ 0.2 √(32768/N) at depth. Extrapolating 1/√N,
+ε_noise ≤ 1 % needs N ≈ 1.4e7 per replica at layer 14 and ≈ 4.5e7 at layer 7 (≈ 2.5e8 at layer 1): 15–45 hours of
+this 4-core box per MLP pair, out of reach here. Two facts make it unnecessary for the *model error*:
+(i) model and target are built from the same samples (x = (Φ∘y)W is the linearisation of z_{l+1}), so the replica
+noise of δ = M − D is 2.5–5× below that of D (closure column: 0.04–0.2 at N = 32k vs 0.2–0.9);
+(ii) the replica cross-product ⟨δ_A, δ_B⟩/⟨D_A, D_B⟩ is noise-free in expectation, and its jackknife error is small
+at depth: at N = 32k the closure's ε² is resolved to ±0.05e-4 (ε ≈ 0.9 ± 0.03 %) at layers 6–14, while layers 0–2
+are unresolved. The production N = 3.5e6 cuts all noise by 10.3×.
+
+### Preliminary ladder, width 1024, MLP seed 770000, N = 32 768 × 2 replicas
+
+ε of D21(l+1) in %, replica cross-product (± jackknife s.e.); full table in
+[`results/summary_prelim.md`](results/summary_prelim.md), raw output in `results/width1024_mlp770000_pair_N32k.txt`.
+
+| layers | slices only | leading Wick | + Gaussian ρ³ | closure without κ4 | **leg-partition closure** | closure, κ4 regenerated u_i C_jk | **fitted closure** | fitted, regenerated κ4 |
+|---|---|---|---|---|---|---|---|---|
+| 3–5 | 46–47 | 3.3–4.1 | 3.4–4.1 | 2.4–3.2 | 0.0–0.9 (± 0.3) | 1.9–2.9 | 0–0.8 | 1.9–2.9 |
+| 6–9 | 45–46 | 4.0–4.2 | 4.0–4.2 | 2.9–3.1 | 0.8–1.0 | 2.5–2.7 | 0.8–0.9 | 2.5–2.7 |
+| 10–14 | 44–46 | 4.3–4.5 | 4.3–4.5 | 3.0–3.2 | **0.84–0.95** | 2.5–2.7 | **0.7–0.85** | 2.5–2.7 |
+
+D21-space fitted coefficients (B0..B6, theory 0, 3, 3, 1, 1, 1.5, 1.5): at every layer 1–14
+B1 2.90–3.13, B2 2.89–2.99, B3 0.17–0.46, B4 0.8–1.0, B5 1.25–1.50, B6 1.40–1.49 — **no depth drift**.
+
+### Width trend (same two seed MLPs, streaming pair ladders, layers 7–14; N = 5e5 at 128, 1e6 at 256)
+
+| width | leading Wick | closure without κ4 | leg-partition closure | closure, regenerated κ4 | fitted closure | fit coef B6 at layer 14 |
+|---|---|---|---|---|---|---|
+| 128 | 7–11 % | 9.4–12 % | 3.7–7.1 % | 6–8 % | 1.7–2.7 % | 1.05–1.2 |
+| 256 | 6.7–8.4 % | 5.7–7.4 % | 2.0–2.9 % | 4.5–5.9 % | 1.5–2.0 % | ≈ 1.3 |
+| 1024 (prelim.) | 4.0–4.5 % | 2.9–3.2 % | 0.8–1.0 % | 2.5–2.7 % | 0.7–0.9 % | 1.42 |
+
+(the width-128 streaming numbers reproduce the dense oracle tables of competition-plan §3.1 on other MLPs:
+closure 3–7 %, fit 1.4–2.7 %, coefficient drift with depth.)
+
+Readings so far. (1) The leg-partition closure's error falls roughly as n^(−0.8) (deep layers 4.7 → 2.6 → 0.9 %),
+much faster than the leading Wick term (≈ n^(−0.25)); at width 1024 the *un-fitted* closure is already below the
+2.2 % frontier bar at layers ≥ 3. (2) The coefficient drift seen at width 128 (renormalisation by second-order
+diagrams) is a finite-width effect: at 1024 the fitted coefficients equal the leg-partition ones within noise at
+every depth, and the fit buys only ~0.1 point over the derived closure. (3) The exact (2,1,1) κ4 slice is
+essential: without it 3 %, with the r = 1 regeneration u_i C_jk 2.5–2.7 % (above the bar), exact 0.9 %. The
+regeneration's relative capture of the κ4 term gets *worse* with width (128: removes ~40 % of the gap, 1024: ~20 %).
