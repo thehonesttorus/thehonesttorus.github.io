@@ -15,10 +15,10 @@ def _He(K):
     for k in range(2, K + 1): H.append(_xg * H[-1] - (k - 1) * H[-2])
     return H
 
-def predict(W, Ksrc=6, inject=True, cov_inject=True, chi=False, Bterm=True, ret_state=False):
+def predict(W, Ksrc=6, inject=True, cov_inject=True, chi=False, Bterm=True, ret_state=False, ret_feats=False, X4=None, ret_C=False):
     W = W.astype(np.float64); L, n, _ = W.shape; sig2 = 2.0 / n
     He = _He(Ksrc); fact = np.cumprod([1.0] + list(range(1, Ksrc + 1)))
-    out = []; t = np.zeros(n); mu = None; C = None; ts = []
+    out = []; t = np.zeros(n); mu = None; C = None; ts = []; Cs = []
     for l in range(L):
         Wl = W[l]
         if l == 0: m = np.zeros(n); S = Wl.T @ Wl; y = np.zeros(n)
@@ -28,11 +28,18 @@ def predict(W, Ksrc=6, inject=True, cov_inject=True, chi=False, Bterm=True, ret_
         k3 = 3 * sig2 * y if inject else np.zeros(n)
         mu_new = muG - k3 * a * p / (6 * v)
         sec = secG + k3 * p / (3 * s)
+        k4 = 3 * sig2 ** 2 * X4[l - 1] if (X4 is not None and l > 0) else 0.0
+        if l > 0 and X4 is not None:
+            mu_new = mu_new + k4 * p * (a * a - 1) / (24 * v * s)
+            sec = sec - k4 * a * p / (12 * v)
         R = S / np.outer(s, s); H = hk(a, 2)
         Cn = np.outer(s * H[0], s * H[0]) * R + 0.5 * np.outer(s * H[1], s * H[1]) * R * R
         if inject and cov_inject:
             u1 = p / s; Cn += 0.5 * sig2 * (np.outer(u1, P * y) + np.outer(P * y, u1))
+        if l > 0 and X4 is not None:
+            u4 = (p / s) * sig2 * np.sqrt(max(X4[l - 1], 0.0)) / 2; Cn += np.sign(X4[l - 1]) * np.outer(u4, u4)
         np.fill_diagonal(Cn, np.maximum(sec - mu_new * mu_new, 1e-12))
+        Cs.append(Cn)
         # trace channel of a_l
         zq = s[:, None] * (a[:, None] + _xg[None, :]); r = np.maximum(zq, 0)
         f = (r - muG[:, None]) ** 2
@@ -49,4 +56,6 @@ def predict(W, Ksrc=6, inject=True, cov_inject=True, chi=False, Bterm=True, ret_
         t = tn; mu = mu_new; C = Cn; out.append(mu); ts.append(t)
     out = np.stack(out)
     if chi: out = out * chi_mean_ratio(n)
+    if ret_C: return out, Cs
+    if ret_feats: return out, a, s
     return (out, np.stack(ts)) if ret_state else out

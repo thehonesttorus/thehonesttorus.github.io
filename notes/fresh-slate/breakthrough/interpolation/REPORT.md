@@ -40,14 +40,32 @@ v0 (≈ 2 h in). Code in this directory; results in `results/`.
    defect (−2.0e-4 at layer 16) matches the radial factor (−2.2e-4). Gaussian-exact bivariate ReLU covariance (Hermite
    order 2 instead of the linearised one) adds 3.35e-6.
 
-**Verdict v0.** The lens does not produce an O(Ln³) exact representation of old content (a, b and c are negative on that
-question, with reasons). It does produce a cheap, general, additive tool: **disorder-conditional (self-averaging)
-correction of any reference chain, at O(n) run-time cost, trained offline on the known weight ensemble.** On the
-Gaussian closure (≈ 17 units ≈ 0.017 B, multiplier 0.1) it gives raw ≈ 1.4e-6 → adjusted ≈ 1.4e-7, which already
-matches the best fresh design's projection (Heisenberg–Duhamel, ≈ 1–1.8e-7 adjusted at 0.26 B) at a fifteenth of the
-cost; it is still ≈ 100× above the bar on its own. The deciding questions (§5) are whether the self-averaging fraction
-grows when the correction is applied *inside* the chain at every layer (drift is the dominant error) and whether it
-survives on top of a first-order (κ3) reference.
+5. **The breakthrough-shaped finding: old content of the per-neuron third cumulant is carried by ONE vector per layer.**
+   Expanding κ3(z_{l+1,p}) = κ3(a_l)[w_p^{⊗3}] in Wiener chaos of the column w_p, the chaos-1 part is
+   3σ²(Wᵀt_l)_p with the **trace channel** t_l = E[|ã_l|²ã_l] = Cov(|ã_l|², a_l) — the covariance of every neuron with
+   the per-input order parameter of (b). **Measured at n = 1024: chaos 1 explains 92–93 % of the variance of the
+   per-neuron κ3 from layer 8 on (corr 0.965; MC noise 6 % of the signal).** And t obeys a closed recursion derived
+   from first-order Edgeworth plus the chaos-0 contraction of the transport Gram (no fitted coefficients):
+   t_{l+1} = src_G + ½σ²(Σγ)·Φ∘(Wᵀt_l) + ½σ²(t_l·Wu)·φ/s, **R² = 0.990–0.998 per layer** against MC (oracle input).
+   Cost: O(K n²) per layer on top of the closure.
+6. **Trace-channel closure (TC, `tc.py`): raw 1.45e-6 (1.31e-6 with the chi factor) at n = 1024, 6/6 MLPs**, against
+   4.10e-6 for the order-2 Gaussian closure and 4.30e-6 for the bench closure; cost ≈ the closure's (≈ 17 units ≈
+   0.017 B, multiplier 0.1) → **adjusted ≈ 1.3e-7**: the level of the best fresh design (HD first order, projected
+   1–1.8e-7 at 0.26 B) at a fifteenth of its cost, and ≈ 80× above the bar.
+7. **What is left is quenched.** A disorder-conditional (self-averaging) correction trained on 23 fresh networks gains
+   nothing on top of TC (1.31 → 1.28e-6): the closure's self-averaging error *was* the trace channel. The scalar κ4
+   channel (chaos 0 of κ4(z_p): 3σ⁴X, X = excess norm variance, oracle value) adds 1.29 → 1.02e-6 (MLP 0). Injecting
+   the Monte Carlo t instead of the propagated one gives 1.51 → 1.37e-6 (MLP 0): the propagation of t is not the
+   bottleneck either. The remainder is the chaos ≥ 2 content (the 7 % of κ3 outside the trace channel, the
+   off-rank-one part of the (2,1) slice, the κ4 slices through a matrix-valued trace M = Σ_i κ4(a)_{ii··}).
+
+**Verdict v1.** (a), (b), (c) do not give an exact O(Ln³) representation of the quenched mean; each fails for a stated
+reason. But the lens's own decomposition — **Wiener chaos in the weights** — identifies which part of the old content is
+low-dimensional: the chaos-1 trace of κ3, one n-vector per layer, with an exact-to-1 % O(n²) recursion. That turns
+the Gaussian closure into a 3.1–3.3× better estimator at the same cost. It is not a path to 1e-8 on its own: the
+remaining error is quenched chaos ≥ 2 content, which is where the expensive designs live. The useful export to the
+other streams is (i) the trace channel, which any chain can carry for free (and should subtract before compressing
+old content — it is the rank-one "spike" of the (2,1) slice), and (ii) the chi factor.
 
 ## 1. The task in the lens
 

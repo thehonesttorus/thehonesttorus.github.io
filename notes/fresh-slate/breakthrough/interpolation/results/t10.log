@@ -1,0 +1,8 @@
+closure 2||C||^2/tr^2 in units 2/n: [ 1.54  2.4   3.31  4.19  5.09  5.98  6.91  7.8   9.12 10.04 11.24 12.38
+ 13.95 15.49 17.25 18.5 ]
+deg 0: MSE before 3.389e-06  after (LOO-MLP) 2.487e-06  2.78e-06 2.99e-06 2.80e-06 2.16e-06 2.25e-06 1.95e-06
+deg 1: MSE before 3.389e-06  after (LOO-MLP) 1.534e-06  1.56e-06 2.03e-06 1.63e-06 1.32e-06 1.46e-06 1.20e-06
+deg 2: MSE before 3.389e-06  after (LOO-MLP) 1.407e-06  1.42e-06 1.91e-06 1.44e-06 1.23e-06 1.36e-06 1.08e-06
+deg 4: MSE before 3.389e-06  after (LOO-MLP) 1.406e-06  1.42e-06 1.92e-06 1.43e-06 1.22e-06 1.35e-06 1.08e-06
+TC+chi ntrain 23: raw 1.312e-06 -> deg0 1.297e-06 deg1 1.291e-06 deg2 1.281e-06
+closure+chi ntrain 23: raw 3.352e-06 -> deg0 2.448e-06 deg1 1.493e-06 deg2 1.360e-06

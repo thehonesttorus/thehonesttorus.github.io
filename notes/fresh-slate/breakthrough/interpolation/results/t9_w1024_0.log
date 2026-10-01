@@ -1,0 +1,16 @@
+layer 1: t_tc vs t_mc corr 0.9781 proj ratio 0.993
+layer 2: t_tc vs t_mc corr 0.9922 proj ratio 0.859 | kappa3 chaos-1 frac 0.437
+layer 3: t_tc vs t_mc corr 0.9869 proj ratio 0.802 | kappa3 chaos-1 frac 0.645
+layer 4: t_tc vs t_mc corr 0.9868 proj ratio 0.780 | kappa3 chaos-1 frac 0.781
+layer 5: t_tc vs t_mc corr 0.9864 proj ratio 0.759 | kappa3 chaos-1 frac 0.836
+layer 6: t_tc vs t_mc corr 0.9849 proj ratio 0.745 | kappa3 chaos-1 frac 0.866
+layer 7: t_tc vs t_mc corr 0.9877 proj ratio 0.739 | kappa3 chaos-1 frac 0.871
+layer 8: t_tc vs t_mc corr 0.9891 proj ratio 0.728 | kappa3 chaos-1 frac 0.899
+layer 9: t_tc vs t_mc corr 0.9910 proj ratio 0.715 | kappa3 chaos-1 frac 0.906
+layer 10: t_tc vs t_mc corr 0.9935 proj ratio 0.718 | kappa3 chaos-1 frac 0.916
+layer 11: t_tc vs t_mc corr 0.9938 proj ratio 0.720 | kappa3 chaos-1 frac 0.925
+layer 12: t_tc vs t_mc corr 0.9937 proj ratio 0.725 | kappa3 chaos-1 frac 0.918
+layer 13: t_tc vs t_mc corr 0.9948 proj ratio 0.719 | kappa3 chaos-1 frac 0.916
+layer 14: t_tc vs t_mc corr 0.9956 proj ratio 0.714 | kappa3 chaos-1 frac 0.926
+layer 15: t_tc vs t_mc corr 0.9951 proj ratio 0.713 | kappa3 chaos-1 frac 0.926
+layer 16: t_tc vs t_mc corr 0.9947 proj ratio 0.711 | kappa3 chaos-1 frac 0.924
