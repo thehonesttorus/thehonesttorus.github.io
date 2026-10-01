@@ -154,6 +154,17 @@ The fitted table is consistent out of sample (MLPs 2–3) and reproduces the ora
 
 The parameter-free engine beats the table, so it captures what the drift approximates.
 
+Width 64, the same end-to-end ladder (κ4 = atlas, order 1, MLPs 0 / 1, `results/w64`):
+
+| | K=2 | slices | Wick | closure | engine | engine + u·C | engine, no (2,1,1) |
+|---|---|---|---|---|---|---|---|
+| MLP 0 | 6.0e-4 | 4.9e-4 | 5.7e-5 | 2.7e-5 | 1.0e-5 | 2.0e-5 | 2.9e-5 |
+| MLP 1 | 3.2e-4 | NaN | 2.4e-4 | 1.7e-4 | 9.6e-6 | 7.2e-5 | 3.4e-4 |
+
+The structured law for MLP 0 has k/K2 = 2.5 (corr 0.999). For MLP 1, the slices-only chain hit a negative variance.
+The engine's advantage over the oracle closure grows as the net gets narrower: 2.7× and 17× at width 64, against 1.9×
+on average at width 128. That is consistent with the closure's ε shrinking faster with width (§1).
+
 ### 3. Variant E — the (2,1,1) slice of κ4(z) (κ4 otherwise teacher-forced; order 1)
 
 | κ3 rule | (2,1,1) slice | MLP 0 | MLP 1 | MLP 2 | MLP 3 | geo-mean | ε(D21) MLP 0 |
