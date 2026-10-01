@@ -26,9 +26,10 @@ below can be regenerated from `results/` with `summarize.py`, `law.py`, `width_f
    core", which matches the published chain's measured 4–7 %. The exact slice would give ε ≈ 1 %.
 4. **At width 128 the binding error of a self-consistent chain is the fourth-cumulant closure, not the κ3 rule.**
    - κ4 = 0 or the memoryless κ4: every κ3 rule lands at 3e-5 or 8e-5.
-   - A dense κ4 closure (full κ4 carried, n⁴ = 268M entries, with same-order κ3×κ3 terms, `dense2`) stays at
-     teacher-forced quality through layer ≈ 10 on every MLP. The final layer on 2 of 6 MLPs so far is 2.5e-6 and 3.4e-6,
-     close to the teacher-forced level. On the other 4 its last 3–4 layers blow up (4.7e-5 to 8.3e-5).
+   - A dense κ4 closure (full κ4 carried, n⁴ = 268M entries, with same-order κ3×κ3 terms, `dense2`) stays close
+     to teacher-forced quality through layer ≈ 10 on the MLPs checked layer by layer (0 and 1). On 2 of the 5 MLPs
+     finished so far its final layer is 2.5e-6 and 3.4e-6, close to the teacher-forced level. On the other 3 its last 3–4
+     layers blow up (4.7e-5 to 8.3e-5).
 5. ARC's reference `mlp_kprop` is not public (git asks for credentials; not on PyPI), so it could not be used as the
    exact K=3 reference.
 
@@ -164,7 +165,8 @@ fitted-coefficient chain.
 
 - The injected law is exactly quadratic over a decade of ε.
 - Unstructured noise costs 2–5× more per ε² than the structured closure errors. Per-MLP k/K2 is 4–16, versus 1–3.7
-  structured, because random D21 errors do not cancel against the D3 and variance channels the way closure errors do.
+  structured. A plausible reason, not tested: random D21 errors do not partly cancel against correlated errors in D3
+  and the variance, as closure errors do.
 - 504aldo's 1024 law (4.2e-6 ε² ≈ 0.95 × K2 MSE) was calibrated on structured variants. Our structured k/K2 = 1–3.7 is
   therefore the comparable number.
 
@@ -198,10 +200,10 @@ fitted-coefficient chain.
 
 How the κ4 closure behaves along the chain (MLP 0, `results/eps/*`), as relative error of K4 = κ4(z)_{aaaa} per layer:
 - memoryless: 16 % at layer 1, 47 % at layer 4, 65 % at 8, 78–91 % by 13–15;
-- dense: 9 %, 13 %, 35 %, 40–67 %;
+- dense: 9 %, 13 %, 35 %, 37–67 %;
 - dense2: 9 %, 12 %, 34 %, 33–46 %.
 
-Teacher-forced κ4 errors stay below 0.5 % in var through layer 9. Mean over layers, dense2 is at 1.2–9e-6 against
+With the κ4 teacher-forced, the variance error stays ≤ 0.6 % through layer 9. Mean over layers, dense2 is at 0.9–9e-6 against
 1.5e-6 teacher-forced, so dense2 is right for most of the depth. Its failures are a late-layer growth: on MLP 1 the
 per-layer MSE triples per layer from layer 11, while the K4 error peaks at 72 % at layer 12.
 
@@ -239,7 +241,8 @@ per-layer MSE triples per layer from layer 11, while the K4 error peaks at 72 % 
   undiagnosed.
 - The atlas noise of one width-128 atlas (N = 5e5) is 1–6 % on D21 and 2–10 % on K4. It is subtracted only where a
   pair exists (MLP 0 at 128, MLP 0 at 64 and 32); other MLPs' ε include it (≈ +0.5 % at layer-rms).
-- At the step level the order-2 Edgeworth term (κ3²/2) helps at width 128 but hurts at width 32. The 1-D mean and
+- At the step level the order-2 Edgeworth term (κ3²/2) hurts at width 32; it was not compared at width 128 (all
+  width-128 runs use order 2). The 1-D mean and
   variance would need κ5/κ6 marginals for the late layers of narrow nets.
 - The width-64 end-to-end chain hit negative variances on two MLPs at depth (the Edgeworth corrections are not
   positivity-preserving), so the width study is done at the step level only.
