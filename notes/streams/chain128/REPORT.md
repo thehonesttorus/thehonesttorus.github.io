@@ -190,7 +190,10 @@ chain (order 2), mean of 4 MLPs:
 | ΔMSE_final / ε² | 2.3e-3 | 2.1e-3 | 2.1e-3 | 2.1e-3 |
 | ΔMSE_mean-over-layers / ε² | 4.5e-4 | 4.4e-4 | 4.4e-4 | 4.5e-4 |
 
-- The injected law is exactly quadratic over a decade of ε.
+Order-1 chain (fitted, κ4 = atlas, one seed per ε, results/eps3): ΔMSE_final/ε² = 1.1e-3, 1.5e-3, 1.7e-3 at
+ε = 0.05, 0.1, 0.2 (mean of 4 MLPs).
+
+- The injected law is quadratic to within ±25 % over ε = 0.02–0.2 (order 2: within 10 %).
 - Unstructured noise costs ≈ 4× more per ε² than the closures' structured errors at the same order (per MLP k/K2 =
   4–16 against 1–3.7). A plausible
   reason, not tested: closure errors in D21 come with correlated errors in D3 and the variance that partly cancel.
@@ -203,6 +206,9 @@ chain (order 2), mean of 4 MLPs:
 |---|---|---|---|---|---|
 | full κ3(a_l) := atlas | 0.98 | 0.95 | 0.87 | **0.76** | 0.83 |
 | only its all-distinct part | — | 0.95 | 0.93 | 0.97 | — |
+
+On the order-1 chain (results/eps3): forcing the full κ3(a_l) gives 0.90 (layer 8) and 0.88 (layer 12); forcing only
+its all-distinct part at layer 12 gives 1.05.
 
 - No single layer dominates. The early layers, where the chain's ε is 1–3 %, are already at the truth.
 - The late layers carry the rest: fixing layer 12 alone removes 24 %.

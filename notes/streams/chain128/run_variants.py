@@ -69,8 +69,11 @@ def run_variant(v, W, atlas=None, coefs=None):
     base = dict(record=atlas is not None)
     if "@" in v:                      # perturbation @ base chain:  N<eps>@k3:k4 | F<l>@k3:k4 | FD<l>@k3:k4 | FA<l>@k3:k4
         pert, b = v.split("@")
-        k3m, k4m = b.split(":")[:2]
+        bp = b.split(":")
+        k3m, k4m = bp[:2]
         kw = dict(k3mode=k3m, k4mode=k4m, coefs=coefs, atlas=atlas, **base)
+        if len(bp) > 2:
+            kw["order"] = int(bp[2])
         if pert.startswith("N"):
             eps, seed = (pert[1:].split("s") + ["1234"])[:2]
             kw["d21_noise"] = (float(eps), int(seed))
