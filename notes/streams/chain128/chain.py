@@ -383,6 +383,13 @@ class Chain:
                     Xt = atlas_state(self.atlas, l, with_k3=False).X
                     if self.k4mode == "atlas":
                         st.X = Xt
+                    elif self.k4mode.startswith("atlas_rank"):
+                        # best rank-r 'covariance-response family' of the (2,1,1) slice: SVD of the (n, n^2) unfolding
+                        r = int(self.k4mode[len("atlas_rank"):].split("_")[0])
+                        K211 = ok.all_distinct(Xt)
+                        U, S_, Vt = np.linalg.svd(K211.reshape(n, n * n), full_matrices=False)
+                        Kr = ((U[:, :r] * S_[:r]) @ Vt[:r]).reshape(n, n, n)
+                        st.X = (Xt - K211) + ok.all_distinct(Kr)
                     elif self.k4mode == "atlas_zero211":
                         st.X = Xt - ok.all_distinct(Xt)
                     elif self.k4mode == "atlas_reg211":

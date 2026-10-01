@@ -24,7 +24,8 @@ def main():
         pass
     want = None if a.mlps is None else set(int(x) for x in a.mlps.split(","))
     res = defaultdict(dict)
-    for f in glob.glob(os.path.join(a.raw, "*.json")):
+    files = [f for d in a.raw.split(",") for f in glob.glob(os.path.join(d, "*.json"))]
+    for f in files:
         d = json.load(open(f))
         if want is None or d["mlp"] in want:
             res[d["variant"]][d["mlp"]] = d

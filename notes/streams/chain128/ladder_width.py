@@ -1,7 +1,7 @@
 """Interface ladder vs width: eps of D21(z_{l+1}) when the ReLU step is fed an atlas's TRUE z_l cumulants and the
 all-distinct kappa3(a_l) is built by each rule (slices of kappa3(a) from the step itself), noise-corrected with an
 independent atlas of the same MLP when given.
-    python ladder_width.py A.npz [B.npz] > results/ladder_w<n>.txt
+    python ladder_width.py A.npz [B.npz] [--order=1|2] > results/ladder_w<n>.txt
 Rules: none (slices only), wick (Gaussian rho^2 + Phi^3 kappa3), closure (oracle leg-partition coefficients),
 engine (all first-order diagrams), engine_reg211 / engine_zero211 (kappa4 (2,1,1) slice regenerated u_i C_jk / zeroed),
 true (the atlas's own kappa3(a): measures the step's slice error + noise).
@@ -17,12 +17,14 @@ def rel(a, b):
 
 
 def main():
-    A = np.load(sys.argv[1]); B = np.load(sys.argv[2]) if len(sys.argv) > 2 else None
+    args = [x for x in sys.argv[1:] if not x.startswith("--order=")]
+    order = int(([x for x in sys.argv[1:] if x.startswith("--order=")] or ["--order=2"])[0].split("=")[1])
+    A = np.load(args[0]); B = np.load(args[1]) if len(args) > 1 else None
     W = A["weights"].astype(np.float64)
     L, n, _ = W.shape
     idx = np.arange(n)
     rules = ["none", "wick", "closure", "engine", "engine_reg211", "engine_zero211", "true"]
-    print(f"# {sys.argv[1]} width {n} depth {L} N {int(A['n_samples'])}" + (" (noise-corrected with pair)" if B is not None else ""))
+    print(f"# {args[0]} order {order} width {n} depth {L} N {int(A['n_samples'])}" + (" (noise-corrected with pair)" if B is not None else ""))
     print("l  noise " + " ".join(f"{r:>14}" for r in rules))
     for l in range(L - 1):
         st = ch.atlas_state(A, l)
@@ -48,7 +50,7 @@ def main():
             if r == "true":
                 _, _, K3a = ch.atlas_post(A, l)
             else:
-                _, _, K3a, _, _ = ch.relu_step(s, mode, want_k4=False)
+                _, _, K3a, _, _ = ch.relu_step(s, mode, order=order, want_k4=False)
             e = rel(ok.offdiag(ok.transport_d21(K3a, W[l + 1])), T)
             out.append(np.sqrt(max(e * e - nz * nz, 0.0)))
         print(f"{l:<2} {nz:5.3f} " + " ".join(f"{v:14.3f}" for v in out), flush=True)

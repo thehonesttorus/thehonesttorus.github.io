@@ -54,7 +54,8 @@ def main():
     print("| variant | mlp | mean eps D21 (raw) | mean eps D21 (noise-corr.) | final MSE |")
     print("|---|---|---|---|---|")
     for (v, m), j in sorted(E.items(), key=lambda t: (t[0][1], t[1]["final_mse"])):
-        if "eps" not in j or not v.endswith(("atlas", "atlas_reg211", "atlas_zero211")):
+        b = v[:-2] if v.endswith(":1") else v
+        if "eps" not in j or not (b.endswith(("atlas", "atlas_reg211", "atlas_zero211")) or "atlas_rank" in b):
             continue
         e = np.array(j["eps"]["D21"][1:])
         nf = f"results/noise_mlp{m}.json"
@@ -66,7 +67,14 @@ def main():
         print(f"| {v} | {m} | {np.sqrt(np.mean(e**2)):.3f} | {np.sqrt(np.mean(ec**2)):.3f} | {j['final_mse']:.2e} |")
 
 
-def structured_fit(raw_dir="results/eps", k2_dir="results/raw"):
+def _ok_variant(v, order1):
+    base = v[:-2] if v.endswith(":1") else v
+    if order1 != v.endswith(":1"):
+        return None
+    return base
+
+
+def structured_fit(raw_dir="results/eps", k2_dir="results/raw", order1=False):
     """per MLP: least-squares final MSE = a + k eps^2 over the teacher-forced-kappa4 variants (eps = rms over layers of the
     per-layer D21 error, noise-corrected when a noise file exists); k is compared with the MLP's K=2 MSE."""
     E = load(raw_dir)
@@ -75,7 +83,8 @@ def structured_fit(raw_dir="results/eps", k2_dir="results/raw"):
     for m in sorted({m for (_, m) in E}):
         xs, ys = [], []
         for (v, mm), j in E.items():
-            if mm != m or "eps" not in j or not v.endswith(("atlas", "atlas_reg211", "atlas_zero211")):
+            b = _ok_variant(v, order1)
+            if mm != m or "eps" not in j or b is None or not (b.endswith(("atlas", "atlas_reg211", "atlas_zero211")) or "atlas_rank" in b):
                 continue
             e = np.array(j["eps"]["D21"][1:])
             nf = f"results/noise_mlp{m}.json"
@@ -89,7 +98,7 @@ def structured_fit(raw_dir="results/eps", k2_dir="results/raw"):
         r = np.corrcoef(xs, ys)[0, 1]
         k2 = K2.get(("A", m), E.get(("k2:zero", m), {})).get("final_mse", np.nan)
         rows.append((m, a, k, r, k2))
-    print("\n## (4) structured law per MLP: final MSE = a + k eps^2 over the kappa4-teacher-forced variants\n")
+    print(f"\n## (4) structured law per MLP{' (Edgeworth order 1)' if order1 else ' (Edgeworth order 2)'}: final MSE = a + k eps^2 over the kappa4-teacher-forced variants\n")
     print("| mlp | a | k | corr(MSE, eps^2) | K=2 MSE (variant A) | k / K2 MSE |")
     print("|---|---|---|---|---|---|")
     for m, a, k, r, k2 in rows:
@@ -115,4 +124,4 @@ if __name__ == "__main__":
     if len(sys.argv) > 1 and sys.argv[1] == "--dir":
         structured_fit(sys.argv[2], sys.argv[2]); pivot(sys.argv[2])
     else:
-        main(); structured_fit(); pivot()
+        main(); structured_fit(); structured_fit(order1=True); pivot()

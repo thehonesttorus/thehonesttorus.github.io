@@ -1,10 +1,12 @@
 """Summarise results/ladder_w*_mlp0.txt: rms over layers 1-6 (common to all widths) of the noise-corrected D21(l+1)
 error per rule, and a power-law fit eps ~ n^-p extrapolated to n = 1024."""
-import glob, re
+import glob, re, sys
 import numpy as np
 
+prefix = sys.argv[1] if len(sys.argv) > 1 else "results/ladder_w"
+
 rows = {}
-for f in sorted(glob.glob("results/ladder_w*_mlp0.txt")):
+for f in sorted(glob.glob(prefix + "*_mlp0.txt")):
     n = int(re.search(r"_w(\d+)_", f).group(1))
     lines = [l.split() for l in open(f) if l[:1].isdigit()]
     hdr = [l for l in open(f) if l.startswith("l ")][0].split()[2:]
