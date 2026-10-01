@@ -1,0 +1,21 @@
+{
+ "width": 256,
+ "depth": 32,
+ "n_samples": 10000000,
+ "seed_protocol": {
+  "name": "whestbench_explicit_per_mlp_seeds",
+  "version": "3.0"
+ },
+ "avg_variance": [
+  0.03396507404168454,
+  0.06648173384070695
+ ],
+ "estimator_seeds": [
+  256101,
+  256102
+ ],
+ "seeds": [
+  256101,
+  256102
+ ]
+}
