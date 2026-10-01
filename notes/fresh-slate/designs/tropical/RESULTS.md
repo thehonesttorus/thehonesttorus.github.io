@@ -43,14 +43,39 @@ The equivalent spherical statement: Δ_S F = −(n−1)F + (walls) for F = f|_S.
 
 **Consequence:** the "first-order tropical correction" (TCT-1) is O(1), not O(n^{-1/2}). The zeroth order equals the Gaussian closure only after replacing the tropical variable |∇z|² by the moment variable s², i.e. after leaving the tropical picture.
 
-(widths 64 and 128 at depth 16: pending)
+Width 64, depth 16, seed 0, N = 2e5. The split worsens with depth: the tropical multiplicity outgrows the variance.
 
-## R-E0: exactness of I2 at toy scale (e0_curvature_identity.py)
+| layer | 1 | 2 | 4 | 8 | 12 | 16 |
+|---|---|---|---|---|---|---|
+| rms m | 0.56 | 0.74 | 0.84 | 0.69 | 0.39 | 0.38 |
+| m − m_G (true μ, s) | 3e-4 | 6.9e-3 | 8.9e-3 | 1.0e-2 | 6.5e-3 | 7.6e-3 |
+| β − β_G | 8e-3 | 0.18 | 0.37 | 0.72 | 0.76 | **1.02** |
+| median E\|∇z\|²/s² | 1.00 | 1.48 | 2.39 | 4.98 | 10.4 | **16.7** |
+| median E\|∇z\|²/(μ²+s²) | 1.00 | 1.31 | 1.27 | 2.65 | 3.51 | 6.40 |
 
-Width 8, depth 3, M = 2,000 lines: LHS and RHS agree within MC error at every layer (max z-score 2.3 over 24 neurons). Layer 1 matches the closed form |w|/√(2π).
+The input-gradient norm of a deep pre-activation is 17× its variance. Even after the mean is added back it is 6× the second moment. The Jacobian picks up "fan roughness": the tropical hypersurface becomes dense and steep with depth, but its walls cancel in the mean. **The tropical variables are the wrong coordinates for this problem at depth.** Width 128: pending.
 
-(M = 60,000 and width 12 / depth 4: pending)
+## R-E0: exactness of I2 at toy scale
 
-## Stage Q
+- Analytic check: for degree-1 homogeneous a, E[Δa] = E[a(|x|² − n)] (Gaussian shift identity) = E a, using E r³ = (n+1) E r for χ_n.
+- `e0_curvature_identity.py` (line integration): agrees within noise at width 8 / depth 3 and width 12 / depth 4. Its RHS weights 1/|v·∇z| have infinite variance, so its z-scores are unreliable.
+- `e0b_curvature_kernel.py` (kernel δ, finite variance). The kernel bias is **O(h), not O(h²)**: H jumps wherever another wall crosses. `e0c_bandwidth_scan.py`, width 16, depth 2: the relative bias is 2.4 %, 1.4 %, 0.85 %, 0.39 %, −0.1 % at h = 0.08, 0.04, 0.02, 0.01, 0.005, so it vanishes linearly. With linear extrapolation over h ∈ {0.01, 0.02}:
+  - width 16, depth 3, N = 2e6: every layer within noise (max |z| 1.78 / 1.81 / 1.24, 16 neurons per layer). Layer 1 matches the closed form to 9.5e-4.
+  - width 12, depth 4: every layer within noise except one neuron at layer 3 (z = 7). At width 12 there are "dead cones", where every input of a neuron is off and z ≡ 0 on an open set. The per-wall decomposition is ambiguous on their boundaries; this has negligible measure at width ≥ 16.
 
-(pending: bakes running)
+**I2 holds.**
+
+## Stage Q (shared bench, eval_q)
+
+TCT-0 (= Gaussian field + exact one/two-wall cone lift, float64, `tct0.py`, `stageq_tct0.py`):
+
+| set | MLPs | raw final MSE | ± s.e. | all-layer MSE | bench gauss baseline raw |
+|---|---|---|---|---|---|
+| w64_d16 | 8 | 4.46e-4 | 7.6e-5 | 4.49e-4 | 5.11e-4 |
+| w128_d16 | 8 | 2.82e-4 | 6.2e-5 | 1.44e-4 | 2.89e-4 |
+
+- Width fit raw ∝ n^{-0.66}, giving raw(1024) ≈ 7e-5. The bench Gaussian fit (n^{-0.82}) gives 5.2e-5.
+- Cost: 19 u, 0.019 B, multiplier 0.1, so **projected adjusted ≈ 5–7e-6** at 1024.
+- The exact bivariate (two-wall) lift is slightly better than the bench's linearised cross-covariance, but the difference is inside the s.e.
+
+This is the zeroth order of every tropical realisation (§2 of DESIGN.md).
