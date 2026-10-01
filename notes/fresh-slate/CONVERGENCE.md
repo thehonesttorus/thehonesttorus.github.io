@@ -131,3 +131,7 @@ Region REPORT §10 (MLPs 0–2; FC alone mean 2.69e-8 on these three):
 - **Where compression is possible.** The only amenable direction is the age axis: a single shift ℤ, N(λ) = λ, Dixmier-critical. The working carriers (team D's frozen frames, region's frozen Tucker bins, team F's cohort bases, the dyadic odometer) all live there. Their algebra is a crossed product of an AF algebra of age blocks by ℤ, for the odometer the Bunce–Deddens algebra C(ℤ₂) ⋊ ℤ: the user's "shift on sequences with tail equivalence", exactly.
 - **Measured companions (team G T3).** Relative loss ≈ A·e^{−4.6c}, width-universal at n = 256 and 512; the energy profile is subcritical (geometric), so the asymptotically optimal total resolution is O(n) in L, with no gain at L = 16.
 - **Housekeeping.** The three background workflows launched before 20:00 (judge panel, foundations check, bridges-synthesis critic) stopped at ≈ 20:10 UTC, most likely in a session restart. Their finished outputs are in the repo (judge/quant.md, judge/theory.md, the foundations notes, bridges-synthesis A/B/C); the judge panel's final decision was never produced and has been overtaken by round 3.
+
+## Depth 32 (team E G3, 22:00 UTC)
+
+At 256 × 32 the causal carrier at k = 2n/a is lossless at every layer (±3 %), and its cost grows ×2.72 from depth 16 to 32 (predicted ×2.69 for the critical 1/a profile, ×2.27 for geometric; FC grows ×4.1). The memory's age-graded rank class matches the Fibonacci/Penrose quasicrystal (log at 99 %), not Thue–Morse (team E §6).
