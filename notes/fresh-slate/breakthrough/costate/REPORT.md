@@ -319,3 +319,30 @@ At depth (t ≥ 8) **81–86 % of the old D21 energy is in the dilation sector**
 - **The critical (unipotent) sector is real and carried exactly.** Every source deposits a near-constant dilation amplitude (0.9 × 10⁻³ at age 1, still 0.6 × 10⁻³ at age 11) that does not decay with age. These deposits add coherently: the conserved charge grows linearly with depth. The carried scalar reproduces the oracle projection: gp4 equals oracle4, and gl is within 1.2×.
 - **The mixing sector decays geometrically, but too slowly to drop and with too much readout weight.** The remainder after projection decays as ≈ 0.62–0.76 per age (≈ e^−0.35 per layer; faster at older ages). Its share of each source falls from 0.87 at age 1 to ≈ 0.22 by age 12. Yet carrying the dilation sector only halves the error at every window (70 → 30, 30 → 15, 14 → 10, 5.9 → 3.8×). In Frobenius it is 81–86 % of the old content; **in the readout metric at FC's accuracy it is ≈ 50 %**. The mixing sector's ≈ 15 % of the energy holds the other half.
 - **Verdict on D1.** The dilation sector is not a cheap carrier of memory at the FC accuracy level. Reaching full FC within 2× needs the exact window to extend past age 8 even with the sector carried, i.e. ≳ 90 of the 120 (source, target) pairs, so the saving is ≲ 25 %. The memory that binds is the mixing sector. It decays geometrically at ≈ 0.35 per layer, which by itself is too slow for a short window, and it is readout-heavy. A cheap carrier must represent that mixing sector, which the C3 double-edge obstruction makes pair-priced unless it is compressed in some other basis. (MLPs 3–5 were not run: the three networks agree to within 15 % on every ratio.)
+
+## 9. Team B's E2 test (a nonlinear readout of a few transported matrices): killed (2 Oct, requested by the coordinating session)
+
+**Test** (`hadfit.py`).
+- *Target.* Inside FC (my instrumented copy, which is identical to region's FC), the old content (age > 2) at target layers t = 6–13, on MLPs 0–1. Fitted is its a-traceless fluctuation D21° = D_old − 1·(1ᵀD_old/n), team B's definition.
+- *Basis.* 16 symmetric n × n matrices:
+  - C(z_t), C(a_t), Γ_tᵀΓ_t (Γ_t = Cov(x, z_t), by the gated recursion Γ_{t+1} = Γ_t diag(Φ_t) W_{t+1});
+  - the one-step images W_tᵀ C(z_{t−1}) W_t and W_tᵀ Γ_{t−1}ᵀΓ_{t−1} W_t;
+  - diag C and I;
+  - the rank-one outer products of m, s² and 1, in every order.
+- *Fit.* Least squares over **all** 135 pairwise Hadamard products B_i ∘ B_j, each column-centred like the target. Any Σ_{k≤K} X_k ∘ Y_k with X_k, Y_k in the span has Gram G = αᵀβ of rank ≤ K inside this feature space, so the unconstrained residual is a **lower bound for every K, K = 8 included**.
+
+**Residual fraction ‖D21° − fit‖²_F / ‖D21°‖²_F:**
+
+| t | MLP 0: all Hadamard pairs / linear span / C6 template | MLP 1: same | traceless share of old D21 energy (MLP 0 / 1) |
+|---|---|---|---|
+| 6 | 0.83 / 0.90 / 0.84 | 0.82 / 0.89 / 0.83 | 0.24 / 0.21 |
+| 7 | 0.77 / 0.86 / 0.79 | 0.74 / 0.85 / 0.76 | 0.21 / 0.20 |
+| 8 | 0.68 / 0.81 / 0.72 | 0.72 / 0.84 / 0.75 | 0.19 / 0.21 |
+| 9 | 0.61 / 0.78 / 0.68 | 0.66 / 0.80 / 0.71 | 0.19 / 0.20 |
+| 10 | 0.59 / 0.77 / 0.66 | 0.64 / 0.79 / 0.69 | 0.19 / 0.20 |
+| 11 | 0.55 / 0.73 / 0.62 | 0.59 / 0.76 / 0.66 | 0.20 / 0.19 |
+| 12 | 0.54 / 0.72 / 0.62 | 0.56 / 0.74 / 0.63 | 0.21 / 0.21 |
+| 13 | 0.46 / 0.67 / 0.56 | 0.55 / 0.73 / 0.63 | 0.20 / 0.21 |
+
+**Verdict: killed.** Even the unconstrained bound leaves 46–83 % (mean 63 % on MLP 0 and 66 % on MLP 1), above the 50 % kill line on 15 of the 16 (layer, network) cases. The 135 Hadamard features improve on the single C6 template by only 3–10 points. The part of the traceless old fluctuation they capture is essentially the dilation sector again, i.e. the column-centred part of 2 m_a C_ab + m_b C_aa. The remaining ≈ 60 % has no representation as a bilinear function of the natural transported symmetric matrices. Consistent with §8, it is the mixing sector: quenched, atom-complete, and pair-priced (C3).
+Caveat: a different basis could do better, e.g. matrices transported from several layers back, or fitted rather than fixed X_k. But the leaders' "≈ 7 symmetric matrices per layer" would have to be matrices outside every natural object listed here.
