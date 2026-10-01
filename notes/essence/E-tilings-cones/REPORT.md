@@ -256,9 +256,72 @@ The two-sector N6 check. With C's dilation share 0.81 at layer 14, coherent and 
 - **What conic integral geometry says about such tensors.** Sums over walls of moments of normals are what Gaussian integration by parts produces from chamber moments: E[(xxᵀ − I) 1_C] = −Σ_{F ⊂ ∂C} ∫_F ν_F xᵀ dγ. Kinematic and Crofton formulas evaluate them *in expectation over rotations*. That is the annealed value again, given here by the wedge calculus.
 - **Verdict (Synthesis).** The wall-tensor reading makes the memory a geometric object of the fan, with an exact birth rule (facet density × averaged normal) and an exact readout (evaluation in the current frame). Conic geometry offers no compression of it beyond what the frames' falling participation ratio already gives, which is team D's multiscale question. The one conic object that *is* compressible is the dilation sector: the radial direction is common to all cones of a central fan, so the scale mode is exactly closed (costate C6). That matches C's coherent sector.
 
+### 4.7 Round-3 follow-up 1: the price list predicts the truncation experiments inside FC (Measured; `price_check_costate.py`, log)
+The price per layer is P_k = c · K_off(k) · ‖ΔC_k‖²_F:
+- K_off from the wedge calculus;
+- ‖ΔC_k‖² from region's MC atlas;
+- c normalised to region's 3.76e-6 for dropping D21 entirely.
+
+Combined with team C's per-pair age spectra (dilation amplitude γ and free residual energy per (source, target), MLP 0), this predicts the MSE added by dropping old content. No fit is used. Here "costate ages ≤ a" keeps the a newest sources, i.e. C's age ≤ a − 1.
+
+| costate experiment (FC, MLP 0) | measured raw | predicted |
+|---|---|---|
+| ages ≤ 2 only | 1.77e-6 | **1.82e-6** |
+| ages ≤ 4 only | 7.79e-7 | **8.19e-7** |
+| ages ≤ 2 + dilation sector of older content | 7.67e-7 | 4.28e-7 |
+| ages ≤ 4 + dilation sector of older content | 3.84e-7 | 1.74e-7 |
+
+- **Pure truncation** is predicted to 3–5 %.
+- **With the dilation sector carried**, the measured cost is 1.9–2.5× the prediction. Either costate's carriage of the dilation sector (oracle or law-level amplitude under decoupled transport) captures less than the ideal projection, or the free remainder is priced about 2× above its Frobenius share. The tolerance profile below therefore uses a **calibration factor 2.2** on the free remainder (δ thresholds divided by 1.5).
+
+### 4.8 Round-3 follow-up 2: what a carrier of the quenched remainder must deliver (`tolerance_profile.py`, log)
+- **Definitions.** The quenched remainder is the free (dilation-deflated) part of sources older than the a newest ones. These sources are mutually orthogonal: C's cross-age cosines are ≤ 0.03. r_k is its share of D21 energy at layer k (6-network mean). The allowed D21 error ε_k comes from an equal-price split of a budget B_q over layers 1–14, and the carrier must reproduce the remainder to relative accuracy δ_k = ε_k / √(2.2 r_k).
+- **Price shares, layers 1–14:** 0.009, 0.017, 0.029, 0.042, 0.057, 0.074, 0.091, 0.107, 0.121, 0.116, 0.102, 0.099, 0.085, 0.049. Layers 6–13 carry 79 %.
+- **Allowed D21 error ε_k:**
+  - B_q = 5e-9 (a third of the bar): 0.10 at layer 1, 0.074 at layer 2, 0.028–0.036 at layers 6–13.
+  - B_q = 1.5e-8: 0.049–0.062 at layers 6–13.
+
+| a newest sources explicit (+ dilation exact) | remainder share r_k at layers 6–13 | required δ_k at layers 6–13, B_q = 5e-9 / 1.5e-8 | explicit cost of the young part (≈ 4.6 u per pair, Strassen mix) |
+|---|---|---|---|
+| 1 | 0.15–0.22 | 0.05–0.06 / 0.08–0.11 | ≈ 70 u |
+| 3 | 0.06–0.08 | 0.07–0.10 / 0.12–0.17 | ≈ 200 u |
+| 5 | 0.008–0.036 | 0.11–0.26 / 0.19–0.45 | ≈ 330 u |
+| 7 | ≤ 0.015 | 0.18–0.39 / 0.3–0.7 | ≈ 440 u |
+
+- **The tolerance spec, in one sentence.** At the leaders' cost, about 7–10 u per layer, at most 1–2 young sources fit explicitly. A carrier must then reproduce a remainder holding **15–22 % of D21 energy at layers 6–13**, made of 5–12 mutually orthogonal age contributions, to **≈ 5–10 % relative accuracy**. It may do so at ≈ O(n³) per layer, i.e. a few products, for all ages together.
+- **For comparison:**
+  - region's per-source rank-256 basis, shared Oseledets q = n/4, CP merge R = n and atom pruning to 50 % all have error ≥ 30–60 % on this remainder (their raws 1.4–20e-7 against FC's 3.2e-8);
+  - the spec is roughly 5× tighter than anything measured so far.
+- **Not covered here.** The readout channel (diag κ3 at the readout, region N4) is not in this price, so the profile is a lower bound on what is needed.
+
+### 4.9 Round-3 follow-up 3: do quenched conic objects carry the remainder at O(n³) per layer? A no-go with its escape hatches (Derived, with measured closures)
+The candidates are conic objects of *this* network, as opposed to their Sheppard averages.
+- **(i) Per-neuron wedges Φ_j² and per-layer pair wedges P(g_i = g_j = 1).**
+  - FC already transports with the actual Φ_j. The two-replica wedges of one network are exactly Φ_iΦ_j (gates of independent inputs are independent given W). They are rank one and carry no remainder.
+  - The single-input pair wedges Γ_l contain the remainder's *effect*, since the true gate law depends on the true D21. But they cannot be computed without it: they are outputs of the chain, not inputs.
+- **(ii) Cross-layer wedges P(g_{s,r} = 1, g_{t,b} = 1).**
+  - These are the conic form of FC's two-time objects Y_s(t), Z_s(t), and they do determine the remainder.
+  - There are L² n² of them, each layer pair costing a product. Costate's C2/C3 (the double edge factors only through the n²-dimensional second chaos) forbids a causal state of o(L n²) numbers per cut carrying them exactly.
+- **(iii) Facet densities w2_{s,r} = φ(t_r)/σ_r (quenched birth strengths).**
+  - These could make the remainder sparse in atoms, if births concentrated on near-threshold neurons.
+  - At n = 1024, t_rms ≈ 1.2 is too small for that. Region's Wick-atom pruning to 50 % costs 1.3e-6. **Closed by measurement.**
+- **(iv) Averaged wall normals (the frames Γ_t, coordinator note §2).**
+  - These cost one product per layer and are quenched. But the remainder is the static wall tensor evaluated in the new frame, a sum of t·n rank-one terms of comparable energy with incoherent signs.
+  - Sampling walls (importance ∝ energy) has relative error ≈ √(t n / S), so S ≥ t n / δ² ≥ t n.
+  - Restricting to the frame's effective span (PR = n/(2(age+1))) fails because the spectrum is heavy-tailed: PR ≪ rank. Region's shared subspace q = n/4 is 6× worse.
+
+**Verdict.** No conic object of this domain, annealed or quenched, single-time or with a fixed subspace, sparse atom set or merged set, delivers the remainder to the §4.8 spec at O(n³) per layer. Exact carriage is impossible by C2/C3. Every approximate form tried is ≥ 5× too coarse.
+
+**Escape hatches, named.**
+1. **The spec is approximate (δ ≈ 5–10 %), so C2/C3 does not apply.** A carrier that is neither a subspace, nor atom-sparse, nor a re-fitted merge is not excluded. An example is a *fixed* (not fitted) linear re-binning of ages that commutes with the gated transport, so that merging needs no ALS. I have no construction. The test for any candidate is §4.8's table, at n = 1024.
+2. **Changing what is carried.** The final means need the layer-k remainder only through its downstream image. The adjoint (backward) route contracts the n × n² Jacobian of the final means against the remainder. By the same double-edge argument this costs n⁴ unless the Jacobian has structure. The fresh-weight lemma says its incoherent part is unstructured. Its *coherent* part (column sums, the dilation direction) is cheap and is already the 2× that the coherent sectors give. Closed except for unknown structure.
+3. **Spending budget differently by layer.** The price list says layers 1–4 carry ≈ 10 % and layer 14 carries 5 %. Dropping the remainder entirely at those layers and spending the saving at layers 6–13 relaxes the spec there by only ≈ 8 %. Not an escape.
+4. **The leaders.** Their 113–154 u cannot meet this spec with any carrier measured by this programme. Either they hold an object of class 1, or their D21 is cruder and their error cancels between layers (region §6 b; MLP 1 shows a 46 % inter-layer cancellation). The price list can test the second option directly. The incoherent sum over layers predicts each MLP's total; a leader-style estimator whose measured raw beats the incoherent prediction by more than 2× would be using cancellation.
+
 ## 5. Honest assessment
 
-**Final-round summary.**
+**Final-round summary.** (Updated after the coordinator's round-3 request: §4.7–4.9.) The price list also predicts costate's truncation experiments inside FC to 3–5 % (§4.7). It gives a quantitative spec for any carrier: at the leaders' cost, a remainder of 15–22 % of D21 energy must be reproduced to 5–10 % at layers 6–13 (§4.8). No conic object meets it. A no-go is argued, with four escape hatches named, one of them open (§4.9).
+
 - Proposition E1 (the wedge calculus) is the team's solid result. It reproduces the measured transfer coefficients at n = 1024 × 16 (3 MLPs), 512 × 16, 256 × 32 and 128 × 16 with no fitted parameter, bias ≤ 0.2 in log, and per-entry scatter that shrinks with n. The power-law (critical) memory holds at depth 32.
 - T2's agreement with N6 is not discriminating (§3.2 correction). Its free-sector content agrees with team C's direct measurement.
 - T4 is dead on cost by region's §8.1.
