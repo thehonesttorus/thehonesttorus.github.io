@@ -14,7 +14,7 @@
 
 Numbers from the checks are evidence attached to a labelled claim, not claims of their own.
 
-**Sigla.** [D-Y] Yang digest (arXiv:2609.38007). [D-CR] Chen–Rouzé digest (arXiv:2504.02208). [D-HC] Hammersley–Clifford digest. [D-EXP] expanders digest (Tao 254B Notes 1 and Hoory–Linial–Wigderson, the latter very probably the user's `expander_survey.pdf`, [D-EXP] §0). [D-HDX] high-dimensional expanders / spectral independence digest. [D-NC] noncommutative Dirichlet forms digest. [D-TS] transfer-spectrum measurement. [D-CHAT] chat retrieval status. Inside those: [CR] Chen–Rouzé, [Y] Yang, [CKG] Chen–Kastoryano–Gilyén, [KB] Kastoryano–Brandão, [BCR] Bardet–Capel–Rouzé, [ALO] Anari–Liu–Oveis Gharan, [CLV] Chen–Liu–Vigoda, [LMRRW] Liu–Mohanty–Raghavendra–Rajaraman–Wu, [VW] Vernooij–Wirth, [JRSWW] Junge–Renner–Sutter–Wilde–Winter, [C26] Chen 2605.02877, [BLMT] Bakshi–Liu–Moitra–Tang.
+**Sigla.** [D-Y] Yang digest (arXiv:2609.38007). [D-CR] Chen–Rouzé digest (arXiv:2504.02208). [D-HC] Hammersley–Clifford digest. [D-EXP] expanders digest (Tao 254B Notes 1 and Hoory–Linial–Wigderson, the latter very probably the user's `expander_survey.pdf`, [D-EXP] §0). [D-HDX] high-dimensional expanders / spectral independence digest. [D-NC] noncommutative Dirichlet forms digest. [D-TS] transfer-spectrum measurement. [D-CHAT] chat retrieval status. Inside those: [CR] Chen–Rouzé, [Y] Yang, [CKG] Chen–Kastoryano–Gilyén, [KB] Kastoryano–Brandão, [BCR] Bardet–Capel–Rouzé, [ALO] Anari–Liu–Oveis Gharan, [CLV] Chen–Liu–Vigoda, [LMRRW] Liu–Mohanty–Raghavendra–Rajaraman–Wu, [VW] Vernooij–Wirth, [JRSWW] Junge–Renner–Sutter–Wilde–Winter, [C26] Chen 2605.02877, [BLMT] Bakshi–Liu–Moitra–Tang, [DLL] Ding–Li–Lin, [HJPW] Hayden–Jozsa–Petz–Winter, [CNNR] Carey–Neshveyev–Nest–Rennie, [Pet] Peterson (the last four through [D-NC] and [D-HC]). Here [KB] is Kastoryano–Brandão; [D-Y] and [D-HC] use the same siglum for Kato–Brandão.
 
 **Retrieval.** No new source was opened for this note; everything cited is cited through the digests, which quote their sources. The ChatGPT conversation behind [Y] was not retrievable ([D-CHAT] §1), so nothing here describes it. Standard facts used *from memory* (rule P3.3) are marked so where they occur: the alternating-projection rate (Aronszajn, Kayalar–Weinert), the identity "Friedrichs cosine $=\lVert PQ-P_{U\cap V}\rVert$" (Deutsch), Takesaki's criterion, the Pimsner–Popa constant and Popa's commuting squares as names, Petz's equality condition, Witsenhausen's maximal-correlation identity, the Diaconis–Saloff-Coste comparison theorem, Chebyshev acceleration. Each is either used only as a name or is also checked numerically.
 
@@ -24,8 +24,8 @@ Numbers from the checks are evidence attached to a labelled claim, not claims of
 
 1. **There is one stage.** Fix a faithful state $\varphi$ (density $\rho$) on a finite-dimensional algebra $M$, and the family of **forget-$A$ subalgebras** $N_A\subset M$: the observables that do not see the region $A$. All five areas are statements about where the subspaces $L^2(N_A)$ sit inside the state's standard $L^2$-space (the KMS embedding $X\mapsto\rho^{1/4}X\rho^{1/4}$; in the commutative case simply $L^2(\mu)$). §1.
 2. **On that stage there are two independent defects, not one.** The user's intuition merges them.
-   - **Defect I, the angle** $c(A,B)=\lVert E_AE_B-E_{A\cup B}\rVert$ between two forget-algebras. One functional gives four familiar things, depending on the pair it is evaluated on. It is **zero on separated pairs exactly when the field is Markov**; it **decays across a buffer** under strong spatial mixing; it **equals $\lambda(G)/d$ on the two ends of an edge** (expander mixing); and on adjacent binary spins it is the **geometric mean of the two Dobrushin influences**. Spectral independence is a frame bound for the single-site versions, and the local-to-global step is the sharp two-projection inequality $(1-c)\,\mathrm{Var}_{A\cup B}\le\mathrm{Var}_A+\mathrm{Var}_B$. All DERIVED, §3.
-   - **Defect II, the cocycle leakage.** For quantum states the commuting-square form of the Markov property is unavailable. The state-preserving conditional expectations it needs do not exist, by Takesaki, even for commuting Gibbs states embedded in matrix algebras. What survives is: **$I(A{:}C|B)_\rho=0$ iff the Connes cocycle $\rho_{BC}^{it}\rho^{-it}$ stays inside $M_{AB}\otimes1$ for all $t$**. Quantitatively, $I(A{:}C|B)\le(\tfrac1\alpha+3)\,d_A^{2\alpha/(1+\alpha)}q^{2\alpha/(1+\alpha)}$, with $q$ the KMS-strip-weighted leakage and $d_A^2$ the Jones index of the inclusion. DERIVED, §4. Expander theory has no counterpart to defect II. Classically it coincides with defect I on separated pairs.
+   - **Defect I, the angle** $c(A,B)=\lVert E_AE_B-E_{A\cup B}\rVert$ between two forget-algebras. One functional gives four familiar things, depending on the pair it is evaluated on. It is **zero on separated pairs exactly when the field is Markov**; it **decays across a buffer** under strong spatial mixing; it **equals $\lambda(G)/d$ on the two ends of an edge** (expander mixing); and on adjacent binary spins it is the **largest conditional correlation, at most the geometric mean of the two Dobrushin influences**. Spectral independence is a frame bound for the single-site versions, and the local-to-global step is the sharp two-projection inequality $(1-c)\,\mathrm{Var}_{A\cup B}\le\mathrm{Var}_A+\mathrm{Var}_B$. All DERIVED, §3.
+   - **Defect II, the cocycle leakage.** For quantum states the commuting-square form of the Markov property is unavailable. The state-preserving conditional expectations it needs do not exist, by Takesaki, even for commuting Gibbs states embedded in matrix algebras. What survives is: **$I(A{:}C|B)_\rho=0$ iff the Connes cocycle $\rho_{BC}^{it}\rho^{-it}$ stays inside $M_{AB}\otimes1$ for all $t$**. Quantitatively, $I(A{:}C|B)\le(\tfrac1\alpha+3)\,d_A^{2\alpha/(1+\alpha)}q^{2\alpha/(1+\alpha)}$, with $q$ the KMS-strip-weighted leakage and $d_A^2$ the Jones index of the inclusion. DERIVED, §4. Classically defect II vanishes exactly when defect I vanishes on the separated pair (both say "Markov"), although the two numbers differ. No counterpart of defect II appears in the expander literature digested here ([D-EXP]).
 3. **The three mechanisms share one proof shape. They are not one theorem.** Each approximates the projection onto an $L^2(N)$ by a function of a positive operator canonically attached to the state, and then needs a light cone.
    - Gap: powers of averaged conditional expectations.
    - Chen–Rouzé: a Cesàro mean of a KMS-symmetric generator, made to work without a gap by **energy duality**: the defect to be recovered is orthogonal to $L^2(N_A)$ and is paired against a vector of small Dirichlet energy.
@@ -33,9 +33,9 @@ Numbers from the checks are evidence attached to a labelled claim, not claims of
 
    The shared shape is DERIVED instance by instance. The claim that it is "one mechanism" is an ANALOGY, and it breaks at the light cone and at the size factor. §5.
 4. **The time-averaged detailed-balanced single-Pauli Lindbladian, in this language.** It is the Cesàro mean of the heat flow of the KMS-twisted derivation of the inclusion $N_A=M_{A^c}\subset M$: a gap-free, quasi-local, exactly stationary surrogate for a $\rho$-preserving conditional expectation onto $N_A$ that does not exist. At $\beta=0$ it is literally the Cayley Laplacian of the Pauli group of $A$ with its single-site generators: the twirl is its Kazhdan projection, the Laplacian gap is $4$ for every $\lvert A\rvert$ (tensorization), and the Kazhdan constant is $8/(3\lvert A\rvert)$, so this is not an expander family (DERIVED). **Its genuinely new idea:** *recovery is not mixing*. What the proof needs is coercivity of the dressed single-site derivation **relative to the algebra $N_A$**, not convergence to its exact kernel, and [CR] prove a Hölder form of that relative coercivity unconditionally, at every temperature. §6.
-5. **A correction to the "expander half" of [CR] (DERIVED, with checks).** For a non-commuting Hamiltonian whose fixed-point algebra $F_A$ is trivial, the spectral gap of $L_A$ above its exact kernel is exponentially small in the distance from $A$ to the farthest site. This is the quantity in [CR]'s Definition B.1 as the digest records it. In the checks it falls about 16-fold per site: $1.8\cdot10^{-2}$, $1.1\cdot10^{-3}$, $7.2\cdot10^{-5}$. The Poincaré constant **relative to $N_A$**, $\kappa(A)$, stays between $0.23$ and $0.54$ ($n\le5$; it decreases in $n$ by shrinking steps). Recovery obeys $\lVert\mathcal R_{A,t}[\rho_{-A}]-\rho\rVert_1\le\sqrt{0.41/t}\,\chi_{\rm KMS}(\rho_{-A}\Vert\rho)\,\kappa(A)^{-1/2}$. So the expander-type certificate that would turn local into global Markov is a **relative** inequality. To remove the exponential in $|A|$ it must be **entropic** (a relative modified log-Sobolev inequality). The $\chi^2$ factor grows like $e^{\approx1.1|A|}$, while the starting relative entropy $D(\rho_{-A}\Vert\rho)=O(\beta|A|)$ is linear (DERIVED; check C11). CONJECTURES, §5.4.
-6. **NCG ties the areas at two layers.** The measure-theoretic layer is modular theory (Petz sufficiency, the Connes cocycle, Takesaki, the KMS embedding, the Jones index). The first-order layer is the Dirichlet form as a squared derivation, property (T) as innerness of derivations, and the Roe-algebra statement that a gap makes a global projection a norm limit of local operators. At these two layers the ties are literal, theorem by theorem. Spectral triples and Connes/Carlen–Maas metrics are the $L^\infty$ and transport faces of the same derivation. In finite dimension they carry no Markov content, and the Carlen–Maas $W_2$ branch does not exist for the KMS-only samplers. §7.
-7. **Verdict on the intuition** (§8). Several things are literally theorems: the [ALO] identity, the four regimes of $c$, the $\beta=0$ Kazhdan picture, and [CR]'s conditional "local gap ⇒ global Markov" once the gap is made relative. Markov and expansion are **two halves of one local-to-global mechanism**: heredity (exact, combinatorial) plus uniform decorrelation (spectral). The intuition is **false** where it says that the Markov property is an expansion property. Markov holds at every temperature, including where expansion fails; expansion of the interaction graph *destroys* Yang's boundary gain; and the single-Pauli generator is not a quantum expander.
+5. **A correction to the "expander half" of [CR] (DERIVED, with checks).** For a non-commuting Hamiltonian whose fixed-point algebra $F_A$ is trivial, the spectral gap of $L_A$ above its exact kernel is exponentially small in the distance from $A$ to the farthest site. This is the quantity in [CR]'s Definition B.1 as the digest records it. In the checks it falls about 16-fold per site: $1.8\cdot10^{-2}$, $1.1\cdot10^{-3}$, $7.2\cdot10^{-5}$. The Poincaré constant **relative to $N_A$**, $\kappa(A)$, stays between $0.23$ and $0.54$ ($n\le5$; it decreases in $n$ by shrinking steps). Recovery obeys $\lVert\mathcal R_{A,t}[\rho_{-A}]-\rho\rVert_1\le\sqrt{0.41/t}\,\chi_{\rm KMS}(\rho_{-A}\Vert\rho)\,\kappa(A)^{-1/2}$. So the expander-type certificate that would turn local into global Markov is a **relative** inequality. In this gap-free route the $\chi^2$ factor still carries an exponential in $|A|$: it grows by a factor of about 2–3.5 per site of $A$ (checks C10–C11), while the starting relative entropy $D(\rho_{-A}\Vert\rho)=O(\beta|A|)$ is linear (DERIVED; check C11). Removing the exponential therefore needs either an **entropic** relative inequality (a relative modified log-Sobolev inequality, which starts from the linear relative entropy) or a relative inequality with an exponential rate in $t$; either way the drift of the $A^c$-marginal must be controlled. CONJECTURES, §5.4.
+6. **NCG ties the areas at two layers.** The measure-theoretic layer is modular theory (Petz sufficiency, the Connes cocycle, Takesaki, the KMS embedding, the Jones index). The first-order layer is the Dirichlet form as a squared derivation, property (T) as innerness of derivations, and the Roe-algebra statement that a gap makes a global projection a norm limit of local operators. At the measure-theoretic layer, and for Dirichlet forms as squared derivations, the ties are literal, theorem by theorem. Property (T) and the Roe-algebra statement are theorems about groups and expanders; carried over to the $\beta>0$ Markov problem they are ANALOGIES (§5.7, §7). Spectral triples and Connes/Carlen–Maas metrics are the $L^\infty$ and transport faces of the same derivation. In finite dimension they carry no Markov content, and no Carlen–Maas $W_2$ branch is available for the KMS-only samplers (it is constructed only under GNS symmetry, [D-NC] L8). §7.
+7. **Verdict on the intuition** (§8). Several things are literally theorems: the [ALO] identity, the four regimes of $c$, the $\beta=0$ Kazhdan picture, and [CR]'s conditional "local gap ⇒ global Markov" (T13). The hypothesis of the last one, read literally, fails for non-commuting $H$ (D-7). Its relative replacement is where the expander essence would enter, and that version is a CONJECTURE (C-1, C-2), not a theorem. Markov and expansion are **two halves of one local-to-global mechanism**: heredity (exact, combinatorial) plus uniform decorrelation (spectral). The intuition is **false** where it says that the Markov property is an expansion property. Markov holds at every temperature, including where expansion fails; expansion of the interaction graph *destroys* Yang's boundary gain; and the single-Pauli generator is not a quantum expander.
 
 ---
 
@@ -59,9 +59,9 @@ Sites $V$; a region $A\subset V$. The forget-$A$ algebra $N_A$:
 | NCG | von Neumann algebra $M$, faithful normal $\varphi$ | an inclusion $N\subset M$; its relative commutant $N'\cap M$ is the "fibre" |
 
 Three kinds of conditional expectation onto $N$:
-- (a) **$\varphi$-preserving.** **KNOWN-LINK** (Takesaki, *from memory*; used in [D-CR] §6.1 and [D-NC] §4.4): it exists iff $N$ is $\sigma^\varphi$-invariant. Classically it always exists (the modular group of a commutative algebra is trivial).
+- (a) **$\varphi$-preserving.** **THEOREM** (Takesaki, *from memory*; used in [D-CR] §6.1 and [D-NC] §4.4): it exists iff $N$ is $\sigma^\varphi$-invariant. Classically it always exists (the modular group of a commutative algebra is trivial).
 - (b) **Trace-preserving.** It always exists. For $N_A$ it is the twirl $E^\tau_{N_A}(X)=d_A^{-2}\sum_{S}SXS$ over a unitary error basis of $A$ ([D-CR] §6.2).
-- (c) **Generalised (Petz / Accardi–Cecchini).** It always exists and is not idempotent ([D-HC] §6.1).
+- (c) **Generalised (Petz / Accardi–Cecchini).** It always exists and in general is not idempotent ([D-HC] §6.1).
 
 **Lattice law.** $N_A\cap N_B=N_{A\cup B}$. **DERIVED** (proof below).
 - Quantum tensor case: the law always holds.
@@ -84,13 +84,15 @@ $$\eta_N(t)=\lVert u_t-E^\tau_N(u_t)\rVert_\infty,\qquad u_t=(D\sigma{:}D\rho)_t
 
 - **THEOREM** ([D-NC] §3.0 L3; [VW] Thms 2.4–2.5). A KMS-symmetric generator on $M_n$ has $\langle X,-\mathcal L X\rangle_\rho=\sum_j\lVert[V_j,X]\rVert_\rho^2$ with $\{V_j\}=\{V_j^*\}$. On the standard form it is $\lVert\delta X\rVert^2$ for a derivation twisted by $\sigma_{\mp i/4}$.
 - For the [CKG]/[CR] sampler the $V$'s are explicit: Gaussian-filtered single Paulis dressed in modular time, $\mathcal E(X)=\sum_a\iint g(t)h(\omega)\lVert[\hat A^a(\omega,t),X]\rVert^2_\rho$, $g(t)=1/(\beta\cosh(2\pi t/\beta))$. **THEOREM** ([D-CR] §3.5, [CR] Lemmas X.1–X.3).
-- **THEOREM** ([D-NC] §2.2, [DLL] Lemma 3; [CR] (4.1)). $\ker\mathcal L=\{V_j\}'$. For jumps generating $M_A$ this gives $\ker\mathcal L_A^\dagger\subseteq N_A$.
+- **THEOREM** ([VW] Thm 2.5 with KMS self-adjointness; in Lindblad form $\ker\mathcal L=\{G,L_j,L_j^\dagger\}'$, [DLL] Lemma 3 via [D-NC] §2.2; [CR] (4.1)). $\ker\mathcal L=\{V_j\}'$. For jumps generating $M_A$ this gives $\ker\mathcal L_A^\dagger\subseteq N_A$.
 
 ---
 
 ## 2. The dictionary
 
 ### 2.1 Objects
+
+The table is a dictionary of objects, not a list of claims; each identification in it is labelled where it is stated or proved (§1, §3–§7). One entry is weaker than the rest: "HC as vanishing of local $H^1$" is SPECULATION ([D-HC] B4 has not proved the identification).
 
 | object | Markov random fields / Gibbs | expanders | HDX / spectral independence | detailed-balance QMS | NCG |
 |---|---|---|---|---|---|
@@ -102,7 +104,7 @@ $$\eta_N(t)=\lVert u_t-E^\tau_N(u_t)\rVert_\infty,\qquad u_t=(D\sigma{:}D\rho)_t
 | decorrelation certificate | Dobrushin $\lVert R\rVert<1$; strong spatial mixing | $\lambda/d$; Cheeger $h$ | spectral independence $\eta$ (D-3) | strong clustering; local gap; relative $\kappa(A)$ (§5.4); quantum Dobrushin | Kazhdan constant; $c(N_1,N_2)$ |
 | local-to-global step | Martinelli template; Dobrushin contraction | EML, AKS walks, zig-zag | Garland, trickle-down, Alev–Lau product formula | [KB] Thm 23; [BCR] approximate tensorization; [CR] Cor B.2 | alternating projections; two-projection inequality (D-2) |
 | time average | locally stationary laws ([LMRRW]) | lazy walk | — | Cesàro $\mathcal R_{A,t}$; Davies secular; Gaussian window | mean ergodic projection; modular-time averages ([Y], [JRSWW]) |
-| size factor | $q^{\lvert A\rvert}$ configurations | degree $d$ | $\lvert X(k)\rvert$ | Jones index $d_A^2$ ([CR]); cut weight $g_{A\vert A^c}$ ([Y]) | Jones / Pimsner–Popa index |
+| size factor | $q^{\lvert A\rvert}$ configurations | degree $d$ | $\lvert X(k)\rvert$ | Jones index $d_A^2$ (D-5); [CR]'s $2^{2\lvert A\rvert}$, equal in value for qubits but from word costs ([D-Y] §8.8); cut weight $g_{A\vert A^c}$ ([Y]) | Jones / Pimsner–Popa index |
 | obstruction | bottleneck; phase coexistence | Cheeger bottleneck; Alon–Boppana | coboundaries lifted from lower dimension | trivial $F_A$ (modular core collapses); $e^{\mu\lvert A\rvert}$ | non-modular-invariant $N$; ghost classes |
 | metric / transport | Hamming $W_1$, Ornstein $\bar d$ | graph metric; distortion $\Omega(\log n)$ | — | De Palma–Marvian–Trevisan–Lloyd $W_1$; Carlen–Maas $W_2$ (GNS only) | Connes distance, Rieffel Lip-norm |
 | degree-1 (cohomological) layer | HC as vanishing of local $H^1$ ([D-HC] §3.7, B4) | coboundary expansion | Garland vanishing; agreement expansion | triangles: incompatible Koashi–Imoto splittings ([D-HC] §7.4) | Connes cocycle class; sufficiency iff coboundary (Note 1 §6) |
@@ -116,13 +118,13 @@ $$\eta_N(t)=\lVert u_t-E^\tau_N(u_t)\rVert_\infty,\qquad u_t=(D\sigma{:}D\rho)_t
 | T3 | local spectral expansion ⇒ gap of the down-up walk (product formula); with marginal bounds and bounded degree ⇒ MLSI and $O(n\log n)$ | HDX ↔ MS | THEOREM | [D-HDX] §2.6, §3.6 |
 | T4 | $(1-\lVert J\rVert)\mathrm{Var}\le\mathcal E$; the Ramanujan regime $\beta<1/(4\sqrt{d-1})$ for diluted SK | MRF ↔ expanders | THEOREM | [D-EXP] §9.3 (Eldan–Koehler–Zeitouni) |
 | T5 | approximate commuting square ⇒ $\mathrm{Var}_{A\cup B}\le(1-2\epsilon)^{-1}(\mathrm{Var}_A+\mathrm{Var}_B)$; strong clustering ⇔ size-independent gap (commuting $H$) | QMS | THEOREM | [D-EXP] §9.8 ([KB] Prop 20, Thms 23, 26) |
-| T6 | approximate tensorization with constant $(1-c_1)^{-1}$, $c_1$ a clustering constant | QMS ↔ NCG | THEOREM | [D-HDX] §4.5 ([BCR]) |
+| T6 | approximate tensorization with constant $(1-c_1)^{-1}$, $c_1$ an $L^1\to L^\infty$ clustering constant, plus an additive term for non-commuting algebras | QMS ↔ NCG | THEOREM | [D-HDX] §4.5 ([BCR]) |
 | T7 | time-averaged single-Pauli KMS Lindbladian recovers $\rho$ from $\rho_{-A}$ with error $re^{\mu\lvert A\rvert}t^{-\lambda}$, quasi-locally; hence local Markov | QMS | THEOREM | [D-CR] §2 ([CR] Thm III.1, Cors III.1–2) |
 | T8 | $I(A{:}C\vert B)\le C_\beta e^{C_\beta g_{A\vert A^c}-c_\beta r}$ by modular-cocycle leakage | QMS ↔ NCG | THEOREM | [D-Y] §4–5 ([Y] Thm II.1) |
 | T9 | CMI $=\delta_{AB}(\rho,\rho_{-A})$, the Petz sufficiency defect of $M_{AB}\otimes1$ for $\{\rho,\rho_{-A}\}$ | QMS ↔ NCG | THEOREM (elementary, proved there) | [D-CR] §6.3 |
 | T10 | KMS-symmetric QMS ↔ Dirichlet forms ↔ twisted derivations | QMS ↔ NCG | THEOREM | [D-NC] §3 L2–L3 |
 | T11 | (T) ⇔ closable derivations inner (finite factors); subexponential spectral growth ⇒ amenable | expanders ↔ NCG | THEOREM | [D-NC] §5.4 |
-| T12 | expander: the Kazhdan projection is a norm limit of finite-propagation operators and is a ghost; coarse Baum–Connes is not surjective | expanders ↔ NCG | THEOREM | [D-EXP] §9.11 (Willett–Yu) |
+| T12 | expander: the Kazhdan projection is a norm limit of finite-propagation operators and is a ghost; for expanders of girth $\to\infty$ coarse Baum–Connes is not surjective | expanders ↔ NCG | THEOREM | [D-EXP] §9.11 (Willett–Yu) |
 | T13 | uniform local gap ⇒ global Markov | QMS | THEOREM (conditional; stated "by the same reasoning") | [D-CR] §2, App. B (Cor B.2) |
 | T14 | strong (post-selected) Markov ⇔ clustering, given approximate detailed balance | QMS | THEOREM | [D-HC] §9.6 ([C26]) |
 | T15 | universal recovery = Petz map averaged over modular time, density $\frac\pi2(\cosh\pi t+1)^{-1}$ | NCG | THEOREM | [D-HC] §8.2 ([JRSWW] Thm 2.1) |
@@ -138,15 +140,15 @@ $$\eta_N(t)=\lVert u_t-E^\tau_N(u_t)\rVert_\infty,\qquad u_t=(D\sigma{:}D\rho)_t
 
 - (a) **Markov.** For disjoint $A,B$: $c(A,B)=0$ iff $\sigma_A\perp\sigma_B\mid\sigma_R$, with $R=V\setminus(A\cup B)$. For non-adjacent pairs on a graph, $c=0$ for all such pairs is the pairwise Markov property, hence (T1) the Gibbs property.
 - (b) **Decorrelation across a buffer.** If $A\cup B=V$, then $E_{A\cup B}$ is the mean and $c(A,B)$ is the maximal correlation between $\sigma_{V\setminus B}$ and $\sigma_{V\setminus A}$, two blocks separated by the buffer $A\cap B$, which is integrated out.
-- (c) **Expander mixing.** For the uniform law of a directed edge $(X_0,X_1)$ of a $d$-regular graph $G$: $c(\{0\},\{1\})=\lambda(G)/d$ with $\lambda(G)=\max(\lvert\lambda_2\rvert,\lvert\lambda_n\rvert)$. The expander mixing lemma is this inequality evaluated on indicators.
+- (c) **Expander mixing.** For the uniform law of a directed edge $(X_0,X_1)$ of a $d$-regular graph $G$: $c(\{0\},\{1\})=\lambda(G)/d$ with $\lambda(G)=\max(\lvert\lambda_2\rvert,\lvert\lambda_n\rvert)$. The expander mixing lemma is this inequality evaluated on indicators. (The edge law is not strictly positive. The formula holds for every $d$-regular $G$; it is also the Friedrichs cosine of §1.3 exactly when the lattice law $N_{\{0\}}\cap N_{\{1\}}=\mathbb C$ holds, i.e. when $G$ is connected and non-bipartite. For bipartite $G$ the left side is $1=\lambda(G)/d$, while the cosine relative to the two-dimensional intersection is $\lvert\lambda_2\rvert/d$; check C1.)
 - (d) **Dobrushin.** For adjacent binary spins $i,j$: $c(\{i\},\{j\})=\max_r\lvert\mathrm{corr}(\sigma_i,\sigma_j\mid\sigma_{\rm rest}=r)\rvert=\max_r\sqrt{\Psi_r(i,j)\Psi_r(j,i)}\le\sqrt{R_{ij}R_{ji}}$, the geometric mean of the two Dobrushin influences. For Ising this is $\le\tanh\lvert J_{ij}\rvert$.
 
 *Proof.*
 - (a) $N_A=L^2(\sigma_{B\cup R})$, $N_B=L^2(\sigma_{A\cup R})$, and by the lattice law (§1.2) $N_A\cap N_B=L^2(\sigma_R)$.
   - Two $\sigma$-algebras form a commuting square over their intersection iff $\mathbb E[g\mid\sigma_{B\cup R}]=\mathbb E[g\mid\sigma_R]$ for all $g\in L^2(\sigma_{A\cup R})$, i.e. iff $\sigma_A\perp\sigma_B\mid\sigma_R$ ([D-HDX] §4.5: the derivation there, and that digest's own check C3).
   - $c=0$ is the commuting square.
-- (b) The two ranges are $L^2(\sigma_{V\setminus A})$ and $L^2(\sigma_{V\setminus B})$, the intersection is the constants, and the norm of $E_AE_B-E_\emptyset$ is the largest correlation between the two ranges.
-- (c) $E_{\{1\}}h=\mathbb E[h\mid X_0]=\tilde h(X_0)$ and $E_{\{0\}}\tilde h(X_0)=\mathbb E[\tilde h(X_0)\mid X_1]=(\hat A\tilde h)(X_1)$, with $\hat A$ the normalised adjacency matrix. So $E_{\{0\}}E_{\{1\}}-E_\emptyset$ has norm $\lVert\hat A-J\rVert_{L^2(\mathrm{unif})}=\lambda(G)/d$ (Witsenhausen, *from memory*; checked). Taking $f=1_S$, $g=1_T$ in the correlation bound gives $\lvert\,\lvert E(S,T)\rvert-d\lvert S\rvert\lvert T\rvert/n\rvert\le\lambda\sqrt{\lvert S\rvert\lvert T\rvert}$, as in [D-EXP] §3.
+- (b) The two ranges are $L^2(\sigma_{V\setminus A})$ and $L^2(\sigma_{V\setminus B})$, the intersection is the constants, and the norm of $E_AE_B-E_V$ ($E_V$ the mean) is the largest correlation between the two ranges.
+- (c) $E_{\{1\}}h=\mathbb E[h\mid X_0]=\tilde h(X_0)$ and $E_{\{0\}}\tilde h(X_0)=\mathbb E[\tilde h(X_0)\mid X_1]=(\hat A\tilde h)(X_1)$, with $\hat A$ the normalised adjacency matrix. So $E_{\{0\}}E_{\{1\}}-E_{\{0,1\}}$ ($E_{\{0,1\}}$ the mean) has norm $\lVert\hat A-J\rVert_{L^2(\mathrm{unif})}=\lambda(G)/d$ (Witsenhausen, *from memory*; checked). Taking $f=1_S$, $g=1_T$ in the correlation bound gives $\lvert\,\lvert E(S,T)\rvert-d\lvert S\rvert\lvert T\rvert/n\rvert\le\lambda\sqrt{\lvert S\rvert\lvert T\rvert}$, as in [D-EXP] §3.
 - (d)
   - The operator is block-diagonal over the value $r$ of the other spins.
   - For a binary pair the maximal correlation is $\lvert\mathrm{corr}\rvert$.
@@ -167,12 +169,12 @@ $$\eta_N(t)=\lVert u_t-E^\tau_N(u_t)\rVert_\infty,\qquad u_t=(D\sigma{:}D\rho)_t
 
 **D-2 (DERIVED; check C2).** Let $P,Q$ be orthogonal projections onto closed subspaces $U,V$ of a Hilbert space, $R$ the projection onto $W=U\cap V$, and $c$ the Friedrichs cosine. For every $g\perp W$,
 $$(1-c)\lVert g\rVert^2\le\lVert g-Pg\rVert^2+\lVert g-Qg\rVert^2 ,$$
-and the constant is attained: $\lambda_{\min}\big((2-P-Q)\vert_{W^\perp}\big)=1-c$.
+and the constant is attained whenever $U\ne V$: $\lambda_{\min}\big((2-P-Q)\vert_{W^\perp}\big)=1-c$.
 
 *Proof.*
 - Since $R\le P$, $RPg=Rg=0$, so $Pg\in U\ominus W$; likewise $Qg\in V\ominus W$. Hence $\lvert\langle Pg,Qg\rangle\rvert\le c\,a\,b$ with $a=\lVert Pg\rVert$, $b=\lVert Qg\rVert$.
 - Then $a^2+b^2=\langle(P+Q)g,g\rangle\le\lVert(P+Q)g\rVert\lVert g\rVert$ and $\lVert(P+Q)g\rVert^2\le a^2+b^2+2cab\le(1+c)(a^2+b^2)$. So $a^2+b^2\le(1+c)\lVert g\rVert^2$, and $\lVert g-Pg\rVert^2+\lVert g-Qg\rVert^2=2\lVert g\rVert^2-a^2-b^2\ge(1-c)\lVert g\rVert^2$.
-- Sharpness: take unit principal vectors $u\in U\ominus W$, $v\in V\ominus W$ with $\langle u,v\rangle=c$, $Pv=cu$, $Qu=cv$ (they exist in finite dimension), and set $g=u+v$. Then $\lVert g\rVert^2=2+2c$ and the right side is $2(1-c^2)=(1-c)\lVert g\rVert^2$. $\square$
+- Sharpness: take unit principal vectors $u\in U\ominus W$, $v\in V\ominus W$ with $\langle u,v\rangle=c$, $Pv=cu$, $Qu=cv$ (they exist in finite dimension when $c>0$; if $c=0$, a unit vector in whichever of $U\ominus W$, $V\ominus W$ is non-zero already gives equality), and set $g=u+v$. Then $\lVert g\rVert^2=2+2c$ and the right side is $2(1-c^2)=(1-c)\lVert g\rVert^2$. $\square$
 
 *Check C2:* over 300 random pairs, $\min[\lambda_{\min}(2-P-Q\vert_{W^\perp})-(1-c)]=-1.3\cdot10^{-15}$; equality, as claimed.
 
@@ -180,7 +182,7 @@ and the constant is attained: $\lambda_{\min}\big((2-P-Q)\vert_{W^\perp}\big)=1-
 $$\mathrm{Var}_{A\cup B}(f)\le\frac{\mathrm{Var}_A(f)+\mathrm{Var}_B(f)}{1-c(A,B)}.$$
 This has the shape of [KB] Prop 20 (T5), which states $(1-2\epsilon)^{-1}$ under a covariance hypothesis, and of [BCR]'s approximate tensorization (T6) in variance form. *Proof:* apply D-2 to $g=f-E_{A\cup B}f$. $\square$
 
-**KNOWN-LINK** (Kayalar–Weinert, *from memory*; check C2 reproduces it to $2\cdot10^{-15}$): $\lVert(PQ)^k-R\rVert=c^{2k-1}$. Alternating the two restriction–co-restriction operators reaches the intersection at a rate set by the angle alone.
+**THEOREM** (Kayalar–Weinert, *from memory*; check C2 reproduces it to $2\cdot10^{-15}$): $\lVert(PQ)^k-R\rVert=c^{2k-1}$. Alternating the two restriction–co-restriction operators reaches the intersection at a rate set by the angle alone.
 
 ### 3.3 Spectral independence is a frame bound
 
@@ -198,16 +200,16 @@ So $\eta$-spectral independence says that the $n$ single-site fluctuation lines 
 ### 3.4 "Hereditary conditional structure + uniform decorrelation ⇒ global gap"
 
 **THEOREM instances.**
-- [ALO]/Alev–Lau (T2–T3): the angles of the single-site expectations, as a frame bound, under every pinning ⇒ gap of their average, the Glauber walk.
+- [ALO]/Alev–Lau (T2–T3): the frame bound of the single-site fluctuation lines (D-3), under every pinning ⇒ gap of the average of the single-site expectations, the Glauber walk.
 - [KB] Thm 23 (T5): angle bounds for overlapping boxes, decaying with the overlap, at every scale ⇒ size-independent gap.
-- [BCR] (T6): the entropy version of D-2.
+- [BCR] (T6): an entropy analogue of D-2, with an $L^1\to L^\infty$ clustering constant in place of the $L^2$ cosine and an additive term for non-commuting algebras ([D-HDX] §4.5).
 
 **ANALOGY** (the zig-zag theorem and Dobrushin's condition). The zig-zag bound is a $2\times2$ angle computation between cloud averages and the inter-cloud permutation ([D-EXP] §6). Dobrushin is an $\ell^\infty$-oscillation contraction ([D-EXP] §9.2). Both have the shape "pairwise decorrelation, iterated". *Break:* neither is an $L^2$ statement about conditional expectations onto a lattice of subalgebras. Zig-zag works with an unrelated permutation, and Dobrushin works in the oscillation seminorm, not in $L^2$.
 
 **Where heredity enters, and where it breaks quantumly.**
 - *Classical:* pinning a Markov random field gives a Markov random field on the induced subgraph ([D-HC] §5.4, THEOREM, elementary). So the links of $X_\mu$ are of the same kind, and one local argument certifies every link ([D-HDX] §4.2 table).
-- The lattice law that $E_{A\cup B}$ needs is the intersection axiom, i.e. positivity. So **Hammersley–Clifford's positivity is the qualitative statement "the relevant angle is $<1$", and the expander gap is its quantitative version.** This is [D-HC] B3 (THEOREM, elementary, proved there), restated on this stage.
-- *Quantum:* there is no pinning. Lüders compressions of a non-commuting Gibbs state leave the class ([D-Y] B4). The operational substitute, recovery of every post-selected branch (the strong Markov property), is *equivalent to clustering* (T14). **So quantumly the heredity half itself costs a decorrelation hypothesis: the two halves are no longer independent.** THEOREM ([C26] via [D-HC] §9.6); the reading is [D-HC] B5.
+- The lattice law that $E_{A\cup B}$ needs is the intersection axiom, which positivity implies. In finite dimension $c(A,B)=\lVert E_AE_B-E_{A\cup B}\rVert<1$ iff the lattice law holds (the Friedrichs cosine relative to the true intersection is always $<1$). So **Hammersley–Clifford's positivity secures the qualitative statement "the relevant angle is $<1$", and the expander gap is its quantitative version.** This is [D-HC] B3 (THEOREM, elementary, proved there), restated on this stage.
+- *Quantum:* there is no pinning. Truncation is not conditioning, and marginals of a non-commuting Gibbs state are not local Gibbs states ([D-Y] B4); the closest operational analogue of pinning is post-selection on a local measurement ([D-HC] B5). The operational substitute, recovery of every post-selected branch (the strong Markov property), is *equivalent to clustering* (T14). **So quantumly the heredity half itself costs a decorrelation hypothesis: the two halves are no longer independent.** THEOREM ([C26] via [D-HC] §9.6); the reading is [D-HC] B5.
 
 ---
 
@@ -215,7 +217,7 @@ So $\eta$-spectral independence says that the $n$ single-site fluctuation lines 
 
 ### 4.1 Takesaki's obstruction removes the commuting-square definition
 
-**THEOREM** ([D-CR] §6.1, with Takesaki's criterion *from memory*). In the classical Ising ring embedded in $M_{2^5}$, the forget-site algebra $N_A$ (dimension 256) has modular core $N_A^\sigma$ of dimension 96. So **even a commuting Gibbs state has no $\rho$-preserving conditional expectation onto $M_{A^c}$**. The $\rho$-preserving conditional expectations that §3 used (classically, the $E_A$) are therefore unavailable in matrix algebras. KMS-orthogonal projections onto $L^2(N_A)$ still exist, but they are not conditional expectations, and the commuting-square form of the Markov property has no direct quantum meaning (C-4 in §10 asks what survives).
+**THEOREM** (Takesaki's criterion, *from memory*), with an elementary computation. In the classical Ising ring of [D-CR] §6.1 ($H=\sum_iZ_iZ_{i+1}+0.3\sum_iZ_i$ on 5 sites, $A=\{0\}$) embedded in $M_{2^5}$, $\sigma_t(1_A\otimes X_1)=X_1\,e^{2i\beta t(Z_0Z_1+Z_1Z_2+0.3Z_1)}$ depends on $Z_0$, so the forget-site algebra $N_A$ (dimension 256) is not modular-invariant; [D-CR] §6.1 finds numerically that its modular core $N_A^\sigma$ has dimension 96. So **even a commuting Gibbs state has no $\rho$-preserving conditional expectation onto $M_{A^c}$**. The $\rho$-preserving conditional expectations that §3 used (classically, the $E_A$) are therefore unavailable in matrix algebras. KMS-orthogonal projections onto $L^2(N_A)$ still exist, but they are not conditional expectations, and the commuting-square form of the Markov property has no direct quantum meaning (C-4 in §10 asks what survives).
 
 What survives is the sufficiency form.
 
@@ -237,7 +239,7 @@ $$I(A{:}C|B)_\rho=0\iff\rho_{BC}^{it}\,\rho^{-it}\in M_{AB}\otimes1_C\quad\text{
 
 **Why the quantum converse of Hammersley–Clifford fails, in one line** (DERIVED from D-4 and [D-HC] §7.5). For $H=H_{AB}+H_{BC}$ the cocycle is generated by $\log\rho-\log\rho_{BC}$.
 - If the terms commute, $\log\rho_{BC}=-\beta H_{BC}+(\text{function on }B)$, and the cocycle stays in $M_{AB}$.
-- If they do not commute, $\log\rho_{BC}$ is only quasi-local: it is the effective Hamiltonian, or Hamiltonian of mean force, of [D-HC] §7.5. The cocycle then leaks into $C$ with a tail, and the Markov property becomes approximate.
+- If they do not commute, $\log\rho_{BC}$ is no longer $-\beta H_{BC}$ plus an operator on $B$: it is the effective Hamiltonian, or Hamiltonian of mean force, of [D-HC] §7.5, whose quasi-locality the sources establish only under extra hypotheses ([D-HC] §9.2: high temperature, with a caveat on the expansion). Whenever the CMI is non-zero (e.g. the Heisenberg chain of [D-HC] §7.5) the cocycle leaves $M_{AB}$ by D-4, and the Markov property is at best approximate.
 - Hammersley–Clifford's Möbius inversion acts on the *joint* $\log\rho$, through the commuting reference expectations. The Markov property is about the *marginal* $\log\rho_{BC}$. Classically the two coincide; quantumly only the first is controlled by locality of $H$.
 
 ### 4.3 Quantitative form; the Jones index appears
@@ -262,10 +264,10 @@ In particular $I\le4\,d_A\,q$ (take $\alpha=1$).
 In the two Gibbs cases CMI$/q^2=1.84$ and $0.85$. That is consistent with [Y]'s middle-range estimate $j(s)\le(1+s)q^2/s^2$ being the dominant term, so the bound's linear power of $q$ is loose there.
 
 **Reading** (DERIVED comparison). D-5 is the "erase-$A$" version of [Y]'s theorem.
-- The size factor is $\sqrt{\text{Jones index}}=d_A$, the static shadow of [CR]'s $2^{2\lvert A\rvert}$ ([D-CR] §6.2).
-- The cocycle $\rho_{BC}^{it}\rho^{-it}$ involves the modular flow of a *marginal*, which no locality estimate controls.
+- The size factor is $\sqrt{\text{Jones index}}=d_A$. [D-CR] §6.2 reads [CR]'s $2^{2\lvert A\rvert}$ as this index. [D-Y] §8.8, which re-read [CR]'s proof, traces it instead to per-string Gibbs-conjugation and Leibniz costs, the twirl being a normalised average. The two agree in value for qubits ($4^{\lvert A\rvert}=d_A^2$); only D-5's factor is literally an index.
+- The cocycle $\rho_{BC}^{it}\rho^{-it}$ involves the modular flow of a *marginal*, $\log\rho_{BC}$, which Lieb–Robinson bounds for $H$ do not control (§4.2).
 - [Y] keeps the same inequality and changes the reference to the cut state $\gamma_A\otimes\gamma_{BC}$ (T8). The size factor becomes $\mathrm{Tr}\rho^{1+\alpha}\sigma^{-\alpha}\le e^{3\alpha\beta g_{A|A^c}}$ ([D-Y] §5.6, Lemma IV.2). The cocycle becomes the interaction-picture unitary generated by the cut $V$, which Lieb–Robinson controls (Lemma IV.1).
-- **The trade is index for interface.** The exponents of the two prefactors are in the ratio $g_{A|A^c}/\lvert A\rvert$, a Cheeger ratio. That ratio tends to $0$ on amenable lattices and is bounded below on expanders (THEOREM, elementary, [D-Y] B1).
+- **The trade is index for interface.** The exponents of the two prefactors are in the ratio $3\beta g_{A|A^c}/(2\lvert A\rvert\log2)$ (qubits), a Cheeger ratio up to a constant. It tends to $0$ along Følner sequences (large boxes in $\mathbb Z^D$) and is bounded below on expanders (THEOREM, elementary, [D-Y] B1).
 
 ### 4.4 The two defects side by side
 
@@ -274,9 +276,11 @@ In the two Gibbs cases CMI$/q^2=1.84$ and $0.85$. That is consistent with [Y]'s 
 | concerns | two subalgebras, relative position | one subalgebra and a pair of states |
 | zero means | commuting square: Markov on separated pairs; independence across a buffer | sufficiency: exact Petz recovery; CMI $=0$ |
 | quantitative tool | two-projection inequality (D-2); alternating projections | [Y] Lemma III.4 / Cor III.5 (D-5) |
-| classical case | carries both Markov and decorrelation | equal to defect I on separated pairs |
+| classical case | carries both Markov and decorrelation | vanishes exactly when defect I vanishes on separated pairs |
 | quantum case | needs $\rho$-preserving conditional expectations, which do not exist (Takesaki); only KMS-orthogonal projections survive | survives; this is approximate Markov |
 | expander theory | yes: EML, Kazhdan, spectral independence | no counterpart |
+
+The rows restate D-1, D-2, D-4 and D-5 (DERIVED) and §4.1. The "no counterpart" entry is a reading of [D-EXP], not a theorem.
 
 ---
 
@@ -287,7 +291,7 @@ In the two Gibbs cases CMI$/q^2=1.84$ and $0.85$. That is consistent with [Y]'s 
 | mechanism | positive operator attached to the state | function approximating a projection | what is measured | light cone | size factor |
 |---|---|---|---|---|---|
 | gap (H+D⇒G) | $I-$ average of conditional expectations; down-up walk | $x^k$ or $e^{-tx}$ across a gap | angles / frame bound on every link | walk steps | none when heredity is exact |
-| [CR] | $-\mathcal L_A$, the KMS Dirichlet generator of the dressed single-site derivation | Cesàro $\phi_t(x)=\frac{1-e^{-tx}}{tx}$, no gap | Dirichlet energy $\le c_*/t$, paired against a defect orthogonal to $L^2(N_A)$ (D-6) | Lieb–Robinson for $e^{s\mathcal L_A}$, error linear in $t$ | index $d_A^2$ (twirl) and KMS word costs |
+| [CR] | $-\mathcal L_A$, the KMS Dirichlet generator of the dressed single-site derivation | Cesàro $\phi_t(x)=\frac{1-e^{-tx}}{tx}$, no gap | Dirichlet energy $\le c_*/t$, paired against a defect orthogonal to $L^2(N_A)$ (D-6) | Lieb–Robinson for $e^{s\mathcal L_A}$, error linear in $t$ | word costs $2^{2\lvert A\rvert}$ ([D-Y] §8.8; equal in value to the index $d_A^2$ for qubits) |
 | [Y] | relative modular operator $\Delta_{\sigma,\rho}$, $K=\log\Delta$ | resolvent $(\Delta+s)^{-1}$, written as a $1/\lvert\sinh\pi t\rvert$-weighted average of $\Delta^{it}$ | squared distance of the resolvent vector from $L^2(N_R)\rho^{1/2}$ (Carlen–Vershynina), bounded by cocycle leakage | Lieb–Robinson in modular time against $e^{-\pi\lvert t\rvert}$ | Rényi moment $e^{O(\beta g)}$ |
 
 Each row is a THEOREM in its source (T3/T5, T7, T8). **The claim that the three rows are "one mechanism" is an ANALOGY.** All three estimate a distance to $L^2(N)$ in the standard form of the state, by functional calculus of a canonical positive operator plus a light cone. *It breaks* in two places:
@@ -306,7 +310,7 @@ Each row is a THEOREM in its source (T3/T5, T7, T8). **The claim that the three 
 
 **Corollary (DERIVED) — gap-free recovery.** Let $\mathcal L_A$ be KMS-symmetric with $\mathcal L_A[\rho]=0$ and $F_A=\ker\mathcal L_A^\dagger\subseteq N_A$ (THEOREM for single-Pauli jumps, §1.4). Set $W=\rho^{-1/2}(\rho_{-A}-\rho)\rho^{-1/2}$. Then:
 - **(a)** $W$ is KMS-orthogonal to all of $N_A$, hence to $F_A$;
-- **(b)** $\lVert\mathcal R_{A,t}[\rho_{-A}]-\rho\rVert_1\le\min\big(\sqrt{c_*/t}\,\lVert W\rVert_{H^{-1}},\ t^{-1}\lVert W\rVert_{H^{-2}}\big)$, with $\lVert W\rVert^2_{H^{-1}}=\langle W,(-\mathcal L_A)^{+}W\rangle_\rho$ and $\lVert W\rVert_{H^{-2}}=\lVert(-\mathcal L_A)^+W\rVert_\rho$;
+- **(b)** $\lVert\mathcal R_{A,t}[\rho_{-A}]-\rho\rVert_1\le\min\big(\sqrt{c_*/t}\,\lVert W\rVert_{H^{-1}},\ t^{-1}\lVert W\rVert_{H^{-2}}\big)$, with $\lVert W\rVert^2_{H^{-1}}=\langle W,(-\mathcal L_A^\dagger)^{+}W\rangle_\rho$ and $\lVert W\rVert_{H^{-2}}=\lVert(-\mathcal L_A^\dagger)^+W\rVert_\rho$;
 - **(c)** with the **relative Poincaré constant**
 $$\kappa(A):=\inf_X\frac{\langle X,-\mathcal L_A^\dagger X\rangle_\rho}{\lVert X-\Pi_AX\rVert_\rho^2}\qquad(\Pi_A=\text{KMS-orthogonal projection onto }L^2(N_A)),$$
 $$\lVert\mathcal R_{A,t}[\rho_{-A}]-\rho\rVert_1\le\sqrt{c_*/t}\;\chi_{\rm KMS}(\rho_{-A}\Vert\rho)\;\kappa(A)^{-1/2},\qquad\chi_{\rm KMS}:=\lVert W\rVert_\rho .$$
@@ -333,7 +337,7 @@ $$\lVert\mathcal R_{A,t}[\rho_{-A}]-\rho\rVert_1\le\sqrt{c_*/t}\;\chi_{\rm KMS}(
 
 **D-7 (DERIVED; checks C8, C10).** For any operator $X$,
 $$\mathrm{gap}(\mathcal L_A)\cdot\mathrm{dist}_\rho(X,F_A)\le\lVert\mathcal L_A^\dagger X\rVert_\rho ,$$
-where the gap is the smallest non-zero eigenvalue of $-\mathcal L_A^\dagger$ in the KMS geometry. Combine this with [CR] Lemma VII.3 (THEOREM, [D-CR] §3.9): $\mathcal L^\dagger_{A,\ell}X=0$ for $X$ supported outside the $\ell$-patch, and $\lVert\mathcal L^\dagger_{A,\ell}-\mathcal L^\dagger_A\rVert_{\infty\to\infty}\lesssim\lvert A\rvert(e^{-c'\ell/(d\beta)}+2^{-\ell})$ for $\ell\ge4e^2\beta d$. Hence
+where the gap is the smallest non-zero eigenvalue of $-\mathcal L_A^\dagger$ in the KMS geometry. Combine this with $\mathcal L^\dagger_{A,\ell}X=0$ for $X$ supported outside the $\ell$-patch (elementary: the truncated sampler's jumps and coherent term are supported in the patch) and with [CR] Lemma VII.3 (THEOREM, [D-CR] §3.9): $\lVert\mathcal L^\dagger_{A,\ell}-\mathcal L^\dagger_A\rVert_{\infty\to\infty}\lesssim\lvert A\rvert(e^{-c'\ell/(d\beta)}+2^{-\ell})$ for $\ell\ge4e^2\beta d$. Hence
 $$\mathrm{gap}(\mathcal L_A)\ \lesssim\ \lvert A\rvert\big(e^{-c'\ell/(d\beta)}+2^{-\ell}\big)\,\frac{\lVert X\rVert}{\mathrm{dist}_\rho(X,F_A)}\qquad\text{for every }X\text{ supported at distance }\ge\ell\text{ from }A .$$
 
 *Proof.*
@@ -341,7 +345,7 @@ $$\mathrm{gap}(\mathcal L_A)\ \lesssim\ \lvert A\rvert\big(e^{-c'\ell/(d\beta)}+
 - Then $\mathrm{gap}\,\lVert Y\rVert^2\le\langle Y,-\mathcal L^\dagger Y\rangle=\langle Y,-\mathcal L^\dagger X\rangle\le\lVert Y\rVert\lVert\mathcal L^\dagger X\rVert_\rho$.
 - Finally $\lVert\cdot\rVert_\rho\le\lVert\cdot\rVert_\infty$. $\square$
 
-**Consequence (DERIVED).** In the commuting case $F_A$ contains every far observable ([D-NC] K3: $F_A=1_A\otimes D_{\partial A}\otimes M_{\rm far}$), so the distance is $0$ and the bound is empty. When $F_A$ is trivial, as in every non-commuting example computed ([D-NC] K3; C8), $\mathrm{dist}_\rho(X,F_A)=\lVert X-\rho(X)\rVert_\rho=O(1)$ for a far single-site $X$. **The gap above the exact kernel is then exponentially small in the distance from $A$ to the farthest site, whatever the size of $A$.**
+**Consequence (DERIVED).** In the commuting case $F_A$ contains every far observable ([D-NC] K3: $F_A=1_A\otimes D_{\partial A}\otimes M_{\rm far}$), so the distance is $0$ and the bound is empty. When $F_A$ is trivial, as in the non-commuting examples of [D-NC] K3 and C8 (the ring of [D-CR] §6.1 also keeps the reflection fixing $A$), $\mathrm{dist}_\rho(X,F_A)=\lVert X-\rho(X)\rVert_\rho=O(1)$ for a far single-site $X$. **The gap above the exact kernel is then exponentially small in the distance from $A$ to the farthest site, with only the prefactor $\lvert A\rvert$ of Lemma VII.3.**
 
 *Checks C8 and C10* (Gaussian-filter KMS sampler, open transverse-field chain, $\beta=1.3$):
 
@@ -354,7 +358,7 @@ $$\mathrm{gap}(\mathcal L_A)\ \lesssim\ \lvert A\rvert\big(e^{-c'\ell/(d\beta)}+
 
 Readings of the table:
 - In the non-commuting rows the gap depends only on the distance $\ell$ from $A$ to the far end: $\ell=2,3,4$ give $\approx1.8\cdot10^{-2}$, $1.1\cdot10^{-3}$, $7\cdot10^{-5}$, i.e. $\approx e^{-2.75\ell}$.
-- The far-end $Z$'s Rayleigh quotient, which upper-bounds the gap by D-7, is $7.6\cdot10^{-2}$, $8.2\cdot10^{-3}$, $7.6\cdot10^{-4}$.
+- The Rayleigh quotient of the far-end $Z$ with $F_A$ projected out, an upper bound on the gap by the min–max principle, is $7.6\cdot10^{-2}$, $8.2\cdot10^{-3}$, $7.6\cdot10^{-4}$.
 - The recovery error at $t=100$ stays at $0.017$–$0.018$ for $n=3,4,5$ (C9), although the gap falls 250-fold. **Recovery is not mixing.**
 
 **Consequence for [CR] App. B (DERIVED, on the digest's reading).** [D-CR] §2 records Def. B.1 as $-\lambda\langle X,\mathcal L^\dagger X\rangle_\rho\le\langle X,\mathcal L^{\dagger2}X\rangle_\rho$ for all $X$, uniformly over restricted Gibbs states. For a KMS-self-adjoint $\mathcal L^\dagger\le0$ this is exactly $\lambda\le\mathrm{gap}$ above the exact kernel (diagonalise: $\lambda x\le x^2$ on the spectrum).
@@ -366,9 +370,9 @@ Readings of the table:
 
 **CONJECTURE C-1 (relative local gap).** For bounded-degree $H$ and fixed $\beta$ there are $c_\beta>0$ and $p\ge0$ such that the single-Pauli KMS sampler satisfies $\kappa(A)\ge c_\beta\lvert A\rvert^{-p}$, uniformly in the system size and in the shape of the region.
 - *What must be true:* the dressed single-site derivation controls, linearly, the KMS distance of any operator from the algebra $1_A\otimes M_{A^c}$. That is an exponent-one version of [CR] Lemma X.4 combined with the twirl.
-- *Evidence:* C9–C10, for $n\le5$ only. For the non-commuting chain, $\kappa$ decreases with $n$ by shrinking steps ($0.415$, $0.263$, $0.227$ for $n=3,4,5$, consistent with a positive limit) and does not decay with $\lvert A\rvert$ ($0.227$, $0.366$, $0.543$). For the commuting chain it decays like $1/\lvert A\rvert$ and does not depend on $n$.
+- *Evidence:* C9–C10, for $n\le5$ only. For the non-commuting chain, $\kappa$ decreases with $n$ by shrinking steps ($0.415$, $0.263$, $0.227$ for $n=3,4,5$, consistent with a positive limit) and does not decay with $\lvert A\rvert$ ($0.227$, $0.366$, $0.543$). For the commuting chain it falls with $\lvert A\rvert$ ($0.644$, $0.191$, $0.141$ for $\lvert A\rvert=1,2,3$; three points fix no rate) and does not depend on $n$.
 - *What it buys* (DERIVED from D-6(c)): recovery error $\le\sqrt{c_*/t}\,\chi_{\rm KMS}\,c_\beta^{-1/2}\lvert A\rvert^{p/2}$, i.e. the rate $t^{-1/2}$ in place of $t^{-\lambda}$, $\lambda\approx1/(2d^4\beta^4)$.
-- *What it does not buy:* $\chi_{\rm KMS}(\rho_{-A}\Vert\rho)$ grows like $e^{\approx1.0\text{–}1.2\lvert A\rvert}$ in C10 (2.15→4.03→12.2 and 3.25→8.92→30.8). Classically it is $\big(\sum_x\mu_{-A}(x)^2/\mu(x)\big)^{1/2}$, exponential in $\beta\lvert A\rvert$ at low temperature. So the $\chi^2$ route alone leaves an exponential in $\lvert A\rvert$, just as an $L^2$ warm-start bound does for Markov chains ([D-NC] §2.8, $\sqrt{1/\sigma_{\min}}$ against $\sqrt{2\log(1/\sigma_{\min})}$).
+- *What it does not buy:* $\chi_{\rm KMS}(\rho_{-A}\Vert\rho)$ grows by a factor of about 2–3.5 per site of $A$ in C10 (2.15→4.03→12.2 commuting, 3.25→8.92→30.8 non-commuting) and C11. Classically it is $\big(\sum_x\mu_{-A}(x)^2/\mu(x)-1\big)^{1/2}$, exponential in $\lvert A\rvert$ unless the conditional law on $A$ is uniform. So the $\chi^2$ route leaves an exponential prefactor in $\lvert A\rvert$, as an $L^2$ warm start does for Markov chains ([D-NC] §2.8, $\sqrt{1/\sigma_{\min}}$ against $\sqrt{2\log(1/\sigma_{\min})}$). With the gap-free rate $t^{-1/2}$ this prefactor costs a time $t\sim\chi_{\rm KMS}^2$, exponential in $\lvert A\rvert$; with an exponential rate $e^{-\kappa t}$ it would cost only a time $\log\chi_{\rm KMS}/\kappa$, polynomial in $\lvert A\rvert$ when $\kappa\ge c_\beta\lvert A\rvert^{-p}$.
 
 **CONJECTURE C-2 (relative modified log-Sobolev ⇒ global Markov).** Suppose the entropy production of the region's semigroup dominates the relative entropy *conditional on $N_A$*:
 $$\mathrm{EP}_{\mathcal L_A}(\omega)\ge\alpha\,D_A(\omega\Vert\rho),\qquad D_A(\omega\Vert\rho)=D(\omega\Vert\rho)-D(\omega_{A^c}\Vert\rho_{A^c}),\qquad\alpha\ge c_\beta\lvert A\rvert^{-p}.$$
@@ -394,16 +398,16 @@ Here $D_A$ is the conditional relative entropy that [D-Y] §10 identifies with [
   - $(\Delta+s)^{-1}\rho^{1/2}=B_s\rho^{1/2}$, with $B_s$ a $1/\sinh(\pi t)$-weighted average of the Connes cocycle $u_t$.
   - Hence $j(s)\le(1+s)q^2/s^2$.
 - **THEOREM** ([D-Y] §5.6). For the cut pair, $u_t$ is the interaction-picture propagator of $V$. Lieb–Robinson growth $e^{v\beta\lvert t\rvert}$ against the kernel decay $e^{-\pi\lvert t\rvert}$ gives $q\lesssim(1+\beta g)e^{-\pi\mu_{LR}(r-R_0)/(\pi+\beta v)}$.
-- In the language of §1.3, [Y] measures **defect II for the pair (state, cut reference) through the angle between the cocycle orbit and $L^2(N_{AB})$**, averaged over modular time. This is KNOWN-LINK as a reading: [D-CHAT] §7.2 makes the same move ("the static proof does not do away with the time average; it moves it", from Lindblad time to modular time).
+- In the language of §1.3, [Y] measures **defect II for the pair (state, cut reference): the operator-norm distance of the Connes cocycle from $N_{AB}$**, averaged over modular time. ANALOGY, as a reading of [CR] against [Y]; [D-CHAT] §7.2 makes the same move, as its own interpretation ("the static proof does not do away with the time average; it moves it", from Lindblad time to modular time). *Break:* the Lindblad-time average is a Cesàro mean of a contraction semigroup, the modular-time average a kernel integral of a unitary cocycle, and neither is obtained from the other.
 
-### 5.6 The modular-time kernels are boundary values of KMS-strip functions
+### 5.6 The modular-time kernels have KMS-strip Fourier transforms
 
-**KNOWN-LINK** ([D-Y] B14; [D-HC] §8.2), with **DERIVED** Fourier identities (check C7, 8 digits):
+**DERIVED** Fourier identities (check C7, 8 digits), with an **ANALOGY** between the three kernels ([D-Y] B14, which labels it so; [D-HC] §8.2):
 - [CR]: $\int g(t)e^{-ixt}dt=\frac1{2\cosh(\beta x/4)}$ for $g(t)=\frac1{\beta\cosh(2\pi t/\beta)}$ ([CR] Lemma X.2).
 - [JRSWW]: $\int\beta_0(t)e^{-ixt}dt=\frac x{\sinh x}$ for $\beta_0(t)=\frac\pi2(\cosh\pi t+1)^{-1}=\frac\pi4\mathrm{sech}^2(\pi t/2)$.
 - [Y]: $\int_0^\infty\frac{\sin vt}{\sinh\pi t}dt=\frac12\tanh\frac v2$ ([Y] App. B.1).
 
-All three are Fourier transforms of functions analytic in a horizontal strip whose width is fixed by the KMS condition. That is the one feature the three "time averages" over modular time share. *Proof of the second identity:* $\int\mathrm{sech}^2(at)e^{-ixt}dt=\pi x/(a^2\sinh(\pi x/2a))$ with $a=\pi/2$. $\square$
+All three are Fourier transforms of functions analytic in a horizontal strip whose width is fixed by the KMS condition. That is the one feature the three "time averages" over modular time share. *Break:* the kernels do different jobs. [Y]'s $1/\lvert\sinh\pi t\rvert$ beats Lieb–Robinson growth; [CR] use $g$ only near $t=0$ (Lemma X.4), and their light cone is cut by the Gaussian filter instead ([D-Y] §6); [JRSWW]'s $\beta_0$ is a probability density over rotated Petz maps. *Proof of the second identity:* $\int\mathrm{sech}^2(at)e^{-ixt}dt=\pi x/(a^2\sinh(\pi x/2a))$ with $a=\pi/2$. $\square$
 
 ### 5.7 The gap row in coarse geometry
 
@@ -422,10 +426,10 @@ All three are Fourier transforms of functions analytic in a horizontal strip who
 
 | word | mathematical content | label | where |
 |---|---|---|---|
-| detailed-balanced | KMS-symmetric, so a Dirichlet form, so the squared norm of a derivation twisted by $\sigma_{\mp i/4}$; explicitly, Gaussian-filtered single Paulis dressed in modular time with kernel $g$. GNS symmetry with local jumps is impossible for non-commuting $H$ | THEOREM | §1.4; [D-NC] §3.2, §4.3 ([CKG] App. E) |
+| detailed-balanced | KMS-symmetric, so a Dirichlet form, so the squared norm of a derivation twisted by $\sigma_{\mp i/4}$; explicitly, Gaussian-filtered single Paulis dressed in modular time with kernel $g$. GNS symmetry needs jumps that are exact Bohr-frequency eigenoperators (Alicki), generically non-local for non-commuting $H$, and [CKG]'s filtered quasi-local construction cannot be GNS-symmetric | THEOREM | §1.4; [D-NC] §3.2, §4.3 ([CKG] App. E) |
 | single-Pauli jumps | a generating set of $M_A$, so $\ker\mathcal L_A^\dagger\subseteq\{P^1_A\}'=N_A$: the vertical derivation of the inclusion $N_A\subset M$ | THEOREM | [D-CR] §3.5 (4.1) |
 | on $A$ | quasi-local by Lieb–Robinson; truncation error linear in $t$ | THEOREM | [D-CR] §3.9 |
-| time-averaged | Cesàro mean $\phi_t(\mathcal L_A)$; energy $\le c_*/t$ with no gap; limit $=$ KMS projection onto $F_A\subseteq N_A^\sigma$ (modular core). The limit recovers exactly but is non-local for non-commuting $H$ | THEOREM (energy), DERIVED (limit) | [D-CR] §3.7, §6.1 |
+| time-averaged | Cesàro mean $\phi_t(-\mathcal L_A)$; energy $\le c_*/t$ with no gap; limit $=$ KMS projection onto $F_A\subseteq N_A^\sigma$ (modular core). The limit recovers exactly but is non-local for non-commuting $H$ | THEOREM (energy $\le2/t$, [CR] Cor VII.1), DERIVED (the constant $c_*$, D-6(i); the limit) | [D-CR] §3.7, §6.1 |
 | classical shadow | block heat bath $=$ resampling $A$ from its link $=$ one block step of the down-up walk | DERIVED | [D-HDX] §4.4 (check C4 there) |
 
 **In one sentence (DERIVED, assembling the rows).** $\mathcal R_{A,t}$ is the Cesàro mean of the heat flow of the KMS-twisted derivation of $N_A=M_{A^c}\subset M$. It is a gap-free, quasi-local, exactly $\rho$-preserving surrogate for a $\rho$-preserving conditional expectation onto $N_A$, which does not exist (§4.1). It succeeds on the one input that matters because the defect $W=\rho^{-1/2}(\rho_{-A}-\rho)\rho^{-1/2}$ is exactly orthogonal to $L^2(N_A)$ and is controlled by Dirichlet energy relative to $N_A$ (D-6).
@@ -450,7 +454,7 @@ All three are Fourier transforms of functions analytic in a horizontal strip who
 
 *Check C6:* $\mathcal E_{\rm str}/2=\mathrm{Var}_A$ to $10^{-14}$; $\max\mathrm{Var}_A/(\mathcal E_1/8)=0.47$ on random operators ($\lvert A\rvert=3$).
 
-**ANALOGY** (for $\beta>0$). [CR]'s proof is a **Diaconis–Saloff-Coste comparison** (*from memory*) between the complete-graph Dirichlet form, which the twirl provides, and the single-site Dirichlet form, which the dynamics provides, carried out in the KMS geometry. *It breaks* exactly where the KMS norm stops being invariant under multiplication by Paulis. Each Leibniz prefix and suffix then costs an imaginary-time conjugation $\lVert\rho_{\beta_0}S\rho_{\beta_0}^{-1}\rVert\le2^{w}$ ([CR] Cor IX.1, THEOREM, [D-Y] §8.8), and frequency filtering (Lemma IX.5) is needed to keep that cost finite at low temperature, at the price of a Hölder exponent. **$2^{2\lvert A\rvert}$ is the comparison constant of the Pauli group's two Cayley graphs in the twisted geometry. It is polynomial in the tracial geometry (D-8).** The gap-free Hölder-type inequality *is* what [CR] Lemma X.4 proves; the comparison-theorem reading is the analogy.
+**ANALOGY** (for $\beta>0$). [CR]'s proof is a **Diaconis–Saloff-Coste comparison** (*from memory*) between the complete-graph Dirichlet form, which the twirl provides, and the single-site Dirichlet form, which the dynamics provides, carried out in the KMS geometry. *It breaks* exactly where the KMS norm stops being invariant under multiplication by Paulis. Each Leibniz prefix and suffix then costs an imaginary-time conjugation $\lVert\rho_{\beta_0}S\rho_{\beta_0}^{-1}\rVert\le2^{w}$ ([CR] Cor IX.1, THEOREM, [D-Y] §8.8), and frequency filtering (Lemma IX.5) is needed to keep that cost finite at low temperature, at the price of a Hölder exponent. **On this reading [CR]'s $2^{2\lvert A\rvert}$ is an upper bound on (a Hölder form of) the comparison constant of the Pauli group's two Cayley graphs in the twisted geometry; in the tracial geometry the constant is $\lvert A\rvert/4$ (D-8).** The gap-free Hölder-type inequality *is* what [CR] Lemma X.4 proves; the comparison-theorem reading is the analogy.
 
 **Guard** (THEOREM, [D-NC] §4.4, §5.3). The $\beta=0$ generator is not a quantum-expander family. Its degree $3\lvert A\rvert$ is unbounded, its Kazhdan constant is $8/(3\lvert A\rvert)\to0$ (D-8), and its $\lvert A\rvert$-independent gap comes from tensorization. Bounded-degree quantum expanders (Hastings; Ben-Aroya–Schwartz–Ta-Shma) are a different object.
 
@@ -463,7 +467,7 @@ All three are Fourier transforms of functions analytic in a horizontal strip who
   - Recovery of a region needs coercivity of the region's derivation *relative to the algebra that forgets the region*, not mixing of the region's dynamics to its exact fixed points.
   - [CR] supply that relative coercivity in Hölder form, unconditionally.
   - In expander terms: the classical locally-stationary theory turns small Dirichlet energy into correct conditionals only under a *hereditary* modified log-Sobolev inequality over all pinnings ([LMRRW] Lemma 3.5, [D-CR] §7.1). [CR] show that, for recovering one region, an *unconditional, non-hereditary, single-region* Hölder coercivity suffices, at a price exponential in $\lvert A\rvert$.
-  - The exact-kernel gap that a "mixing" proof would need collapses exponentially with distance (D-7), while the relative constant does not (C9–C10). That is why the gap-free route is not merely convenient here; it is the right route.
+  - The exact-kernel gap that a "mixing" proof would need collapses exponentially with distance (D-7), while in the checks the relative constant does not (C9–C10, $n\le5$; C-1 conjectures this in general). That is why the gap-free route is not merely convenient here; it is the right route.
 - **New in [Y], the same theorem seen statically** (THEOREM [Y]; reading in §4.3, §5.5): the dynamics is replaced by the modular flow of the pair (state, cut reference), the erase reference by the cut reference (index → interface), and coercivity by the light cone of the Connes cocycle.
 
 ---
@@ -473,7 +477,7 @@ All three are Fourier transforms of functions analytic in a horizontal strip who
 | NCG layer | what it supplies here | label | the exact point of contact or break |
 |---|---|---|---|
 | modular theory (Tomita–Takesaki, Connes cocycle, KMS) | Markov $=$ cocycle localisation (D-4); quantitative form with index (D-5); [Y]'s leakage; Takesaki's obstruction (§4.1); KMS-strip kernels (§5.6) | THEOREM / DERIVED | literal; the quantum Markov theory *is* modular theory of the inclusion $M_{AB}\otimes1\subset M$ for a pair of states |
-| inclusions and subfactor geometry (index, Pimsner–Popa, commuting squares) | $\rho\le d_A^2\rho_{-A}$ is the [CR] prefactor and D-5's $d_A$; classical Markov $=$ commuting square (D-1a); expansion $=$ Friedrichs angle (D-1, D-2) | DERIVED; names KNOWN-LINK (*from memory*) | literal in finite dimension. *Break:* the subfactor theory of infinite index or type III, which the names suggest, is not used |
+| inclusions and subfactor geometry (index, Pimsner–Popa, commuting squares) | $\rho\le d_A^2\rho_{-A}$ gives D-5's $d_A$ (and equals [CR]'s $2^{2\lvert A\rvert}$ in value, though not in origin, §4.3); classical Markov $=$ commuting square (D-1a); expansion $=$ Friedrichs angle (D-1, D-2) | DERIVED; names KNOWN-LINK (*from memory*) | literal in finite dimension. *Break:* the subfactor theory of infinite index or type III, which the names suggest, is not used |
 | Dirichlet forms as squared derivations | the [CR] Dirichlet form, explicitly (T10); kernels as commutants; $\kappa(A)$ as relative coercivity of the derivation (§5.4) | THEOREM / DERIVED | literal |
 | property (T), Kazhdan constants, amenability | (T) ⇔ derivations inner (T11); at $\beta=0$ the single-Pauli generator is the Cayley Laplacian of the Pauli group, twirl $=$ Kazhdan projection, Laplacian gap 4, Kazhdan constant $8/(3\lvert A\rvert)$ (D-8) | THEOREM / DERIVED | literal at $\beta=0$. ANALOGY at $\beta>0$: a "twisted Kazhdan constant" for the KMS-twisted bimodule; *break:* [Pet] is proved for tracial finite factors and untwisted bimodules |
 | coarse geometry (Roe algebras, Kazhdan projections, ghosts) | gap ⇒ global projection is a norm limit of local operators (T12); the gap row of §5.1 | THEOREM (expanders); ANALOGY (Markov) | *break:* §5.7; the quantum object to localise is a non-existent conditional expectation, not a projection onto constants |
@@ -481,7 +485,7 @@ All three are Fourier transforms of functions analytic in a horizontal strip who
 | Carlen–Maas $W_2$ | gradient-flow geometry for GNS-symmetric semigroups | THEOREM ([D-NC] L8) | **absent** for the KMS-only [CKG]/[CR] samplers. Ricci or Talagrand statements about them are unsupported |
 | $K$-theory, cyclic cohomology, modular spectral triples | none for Markov or expansion in finite dimension; [CNNR]'s modular index might label sufficiency defects for stationary diagrams | SPECULATION ([D-NC] B-NC3) | finite-dimensional NCG topology is trivial (Note 1 §10) |
 
-**Verdict.** NCG ties the five areas together where the ties are *operator-algebraic*: the measure-theoretic layer (modular theory, inclusions) and the first-order layer (derivations, Dirichlet forms, Kazhdan constants, Roe-algebra locality). Those ties are literal. At the metric and topological layers the contribution is a reformulation with constants, or speculation. This agrees with [D-HDX] §4.6, [D-HC] §13.1 and [D-NC] §9, reached there by other routes (rule C3).
+**Verdict.** NCG ties the five areas together where the ties are *operator-algebraic*: the measure-theoretic layer (modular theory, inclusions) and the first-order layer (derivations and Dirichlet forms; Kazhdan constants and Roe-algebra locality for groups and expanders). Those ties are literal. Carried to the $\beta>0$ Markov problem, the Kazhdan and Roe-algebra rows are ANALOGIES (§5.7, §6.2). At the metric and topological layers the contribution is a reformulation with constants, or speculation. This agrees with [D-HDX] §4.6, [D-HC] §13.1 and [D-NC] §9, reached there by other routes (rule C3).
 
 ---
 
@@ -489,15 +493,15 @@ All three are Fourier transforms of functions analytic in a horizontal strip who
 
 **Where the "same essence" is literally a theorem.**
 1. The pairwise influence spectrum of a Gibbs measure under all pinnings *is* the link spectrum of a high-dimensional expander (T2), and that is a frame bound on single-site fluctuation spaces (D-3).
-2. The Markov property, strong spatial mixing, Dobrushin influences and the expander mixing lemma are values of one functional, $c(A,B)$ (D-1). The step from local to global is the sharp two-projection inequality (D-2) and its iterations (T3, T5, T6).
+2. The Markov property, strong spatial mixing and the expander mixing lemma are values of one functional, $c(A,B)$, and Dobrushin influences bound it on adjacent pairs (D-1). The step from local to global is the sharp two-projection inequality (D-2) and its iterations (T3, T5, T6).
 3. At $\beta=0$ the "single-Pauli jumps on $A$" generator is the Cayley Laplacian of the Pauli group of $A$, and the twirl is its Kazhdan projection (D-8). The $\lvert A\rvert$-independent gap is a tensorization (sum) phenomenon, while the Kazhdan constant decays like $1/\lvert A\rvert$.
-4. A uniform local gap would turn the local quantum Markov property into the global one (T13). This holds once "local gap" is read as the relative constant $\kappa(A)$ (with the $\chi^2$ caveat), because the literal gap collapses (D-7).
+4. A uniform local gap would turn the local quantum Markov property into the global one (T13, a theorem as stated). For non-commuting $H$ with trivial $F_A$ its hypothesis, read literally, fails (D-7). Read with the relative constant $\kappa(A)$ instead, the statement is no longer a theorem: through D-6(c) it keeps an exponential $\chi_{\rm KMS}$ prefactor (C-1), and the entropic version is CONJECTURE C-2.
 
 **Where it is two halves of one mechanism.** Every local-to-global theorem in these areas pairs:
 - **heredity**: the class is closed under passing to links or pinnings, and on separated pairs the angle is exactly zero (Markov / Hammersley–Clifford; exact, combinatorial, no rate);
 - **uniform decorrelation**: the angle is bounded away from 1 on overlapping pairs or links (expansion, spectral independence, strong clustering, Dobrushin).
 
-[D-HC] B3 shows the hinge: Hammersley–Clifford's positivity is "angle $<1$", the gap is "angle $\le c_0<1$". Quantumly the two halves are coupled, since heredity (strong Markov) costs clustering (T14).
+[D-HC] B3 shows the hinge: Hammersley–Clifford's positivity secures "angle $<1$" (the lattice law, §3.4), the gap is "angle $\le c_0<1$". Quantumly the two halves are coupled, since heredity (strong Markov) costs clustering (T14).
 
 **Where it is false.**
 1. *"The Markov property is an expansion property."* False. $c=0$ on separated pairs at every temperature, while the buffer angle is $0.93$ (C1, $\beta=2$). Classical Gibbs measures stay Markov at phase transitions ([D-Y] §10). Both all-temperature quantum proofs use no gap.
@@ -522,12 +526,12 @@ All three are Fourier transforms of functions analytic in a horizontal strip who
   - **Defect I.** Define the angle of the triple (past algebra, future algebra | face algebra at layer $\ell$) inside the history algebra $D$, i.e. the conditional maximal correlation of past and future given the present face. It is zero iff the law is Markov at $\ell$ (D-1a; U8 of [D-HDX] §6.4). Unlike the CMI it is a sup-type, $L^2$ quantity, and its uniform smallness is the expander-type certificate.
   - **Defect II.** For states with coherences between histories (Note 1 §4.1; [D-Y] B13), define the leakage of $(D\omega{:}D\mathbb P_\beta)_t$ out of $D_0$. D-5 bounds the sufficiency defect by it, with the index of $D_0$ in the corner as the size factor, and [D-Y] B8 already gives $\eta\le\lvert\beta-\beta'\rvert\lvert t\rvert\max_\tau\mathrm{osc}F$ for diagonal states.
   - Both pass the drag test: they are defined for any inclusion with a faithful state.
-- **Arrows.** An arrow is the ReLU immediately before a linear map (Note 1 §2.1). Nothing above uses activation vectors. Faces enter only as the projections generating $D_0$, and the angle is computed in $L^2$ of the state on histories.
+- **Arrows.** An arrow is a linear layer together with the ReLU immediately before it (Note 1 §2.1). Nothing above uses activation vectors. Faces enter only as the projections generating $D_0$, and the angle is computed in $L^2$ of the state on histories.
 
 ### 9.2 Competition context (prong 2; dictionary-level, rule P2.1)
 
-- **Annealed against quenched** (DERIVED in [D-TS] §2.5). The ensemble-averaged covariance transfer is a conditional expectation onto the scalars (angle $0$, a perfect expander), and the averaged third-order transfer is $0$. A single realised layer is a one-Kraus channel, with no averaging and therefore no isolated invariant subspace.
-- In this note's language the old $\kappa_3$ content lives in what the conditional expectation does not see. The propagator law $\mathrm{PR}\approx n/(2\cdot\text{age})$ has no gap, so mode counts are a fixed fraction of $n$ ([D-TS] §3.4), consistent with the old-content stream's verdict that no cheap carrier exists ([old-content/REPORT.md](../old-content/REPORT.md)).
+- **Annealed against quenched** (DERIVED in [D-TS] §2.5). The ensemble-averaged covariance transfer is a conditional expectation onto the scalars (all non-trivial eigenvalues $0$: a perfect expander), and the averaged third-order transfer is $0$. A single realised layer is a one-Kraus channel, with no averaging and therefore no isolated invariant subspace.
+- In this note's language the old $\kappa_3$ content lives in what the conditional expectation does not see. The propagator law $\mathrm{PR}\approx n/(2\cdot\text{age})$ has no gap, so mode counts are a fixed fraction of $n$ ([D-TS] §3.4), consistent with the old-content stream's verdict that none of the carriers it tested is cheap enough at $n=1024$ ([old-content/REPORT.md](../old-content/REPORT.md)).
 - Per P2.1 that negative is charged to the dictionary (N1: the $\Phi^3$ pass-through; N2: the noAD bookkeeping), not to the theory. The only gapped direction is the rank-one mean mode ([D-TS] B6).
 - **The face law** has measured unpinned $\eta_0=1.7$–$8$ ([D-TS] §3.5). By D-3 this is a frame bound $\lVert\sum P_i\rVert-1$ on gate fluctuation lines. Pinned values, the actual hypothesis of T2–T3, need third-order gate statistics that the atlases do not store.
 - **Honest scope.** This synthesis gives **no direct lever on the binding competition error**. Per [competition-plan.md](../../competition-plan.md) §6b and the [oracle1024](../oracle1024/REPORT.md) and [chain128](../chain128/REPORT.md) reports, that error is the carrier of the $(2,1,1)$ fourth-cumulant slice. The closest contact is §9.2's first bullet, which predicts the failure of expander-style compression of quenched content and agrees with the measurements. Nothing here should change Lines A–C.
@@ -564,7 +568,7 @@ All three are Fourier transforms of functions analytic in a horizontal strip who
 
 Add two guards:
 - the literal local gap collapses for non-commuting dynamics (D-7);
-- the $\chi^2$ route keeps an exponential in the region size, so the expander-type input must be entropic (C-2).
+- the gap-free $\chi^2$ route keeps an exponential in the region size, so the expander-type input must be entropic (C-2) or give an exponential rate in $t$.
 
 ---
 

@@ -83,7 +83,7 @@ Each is used only as a name, or is re-derived or checked here. The ChatGPT conve
      - A single fitted scalar per layer recovers 74–114 % of the D21 gain that the n-parameter regeneration gets at n = 128.
      - At layer 15 the variance excess along the mean is 1.05–1.6× the gain-mode prediction, so the spike at depth is largely the gain mode at order 2.
    - **The amplitude.** It is width-stable as c·n. The scalar Var‖z̃‖²/(E‖z̃‖²)² − 2‖C‖²_F/(tr C)² is exactly the trace of the (2,2) slice divided by (tr C)² (DERIVED identity). It bounds the amplitude from above: c4/gex = 0.77–1.01 at n = 1024 and 0.5–1.0 at n = 128.
-   - **The limit at n = 1024.** Across widths the template's share of the slice energy falls: at layers 6–15 it is 0.47–0.91 at n = 128 and <<S1024RANGE>> at n = 1024 (C9). This is the measured mechanism behind the published regeneration's falling share of the κ4 gap (55 → 33 → 20 % at n = 128 → 256 → 1024, [O1024]). At n = 1024 the binding (2,1,1) content is mostly *not* the gain mode.
+   - **The limit at n = 1024.** Across widths the template's share of the slice energy falls: at layers 6–15 it is 0.47–0.91 at n = 128 and 0.25–0.39 at n = 1024 (two networks each, C9). This is the measured mechanism behind the published regeneration's falling share of the κ4 gap (55 → 33 → 20 % at n = 128 → 256 → 1024, [O1024]). At n = 1024 the binding (2,1,1) content is mostly *not* the gain mode.
    - **Not a Gaussian quantity.** A Gaussian-input recursion recovers layer 1 exactly but only 24–47 % of the amplitude at layer 15 (C10).
    - **Old κ3 content is mostly the gain mode, in the published convention.** In the no-AD convention the old pool's D21 is 49–97 % along the κ3 template T (87–97 % at layers 10–15). A scalar accumulator, fed once by each source as it ages out of the young window and never discounted, removes most of it at zero cost (n = 128, two MLPs, C12):
      - residual 0.13–0.32 of ‖D21‖, against 0.20–0.88 if the pool is dropped;
@@ -212,7 +212,7 @@ The rank-one spike is not the κ3 gain template T of §7.5. T has one leg along 
 **DERIVED (deflation).** Carry the spike exactly and the bulk in the propagator basis. The bulk's own target relaxes from ε to ε/√(1 − f). At f = 0.84 that is from 2 % to 5 %. At age 8 and n = 1024, this means 263 modes instead of 322 ([D-TS] §3.4): ≈ 20 % fewer, but still ∝ n. **A small lever.**
 
 **Link to the gain mode (measured, C9; ANALOGY with an exact breaking point).** The variance excess of C along μ̂ can be compared with the scale-mixture prediction (c4/4)·‖μ‖² of §7.1:
-- at layer 15 it is 1.05–1.6× the prediction (n = 128–1024, seven networks);
+- at layer 15 it is 1.05–1.6× the prediction (n = 128–1024, eight networks);
 - at layer 10 it is 1.4–2.2×;
 - at layer 2 it is 2.4–3.3×.
 
@@ -248,7 +248,7 @@ The closure error (§6) is a sum over diagrams of products of entrywise correlat
 **Setting.** The face law of layer l is the law of the gate pattern g = 1[z_l > 0] ∈ {0,1}ⁿ (dictionary v1). The statistics that the community bakes store, and that [CP]'s Line C proposed as a representation, are:
 - gate_p;
 - gate_GG = P(z_i > 0, z_j > 0);
-- gate_GX = E[1[z_i>0](a_j − μ_j)].
+- gate_GX = E[1[z_i>0]·(a_j − μ_j)].
 
 The question is whether a Gibbs description of this law, sharpened by spectral independence, closes the (2,1,1) slice more cheaply or more accurately than the leg-partition closure does.
 
@@ -597,7 +597,7 @@ Variants:
   - Σ_i κ4_iijk = Cov(‖z̃‖², z̃_j z̃_k) − 2(C²)_jk;
   - Σ_ij κ4_iijj = Var(‖z̃‖²) − 2‖C‖_F².
 
-  So the *gain excess* gex := Var‖z̃‖²/(tr C)² − 2‖C‖²_F/(tr C)² equals Σ_ij κ4_iijj/(tr C)², the normalised trace of the (2,2) slice. For a scale mixture of a Gaussian, gex = Var(s²)·(1 + 2‖Σ‖²_F/(tr Σ)²). Hence c4/gex ≤ 1, with equality when no eigenvalue of C dominates.
+  So the *gain excess* gex := Var‖z̃‖²/(tr C)² − 2‖C‖²_F/(tr C)² equals Σ_ij κ4_iijj/(tr C)², the normalised trace of the (2,2) slice. For a scale mixture of a Gaussian, gex = Var(s²)·(1 + 2‖Σ‖²_F/(tr Σ)²). Hence c4/gex = 1/(1 + 2‖Σ‖²_F/(tr Σ)²) ≤ 1. The ratio is close to 1 unless a few eigenvalues dominate C; a strong spike lowers it.
 - (v) Positive homogeneity propagates the scale. If z_l = s·y_l, then z_{l+1} = s·relu(y_l)W_{l+1}: a scale fluctuation present at layer l reaches every later layer exactly, undiscounted. If layer l+1 adds a fresh, independent gain g, then Var((sg)²) = Var(s²) + Var(g²) to first order. The amplitude therefore accumulates additively with depth.
 - (vi) The input radius r̃ = ‖x‖/√n has Var(r̃²) = 2/n. But x is exactly Gaussian, so κ4(z₀) = 0: the radial part is cancelled exactly by the spherical part, x̂ being uniform on the sphere. "2/n" is therefore not the amplitude at depth. The gains that the layers add set it.
 
@@ -679,7 +679,7 @@ This is the first quantitative explanation of *why* the u_iC_jk form works at al
 | 512 | 21 | 0.25 / 0.30 / 0.24 / 0.38 | 0.36 | 0.95–0.99 | 2.5 / 4.8 / 6.0 / 10.3 | 2.8 / 5.9 / 7.7 / 11.9 | 4.4 / 6.9 / 8.5 / 9.0 | 0.45 / 0.77 / 0.76 / 0.79 | 2.9 / 2.4 / 2.2 / 1.4 |
 | 512 | 22 | – / 0.37 / 0.54 / 0.66 | 0.60 | 0.97–0.98 | – / 5.9 / 10.4 / 13.7 | – / 6.4 / 9.9 / 14.5 | – / 7.7 / 9.1 / 9.7 | – / 0.78 / 0.85 / 0.89 | – / 2.1 / 1.4 / 1.2 |
 | 1024 | 21 | 0.27 / 0.26 / 0.25 / 0.36 | 0.34 | 0.96–0.98 | 2.4 / 4.4 / 6.3 / 10.5 | 2.7 / 5.6 / 7.8 / 10.5 | 4.5 / 7.3 / 8.9 / 9.8 | 0.47 / 0.72 / 0.79 / 0.83 | 3.3 / 2.6 / 2.0 / 1.4 |
-| 1024 | 22 | <<S22_1024>> |
+| 1024 | 22 | – / 0.28 / 0.30 / 0.39 | 0.36 | 0.95–0.98 | – / 4.6 / 6.6 / 9.3 | – / 5.7 / 8.1 / 10.1 | – / 7.9 / 8.9 / 9.3 | – / 0.76 / 0.82 / 0.86 | – / 2.7 / 2.0 / 1.5 |
 
 **Readings.**
 1. **The shape is the same at every width.** cos(u, var) = 0.93–0.99 everywhere. share_Creg ≈ share_R, so the free u buys nothing over u = c·var.
@@ -687,15 +687,15 @@ This is the first quantitative explanation of *why* the u_iC_jk form works at al
 3. **The template's share of the (2,1,1) slice falls with width.**
    - At layers 6–15 it is 0.47–0.91 at n = 128.
    - It is 0.24–0.66 at n = 512, across two networks.
-   - It is <<S1024RANGE>> at n = 1024.
+   - It is 0.25–0.39 at n = 1024, across two networks.
    - The fall from 128 to 256 is clean. Beyond 256, network scatter is comparable to the trend.
 
-   The slice energy per neuron falls as n^{−1.2} at layer 2 (‖K‖²/(n·var⁴) = 2.41, 1.06, 0.47, 0.21). At layer 15 it falls faster (1140, 269, 70.5, 29.7), because the template part there rides on the spike, whose weight relative to the bulk decays with n.
+   The slice energy per neuron falls as n^{−1.2} at layer 2 (‖K‖²/(n·var⁴) = 2.41, 1.06, 0.47, 0.21). At layer 15 it falls faster (1140, 269, 70.5, 29.7). This is consistent with the template part there riding on the spike, whose weight relative to the bulk decays with n (an interpretation, not separately measured).
 4. **This is the mechanism behind the published regeneration's measured fall** (55 → 33 → 20 % of the κ4 gap at n = 128 → 256 → 1024, [O1024], a different network). What the regeneration can carry is the gain mode, and the gain mode is a falling share of the slice.
 
-   At n = 1024 roughly two thirds or more of the (2,1,1) energy is *not* the gain mode. That remainder is the binding object of [CP] §6b. E1 decides whether it is low-rank.
-5. **The κ3 template does not collapse.** share3_T is 0.72–0.83 at layers 6–15 at n = 1024. At the D21 interface the scale-mixture shape remains the dominant part of the target at the competition width.
-6. **c4 versus gex.** c4/gex = 0.77–1.01 at n = 1024 and 0.5–1.0 at n = 128. Both bounds and the trend are as (iv) predicts, since c4/gex ≤ 1 with the gap growing with the spike.
+   At n = 1024, 60–75 % of the (2,1,1) energy is *not* the gain mode. That remainder is the binding object of [CP] §6b. E1 decides whether it is low-rank.
+5. **The κ3 template does not collapse.** share3_T is 0.72–0.86 at layers 6–15 at n = 1024. At the D21 interface the scale-mixture shape remains the dominant part of the target at the competition width.
+6. **c4 versus gex.** c4/gex = 0.77–1.01 at n = 1024 and 0.5–1.0 at n = 128. As (iv) predicts, c4/gex ≤ 1 within noise, and it is lowest where the spike is strongest (n = 128 at depth).
 
    The single-mixture relation c3 = c4/2 holds only to within a factor of about 2: c3·n/(c4·n/2) = 0.6–1.9.
 
@@ -760,7 +760,7 @@ This is the first quantitative explanation of *why* the u_iC_jk form works at al
 - **What is left is still 6–15 times the bar.** The template does not remove the old-content problem. It shrinks the part that needs a real carrier by a factor of 2.6–4.6 in D21 norm at layers 10–15, at n = 128.
 
 **CONJECTURE (n = 1024).** Two predictions:
-- In the no-AD convention the old pool stays ≥ 70 % (energy) along T at layers ≥ 8. Support: share3_T of the *total* D21 is still 0.72–0.83 at n = 1024 (C9).
+- In the no-AD convention the old pool stays ≥ 70 % (energy) along T at layers ≥ 8. Support: share3_T of the *total* D21 is still 0.72–0.86 at n = 1024 (C9).
 - A carrier then needs to reach only ε_own ≈ 0.022/0.2 ≈ 11 % on the non-T residual, rather than 2–3 % on the whole pool.
 
 Suppose the residual's mode count follows the single-age law of [D-TS] §3.4 at ε_own ≈ 10–20 % (162–214 modes at age 8, n = 1024). A Tucker core then costs ≈ 4–9 u per layer, against 54–86 u for the w = 4 tier at 2 % without the template. This is rough: the residual is not a generic Haar-oriented source, and its own law must be measured. Tests: E9 (the residual's own mode count) and E2.
@@ -769,23 +769,23 @@ Suppose the residual's mode count follows the single-age law of [D-TS] §3.4 at 
 
 **κ4 (2,1,1).**
 - The published regeneration u_iC_jk is the gain mode (cos ≥ 0.91), and one scalar per layer reproduces ≈ 90 % of its effect at n = 128.
-- At n = 1024 the gain mode holds roughly a quarter to a third of the slice's energy, so it can close only ≈ 20–30 % of the κ4 gap. That is what the regeneration achieves.
-- The remaining two thirds or more is the binding error at the competition width. Nothing in this note's bridges carries it: not the MRF (§4), not the expander (§6.5), not the gain (§7.3).
+- At n = 1024 the gain mode holds 0.25–0.39 of the slice's energy (two networks), so it can close only ≈ 20–35 % of the κ4 gap. The regeneration achieves 20 % on a third network ([O1024]).
+- The remaining 60–75 % is the binding error at the competition width. Nothing in this note's bridges carries it: not the MRF (§4), not the expander (§6.5), not the gain (§7.3).
 - E1 is the decisive next measurement: is the remainder dominated by one mode?
 
-**Old κ3 content.** The gain template plus a scalar accumulator replaces most of the old tier's D21 effect at no cost (§7.5). The open question moves from "carry the old pool" to "carry the non-T residual". That residual is 3–5× smaller in D21 norm at n = 128.
+**Old κ3 content.** The gain template plus a scalar accumulator replaces most of the old tier's D21 effect at no cost (§7.5). The open question moves from "carry the old pool" to "carry the non-T residual". At depth that residual is 2.6–4.6× smaller in D21 norm, at n = 128.
 
 **The amplitude.**
-- For κ3, the accumulator supplies it. A Monte Carlo estimate of ⟨D21, T⟩ with the control variate (z̃² − var) needs ≈ 5·10⁴–1.2·10⁵ samples for 1 % at n = 1024 (C11b). That is ≈ 2–4 u, affordable but not free.
+- For κ3, the accumulator supplies it. A Monte Carlo estimate of ⟨D21, T⟩ with the control variate (z̃² − var) needs ≈ 5·10⁴–1.2·10⁵ samples for 1 % at n = 1024 (C11). That is ≈ 2–4 u, affordable but not free.
 - For κ4, Monte Carlo is hopeless: 3·10⁶–8·10⁶ samples for 1 % already at n = 128, and ≥ 10⁹ at n = 1024.
 - The κ4 amplitude therefore needs its own closure (E10). An offline table of c·n against l is the fallback; it carries ±30–40 % scatter between networks.
 
 ### 7.7 Known links, analogies, and the NCG reading
 
 - **KNOWN-LINK** ([D-TS] §2.3, Hanin–Nica Thm 1, Cor. 3). For a fixed input and random weights, ‖Mu‖² is log-normal with β = 5Σ1/n_i for ReLU. This is the annealed version of the gain accumulation.
-  - The quenched quantity measured here (fixed weights, random input) grows by ≈ 0.9–1.2 per layer in units of 2/n, i.e. ≈ 1.8–2.4/n per layer, against the annealed 5/n.
-  - So the across-input gain variance of one network is ≈ 35–50 % of the ensemble's. The rest is network-to-network variation, which a quenched estimator never sees.
-  - The analogy breaks exactly at quenched versus annealed, the guard of [D-TS] B4.
+  - The quenched quantity measured here (fixed weights, random input, excess over the Gaussian value) grows by ≈ 0.9–1.2 per layer in units of 2/n, i.e. ≈ 1.8–2.4/n per layer. The annealed log-variance grows by 5/n.
+  - The two are different quantities. The annealed one includes network-to-network variation and the Gaussian part. Only the O(depth/width) scaling transfers.
+  - The link breaks exactly at quenched versus annealed, the guard of [D-TS] B4.
 - **KNOWN-LINK** (memory: Roberts–Yaida–Hanin, *The Principles of Deep Learning Theory*). The leading finite-width four-point vertex of a ReLU network is O(depth/width). In the ensemble it is the variance of the stochastic metric, i.e. a scale mixture over the previous layer's empirical second moment. The quenched gain mode here is its fixed-network counterpart, and c·n is width-stable as that scaling predicts.
 - **ANALOGY** (memory: Lebowitz–Percus–Verlet ensemble corrections). In a canonical ensemble, correlation functions differ from microcanonical ones by terms proportional to the fluctuation of the conserved quantity times derivatives with respect to it. The gain-mode cumulants (R for κ4, T for κ3, μμᵀ for C) are such terms for the scale.
   - It breaks because the scale is not conserved: every layer injects fresh variance (§7.4), and only its *past* fluctuation is conserved, by 1-homogeneity.
@@ -811,7 +811,7 @@ The intuition: Gibbs states, the approximate local Markov property and MRFs shar
    - doubled legs average (the expander).
 
    The local-to-global step "local Markov + decorrelation ⇒ global accuracy" is literally what the leg-partition closure does. The decorrelation comes from randomness (entrywise n^{−1/2}), not from distance or a spectral gap.
-2. **The gain mode is heredity of the scale plus the expander's Perron mode.** Positive homogeneity carries the scale forward exactly, the hereditary half. The doubled-leg expander transmits exactly the norm-coupling channel, the decorrelation half: everything else on a doubled leg is averaged away. Together they explain why the one shape that survives transport is the scale-mixture shape (§7). This is the single "same essence" that pays in the competition.
+2. **The gain mode is heredity of the scale plus the expander's Perron mode.** Positive homogeneity carries the scale forward exactly, the hereditary half. On the doubled→doubled channel the expander transmits only the norm-coupling (trace) part, the decorrelation half: everything else on that channel is averaged down to O(n^{−1/2}). Together they explain why the one shape that survives transport is the scale-mixture shape (§7). This is the single "same essence" that pays in the competition.
 
 **False.**
 1. **"The Markov property is an expansion property."** The face law is Markov only for the complete graph and fails positivity (R4). Its accuracy-relevant content is not pairwise (R2), and a pairwise Gibbs closure is biased by up to 4/π (R3).
@@ -849,7 +849,7 @@ The cheap decisive pair is E1 + E7 for the κ4 slice and E9 for old content. E1 
 
 ## 10. Checks (C1–C12): what was run, and the numbers
 
-All runs are in the scratchpad (`csynth/`), not committed. Width-128 checks use the two atlas MLPs of the coordinating session (seeds 3 and 4: N = 5·10⁵ each, with `pre_M211`). The other checks use fresh He MLPs generated with numpy. Fit and score always use different samples.
+All runs are in the scratchpad (`csynth/`), not committed. Width-128 checks use the coordinating session's atlases: two MLPs, each with two independent sample atlases (sample seeds 3 and 4, N = 5·10⁵ each, with `pre_M211`). The other checks use fresh He MLPs generated with numpy. Fit and score always use different samples.
 
 | check | what | result | § |
 |---|---|---|---|
@@ -858,12 +858,12 @@ All runs are in the scratchpad (`csynth/`), not committed. Width-128 checks use 
 | C3 | Orthants met by the row cone of W (n = 8–14) | 105/256, 317/1024, 1375/4096, 4606/16384 | 4.3 |
 | C4 | Top Cor(g) mode vs spike image (n = 128, layers 1–4) | overlap 0.44, 0.39, 0.39, 0.49 (random 0.01); 82–99 % of η₀ | 3.3 |
 | C5 | Transport channel fractions (n = 128) | tripled → diagonal 0.36 → 0.03–0.12; D21 doubled→doubled 0.52–0.81, flat to 0.19–0.29 | 6.4 |
-| C6 | Flat (2,1,1) carrier pilot | refuted at layers ≥ 5 (gap closed −2.05 to +0.33) | 6.5 |
+| C6 | Flat (2,1,1) carrier pilot | refuted at layers ≥ 5: worse than the published form, gap closed −2.05 to +0.33 | 6.5 |
 | C7 | u_Creg vs var; slice energy in span(R) (atlases) | cos 0.91–0.997; share 0.27 → 0.94 (MLP 0), 0.30 → 0.85 (MLP 1) | 7.2 |
 | C8 | D21 gap closed by c·R vs u_iC_jk (atlases) | ratio 0.74–1.14, median ≈ 0.9 | 7.2 |
 | C9 | Gain template across widths (Gram trick) | table of §7.3 | 7.3 |
 | C10 | Gaussian-input gain recursion | 24–47 % of gex at layer 15 | 7.4 |
-| C11 | κ3 template T: D21 energy share (atlases); Monte Carlo cost of its amplitude | 0.90–0.97 at layers 8–15 (n = 128); 0.72–0.83 at n = 1024; 1 % amplitude needs 5·10⁴–1.2·10⁵ samples at n = 1024 with the control variate | 7.2, 7.6 |
+| C11 | κ3 template T: D21 energy share (atlases); Monte Carlo cost of its amplitude | 0.90–0.97 at layers 8–15 (n = 128); 0.72–0.86 at n = 1024 (layers 6–15); 1 % amplitude needs 5·10⁴–1.2·10⁵ samples at n = 1024 with the control variate | 7.2, 7.6 |
 | C12 | Old pool along T (tracker, AD and no-AD); undiscounted accumulator | no-AD cos² 0.49–0.97; residual 0.13–0.24 (fit), 0.13–0.32 (accumulator); AD cos² ≤ 0.33 | 7.5 |
 
 **Validation of the estimators.**
