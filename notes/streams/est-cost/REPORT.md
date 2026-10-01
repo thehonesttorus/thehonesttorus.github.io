@@ -1,6 +1,20 @@
 # Stream est-cost: cut the public chain's FLOP bill and flopscope call count at unchanged numbers
 
-*Status: IN PROGRESS (2026-10-01). Partial results; everything below is measured unless marked.*
+*Status: STOPPED at 17:45 UTC on 2026-10-01 on the user's instruction (the competition system is to be designed from a
+fresh slate; adapting the public chain is out). Everything below is measured unless marked.*
+
+**Stop note.** Measured before stopping: V29's steady ledger reproduces exactly (260.06 units, 13,121 flopscope calls);
+the five Strassen families hold 7,170 calls and the rest is ~400 small elementwise calls per layer. A lower-op Strassen
+engine (`sw2.py`: 6-D quadrant grids, two blocks per op, 15 calls per level instead of 22, fused leaf 19 instead of 25)
+cuts an L5 family from 113 to 79 calls (hub 127 → 87) at the same price and error. Bundle v29d (engine + the d=2 term
+program on 12 matrix parts instead of 52 materialized products + the cumulant conversion as one einsum + dead K4 riders
+removed) bills **258.89 units (V29 260.06) in 9,869 calls (V29 13,123, −25 %)** at steady state, with final-layer outputs
+within float32 noise of V29 (rms rel 8.0e-7, max 1.0e-6). v29e (C_pre copies paired) runs 9,827 calls. Not done:
+idle-box / client-server residual, robustness checks, further elementwise fusions, FLOP levers. Measured exchange rates
+(estimated from the op table): keeping C_pre's block family vs going dense ≈ 140 calls per unit; old-tier families
+dense ≈ 65 calls per unit; more Strassen on the join products ≈ 160–190 calls per unit. Line-level call attribution of
+v29e is in `results/prof_v29e_lines.json`. Note from the submission stream: on the grader every basic slice is also a
+client/server round trip, so slice memoization matters as much as op count.
 
 ## Question
 
