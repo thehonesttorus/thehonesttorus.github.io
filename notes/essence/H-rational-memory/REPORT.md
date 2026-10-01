@@ -145,3 +145,22 @@ The merge packs everything older than four layers into n/2 atoms, where c = 2 sp
   - That space can be carried causally by response-matched merged histories without error accumulation at width 256, and with slow growth at width 1024.
 - **What it does not establish.** The competition wall has moved: to the per-pair constant of the exact young tier, and to FC's raw accuracy (2–3× the leaders' raw). The merged-history carrier attacks neither.
 - **What would move the score.** A representation of ages 1–2 that does not materialise the Hadamard squares (Y∘Y, Y∘Z, Z∘Z, Z∘T) per source per target, or a cut of the per-pair constant (7 → 4 by dropping or sketching the slice legs where their score-level weight is small). Both are measurable inside FC on the six networks.
+
+## Appended 23:00 UTC: can the per-pair constant be cut by keeping slice legs only at young ages?
+
+**12. Score-level ablation: slice legs only up to age K** (`fc_age.py` = region's `fc.py` plus `slice_age`, and a per-pair product counter; `run_sliceage.py`; width 1024; raw with truth noise subtracted).
+
+- **Counter.** Of FC's 825 D21 products, the Wick legs take 465 and the slice legs 360. So slice legs are 44 % of the D21 bill.
+- **Sanity check.** Full FC reproduces region's MLP 0 score (3.24e-8).
+
+| slice legs kept for ages ≤ K | slice products | MLP 0 | MLP 1 | MLP 2 | worse than full FC by |
+|---|---|---|---|---|---|
+| all (full FC) | 360 | 3.24e-8 | 1.81e-8 | 3.03e-8 | — |
+| 4 | 162 | 5.04e-8 | 6.29e-8 | 6.93e-8 | 1.6× / 3.5× / 2.3× |
+| 2 | 87 | 1.15e-7 | 1.37e-7 | 1.17e-7 | 3.6× / 7.6× / 3.9× |
+| 1 | 45 | 1.68e-7 | 2.19e-7 | 1.74e-7 | 5.2× / 12× / 5.7× |
+
+**Negative: the slice memory is as long as the Wick memory.**
+- Slice legs older than four layers still carry a factor of 1.6–3.5 in raw MSE. The constant of 7 products per pair cannot be cut by age-truncating the slice legs.
+- Row pruning of slice atoms also fails (region: 50 % pruning → 2.5× worse).
+- What remains is to treat slice legs like Wick legs, in age-graded frames: team G's c·n/a law already projects both.

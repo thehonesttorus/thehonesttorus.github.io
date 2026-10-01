@@ -1,0 +1,26 @@
+[
+ {
+  "mlp": 0,
+  "K": 2,
+  "raw": 1.1520324260161964e-07,
+  "wick_products": 465.0,
+  "slice_products": 87.0,
+  "wall": 37.4
+ },
+ {
+  "mlp": 1,
+  "K": 2,
+  "raw": 1.372760777506557e-07,
+  "wick_products": 465.0,
+  "slice_products": 87.0,
+  "wall": 38.6
+ },
+ {
+  "mlp": 2,
+  "K": 2,
+  "raw": 1.1682261328177657e-07,
+  "wick_products": 465.0,
+  "slice_products": 87.0,
+  "wall": 36.9
+ }
+]
