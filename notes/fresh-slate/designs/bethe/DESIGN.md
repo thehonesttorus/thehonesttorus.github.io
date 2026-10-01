@@ -130,3 +130,64 @@ and lie ≥ 10× below Gaussian closure, the pair-belief dictionary is falsified
   i.e. the c, c², c³ terms are exact.
 - Exactness check 2 (layer map with the triple hubs, n = 12, MC 4e6): C^a, K^a, T^a errors at MC noise
   for |c| ≤ 0.2; T^a hub closure 10 % off at |c| ≈ 0.5 (expected next order).
+- Exactness check 3 (exact edge table, v1): the bivariate-Gaussian table G_ij (i, j ∈ [−4, 3]; Φ2 by
+  40-node Gauss–Legendre in θ = asin ρ; Stein recursion G_pq = (m_a G_{p−1,q} + v_a G_{p−2,q} + c G_{p−1,q−1})/p;
+  negative indices from the conditional law at z = 0) matches adaptive quadrature to 1e-16 for ρ = 0.3, 0.9,
+  0.99, and its mean-derivatives match finite differences to 1e-11.
+
+## 8. Stage Q results (bench sets w64_d16, w128_d16; raw = final MSE − truth noise; 8 MLPs)
+
+| estimator | w64 raw | w128 raw | note |
+|---|---|---|---|
+| tree (node beliefs only, lift limit) | 2.5e-3 | 3.3e-3 | does not improve with width: the naive principle fails, as derived in §2 |
+| Gaussian closure (Mehler-12) | 4.5e-4 | 2.8e-4 | |
+| fact0 (pairs to c³, fresh hubs) | NaN on 1 MLP | 7.1e-5 | |
+| fact1 (+ age-1 old triples) | NaN on 1 MLP | 5.6e-5 | |
+| full (all-age triples, n³ tensor) | NaN on 2 MLPs | 4.1e-5 | reference: old content worth 1.7× |
+| edgeG (exact Gaussian edges + K, no hubs) | 3.4e-4 | 8.1e-5 | |
+| edge0 (exact edges + K + fresh hubs) | 2.4e-4 | 6.9e-5 | |
+| edge1 (+ age-1 old triples) | 2.1e-4 | 5.3e-5 | best: 5.3× below Gaussian at w128 |
+
+Exact edges (all orders in ρ; rms ρ reaches 0.43 at layer 15, w128) cure the NaNs but gain little.
+
+## 9. Diagnosis (w64, MLPs 0–1, MC 4e6)
+
+Oracle injection of true z-state pieces at every layer (final MSE; none = 1.65e-4 / 8.8e-5):
+true (v, κ3, κ4) at every node → 9.4e-6 / 9.3e-6 (17× / 9×), identical to injecting (C, K, κ4) in full:
+**the pair (off-diagonal) parts of the state are not what is binding; the node beliefs are.**
+Injecting true κ4 alone makes it 3–6× worse (my κ3, v are tuned to my κ4 ≈ 0).
+
+Node-belief errors along depth (own chain vs MC truth, MLP 0): variance rel. err. grows to 5–10 %;
+κ3 rel. err. 0.4–0.6; **κ4 rel. err. ≈ 1: the true node κ4 is large and coherently positive
+(mean 0.1–0.3, rms 0.2–0.8), whereas the tree κ4 decays to ≈ 0.** Adding the two-site (Q, R) and the
+generated (2,1,1)/(1,1,1,1) tree terms to κ4 (v2) does not fix it (still ~0 mean).
+
+Interpretation (the cavity picture done right): the cavity field of a neuron in a dense random layer is
+Gaussian **conditionally on the global order parameter** q_l(x) = |a_l(x)|²/n (the layer self-overlap,
+starting with the input radius |x|²/n), whose O(n^{-1/2}) fluctuation is shared by *all* neurons. It
+modulates every variance at once, so it is invisible to any pair-local edge belief that starts with
+Q^z = 0, yet it contributes κ4 ≈ 3 Var(q)/q̄² v² = O(1/n) to every node, growing with depth (the
+finite-width "4-point vertex" of deep-network theory). This is the replica/cavity order-parameter
+fluctuation, i.e. a loop correction that the dense graph sums coherently. Next: carry it.
+
+## 10. Direct test at n = 1024 (bench w1024_d16, 6 MLPs, N = 2e6, truth noise 3.6e-8 subtracted; paired)
+
+| estimator | raw MSE | ± s.e. | units at 1024 | adjusted |
+|---|---|---|---|---|
+| Gaussian closure (Mehler-12) | 4.10e-6 | 3.3e-7 | ≈ 32 | 4.1e-7 |
+| edge0 (pairs + fresh hubs) | 1.04e-6 | 6.6e-8 | ≈ 105 | 1.07e-7 |
+| edge1 (+ age-1 old triples) | **8.1e-7** | 5.1e-8 | ≈ 195 | 1.5e-7 |
+
+The pair-belief Bethe estimator is 5× below the Gaussian closure at 1024, but 80× above the target
+raw 1e-8. Width law 64 → 128 → 1024 for edge1: 2.1e-4 → 5.3e-5 → 8.1e-7 (≈ n^-2.0 throughout).
+
+## 11. The global order parameter (v3/v4)
+
+True Q^z = κ(z_a, z_a, z_b, z_b) at w64 (MLP 0, MC 1e6) has a **dominant rank-one spike** (top eigenvalue
+5–9, next ≈ 1); fitted as ε v_a v_b, ε grows with depth (0.06 at layer 1 → 0.74 at layer 15, vs 2/n =
+0.03 for the input radius alone). Normalising the input to the sphere removes about a third of it at
+layer 1 and a quarter at depth: the input radius seeds it, the layers amplify it.
+Carrying Q^z as an edge belief (Q' = (W∘W)ᵀ(Q^a + diag κ4^a)(W∘W) + hub generation; κ4 from two-site +
+tree terms) reproduces the mean node κ4 along depth (w64: 0.32/0.35/0.25/0.24/0.28 vs true
+0.32/0.32/0.22/0.19/0.23). Feeding Q into the pair map by Edgeworth is singular as ρ → 1 (the δ⊗δ term);
+treating it as a per-pair variance scale mixture (3-point Gauss–Hermite in η) is smooth.

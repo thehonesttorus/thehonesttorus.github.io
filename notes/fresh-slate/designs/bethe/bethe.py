@@ -461,3 +461,217 @@ def estimate_edge4(Ws, old=1, k4mode='full'):
         k4n = k4_next(Wn, k4a, Q, R, c, L, mu) if k4mode == 'full' else (Wn ** 4).T @ k4a
         m = mu @ Wn; C = Wn.T @ Ca @ Wn; K = Kn; k4 = k4n
     return np.array(out)
+
+
+# ------------------------------------------------- v3: carry the order-parameter (Q) edge belief ----
+def relu_map_v3(m, C, K, k4, Qz):
+    v = np.diag(C).copy(); k3 = np.diag(K).copy()
+    L = ladder(m, v, k3, k4)
+    mu, var, k3a, k4a = node_moments(L)
+    c = C.copy(); np.fill_diagonal(c, 0.0)
+    Kab = K.copy(); np.fill_diagonal(Kab, 0.0)
+    Qo = Qz.copy(); np.fill_diagonal(Qo, 0.0)
+    T = edge_table(m, v, c, pmax=3)
+    r, cc = (lambda x: x[:, None]), (lambda x: x[None, :])
+    Z = np.zeros_like(c)
+    args = (r(k3), cc(k3), r(k4), cc(k4), Kab, Kab.T, Qo, Z, Z)
+    E11 = pair_moment(T, 1, 1, *args); E21 = pair_moment(T, 2, 1, *args)
+    E2 = 2 * L[2]; E3 = 6 * L[3]
+    Ca = E11 - np.outer(mu, mu)
+    Ka = E21 - np.outer(E2, mu) - 2 * mu[:, None] * Ca
+    np.fill_diagonal(Ca, var); np.fill_diagonal(Ka, 0.0)
+    Q, R = pair_cumulants4(T, mu, E2, E3, args)
+    return mu, Ca, Ka, k3a, k4a, c, L, Q, R
+
+
+def estimate_v3(Ws, old=1, qgen=True):
+    Ls, n, _ = Ws.shape
+    W = Ws[0].astype(np.float64)
+    m = np.zeros(n); C = W.T @ W; K = np.zeros((n, n)); k4 = np.zeros(n); Qz = np.zeros((n, n))
+    out = []; prev = None
+    for l in range(Ls):
+        mu, Ca, Ka, k3a, k4a, c, L, Q, R = relu_map_v3(m, C, K, k4, Qz)
+        L0, Lm1 = L[0], L[-1]
+        out.append(mu)
+        if l + 1 == Ls:
+            break
+        Wn = Ws[l + 1].astype(np.float64)
+        M = c * c * (L0 ** 2)[:, None] * Lm1[None, :]
+        spec = (k3a, Ka - M, c, L0, Lm1)
+        Kn = contract(*spec, Wn, Wn)
+        if old and prev is not None:
+            pspec, Wl = prev
+            P = Wl @ (L0[:, None] * Wn)
+            Kz = K.copy(); k3z = np.diag(K).copy(); np.fill_diagonal(Kz, 0.0)
+            Kn = Kn + contract(*pspec, P, P) - contract(k3z * L0 ** 3, Kz * (L0 ** 2)[:, None] * L0[None, :],
+                                                      None, L0, Lm1, Wn, Wn)
+        prev = (spec, Wn)
+        W2 = Wn * Wn
+        Qn = W2.T @ ((Q + np.diag(k4a)) @ W2)
+        if qgen:
+            X = L0[:, None] * Wn; U = c @ X; s = (c * c) @ (X * X)
+            h4 = 2 * (L0 * (1 - L0) - mu * Lm1)
+            H = (W2 * h4[:, None]).T @ (U * U - s)
+            Qn = Qn + H + H.T
+        k4n = k4_next(Wn, k4a, Q, R, c, L, mu)
+        np.fill_diagonal(Qn, 0.0)
+        m = mu @ Wn; C = Wn.T @ Ca @ Wn; K = Kn; k4 = k4n; Qz = Qn
+    return np.array(out)
+
+
+# ------------------------------------- v4: order-parameter fluctuation as a scale mixture (smooth) --
+_QX = np.array([-np.sqrt(3.0), 0.0, np.sqrt(3.0)]); _QW = np.array([1 / 6, 2 / 3, 1 / 6])
+
+
+def node_mixture_ladder(m, v, k3, k4, qmax=0.3):
+    """Node belief with kappa4 carried as a variance scale mixture (q = kappa4 / 3v^2, 3-point GH),
+    the residual kappa4 (outside [0, qmax]) by Edgeworth."""
+    q = np.clip(k4 / (3 * v * v), 0.0, qmax)
+    k4res = k4 - 3 * q * v * v
+    Lm = None
+    for x, w in zip(_QX, _QW):
+        s = 1 + x * np.sqrt(q)
+        Lx = ladder(m, v * s, k3 * s ** 1.5, k4res * s * s)
+        Lm = {k: w * val for k, val in Lx.items()} if Lm is None else {k: Lm[k] + w * Lx[k] for k in Lm}
+    return Lm
+
+
+def relu_map_v4(m, C, K, k4, Qz, need4=True):
+    """Pairs: E over a per-pair shared variance modulation (1 + eta), Var eta = q_ab = Q_ab/(v_a v_b),
+    3-point Gauss-Hermite; inside each node the exact bivariate-Gaussian edge + node k3 + K Edgeworth."""
+    v = np.diag(C).copy(); k3 = np.diag(K).copy()
+    L = node_mixture_ladder(m, v, k3, k4)
+    mu, var, k3a, k4a = node_moments(L)
+    c = C.copy(); np.fill_diagonal(c, 0.0)
+    Kab = K.copy(); np.fill_diagonal(Kab, 0.0)
+    q = Qz / np.outer(v, v); np.fill_diagonal(q, 0.0)
+    q = np.clip(q, 0.0, 0.3)
+    r, cc = (lambda x: x[:, None]), (lambda x: x[None, :])
+    keys = [(1, 1), (2, 1)] + ([(2, 2), (3, 1), (1, 2)] if need4 else [])
+    Em = {k: 0.0 for k in keys}
+    z0 = np.zeros_like(c)
+    for x, w in zip(_QX, _QW):
+        s = 1 + x * np.sqrt(q)
+        va = v[:, None] * s; vb = v[None, :] * s
+        T = edge_table_pairs(m, va, vb, c * s, pmax=3 if need4 else 2)
+        args = (r(k3) * s ** 1.5, cc(k3) * s ** 1.5, z0, z0, Kab * s ** 1.5, Kab.T * s ** 1.5)
+        for k in keys:
+            Em[k] = Em[k] + w * pair_moment(T, k[0], k[1], *args)
+        # mixture marginals of the same per-pair model (node k3 scaled with the variance)
+        for side, mm, vv, kk in (('a', m[:, None], va, r(k3) * s ** 1.5), ('b', m[None, :], vb, cc(k3) * s ** 1.5)):
+            G = uni_G(mm + 0 * vv, vv, -6, 3)
+            for p in (1, 2, 3):
+                val = factorial(p) * (G[p] + kk / 6 * G[p - 3])
+                key = (p, 0) if side == 'a' else (0, p)
+                Em[key] = Em.get(key, 0.0) + w * val
+    ma, mb = Em[(1, 0)], Em[(0, 1)]
+    Ca = Em[(1, 1)] - ma * mb
+    if need4:
+        Ea2 = Em[(2, 0)]
+        Ka = Em[(2, 1)] - Ea2 * mb - 2 * ma * Ca
+        from math import comb
+        raw = lambda i, j: (1.0 if (i, j) == (0, 0) else Em[(i, j)] if (i, j) in Em else None)
+        def raw2(i, j):
+            if j == 0 and i == 0: return 1.0
+            if (i, j) in Em: return Em[(i, j)]
+            raise KeyError((i, j))
+        def central(p, qq):
+            return sum(comb(p, i) * comb(qq, j) * (-ma) ** (p - i) * (-mb) ** (qq - j) * raw2(i, j)
+                       for i in range(p + 1) for j in range(qq + 1))
+        c11 = central(1, 1); c20 = central(2, 0); c02 = central(0, 2)
+        R = central(3, 1) - 3 * c20 * c11
+        Q = central(2, 2) - c20 * c02 - 2 * c11 ** 2
+        np.fill_diagonal(R, 0.0); np.fill_diagonal(Q, 0.0)
+    else:
+        Ka = Em[(2, 1)] - np.outer(2 * L[2], mu) - 2 * mu[:, None] * Ca
+        Q = R = None
+    np.fill_diagonal(Ca, var); np.fill_diagonal(Ka, 0.0)
+    return mu, Ca, Ka, k3a, k4a, c, L, Q, R
+
+
+def edge_table_pairs(m, va, vb, c, pmax=2, kmin=-4):
+    """edge_table with per-pair variances va (n,n), vb (n,n)."""
+    from math import comb
+    ma, mb = m[:, None] + 0 * va, m[None, :] + 0 * vb
+    rho = np.clip(c / np.sqrt(va * vb), -0.999999, 0.999999)
+    c = rho * np.sqrt(va * vb)
+    Ga = uni_G(ma, va, 2 * kmin - 1, pmax)
+    Gb = uni_G(mb, vb, 2 * kmin - 1, pmax)
+    vba = np.maximum(vb - c * c / va, 1e-12 * vb); mba = mb - c * ma / va
+    vab = np.maximum(va - c * c / vb, 1e-12 * va); mab = ma - c * mb / vb
+    gba = uni_G(mba, vba, 2 * kmin, pmax)
+    gab = uni_G(mab, vab, 2 * kmin, pmax)
+    T = {}
+    for k in range(1, -kmin + 1):
+        for j in range(kmin, pmax + 1):
+            T[(-k, j)] = sum(comb(k - 1, i) * Ga[-k + i] * (-c / va) ** i * gba[j - i] for i in range(k))
+            if j >= 0:
+                T[(j, -k)] = sum(comb(k - 1, i) * Gb[-k + i] * (-c / vb) ** i * gab[j - i] for i in range(k))
+    T[(0, 0)] = bvn_orthant(ma / np.sqrt(va), mb / np.sqrt(vb), rho)
+    for qq in range(1, pmax + 1):
+        T[(0, qq)] = (mb * T[(0, qq - 1)] + vb * T[(0, qq - 2)] + c * T[(-1, qq - 1)]) / qq
+    for p in range(1, pmax + 1):
+        for qq in range(0, pmax + 1):
+            T[(p, qq)] = (ma * T[(p - 1, qq)] + va * T[(p - 2, qq)] + c * T[(p - 1, qq - 1)]) / p
+    return T
+
+
+def estimate_v4(Ws, old=1, qgen=True, verbose=False):
+    Ls, n, _ = Ws.shape
+    W = Ws[0].astype(np.float64)
+    m = np.zeros(n); C = W.T @ W; K = np.zeros((n, n)); k4 = np.zeros(n); Qz = np.zeros((n, n))
+    out = []; prev = None; info = []
+    for l in range(Ls):
+        mu, Ca, Ka, k3a, k4a, c, L, Q, R = relu_map_v4(m, C, K, k4, Qz, need4=(l + 1 < Ls))
+        L0, Lm1 = L[0], L[-1]
+        out.append(mu); info.append(dict(m=m, v=np.diag(C).copy(), k3=np.diag(K).copy(), k4=k4))
+        if l + 1 == Ls:
+            break
+        Wn = Ws[l + 1].astype(np.float64)
+        M = c * c * (L0 ** 2)[:, None] * Lm1[None, :]
+        spec = (k3a, Ka - M, c, L0, Lm1)
+        Kn = contract(*spec, Wn, Wn)
+        if old and prev is not None:
+            pspec, Wl = prev
+            P = Wl @ (L0[:, None] * Wn)
+            Kz = K.copy(); k3z = np.diag(K).copy(); np.fill_diagonal(Kz, 0.0)
+            Kn = Kn + contract(*pspec, P, P) - contract(k3z * L0 ** 3, Kz * (L0 ** 2)[:, None] * L0[None, :],
+                                                      None, L0, Lm1, Wn, Wn)
+        prev = (spec, Wn)
+        W2 = Wn * Wn
+        Qn = W2.T @ ((Q + np.diag(k4a)) @ W2)
+        if qgen:
+            X = L0[:, None] * Wn; U = c @ X; s = (c * c) @ (X * X)
+            h4 = 2 * (L0 * (1 - L0) - mu * Lm1)
+            H = (W2 * h4[:, None]).T @ (U * U - s)
+            Qn = Qn + H + H.T
+        k4n = k4_next(Wn, k4a, Q, R, c, L, mu)
+        np.fill_diagonal(Qn, 0.0)
+        m = mu @ Wn; C = Wn.T @ Ca @ Wn; K = Kn; k4 = k4n; Qz = Qn
+    return (np.array(out), info) if verbose else np.array(out)
+
+
+def estimate_edge_info(Ws):
+    """estimate_edge with per-layer node info (for diagnostics)."""
+    Ls, n, _ = Ws.shape
+    W = Ws[0].astype(np.float64)
+    m = np.zeros(n); C = W.T @ W; K = np.zeros((n, n)); k4 = np.zeros(n)
+    out = []; prev = None; info = []
+    for l in range(Ls):
+        mu, Ca, Ka, k3a, k4a, c, L0, Lm1 = relu_map_edges(m, C, K, k4)
+        out.append(mu); info.append(dict(m=m, v=np.diag(C).copy(), k3=np.diag(K).copy(), k4=k4))
+        if l + 1 == Ls:
+            break
+        Wn = Ws[l + 1].astype(np.float64)
+        M = c * c * (L0 ** 2)[:, None] * Lm1[None, :]
+        spec = (k3a, Ka - M, c, L0, Lm1)
+        Kn = contract(*spec, Wn, Wn)
+        if prev is not None:
+            pspec, Wl = prev
+            P = Wl @ (L0[:, None] * Wn)
+            Kz = K.copy(); k3z = np.diag(K).copy(); np.fill_diagonal(Kz, 0.0)
+            Kn = Kn + contract(*pspec, P, P) - contract(k3z * L0 ** 3, Kz * (L0 ** 2)[:, None] * L0[None, :],
+                                                      None, L0, Lm1, Wn, Wn)
+        prev = (spec, Wn)
+        m = mu @ Wn; C = Wn.T @ Ca @ Wn; K = Kn; k4 = (Wn ** 4).T @ k4a
+    return np.array(out), info
