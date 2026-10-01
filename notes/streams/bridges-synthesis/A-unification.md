@@ -117,7 +117,7 @@ The table is a dictionary of objects, not a list of claims; each identification 
 | T2 | spectral independence of $\mu$ under all pinnings = local spectral expansion of $X_\mu$, with $\lambda_2(P_\emptyset)=\lambda_{\max}(\Psi_\mu)/(n-1)$ | MRF ↔ HDX | THEOREM | [D-HDX] §3.4 ([ALO] Thm 3.1) |
 | T3 | local spectral expansion ⇒ gap of the down-up walk (product formula); with marginal bounds and bounded degree ⇒ MLSI and $O(n\log n)$ | HDX ↔ MS | THEOREM | [D-HDX] §2.6, §3.6 |
 | T4 | $(1-\lVert J\rVert)\mathrm{Var}\le\mathcal E$; the Ramanujan regime $\beta<1/(4\sqrt{d-1})$ for diluted SK | MRF ↔ expanders | THEOREM | [D-EXP] §9.3 (Eldan–Koehler–Zeitouni) |
-| T5 | approximate commuting square ⇒ $\mathrm{Var}_{A\cup B}\le(1-2\epsilon)^{-1}(\mathrm{Var}_A+\mathrm{Var}_B)$; strong clustering ⇔ size-independent gap (commuting $H$) | QMS | THEOREM | [D-EXP] §9.8 ([KB] Prop 20, Thms 23, 26) |
+| T5 | approximate commuting square ⇒ $\mathrm{Var}_{A\cup B}\le(1-2\epsilon)^{-1}(\mathrm{Var}_A+\mathrm{Var}_B)$; strong clustering ⇒ size-independent gap, and conversely gaps on every subregion with a projective expectation (Davies) ⇒ strong clustering (commuting $H$) | QMS | THEOREM | [D-EXP] §9.8 ([KB] Prop 20, Thms 23, 26) |
 | T6 | approximate tensorization with constant $(1-c_1)^{-1}$, $c_1$ an $L^1\to L^\infty$ clustering constant, plus an additive term for non-commuting algebras | QMS ↔ NCG | THEOREM | [D-HDX] §4.5 ([BCR]) |
 | T7 | time-averaged single-Pauli KMS Lindbladian recovers $\rho$ from $\rho_{-A}$ with error $re^{\mu\lvert A\rvert}t^{-\lambda}$, quasi-locally; hence local Markov | QMS | THEOREM | [D-CR] §2 ([CR] Thm III.1, Cors III.1–2) |
 | T8 | $I(A{:}C\vert B)\le C_\beta e^{C_\beta g_{A\vert A^c}-c_\beta r}$ by modular-cocycle leakage | QMS ↔ NCG | THEOREM | [D-Y] §4–5 ([Y] Thm II.1) |
@@ -140,7 +140,7 @@ The table is a dictionary of objects, not a list of claims; each identification 
 
 - (a) **Markov.** For disjoint $A,B$: $c(A,B)=0$ iff $\sigma_A\perp\sigma_B\mid\sigma_R$, with $R=V\setminus(A\cup B)$. For non-adjacent pairs on a graph, $c=0$ for all such pairs is the pairwise Markov property, hence (T1) the Gibbs property.
 - (b) **Decorrelation across a buffer.** If $A\cup B=V$, then $E_{A\cup B}$ is the mean and $c(A,B)$ is the maximal correlation between $\sigma_{V\setminus B}$ and $\sigma_{V\setminus A}$, two blocks separated by the buffer $A\cap B$, which is integrated out.
-- (c) **Expander mixing.** For the uniform law of a directed edge $(X_0,X_1)$ of a $d$-regular graph $G$: $c(\{0\},\{1\})=\lambda(G)/d$ with $\lambda(G)=\max(\lvert\lambda_2\rvert,\lvert\lambda_n\rvert)$. The expander mixing lemma is this inequality evaluated on indicators. (The edge law is not strictly positive. The formula holds for every $d$-regular $G$; it is also the Friedrichs cosine of §1.3 exactly when the lattice law $N_{\{0\}}\cap N_{\{1\}}=\mathbb C$ holds, i.e. when $G$ is connected and non-bipartite. For bipartite $G$ the left side is $1=\lambda(G)/d$, while the cosine relative to the two-dimensional intersection is $\lvert\lambda_2\rvert/d$; check C1.)
+- (c) **Expander mixing.** For the uniform law of a directed edge $(X_0,X_1)$ of a $d$-regular graph $G$: $c(\{0\},\{1\})=\lambda(G)/d$ with $\lambda(G)=\max(\lvert\lambda_2\rvert,\lvert\lambda_n\rvert)$. The expander mixing lemma is this inequality evaluated on indicators. (The edge law is not strictly positive. The formula holds for every $d$-regular $G$; it is also the Friedrichs cosine of §1.3 exactly when the lattice law $N_{\{0\}}\cap N_{\{1\}}=\mathbb C$ holds, i.e. when $G$ is connected and non-bipartite. For bipartite $G$ the left side is $1=\lambda(G)/d$, while the cosine relative to the two-dimensional intersection is $\lvert\lambda_2\rvert/d$; on the 8-cycle, $1$ against $0.707$.)
 - (d) **Dobrushin.** For adjacent binary spins $i,j$: $c(\{i\},\{j\})=\max_r\lvert\mathrm{corr}(\sigma_i,\sigma_j\mid\sigma_{\rm rest}=r)\rvert=\max_r\sqrt{\Psi_r(i,j)\Psi_r(j,i)}\le\sqrt{R_{ij}R_{ji}}$, the geometric mean of the two Dobrushin influences. For Ising this is $\le\tanh\lvert J_{ij}\rvert$.
 
 *Proof.*
@@ -296,7 +296,7 @@ The rows restate D-1, D-2, D-4 and D-5 (DERIVED) and §4.1. The "no counterpart"
 
 Each row is a THEOREM in its source (T3/T5, T7, T8). **The claim that the three rows are "one mechanism" is an ANALOGY.** All three estimate a distance to $L^2(N)$ in the standard form of the state, by functional calculus of a canonical positive operator plus a light cone. *It breaks* in two places:
 - The light cones are of three different kinds: combinatorial steps, Lindblad time and modular time.
-- The size factors are of three different kinds: none, an index and an interface. No single inequality specialises to all three.
+- The size factors are of three different kinds: none, a word cost on the region (equal in value to an index) and an interface. No single inequality specialises to all three.
 
 ### 5.2 The Chen–Rouzé row made exact: energy duality
 
@@ -319,7 +319,7 @@ $$\lVert\mathcal R_{A,t}[\rho_{-A}]-\rho\rVert_1\le\sqrt{c_*/t}\;\chi_{\rm KMS}(
 - (a) For $Z=1_A\otimes z$: $\langle Z,W\rangle_\rho=\mathrm{Tr}[Z^\dagger(\rho_{-A}-\rho)]=0$, because $\rho_{-A}$ and $\rho$ have the same marginal on $A^c$.
 - (b), (c): set-up.
   - Duality and stationarity give $\lVert\mathcal R_{A,t}[\rho_{-A}]-\rho\rVert_1=\sup_{\lVert X\rVert\le1}\lvert\mathrm{Tr}[(\mathcal R^\dagger_{A,t}X)(\rho_{-A}-\rho)]\rvert$. The supremum may be taken over Hermitian $X$.
-  - Write $Y=\mathcal R^\dagger_{A,t}X=\phi_t(\mathcal L_A^\dagger)X$. Then $\mathrm{Tr}[Y(\rho_{-A}-\rho)]=\langle Y,W\rangle_\rho$, and by (a) this equals $\langle Y-\Pi_AY,W\rangle_\rho$.
+  - Write $Y=\mathcal R^\dagger_{A,t}X=\phi_t(-\mathcal L_A^\dagger)X$. Then $\mathrm{Tr}[Y(\rho_{-A}-\rho)]=\langle Y,W\rangle_\rho$, and by (a) this equals $\langle Y-\Pi_AY,W\rangle_\rho$.
 - (b) Apply D-6(ii) with $X\mapsto-\mathcal L_A^\dagger$ and $O=X$, using $\lVert X\rVert_\rho\le\lVert X\rVert$ ([CR] Lemma II.1).
 - (c) Bound by $\lVert Y-\Pi_AY\rVert_\rho\lVert W\rVert_\rho\le\kappa^{-1/2}\langle Y,-\mathcal L^\dagger Y\rangle_\rho^{1/2}\lVert W\rVert_\rho$, then D-6(i). Note $\lVert W\rVert_{H^{-1}}\le\kappa^{-1/2}\lVert W\rVert_\rho$, because $W\in\mathrm{Ran}(1-\Pi_A)$. $\square$
 
@@ -333,7 +333,7 @@ $$\lVert\mathcal R_{A,t}[\rho_{-A}]-\rho\rVert_1\le\sqrt{c_*/t}\;\chi_{\rm KMS}(
 
 [CR]'s proof bounds a Hölder surrogate of (c) unconditionally. It moves the commutators onto $Y$ through the twirl, pairs against $\rho$ itself (so no $\chi^2$ is paid), and compares string commutators with single-site Dirichlet energy (Lemmas IX.5, VIII.1, X.4). The price is an exponent $\lambda\ll1$ and the factor $2^{2\lvert A\rvert}$ ([D-CR] §3.0, §3.8). D-6 shows what an exponent-one coercivity would buy. It also shows the best gap-free rate: $t^{-1}$, against $W$'s $H^{-2}$ norm.
 
-### 5.3 The literal "local gap" collapses; the relative one does not
+### 5.3 The literal "local gap" collapses; in the checks the relative one does not
 
 **D-7 (DERIVED; checks C8, C10).** For any operator $X$,
 $$\mathrm{gap}(\mathcal L_A)\cdot\mathrm{dist}_\rho(X,F_A)\le\lVert\mathcal L_A^\dagger X\rVert_\rho ,$$
@@ -354,7 +354,7 @@ $$\mathrm{gap}(\mathcal L_A)\ \lesssim\ \lvert A\rvert\big(e^{-c'\ell/(d\beta)}+
 | commuting, $\lvert A\rvert=1$, $n=3,4,5$ | $0.352$, $0.352$, $0.352$ ($\dim F_A=8,32,128$) | $0.644$ (all $n$) | 2.0–2.2 |
 | non-commuting, $\lvert A\rvert=1$, $n=3,4,5$ | $1.76\cdot10^{-2}$, $1.11\cdot10^{-3}$, $7.2\cdot10^{-5}$ ($\dim F_A=1$) | $0.415$, $0.263$, $0.227$ | 3.1–3.3 |
 | non-commuting, $n=5$, $\lvert A\rvert=1,2,3$ | $7.2\cdot10^{-5}$, $1.0\cdot10^{-3}$, $1.8\cdot10^{-2}$ | $0.227$, $0.366$, $0.543$ | 3.25, 8.92, 30.8 |
-| commuting, $n=5$, $\lvert A\rvert=1,2,3$ | $0.352$, $0.191$, $0.141$ | $0.644$, $0.191$, $0.141$ | 2.15, 4.03, 12.2 |
+| commuting, $n=5$, $\lvert A\rvert=1,2,3$ | $0.352$, $0.191$, $0.141$ | $0.644$, $0.191$, $0.141$ | 2.15, 4.03, 12.1 |
 
 Readings of the table:
 - In the non-commuting rows the gap depends only on the distance $\ell$ from $A$ to the far end: $\ell=2,3,4$ give $\approx1.8\cdot10^{-2}$, $1.1\cdot10^{-3}$, $7\cdot10^{-5}$, i.e. $\approx e^{-2.75\ell}$.
@@ -372,7 +372,7 @@ Readings of the table:
 - *What must be true:* the dressed single-site derivation controls, linearly, the KMS distance of any operator from the algebra $1_A\otimes M_{A^c}$. That is an exponent-one version of [CR] Lemma X.4 combined with the twirl.
 - *Evidence:* C9–C10, for $n\le5$ only. For the non-commuting chain, $\kappa$ decreases with $n$ by shrinking steps ($0.415$, $0.263$, $0.227$ for $n=3,4,5$, consistent with a positive limit) and does not decay with $\lvert A\rvert$ ($0.227$, $0.366$, $0.543$). For the commuting chain it falls with $\lvert A\rvert$ ($0.644$, $0.191$, $0.141$ for $\lvert A\rvert=1,2,3$; three points fix no rate) and does not depend on $n$.
 - *What it buys* (DERIVED from D-6(c)): recovery error $\le\sqrt{c_*/t}\,\chi_{\rm KMS}\,c_\beta^{-1/2}\lvert A\rvert^{p/2}$, i.e. the rate $t^{-1/2}$ in place of $t^{-\lambda}$, $\lambda\approx1/(2d^4\beta^4)$.
-- *What it does not buy:* $\chi_{\rm KMS}(\rho_{-A}\Vert\rho)$ grows by a factor of about 2–3.5 per site of $A$ in C10 (2.15→4.03→12.2 commuting, 3.25→8.92→30.8 non-commuting) and C11. Classically it is $\big(\sum_x\mu_{-A}(x)^2/\mu(x)-1\big)^{1/2}$, exponential in $\lvert A\rvert$ unless the conditional law on $A$ is uniform. So the $\chi^2$ route leaves an exponential prefactor in $\lvert A\rvert$, as an $L^2$ warm start does for Markov chains ([D-NC] §2.8, $\sqrt{1/\sigma_{\min}}$ against $\sqrt{2\log(1/\sigma_{\min})}$). With the gap-free rate $t^{-1/2}$ this prefactor costs a time $t\sim\chi_{\rm KMS}^2$, exponential in $\lvert A\rvert$; with an exponential rate $e^{-\kappa t}$ it would cost only a time $\log\chi_{\rm KMS}/\kappa$, polynomial in $\lvert A\rvert$ when $\kappa\ge c_\beta\lvert A\rvert^{-p}$.
+- *What it does not buy:* $\chi_{\rm KMS}(\rho_{-A}\Vert\rho)$ grows by a factor of about 2–3.5 per site of $A$ in C10 (2.15→4.03→12.1 commuting, 3.25→8.92→30.8 non-commuting) and C11. Classically it is $\big(\sum_x\mu_{-A}(x)^2/\mu(x)-1\big)^{1/2}$, exponential in $\lvert A\rvert$ unless the conditional law on $A$ is uniform. So the $\chi^2$ route leaves an exponential prefactor in $\lvert A\rvert$, as an $L^2$ warm start does for Markov chains ([D-NC] §2.8, $\sqrt{1/\sigma_{\min}}$ against $\sqrt{2\log(1/\sigma_{\min})}$). With the gap-free rate $t^{-1/2}$ this prefactor costs a time $t\sim\chi_{\rm KMS}^2$, exponential in $\lvert A\rvert$; with an exponential rate $e^{-\kappa t}$ it would cost only a time $\log\chi_{\rm KMS}/\kappa$, polynomial in $\lvert A\rvert$ when $\kappa\ge c_\beta\lvert A\rvert^{-p}$.
 
 **CONJECTURE C-2 (relative modified log-Sobolev ⇒ global Markov).** Suppose the entropy production of the region's semigroup dominates the relative entropy *conditional on $N_A$*:
 $$\mathrm{EP}_{\mathcal L_A}(\omega)\ge\alpha\,D_A(\omega\Vert\rho),\qquad D_A(\omega\Vert\rho)=D(\omega\Vert\rho)-D(\omega_{A^c}\Vert\rho_{A^c}),\qquad\alpha\ge c_\beta\lvert A\rvert^{-p}.$$
@@ -384,7 +384,7 @@ Here $D_A$ is the conditional relative entropy that [D-Y] §10 identifies with [
     - Terms of $H$ supported off $A$ have equal expectations, and each other term changes by at most $2\lVert h_\gamma\rVert$.
     - *Check C11* (open transverse-field chain, $n=6$, $\beta=1.3$, $\lvert A\rvert=1,\dots,4$): $D(\rho_{-A}\Vert\rho)=0.71,1.38,2.06,2.75$ (commuting) and $1.04,2.04,3.04,4.05$ (non-commuting), linear and within the bound. Over the same range $\chi_{\rm KMS}=2.0,4.4,10.9,24.0$ and $3.2,9.2,29.2,87.6$, exponential.
     - This is the same gain as $\sqrt{2\log(1/\sigma_{\min})}$ against $\sqrt{1/\sigma_{\min}}$ in [D-NC] §2.8.
-  - (ii) The drift of the $A^c$-marginal under $e^{t\mathcal L_A}$ is controlled. The classical heat-bath generator vanishes on $N_A$; $\mathcal L_A^\dagger$ vanishes only on the modular core $F_A$ and is merely quasi-local on the rest of $N_A$.
+  - (ii) The drift of the $A^c$-marginal under $e^{t\mathcal L_A}$ is controlled. The classical heat-bath generator vanishes on $N_A$; $\mathcal L_A^\dagger$ vanishes only on $F_A\subseteq N_A^\sigma$ and is merely quasi-local on the rest of $N_A$.
   - (iii) A Pinsker step from $D$ to trace distance.
 - *Status:*
   - The classical analogue is the entropy-factorisation route of [CLV] and [BCR] ([D-HDX] §2.7, §4.5).
@@ -524,7 +524,7 @@ All three are Fourier transforms of functions analytic in a horizontal strip who
   - With a gap $\lambda$ of the re-routing (or flip) generator, $\lVert W\rVert_{H^{-1}}\le\lambda^{-1/2}\lVert W\rVert_{\rm KMS}$. This is [D-EXP] §11.1's Poincaré bound in dynamical form.
 - **Two defects, two measurements** (CONJECTURE-level programme content, stated for abstract faces).
   - **Defect I.** Define the angle of the triple (past algebra, future algebra | face algebra at layer $\ell$) inside the history algebra $D$, i.e. the conditional maximal correlation of past and future given the present face. It is zero iff the law is Markov at $\ell$ (D-1a; U8 of [D-HDX] §6.4). Unlike the CMI it is a sup-type, $L^2$ quantity, and its uniform smallness is the expander-type certificate.
-  - **Defect II.** For states with coherences between histories (Note 1 §4.1; [D-Y] B13), define the leakage of $(D\omega{:}D\mathbb P_\beta)_t$ out of $D_0$. D-5 bounds the sufficiency defect by it, with the index of $D_0$ in the corner as the size factor, and [D-Y] B8 already gives $\eta\le\lvert\beta-\beta'\rvert\lvert t\rvert\max_\tau\mathrm{osc}F$ for diagonal states.
+  - **Defect II.** For states with coherences between histories (Note 1 §4.1; [D-Y] B13), define the leakage of $(D\omega{:}D\mathbb P_\beta)_t$ out of $D_0$. [Y]'s Cor III.5 in its subalgebra form ([D-CHAT] §7.1: proof sketch and numerical checks there) bounds the sufficiency defect of $D_0$ for the pair $(\omega,\mathbb P_\beta)$ by this leakage, with the Rényi moment $\mathrm{Tr}\,\omega^{1+\alpha}\mathbb P_\beta^{-\alpha}$ as size factor; an index replaces it only for an erase-type reference, as in D-5. [D-Y] B8 already gives $\eta\le\lvert\beta-\beta'\rvert\lvert t\rvert\max_\tau\mathrm{osc}F$ for diagonal states.
   - Both pass the drag test: they are defined for any inclusion with a faithful state.
 - **Arrows.** An arrow is a linear layer together with the ReLU immediately before it (Note 1 §2.1). Nothing above uses activation vectors. Faces enter only as the projections generating $D_0$, and the angle is computed in $L^2$ of the state on histories.
 
@@ -587,8 +587,8 @@ All numpy, run for this note; scratch scripts (the task allowed one file), with 
 | C7 | §5.6 kernels | three Fourier identities to 8 digits (Yang's to $2\cdot10^{-5}$, grid) |
 | C8 | D-7 | non-commuting: gap $1.76\cdot10^{-2}$, $1.11\cdot10^{-3}$, $7.2\cdot10^{-5}$ ($n=3,4,5$), $\dim F_A=1$; commuting: $0.352$ constant, $\dim F_A=4^{n-1}/2$ |
 | C9 | D-6 (c), C-1 | $\kappa=0.415,0.263,0.227$ (non-commuting), $0.644$ (commuting); recovery errors $0.009$–$0.018\le$ bounds $0.16$–$0.44$ |
-| C10 | D-7, C-1, $\chi$ growth | gap a function of the distance to the far end only; $\kappa$ not decaying in $\lvert A\rvert$ (non-commuting); $\chi_{\rm KMS}$ $\times\approx3$ per site of $A$ |
-| C11 | C-2 (i) | $D(\rho_{-A}\Vert\rho)$ linear in $\lvert A\rvert$ ($\approx0.7$–$1.0$ per site) and below $2\beta\sum\lVert h_\gamma\rVert$; $\chi_{\rm KMS}$ $\times\approx3$ per site ($n=6$, $\lvert A\rvert\le4$) |
+| C10 | D-7, C-1, $\chi$ growth | gap a function of the distance to the far end only; $\kappa$ not decaying in $\lvert A\rvert$ (non-commuting); $\chi_{\rm KMS}$ $\times1.9$–$3.5$ per site of $A$ |
+| C11 | C-2 (i) | $D(\rho_{-A}\Vert\rho)$ linear in $\lvert A\rvert$ ($\approx0.7$–$1.0$ per site) and below $2\beta\sum\lVert h_\gamma\rVert$; $\chi_{\rm KMS}$ $\times2.2$–$2.5$ (commuting) and $\times2.9$–$3.2$ (non-commuting) per site ($n=6$, $\lvert A\rvert\le4$) |
 
 These are checks of identities and inequalities on small systems, not experiments. The evidence for C-1 is $n\le5$ only.
 

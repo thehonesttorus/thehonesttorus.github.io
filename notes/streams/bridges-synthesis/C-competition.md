@@ -137,9 +137,10 @@ Each is used only as a name, or is re-derived or checked here. The ChatGPT conve
   - z_l = a_{l−1}W_l (x@W convention, a_{−1} = x), a_l = relu(z_l).
   - Estimate the n means E[a_15].
   - Score = final-layer MSE × max(0.1, F/B), with B = 2^41 FLOPs. The unit is u = 2^31 FLOPs, one dense 1024³ product.
-- **The bar** ([CP] §0, §7).
-  - Money line: adjusted MSE ≈ 1.6–1.8e-9, i.e. raw ≈ 1.6e-8 at the 0.1 floor.
-  - Best published raw: 1.14e-8 at 0.151 B. V29: raw 2.13e-8 at 0.253 B.
+- **The bar** ([CP] §0; [phase2-intel](../../digests/phase2-intel-2026-10-01.md)).
+  - Money line: adjusted MSE ≤ 1.6–1.8e-9, i.e. raw ≤ 1.6e-8 at the 0.1 floor.
+  - Best raw on the board: 1.14e-8 at 0.151 B.
+  - Public V29: raw 2.13e-8 at 0.253 B. The same chain without its old-source tier runs at 0.150 B but raw 1.3–2.9e-7, ten times worse.
 - **Interface law** ([CP] §3.1, [C128], [O1024]). In a cumulant chain the error that reaches the final layer through the nonlinearity's (2,1) interface obeys extra MSE ≈ 4.2e-6·ε², where ε is the relative rms error of D21_{ab} = κ3(z_a, z_a, z_b). The frontier needs ε ≤ 2.2 %.
 - **Measured at n = 1024** ([O1024], one MLP; [CP] §6b), D21 error by κ4 input:
 
@@ -183,9 +184,9 @@ A bridge has to say something about one of these at ≤ 3–4 u per layer, or sh
 
 **DERIVED (arithmetic; [D-TS] §0.3).** A Tucker core of rank k costs k³/n² u per layer. The w = 4 tier needs ≈ 384–448 modes at n = 1024, i.e. 54–86 u per layer, against 3–4 available. **DOA as a carrier.**
 
-**DERIVED (legs, under the hypothesis of [D-TS] §2.4).** Let a source be Haar-oriented relative to the right singular vectors of J, and let it have m *scrambled* legs (indices that appear once). Project each such leg onto the top-k left singular subspace of J. To leading order in 1/n the expected kept energy is e(k)^m, with e(k) = Σ_{p≤k}σ_p²/Σ_pσ_p².
+**DERIVED (legs, under the hypothesis of [D-TS] §2.4).** Let a source be Haar-oriented relative to the right singular vectors of J, and let it have m *scrambled* legs (indices that appear once). Project each such leg onto the top-k left singular subspace of J. To leading order in 1/PR(J) the expected kept tensor energy is e(k)^m, with e(k) = Σ_{p≤k}σ_p²/Σ_pσ_p².
 
-*Proof.* Write the source as Sym(Z) with Z i.i.d. Gaussian, as in [D-TS] §2.4. The projected transported energy factorises over legs into ∏ tr(P_kJJᵀ)/tr(JJᵀ), up to symmetrisation cross terms that are O(1/n) for traceless sources. ∎
+*Proof.* Write the source as Sym(Z) with Z i.i.d. Gaussian, as in [D-TS] §2.4. The projected transported tensor energy factorises over legs into ∏ tr(P_kJJᵀ)/tr(JJᵀ). The symmetrisation cross terms are of relative order 1/PR(J), since tr(A²) ≤ ‖A‖·tr A. ∎ This is a statement about tensor energy. The D21-level version is E4.
 
 Consequences:
 - All-distinct κ4 (m = 4) needs more modes than all-distinct κ3 (m = 3) at equal accuracy. **DOA a fortiori.**
