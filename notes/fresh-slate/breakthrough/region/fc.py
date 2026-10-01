@@ -181,11 +181,12 @@ def bin_readout(b):
     return ((b["X"] * b["Y"]).T @ b["Z"]).astype(np.float64)
 
 
-def run(W, window=None, slices=False, young=None, rank=None, edge=True, readout=True, dtype=np.float32, trace=None, k4f=None, k4use=True, share=None, share_young=2, k4own=False, k4mf=False, prune=None, prune_slices=None, merge=None, merge_young=2, sweeps=3, mstats=None, bincut=None, binstats=None):
+def run(W, window=None, slices=False, young=None, rank=None, edge=True, readout=True, dtype=np.float32, trace=None, k4f=None, k4use=True, share=None, share_young=2, k4own=False, k4mf=False, prune=None, prune_slices=None, merge=None, merge_young=2, sweeps=3, mstats=None, bincut=None, binstats=None, binsched=None):
     L, n, _ = W.shape
     W64 = W.astype(np.float64)
     Wf = W.astype(dtype)
     sources = []          # dicts: s, w2, Y, Z, (Delta), (Q)
+    bins = []             # schedule mode: list of once-compressed bins
     binc = None           # once-compressed age bin: dict(exact=[sources], X, Y, Z) transported linearly
     cp = None             # merged old content: CP factors (A, B, C), each (R, n), in current layer coordinates
     outs = []
@@ -238,6 +239,8 @@ def run(W, window=None, slices=False, young=None, rank=None, edge=True, readout=
             src["Z"] = src["Z"] @ G                               # (n, n) or, rank-k, R = Q^T Z (k, n)
         if cp is not None:
             cp = tuple(F @ G for F in cp)
+        for b in bins:
+            b["X"] = b["X"] @ G; b["Y"] = b["Y"] @ G; b["Z"] = b["Z"] @ G
         if binc is not None:
             binc["X"] = binc["X"] @ G; binc["Y"] = binc["Y"] @ G; binc["Z"] = binc["Z"] @ G
             for src in binc["exact"]:
@@ -340,6 +343,13 @@ def run(W, window=None, slices=False, young=None, rank=None, edge=True, readout=
             inbin = [x for x in sources if bincut["lo"] <= l + 1 - x["s"] <= bincut["hi"]]
             sources = [x for x in sources if not (bincut["lo"] <= l + 1 - x["s"] <= bincut["hi"])]
             binc = bin_compress(inbin, bincut["R"], bincut["kind"], dtype, binstats, sweeps)
+        if binsched is not None and (l + 1) in binsched["cuts"]:
+            lo = binsched["lo"]
+            inbin = [x for x in sources if l + 1 - x["s"] >= lo]
+            sources = [x for x in sources if l + 1 - x["s"] < lo]
+            if inbin:
+                b = bin_compress(inbin, binsched["R"], binsched.get("kind", "tucker"), dtype, binstats, sweeps)
+                b.pop("exact"); bins.append(b)
         # ---- D21 of z_{l+1}
         D21_prev = D21
         D = np.zeros((n, n), dtype=np.float64)
@@ -363,6 +373,8 @@ def run(W, window=None, slices=False, young=None, rank=None, edge=True, readout=
                 else:
                     Zs, Ts = Zf, T
                 D += (((Zs * Zs).T @ Ts) + 2 * ((Zs * Ts).T @ Zs)).astype(np.float64)
+        for b in bins:
+            D += bin_readout(b)
         if binc is not None:
             Db = bin_readout(binc)
             D += Db

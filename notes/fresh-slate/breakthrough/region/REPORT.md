@@ -441,3 +441,52 @@ R is 3–8× worse. So the static once-per-bin frame works where the moving per-
 Binning removes the L² scaling of the *old* content, not the bill. The next questions are:
 - (i) the same static-bin compression at ages 3–4;
 - (ii) a cheaper core readout: a CP of the R³ core, or a smaller per-mode R for the Z-leg.
+
+## 10. Combined design: young tier exact plus a schedule of static Tucker bins (coordinator round 5)
+
+**Setup** (`fc.py` `binsched`, `run_sched.py`, `results/sched_*.json`).
+- Sources younger than `lo` stay exact.
+- Every 2 layers, all sources of age ≥ `lo` are compressed **once** into a new static bin: per-mode top-R Tucker of
+  their Wick and slice triplets, N = 12n atoms per bin. Bins are only transported after that.
+- Not included:
+  - essence B's split of the old D21 into an a-constant norm-process vector plus a traceless remainder (not
+    implemented here);
+  - essence D's per-age 2n/a rule (no saving at ages 1–2, which is what remains exact).
+
+| young exact | bins (cuts) | R | raw MLP 0 / 1 / 2 | mean | vs FC (3.24 / 1.81 / 3.03, mean 2.69e-8) |
+|---|---|---|---|---|---|
+| ages ≤ 2 | 4, 6, …, 14 | n/8 | 2.35 / 2.10 / 2.05e-7 | 2.2e-7 | 8× |
+| ages ≤ 2 | 4, 6, …, 14 | n/4 | 4.23 / 4.92 / 7.57e-8 | 5.6e-8 | 2.1× |
+| ages ≤ 3 | 5, 7, …, 13 | n/4 | 3.94 / 2.43 / 4.20e-8 | 3.5e-8 | 1.3× |
+| ages ≤ 4 | 6, 8, …, 14 | n/8 | 6.40 / 5.03 / 6.33e-8 | 5.9e-8 | 2.2× |
+| **ages ≤ 4** | **6, 8, …, 14** | **n/4** | **3.77 / 2.16 / 3.22e-8** | **3.05e-8** | **1.13×** |
+
+**Accuracy.** Static binning works for content older than 4 layers at R = n/4 (+13 %), and degrades steadily as the bins
+start younger. Content of ages 3–4 has rank ≈ n/(2a), too high for R ≤ n/4.
+
+**Full cost, dense units, of the best accuracy row (young ≤ 4, R = n/4).**
+
+| part | units |
+|---|---|
+| covariance arrow | 30 |
+| young tier (≈ 60 exact pairs × 6–7 products) | ≈ 405 |
+| 5 cuts (projection 54 + core formation 192 each) | 1,230 |
+| core readout and transport (30 bin-layers × 17.5) | ≈ 525 |
+| **total** | **≈ 2,190 u (2.1 B)** |
+
+At R = n/8 the cuts cost 345 u and readout plus transport ≈ 83 u, giving ≈ 863 u total. That is the same as dense FC
+(855 u), at 2.2× worse raw.
+
+**Wall-feasible pricing.** The young tier and the covariance arrow (≈ 435 products) can be Strassen-batched to
+≈ 300 u. The Tucker core formation and readout are 3-way einsums (N R³ and n R³), not Strassen-able products. So the best
+combined row prices at **≥ 2 B wall-feasible**, and the R = n/8 row at ≈ 0.7–0.8 B. Neither beats FC's 0.544 B
+(§8.2).
+
+**Verdict.**
+- Static bins solve the *accuracy* problem of old content (the first positive carrier).
+- The bill is now set by two things:
+  - (i) the exact young tier, ≈ 400 u for ages ≤ 4. That alone is 2.6× the leaders' whole 154 u, and it cannot be binned
+    (§10 table, rows 1–3);
+  - (ii) the Tucker core.
+- A design at ≤ 0.15 B therefore needs a different representation of ages 1–4, not only of old content.
+- Essence B's a-constant split could loosen the bin tolerance enough for R = n/8. It would not change (i).
