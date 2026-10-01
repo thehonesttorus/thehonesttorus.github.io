@@ -52,3 +52,11 @@ Brief: `notes/essence/BRIEF.md`; the user's mandate verbatim: `notes/essence/INP
 | F | `notes/essence/F-nc-local-to-global/` | [session](https://claude.ai/code/session_01Jg65pQarkMSSY1zxCFTtwM) | noncommutative trickle-down, localization schemes, commuting squares; cross-team synthesis |
 
 Experiments running alongside: costate (dilation-sector share of the memory at n = 1024), region (CP-merged old tier; FC under the wall-feasible Strassen mix), bethe (localization estimator conditioned on the collective coordinate). Faces and heisenberg are writing final verdicts and stopping.
+
+### Round 3 status (22:30 UTC)
+
+- **Memory carriers that work** (inside FC at n = 1024; notes/fresh-slate/CONVERGENCE.md): team D's causal frozen frames at k = 2n/age (lossless on 6/6, ≈ 0.53 B wall-feasible; constant ≈ 9 products per unit of resolution); team F's cohort basis for ages ≥ 8 (≈ 1–2 u per layer, 1.01–1.04×); team B's constant-in-a channel (80 % of old energy at ≈ 0 cost). The bill is now ages 1–7.
+- **Theory:** team G's Theorem G10 (no finitely summable grading of neuron space is compatible with ≥ 2 fresh layers; compression only along the age axis); team F's G5 (Dixmier-critical trickle-down: the polynomial-loss exponent is a Dixmier trace); team B's G1 (gapless torus: the λ-term rank is Dixmier-critical exactly at Pólya's d = 2; free products are universally "d_eff = 2"); team E's G3 (the carrier holds at depth 32 and its cost grows as L log L; the memory's tiling class is Fibonacci/Penrose).
+- **Coordinator experiments** (`notes/essence/H-rational-memory/`): response-matched merged histories reproduce the old memory's future at R = n/4 with ≈ 1 % residual energy (n = 256), where pruning leaves 79 % and tensor-norm CP fails; the fit cost is the open problem.
+- **Bench complete** (bench session): truth for w64 … w1024 (w1024_d16: 6 MLPs, N = 2e6, noise ≤ 4.4e-8) and the smoke shape w256_d32.
+- **Background workflows** (judge panel, foundations check, bridges-synthesis critic) stopped at ≈ 20:10 UTC; finished parts are in the repo.
