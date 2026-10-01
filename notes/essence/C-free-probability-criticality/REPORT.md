@@ -198,7 +198,7 @@ g_l = 2E[Φ²] over layers 0…14 (network 0): 0.50, 0.58, 0.63, 0.71, 0.75, 0.7
 | PR ÷ (n/(2(age + 1))) | 1.00 | 1.01 | 1.01 | 1.01 | 1.00 | 1.00 | 0.99 | 0.97 | 0.93 | 0.87 | 0.80 |
 | tr(UᵀU)/n ÷ 2Πg | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 1.002 | 1.007 | 1.016 | 1.032 | 1.052 |
 
-Caveat (Measured, to be resolved in v1). With the mean gates treated as free from W, the free law would predict PR ≈ n/(1 + (age + 1) + Σ(r(Φ²) − 1)). r(Φ²) at layer 1 is ≈ 1.2 (Φ spread around ½), so at age 1 the prediction is ≈ n/3.2, against n/4.0 measured. The measured law is the one for *pathwise* projection gates (r = 2). The likely cause is the rank-one Φ–W coupling of C2(iv); T4 tests it.
+Resolved in v1 (§4.6). The v0 caveat assumed r(Φ²) ≈ 1.2. The measured r(Φ²) is 1.6–2.1 (the mean gates are nearly frozen), so the free law ≈ n/(2(age + 1)) is predicted at young ages. The old-age deficit disappears when the gates are permuted, which shows it is the Φ–W (Perron) coupling.
 
 **4.4 Free-sector tail at the final kink layer (6 × w1024).** Share of energy in ages > A:
 
@@ -224,7 +224,7 @@ Caveat (Measured, to be resolved in v1). With the mean gates treated as free fro
 
 At w128 (8 networks): Tgsl_nc τ = 0.1 wins 8/8 (0.83×), τ = 0.15 wins 7/8 (0.82×). T1, leak factor on the retiring amplitude (w128, A3gsl_nc, geometric means): 0.5 → 2.93e-5, 0.75 → 2.53e-5, **1 → 2.30e-5**, 1.25 → 2.27e-5, 1.7 → 2.93e-5, 2.5 → 4.22e-5. The optimum is at 1–1.25, so T1 is killed.
 
-**4.6 Traffic freeness of the gates (T4, `t4.py`, network 0, w1024, chain from s = 1).** Each entry is PR × 2(a + 1)/n at age a, with the free law in brackets, computed from the measured r(Φ_l²):
+**4.6 Traffic freeness of the gates (T4, `t4.py`, network 0, w1024, chain from s = 1).** Each entry is PR × 2(a + 1)/n at age a, with the free law (a separate row), computed from the measured r(Φ_l²):
 
 | age | 1 | 2 | 5 | 7 | 9 | 11 | 13 |
 |---|---|---|---|---|---|---|---|
