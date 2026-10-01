@@ -1,7 +1,7 @@
 # Team A: permanents, hafnians and polynomial methods
 
 *Local-to-global essence programme, round 3 (brief: `../BRIEF.md`; mandate: `../INPUT-2026-10-01-local-to-global.md`).
-v0, 1 Oct 2026. Labels: **[thm]** a published theorem (source given); **[prop]** proved here; **[meas]** measured here
+v1 (final), 1 Oct 2026; §6 holds the final measurements and the no-go. Labels: **[thm]** a published theorem (source given); **[prop]** proved here; **[meas]** measured here
 at n = 1024 on the bench; **[syn]** synthesis; **[spec]** speculation. Code and results are in this directory:
 `fc_hook.py` (FC with a hook), `t_atoms.py`, `t_lorentz.py`, `results/`.*
 
@@ -482,7 +482,18 @@ number at n = 1024, and the escape hatches are named.**
 **Width test of Conjecture 1** (`t_width.py`, relative Frobenius error of the old (age ≥ 3) D21 of FC; *k = 3, 5 cuts
 apply only to sources older than k, so they are lower bounds*):
 
-WIDTH_TABLE
+| n | MLP | t | old share | Bethe (Z₂ⁿ, all layers) | mean-field (O(n) trace) | cut k=1 | k=2 | k=3* | k=5* | rank n/8 | rank n/4 |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| 256 | 0 | 10 | 0.70 | 0.623 | 0.541 | 0.616 | 0.601 | 0.491 | 0.269 | 0.344 | 0.145 |
+| 256 | 0 | 14 | 0.74 | 0.645 | 0.518 | 0.632 | 0.626 | 0.524 | 0.382 | 0.265 | 0.106 |
+| 256 | 1 | 10 | 0.73 | 0.588 | 0.444 | 0.565 | 0.568 | 0.480 | 0.307 | 0.259 | 0.101 |
+| 256 | 1 | 14 | 0.85 | 0.680 | 0.317 | 0.639 | 0.625 | 0.596 | 0.466 | 0.167 | 0.055 |
+| 512 | 0 | 10 | 0.73 | 0.531 | 0.445 | 0.511 | 0.509 | 0.428 | 0.271 | 0.249 | 0.098 |
+| 512 | 0 | 14 | 0.84 | 0.574 | 0.386 | 0.535 | 0.532 | 0.481 | 0.370 | 0.188 | 0.071 |
+| 512 | 1 | 10 | 0.77 | 0.551 | 0.467 | 0.533 | 0.526 | 0.435 | 0.283 | 0.282 | 0.109 |
+| 512 | 1 | 14 | 0.81 | 0.590 | 0.423 | 0.566 | 0.564 | 0.519 | 0.411 | 0.205 | 0.079 |
+| 1024 | 0 | 10 | 0.76 | 0.482 | 0.444 | 0.477 | 0.474 | 0.392 | 0.240 | 0.283 | 0.114 |
+| 1024 | 0 | 14 | 0.84 | 0.466 | 0.399 | 0.460 | 0.457 | 0.402 | 0.315 | 0.216 | 0.086 |
 
 Reading:
 - **The O(n)-invariant (mean-field/trace) defect is flat in width.** At t = 10 it is 0.44–0.54 at n = 256,
@@ -509,7 +520,12 @@ Reading:
 
 **End-to-end** (`t_e2e.py`, bench w1024_d16, FC with slices and κ4-mf; old = age ≥ 3; raw = final MSE − truth noise):
 
-E2E_TABLE
+| MLP | FC (all ages, region) | old memory in the Bethe sector only | old memory dropped (window 2) |
+|---|---|---|---|
+| 0 | 3.24e-08 | 1.05e-06 | 1.77e-06 |
+| 1 | 1.81e-08 | 1.04e-06 | 2.07e-06 |
+
+(MLP 2's run did not complete; two networks.)
 
 The Bethe (gauge-invariant) sector carries ≈ 80 % of the memory's energy. **It buys only ≈ 1.7× over dropping the
 memory, and leaves the estimator ≈ 30× above FC.** The signed 20 % of energy is what the score is made of.
@@ -550,13 +566,21 @@ a contraction with the actual fresh weights (to keep the ε_m ε_m′ components
 
 ### 6.3 Escape hatches (what the leaders could be doing; ranked by this team's credence)
 
-**1. A single aggregated signed n×n state per cut, approximate rather than exact.**
+**1. A few aggregated signed n×n states per cut, approximate rather than exact (killed, see below).**
 - C2/C3 forbid an *exact* o(L n²) state. The cut curve shows the signed sector is regenerated each layer from the
   full old legs, and that it decays: cuts at k = 3, 5 lose only 0.39 / 0.24, a lower bound.
 - So an approximate one-state recursion may exist if the signed contribution through a cut is dominated by its
   *projection onto a fixed n²-dimensional quadratic statistic of the past*: for example the matrix
   Σ_r w_r y′_r y′_rᵀ ⊙ (something one-dimensional in the third leg).
-- *Test:* regress the cut-1 off-diagonal term on such aggregates and measure R². A small, cheap next experiment.
+- **Tested and killed [meas, `t_hatch.py`, MLP 0, t = 10/14].** Aggregate all old atoms into k signed n×n states
+  A_j = Σ_r w_r (z_r·u_j) y_r y_rᵀ, with u_j the top-k third-leg modes of the aggregated tensor.
+  - Energy fraction: 0.11/0.17 (k = 1), 0.26/0.37 (k = 8), 0.71/0.80 (k = 64), 0.89/0.93 (k = 128),
+    0.98/0.99 (k = 256).
+  - D21 relative error: 0.61/0.63, 0.54/0.53, 0.33/0.30, 0.21/0.17, 0.08/0.06.
+  - Each state costs a congruence transport (2 u per layer), so 5–10 % needs k ≈ 200–256, i.e. ≈ 400–500 u per
+    layer, against a budget of ≈ 7.
+  - Aggregating across ages compresses slightly better than per-source legs (0.06–0.08 against 0.09–0.11 at n/4), but
+    not by the factor of ~50 needed.
 
 **2. Error budgeting across layers (region §6(b)).**
 - The D21 tolerance is 5–10 % only at layers 6–12 (K_off large).
@@ -585,7 +609,7 @@ a contraction with the actual fresh weights (to keep the ε_m ε_m′ components
   - cut curve;
   - T2 kill;
   - Lorentzian failure;
-  - end-to-end Bethe-sector FC (E2E_NETS networks).
+  - end-to-end Bethe-sector FC (2 networks).
 - **Synthesis:**
   - the gauge-group reading (Godsil–Gutman = (Z₂)ⁿ average; the fresh-weight lemma = O(n) average; memory = the
     non-invariant isotypic part);
