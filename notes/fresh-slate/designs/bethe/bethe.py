@@ -129,16 +129,20 @@ def estimate_gauss(Ws):
     raise NotImplementedError
 
 
-def estimate_gauss(Ws, R=12):
+def estimate_gauss(Ws, R=12, x0=None, P=None, gates=False):
     """Baseline: Gaussian (covariance) closure; bivariate ReLU kernel by the Mehler series to order R."""
     Ls, n, _ = Ws.shape
     W = Ws[0].astype(np.float64)
     m = np.zeros(n); C = W.T @ W
+    if x0 is not None:
+        m = x0 @ W; C = W.T @ P @ W
+    Phis = []
     out = []
     for l in range(Ls):
         v = np.diag(C).copy()
         L = ladder(m, v, 0 * v, 0 * v, qmin=-R - 6, qmax=4)
         mu, var, _, _ = node_moments(L)
+        Phis.append(L[0])
         c = C.copy(); np.fill_diagonal(c, 0)
         Ca = np.zeros_like(C); cr = np.ones_like(C); f = 1.0
         for r in range(1, R + 1):
@@ -149,7 +153,7 @@ def estimate_gauss(Ws, R=12):
         if l + 1 < Ls:
             W = Ws[l + 1].astype(np.float64)
             m = mu @ W; C = W.T @ Ca @ W
-    return np.array(out)
+    return (np.array(out), Phis, C) if gates else np.array(out)
 
 
 def mc_truth(Ws, N, batch=1_000_000, seed=0):
@@ -618,10 +622,13 @@ def edge_table_pairs(m, va, vb, c, pmax=2, kmin=-4):
     return T
 
 
-def estimate_v4(Ws, old=1, qgen=True, verbose=False, pairmix=True, qscale=1.0, mixC=True, node_oracle=None, oracle_from=1):
+def estimate_v4(Ws, old=1, qgen=True, verbose=False, pairmix=True, qscale=1.0, mixC=True, node_oracle=None, oracle_from=1,
+                x0=None, P=None):
     Ls, n, _ = Ws.shape
     W = Ws[0].astype(np.float64)
     m = np.zeros(n); C = W.T @ W; K = np.zeros((n, n)); k4 = np.zeros(n); Qz = np.zeros((n, n))
+    if x0 is not None:
+        m = x0 @ W; C = W.T @ P @ W
     out = []; prev = None; info = []
     for l in range(Ls):
         if node_oracle is not None and l >= oracle_from:
@@ -794,3 +801,42 @@ def estimate_v5(Ws, Kq=6, old=1, gtriples=True, verbose=False, glaw=None):
         k4 = ell_n ** 4 * k4gn + (Wn ** 4).T @ k4cond
         m = mn; C = Cn; K = Kn; u = un
     return (np.array(out), info) if verbose else np.array(out)
+
+
+# ------------------------------------------- localization: pin the Perron coordinate at the input ---
+def perron_input_direction(Ws, layer=None):
+    """Input direction v carrying the linear (first-chaos) part of the top principal coordinate of z_layer:
+    v ∝ W_1 Φ_1 W_2 ⋯ Φ_{layer-1} W_layer u, u = top eigenvector of the Gaussian-closure covariance."""
+    Ls = Ws.shape[0]; layer = Ls - 1 if layer is None else layer
+    _, Phis, _ = estimate_gauss(Ws[:layer + 1], gates=True)
+    # covariance of z_layer: rerun cheaply
+    W = Ws.astype(np.float64)
+    u = top_eig(gauss_cov(Ws, layer))
+    v = W[layer] @ u
+    for l in range(layer - 1, -1, -1):
+        v = W[l] @ (Phis[l] * v)
+    return v / np.linalg.norm(v)
+
+
+def gauss_cov(Ws, layer):
+    """Covariance of z_layer under the Gaussian closure."""
+    Ls, n, _ = Ws.shape
+    W = Ws[0].astype(np.float64); m = np.zeros(n); C = W.T @ W
+    for l in range(layer):
+        v = np.diag(C).copy(); L = ladder(m, v, 0 * v, 0 * v, qmin=-18, qmax=4)
+        mu, var, _, _ = node_moments(L)
+        c = C.copy(); np.fill_diagonal(c, 0); Ca = np.zeros_like(C); cr = np.ones_like(C); f = 1.0
+        for r in range(1, 13):
+            cr = cr * c; f *= r; Ca += cr / f * np.outer(L[1 - r], L[1 - r])
+        np.fill_diagonal(Ca, var)
+        W = Ws[l + 1].astype(np.float64); m = mu @ W; C = W.T @ Ca @ W
+    return C
+
+
+def localized(Ws, base, K=5, v=None, **kw):
+    """Average base(Ws | x = t v + x_perp) over t ~ N(0,1) by K-point Gauss-Hermite (exact law of t)."""
+    n = Ws.shape[1]
+    v = perron_input_direction(Ws) if v is None else v
+    P = np.eye(n) - np.outer(v, v)
+    t, w = np.polynomial.hermite_e.hermegauss(K); w = w / w.sum()
+    return sum(wk * base(Ws, x0=tk * v, P=P, **kw) for tk, wk in zip(t, w))
