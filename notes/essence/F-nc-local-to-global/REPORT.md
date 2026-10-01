@@ -1,6 +1,6 @@
-# Team F: the noncommutative local-to-global framework — REPORT (v0)
+# Team F: the noncommutative local-to-global framework — REPORT (final)
 
-*1 Oct 2026, v0 (≈ 21:30 UTC). Scope: Garland / Oppenheim / Alev–Lau, spectral and entropic independence, Chen–Eldan localization, commuting squares and quasi-factorization; a precise noncommutative trickle-down statement; the dictionary to the competition object; from ≈ 22:30 the synthesis across teams A–E (§7, to come in the final). Labels: **Theorem** (proved here, elementary, and checked numerically), **Fact** (cited), **Measured** (run here, numbers in `results/`), **Synthesis**, **Conjecture**, **Speculation**.*
+*1 Oct 2026, v1 final (synthesis included). Scope: Garland / Oppenheim / Alev–Lau, spectral and entropic independence, Chen–Eldan localization, commuting squares and quasi-factorization; a precise noncommutative trickle-down statement; the dictionary to the competition object; the synthesis across teams A–E (§7). Labels: **Theorem** (proved here, elementary, and checked numerically), **Fact** (cited), **Measured** (run here, numbers in `results/`), **Synthesis**, **Conjecture**, **Speculation**.*
 
 *Builds on, does not repeat: `notes/local-to-global-unlocks.md` §4–5, `notes/digests/bridges/hdx-spectral-independence.md` (§2 trickle-down, §4.5 BCR, §7 "no k-step quantum trickle-down found"), `notes/streams/bridges-synthesis/A-unification.md` (D-2 two-projection inequality, D-3 "SI is a frame bound", C-2 the missing quantum k-step trickle-down), `C-competition.md` (R1 doubled leg W∘W = (2/n)11ᵀ + E, R11 no transport gap, "no direct lever").*
 
@@ -10,7 +10,17 @@
 2. **The noncommutative failure is entropic, and it is one step** (§2.2). Classical local-to-global for entropy (Chen–Liu–Vigoda Thm 5.6) converts spectral to entropic contraction *inside a link*, where the densities are single-site marginals with bounded ratio b. With no links, the noncommutative comparison must be made on a whole region, at a cost that grows like e^{c|A|} (the χ_KMS growth already measured in A-unification C10–C11). **Repair hypothesis:** the Pimsner–Popa constant of the one-site inclusion N_A ⊂ N_{A∖i} (a Jones index, O(d²), not exponential) plays the role of b. Conjecture F2 states the resulting iterable approximate tensorization; its two known corners (m = 2: Bardet–Capel–Rouzé; exact commuting lattice: Lemma F2a, proved here) are both consistent with it.
 3. **Dictionary, precise (§3).** The fresh-weight average E_W over rotation-invariant Gaussian weights acts on tensors through the **Brauer algebra**: a sum over pairings. The *through-string* pairings are the commuting-square part: they give the Frobenius currency and the incoherent sum over layers. The *caps* are Jones projections with loop value n and Markov trace τ = 1/n: they are partial traces, i.e. the coincident-pattern channel, the column sums of N7, the trace channel and the dilation charge. He initialisation puts the cap sector exactly at eigenvalue 1 (loop n × variance 2/n × gate density ½ = 1), a unipotent sector with no mixing (angle 0). By Proposition F3 an angle-0 sector cannot be quasi-factorized; it must be **pinned** (localized), which is Chen–Eldan / Bauerschmidt–Bodineau's move.
 4. **Measured at n = 1024 (§5.2, three networks).** The cap (trace) channel holds 0.66–0.79 of the energy of the old (2,1) slice at layers ≥ 8. With costate's scale mode the union holds 0.82 at layer 15 (random-direction control ≤ 0.005). The remaining through-string bulk (18 % of old energy at A = 1, still 12.5 % beyond age 3 and 3.5 % beyond age 7) forgets only slightly faster than the cap sector. Priced by the ε² law, that bulk costs ≈ 3e-7 at A = 3. So the cap sector is most of the memory, not all of it, and the bulk is the decisive remainder.
-5. **Best transfer (§4, T1 + T2).** Carry the cap sector at law level by localization: the scale field h_l plus the collective coordinate g pinned at K quadrature nodes, O(K n²) per layer on top of one Gaussian closure. Treat the through-string bulk as *iterable*: since weight layers form an exact commuting lattice, per-layer compression errors of the bulk add incoherently and do not compound. Kill criteria and costs are in §4.
+5. **Transfers, measured (§4, §5.4).**
+   - Pinning the cap sector (T1) lands at 7.6–7.7e-7 on all three networks at first order (young A = 1 exact). That is 60–70 % of the old-content gain, the same cap that team A's no-go and team D's Perron oracle hit.
+   - The bulk is readout-relevant and needs rank ≈ 256 per layer (T2).
+   - Neither is a carrier at one layer's cost.
+6. **Synthesis (§7).**
+   - *The mechanism.* All of A–E's transfers factorize one conditional expectation, the Brauer/Weingarten fresh-weight average E_W, which has exactly two sectors:
+     - the cap sector: angle 0, unipotent, must be pinned;
+     - the through-string free sector: per-step angle g_l = 2τ(P_x P_{x′}), a two-projection trace, with energy g³ per step and rank n/(2(a+1)); it tensorizes by Theorem F1 at η = 0.
+   - *Agreement.* Five teams' numbers agree on this split: cap share 0.75–0.82, free decay 1.02–1.10·g³, rank law ≈ 2n/a.
+   - *The theorem shape for memory at one layer's cost.* An approximate commuting square between the carrier and the transport, iterable for free over independent layers. Linear carriers face a conjectured harmonic floor Ω(n³ log L) (Conjecture F4).
+   - *The live escape.* Node sufficiency, from Bethe's oracle: memory is needed only through 3 n-vectors per layer. Add law-level cap pinning, plus free-sector cores merged without fit in a shared basis per age bin (Conjecture F5). Deciding test S1 is in §7.3 / §5.5.
 
 ## 1. Instances, to the level of their proofs
 
@@ -138,6 +148,16 @@ The bound holds everywhere. It is tight for products and within 2× at high temp
   The step to check first is whether the reverse Pinsker inequality can be applied to E_{A∖i}*ρ against E_A*ρ *uniformly in the N_A-component*. That is precisely what pinning gives for free classically.
 - *Status.* Conjecture. The noncommutative corrections d of BCR (non-zero for non-commuting Hamiltonians) may force an additive term, which would make the statement a "quasi" tensorization only.
 
+**Proposition F2b (linear response: the entropic frame constant is never better than the spectral one; proved here).**
+
+*Setting.* The E_A are σ-preserving conditional expectations, so each N_A is modular-invariant and E_A commutes with the modular operator Δ_σ (Takesaki).
+
+*Claim.* Then lim_{t→0} sup_X [Σ_i D(E_{A∖i}*ρ_t‖E_A*ρ_t)] / D(ρ_t‖E_A*ρ_t) = 1 + η_m, with ρ_t = σ + tX. Hence η^{ent}_m ≥ η_m, with equality in linear response.
+
+*Proof.* To second order, D(σ + tX ‖ σ + tY) = (t²/2) ‖X − Y‖²_{BKM,σ}. The dual maps E_A* are orthogonal projections in the BKM metric, because they commute with Δ_σ. So both sides become quadratic forms of the same nested projections, and the ratio's supremum is ‖Σ_i P^A_i‖ in the BKM metric. Σ_i P^A_i commutes with Δ_σ and is self-adjoint in every metric of the form ⟨·, f(Δ_σ)·⟩, so its norm, which equals its spectral radius, is the same as in the KMS metric. ∎
+
+*Reading.* Conjecture F2 is therefore a statement about the *non-perturbative* regime only. Near equilibrium the entropic and spectral local-to-global theories coincide exactly in the noncommutative setting. What H-PP has to control is how far from σ the ratio can drift.
+
 ### 2.4 Proposition F3 (a central defect must be pinned, not factorized)
 
 **Proposition F3.** Let P, Q be orthogonal projections with R = P ∧ Q, and let Z be a projection commuting with P and Q such that PQ − R = Z(PQ − R)Z. Then:
@@ -195,6 +215,7 @@ The through-string (ia, ka)(jb, lb) is the only pairing that survives off the co
   - (b) bethe `localized()` (pin the Perron input direction, K-node GH): must cut v4's 4.3e-7 by ≥ 2×.
 - **Kill criterion.** If (a) and (b) each fail to reach ≤ 2e-7 raw at n = 1024, the cap sector is not being pinned by these constructions. Then charge the dictionary first: the pinned coordinate must be the O(n) Casimir q and h, not a linear input direction. Bethe's input-direction pinning captures only the first-chaos part of g, while q is second chaos in x.
 - **Explains** established fact 4 (Section 3 of the brief: leaders carry memory at about zero cost) only partly: ~80 % of memory is one sector that costs nothing to carry.
+- **Status (final).** Measured at Stein level with young A = 1 exact, the cap sector gives 7.6–7.7e-7 on three networks (§5.4). Team A's Bethe-sector FC gives 1.05e-6, and team D's Perron sandwich 1.5e-6. At law level, costate's A3gsl_nc gives 3.25e-7 and team C's trace-adaptive window 2.43e-7. **Alive as a component, dead as a carrier.**
 
 ### T2. The through-string bulk is iterable: compress it per layer, and errors will not compound
 
@@ -210,6 +231,11 @@ The through-string (ia, ka)(jb, lb) is the only pairing that survives off the co
 - **Cheapest decisive test.** Region §6's experiment, sharpened: inside FC, carry the cap sector of old sources by T1 and CP-merge only the bulk at R ∈ {n/2, n}, on MLPs 0–2 at n = 1024.
 - **Kill criterion.** If the bulk at R = n has merge error > 15 % per layer, or raw > 6e-8, then the bulk is not compressible: a generic high-rank random tensor has CP rank ≫ n, and region found each source atom-complete. The memory question then reduces to whether the leaders spend their error budget on the bulk (region §6 (b)).
 - **Risk, stated now.** Removing the structured cap sector leaves the *least* compressible part. Our measurement (§5.2: bulk high-rank, slowly decaying in age) makes the negative branch likely.
+- **Status (final).**
+  - In the readout, the bulk needs rank ≈ 256 (§5.4).
+  - Region's CP merge of all ages > 2 to R = n gives 2.0e-7 at 3,510 u: killed on cost (team E T4).
+  - Team D's age multiresolution (each source in 2n/a directions of its own propagator) is lossless as an oracle at O(n³ log L).
+  - T2 as a CP merge is dead. As fit-free merging in a shared basis it survives as Conjecture F5, decided by S1 (§5.5).
 
 ### T3. Books close as a frame bound over the weight lattice
 
@@ -273,6 +299,39 @@ Table in §2.1 (`nc_trickle.py`; runs in seconds; n ≤ 5 because the operator s
   That is Frobenius pricing. Costate's oracles show the readout reads old content through fewer modes, so these are upper estimates. Even so, **pinning the cap sector plus a window does not reach the bar on its own**. The bulk has to be carried by something (T2) or the readout metric has to be shown to suppress it.
 
 
+### 5.3 Is the bulk random? Rank profile of the bulk slice (`bulk_rank.py`, MLP 0)
+
+The bulk is the old off-diagonal slice minus the cap channel and minus the scale mode. The table gives top-k singular-value energy shares, k = 1 / 16 / 64 / 256 / 512.
+
+| object | layer 6 | layer 10 | layer 15 |
+|---|---|---|---|
+| i.i.d. Gaussian n × n control | 0.004 / 0.058 / 0.210 / 0.623 / 0.894 | (same) | (same) |
+| whole old slice, A = 1 | 0.64 / 0.77 / 0.91 / 0.993 / 0.999 | 0.74 / 0.87 / 0.96 / 0.996 / 0.999 | 0.79 / 0.92 / 0.98 / 0.997 / 0.999 |
+| bulk, A = 1 (0.33 / 0.21 / 0.16 of old) | 0.03 / 0.35 / 0.75 / 0.985 / 0.999 | 0.05 / 0.46 / 0.82 / 0.989 / 0.999 | 0.07 / 0.56 / 0.88 / 0.991 / 0.999 |
+| bulk, A = 3 (0.38 / 0.17 / 0.13 of old) | 0.03 / 0.37 / 0.78 / 0.992 / 0.999 | 0.06 / 0.49 / 0.86 / 0.993 / 0.999 | 0.07 / 0.56 / 0.90 / 0.993 / 0.999 |
+
+**Reading.** The bulk is *not* random as a matrix: 64 directions hold 75–90 % (control 21 %), 256 hold ≥ 98.5 % (control 62 %). Its symmetric and antisymmetric parts carry equal energy (0.500), as a generic non-symmetric slice would. So the bulk is high-rank compared with the cap sector (rank ≲ 4 plus one dense template) but low-rank compared with n. That matches team D's age-dependent rank law (coordinator note, correction): content of age a lives in about 2n/a propagator directions.
+
+### 5.4 What the readout needs: oracle filters on the old slice inside costate's first-order co-state (`cap_filter.py`, A = 1, n = 1024)
+
+Each filter keeps the exact diagonal and a part of the old off-diagonal slice, injected at every layer. Raw = final MSE − truth noise.
+
+| filter on old content (age > 1) | MLP 0 | MLP 1 | MLP 2 |
+|---|---|---|---|
+| none (diagonal only) | 1.36e-6 | 1.59e-6 | 1.46e-6 |
+| cap sector (cap channel ∪ scale mode) | 7.74e-7 | 7.62e-7 | 7.64e-7 |
+| cap + bulk rank 16 | 6.82e-7 | — | — |
+| cap + bulk rank 64 | 5.09e-7 | 5.21e-7 | 4.77e-7 |
+| cap + bulk rank 256 | 4.20e-7 | 4.72e-7 | (running) |
+| plain rank 64 of the whole off-diagonal (costate's filter) | 4.84e-7 | 4.72e-7 | (running) |
+| all (exact first order) | 3.92e-7 | 4.03e-7 | 4.13e-7 |
+
+**Reading.**
+- In the readout metric the cap sector recovers 60 % / 70 % / 66 % of the old-content gain on MLPs 0 / 1 / 2 (e.g. (1.36 − 0.774)/(1.36 − 0.392) on MLP 0), against ≈ 80 % of its energy. It lands at 7.6–7.7e-7 on all three networks.
+- The bulk is readout-relevant. Rank 64 recovers 69 % of the remaining gain and rank 256 recovers 93 %.
+- **The cap channel is not the readout-optimal subspace.** A plain rank-64 SVD (4.84e-7) beats cap + bulk rank 64 (5.09e-7). The readout reads old content through a ≈ 64–256-dimensional subspace that only partly aligns with the O(n)-invariant cap directions.
+- Consequence for T1: pinning the cap sector alone, at Stein level, would at best take the A = 1 co-state from 1.36e-6 to ≈ 7.7e-7. Costate's law-level treatment of the same sector (A3gsl_nc, 3.25e-7) does better than Stein level, which is the evidence that *pinning at law level* (Proposition F3), rather than first-order projection, is what pays.
+
 ## 6. Honest assessment
 
 - **Theorem**:
@@ -291,7 +350,114 @@ Table in §2.1 (`nc_trickle.py`; runs in seconds; n ≤ 5 because the operator s
 
 ## 7. Synthesis across teams A–E
 
-To come in the final (from ≈ 22:30 UTC).
+*Sources: the five final REPORTs in `notes/essence/*/`, `COORDINATOR-NOTE-1.md` with its 21:10 correction, and F's own measurements. Section numbers refer to the teams' reports.*
+
+### 7.1 One noncommutative mechanism behind the transfers
+
+**Statement (Synthesis, built from proved pieces).** Every competition transfer the five teams made is an attempt to factorize one conditional expectation: the **fresh-weight average E_W**, the Weingarten/Brauer average over a rotation-invariant Gaussian layer. It has an exact two-sector structure.
+
+1. **The cap sector.** Brauer caps (Jones projections, loop value n) are partial traces. This is the O(n)-invariant part: dilation, trace channel, coincident patterns, the Bethe/diagonal pairing, the Perron mode.
+   - Its transfer eigenvalue is exactly 1: loop n × variance 2/n × gate density ½ = 1. This matches Euler's identity and the costate C6 Jordan block, and team C's Proposition C1, which finds a 2×2 unipotent block.
+   - So its angle is 0. By Proposition F3 it cannot be factorized; it must be **pinned** (localized).
+2. **The through-string ("free") sector.** Its pricing is tracial and Frobenius:
+   - team D Proposition D1;
+   - team B §2.2 (Schur orthogonality);
+   - region §1.
+
+   Its contents are mutually orthogonal across ages and layers (cross-age cosines ≤ 0.03, team C §4). Its per-step angle is a **two-projection angle**, g_l = 2E[Φ_l²] = 2τ(P_x P_{x′}) = ½ + arcsin(ρ_l)/π: the trace of the two replica gate projections at angle θ_l = arccos ρ_l (team E §2.2, team C). Energy contracts like g_l³, one factor per leg, at 1.02–1.10 g³ (team C), and rank falls like the participation ratio n/(2(a+1)).
+
+   By Theorem F1 with η = 0 on the lattice of independent weight layers, local errors in this sector **tensorize**: they add, they do not compound. That is the books-close identity and region's K(l) price list, reproduced from first principles by team E's wedge calculus to ±0.1 in log.
+
+**Each team's transfers in this language.**
+
+| team | transfer | sector it acts on | role of E_W | measured verdict |
+|---|---|---|---|---|
+| A | Bethe / diagonal pairing (T1), gauge-group lattice | cap: the (Z₂)ⁿ / O(n) average is the commuting-square lattice | down step = gauge average | the cap carries ≈ 80 % of memory energy but leaves 0.40–0.48 D21 error, ≥ 1.05e-6 end-to-end. **No-go for gauge-invariant carriers** |
+| A | Barvinok / rank-k fluctuation (T2), Godsil–Gutman (T3) | free sector, sampled or truncated | sketching the through-strings | killed: rank 256 still 8–10 %; GG variance ≥ 10⁵× the budget |
+| B | orthogonal hybrid (T1), Schur orthogonality (§2.2) | free sector: martingale increments over F_l | E_W as Doob conditional expectation | derivation = Theorem F1 at η = 0. Cancellation test not run |
+| B | JMR squared graph (T2), INW seed (T5) | free sector (λ_eff ≈ 1, no contraction in the quenched propagator) | ignore-first-step needs a gap that is absent | killed / derived negative |
+| C | two-sector trichotomy, trace-adaptive window (T2) | both: parabolic cap + free g³ | the angle g_l sets the window | **only measured gain**: 2.43e-7 (0.75× A3gsl_nc), 6/6 networks |
+| D | D1 tracial price; Kyng–Sachdeva (3.1); Perron sandwich (3.3); age multiresolution (3.7) | free sector (D1, 3.1, 3.7); cap (3.3) | E_W = the tracial state (fresh consumer) | 3.1 and 3.3 killed. **3.7 oracle lossless**: k(a) = 2n/a, 3.31e-8 vs FC 3.24e-8, O(n³ log L). Causal version not run |
+| E | wedge calculus (T1), age law (T2), dyadic merging (T4) | the price of both sectors from θ_l; free-sector age law | E_W over the fresh W = the down step | T1 positive (K(l) to ±0.1 log); T4 killed on cost (CP merge R = n: 2.0e-7 at 3,510 u) |
+| F | pin the cap (T1); iterable bulk (T2) | cap / free | Proposition F3 / Theorem F1 at η = 0 | cap at Stein level 7.6–7.7e-7 (60–70 % of the old gain); bulk needs rank ≈ 256 in the readout |
+
+**Consistency ledger.** Independent measurements of the same sector agree.
+
+| quantity | value | measured by |
+|---|---|---|
+| cap/dilation share of old (or all-age) D21 energy at the last layer | 0.82 (C, all ages), 0.82 (F, union, A = 1, three networks), ≈ 0.8 (A, Bethe sector), 0.75 (D, Perron second leg at t = 15) | C §4, F §5.2, A §4, D §4.2 |
+| cap-only end-to-end | 7.6–7.7e-7 (F, Stein level, young exact at A = 1); 1.05e-6 (A, FC with memory replaced by its Bethe value at A = 3); 1.5e-6 (D, Perron q = 1) | F §5.4, A T1, D 3.3 |
+| free-sector decay per step | (1.02–1.10)·g³, g³ ≈ 0.13 → 0.6 with depth (C); tail ratio ≈ 0.7–0.77 per age at layer 15 (F) | C §4, F §5.2 |
+| free-sector rank | PR = n/(2(a+1)) (C, E); resolution ≈ 4·PR = 2n/a lossless (D); bulk slice 64 → 75–90 %, 256 → ≥ 98.5 % (F); 121–191 modes at 10 % (C §6.2) | C, D, E, F |
+| pricing | K(l) from θ_l to ±0.1 log (E); D1 exact (D); books close 2–6 % (region) | E, D, region |
+
+**What the mechanism explains among the established facts (brief §3).**
+- "Old content nearly orthogonal to the present and to other ages" (F8.3) is through-string orthogonality: free-sector contents of different ages are Brauer-orthogonal, and the cap part is coherent across ages, with D's mean cosine between old sources 0.38–0.46 coming from it.
+- "Every age matters" (N6) has two causes: angle 0 in the cap, and a slow free angle (g³ ≈ 0.6 at depth).
+- "Ensemble mean zero, purely quenched" (F8.5): the free sector has zero E_W-image by construction, so every annealed or gauge-averaged carrier, i.e. every conditional expectation onto invariants, misses it (A's no-go, E's Conjecture E3).
+- "The leaders carry memory at about zero cost" is **not** explained. §7.2 says exactly what would explain it.
+
+### 7.2 The theorem shape that would give a carrier of memory at about one layer's cost
+
+**Requirement.** A carrier is a family of states s_t with an update s_{t+1} = Φ_t(s_t, W_{t+1}) costing O(n³) (≈ 1–4 products), plus a readout of the per-layer quantities the means need (region §4: D21 to 5–10 %, node κ3/κ4 to ≈ 7 % at layers ≥ 5).
+
+By Theorem F1 at η = 0 (exact independence of the weight layers), the global error is the incoherent sum Σ_t K(t)·δ_t², where δ_t is the per-layer **commuting-square defect** between the carrier and the true transport:
+
+  δ_t := ‖R_{t+1}(Φ_t(s_t)) − T_t(R_t(s_t))‖_read,
+
+with R_t the readout map and T_t the exact (first-order chaos) transport. So the theorem to look for is an **approximate commuting square for the carrier**,
+
+  R_{t+1} ∘ Φ_t ≈ T_t ∘ R_t, with defect δ_t ≤ 5–10 % at layers 6–13 (team E §4.8 gives the per-layer tolerance),
+
+*iterable for free* because the weight lattice commutes exactly. This is Theorem F1's structure: local defects are global errors, with no compounding. The whole difficulty is the local defect.
+
+**Two measured constraints on the defect.**
+- (i) **Cap.** The cap sector has angle 0, so a carrier must hold it exactly (Proposition F3). Holding it at **law level**, i.e. pinning the dilation/collective coordinate, does better than holding it at first order. Costate's law-level A3gsl_nc at 3.25e-7 beats its exact all-pairs first order at 4.0e-7 with 32 % of the products, and C's trace-adaptive window takes it to 2.43e-7.
+- (ii) **Free sector — the harmonic floor (Conjecture F4).** Content of age a needs a resolution of ≈ 2n/a directions (D's oracle). It is orthogonal across ages (C) and quenched with zero E_W-image (F8.5). The conjecture is that any carrier that is a **linear image of the first-order chaos content** (the R_t of a conditional expectation onto a subspace of atoms or legs) has defect ≤ 10 % only if its state dimension per target is ≳ n Σ_{a ≤ a*} 2/a ≈ 2n ln t. That gives cost Ω(n³ log L) per layer, which is D's oracle cost.
+
+  *Status:* a conjecture, supported by every linear carrier measured:
+  - shared subspaces: q = n/4 is 6× worse;
+  - per-source bases;
+  - pruning;
+  - Kyng–Sachdeva;
+  - CP merge (R = n reaches only 2.0e-7);
+  - F's bulk ranks.
+
+**Consequence.** One-layer cost requires a carrier that is **not a linear image** of the first-order content. The local-to-global literature offers exactly three non-linear escape shapes, and the measurements say which are live.
+
+1. **Localization (Chen–Eldan / Bauerschmidt–Bodineau), applied to the cap sector.** Pin a few collective coordinates and run memoryless closures on the conditional laws. This is live and cheap (O(K n²) per layer), but by the measurements it carries ≲ 70 % of the old gain at first order. Its law-level advantage is real (3.25e-7, 2.43e-7) but still ≈ 25× short.
+2. **Node sufficiency (Bethe / commuting square of the pair algebra over the node algebra).** Bethe's deciding experiment (designs/bethe DESIGN §14) shows that v4's memoryless pair, mean and readout machinery, given the *true node beliefs* (v, κ3, κ4 per neuron) at layers ≥ 6, reaches ≤ 3.9e-8 (MC noise floor), from 4.3e-7. In NC terms: given the node algebra, the pair algebra and the past form an approximate commuting square, E_past E_pair ≈ E_node, with defect below 4e-8.
+   - So **memory is needed only through 3 n-vectors per layer**.
+   - The memory problem reduces to producing per-neuron (v, κ3, κ4) at depth to ≈ 7 %. This is a *diagonal* readout of the free sector: node κ3 = Σ_s 1ᵀ diag(w2_s)(Y_s ∘ Y_s ∘ Z_s) at the diagonal. In core form it is a contraction G_{ii′j} B_{ai}B_{ai′}D_{aj} in which **cores of the same age bin, expressed in a shared transported basis, add without any fit**: the "fit-free linear re-binning that commutes with transport" that team E left as its one open hatch.
+3. **Inter-layer cancellation** (team E hatch 4, B T1, F T3). The incoherent sum is only an upper bound when the frame matrix ρ_{ll′} has negative eigenvalues. MLP 1's 46 % over-prediction is such a case. The leaders could exploit it, but this cannot be engineered without knowing the sign structure. Low prior.
+
+**The precise theorem shape F proposes (Conjecture F5, node-level iterable tensorization).** For He-ReLU networks at n → ∞ with L/n → 0:
+- (a) **Node sufficiency.** The final-layer means depend on the past only through the node beliefs (v_t, κ3_t, κ4_t) ∈ (ℝⁿ)³ of each layer, up to a defect o(1/n²) per layer in the readout metric. This is Bethe's oracle, as a theorem.
+- (b) **Sector split of node beliefs.** Node beliefs split as (cap part, computable at law level from the pinned collective coordinates at O(n²) per layer) + (free part). The free part's node-diagonal is a sum over age bins of core contractions in a shared QR-transported basis, merged without fit.
+- (c) **Iterability.** By Theorem F1 at η = 0, per-layer defects in (a) and (b) add incoherently.
+
+If (a)–(c) hold with cores of dimension k_b = 2n/a_b ≤ n^{2/3} for all ages beyond a short exact window, the whole carrier costs O(n³) per layer, about one layer. The cost of a node readout from a core is n·k³, which is ≤ n³ only for k ≤ n^{2/3} ≈ 100, i.e. ages ≳ 20 at n = 1024. **So at n = 1024, L = 16 the shape does not yet close on cost.** A single shared core at k ≈ n^{2/3} per bin would need the free sector of ages ≥ 4 to be readable at node level through ≈ 100 shared directions. That is the decisive, cheap measurement (§7.3, test S1).
+
+### 7.3 Deciding tests the synthesis implies (cheapest first)
+
+- **S1 (node-level rank of the free sector).** At n = 1024, measure the fraction of the per-neuron free-sector κ3 (old sources, cap part removed) captured when every old source is restricted to a *shared* k-dimensional basis per dyadic age bin (QR-transported), for k ∈ {64, 128, 256}.
+  - Kill: k = 256 leaves > 7 % rms at layers ≥ 6.
+  - Alive: k ≤ 128 suffices. Then the node-level carrier costs ≈ n·k³ + 2kn² per bin per layer, ≈ 1–2 u at k = 128.
+- **S2 (Bethe node sufficiency with computed cap and true free node beliefs).** In bethe v4, inject the true node beliefs minus their cap part, and supply the cap part from the law-level scale field. This tests whether (a) and (b) compose.
+- **S3 (frame bound over layers, F T3).** Inject each layer's local error separately and measure the inter-layer correlation matrix. This tests the cancellation route and the Theorem-F1 reading of books-close.
+- **Already decided by others.**
+  - Costate's scale field at law level: queued.
+  - D's causal age-multiresolution: kill if raw > 5e-8 at k = 2n/a.
+  - C's trace-adaptive window: 2.43e-7 measured.
+
+### 7.4 What the user's frame bought, honestly
+
+- **The noncommutative side.**
+  - The spectral local-to-global theorem is fully noncommutative (Theorem F1).
+  - The entropic one fails at exactly one step, which is repairable by a one-site Jones-index hypothesis (Conjecture F2, consistent with BCR, GJL and LaRacuente). Near equilibrium it holds exactly (Proposition F2b).
+  - The fresh-weight lemma *is* Jones' Markov-trace independence in the Brauer algebra of O(n), with index n².
+- **The competition side.** The frame reorganizes all of A–E into one two-sector picture whose numbers agree across five teams. It explains why every gauge-invariant or annealed carrier is capped (they are conditional expectations onto the cap) and why local errors do not compound (Theorem F1, η = 0). It turns "carry memory cheaply" into an approximate-commuting-square defect with a measured per-layer tolerance.
+- **What it did not buy.** A carrier. No measured construction has both an O(n²) state and a small free-sector defect. The live route is node sufficiency (Bethe's oracle) plus law-level cap pinning plus shared-basis free cores (S1).
 
 ## 8. Sources
 
