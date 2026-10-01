@@ -578,6 +578,14 @@ with R_t the readout map and T_t the exact (first-order chaos) transport. So the
 
   Status: synthesis, plausible. It is not a theorem until the quantitative p(n) statement is formulated.
 
+**Update (team G, Theorem G10; proof checked here).** The finite-n version of the hyperfiniteness reading that F asked for exists.
+- *Statement.* If the fresh layers form a λ-quantum expander (Hastings; Pisier), any grading D of neuron space with ‖[D, U_i]‖ ≤ 1 has a counting function growing like (1 + (1 − λ)/4)^m per level step. So no finitely summable grading is uniformly compatible with k ≥ 2 independent layers.
+- *Proof check.* F checked its three steps: the expander bound on ⟨P, ΦP⟩, the commutator bound on the far block, and the shell rank. All are correct as written for orthogonal layers.
+- *Open part.* The extension to gated Gaussian steps (not unitary) is open, as G states.
+- *In F's language.* The free sector is the expander direction, compressible only along the amenable age axis. The cap sector is the invariant (λ = 1) direction.
+- *Agreement with S1.* S1's carrier uses bases that are *transported*, B ← orth(MᵀB), i.e. covariant under the time shift. It is not a static grading, so S1 is exactly the kind of carrier G10 allows, and the static shared subspaces that failed (region, 6×) are the kind it forbids.
+- *Correction to note 2 (team G, agreed).* [F, X] has rank ≤ 2n, hence is compact. What is width-flat is its value on the state, so F's "not compact" wording above should be read as "not small in the state norm".
+
 **Note 2 (Fredholm).** Consistent with F's dictionary:
 - F = 2P − 1 with P the gauge average equals the cap/through-string split (P = E_W onto the Brauer invariants);
 - [F, a] ≠ compact is the statement that the free sector has no finite-rank image under the invariant projection;
