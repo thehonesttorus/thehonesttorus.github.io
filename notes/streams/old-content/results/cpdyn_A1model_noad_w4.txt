@@ -1,0 +1,11 @@
+/root/atl/A1/mlp_00000.npz [MODEL chain]: width 128, depth 16, N = 600000, young window w = 4, no-AD sources
+
+old share: ||D21(Old_l)|| / ||D21(z_l)||
+1:0.000 2:0.000 3:0.000 4:0.000 5:0.161 6:0.305 7:0.549 8:0.541 9:0.609 10:0.692 11:0.669 12:0.565 13:0.734 14:0.756 15:0.739
+
+(b/d) cp-dyn: CP factors transported leg by leg, incoming source merged by warm-started ALS (25 it); eps
+ l | R=64    R=128  
+ 1 |   -     -  
+ 2 |   -     -  
+ 3 |   -     -  
+ 4 |   -     -  
