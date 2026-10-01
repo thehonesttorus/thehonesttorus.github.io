@@ -51,7 +51,7 @@ def M(fa, fb, R, d0=1):
     return out
 
 
-def layer_step(m, s, a, R, D, W, cfg):
+def layer_step(m, s, a, R, D, W, cfg, U=None, beta=None):
     n = len(m)
     pr = ext_profiles(m, s, a)
     h, F2, F3, F4, Hd, dl = pr['h'], pr['F2'], pr['F3'], pr['F4'], pr['Hd'], pr['dl']
@@ -87,6 +87,16 @@ def layer_step(m, s, a, R, D, W, cfg):
             t111 += np.sum(W * h[:, p + q][:, None] * (X[p] * X[q] - Z), 0)
     K21W = K21 @ W
     k3z = k3a @ W3 + 3 * np.sum(W2 * K21W, 0) + 3 * t111
+    src = cfg.get('src', 0)
+    if src:
+        Pg = pr['Hd'][:, 0]                                      # gate linear response E[1{z>0}]
+        Ut = U * Pg[None, :] if U is not None and len(U) else np.zeros((0, n))
+        bt = beta if beta is not None and len(Ut) else np.zeros(0)
+        bres = k3a - (bt @ Ut ** 3 if len(Ut) else 0)             # birth: marginal residual
+        Ut = np.vstack([Ut, np.eye(n)]); bt = np.concatenate([bt, bres])
+        V = Ut @ W
+        s111src = bt @ (V ** 3 - 3 * ((Ut ** 2) @ W2) * V + 2 * ((Ut ** 3) @ W3))
+        k3z = k3z + s111src
     # fourth cumulant (copula sectors as v0)
     K22 = M(A2, A2, R0) - 2 * Ca ** 2 * off
     K31 = M(A3, h, R0) - 3 * var[:, None] * (Ca * off)
@@ -108,13 +118,23 @@ def layer_step(m, s, a, R, D, W, cfg):
             Xc = X[p] * X[q]                                     # centre c, both j-legs at the ends
             Dn += ((h[:, p + q][:, None] * Xc).T @ W)
             Dn += 2 * (W * h[:, p + q][:, None] * X[p]).T @ X[q]  # centre a (a j-leg), ends b (j) and c (k)
+            # coincident ends: a = b at a centre-c path; b = c at a centre-a path
+            Zc = (R0 ** (p + q)) @ (W2 * (h[:, p] * h[:, q])[:, None]) / (FACT[p] * FACT[q])
+            Dn -= (h[:, p + q][:, None] * Zc).T @ W
+            Xpq = (R0 ** (p + q)) @ (W * h[:, p + q][:, None])
+            Dn -= 2 * (W * (h[:, p] * h[:, q])[:, None] * Xpq / (FACT[p] * FACT[q])).T @ W
+    if src:
+        Dn += (bt[:, None] * V ** 2).T @ V - ((bt[:, None] * ((Ut ** 2) @ W2))).T @ V
+        if cfg.get('age'):
+            keep = slice(max(0, len(bt) - cfg['age'] * n), None); V, bt = V[keep], bt[keep]
+        U, beta = V, bt
     Dn = Dn * (~np.eye(Dn.shape[0], dtype=bool)) + np.diag(k3z)
     sz = np.sqrt(vz)
     g1 = np.clip(k3z / sz ** 3, -1.5, 1.5); g2 = np.clip(k4z / sz ** 4, -1.0, 4.0)
     an = fleishman(g1, g2)
     t = np.stack([sz * an[:, 0], 2 * sz * an[:, 1], 6 * sz * an[:, 2]], 1)
     Rn = latent_corr(Cz, t)
-    return mu, (mz, sz, an, Rn, Dn), dict(k3=k3z, k4=k4z, vz=vz, Cz=Cz, D=Dn)
+    return mu, (mz, sz, an, Rn, Dn, U, beta), dict(s3=k3a @ W3, s21=3 * np.sum(W2 * K21W, 0), s111=3 * t111, K21=K21, k3=k3z, k4=k4z, vz=vz, Cz=Cz, D=Dn)
 
 
 def estimate(W, cfg=None, return_diag=False):
@@ -124,9 +144,10 @@ def estimate(W, cfg=None, return_diag=False):
     s = np.sqrt(np.diag(C1)); R = C1 / np.outer(s, s)
     m = np.zeros(n); a = np.tile([1.0, 0.0, 0.0], (n, 1)); D = np.zeros((n, n))
     means, diags = [], []
+    U = beta = None
     for l in range(L):
         if l < L - 1:
-            mu, (m, s, a, R, D), dg = layer_step(m, s, a, R, D, W[l + 1].astype(float), cfg)
+            mu, (m, s, a, R, D, U, beta), dg = layer_step(m, s, a, R, D, W[l + 1].astype(float), cfg, U, beta)
             diags.append(dg)
         else:
             mu = ext_profiles(m, s, a, dmax=0)['h'][:, 0]
