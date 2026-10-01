@@ -402,10 +402,14 @@ def ladder_pair(tA, tB):
                 m["closure" + tag + "_noB0"] = m["closure" + tag] - t["B0"]
                 m["closure" + tag + "_projB0"] = m["closure" + tag + "_noB0"] + sum(c * x for c, x in zip(beta, births(t, reg)))
             pB = sum(c * x for c, x in zip(bA, births(b, reg)))
+            pA = sum(c * x for c, x in zip(bB, births(a, reg)))
             r["projR2" + tag] = 1.0 - float(np.sum((b["B0"] - pB) ** 2) / np.sum(b["B0"] ** 2))
+            # noise-free (replica cross-product) version of the held-out R^2
+            r["projR2cp" + tag] = 1.0 - float(np.sum((a["B0"] - pA) * (b["B0"] - pB)) / np.sum(a["B0"] * b["B0"]))
             r["beta" + tag] = bA
         r["B0_share"] = 0.5 * (float(np.linalg.norm(a["B0"]) / np.linalg.norm(DA)) + float(np.linalg.norm(b["B0"]) / np.linalg.norm(DB)))
         den = float(np.sum(DA * DB))
+        r["B0_share_cp"] = float(np.sign(np.sum(a["B0"] * b["B0"])) * np.sqrt(abs(np.sum(a["B0"] * b["B0"])) / den))
         for k in mA:
             ex = rel(mA[k], DB)
             r[k + "_x"] = ex
@@ -538,7 +542,7 @@ def run_ladder(paths, with_h8=True, out=None, log=None, gauss_path=None):
             print(f"{r['l']:>2} " + " ".join(f"{1e4 * r[c + '_cp2']:6.1f}+-{1e4 * r[c + '_cp2_se']:5.1f}" for c in cols), flush=True)
         print("\nold content: share ||T(B0)||/||D21||, held-out R^2 of T(B0) on the transported births (exact / regenerated k4)")
         for r in prow:
-            print(f"{r['l']:>2} share {r['B0_share']:.3f}  projR2 {r['projR2']:.3f} {r['projR2_reg']:.3f}  beta " + " ".join(f"{c:+.2f}" for c in r["beta"]), flush=True)
+            print(f"{r['l']:>2} share {r['B0_share']:.3f} (noise-free {r['B0_share_cp']:.3f})  projR2 {r['projR2']:.3f} {r['projR2_reg']:.3f} (noise-free {r['projR2cp']:.3f})  beta " + " ".join(f"{c:+.2f}" for c in r["beta"]), flush=True)
         print("\nreplica noise of the model error delta = M - D, ||delta_A - delta_B|| / (sqrt2 ||D||), per column")
         for r in prow:
             print(f"{r['l']:>2} " + " ".join(f"{r[c + '_dn']:11.4f}" for c in cols), flush=True)

@@ -29,7 +29,7 @@ def table(path):
         for c, _ in cols:
             e, de = eps(r[c + "_cp2"], r[c + "_cp2_se"])
             cells.append(f"{100 * e:.2f} ± {100 * de:.2f}")
-        extra = f"{r['B0_share']:.3f} | {r['projR2']:.3f} | " if "B0_share" in r else "– | – | "
+        extra = (f"{r.get('B0_share_cp', r['B0_share']):.3f} | {r.get('projR2cp', r['projR2']):.3f} | ") if "B0_share" in r else "– | – | "
         out.append(f"| {r['l']} | {r['noise']:.3f} | {r['closure_dn']:.3f} | " + extra + " | ".join(cells) + " | "
                    + " ".join(f"{c:+.2f}" for c in r["coefA"]) + " |")
     return "\n".join(out)
