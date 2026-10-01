@@ -62,11 +62,60 @@ def relu_k4(mu, v):
     return c4 - 3 * c2 * c2
 
 
-def run(W, window=None, slices=False, young=None, rank=None, edge=True, readout=True, dtype=np.float32, trace=None, k4f=None, k4use=True, share=None, share_young=2, k4own=False, k4mf=False, prune=None, prune_slices=None):
+def cp_merge(cp, src, R, sweeps, dtype, mstats=None):
+    """Fit a rank-R CP (A, B, C) to [existing CP] + [the source's Wick and slice triplets] by warm-started ALS on the
+    implicit tensor (atoms X, Y, Z of size N x n; target T = sum_j x_j o y_j o z_j)."""
+    import time
+    t0 = time.time()
+    Z = src["Z"]; w = src["w2"]
+    Yl = src["SP"].astype(dtype) @ Z
+    Xs, Ys, Zs = [Yl * w[:, None], Yl * w[:, None], Z * w[:, None]], [Yl, Z, Yl], [Z, Yl, Yl]
+    if "Delta" in src:
+        T = src["Delta"] @ Z
+        Xs += [Z, Z, T]; Ys += [Z, T, Z]; Zs += [T, Z, Z]
+    if cp is not None:
+        Xs.append(cp[0]); Ys.append(cp[1]); Zs.append(cp[2])
+    X = np.concatenate(Xs); Yt = np.concatenate(Ys); Zt = np.concatenate(Zs)
+    if cp is None:
+        # init: the R triplets of largest norm product
+        sc = np.linalg.norm(X, axis=1) * np.linalg.norm(Yt, axis=1) * np.linalg.norm(Zt, axis=1)
+        idx = np.argsort(-sc)[:R]
+        A, B, C = X[idx].copy(), Yt[idx].copy(), Zt[idx].copy()
+    else:
+        A, B, C = [F.copy() for F in cp]
+    nprod = 0
+    XA = X @ A.T; YB = Yt @ B.T; ZC = Zt @ C.T; nprod += 3
+    for it in range(sweeps):
+        for k in range(3):
+            if k == 0:
+                M = X.T @ (YB * ZC); Gm = (B @ B.T) * (C @ C.T)
+            elif k == 1:
+                M = Yt.T @ (XA * ZC); Gm = (A @ A.T) * (C @ C.T)
+            else:
+                M = Zt.T @ (XA * YB); Gm = (A @ A.T) * (B @ B.T)
+            Gm = Gm.astype(np.float64); Gm += 1e-6 * np.trace(Gm) / len(Gm) * np.eye(len(Gm))
+            F = np.linalg.solve(Gm, M.T.astype(np.float64)).astype(dtype)
+            nprod += 3   # MTTKRP + two small Grams (R x n x R) counted as one unit-equivalent each
+            if k == 0:
+                A = F; XA = X @ A.T
+            elif k == 1:
+                B = F; YB = Yt @ B.T
+            else:
+                C = F; ZC = Zt @ C.T
+            nprod += 1
+    if mstats is not None:
+        n = X.shape[1]
+        mstats.append(dict(N=X.shape[0], R=R, products=nprod, units=nprod * X.shape[0] * R / n ** 2,
+                           wall=time.time() - t0))
+    return (A, B, C)
+
+
+def run(W, window=None, slices=False, young=None, rank=None, edge=True, readout=True, dtype=np.float32, trace=None, k4f=None, k4use=True, share=None, share_young=2, k4own=False, k4mf=False, prune=None, prune_slices=None, merge=None, merge_young=2, sweeps=3, mstats=None):
     L, n, _ = W.shape
     W64 = W.astype(np.float64)
     Wf = W.astype(dtype)
     sources = []          # dicts: s, w2, Y, Z, (Delta), (Q)
+    cp = None             # merged old content: CP factors (A, B, C), each (R, n), in current layer coordinates
     outs = []
     D21 = None
     mu = np.zeros(n); S = W64[0].T @ W64[0]
@@ -115,6 +164,8 @@ def run(W, window=None, slices=False, young=None, rank=None, edge=True, readout=
         G = (P.astype(dtype)[:, None] * Wn)                      # diag(P_l) W_{l+1}
         for src in sources:
             src["Z"] = src["Z"] @ G                               # (n, n) or, rank-k, R = Q^T Z (k, n)
+        if cp is not None:
+            cp = tuple(F @ G for F in cp)
         w2 = (p / s)
         new = dict(s=l, w2=w2.astype(dtype), Z=Wn.copy(), SP=(S * P[None, :]), k4a=relu_k4(mu, v))
         if slices:
@@ -199,6 +250,15 @@ def run(W, window=None, slices=False, young=None, rank=None, edge=True, readout=
                         src["Yp"] = (src["SP"].astype(dtype) @ src["Z"])
                     else:
                         src["Yp"] = ((src["Yp"] @ G) @ U) @ U.T
+        # ---- CP merge of sources turning old (age > merge_young) into one rank-R state
+        if merge is not None:
+            keep = []
+            for src in sources:
+                if l + 1 - src["s"] > merge_young:
+                    cp = cp_merge(cp, src, merge, sweeps, dtype, mstats)
+                else:
+                    keep.append(src)
+            sources = keep
         # ---- D21 of z_{l+1}
         D21_prev = D21
         D = np.zeros((n, n), dtype=np.float64)
@@ -222,6 +282,9 @@ def run(W, window=None, slices=False, young=None, rank=None, edge=True, readout=
                 else:
                     Zs, Ts = Zf, T
                 D += (((Zs * Zs).T @ Ts) + 2 * ((Zs * Ts).T @ Zs)).astype(np.float64)
+        if cp is not None:
+            A_, B_, C_ = cp
+            D += ((((A_ * B_).T @ C_) + ((A_ * C_).T @ B_) + ((B_ * C_).T @ A_)) / 3).astype(np.float64)
         D21 = D
         if k4mf:
             import k4mf as KM

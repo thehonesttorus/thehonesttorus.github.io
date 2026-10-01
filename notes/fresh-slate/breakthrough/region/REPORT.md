@@ -341,3 +341,59 @@ second-order (hyperedge) birth diagrams. oracle1024's leg-partition closure take
   memoryless mean-field recursion, again a fresh-weight consequence.
 - **A self-contained, principled estimator at 3.0e-8 at n = 1024.** It is the strongest fresh design so far: the
   convergence dossier's best projection was ≈ 4–7e-7. Its cost gap is reduced to one explicitly stated object.
+
+## 8. Round 3 (coordinator's requests, 1 Oct ≈ 21:30 UTC)
+
+### 8.1 CP-merged old content inside FC (`fc.py` `merge=R`, `run_merge.py`, `results/merge_*.json`)
+
+**Setup.** At each layer, every source that turns old (age > 2) is folded into one CP state (A, B, C), each R × n, held
+in current-layer coordinates.
+- The fit is warm-started ALS on the implicit target: [transported CP] + [the source's Wick triplets
+  (w Y, Y, Z) ×3 permutations] + [its slice triplets (Z, Z, ΔZ) ×3]. The target therefore has N = R + 6n atoms.
+- Between merges the state is transported by G at 3R/n units. The D21 readout is symmetrised, 3 products of R/n.
+- Young sources (ages ≤ 2) and everything else are as in FC v2.
+- Merge price: each ALS sweep is 4 products of N × n × R per factor, i.e. 12 per sweep, plus 3 for the initial
+  projections. In units this is (products) × N R / n³.
+
+| R | ALS sweeps | MLPs | raw | vs unmerged FC (3.0e-8) | merge units (13 merges) | merge backend wall (numpy, 2 threads) |
+|---|---|---|---|---|---|---|
+| n/4 = 256 | 3 | 0 | 4.7e-7 | 15× | 790 | 9.6 s |
+| n/2 = 512 | 3 | 0 | 3.0e-7 | 9× | 1,638 | 25 s |
+| n = 1024 | 3 | all 6 | **2.02e-7 ± 0.10e-7** (1.75–2.40e-7) | 6.7× | 3,510 | 34–36 s |
+| n = 1024 | 8 | 0 | 1.8e-7 | 6× | 8,910 | 132 s |
+
+Readings:
+- **The ceiling is the rank, not the fitting.** Going from 3 to 8 sweeps at R = n changes raw by 6 %.
+- **Even a rank-n CP of the old third cumulant loses 6–7×.**
+- **The merge alone costs 790–3,510 units**, more than all of FC (≈ 855 products), because every merge must absorb the
+  new source's 6n atom-triplets.
+
+So the aggregated-CP branch of §6(a) is closed at n = 1024, on accuracy and on cost. Together with §5 (per-source
+bases, shared subspaces, pruning), every compression of the old content tried fails. The leaders' old content, if they
+carry it, is not a compressed version of this object.
+
+### 8.2 FC repriced under the quant judge's wall-feasible mix (judge/quant.md §1.2)
+
+**Product count from the code.**
+- 15 age-1 pairs × 6 products (Y = SΦW, ΔW, 4 contractions).
+- 105 older pairs × 7 products.
+- 30 for the covariance arrow.
+
+Total ≈ 855 products. Elementwise work is ≈ 5 u, kept off the product count.
+
+**Greedy upgrade at a 90 s backend budget.** All products are first raised dense → L1 → L2 → L3 (60.7 s, 581 u). The
+remaining 29 s raises 337 of them to L4. The result is **≈ 557 u = 0.544 B**.
+
+**Adjusted = 0.544 × 3.03e-8 = 1.65e-8 (score 5.8 on the judge's scale; 10× the bar).**
+
+| alternative | C/B | adjusted |
+|---|---|---|
+| 60 s budget, L3 only | 0.57 B | 1.72e-8 |
+| dense | 0.835 B | 2.5e-8 |
+
+**Residual-cap condition.** The mix is feasible only if each layer's products are batched into ≤ 4 Strassen families
+(≈ 180 calls per layer at L3). Unbatched L3 would be ≈ 39k calls.
+
+**The raw an all-age FC would need to beat the bar at this price: ≤ 2.9e-9**, i.e. 10× below its present 3.0e-8 and
+2.5× above EscAI's exact-moment oracle. The hyperedge lever (§5) is predicted to reach ≈ 1e-8, not 3e-9. So FC stays a
+reference for accuracy and information, not a submission path.
