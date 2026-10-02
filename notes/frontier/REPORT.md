@@ -106,3 +106,33 @@ Per-MLP raw change of `pkg/` against V29 (MLPs 0–5): −4.7 / −50 (MLP 1's r
 - *Our evidence so far.* The single hyperedge scale (×1.5, mostly from the shallow layers) is the one-parameter shadow of this (−3.5 % raw).
 - *What doing it properly needs.* True per-layer D21 slices at width 1024, to fit the per-layer diagram coefficients (including diagrams V29 drops, e.g. the (2,2) hyperedge WK22), plus true marginals for the oracle attribution.
 - *Where that data is.* Both are in the N = 1e9 HF moments (`pre_M21`, `pre_m2..4`). The fetch and run scripts are ready (`oracle/fetch_full.py`, `oracle/run_full.py`), pending network access to huggingface.co.
+
+## 6. Where the remaining error lives (per-layer truth on dev MLP 0, `d21/`)
+
+**Method.**
+- Split-half MC truth (2 × 2^19 samples) for every layer's D21 slices, marginal κ3 and variances (`d21/mc_d21.py`).
+- Unbiased error norms ⟨D − D_A, D − D_B⟩ / ⟨D_A, D_B⟩ (`d21/cmp2.py`).
+- Estimator internals recorded per layer through V29's debug hook. A copy per layer is needed because the pooled buffers alias (`d21/est_rec_*.py`).
+
+**Per-layer relative D21 (off-diagonal) error.**
+
+| layer | 2 | 4 | 6 | 8 | 10 | 12 | 14 |
+|---|---|---|---|---|---|---|---|
+| V29 | 3.2 % | 4.1 % | 4.7 % | 5.1 % | 5.8 % | 6.3 % | 6.7 % |
+| best estimator | 3.2 % | 4.0 % | 4.5 % | 4.9 % | 5.5 % | 5.8 % | 6.6 % |
+| best, thin ranks 64 | 3.0 % | 3.8 % | 4.3 % | 4.7 % | 5.3 % | 5.6 % | 6.4 % |
+
+- The best overall rescaling stays within 1.00–1.03, so the error is in the slice's shape, not its size.
+- Marginal κ3 errors are 1–5 %. Variance errors stay below 1.4e-3 relative.
+- The atlas model raw ≈ 4.2e-6 × ε² gives 1.8e-8 at ε = 6.6 %, against the measured 1.88e-8 on this MLP.
+
+**Reading.**
+- At layer 2 the inputs are exact: layer 1 is exact and every source is carried densely. So the 3.2 % there is pure **birth-closure** error, i.e. the first-order Edgeworth/diagram closure of κ3(a) given z's cumulants. It accumulates with depth.
+- Old-tier compression and thin-leg rank are minor (rank 64 recovers only 0.2 points).
+- A per-layer linear-response fit of the three existing birth knobs (hyperedge, λ, feed) against the true slices lowers ε only modestly (layer 14: 6.6 → 5.5 %). Its λ direction conflicts with the raw optimum (λ also feeds the κ4 readout, i.e. cancellation).
+
+**The path this identifies (multi-hour build).**
+- Renormalise the birth closure itself: per-layer coefficients on every first-order diagram, including the two V29 drops (the ρ³ Gaussian term and the (2,2)-slice hyperedge WK22). Fit them against true slices layer by layer, starting at layer 2, where the closure is the only error source.
+- The width-128 atlas did exactly this at the tensor level: residual 4–6 % → 1.4–2.3 %.
+- Halving ε would cut raw by ≈ 4× (raw ∝ ε²). That is the only lever found that reaches the leaders, and it costs nothing at evaluation time.
+- Doing it robustly needs per-layer truth on many networks: our MC costs ≈ 20 min per network here, while the HF N = 1e9 moments include `pre_M21` for 1,000 networks.
