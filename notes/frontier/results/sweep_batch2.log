@@ -1,0 +1,8 @@
+{"cfg": "strassen6", "error": "[Errno 2] No such file or directory: '/home/user/thehonesttorus.github.io/notes/frontier/results/sw_strassen6.json'"}
+{"cfg": "noconfine", "error": "[Errno 2] No such file or directory: '/home/user/thehonesttorus.github.io/notes/frontier/results/sw_noconfine.json'"}
+{"cfg": "qpass2", "n_ok": 3, "raw": 1.419154295829895e-08, "raws": [1.8727, 0.3485, 2.0362], "cb": 0.2742, "adjusted": 3.891795924214403e-09, "min": 4.8}
+{"cfg": "rfb32", "n_ok": 3, "raw": 1.4423921573119653e-08, "raws": [1.9354, 0.3488, 2.043], "cb": 0.269, "adjusted": 3.880260071325652e-09, "min": 4.8}
+{"cfg": "rfb8_rres8", "n_ok": 3, "raw": 1.502949680042187e-08, "raws": [1.9594, 0.4394, 2.1101], "cb": 0.2425, "adjusted": 3.645367764015826e-09, "min": 4.8}
+{"cfg": "lam100", "n_ok": 3, "raw": 1.4827315439596472e-08, "raws": [1.9537, 0.4134, 2.0811], "cb": 0.254, "adjusted": 3.765607247182473e-09, "min": 4.7}
+{"cfg": "age2nd5_r2_192", "n_ok": 3, "raw": 1.976726088094231e-08, "raws": [2.2523, 1.282, 2.3958], "cb": 0.2405, "adjusted": 4.753320906226098e-09, "min": 4.9}
+SWEEP_DONE
