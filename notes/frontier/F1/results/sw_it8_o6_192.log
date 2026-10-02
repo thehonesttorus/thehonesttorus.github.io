@@ -1,0 +1,29 @@
+/home/user/thehonesttorus.github.io/notes/frontier/F1/../F1/est_incj.py:813: FlopscopeWarning: stats.norm.pdf promoted its float32 input to float64 to match scipy.stats. If float64 output was not intended, cast the result back with result.astype(np.float32) before downstream operations; float64 operations are billed at twice the float32 dtype rate.
+  flops.stats.norm.pdf(v)
+/home/user/thehonesttorus.github.io/notes/frontier/F1/../F1/est_incj.py:814: FlopscopeWarning: stats.norm.cdf promoted its float32 input to float64 to match scipy.stats. If float64 output was not intended, cast the result back with result.astype(np.float32) before downstream operations; float64 operations are billed at twice the float32 dtype rate.
+  flops.stats.norm.cdf(v)
+/home/user/thehonesttorus.github.io/notes/frontier/F1/../F1/est_incj.py:828: SymmetryLossWarning: Symmetry lost along dims (1, 2): slicing removed all symmetric dim groups. Use as_symmetric() to re-tag if you know the result is symmetric. Suppress with flops.configure(symmetry_warnings=False).
+  fnp.einsum("tij,ti,tj,tg->gij", t3, t3[:, :, 0], t3[:, 0, :], g3)
+/home/user/thehonesttorus.github.io/notes/frontier/F1/../F1/est_incj.py:829: SymmetryLossWarning: Symmetry lost along dims (1, 2): slicing removed all symmetric dim groups. Use as_symmetric() to re-tag if you know the result is symmetric. Suppress with flops.configure(symmetry_warnings=False).
+  fnp.einsum("ti,ti,tg->gi", t3[:, :, 0], t3[:, :, 1], g3)
+/home/user/thehonesttorus.github.io/notes/frontier/F1/../F1/est_incj.py:830: SymmetryLossWarning: Symmetry lost along dims (0, 1): slicing removed all symmetric dim groups. Use as_symmetric() to re-tag if you know the result is symmetric. Suppress with flops.configure(symmetry_warnings=False).
+  fnp.einsum("iq,kqn->kin", m[:, :16], t3[:, :16, :])
+/home/user/thehonesttorus.github.io/notes/frontier/F1/../F1/est_incj.py:830: SymmetryLossWarning: Symmetry lost along dims (1, 2): slicing removed all symmetric dim groups. Use as_symmetric() to re-tag if you know the result is symmetric. Suppress with flops.configure(symmetry_warnings=False).
+  fnp.einsum("iq,kqn->kin", m[:, :16], t3[:, :16, :])
+/home/user/thehonesttorus.github.io/notes/frontier/F1/../F1/est_incj.py:831: SymmetryLossWarning: Symmetry lost along dims (1, 2): slicing removed all symmetric dim groups. Use as_symmetric() to re-tag if you know the result is symmetric. Suppress with flops.configure(symmetry_warnings=False).
+  fnp.einsum("ki,kc->ic", t3[:, :, 0], t3[:, :, 1])
+/home/user/thehonesttorus.github.io/notes/frontier/F1/../F1/est_incj.py:833: SymmetryLossWarning: Symmetry lost along dims (1, 2): slicing removed all symmetric dim groups. Use as_symmetric() to re-tag if you know the result is symmetric. Suppress with flops.configure(symmetry_warnings=False).
+  fnp.einsum("kij,kj->ki", t3, t3[:, 0, :])
+/home/user/thehonesttorus.github.io/notes/frontier/F1/../F1/est_incj.py:834: SymmetryLossWarning: Symmetry lost along dims (1, 2): slicing removed all symmetric dim groups. Use as_symmetric() to re-tag if you know the result is symmetric. Suppress with flops.configure(symmetry_warnings=False).
+  fnp.einsum("ki,ki->i", t3[:, :, 0], t3[:, :, 1])
+/home/user/thehonesttorus.github.io/notes/frontier/F1/../F1/est_incj.py:835: SymmetryLossWarning: Symmetry lost along dims (1, 2): slicing removed all symmetric dim groups. Use as_symmetric() to re-tag if you know the result is symmetric. Suppress with flops.configure(symmetry_warnings=False).
+  fnp.einsum("kij,kqj->iq", t3, t3[:, :16, :])
+setup 0.08s
+/home/user/thehonesttorus.github.io/notes/frontier/F1/../F1/est_incj.py:1299: FlopscopeWarning: stats.norm.pdf promoted its float32 input to float64 to match scipy.stats. If float64 output was not intended, cast the result back with result.astype(np.float32) before downstream operations; float64 operations are billed at twice the float32 dtype rate.
+  phi = flops.stats.norm.pdf(alpha).astype(f32)
+/home/user/thehonesttorus.github.io/notes/frontier/F1/../F1/est_incj.py:1300: FlopscopeWarning: stats.norm.cdf promoted its float32 input to float64 to match scipy.stats. If float64 output was not intended, cast the result back with result.astype(np.float32) before downstream operations; float64 operations are billed at twice the float32 dtype rate.
+  Phi = flops.stats.norm.cdf(alpha).astype(f32)
+{"mlp": 0, "ok": true, "cb": 0.24546199965243432, "mse": 6.243097729820518e-08, "raw": 1.870962968833481e-08, "adjusted": 4.592503116055214e-09, "all_layers": 1.2656100443995149e-07, "wall": 77.62791323661804, "residual": 0.45143648796511116}
+{"mlp": 1, "ok": true, "cb": 0.23218624175478908, "mse": 4.7661136526190475e-08, "raw": 5.032395325757528e-09, "adjusted": 1.1684529577120079e-09, "all_layers": 1.1499588945569827e-07, "wall": 102.99732398986816, "residual": 0.4630159689450011}
+{"mlp": 2, "ok": true, "cb": 0.23078132861246559, "mse": 5.838311902985717e-08, "raw": 2.2809887810493346e-08, "adjusted": 5.264096214406938e-09, "all_layers": 1.2888322148623117e-07, "wall": 96.31579947471619, "residual": 0.4557953470812208}
+SUMMARY w1024_d16: 3/3 ok, raw 1.5517e-08, C/B max 0.2455, adjusted 3.6750e-09, residual max 0.463s, wall max 103.0s
