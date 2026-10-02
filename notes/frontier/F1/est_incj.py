@@ -355,6 +355,7 @@ INCJ = _os.environ.get("F1_INCJ", "1") == "1"   # F1: incremental join (exact-co
 JS = int(_os.environ.get("F1_JS", "64"))         # F1: residual sketch width
 JPASS = int(_os.environ.get("F1_JPASS", "2"))    # F1: subspace passes on the (r+s) core
 JEIG = _os.environ.get("F1_JEIG", "0") == "1"     # F1: exact eigh instead of subspace passes
+FB_SCALE = float(_os.environ.get("H_FB_SCALE", "1.0"))  # coordinator E3: D21-feedback hyperedge scale
 T2EIG = _os.environ.get("F1_T2EIG", "0") == "1"  # F1: exact eigh for the tier-2 sub-basis
 NO_SRC_LAST = _os.environ.get("V19_NO_SRC_LAST", "0") == "1"  # V19 probe: D3(last) := 0, skip source transports
 # The V16b CORR_BETA mean rider was ridge-fitted on V16b's OWN trajectory and is
@@ -1438,9 +1439,9 @@ class Estimator(BaseEstimator):
                 Qf, _ = fnp.linalg.qr(Yf)
                 Bf = Qf.T @ D21                       # D21 ~= Qf @ Bf
                 F1_b = (w2)[:, None] * Qf            # Xt = F1 R1, R1 = 1.5 Bf
-                R1T_b = Bf.T * 1.5                              # (n, rfb) = R1^T
+                R1T_b = Bf.T * (1.5 * FB_SCALE)                 # (n, rfb) = R1^T   (coordinator H: scaled hyperedge)
                 F2_b = w1col * Bf.T                             # Yt = F2 R2, R2 = 0.5 Qf^T d(w3)
-                R2T_b = Qf * (w3 * 0.5)[:, None]     # (n, rfb) = R2^T
+                R2T_b = Qf * (w3 * (0.5 * FB_SCALE))[:, None]     # (n, rfb) = R2^T
                 Xt_b = fnp.matmul(F1_b, R1T_b.T, out=NN("xtb"))
                 Yt_b = fnp.matmul(F2_b, R2T_b.T, out=NN("ytb"))
                 X1_b = fnp.multiply(a_b, 3.0, out=NN("x1b"))
