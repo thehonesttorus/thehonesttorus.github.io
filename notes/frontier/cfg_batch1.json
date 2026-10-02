@@ -1,0 +1,10 @@
+{
+ "base": {"env": {}},
+ "ageold3": {"env": {"V21_AGE_OLD": 3}},
+ "ageold3_r448": {"env": {"V21_AGE_OLD": 3, "V21_R_OLD": 448}},
+ "age2nd6": {"env": {"V24_AGE_OLD2": 6}},
+ "r2_192": {"env": {"V24_R_OLD2": 192}},
+ "age2nd6_r2_192": {"env": {"V24_AGE_OLD2": 6, "V24_R_OLD2": 192}},
+ "r352": {"env": {"V21_R_OLD": 352}},
+ "ageold2_r512": {"env": {"V21_AGE_OLD": 2, "V21_R_OLD": 512}}
+}
