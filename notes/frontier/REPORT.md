@@ -68,7 +68,16 @@
 |---|---|---|---|---|
 | V29r3 (base) | 1.7576e-8 | 0.2526 | 4.44e-9 | — |
 | syn_rfb8: incj + R_FB 8 + hyperedge ×1.5 + LAM 0.80 + Strassen L6 | 1.7086e-8 (−2.8 %) | 0.2302 | 3.93e-9 | **−11.4 %** |
-| pkg/estimator.py: same, LAM 0.95 (defaults baked in, no env) | pending | | | |
+| **pkg/estimator.py**: incj + R_FB 8 + hyperedge ×1.5 + Strassen L6 (LAM 0.95, defaults baked in, no env) | **1.7005e-8 (−3.2 %)** | **0.2302** | **3.92e-9** | **−11.8 %** |
+| pkg5/estimator.py: same with upstream Strassen L5 (residual-safe variant) | 1.7016e-8 (−3.2 %) | 0.2435 | 4.14e-9 | −6.7 % |
+
+Per-MLP raw change of `pkg/` against V29 (MLPs 0–5): −4.7 / −50 (MLP 1's raw is near zero, so its relative change is large) / −5.7 / −1.1 / +2.4 / +0.5 %.
+
+**Grader-harness check, and a caveat.**
+- `run_p.py` (`whest run --runner subprocess`, graded caps) on this 4-core container cannot reproduce the grader. On it even the base V29r3 fails all 6 MLPs: residual 0.46–0.48 s against the 0.4 s cap, two worker EOFs, walls 88–109 s. The submission stream had measured 0.29 s residual on an idle machine with its grader emulator.
+- Paired against base on the same machine, `pkg/` (Strassen L6) raises the residual by ≈ 10–15 % (0.52–0.54 s on the MLPs that completed) and the wall to 105–112 s. Its first predict also timed out once.
+- L6 adds many small ops, so it eats into the residual and wall margins. Treat `pkg/` as needing a grader-emulator check (`notes/streams/submission/scripts/grader_emul.py`) on an idle machine before any upload.
+- `pkg5/` keeps upstream L5 and so V29's residual profile.
 
 ## 4. What this means
 
