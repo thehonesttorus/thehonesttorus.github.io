@@ -368,6 +368,7 @@ BETA = float(_os.environ.get("V25_BETA", "1.0"))
 # H (frontier E3): scale of the D21-feedback hyperedge [D21 x C] per layer (renormalised first-order diagram)
 FB_SCALE = [float(x) for x in _os.environ.get("H_FB_SCALE", "1.0").split(",")]
 FB_GAMMA = float(_os.environ.get("H_FB_GAMMA", "0.0"))
+RES_SCALE = float(_os.environ.get("H_RES_SCALE", "1.0"))  # H (E3): scale of the rank-R_RES (2,1)-slice residual
 DEBUG = []  # parity_v17.py: per-layer dict of diagnostics when V17_DEBUG=1
 
 # pruned V16b table + the 4 (3,1)-slice use-side terms
@@ -1565,7 +1566,7 @@ class Estimator(BaseEstimator):
             # V27: Rr into a persistent (n, r+2) buffer (read by next layer's W @ Rr);
             # Lr written straight into its stack slot k (static, never transported).
             Rr_full = pool.get("rr", (n, r + 2))
-            fnp.multiply(Bm.T, 3.0, out=Rr_full[:, :r])
+            fnp.multiply(Bm.T, 3.0 * RES_SCALE, out=Rr_full[:, :r])   # H (E3): scaled slice residual
             fnp.copyto(Rr_full[:, r], u_b)
             fnp.copyto(Rr_full[:, r + 1], y_b)
             # slot of the source born here = number of sources present at this layer
