@@ -1,2 +1,5 @@
 {"cfg": "incj_base", "n_ok": 3, "raw": 1.3619066203191935e-08, "raws": [1.8766, 0.2253, 1.9838], "cb": 0.2521, "adjusted": 3.43372434017783e-09, "min": 4.9}
 {"cfg": "thin8", "n_ok": 3, "raw": 1.502949680042187e-08, "raws": [1.9594, 0.4394, 2.1101], "cb": 0.2425, "adjusted": 3.645367764015826e-09, "min": 4.9}
+{"cfg": "incj_r320_o2_160", "error": "[Errno 2] No such file or directory: '/home/user/thehonesttorus.github.io/notes/frontier/F1/results/sw_incj_r320_o2_160.json'"}
+{"cfg": "a3_r384_o6_160", "n_ok": 3, "raw": 2.2397649194683886e-08, "raws": [2.2722, 1.1852, 3.2619], "cb": 0.2338, "adjusted": 5.2367694599192365e-09, "min": 4.5}
+SWEEP_DONE

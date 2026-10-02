@@ -1041,8 +1041,7 @@ class Estimator(BaseEstimator):
                         Sfull = Sg if kb == 0 else Sg + U @ (S2 @ U.T)
                         So = Ro @ (Sfull @ Ro.T)
                         SE = FAE @ (dAj * FAE.T) + FPE @ (dPj * FPE.T)
-                        SE = SE + fnp.concatenate([fnp.concatenate([So, fnp.zeros((r_old, JS), dtype=f32) * 0.0], axis=1),
-                                                   fnp.zeros((JS, r_old + JS), dtype=f32) * 0.0], axis=0)
+                        fnp.add(SE[:r_old, :r_old], So, out=SE[:r_old, :r_old])
                         if JEIG:
                             _ev, _vv = fnp.linalg.eigh(SE)
                             V = fnp.copy(_vv[:, JS:])

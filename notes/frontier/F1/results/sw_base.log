@@ -18,12 +18,8 @@
   fnp.einsum("ki,ki->i", t3[:, :, 0], t3[:, :, 1])
 /home/user/thehonesttorus.github.io/notes/frontier/F1/../estimator_v29r3.py:829: SymmetryLossWarning: Symmetry lost along dims (1, 2): slicing removed all symmetric dim groups. Use as_symmetric() to re-tag if you know the result is symmetric. Suppress with flops.configure(symmetry_warnings=False).
   fnp.einsum("kij,kqj->iq", t3, t3[:, :16, :])
-setup 0.05s
+setup 0.04s
 /home/user/thehonesttorus.github.io/notes/frontier/F1/../estimator_v29r3.py:1253: FlopscopeWarning: stats.norm.pdf promoted its float32 input to float64 to match scipy.stats. If float64 output was not intended, cast the result back with result.astype(np.float32) before downstream operations; float64 operations are billed at twice the float32 dtype rate.
   phi = flops.stats.norm.pdf(alpha).astype(f32)
 /home/user/thehonesttorus.github.io/notes/frontier/F1/../estimator_v29r3.py:1254: FlopscopeWarning: stats.norm.cdf promoted its float32 input to float64 to match scipy.stats. If float64 output was not intended, cast the result back with result.astype(np.float32) before downstream operations; float64 operations are billed at twice the float32 dtype rate.
   Phi = flops.stats.norm.cdf(alpha).astype(f32)
-{"mlp": 0, "ok": true, "cb": 0.24455667356687627, "mse": 6.64433011221759e-08, "raw": 2.272195351230553e-08, "adjusted": 5.556805367910641e-09, "all_layers": 1.2838415611381156e-07, "wall": 76.05514693260193, "residual": 0.4803397740015498}
-{"mlp": 1, "ok": true, "cb": 0.23380888835254154, "mse": 5.448025940824218e-08, "raw": 1.1851518207809235e-08, "adjusted": 2.7709902974577827e-09, "all_layers": 1.178141639957525e-07, "wall": 98.94576001167297, "residual": 0.5147251329998426}
-{"mlp": 2, "ok": true, "cb": 0.23287547402742348, "mse": 6.819270708330072e-08, "raw": 3.261947586393689e-08, "adjusted": 7.596275904340403e-09, "all_layers": 1.3203491645737417e-07, "wall": 87.8710789680481, "residual": 0.4888499290029813}
-SUMMARY w1024_d16: 3/3 ok, raw 2.2398e-08, C/B max 0.2446, adjusted 5.3080e-09, residual max 0.515s, wall max 98.9s
