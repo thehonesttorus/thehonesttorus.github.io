@@ -16,6 +16,8 @@ On all 6 MLPs it reaches **dev adjusted 3.86e-9**, against 4.46e-9 for base: **�
 | knob stack, no incj (thin 8/8, FB 1.5, LAM 0.80, L6) | 1.924 0.317 2.079 1.096 2.584 2.465 | 1.744e-8 | 0.2307 | 4.024e-9 | −9.9 % |
 | coordinator syn_rfb8 (incj JS64 JPASS2, R_FB 8, FB, LAM, L6) | 1.845 0.151 1.971 1.062 2.599 2.624 | 1.709e-8 | 0.2328 | 3.977e-9 | −10.9 % |
 | incj JS32 JPASS1, R_FB 8, R_RES 16, FB, LAM, L6 | 1.858 0.121 1.955 1.081 2.697 2.659 | 1.728e-8 | 0.2284 | 3.947e-9 | −11.6 % |
+| final + AGE_OLD2 6 | 1.886 0.260 2.220 1.016 2.786 2.550 | 1.786e-8 | 0.2215 | 3.957e-9 | −11.4 % |
+| final + R_FB 4 | 1.867 0.180 2.017 1.072 2.752 2.620 | 1.752e-8 | 0.2207 | 3.866e-9 | −13.4 % |
 | **incj JS32 JPASS1, thin 8/8, FB 1.5, LAM 0.80, L6 (= est_F1_final)** | 1.877 0.124 1.960 1.038 2.720 2.594 | **1.719e-8** | **0.2245** | **3.859e-9** | **−13.6 %** |
 
 The final stack combines:
@@ -24,6 +26,10 @@ The final stack combines:
 - From the coordinator: D21-feedback hyperedge ×1.5, LAM scale 0.80, and Strassen L6 with 16-leaves.
 
 Base MLPs 3–5 come from the coordinator's `sw_base_345.json`.
+
+Checks:
+- `est_F1_final.py` reproduces the env run bit for bit on MLPs 0–1 (`results/final_identity_m01.json`).
+- The grader smoke shape w256_d32 runs the fallback path: 2/2 finite, C/B 0.002, residual 0.016 s (`results/smoke_w256_d32.json`).
 
 ## The F1 code change: incremental exact-core join (`est_incj.py`)
 
