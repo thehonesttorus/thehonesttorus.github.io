@@ -1,0 +1,4 @@
+{
+ "fin_o6_6": {"estimator": "F1/est_F1_final.py", "env": {"V24_AGE_OLD2": 6}},
+ "fin_rfb4_6": {"estimator": "F1/est_F1_final.py", "env": {"F1_RFB": 4}}
+}
