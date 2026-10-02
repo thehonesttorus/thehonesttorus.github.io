@@ -23,3 +23,7 @@ setup 0.10s
   phi = flops.stats.norm.pdf(alpha).astype(f32)
 /home/user/thehonesttorus.github.io/notes/frontier/estimator_fbs.py:1257: FlopscopeWarning: stats.norm.cdf promoted its float32 input to float64 to match scipy.stats. If float64 output was not intended, cast the result back with result.astype(np.float32) before downstream operations; float64 operations are billed at twice the float32 dtype rate.
   Phi = flops.stats.norm.cdf(alpha).astype(f32)
+{"mlp": 0, "ok": true, "cb": 0.2670561966870082, "mse": 6.343059430095055e-08, "raw": 1.9709246691080173e-08, "adjusted": 5.2634764608858724e-09, "all_layers": 1.264674641030137e-07, "wall": 92.2844717502594, "residual": 0.48428267999361196}
+{"mlp": 1, "ok": true, "cb": 0.2539641961839152, "mse": 4.7106895235413553e-08, "raw": 4.478154034980606e-09, "adjusted": 1.137290789881606e-09, "all_layers": 1.1494302776758129e-07, "wall": 104.16634058952332, "residual": 0.495451152966325}
+{"mlp": 2, "ok": true, "cb": 0.2525592830415917, "mse": 5.6605416145245474e-08, "raw": 2.1032184925881648e-08, "adjusted": 5.311873545678842e-09, "all_layers": 1.2838014868100265e-07, "wall": 101.63508915901184, "residual": 0.4601071009747102}
+SUMMARY w1024_d16: 3/3 ok, raw 1.5073e-08, C/B max 0.2671, adjusted 3.9042e-09, residual max 0.495s, wall max 104.2s

@@ -61,3 +61,33 @@ User direction (2 Oct, 09:40 UTC): take the frontier approaches and understand t
   - Ages 1–2: ≈ 5–7 u per layer, ≈ 75–100 u in total. Affordable only once the K3 bill is cut (F1, F2).
 - **EscAI's oracle** points the same way. True per-layer marginals (variance, κ3, joint κ4) give 20× in raw, and variance alone −40 %. By the fresh-weight lemma, per-neuron variance errors are random quadratic forms of the full post-activation covariance error, which the missing κ4 (2,2) and (3,1) content feeds through the bivariate closure.
 - **Status:** not attempted today; the reward gain from cost is larger and surer at the floor (see E1, F1, F2).
+
+## 5. The up-down involution on the age tree (Pearson–Bellissard), and what it says about V29 (2 Oct, 10:50 UTC)
+
+Spark from the user (the other chat's Pearson–Bellissard / Lapidus note), transplanted to the age axis:
+
+- **The tree and F.** The Cantor set of histories is the age tree (ages = cylinder depth). F swaps two siblings at each vertex, F² = 1, and [F, f] is the Haar detail of the readout f along the tree, i.e. the change in the estimate when one more age is resolved separately instead of merged with its sibling.
+- **Dixmier trace = measure.** The Dixmier trace at the critical exponent is the measure, here the 1/a density on ages (team G's score optimum). So the score-optimal resolution of an age block is proportional to its measure, log(a_end / a_start).
+- **Self-similar string.** Fibonacci blocks [F_k, F_{k+1}) all have measure → log φ, so they form a self-similar string of ratio φ, with equal Dixmier weight per block and per-source rank ∝ 1/a. Team E found the memory's age-graded rank class to be Fibonacci/Penrose.
+
+**What this explains in the frontier.** V29's empirically tuned old tiers *are* this string:
+
+| tier | ages | V29 rank | Dixmier c·n/a at c = 2.2, block average |
+|---|---|---|---|
+| 1 | 5–7 | 384 | ≈ 382 |
+| 2 | 8–12 (sources older than 7 transports) | 224 | ≈ 220 |
+
+- The tier boundaries are Fibonacci ages and the ranks are Dixmier ranks with one constant, c ≈ 2.2.
+- The young ages 1–4 stay dense. Dixmier would give 751 / 563 at ages 3 / 4, but a per-source frame costs ≈ 7k/n dense products per layer against 4 dense ones (the Hadamard wall), so it does not pay above k ≈ 585.
+- **The next block** is ages 13+ at k ≈ 160 (passed to F2). Depth 16 contains only one decade of age, so deeper blocks are worth little here: the Lapidus oscillations (complex dimensions 2πik/log φ) need several periods of log-age to matter.
+- **Haar sparsity ("sharing").** [F, f] vanishing across siblings is the statement that a cohort can be merged without loss. F2's cohort Tucker core is that quotient-tree carrier, and it is exact (the core is additive), so its only approximation is the basis.
+
+**E3 probe (the [D21 ⊗ C] hyperedge, the "refinement by one more layer" term of the newborn).**
+- *Setup.* V29 carries it at rank 16 with first-order coefficients. Scaling it by s at birth (`estimator_fbs.py`, H_FB_SCALE), MLPs 0–2, zero cost.
+
+  | s | 0.8 | 1.0 | 1.2 | 1.5 | 2.0 |
+  |---|---|---|---|---|---|
+  | raw (×1e-8) | 1.507 | 1.467 | 1.430 | **1.409 (−4.0 %)** | 1.432 |
+
+- *Reading.* Rank truncation loses energy, and depth renormalises the first-order coefficient (competition-plan atlas: the D21 diagram coefficients drift with depth).
+- *Principled form, no fitted constant.* Rescale the captured part by its own truncated energy, (‖D21‖_F / ‖Q_f B_f‖_F)^γ at n² cost. Running as `fbg050` / `fbg100`.

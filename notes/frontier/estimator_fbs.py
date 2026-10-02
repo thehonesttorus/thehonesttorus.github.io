@@ -367,6 +367,7 @@ REF_R = [6.58815e-03, 8.18414e-03, 8.53136e-03, 8.38859e-03, 8.10153e-03, 7.7428
 BETA = float(_os.environ.get("V25_BETA", "1.0"))
 # H (frontier E3): scale of the D21-feedback hyperedge [D21 x C] per layer (renormalised first-order diagram)
 FB_SCALE = [float(x) for x in _os.environ.get("H_FB_SCALE", "1.0").split(",")]
+FB_GAMMA = float(_os.environ.get("H_FB_GAMMA", "0.0"))
 DEBUG = []  # parity_v17.py: per-layer dict of diagnostics when V17_DEBUG=1
 
 # pruned V16b table + the 4 (3,1)-slice use-side terms
@@ -1396,9 +1397,17 @@ class Estimator(BaseEstimator):
                 Qf, _ = fnp.linalg.qr(Yf)
                 Bf = Qf.T @ D21                       # D21 ~= Qf @ Bf
                 F1_b = (w2)[:, None] * Qf            # Xt = F1 R1, R1 = 1.5 Bf
-                R1T_b = Bf.T * (1.5 * FB_SCALE[min(li, len(FB_SCALE) - 1)])   # H: scaled [D21 x C] hyperedge
+                # H (E3): energy-matched rank-rfb truncation of the [D21 x C] hyperedge: scale the
+                # captured part by (||D21||_F / ||Qf Bf||_F)^gamma (no fitted constant; n^2 work)
+                if FB_GAMMA != 0.0:
+                    _etot = fnp.sum(fnp.multiply(D21, D21, out=NN("fbtmp")))
+                    _ecap = fnp.sum(fnp.multiply(Bf, Bf))
+                    _fbr = float((_etot / fnp.maximum(_ecap, 1e-30)) ** (0.5 * FB_GAMMA))
+                else:
+                    _fbr = 1.0
+                R1T_b = Bf.T * (1.5 * _fbr * FB_SCALE[min(li, len(FB_SCALE) - 1)])   # H: scaled [D21 x C] hyperedge
                 F2_b = w1col * Bf.T                             # Yt = F2 R2, R2 = 0.5 Qf^T d(w3)
-                R2T_b = Qf * (w3 * (0.5 * FB_SCALE[min(li, len(FB_SCALE) - 1)]))[:, None]   # H: scaled
+                R2T_b = Qf * (w3 * (0.5 * _fbr * FB_SCALE[min(li, len(FB_SCALE) - 1)]))[:, None]   # H: scaled
                 Xt_b = fnp.matmul(F1_b, R1T_b.T, out=NN("xtb"))
                 Yt_b = fnp.matmul(F2_b, R2T_b.T, out=NN("ytb"))
                 X1_b = fnp.multiply(a_b, 3.0, out=NN("x1b"))
