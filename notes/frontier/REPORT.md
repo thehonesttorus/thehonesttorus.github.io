@@ -70,6 +70,7 @@
 | syn_rfb8: incj + R_FB 8 + hyperedge ×1.5 + LAM 0.80 + Strassen L6 | 1.7086e-8 (−2.8 %) | 0.2302 | 3.93e-9 | **−11.4 %** |
 | **pkg/estimator.py**: incj + R_FB 8 + hyperedge ×1.5 + Strassen L6 (LAM 0.95, defaults baked in, no env) | **1.7005e-8 (−3.2 %)** | **0.2302** | **3.92e-9** | **−11.8 %** |
 | pkg5/estimator.py: same with upstream Strassen L5 (residual-safe variant) | 1.7016e-8 (−3.2 %) | 0.2435 | 4.14e-9 | −6.7 % |
+| **F1/est_F1_final.py**: incj (JS 32, 1 pass) + thin 8/8 + hyperedge ×1.5 + LAM 0.80 + Strassen L6 (F1's 6-MLP finalist) | **1.719e-8 (−2.2 %)** | **0.2213** | **3.80e-9** | **−14.4 %** (−13.6 % in F1's convention, C/B = max over non-first MLPs) |
 
 Per-MLP raw change of `pkg/` against V29 (MLPs 0–5): −4.7 / −50 (MLP 1's raw is near zero, so its relative change is large) / −5.7 / −1.1 / +2.4 / +0.5 %.
 
