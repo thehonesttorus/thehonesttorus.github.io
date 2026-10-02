@@ -1,0 +1,2 @@
+{"feed070": {"estimator": "est_feed.py", "env": {"H_FEED_SCALE": "0.7"}},
+ "feed130": {"estimator": "est_feed.py", "env": {"H_FEED_SCALE": "1.3"}}}
