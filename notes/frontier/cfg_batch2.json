@@ -1,0 +1,42 @@
+{
+ "strassen6": {
+  "env": {
+   "V26_STRASSEN": 6,
+   "V26_STRASSEN_MIN": 16
+  }
+ },
+ "noconfine": {
+  "env": {
+   "V21_NO_CONFINE": 1
+  }
+ },
+ "qpass2": {
+  "env": {
+   "V21_QPASS": 2
+  }
+ },
+ "rfb32": {
+  "estimator": "estimator_wrap.py",
+  "env": {
+   "H_R_FB": 32
+  }
+ },
+ "rfb8_rres8": {
+  "estimator": "estimator_wrap.py",
+  "env": {
+   "H_R_FB": 8,
+   "H_R_RES": 8
+  }
+ },
+ "lam100": {
+  "env": {
+   "V17_LAM_SCALE": 1.0
+  }
+ },
+ "age2nd5_r2_192": {
+  "env": {
+   "V24_AGE_OLD2": 5,
+   "V24_R_OLD2": 192
+  }
+ }
+}

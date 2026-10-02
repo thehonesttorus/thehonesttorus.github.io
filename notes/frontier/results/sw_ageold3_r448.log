@@ -18,12 +18,12 @@
   fnp.einsum("ki,ki->i", t3[:, :, 0], t3[:, :, 1])
 /home/user/thehonesttorus.github.io/notes/frontier/estimator_v29r3.py:829: SymmetryLossWarning: Symmetry lost along dims (1, 2): slicing removed all symmetric dim groups. Use as_symmetric() to re-tag if you know the result is symmetric. Suppress with flops.configure(symmetry_warnings=False).
   fnp.einsum("kij,kqj->iq", t3, t3[:, :16, :])
-setup 0.05s
+setup 0.06s
 /home/user/thehonesttorus.github.io/notes/frontier/estimator_v29r3.py:1253: FlopscopeWarning: stats.norm.pdf promoted its float32 input to float64 to match scipy.stats. If float64 output was not intended, cast the result back with result.astype(np.float32) before downstream operations; float64 operations are billed at twice the float32 dtype rate.
   phi = flops.stats.norm.pdf(alpha).astype(f32)
 /home/user/thehonesttorus.github.io/notes/frontier/estimator_v29r3.py:1254: FlopscopeWarning: stats.norm.cdf promoted its float32 input to float64 to match scipy.stats. If float64 output was not intended, cast the result back with result.astype(np.float32) before downstream operations; float64 operations are billed at twice the float32 dtype rate.
   Phi = flops.stats.norm.cdf(alpha).astype(f32)
-{"mlp": 0, "ok": true, "cb": 0.2670561966870082, "mse": 6.314295847716993e-08, "raw": 1.9421610867299555e-08, "adjusted": 5.186661531756086e-09, "all_layers": 1.2638688323772883e-07, "wall": 120.1180477142334, "residual": 0.5439533000014762}
-{"mlp": 1, "ok": true, "cb": 0.2539641961839152, "mse": 4.64685683082663e-08, "raw": 3.83982710783335e-09, "adjusted": 9.751786049261047e-10, "all_layers": 1.1477391589759057e-07, "wall": 121.49570798873901, "residual": 0.6024178700001812}
-{"mlp": 2, "ok": true, "cb": 0.2525592830415917, "mse": 5.6309348863472384e-08, "raw": 2.0736117644108558e-08, "adjusted": 5.237099005262157e-09, "all_layers": 1.2812262612496723e-07, "wall": 112.70259690284729, "residual": 0.5346991929984597}
-SUMMARY w1024_d16: 3/3 ok, raw 1.4666e-08, C/B max 0.2671, adjusted 3.7996e-09, residual max 0.602s, wall max 121.5s
+{"mlp": 0, "ok": true, "cb": 0.27955817888960155, "mse": 6.307984257981426e-08, "raw": 1.9358494969943892e-08, "adjusted": 5.411825599841026e-09, "all_layers": 1.267227787096623e-07, "wall": 79.53714537620544, "residual": 0.5206399249921105}
+{"mlp": 1, "ok": true, "cb": 0.26880059336781414, "mse": 4.6941197275504305e-08, "raw": 4.312456075071358e-09, "adjusted": 1.1591907518518159e-09, "all_layers": 1.1507265056914287e-07, "wall": 105.79931974411011, "residual": 0.5386734590153992}
+{"mlp": 2, "ok": true, "cb": 0.26792851222216996, "mse": 5.8228600073819513e-08, "raw": 2.2655368854455687e-08, "adjusted": 6.0700192710187994e-09, "all_layers": 1.2839428358708687e-07, "wall": 101.81884479522705, "residual": 0.5125732580054319}
+SUMMARY w1024_d16: 3/3 ok, raw 1.5442e-08, C/B max 0.2796, adjusted 4.2137e-09, residual max 0.539s, wall max 105.8s
