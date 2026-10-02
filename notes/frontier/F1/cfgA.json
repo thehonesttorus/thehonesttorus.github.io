@@ -1,0 +1,10 @@
+{
+ "a3_o5_192": {"env": {"V21_AGE_OLD": 3, "V24_AGE_OLD2": 5, "V24_R_OLD2": 192}},
+ "a2_r512_o4_192": {"env": {"V21_AGE_OLD": 2, "V21_R_OLD": 512, "V24_AGE_OLD2": 4, "V24_R_OLD2": 192}},
+ "a2_r448_o4_160": {"env": {"V21_AGE_OLD": 2, "V21_R_OLD": 448, "V24_AGE_OLD2": 4, "V24_R_OLD2": 160}},
+ "a3_r448_o5_160": {"env": {"V21_AGE_OLD": 3, "V21_R_OLD": 448, "V24_AGE_OLD2": 5, "V24_R_OLD2": 160}},
+ "thin8": {"estimator": "F1/est_thin.py", "env": {"F1_RFB": 8, "F1_RRES": 8}},
+ "a2_r384_o4_128": {"env": {"V21_AGE_OLD": 2, "V21_R_OLD": 384, "V24_AGE_OLD2": 4, "V24_R_OLD2": 128}},
+ "a3_r384_o6_160": {"env": {"V21_AGE_OLD": 3, "V24_AGE_OLD2": 6, "V24_R_OLD2": 160}},
+ "a2_r512_o5_224": {"env": {"V21_AGE_OLD": 2, "V21_R_OLD": 512, "V24_AGE_OLD2": 5, "V24_R_OLD2": 224}}
+}

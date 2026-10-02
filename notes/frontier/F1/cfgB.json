@@ -1,0 +1,6 @@
+{
+ "incj_base": {"estimator": "F1/est_incj.py", "env": {}},
+ "thin8": {"estimator": "F1/est_thin.py", "env": {"F1_RFB": 8, "F1_RRES": 8}},
+ "incj_r320_o2_160": {"estimator": "F1/est_incj.py", "env": {"V21_R_OLD": 320, "V24_R_OLD2": 160}},
+ "a3_r384_o6_160": {"env": {"V21_AGE_OLD": 3, "V24_AGE_OLD2": 6, "V24_R_OLD2": 160}}
+}

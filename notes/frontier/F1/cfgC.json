@@ -1,0 +1,8 @@
+{
+ "base": {"env": {}},
+ "incj_t2eig": {"estimator": "F1/est_incj.py", "env": {"F1_T2EIG": 1}},
+ "incj_thin8": {"estimator": "F1/est_incj.py", "env": {"F1_RFB": 8, "F1_RRES": 8}},
+ "incj_a3_o5_192": {"estimator": "F1/est_incj.py", "env": {"V21_AGE_OLD": 3, "V24_AGE_OLD2": 5, "V24_R_OLD2": 192}},
+ "incj_r256_o2_128": {"estimator": "F1/est_incj.py", "env": {"V21_R_OLD": 256, "V24_R_OLD2": 128}},
+ "incj_rfb8": {"estimator": "F1/est_incj.py", "env": {"F1_RFB": 8}}
+}
