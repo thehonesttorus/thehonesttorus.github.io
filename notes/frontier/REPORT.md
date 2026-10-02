@@ -88,3 +88,13 @@ Per-MLP raw change of `pkg/` against V29 (MLPs 0–5): −4.7 / −50 (MLP 1's r
   1. Per F2's measurement and the Hadamard wall, no transported-frame or core representation of the old content is cheap at depth 16. The old content is long-lived (1/a weight) and needs about 200 dimensions.
   2. The accuracy lever is the traceless (FREE) κ4 sector, concentrated in the youngest births.
 - A young-only FREE-κ4 carrier, paid for by the cost savings above, is the next concrete design. Not attempted today.
+
+## 5. Break-through attempts after the synthesis (2 Oct, afternoon)
+
+- **Radial (homogeneity) factorisation.**
+  - *The identity.* Bias-free ReLU nets satisfy F(x) = s·F(u), with s = ‖x‖/√n and u uniform on the √n-sphere, so E_x F = E[s]·E_u F exactly (E[s] = 1 − 2.44e-4 at n = 1024).
+  - *Link to costate.* Costate's dilation template (2μ⊗S + diag(S)⊗μ) is exactly the third-cumulant signature of this radial scale mixture (derived in `radial/fc_sphere.py`).
+  - *Test (in FC, MLPs 0–2).* The u-problem is seeded with the sphere's κ4, c = −2/(n+2) times the pairings, through FC's mean-field κ4 channel. **Negative** at full memory: raw 2.69e-8 → 4.99e-8. It reduces the dependence on old memory by 22 % (window 4: 7.9e-7 → 6.1e-7). Multiplying FC-x by E[s] again (double counting) gives 1e-7-level errors, confirming that the x-chain already carries the radial factor.
+- **Systematic-bias calibration** (`diag/analyse.py`, best estimator, 6 MLPs). Negative. The coherent bias is ≈ 0.5 % of each layer's MSE. A left-one-out affine final-layer calibration changes raw by +0.2 %, and constant-bias removal by −0.4 %. The residual is per-neuron: errors in the per-neuron variance, κ3 and κ4 marginals (EscAI: oracle marginals give 20×).
+- **Oracle harness ready.** `diag/estimator_oracle.py` teacher-forces chosen per-layer pre-activation marginals (μ, var, κ3, κ4) into the best estimator. A plumbing test at layer 0 reproduces the baseline: raw 1.8768e-8 against 1.8773e-8.
+- **Blocked on data.** Attribution needs per-layer truth far more precise than our dev set's (N = 2e6). The N = 1e9 per-layer moments of the 1,000 public `full` networks (keenanpepper/arc-whestbench-p2-full1000-N1e9, plus the weights from aicrowd/arc-whestbench-public-2026) are on huggingface.co, which this environment's network policy denies.
