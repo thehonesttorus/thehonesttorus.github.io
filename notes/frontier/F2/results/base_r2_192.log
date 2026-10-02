@@ -1,0 +1,29 @@
+/home/user/thehonesttorus.github.io/notes/fresh-slate/bench/../../frontier/F2/estimator_f2.py:820: FlopscopeWarning: stats.norm.pdf promoted its float32 input to float64 to match scipy.stats. If float64 output was not intended, cast the result back with result.astype(np.float32) before downstream operations; float64 operations are billed at twice the float32 dtype rate.
+  flops.stats.norm.pdf(v)
+/home/user/thehonesttorus.github.io/notes/fresh-slate/bench/../../frontier/F2/estimator_f2.py:821: FlopscopeWarning: stats.norm.cdf promoted its float32 input to float64 to match scipy.stats. If float64 output was not intended, cast the result back with result.astype(np.float32) before downstream operations; float64 operations are billed at twice the float32 dtype rate.
+  flops.stats.norm.cdf(v)
+/home/user/thehonesttorus.github.io/notes/fresh-slate/bench/../../frontier/F2/estimator_f2.py:835: SymmetryLossWarning: Symmetry lost along dims (1, 2): slicing removed all symmetric dim groups. Use as_symmetric() to re-tag if you know the result is symmetric. Suppress with flops.configure(symmetry_warnings=False).
+  fnp.einsum("tij,ti,tj,tg->gij", t3, t3[:, :, 0], t3[:, 0, :], g3)
+/home/user/thehonesttorus.github.io/notes/fresh-slate/bench/../../frontier/F2/estimator_f2.py:836: SymmetryLossWarning: Symmetry lost along dims (1, 2): slicing removed all symmetric dim groups. Use as_symmetric() to re-tag if you know the result is symmetric. Suppress with flops.configure(symmetry_warnings=False).
+  fnp.einsum("ti,ti,tg->gi", t3[:, :, 0], t3[:, :, 1], g3)
+/home/user/thehonesttorus.github.io/notes/fresh-slate/bench/../../frontier/F2/estimator_f2.py:837: SymmetryLossWarning: Symmetry lost along dims (0, 1): slicing removed all symmetric dim groups. Use as_symmetric() to re-tag if you know the result is symmetric. Suppress with flops.configure(symmetry_warnings=False).
+  fnp.einsum("iq,kqn->kin", m[:, :16], t3[:, :16, :])
+/home/user/thehonesttorus.github.io/notes/fresh-slate/bench/../../frontier/F2/estimator_f2.py:837: SymmetryLossWarning: Symmetry lost along dims (1, 2): slicing removed all symmetric dim groups. Use as_symmetric() to re-tag if you know the result is symmetric. Suppress with flops.configure(symmetry_warnings=False).
+  fnp.einsum("iq,kqn->kin", m[:, :16], t3[:, :16, :])
+/home/user/thehonesttorus.github.io/notes/fresh-slate/bench/../../frontier/F2/estimator_f2.py:838: SymmetryLossWarning: Symmetry lost along dims (1, 2): slicing removed all symmetric dim groups. Use as_symmetric() to re-tag if you know the result is symmetric. Suppress with flops.configure(symmetry_warnings=False).
+  fnp.einsum("ki,kc->ic", t3[:, :, 0], t3[:, :, 1])
+/home/user/thehonesttorus.github.io/notes/fresh-slate/bench/../../frontier/F2/estimator_f2.py:840: SymmetryLossWarning: Symmetry lost along dims (1, 2): slicing removed all symmetric dim groups. Use as_symmetric() to re-tag if you know the result is symmetric. Suppress with flops.configure(symmetry_warnings=False).
+  fnp.einsum("kij,kj->ki", t3, t3[:, 0, :])
+/home/user/thehonesttorus.github.io/notes/fresh-slate/bench/../../frontier/F2/estimator_f2.py:841: SymmetryLossWarning: Symmetry lost along dims (1, 2): slicing removed all symmetric dim groups. Use as_symmetric() to re-tag if you know the result is symmetric. Suppress with flops.configure(symmetry_warnings=False).
+  fnp.einsum("ki,ki->i", t3[:, :, 0], t3[:, :, 1])
+/home/user/thehonesttorus.github.io/notes/fresh-slate/bench/../../frontier/F2/estimator_f2.py:842: SymmetryLossWarning: Symmetry lost along dims (1, 2): slicing removed all symmetric dim groups. Use as_symmetric() to re-tag if you know the result is symmetric. Suppress with flops.configure(symmetry_warnings=False).
+  fnp.einsum("kij,kqj->iq", t3, t3[:, :16, :])
+setup 0.06s
+/home/user/thehonesttorus.github.io/notes/fresh-slate/bench/../../frontier/F2/estimator_f2.py:1416: FlopscopeWarning: stats.norm.pdf promoted its float32 input to float64 to match scipy.stats. If float64 output was not intended, cast the result back with result.astype(np.float32) before downstream operations; float64 operations are billed at twice the float32 dtype rate.
+  phi = flops.stats.norm.pdf(alpha).astype(f32)
+/home/user/thehonesttorus.github.io/notes/fresh-slate/bench/../../frontier/F2/estimator_f2.py:1417: FlopscopeWarning: stats.norm.cdf promoted its float32 input to float64 to match scipy.stats. If float64 output was not intended, cast the result back with result.astype(np.float32) before downstream operations; float64 operations are billed at twice the float32 dtype rate.
+  Phi = flops.stats.norm.cdf(alpha).astype(f32)
+{"mlp": 0, "ok": true, "cb": 0.2628521862470734, "mse": 6.271984891861732e-08, "raw": 1.8998501308746944e-08, "adjusted": 4.99379760442202e-09, "all_layers": 1.2631998538741247e-07, "wall": 95.69839596748352, "residual": 0.6298318979552278}
+{"mlp": 1, "ok": true, "cb": 0.24978051651578426, "mse": 4.715500990705347e-08, "raw": 4.526268706620524e-09, "adjusted": 1.130573735428905e-09, "all_layers": 1.1497247894974352e-07, "wall": 121.445636510849, "residual": 0.5740730789439112}
+{"mlp": 2, "ok": true, "cb": 0.24837560337346076, "mse": 5.72708246905375e-08, "raw": 2.1697593471173677e-08, "adjusted": 5.389152870154825e-09, "all_layers": 1.2845930407156337e-07, "wall": 111.84730958938599, "residual": 0.5524156149622286}
+SUMMARY w1024_d16: 3/3 ok, raw 1.5074e-08, C/B max 0.2629, adjusted 3.8378e-09, residual max 0.630s, wall max 121.4s

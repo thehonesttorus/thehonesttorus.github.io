@@ -365,7 +365,13 @@ REF_R = [6.58815e-03, 8.18414e-03, 8.53136e-03, 8.38859e-03, 8.10153e-03, 7.7428
          5.32459e-03, 5.05165e-03, 4.77181e-03]
 BETA = float(_os.environ.get("V25_BETA", "1.0"))
 CHECK3 = _os.environ.get("F2_CHECK", "0") == "1"        # F2: core vs dense-leg readout of the cohort
-CHECK3_EXACT = _os.environ.get("F2_EXACT", "0") == "1"  # F2: cohort basis = exact span (no truncation)
+CHECK3_EXACT = _os.environ.get("F2_EXACT", "0") == "1"
+DIAG3 = _os.environ.get("F2_DIAG", "0") == "1"
+# F2: choose the tier-1 basis optimal for the TRANSPORTED legs (this layer's readout):
+# range finder on W G (G = weighted leg Gram before the transport), Qc = qr(W G Om) directly,
+# coordinates through W^T Qc.  +1 (n,n)x(n,r) product per join, no W Qn product.
+POSTT = _os.environ.get("F2_POSTT", "0") == "1"
+DROP3 = _os.environ.get("F2_DROP", "0") == "1"   # F2 probe: the cohort's content is dropped (zero state)  # F2: cohort basis = exact span (no truncation)
 DEBUG = []  # parity_v17.py: per-layer dict of diagnostics when V17_DEBUG=1
 
 # pruned V16b table + the 4 (3,1)-slice use-side terms
@@ -1028,7 +1034,15 @@ class Estimator(BaseEstimator):
                 kc_t = kc
                 if cohort and not last:
                     kc_t = max(kc, min(kb, li - age3))
-                if kc_t > kc:
+                if kc_t > kc and DROP3:
+                    Sm = (FAP2[0, 0] @ ((dA_list[kc])[:, None] * FAP2[0, 0].T)) + (FAP2[0, 1] @ ((dP_list[kc])[:, None] * FAP2[0, 1].T))
+                    S2 = S2 - Sm
+                    FAP2 = FAP2[1:]
+                    fa2_off += 1
+                    FA2 = FAP2[:, 0]
+                    FP2 = FAP2[:, 1]
+                    kc = kc_t
+                elif kc_t > kc:
                     assert kc_t == kc + 1 and kb > kc, (li, kc, kb)
                     w1c = (w1_prev)[:, None]
                     FA2s = FAP2[0, 0]
@@ -1054,6 +1068,31 @@ class Estimator(BaseEstimator):
                                 Yc = Yc + Q3p @ (S3 @ (Q3p.T @ Om3))
                             Q3n, _ = fnp.linalg.qr(Yc)
                             Om3 = Q3n
+                    if DIAG3:
+                        # captured fraction of the weighted leg Gram (mover; old cohort; thin legs)
+                        Gm_full = Bm3.T @ Bm3
+                        trm = float(fnp.trace(Sm @ Gm_full))
+                        Pm = (Q3n.T @ Bm3)
+                        capm = float(fnp.trace(Sm @ (Pm.T @ Pm)))
+                        msg = f"F2_DIAG layer {li}: mover {capm / trm:.4f}"
+                        if kc > 0:
+                            Go = Q3p.T @ Q3p
+                            tro = float(fnp.trace(S3 @ Go))
+                            Po = Q3n.T @ Q3p
+                            capo = float(fnp.trace(S3 @ (Po.T @ Po)))
+                            msg += f" old {capo / tro:.4f}"
+                        Zm = w1c * Z_st[kc]
+                        Zp = Q3n.T @ Zm
+                        msg += f" Z {float(fnp.sum(Zp * Zp)) / (float(fnp.sum(Zm * Zm)) + 1e-30):.4f}"
+                        Zm = w1c * Zf_st[kc]
+                        Zp = Q3n.T @ Zm
+                        msg += f" Zf {float(fnp.sum(Zp * Zp)) / (float(fnp.sum(Zm * Zm)) + 1e-30):.4f}"
+                        # spectrum of the mover's weighted Gram in the r2 basis: rank at 90/99 %
+                        ev = fnp.linalg.eigvalsh(Bm3 @ (Sm @ Bm3.T))
+                        ev = fnp.sort(fnp.abs(ev))[::-1]
+                        cs = fnp.cumsum(ev) / fnp.sum(ev)
+                        msg += f" rank90 {int(fnp.sum(cs < 0.9)) + 1} rank99 {int(fnp.sum(cs < 0.99)) + 1}"
+                        print(msg, flush=True)
                     Cb = Q3n.T @ Bm3                                       # (k3, r2)
                     fa = Cb @ FA2s
                     fp = Cb @ FP2s
@@ -1085,7 +1124,7 @@ class Estimator(BaseEstimator):
                     kc = kc_t
                     q3_side ^= 1
                     Q3 = fnp.matmul(W, Q3n, out=pool.get(("q3", q3_side), (n, k3)))
-                elif kc > 0:
+                elif kc > 0 and not DROP3:
                     q3_side ^= 1
                     Q3 = fnp.matmul(WD, Q3, out=pool.get(("q3", q3_side), (n, k3)))
                 # V21: one source per layer crosses the age gate; join it to the shared
@@ -1121,6 +1160,11 @@ class Estimator(BaseEstimator):
                             Sfull = Sg if kb == kc else Sg + U @ (S2 @ U.T)
                             fnp.matmul(Qp, Sfull @ (Qp.T @ Om), out=Yq2)
                             fnp.add(Yq, Yq2, out=Yq)
+                        if POSTT:
+                            # F2: post-transport range finder (one pass)
+                            Qt, _ = fnp.linalg.qr(fnp.matmul(W, Yq, out=Yq2))
+                            Qn = fnp.matmul(w32, Qt, out=pool.get("wtq", (n, r_old)))   # W^T Qt
+                            break
                         Qn, _ = fnp.linalg.qr(Yq)           # (n, r) orthonormal
                         Om = Qn
                     # V27: factors live in ping-pong slot buffers (rotation reads one side,
@@ -1187,7 +1231,11 @@ class Estimator(BaseEstimator):
                         Sg = Sg - S_s
                         kb = kb_t
                     qc_side ^= 1
-                    Qc = fnp.matmul(W, Qn, out=pool.get(("qc", qc_side), (n, r_old)))  # wick already inside Qn
+                    if POSTT:
+                        Qc = pool.get(("qc", qc_side), (n, r_old))
+                        fnp.copyto(Qc, Qt)
+                    else:
+                        Qc = fnp.matmul(W, Qn, out=pool.get(("qc", qc_side), (n, r_old)))  # wick already inside Qn
                     ka = ka_t
                 elif ka > 0:
                     qc_side ^= 1
@@ -1306,7 +1354,7 @@ class Estimator(BaseEstimator):
                                         sb1=(smm.ps(fap4, ("s", 2 * fa_off, 2 * (fa_off + ka - kb))) if ka > kb else None),
                                         sb2=(smm.ps(fap24, ("s", 2 * fa2_off, 2 * (fa2_off + kb - kc_))) if kb > kc_ else None),
                                         s_sb=s_sb)
-                if kc > 0:
+                if kc > 0 and not DROP3:
                     # F2: cohort readout, cost 2 n P (2 k3) + 2 n^2 k3 with P = k3 (k3 + 1) / 2
                     D3c, D21c = self._cohort_read(Q3, G3c, H3c, IU3, JU3, PK3, WP3, not trim, pool, n, k3)
                     D3 = D3 + D3c
@@ -1848,6 +1896,8 @@ class Estimator(BaseEstimator):
         except (flops.BudgetExhaustedError, flops.TimeExhaustedError):
             raise
         except Exception:  # noqa: BLE001  any chain failure -> fallback, never a zeroed MLP
+            if _os.environ.get("F2_RAISE", "0") == "1":
+                raise
             return self._safe_predict(mlp)
         try:
             ok = bool(fnp.all(fnp.isfinite(out)))
