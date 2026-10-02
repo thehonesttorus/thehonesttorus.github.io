@@ -1,0 +1,3 @@
+{"syn_rfb8": {"estimator": "F1/est_incj.py", "env": {"F1_RFB": 8, "H_FB_SCALE": "1.5", "V17_LAM_SCALE": 0.80, "V26_STRASSEN": 6, "V26_STRASSEN_MIN": 16}},
+ "syn_thin8": {"estimator": "F1/est_incj.py", "env": {"F1_RFB": 8, "F1_RRES": 8, "H_FB_SCALE": "1.5", "V17_LAM_SCALE": 0.80, "V26_STRASSEN": 6, "V26_STRASSEN_MIN": 16}}
+}
