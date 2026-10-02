@@ -152,3 +152,18 @@ The 6-MLP base reproduces the coordinator's number: mean raw 1.7576e-8 at C/B 0.
 - `estimator_f2.py`: V29r3 plus the cohort tier, the POSTT basis and the probes (MIT, `LICENSE-504aldo-MIT`).
 - `base_012.json` and `results/*.json|log`: per-MLP results. `results/table.txt` is the table above.
 - `sweep*.sh`: the exact commands.
+
+## Addendum: deep tier from age 13 at k = 160 (coordinator's golden-ratio block)
+
+`F2_AGE3=12 F2_K3=160`, cohort = ages ≥ 13, MLPs 0 and 1:
+
+| | MLP 0 | MLP 1 |
+|---|---|---|
+| cohort raw | 1.9416e-8 | 3.863e-9 |
+| base raw | 1.9422e-8 | 3.840e-9 |
+| cohort C/B | 0.3046 | 0.2920 |
+| base C/B | 0.2671 | 0.2540 |
+
+- **Accuracy:** k = 160 loses nothing at ages ≥ 13. Raw is unchanged on MLP 0 and within 0.6 % on MLP 1. This is consistent with the Dixmier allocation k(13.5) ≈ 2.2·n/13.5.
+- **Cost:** +0.038 B (+39 u). That matches the cost law (≈ 8·n·k³ ≈ 16 u per layer at k = 160 for at most 3 layers, against 1 to 2 deep sources).
+- **Conclusion:** the rank prediction is right, but at depth 16 a cubic-cost cohort with k = 160 is far from profitable.
