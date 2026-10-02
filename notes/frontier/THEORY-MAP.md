@@ -47,3 +47,17 @@ User direction (2 Oct, 09:40 UTC): take the frontier approaches and understand t
 - **E3. κ4 beyond memoryless and the marginals** (child session).
   - Diagnose which marginal errors dominate on dev, via an oracle against MC truth per layer.
   - Then replace or augment the λ C_off channel with a physically grounded κ4 carrier with memory, e.g. region's mean-field κ4 recursion with (2,2) column means and the exact diagonal, or a FREE-sector κ4 for young ages.
+
+## 4. Where the remaining accuracy lies (E3), in the paper's terms and ours
+
+- **ARC's cumulant-propagation paper** (arXiv 2605.05179; digest `../digests/paper-2605.05179-cumulant-propagation.md`):
+  - MSE ≈ c_K (L/n)^K.
+  - For odd K, the paired entries of κ_{K+1} are as large as the generic κ_K entries. The *augmented* K = 3 algorithm therefore tracks every harmonic component of κ4 except the **traceless** one.
+- **V29 is an augmented K = 3 chain.** Its regenerated κ4 core G = diag(g) + λ C_off (R² 0.90–0.97 against the aug chain's transported core) is the r = 1 harmonic (matrix-core) projection.
+- **The dictionary.** The non-traceless harmonic parts are our **CAP sector** (O(n)-invariant: trace and dilation). The traceless part is our **FREE sector** (through-strings).
+- **So "κ4 beyond a memoryless core" (the author's diagnosis of the leaders) means the FREE κ4 sector.** Our sector theory predicts it decays geometrically in age, like the FREE K3 sector (≈ 0.65 per age, costate §8). It is then concentrated in the youngest births, so a young-only FREE-κ4 carrier is the cheapest way to move toward K = 4 accuracy. Full factorised K = 4 costs 24 n⁴L², which is impossible at the budget.
+- **Cost estimate.**
+  - One FREE κ4 source has 4-legged atoms, ≈ 4–6 dense products per layer (≈ 2.2–3.3 u at Strassen L5).
+  - Ages 1–2: ≈ 5–7 u per layer, ≈ 75–100 u in total. Affordable only once the K3 bill is cut (F1, F2).
+- **EscAI's oracle** points the same way. True per-layer marginals (variance, κ3, joint κ4) give 20× in raw, and variance alone −40 %. By the fresh-weight lemma, per-neuron variance errors are random quadratic forms of the full post-activation covariance error, which the missing κ4 (2,2) and (3,1) content feeds through the bivariate closure.
+- **Status:** not attempted today; the reward gain from cost is larger and surer at the floor (see E1, F1, F2).
