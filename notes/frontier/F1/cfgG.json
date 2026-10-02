@@ -1,0 +1,6 @@
+{
+ "incj_base_345": {"estimator": "F1/est_incj.py", "env": {}},
+ "it8_js32_345": {"estimator": "F1/est_incj.py", "env": {"F1_RFB": 8, "F1_RRES": 8, "F1_JS": 32}},
+ "incj_fb_lam_345": {"estimator": "F1/est_incj.py", "env": {"H_FB_SCALE": 1.5, "V17_LAM_SCALE": 0.80}},
+ "it8_fb_lam_345": {"estimator": "F1/est_incj.py", "env": {"F1_RFB": 8, "F1_RRES": 8, "H_FB_SCALE": 1.5, "V17_LAM_SCALE": 0.80}}
+}
