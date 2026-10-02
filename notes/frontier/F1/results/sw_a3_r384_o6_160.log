@@ -23,3 +23,4 @@ setup 0.05s
   phi = flops.stats.norm.pdf(alpha).astype(f32)
 /home/user/thehonesttorus.github.io/notes/frontier/F1/../estimator_v29r3.py:1254: FlopscopeWarning: stats.norm.cdf promoted its float32 input to float64 to match scipy.stats. If float64 output was not intended, cast the result back with result.astype(np.float32) before downstream operations; float64 operations are billed at twice the float32 dtype rate.
   Phi = flops.stats.norm.cdf(alpha).astype(f32)
+{"mlp": 0, "ok": true, "cb": 0.24455667356687627, "mse": 6.64433011221759e-08, "raw": 2.272195351230553e-08, "adjusted": 5.556805367910641e-09, "all_layers": 1.2838415611381156e-07, "wall": 76.05514693260193, "residual": 0.4803397740015498}
