@@ -1,0 +1,2 @@
+{"cfg": "strassen6", "n_ok": 3, "raw": 1.4637518775215527e-08, "raws": [1.9392, 0.3826, 2.0695], "cb": 0.2421, "cb_third": 0.2389, "adjusted": 3.5437e-09, "note": "re-run alone after OOM; sweep summary written by hand from sw_strassen6.json"}
+SWEEP_DONE

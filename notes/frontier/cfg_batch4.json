@@ -1,0 +1,2 @@
+{"fbs080": {"estimator": "estimator_fbs.py", "env": {"H_FB_SCALE": "0.8"}},
+ "fbs120": {"estimator": "estimator_fbs.py", "env": {"H_FB_SCALE": "1.2"}}}
