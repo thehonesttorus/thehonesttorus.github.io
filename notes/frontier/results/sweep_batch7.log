@@ -1,0 +1,3 @@
+{"cfg": "base_345", "n_ok": 3, "raw": 2.0486e-08, "raws": [1.1945, 2.531, 2.4202], "cb": 0.254, "note": "summary written by hand (sweep.py exited early); per-MLP values from sw_base_345.log"}
+{"cfg": "fbs150_345", "n_ok": 3, "raw": 1.9829e-08, "raws": [1.1766, 2.4466, 2.3256], "cb": 0.254, "note": "summary written by hand"}
+SWEEP_DONE

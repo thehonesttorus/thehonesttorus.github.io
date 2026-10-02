@@ -1,0 +1,2 @@
+{"fbs150_lam080": {"estimator": "estimator_fbs.py", "env": {"H_FB_SCALE": "1.5", "V17_LAM_SCALE": 0.80}},
+ "fbs150_lam110": {"estimator": "estimator_fbs.py", "env": {"H_FB_SCALE": "1.5", "V17_LAM_SCALE": 1.10}}}

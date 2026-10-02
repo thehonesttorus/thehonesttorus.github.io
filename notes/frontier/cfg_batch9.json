@@ -1,0 +1,2 @@
+{"fbs_deep2": {"estimator": "estimator_fbs.py", "env": {"H_FB_SCALE": "1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,2.0"}},
+ "fbs_shallow2": {"estimator": "estimator_fbs.py", "env": {"H_FB_SCALE": "2.0,2.0,2.0,2.0,2.0,2.0,2.0,2.0,1.0"}}}
