@@ -1,0 +1,1 @@
+{"stk_js32_jp1_m345": {"estimator": "F1/est_incj.py", "env": {"F1_RFB": 8, "F1_RRES": 8, "F1_JS": 32, "F1_JPASS": 1, "H_FB_SCALE": 1.5, "V17_LAM_SCALE": 0.80, "V26_STRASSEN": 6, "V26_STRASSEN_MIN": 16}}}
