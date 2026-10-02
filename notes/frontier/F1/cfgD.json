@@ -1,0 +1,8 @@
+{
+ "it8_r320_o2_160": {"estimator": "F1/est_incj.py", "env": {"F1_RFB": 8, "F1_RRES": 8, "V21_R_OLD": 320, "V24_R_OLD2": 160}},
+ "it8_r288_o2_128": {"estimator": "F1/est_incj.py", "env": {"F1_RFB": 8, "F1_RRES": 8, "V21_R_OLD": 288, "V24_R_OLD2": 128}},
+ "it8_r384_o2_160": {"estimator": "F1/est_incj.py", "env": {"F1_RFB": 8, "F1_RRES": 8, "V24_R_OLD2": 160}},
+ "it8_o6_192": {"estimator": "F1/est_incj.py", "env": {"F1_RFB": 8, "F1_RRES": 8, "V24_AGE_OLD2": 6, "V24_R_OLD2": 192}},
+ "it8_a5_o8": {"estimator": "F1/est_incj.py", "env": {"F1_RFB": 8, "F1_RRES": 8, "V21_AGE_OLD": 5, "V24_AGE_OLD2": 8}},
+ "it8_js32": {"estimator": "F1/est_incj.py", "env": {"F1_RFB": 8, "F1_RRES": 8, "F1_JS": 32}}
+}
