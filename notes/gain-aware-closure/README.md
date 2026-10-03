@@ -1,8 +1,9 @@
 # The gain-aware closure
 
-Working note XI (results so far; the write-up follows once more width-1024 ground truths finish). It replaces the
-empirical transport constant tau = 0.95 of notes IX-X with a derivation, and tests two more proposals from other
-conversations (a "Ruelle bundle" over sign chambers, and a "dual truncation" over wall codimension).
+Working note XI (results so far; the full write-up is still to come). It replaces the empirical transport constant
+tau = 0.95 of notes IX-X with a derivation. It evaluates the result on the official WhestBench Phase 2 networks,
+with a flopscope implementation, and tests three proposals from other conversations: a "Ruelle bundle" over sign
+chambers, a "dual truncation" over wall codimension, and a "cyclic filtration" probe.
 
 **Exact ledger.** The closure error at the output is exactly a sum of local defects, each carried to the output by
 the closure itself:
@@ -40,7 +41,30 @@ Final-layer MSE against Monte Carlo truth:
 - GAC changes shape as well as scale, so it can beat the oracle scale (width 256, seeds 1 and 2; layers 2-7
   everywhere).
 - At width 1024, GAC still under-corrects slightly: 8 x the residual scale is +0.002 to +0.003.
-- Estimated cost is about twice the closure, ~5% of the WhestBench budget, so the score multiplier is still 0.1.
+
+**Official WhestBench Phase 2 networks** (`code/official/`). These are the 100 networks of the `mini` split of
+`aicrowd/arc-whestbench-public-2026@v2-phase2`, with 1e9-sample truth. Final-layer MSE, mean over the networks:
+
+| estimator | mean MSE | flopscope cost (measured) | score = MSE x max(0.1, C/B) |
+|---|---|---|---|
+| Monte Carlo, full budget | ~1.2e-6 (avg_var / 65,536) | 100% | ~1.2e-6 |
+| bundled covariance baseline / closure | 3.85e-6 | 2.35% | 3.9e-7 |
+| closure + residue, tau = 0.95 (fitted at width 256) | 1.37e-6 | | |
+| **GAC** (no fitted constant) | **1.42e-6** | **2.38%** | **1.4e-7** |
+| **GAC + kappa_3 trees** (48 networks so far, 48/48 better than GAC) | **1.12e-6** | **8.25%** | **1.1e-7** |
+| oracle scale (fitted to truth) | 1.31e-6 | | |
+
+- tau = 0.95 beats GAC on 74/100 networks, by about 3% on average. GAC's residual scale is systematic:
+  8 x scale = +0.0029 +- 0.0014.
+- The trees remove that residual and also correct shape, so they beat the oracle scale.
+- The trees are the fresh one-point kappa_3 terms of the previous layer (`gac_k3.py`):
+  - D3: single walls, about a quarter of the gain;
+  - P3 with Hermite orders <= 2, and T3: wall pairs, about three quarters.
+- Flopscope implementation (`code/flopscope/gac_flopscope.py`):
+  - float32 throughout, with the centred covariance tagged symmetric as in the bundled baseline;
+  - the relu^2 Hermite coefficients come for free from B_j = 2 sigma A_{j-1};
+  - it reproduces the numpy MSE exactly;
+  - wall time is 4.8 s and residual Python time 0.14 s on an idle machine (limits 120 s and 0.4 s).
 
 **Tests of the other proposals.**
 
@@ -63,9 +87,22 @@ Final-layer MSE against Monte Carlo truth:
     carry 93% of the gain injection and 87% of the rms mean shift.
   - The pair sum is not sparse. The top n pairs by |rho| carry -3% to +3% of it, and the top 10n carry at most 18%.
   - Its coherent part is the quadratic form u^T F0 u, which GAC evaluates exactly in O(n^2).
+  - The same split for the kappa_3 mean corrections on official networks: single walls cut GAC's MSE 5-8%, and wall
+    pairs cut it 19-22%.
+- **Cyclic-filtration probe** (`probe64.py`). Width 64, depth 8, 10 networks, 1e7-sample truth. MSE relative to the
+  closure:
+  - wall page (closure + diagonal wall current): 0.69;
+  - 16-cylinder page (exact cell moments): 0.81;
+  - GAC: 0.28.
+  - The page difference d1 correlates only weakly with the closure residual: mean +0.23, range -0.22 to +0.67.
+    Each page alone correlates +0.66 / +0.74, because they capture the same part.
+  - The non-scale forgetting rate 2<P(1-P)> stays >= 0.15 per layer, a Theta(1) gap. The residual is
+    dominated by the exact zero mode, the gain.
 
 Files (`code/`):
-- `gac.py` (the estimator), `gac_local.py`
+- `gac.py` (the estimator), `gac_k3.py` / `gac_tree.py` (GAC + trees), `gac_local.py`
+- `flopscope/gac_flopscope.py` (contest implementation), `flopscope/run_flopscope.py`
+- `official/` (extract the official parquet shards, evaluate), `probe64.py`
 - `ledger.py`, `hmoments.py`, `transport.py`, `channels.py`
 - `local_compare.py`, `mixture_local.py`
 - `bundle_local.py`, `codim.py`, `bragg.py`, `diffraction.py`

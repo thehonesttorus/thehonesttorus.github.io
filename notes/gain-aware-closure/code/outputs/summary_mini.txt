@@ -1,0 +1,9 @@
+100 official mini MLPs (1e9-sample truth): final-layer MSE
+  closure       mean 3.8493e-06  median 3.8529e-06  max 5.4945e-06
+  tau=1         mean 1.8301e-06  median 1.8339e-06  max 3.4060e-06
+  tau=0.95      mean 1.3733e-06  median 1.3426e-06  max 1.9205e-06
+  GAC           mean 1.4192e-06  median 1.3813e-06  max 1.9375e-06
+  oracle-scale  mean 1.3146e-06  median 1.2919e-06  max 1.7823e-06
+  GAC beats tau=0.95 on 26/100;  mean GAC/oracle-scale 1.080; mean tau.95/oracle 1.045
+  8*scale residual: closure +0.0133 +- 0.0014, GAC +0.0029 +- 0.0014
+GAC + kappa_3 trees on 48 of them: mean 1.1195e-06 (median 1.0755e-06) vs GAC 1.4292e-06, oracle-scale 1.3180e-06, closure 3.9047e-06; better than GAC on 48/48
