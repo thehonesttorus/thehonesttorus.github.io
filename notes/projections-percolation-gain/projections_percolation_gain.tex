@@ -60,6 +60,8 @@ The bundled full-covariance baseline costs $5.2\times10^{10}$ FLOPs ($2.4\%$) an
 \textbf{(5) The ``type-III spikes'' reading.} Its own test is that $W^{(1)}$ should have spectral spikes above the Marchenko--Pastur edge. There are none in $80$ He matrices. The layer algebras are also abelian, so they are type I. What is true is weaker: depth creates outliers in the layer covariance, and $5$--$45\%$ of the non-scale residual sits on its top $4$ eigenvectors.
 
 \textbf{(6) Where percolation is real.} Depth is a critical branching process (note I). Maxmud--Suomala's Theorem~A(i), stability of critical non-percolation under level-dependent enhancement, suggests a criterion for when finite-width gain stops the deep representation from collapsing. We state it as a conjecture; it concerns depth $\gg$ width, not Phase 2.
+
+\textbf{(7) Addendum: measured correspondences.} A further critique (Section~\ref{sec:measured}) sharpens the corrections in (5). It replaces $KK$-invariance by \emph{measured} correspondences, which carry a distinguished vector and so keep amplitude. For ReLU networks the measured layer map is exact by homogeneity: means evolve by the $\beta=1$ gain-weighted directional state, covariances by $\beta=2$. It predicts the \emph{sign} of the closure error: the closure overestimates. The data agree at all $88$ layer instances across $7$ networks, with $76$--$85\%$ of significant per-neuron errors being overestimates.
 \end{abstract}
 
 \section{Phase 2 as it actually binds}\label{sec:rules}
@@ -280,6 +282,51 @@ residual on a few coarse directions & partly true: top covariance eigenvectors a
 \bottomrule
 \end{tabular}
 \end{center}
+
+\section{Addendum: measured correspondences}\label{sec:measured}
+
+A critique of the ``type-III spikes'' reading, supplied by the user from another conversation, makes the corrections of Section~\ref{sec:spikes} sharper. We checked each point.
+\begin{itemize}
+\item \emph{Amplitude.} $F_c(x)=(cx)_+$ has the same gate projection for all $c>0$ but mean $c/\sqrt{2\pi}$. Any class that forgets amplitude cannot determine the mean.
+\item \emph{Spectral states are not topological.} On $\mathbb C\oplus\mathbb C$, take $D_\alpha=\mathrm{diag}(k/\alpha;\,k/(1-\alpha))_{k\ge1}$. The normalized residue at $s=1$ is the state $\alpha f_0+(1-\alpha)f_1$, which varies with $\alpha$ although the $K$-homology class does not.
+\item \emph{Nontracial does not mean type III.} $\varphi=\mathrm{Tr}(\mathrm{diag}(0.9,0.1)\,\cdot)$ on $M_2$ has nontrivial modular flow, $\sigma_t(E_{12})=9^{it}E_{12}$, on a type I$_2$ algebra.
+\item \emph{Cocycles compare dynamics.} $[D\rho_1:D\rho_0]_t=\rho_1^{it}\rho_0^{-it}$ intertwines the two modular groups; it does not map $\rho_0$ to $\rho_1$. The state transfer is $V=\rho_1^{1/2}\rho_0^{-1/2}$, with $\mathrm{Tr}(\rho_1a)=\mathrm{Tr}(\rho_0V^*aV)$.
+\item \emph{The proposed thinning schedule.} $q_n=1-\Theta(n^{-1-\delta})$ has $\sum(1-q_n)<\infty$, hence $\prod q_n>0$, not $0$.
+\item \emph{Mean-zero observables are not an ideal.} $b=\mathrm{diag}(1,-1)$ has $\tau(b)=0$ but $\tau(b_+)=\tfrac12$. Cancellations cannot be dropped before a later nonlinearity.
+\end{itemize}
+
+\paragraph{The measured layer map.} Write $h_{\ell}=\|h_\ell\|\,\hat h_\ell$, and for $u$ in the positive part of the sphere let $(Wu)_+=r_W(u)\,T_W(u)$ with $\|T_W(u)\|=1$. For $\beta\ge0$ define the gain-weighted directional states and the weighted transfer operators
+\[
+\eta^{(\beta)}_\ell(f)=\E\big[\|h_\ell\|^\beta f(\hat h_\ell)\big],\qquad (Q^{(\beta)}_Wf)(u)=r_W(u)^\beta f(T_Wu).
+\]
+
+\begin{proposition}[exact measured duality]\label{prop:measured}
+$\eta^{(\beta)}_{\ell+1}(f)=\eta^{(\beta)}_\ell(Q^{(\beta)}_{W_{\ell+1}}f)$ for every layer and every $\beta$. Composition is a multiplicative cocycle: $Q^{(\beta)}_{W_1}Q^{(\beta)}_{W_2}=Q^{(\beta)}_\Psi$ for the two-layer map $\Psi(u)=(W_2(W_1u)_+)_+$, with $r_\Psi=r_{W_1}\cdot(r_{W_2}\circ T_{W_1})$ and $T_\Psi=T_{W_2}\circ T_{W_1}$. The means are $\E h_L=\eta^{(1)}_L(\iota)$ with $\iota(u)=u$, and the second moments are $\E h_Lh_L^\top=\eta^{(2)}_L(\iota\otimes\iota)$.
+\end{proposition}
+
+\begin{proof}
+Positive homogeneity: $\|h_{\ell+1}\|^\beta f(\hat h_{\ell+1})=\|h_\ell\|^\beta r_W(\hat h_\ell)^\beta f(T_W\hat h_\ell)$.
+\end{proof}
+
+\noindent So the means and the covariances are pairings with \emph{different} measured states of one directional process, tilted by $\|h\|^1$ and $\|h\|^2$. The Gaussian closure propagates both kinds of data, but it computes each new mean from a Gaussian model whose spread is fixed by $\beta=2$ data. This is the precise form of the pressure gap of Section~\ref{sec:dilation}.
+
+\begin{proposition}[the closure overestimates]\label{prop:sign}
+Let $z=G\tilde z$, with $G>0$ independent of $\tilde z\sim N(\tilde\mu,\tilde\sigma^2)$ per neuron, $\E G^2=1$ and $\gamma=\Var(G^2)$. The Gaussian closure with the true first and second moments of $z$ errs by
+\[
+\E_{\mathrm{closure}}\relu-\E\relu(z)=\tfrac{\gamma}{8}\,\tilde\sigma\,\varphi(a)\,(1+a^2)+O(\gamma^2)\;\ge0,\qquad a=\tilde\mu/\tilde\sigma .
+\]
+For centred $\tilde z$ the error is $(1-\E G)\,\E\relu(\tilde z)\ge0$ exactly, by Cauchy--Schwarz.
+\end{proposition}
+
+\begin{proof}
+$\E\relu(z)=\E G\cdot M(\tilde\mu,\tilde\sigma)$ with $\E G=1-\gamma/8+O(\gamma^2)$. The closure uses mean $\E G\,\tilde\mu$ and variance $\tilde\sigma^2+\tilde\mu^2(1-(\E G)^2)$. Expand $M$ using $\partial_\mu M=\Phi(a)$ and $\partial_\sigma M=\varphi(a)$.
+\end{proof}
+
+\noindent The data confirm the sign without exception. The scale coefficient $c_\ell$ of the closure error is positive at every layer $\ge2$ of every network tested: $88/88$ layer instances over widths $256$--$1024$ and depths $4$--$16$, with minimum $0.0004$. At the final layer, $76$--$85\%$ of per-neuron errors larger than three standard errors of the ground truth are overestimates. The per-layer local shape $\varphi(a)(1+a^2)$ is not what reaches the output (Section~\ref{sec:dilation}). What reaches it is the accumulated scale, carried by the exactly critical mode.
+
+\paragraph{Certified rewrites.} The critique's operational rule is that a switch $\varphi\to\psi\circ Q$ is legal with error at most $\|\varphi-\psi Q\|\,\|a\|+\|\psi\|\,\|Qa-b\|$. Our estimators fit this rule only partly. The state defect (closure versus true law) is not computed; it is only measured afterwards. The one direction in which the measured transport is known exactly is the scale. By Proposition~\ref{prop:measured} and Theorem~7.2 of note IX, the pulled-back readout (left eigenvector) at the scale mode is fixed by homogeneity. The first-order output error is therefore $\sum_\ell\langle\lambda_\ell,\delta_\ell\rangle$, with $\delta_\ell$ the state defect injected at layer $\ell$ and $\lambda_\ell$ that readout pulled back to layer $\ell$. Computing $\lambda_\ell$ through the linearised closure is the principled replacement for the empirical $\tau$ of note IX. It is not implemented here.
+
+\paragraph{Subgraph projections.} For $f\ge0$, the projection $P_f=\mathbf 1_{\{0\le t<f(x)\}}$ in $L^\infty(X\times\R_+)$ has trace $\int f\,d\mu$. This converts amplitude into measure without losing it. For degree-1 homogeneous readouts it reduces to the radial--directional split, $\E F=\E\|x\|\cdot\E_uF(u)$. A trace-preserving rearrangement that makes the readout cheaper would be an acceleration; we do not have one.
 
 \section{Open problems}
 \begin{enumerate}

@@ -37,6 +37,13 @@ depth 16, He ReLU, Gaussian inputs):
 - Width 1024: MSE 1.56e-6 (weights-only 1.50e-6, oracle 1.48e-6, full-budget MC 1.03e-6). At the 0.1 multiplier
   that is ~6.6x better than Monte Carlo. One network.
 
+**Addendum: measured correspondences.** A further critique (checked point by point) replaces KK-invariance with
+measured correspondences that keep amplitude.
+- For ReLU nets the measured layer map Q_W f(u) = r_W(u)^beta f(T_W u) is exact. Means are the beta=1
+  gain-weighted state, covariances the beta=2 state.
+- It predicts that the closure overestimates. Observed at 88/88 layer instances over 7 networks, with 76-85% of
+  significant per-neuron errors being overestimates (`code/sign_check.py`).
+
 **Where percolation is real.** Depth is a critical branching process (note I). Maxmud-Suomala Theorem A(i) suggests
 a criterion for when finite-width gain stops the deep representation from collapsing. This is a conjecture, and
 it concerns depth much larger than width.

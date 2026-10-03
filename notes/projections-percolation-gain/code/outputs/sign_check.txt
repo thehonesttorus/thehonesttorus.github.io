@@ -1,0 +1,7 @@
+n=256 L=4 s=0: c_l > 0 at 3/3 layers (min +0.0013); final-layer overestimate fraction 0.85; min over layers 0.85
+n=256 L=8 s=0: c_l > 0 at 7/7 layers (min +0.0013); final-layer overestimate fraction 0.85; min over layers 0.83
+n=256 L=16 s=0: c_l > 0 at 15/15 layers (min +0.0013); final-layer overestimate fraction 0.82; min over layers 0.82
+n=256 L=16 s=1: c_l > 0 at 15/15 layers (min +0.0013); final-layer overestimate fraction 0.84; min over layers 0.82
+n=256 L=16 s=2: c_l > 0 at 15/15 layers (min +0.0015); final-layer overestimate fraction 0.82; min over layers 0.76
+n=512 L=16 s=0: c_l > 0 at 15/15 layers (min +0.0007); final-layer overestimate fraction 0.79; min over layers 0.79
+n=1024 L=16 s=0: c_l > 0 at 15/15 layers (min +0.0004); final-layer overestimate fraction 0.84; min over layers 0.83
