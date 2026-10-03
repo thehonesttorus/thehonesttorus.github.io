@@ -1,0 +1,274 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{booktabs}
+\usepackage[expansion=false]{microtype}
+\usepackage{xcolor}
+\usepackage[colorlinks=true,linkcolor=blue!50!black,citecolor=blue!50!black,urlcolor=blue!50!black]{hyperref}
+\setlength{\emergencystretch}{3em}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{problem}[theorem]{Problem}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\Z}{\mathbb Z}
+\newcommand{\Q}{\mathbb Q}
+\newcommand{\R}{\mathbb R}
+\newcommand{\N}{\mathbb N}
+\newcommand{\E}{\mathbb E}
+\newcommand{\Ad}{\operatorname{Ad}}
+\newcommand{\Var}{\operatorname{Var}}
+\newcommand{\ff}[1]{[\![#1]\!]}
+
+\title{Where expansion comes from\\[4pt]
+\large inner arrows, outer symmetries, Galton--Watson duality,\\ and a neural Gabber--Galil lemma}
+\author{Working note IV for the continuation-algebra programme\\
+\small self-reviewed draft, not independently verified}
+\date{3 October 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Note~III proposed a \emph{neural Gabber--Galil lemma}: expanding, measure-preserving transformation families on what a network distinguishes, with a certificate built from weight data. Developing it forced a classification of where expansion can come from on a Cantor hierarchy. We use three external inputs: topological full groups and their amenability (Matui's survey; Juschenko--Monod), the measured orbit-equivalence category and its cohomological \emph{shadow} (Medynets--Sauer--Thom, MST), and tiling deformations (Julien--Sadun, JS).
+
+\textbf{(1) Inner arrows never expand.} For the tail/continuation relation (AF) and for minimal $\Z$-actions, the topological full group is amenable. No finite set of inner symmetries, i.e.\ arrows of the continuation algebra assembled into homeomorphisms, gives a spectral gap. Bounded-degree uniform expanders on the cylinders are impossible from the convolution algebra's own arrows. This is why notes~I and~III needed per-level generators.
+
+\textbf{(2) Outer symmetries do, and rank two is where they start.} Interleaving digits identifies the fair binary Cantor set with the $2$-adic plane $\Z_2^2$. Sanov's free group $\langle\begin{psmallmatrix}1&2\\0&1\end{psmallmatrix},\begin{psmallmatrix}1&0\\2&1\end{psmallmatrix}\rangle\cong F_2$ then acts by measure-preserving homeomorphisms that preserve \emph{every} cylinder partition and normalize the tail relation. Their MST shadows are the matrices themselves; their JS type is a pure linear deformation. Every finite level is a Gabber--Galil expander (second eigenvalue $\le5\sqrt2/8$). For a single odometer the shadow lies in $\{\pm1\}$, which is why the Gabber--Galil mechanism needs two digit streams.
+
+\textbf{(3) The local lemma is a frequency-drift criterion, and its network analogue is Galton--Watson criticality.} We prove a Schur--Kesten criterion that turns outward drift of the dual action on frequencies into a spectral gap; Gabber--Galil's local lemma is an instance. For deep random networks the dual action on moment orders is a Galton--Watson branching. Subcritical (ordered) networks forget the input exponentially. Supercritical (chaotic) networks fool every fixed-degree test exponentially and act as pseudorandom generators. He-ReLU is exactly critical, with only polynomial ($D^{-2}$) behaviour; this is confirmed numerically for tanh in both phases and for ReLU.
+
+\textbf{(4) Neural Gabber--Galil lemma (walk form).} Lump the interleaved Gabber--Galil walk onto \emph{any} partition of inputs induced by the network (continuation classes, $\varepsilon$-chain classes of any layer, activation tiles) and Metropolize toward the gain-weighted class law. The result is a reversible walk on the network's own distinctions, with certified spectral gap at least $(1-5\sqrt2/8)\cdot\min h/\max h$, where $h$ is the class-averaged gain. On a random ReLU network the lumped gaps are $0.24$--$0.30$ (source $0.21$) and the gain-targeted gaps are $0.23$--$0.30$, above the certified $0.15$--$0.16$.
+\end{abstract}
+
+\tableofcontents
+
+\section{The symmetry layer: inner, outer, shadow}
+
+Throughout, $X$ is a Cantor set with a profinite structure (PB Def.~7), i.e.\ nested finite clopen partitions $\mathcal P_m$. $\mu$ is a non-atomic invariant probability of full support, $R$ is an \'etale equivalence relation preserving $\mu$, and $E_m$ is the $\mu$-conditional expectation onto $\mathcal P_m$-measurable functions.
+
+\begin{definition}
+\begin{itemize}
+\item \emph{Inner symmetries}: the topological full group $\ff R$, i.e.\ homeomorphisms whose graph is a finite union of compact-open bisections of $R$ (Matui, Def.~4.1). These are the arrows of the convolution algebra $C^*(R)$ assembled into maps.
+\item \emph{Outer symmetries}: homeomorphisms $h$ with $(h\times h)(R)=R$ (equivalently automorphisms of $\ff R$, by Medynets' reconstruction; MST Thm.~2.1), taken $\mu$-preserving.
+\item \emph{Shadow}: for a free minimal $\Z^d$-action generating $R$, MST's functor $\Psi_1:\mathrm{Aut}_\mu(\ff{X,\Z^d})\to\{A\in GL_d(\R):\det A=\pm1\}$ (MST Thm.~4.7). For tiling hulls, JS's cohomological deformation invariant plays the same role.
+\end{itemize}
+For a finite symmetric family $S$ of $\mu$-preserving homeomorphisms, put $P_S=|S|^{-1}\sum_{s\in S}U_s$ with $U_sf=f\circ s$.
+\end{definition}
+
+\begin{proposition}[uniform level gaps $=$ global gap]\label{prop:levels}
+If every $s\in S$ maps each $\mathcal P_m$ to itself, then $P_S$ commutes with every $E_m$. The spectral bound of $P_S$ on $L^2_0(X,\mu)$ is the supremum of its spectral bounds on the level spaces $L^2(\mathcal P_m)\ominus\mathbb C$, whose union is dense.
+\end{proposition}
+
+\begin{proof}
+$P_S$ is self-adjoint and preserves each finite-dimensional $L^2(\mathcal P_m)$, hence commutes with its projection $E_m$. Rayleigh quotients over a dense union of invariant subspaces determine the top of the spectrum.
+\end{proof}
+
+\section{Inner arrows never expand}
+
+\begin{theorem}[inner no-go]\label{thm:nogo}
+Suppose $\ff R$ is amenable. This holds when $R$ is AF (in particular the tail relation and every continuation relation, where $\ff R$ is locally finite), and when $R$ is the orbit relation of a minimal homeomorphism (Juschenko--Monod; Matui Thm.~8.4). Then for every finite symmetric $S\subset\ff R$, $P_S$ has no spectral gap on $L^2_0(X,\mu)$. Consequently the level Schreier graphs of $S$ are not uniform expanders.
+\end{theorem}
+
+\begin{proof}
+For AF relations, compactness shows each $g\in\ff R$ acts at some level $n$ as a permutation of level-$n$ prefixes inside continuation classes. So $\ff R=\bigcup_n\prod_{C\in P_n}\mathrm{Sym}(C)$ is locally finite, hence amenable.
+Let $\Gamma=\langle S\rangle$, an amenable group. If $\Gamma$ is not ergodic, a nonconstant invariant $f\in L^2_0$ is an eigenvector with eigenvalue $1$. If it is ergodic, then since $\mu$ is non-atomic and $\Gamma$ amenable, the action is not strongly ergodic (Connes--Weiss; Schmidt). So there are sets $A_k$ with $\mu(A_k)\in[c,1-c]$ and $\mu(sA_k\triangle A_k)\to0$ for all $s\in S$. Put $f_k=\mathbf 1_{A_k}-\mu(A_k)$. Then $\langle f_k,(I-P_S)f_k\rangle=\frac1{2|S|}\sum_s\|U_sf_k-f_k\|^2=\frac1{2|S|}\sum_s\mu(s^{-1}A_k\triangle A_k)\to0$ while $\|f_k\|^2\ge c(1-c)$. The last claim follows from Proposition~\ref{prop:levels}.
+\end{proof}
+
+\begin{remark}[what this explains]
+Note~I's small-bias sparsifier used $O(N)$ jumps per level and note~III's tail operators used eight maps \emph{per level}. Theorem~\ref{thm:nogo} shows that some such growth is forced as long as the generators are inner. The fair PB hierarchy is an odometer (note~I, Thm.~9.3), so its inner symmetries are amenable twice over.
+\end{remark}
+
+\begin{remark}[the semigroupoid is non-amenable but has no invariant measure]
+The shift semigroupoid of note~I, \S7 has groupoid $G_{[2]}$ with $C^*(G_{[2]})=\mathcal O_2$. Its full group is the Higman--Thompson group $V_{2,1}$ (Nekrashevych; Matui \S5), which is non-amenable; purely infinite groupoids contain $\Z_2*\Z_3$ in their full group (Matui). But $G_{[2]}$ admits no invariant probability measure: prefix replacements of unequal length scale Bernoulli measure by $2^{|p|-|q|}$, which is the modular/KMS structure of note~I. So across the three algebras of the programme:
+\begin{itemize}
+\item the AF core has an invariant measure and amenable arrows;
+\item $\mathcal O_2$ has non-amenable arrows and no invariant measure;
+\item measure-preserving \emph{and} non-amenable symmetries must be outer.
+\end{itemize}
+\end{remark}
+
+\section{Outer expansion on the binary hierarchy: rank two}
+
+\begin{definition}[digit interleaving]
+$\Phi:\{0,1\}^{\N}\to\Z_2^2$, $\Phi(\xi)=\big(\sum_{k\ge0}\xi_{2k+1}2^k,\ \sum_{k\ge0}\xi_{2k+2}2^k\big)$. It is a homeomorphism carrying fair Bernoulli measure to Haar measure. The depth-$m$ cylinder of $\xi$ becomes $\{x\equiv a\bmod 2^{\lceil m/2\rceil},\ y\equiv b\bmod2^{\lfloor m/2\rfloor}\}$.
+\end{definition}
+
+Let $A=\begin{psmallmatrix}1&2\\0&1\end{psmallmatrix}$ and $B=\begin{psmallmatrix}1&0\\2&1\end{psmallmatrix}$, let $\tau_1,\tau_2$ be the unit translations, and let $S_{GG}$ be the eight Gabber--Galil maps $A^{\pm1},\ \tau_1^{\pm1}A^{\pm1},\ B^{\pm1},\ \tau_2^{\pm1}B^{\pm1}$ (signs matched; i.e.\ $(x,y)\mapsto(x\pm2y,y),(x\pm(2y+1),y),(x,y\pm2x),(x,y\pm(2x+1))$). All are transported to $\{0,1\}^{\N}$ by $\Phi$.
+
+\begin{theorem}[outer expansion on the fair hierarchy]\label{thm:outer}
+\begin{enumerate}
+\item Each $s\in S_{GG}$ is a measure-preserving homeomorphism of $\{0,1\}^{\N}$ mapping \emph{every} depth-$m$ cylinder partition to itself.
+\item $\langle A,B\rangle\cong F_2$ (Sanov), so $\langle S_{GG}\rangle\supseteq\Z^2\rtimes F_2$ is non-amenable.
+\item Up to a null set, the tail relation is the $\Z^2$-orbit relation, and $S_{GG}$ normalizes it. The maps are outer symmetries. They act on the hyperfinite II$_1$ factor $L^\infty(X)\rtimes R_{\rm tail}$ by trace-preserving, Cartan-preserving automorphisms. The MST shadow of $A,B$ (for the $\Z^2$-odometer with Haar measure) is induced by the matrices themselves, so $A,B\notin\ff R$, whose shadows are trivial.
+\item $P_{S_{GG}}$ has spectrum in $[-1,\lambda^*]$, $\lambda^*=5\sqrt2/8$, on $L^2_0$, so every depth carries the same constant-degree expander.
+\item The tail operators $M_m$ (Gabber--Galil maps applied to the coordinates below depth $m$) satisfy $(1-\lambda^*)(I-E_m)\le I-M_m\le2(I-E_m)$ and commute with all $E_k$. Hence $\hat L=\sum_m(\lambda_{m+1}-\lambda_m)(M_m-I)$ is a constant-degree sparsifier of the PB form on the binary Cantor set itself: $(1-\lambda^*)Q_{PB}\le\hat Q\le2Q_{PB}$.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+(1) Write $a=\lceil m/2\rceil$, $b=\lfloor m/2\rfloor$, so $b\ge a-1$ and $a\ge b$. Under $(x,y)\mapsto(x\pm2y(+1),y)$, $x\bmod2^a$ depends only on $x\bmod 2^a$ and $y\bmod2^{a-1}$, both of which are known. Under $(x,y)\mapsto(x,y\pm2x(+1))$, $y\bmod2^b$ depends on $x\bmod2^{b-1}$, which is known. The maps are affine with unimodular linear part, hence Haar-preserving bijections. (This was also verified exhaustively at depth $10$.)
+(2) Sanov's theorem.
+(3) For $x\in\Z_2\setminus\Z$ (digits not eventually constant) and $k\in\Z$, $x+k$ differs from $x$ in finitely many digits. Conversely, eventually equal digits force an integer difference. So off the null, countable union $\bigcup_{g\in\langle S_{GG}\rangle}g(\{x\in\Z\}\cup\{y\in\Z\})$, tail equivalence is $\Z^2$-orbit equivalence. Affine maps with linear part in $SL_2(\Z)$ map $v+\Z^2$ to $s(v)+\Z^2$. A normalizing, measure-preserving map induces a trace-preserving automorphism of the group-measure-space factor that preserves $L^\infty$. For linear $s$ the MST cocycle is constant, $\alpha(k,v)=sk$, so $\Psi_1(s)$ is the induced map on $H^1(\Z^2;\R)$. For $h\in\ff R$, $h(v)=v+c(v)$ with $c$ continuous and bounded, so $\alpha(k,v)$ is within bounded distance of $k$, and $\Psi_1(h)=\mathrm{id}$ (homomorphisms at bounded distance agree, as in MST's proof of Thm.~4.8).
+(4) Gabber--Galil's bound holds for $(\Z/m)^2$ for every $m$, combined with Proposition~\ref{prop:levels}.
+(5) This is note~III, Thm.~2.2, applied to the tail coordinates at each depth (for odd depth, $x$ carries one more digit than $y$; the tail coordinates are again a copy of $\Z_2^2$).
+\end{proof}
+
+\begin{proposition}[rank one has a trivial shadow]
+For a free minimal $\Z$-action (e.g.\ the binary odometer underlying the fair hierarchy) with ergodic invariant $\mu$, $\Psi_1$ takes values in $\{\pm1\}$ (MST Thm.~4.7 with $d=1$). The shadow group of any family of outer symmetries is therefore finite. A non-amenable shadow group, which is the engine of Theorem~\ref{thm:outer}, first appears at rank two, and digit interleaving manufactures that rank from a single binary hierarchy.
+\end{proposition}
+
+\begin{remark}[Julien--Sadun reading]
+The suspension of the $\Z^2$-odometer is the $2$-adic solenoid, the inverse limit of $T^2$ under $\times2$. $A$ and $B$ induce homeomorphisms that are pure linear shape changes, with trivial quasi-translation and MLD parts in the JS decomposition. The expansion of Theorem~\ref{thm:outer} is entirely visible in their cohomological deformation class: the free subgroup of $SL_2(\Z)$ acting on $H^1=\Z[\frac12]^2$.
+\end{remark}
+
+\begin{conjecture}[shadow criterion]
+Let $R$ come from a free minimal uniquely ergodic $\Z^d$-action on a Cantor set with amenable $\ff R$, and let $S\subset\mathrm{Aut}_\mu(\ff R)$ be finite, symmetric and profinite-structure preserving. If $\langle\Psi_1(S)\rangle$ is amenable, then $P_S$ has no spectral gap.
+The obstacle is controlling $\ker\Psi_1\cap\langle S\rangle$. JS's decomposition suggests that, after suspension, elements with trivial shadow are quasi-translations up to MLD/conjugacy; if this kernel is amenable, the conjecture follows from the proof of Theorem~\ref{thm:nogo} applied to the extension. For $d\ge2$ the hypothesis on $\ff R$ is essential: Elek--Monod give minimal $\Z^2$-systems whose full group contains $F_2$.
+\end{conjecture}
+
+\section{The local lemma as frequency drift}
+
+\begin{lemma}[Schur--Kesten criterion]\label{lem:sk}
+Let $\Omega$ be countable, and let $P=\sum_g\pi_gT_g$ on $\ell^2(\Omega)$ with $\pi_g=\pi_{g^{-1}}\ge0$, $\sum\pi_g=1$. Each $T_g$ is \emph{monomial}: $(T_gf)(\omega)=c_g(\omega)f(g\omega)$ with $|c_g|=1$ and $g$ a bijection of $\Omega$, and $P$ is self-adjoint. If $N:\Omega\to(0,\infty)$ satisfies
+\[\sup_{\omega}\ \sum_g\pi_g\sqrt{N(g\omega)/N(\omega)}\ \le\ \lambda,\]
+then $\|P\|\le\lambda$.
+\end{lemma}
+
+\begin{proof}
+$|\langle f,Pf\rangle|\le\sum_g\pi_g\sum_\omega|f(\omega)||f(g\omega)|$. Bound each product by $\frac12\big(t|f(\omega)|^2+t^{-1}|f(g\omega)|^2\big)$ with $t=\sqrt{N(g\omega)/N(\omega)}$. The first half sums to at most $\frac\lambda2\|f\|^2$. For the second, substitute $\eta=g\omega$; using $\pi_g=\pi_{g^{-1}}$ it equals $\frac12\sum_\eta|f(\eta)|^2\sum_h\pi_h\sqrt{N(h\eta)/N(\eta)}\le\frac\lambda2\|f\|^2$. Self-adjointness gives $\|P\|=\sup|\langle f,Pf\rangle|/\|f\|^2$.
+\end{proof}
+
+\begin{corollary}[Kesten]
+For the free group $F_k$ with uniform generators and $N(\omega)=\gamma^{2|\omega|}$, each $\omega\ne e$ has $2k-1$ outward and one inward neighbour. Optimizing $\gamma$ gives $\lambda=\sqrt{2k-1}/k$, Kesten's sharp bound.
+\end{corollary}
+
+\begin{remark}[Gabber--Galil is outward drift on the dual]
+Fourier transform turns $P_{S_{GG}}$ on $L^2_0((\Z/m)^2)$ into a symmetric combination of monomial operators on the nonzero frequencies. The linear parts act by $A^{-T},B^{-T}$; translations contribute phases, which Lemma~\ref{lem:sk} ignores. Gabber--Galil and Jimbo--Maruoka choose $N$ from a diamond-shaped order in which, for \emph{every} nonzero frequency, outward moves outnumber inward ones; this is the local lemma, and it gives $5\sqrt2/8$. Frequencies here are graded by depth exactly as in note~I's Weyl bands, and the shears preserve depth. So expansion is \emph{outward drift within each band}: a non-amenable, tree-like dual dynamics. This is the precise form of ``local neighbourhood $\Rightarrow$ global mixing''.
+\end{remark}
+
+\section{Galton--Watson duality: the network's local lemma}
+
+For an activation at its variance fixed point, the normalized correlation map $\rho$ is a probability generating function (squared normalized Hermite coefficients plus a bias constant), with mean $\chi_1=\rho'(1)$ and extinction probability $q$. Notes~I--II showed that the depth-$D$ weight-averaged input-to-output sensitivity splits over input moment orders with weights $b^{(D)}_r=P(Z_D=r)$ for the Galton--Watson process $Z$ with offspring law $\rho$. The dual action of a layer on moment orders is a branching step: each order-$r$ ``particle'' is replaced by an independent sum of offspring.
+
+\begin{definition}
+The \emph{degree-$\le t$ leakage} at depth $D$ is $\Lambda_t(D)=P(1\le Z_D\le t)$, the share of output second moment carried by input orders $1,\dots,t$. The \emph{input-dependence} is $\Lambda_\infty(D)=P(Z_D\ge1)$.
+\end{definition}
+
+\begin{theorem}[trichotomy]\label{thm:gw}
+\begin{enumerate}
+\item \emph{Subcritical} ($\chi_1<1$, ordered): $\Lambda_\infty(D)\le\chi_1^D$. The network forgets its input exponentially: structure wins.
+\item \emph{Critical} ($\chi_1=1$; ReLU at He initialization for every weight scale): if the offspring tail is stable of index $1+\beta$, then $\Lambda_\infty(D)\asymp D^{-1/\beta}$ (Slack). For ReLU, $\beta=\frac12$ and $\Lambda_\infty(D)\sim9\pi^2/(2D^2)$. Leakage is polynomial and there is no gap in depth.
+\item \emph{Supercritical} ($\chi_1>1$, chaotic): $\Lambda_\infty(D)\to1-q>0$, while for each fixed $t$, $\Lambda_t(D)\le C_t\,\rho'(q)^D$ with $\rho'(q)<1$ (Athreya--Ney; if $q=0$ the rate is $p_1$). Every fixed-degree test of the input is fooled exponentially fast, while a fraction $1-q$ of input randomness survives at ever higher orders. With the input as the seed, the network is a pseudorandom generator for low-degree tests.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+(1) Markov's inequality: $P(Z_D\ge1)\le\E Z_D=\chi_1^D$.
+(2) Slack's theorem for critical processes in the domain of attraction of a stable law; for ReLU, $\rho(1-x)=1-x+\frac{2\sqrt2}{3\pi}x^{3/2}+O(x^{5/2})$ (note~I).
+(3) Standard limit theory for supercritical processes: $P(Z_D=k)\sim c_k\rho'(q)^D$ for each fixed $k\ge1$ (Harris; Athreya--Ney, Ch.~I).
+\end{proof}
+
+\begin{center}\small
+\begin{tabular}{lccccccc}
+\toprule
+network & $\chi_1$ & $q$ & rate & $\Lambda_3(4)$ & $\Lambda_3(8)$ & $\Lambda_3(16)$ & $\Lambda_3(32)$\\
+\midrule
+tanh, $\sigma_w=0.8,\sigma_b=0.3$ (ordered) & 0.496 & 1 & 0.496 & 5.8e-2 & 3.5e-3 & 1.3e-5 & 1.7e-10\\
+tanh, $\sigma_w=2.5,\sigma_b=0$ (chaotic) & 1.606 & 0 & 0.838 & 6.4e-1 & 3.4e-1 & 8.3e-2 & 5.0e-3\\
+ReLU, He (critical) & 1 & 1 & -- & 2.6e-1 & 1.1e-1 & 3.1e-2 & 7.2e-3\\
+\bottomrule
+\end{tabular}
+\end{center}
+\noindent Successive ratios confirm the rates: $0.496^{16}\approx1.4\times10^{-5}$ against an observed $1.3\times10^{-5}$; $0.838^{16}\approx0.059$ against an observed $0.060$; and ReLU $\approx(16/32)^{2}$.
+
+\begin{remark}[the analogy made exact]
+Gabber--Galil: a \emph{single} frequency performs a walk whose outward drift (non-amenability) gives a spectral gap. Networks: a \emph{branching} population of moment orders whose mean offspring decides everything.
+\begin{itemize}
+\item Supercritical networks behave like expanders: mass escapes to high frequency and low-degree tests are fooled.
+\item Subcritical networks contract onto structure.
+\item He-ReLU sits exactly on the boundary. This is the network-internal reason, complementary to Theorem~\ref{thm:nogo}, why expansion must be imported, and why note~II's seed ceiling is governed by a critical, heavy-tailed law.
+\end{itemize}
+\end{remark}
+
+\section{Neural Gabber--Galil lemma (walk form)}
+
+\begin{lemma}[collapse never closes a gap]\label{lem:collapse}
+Let $P$ be $\mu$-reversible on a finite set $V$ with spectral gap $\gamma$, and let $\pi:V\to W$ be any partition. The lumped kernel $\bar P(a,b)=\mu(a)^{-1}\sum_{u\in a,v\in b}\mu(u)P(u,v)$ is $\bar\mu$-reversible with gap $\ge\gamma$.
+\end{lemma}
+
+\begin{proof}
+For $g$ on $W$, $\mathcal E_{\bar P}(g)=\mathcal E_P(g\circ\pi)$ and $\Var_{\bar\mu}(g)=\Var_\mu(g\circ\pi)$. The gap of $\bar P$ is an infimum of Rayleigh quotients over a subspace of those defining $\gamma$.
+\end{proof}
+
+\begin{lemma}[Metropolis comparison]\label{lem:metro}
+If $\bar P$ is $\bar\mu$-reversible with gap $\bar\gamma$ and $h>0$ with $\bar\mu(h)=1$, then $K(a,b)=\bar P(a,b)\min(1,h(b)/h(a))$ ($a\ne b$) is $h\bar\mu$-reversible with gap $\ge\bar\gamma\,\min h/\max h$.
+\end{lemma}
+
+\begin{proof}
+$\mathcal E_K(g)=\frac12\sum\bar\mu(a)\bar P(a,b)\min(h(a),h(b))(g(a)-g(b))^2$, which is at least $\min h\cdot\mathcal E_{\bar P}(g)\ge\min h\,\bar\gamma\Var_{\bar\mu}(g)$. Also $\Var_{h\bar\mu}(g)\le\int(g-\bar\mu g)^2h\,d\bar\mu\le\max h\Var_{\bar\mu}(g)$.
+\end{proof}
+
+\begin{theorem}[neural Gabber--Galil lemma]\label{thm:ngg}
+Let the source be depth $N=2n$ of the fair binary hierarchy with the interleaved Gabber--Galil walk, of gap $\gamma\ge1-5\sqrt2/8$ (Theorem~\ref{thm:outer}). Let $\mathcal C$ be \emph{any} partition of the depth-$N$ cylinders induced by a network: continuation classes, PB $\varepsilon$-chain classes of any layer's representation (note~III), or activation tiles (note~II). Let $h(a)$ be the class-averaged gain normalized to $\bar\mu(h)=1$, restricted to classes with positive gain. Then the Metropolized lumped walk on $\mathcal C$ is reversible with respect to the gain-weighted class law, the network's state seen through its own distinctions. Its spectral gap is
+\[\ \ge\ \Big(1-\tfrac{5\sqrt2}{8}\Big)\cdot\frac{\min_ah(a)}{\max_ah(a)}.\]
+The certificate depends on the weights only through the class-level gains. Consequently, by the expander-walk Chernoff bound (Gillman; Lezaud), for any class readout $|g|\le1$ the average along $t$ steps from stationarity deviates from its gain-weighted mean by more than $\varepsilon$ with probability $\le2\exp(-c\,\varepsilon^2\gamma_{\rm cert}t)$. Each step uses $3$ random bits plus one Metropolis coin.
+\end{theorem}
+
+\begin{proof}
+Combine Theorem~\ref{thm:outer}(4), Lemma~\ref{lem:collapse} and Lemma~\ref{lem:metro}. Concentration for reversible chains with spectral gap is Gillman/Lezaud.
+\end{proof}
+
+\noindent\emph{Numerics} ($n=5$, so $1024$ source cylinders). Cylinders are mapped to Cantor-structured inputs and pushed through a random He-ReLU network (width $256$, depth $8$); classes are PB $\varepsilon$-chain classes of the output and $h$ is the class-averaged $\|h_L\|_1$.
+\begin{center}\small
+\begin{tabular}{lccccc}
+\toprule
+$\varepsilon$ & classes & source gap & lumped gap & gain-targeted gap & certified bound\\
+\midrule
+0.02 & 302 & 0.213 & 0.243 & 0.233 & 0.152\\
+0.05 & 88 & 0.213 & 0.297 & 0.281 & 0.155\\
+0.10 & 30 & 0.213 & 0.299 & 0.303 & 0.163\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{remark}[what the lemma does and does not give]
+The network cannot destroy expansion, only coarsen it (Lemma~\ref{lem:collapse}); weights enter only through the gain spread, which shrinks as classes coarsen with depth (note~III). So expanders give \emph{certified, randomness-efficient walks over what the network distinguishes}. They do not lower the variance floor of estimating a mean (note~II's ceiling): the mean is structure, and the walk only samples it.
+\end{remark}
+
+\section{Synthesis}
+\begin{center}\small
+\begin{tabular}{p{0.3\linewidth}p{0.3\linewidth}p{0.3\linewidth}}
+\toprule
+source of transformations & invariant measure / amenability & expansion\\
+\midrule
+inner arrows (tail, continuation, odometer) & yes / amenable & never (Thm.~\ref{thm:nogo})\\
+semigroupoid arrows ($\mathcal O_2$, Thompson $V$) & no / non-amenable & only modular (KMS) structure\\
+outer rank-2 symmetries (interleaved GG) & yes / non-amenable shadow $F_2$ & uniform, constant degree (Thm.~\ref{thm:outer})\\
+network depth, He-ReLU & -- / critical GW & none: polynomial (Thm.~\ref{thm:gw})\\
+network depth, chaotic & -- / supercritical GW & PRG for low-degree tests\\
+lumped onto network classes & gain-weighted & certified (Thm.~\ref{thm:ngg})\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Open problems}
+\begin{enumerate}
+\item \emph{Shadow criterion} (Conjecture above): characterize expansion of outer families by non-amenability of their MST/JS shadows.
+\item \emph{Expansion from the semigroupoid.} Does Thompson's $V$, acting on $L^2(\{0,1\}^{\N})$ through the Koopman representation with its modular cocycle, have a spectral gap for some finite generating set? A yes would turn the semigroupoid arrows themselves, rather than outer symmetries, into expanders, linked to the KMS structure.
+\item \emph{Neural shadows.} Define a cohomological invariant of a network layer's merging tree map (e.g.\ through the PV complex of its tile hierarchy) that extends MST/JS shadows, and decide when weight-derived maps can be outer symmetries.
+\item \emph{Supercritical seeds.} For chaotic networks, derive the analogue of note~II's lower bound: the GW law now pushes mass to high orders, so designs matter less and the ceiling changes.
+\end{enumerate}
+
+\appendix
+\section{Scripts}
+\texttt{code/note4\_checks.py}: interleaved maps preserve all cylinders; Sanov relations absent to length $8$; Galton--Watson leakage for tanh and ReLU. \texttt{code/neural\_gg.py}: the neural Gabber--Galil walk on network $\varepsilon$-chain classes.
+\end{document}
