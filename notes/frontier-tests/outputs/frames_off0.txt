@@ -1,0 +1,3 @@
+iid Gaussian                                       MSE 1.200e-05 (+-3.8e-07)
+iid Gaussian, antithetic                           MSE 1.084e-05 (+-5.1e-07)
+signed-Hadamard frames + antipodes, exact radius   MSE 7.172e-06 (+-9.2e-08)

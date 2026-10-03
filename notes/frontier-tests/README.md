@@ -19,6 +19,7 @@ while looking for a route to the top of the leaderboard.
 | corrected restriction hierarchy (W1 singular frame, exact psi at layer 1, coupled levels, optimal multilevel allocation) | work x 15.4 |
 | paired wall-source correction around the top-256 frame | Var(D) = 0.54 Var(F) at 3 passes |
 | layer-1 frame regression (top 8 / 256 coordinates) | R^2 0.007 / 0.16 (`cv1024.py`) |
+| orthonormal frames + antipodes + exact radius (the leaders' Phase 1 quadrature family) | MSE 7.2e-6 vs 1.2e-5 i.i.d. at 6144 passes, a 1.7x gain (`frames.py`) |
 
 To match the frontier by sampling at the 10% floor, the variance would have to fall by about 573x.
 
