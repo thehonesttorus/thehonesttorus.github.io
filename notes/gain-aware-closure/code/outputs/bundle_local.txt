@@ -1,0 +1,15 @@
+  batch 10/50  75s
+  batch 20/50  187s
+  batch 30/50  336s
+  batch 40/50  477s
+  batch 50/50  613s
+n=256 L=16 s=0 T=1000000: local defect of one Gaussian step (prediction of layer l+2 mean from moments of h_l)
+ layer | closure: rms   8*scale |   W-frame: MSE/closure 8*scale      data: MSE/closure 8*scale      gain: MSE/closure 8*scale    random: MSE/closure 8*scale
+    2  | 1.36e-03 +0.0108 |    0.945     +0.0108       0.824     +0.0100       0.440     -0.0044       0.996     +0.0107   
+    4  | 2.30e-03 +0.0118 |    0.861     +0.0115       0.374     +0.0059       0.304     -0.0033       0.999     +0.0118   
+/tmp/claude-0/-home-user-thehonesttorus-github-io/2cab30f0-c454-5769-8d9a-8195cd80a5f3/scratchpad/num12/bundle_local.py:49: RuntimeWarning: invalid value encountered in sqrt
+  sig = np.sqrt(var); a = mu/sig; return sig*(a*ndtr(a) + phi(a))
+    6  | 2.25e-03 +0.0116 |      nan     +nan       0.252     +0.0039       0.270     -0.0013       0.999     +0.0116   
+    8  | 2.03e-03 +0.0075 |    0.845     +0.0070       0.218     +0.0020       0.399     -0.0012       1.000     +0.0075   
+   12  | 1.99e-03 +0.0045 |    0.722     +0.0040       0.142     +0.0010       0.293     -0.0005       0.999     +0.0045   
+   16  | 1.76e-03 +0.0021 |    0.962     +0.0021       0.115     +0.0004       0.439     -0.0003       1.000     +0.0021   
