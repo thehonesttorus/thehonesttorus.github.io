@@ -1,0 +1,10 @@
+Official harness (whest run, mini split streamed, 1 BLAS thread, in-process, residual cap relaxed): open-source chain v29
+  3 MLPs: adjusted 6.00e-9, raw final MSE 2.33e-8, compute 0.258 B. (Subprocess runner on this machine: residual 0.47 s > 0.4 cap on
+  the first MLP and two worker failures; the grader accepted the same code, so local residual time is slower than the grader's.)
+Profile (one MLP, 0.267 B): matmul 91.2% (1085 Strassen sub-block calls), einsum 3.3%, add 1.5%, linalg.qr 1.1%, copyto 1.0%, multiply 0.8%.
+Readout truncation at the final ReLU (same 524k samples, official net 0):
+  Gaussian (mu, sigma) readout vs sample mean: MSE 1.8e-7; + k3: 2.2e-8; + k3 + k4 + k3^2: 5.3e-10.
+  Standardized cumulants of z16: |k3|/s^3 median 0.088; k4/s^4 median 0.064; a = mu/sigma 5-95%: [-5.3, 5.1].
+Oracle: inject the TRUE post-activation mean (1e9 truth) entering chosen layers of the open-source chain (net 0):
+  none 2.19e-8 | layer 16 only 4.18e-9 | layers 9,16 4.18e-9 | 5,9,13,16 4.17e-9 | all layers 4.16e-9
+  => 81% of the final error is the mean error inherited at layer 15 (passed linearly through W16); the final step's own error is 4e-9.

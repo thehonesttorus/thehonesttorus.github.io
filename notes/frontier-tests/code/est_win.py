@@ -274,6 +274,8 @@ NO_SRC_LAST = _os.environ.get("V19_NO_SRC_LAST", "0") == "1"  # V19 probe: D3(la
 NO_CORR = _os.environ.get("V17_NO_CORR", "1") == "1"
 LAM = [c * float(_os.environ.get("V17_LAM_SCALE", "1")) for c in LAM]
 WIN = int(_os.environ.get("K3_WIN", "0"))
+ORACLE_LAYERS = ()
+ORACLE_PREV = None  # true post-activation means per layer (oracle tests)
 GOLD = None  # per-layer gain variance born in dropped (old) layers; set by the runner
 DUMP = []
 DEBUG = []  # parity_v17.py: per-layer dict of diagnostics when V17_DEBUG=1
@@ -434,6 +436,8 @@ class Estimator(BaseEstimator):
             w32 = w if w.dtype == fnp.float32 else w.astype(f32)
             W = w32.T
             # ---- linear ----
+            if ORACLE_PREV is not None and li in ORACLE_LAYERS and li > 0:
+                mu = fnp.asarray(ORACLE_PREV[li - 1], dtype=f32)
             mu = W @ mu
             if trim:
                 # only var = diag(C_pre) is consumed: C_pre[a,a] = sum_i w32[i,a] (C w32)[i,a]

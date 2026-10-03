@@ -1,0 +1,42 @@
+matmul f32 A@B                                                2,146,435,072    0.9995 units
+matmul f16                                                    2,146,435,072    0.9995 units
+matmul f64                                                    4,292,870,144    1.9990 units
+matmul out=                                                   2,146,435,072    0.9995 units
+A @ A (same object)                                           2,146,435,072    0.9995 units
+A @ A.T (Gram, same object)                                   2,146,435,072    0.9995 units
+einsum ik,jk->ij (A,A) Gram                                   1,074,265,600    0.5002 units
+einsum ij,ia,jb->ab (S plain, A, A)                           4,292,870,144    1.9990 units
+einsum ij,ia,jb->ab (S symmetric-tagged, A, A)             ERROR SymmetryError: Tensor not symmetric along axes (0, 1): max deviation = inf (tolerance: atol=1e-
+Ssym @ A                                                      2,146,435,072    0.9995 units
+A.T @ (Ssym @ A) two matmuls                                  4,292,870,144    1.9990 units
+batched matmul (4,n,n)@(4,n,n)                                8,602,517,504    4.0059 units
+matvec A@v                                                        2,096,128    0.0010 units
+multiply A*B                                                      1,048,576    0.0005 units
+multiply out=                                                     1,048,576    0.0005 units
+add A+B                                                           1,048,576    0.0005 units
+outer(v,v)                                                          524,800    0.0002 units
+sum(A, axis=0)                                                    1,047,552    0.0005 units
+einsum ij,ij->i (rowwise dot)                                     2,096,128    0.0010 units
+A[:512] slice (getitem)                                                   0    0.0000 units
+A.T (transpose)                                                           0    0.0000 units
+reshape                                                           1,048,576    0.0005 units
+copy                                                              1,048,576    0.0005 units
+astype f32->f16                                                   1,048,576    0.0005 units
+astype f64->f32                                                   2,097,152    0.0010 units
+fill_diagonal                                                     1,049,600    0.0005 units
+diag(A)                                                                   0    0.0000 units
+as_symmetric(S)                                                   7,340,031    0.0034 units
+stats.norm.cdf(v) f32                                                98,304    0.0000 units
+stats.norm.pdf(v) f32                                                55,296    0.0000 units
+exp(v)                                                               16,384    0.0000 units
+sqrt(v)                                                               1,024    0.0000 units
+maximum(A,0)                                                      1,048,576    0.0005 units
+where(A>0,A,0)                                                    5,242,880    0.0024 units
+linalg.qr(A[:, :384])                                           528,482,304    0.2461 units
+linalg.svd(A) full                                           27,917,287,424   13.0000 units
+linalg.eigh(Ssym)                                             9,663,676,416    4.5000 units
+linalg.cholesky(S+nI)                                           359,488,341    0.1674 units
+linalg.solve(S, A)                                            2,863,311,530    1.3333 units
+linalg.inv(S)                                                 2,147,483,648    1.0000 units
+fft.rfft(A, axis=1)                                              26,214,400    0.0122 units
+random standard_normal (n,n)                                     33,554,432    0.0156 units
