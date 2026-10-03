@@ -1,0 +1,6 @@
+layer 10: old births b<= 5: input-space energy in top r: r=1:0.006 r=8:0.045 r=32:0.156 r=128:0.457 r=384:0.834 | participation ratio 412.9
+          single birth b=5: r=1:0.020 r=8:0.139 r=32:0.419 r=128:0.858 r=384:0.997 | PR 120.5
+layer 13: old births b<= 8: input-space energy in top r: r=1:0.007 r=8:0.054 r=32:0.179 r=128:0.489 r=384:0.847 | participation ratio 373.6
+          single birth b=8: r=1:0.035 r=8:0.223 r=32:0.589 r=128:0.957 r=384:1.000 | PR 70.3
+layer 16: old births b<= 11: input-space energy in top r: r=1:0.009 r=8:0.059 r=32:0.193 r=128:0.505 r=384:0.853 | participation ratio 352.7
+          single birth b=11: r=1:0.050 r=8:0.294 r=32:0.701 r=128:0.986 r=384:1.000 | PR 49.7

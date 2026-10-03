@@ -1,0 +1,11 @@
+plain MC: avg per-neuron Var 0.0789  -> MSE at the 10% floor (6554 samples) 1.20e-05
+E1 radial: Var ratio 0.9930
+E2 optimal IS (q* ~ phi*||R||): best possible variance factor 0.9858
+E3 level-0 evaluator (deterministic): MSE vs truth 2.32e-01
+   level    0 ->   16: Var(D_j)/Var(F) 0.1415, mean |E D_j| 6.63e-02
+   level   16 ->   64: Var(D_j)/Var(F) 0.3270, mean |E D_j| 8.27e-02
+   level   64 ->  256: Var(D_j)/Var(F) 0.7254, mean |E D_j| 1.93e-01
+   level  256 -> 1024: Var(D_j)/Var(F) 0.9858, mean |E D_j| 1.76e-01
+E3 MLMC work / plain MC work (optimal allocation): 15.422   (<1 means the hierarchy wins)
+E4 paired correction (k=256): Var(D)/Var(F) 0.5353; Var(F(x0))/Var(F) 0.6329
+E5 frontier scale: the open-source chain's final MSE is ~2.1e-8; to match it by sampling at the 10% floor needs Var/573
