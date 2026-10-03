@@ -1,0 +1,366 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{booktabs}
+\usepackage[expansion=false]{microtype}
+\usepackage{xcolor}
+\usepackage[colorlinks=true,linkcolor=blue!50!black,citecolor=blue!50!black,urlcolor=blue!50!black]{hyperref}
+\setlength{\emergencystretch}{3em}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{problem}[theorem]{Problem}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\Z}{\mathbb Z}
+\newcommand{\R}{\mathbb R}
+\newcommand{\Q}{\mathbb Q}
+\newcommand{\N}{\mathbb N}
+\newcommand{\E}{\mathbb E}
+\newcommand{\F}{\mathbb F}
+\newcommand{\Tr}{\operatorname{Tr}}
+\newcommand{\Sig}{\operatorname{Sig}}
+\newcommand{\Ind}{\operatorname{Ind}}
+\newcommand{\supp}{\operatorname{supp}}
+
+\title{Codes from order\\[4pt]
+\large expanders, quasicrystal codes, and the entropy price of local indistinguishability}
+\author{Working note VI for the continuation-algebra programme\\
+\small self-reviewed draft, not independently verified}
+\date{3 October 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Expanders, quantum codes and pseudorandomness share one currency: \emph{indistinguishability by local tests}. A code hides logical data from every small region (Knill--Laflamme). A small-bias set hides a random string from every parity. An expander hides its starting vertex from every walker after a few steps. We map the current frontier: good quantum LDPC codes, good locally testable codes, and, in September 2026, asymptotically good quantum locally testable codes, all built on high-dimensional expanders. We then use the programme's noncommutative geometry (NCG) as a \emph{computational} instrument, in the sense of Loring--Schulz-Baldes' spectral localizer, where a global $K$-theoretic index becomes the signature of one finite matrix. The test case is the code family that NCG owns: Li--Boyle's quantum codes built from quasicrystals.
+
+\textbf{(1) Exact dictionary.} For an orbit (Li--Boyle type) code, the Knill--Laflamme functional is the canonical trace of the hull algebra. Local indistinguishability is unique ergodicity; recoverability is the absence of homoclinic pairs. The entanglement spectrum of a region lies in the gap-labelling group $\tau_*K_0$.
+
+\textbf{(2) The entropy price (main theorem).} Consider any translation-orbit code on $N$ sites in one dimension that corrects erasure of an interval of length $\ell$. Its logical dimension $k$ (in bits) satisfies
+\[k\;\le\;N\,h_\nu(\ell)\;\le\;N\,\frac{S(\rho_\ell)}{\ell}\;\le\;\frac{N\log_2N}{\ell}.\]
+Here $h_\nu$ is the conditional entropy of the common window statistics and $S(\rho_\ell)$ the entanglement entropy of the window. The bound $k\ell\le N\log_2N$ is \emph{tight}: we construct codes with $k\ell=(1-o(1))N\log_2N$. In $d$ dimensions, $k\,r^d\lesssim N\log_2N$. Hiding information by translation-invariant pattern frequencies, the amenable mechanism of quasicrystals, is therefore information-poor.
+
+\textbf{(3) NCG computes the code.} The logical dimension is governed by the Anderson--Putnam/Rauzy graph of the window statistics. The size of the type class is exact via a Kirchhoff determinant (the BEST theorem), and $k\le N(b_1-1)\max\nu$ with $b_1$ the graph's first Betti number. For linearly recurrent (substitution) statistics this gives $k\ell=O(N)$, and Li--Boyle's Fibonacci codes are within a small constant of it. This answers, in one dimension, the open question of how code dimension relates to tiling cohomology.
+
+\textbf{(4) Sturmian codes.} The window spectrum has at most three distinct eigenvalues, each in $\Z+\alpha\Z$. The following are equivalent: bounded-type slope; Bellissard--Julien bi-Lipschitz embeddability of the hull; uniformly conditioned local states.
+
+\textbf{(5) Dichotomy.} Codes whose connectivity comes from amenable (``inner'') structure cannot reach linear distance (Baspin--Krishna plus hyperfiniteness). Codes whose orbit group is algebraic and expanding (CSS on left--right Cayley complexes) can. This is note~IV's ``inner never expands, outer rank two does'', in coding form. As a by-product, Ta-Shma's codes give explicit hierarchical quantum expanders of near-optimal size $\tilde\Theta(N/\varepsilon^2)$ on the tail algebra, improving note~I.
+\end{abstract}
+
+\tableofcontents
+
+\section{The frontier, in one currency}
+
+\textbf{Expanders.} Spectral expanders reach the Ramanujan bound: arithmetically (Lubotzky--Phillips--Sarnak, Margulis), and in all degrees for bipartite graphs (Marcus--Spielman--Srivastava, via interlacing). The zig-zag product gives combinatorial constructions. \emph{Lossless} vertex expanders are now explicit (Hsieh--Lubotzky--Mohanty--Reiner--Zhang, FOCS 2025). High-dimensional expanders replace graphs by complexes. Their relevant notions are coboundary and cosystolic expansion (Kaufman--Lubotzky's link to property testing) and \emph{product expansion} of local codes (Panteleev--Kalachev; Kalachev--Panteleev, FOCS 2025).
+
+\textbf{Codes on expanders.} Sipser--Spielman turned graph expansion into linear distance.
+\begin{itemize}
+\item Good classical LTCs: Dinur--Evra--Livne--Lubotzky--Mozes (left--right Cayley square complexes; Annals 2026) and Panteleev--Kalachev.
+\item Good quantum LDPC codes: Panteleev--Kalachev (lifted products), Leverrier--Z\'emor (quantum Tanner codes), and Dinur--Hsieh--Lin--Vidick (linear-time decoding).
+\item NLTS: proved from good qLDPC codes (Anshu--Breuckmann--Nirkhe).
+\item Quantum LTCs: Dinur--Lin--Vidick's cubical complexes (FOCS 2024) had polylogarithmic losses. These were removed in September 2026: Gay--Jeronimo construct explicit \emph{asymptotically good quantum locally testable codes} on Ramanujan cubical complexes (Jordan--Livn\'e quotients of products of trees) with product-expanding Reed--Solomon local codes. Two concurrent works use lossless cubical complexes and a product-expansion conjecture.
+\end{itemize}
+The converse direction is Baspin--Krishna: the distance of a quantum LDPC code is $O(\text{separator of its connectivity graph})$, so linear distance forces an expanding subgraph.
+
+\textbf{Pseudorandomness.} An $\varepsilon$-biased set in $\F_2^k$ is exactly the column set of an $\varepsilon$-balanced code. Ta-Shma (STOC 2017) gives explicit sets of size $O(k/\varepsilon^{2+o(1)})$, against Alon's lower bound $\Omega(k/(\varepsilon^2\log(1/\varepsilon)))$. Expander walks fool test functions in proportion to their Fourier mass (Cohen--Peri--Ta-Shma; Golowich--Vadhan). Quantumly:
+\begin{itemize}
+\item small-bias Pauli sets are quantum expanders (Ambainis--Smith; Ben-Aroya--Schwartz--Ta-Shma);
+\item approximate unitary designs arise in logarithmic depth by gluing local patches (Schuster--Haferkamp--Huang);
+\item pseudorandom unitaries exist (Ma--Huang).
+\end{itemize}
+
+\textbf{The common currency.} A subspace corrects erasure of a region $K$ iff every operator supported on $K$ is compressed to a scalar, $P_COP_C=c(O)P_C$. Equivalently, all code states have the same reduced state on $K$. This is \emph{perfect indistinguishability by tests supported on $K$}. Its classical shadow: a linear code's dual distance exceeds $t$ iff its uniform distribution is $t$-wise independent. Expansion is how one makes indistinguishability \emph{robust} and \emph{cheap to check}.
+
+\textbf{Aperiodic order as codes.} Li--Boyle (2023) observed that the Penrose, Ammann--Beenker and Fibonacci tilings define quantum codes. Superpose a tiling over its translates (and rotations). All finite patches have the same frequencies in all tilings, so these superpositions are locally indistinguishable. Any finite hole is uniquely refillable from its complement, so they are recoverable. Batle--Bednorz (July 2026) extend this to the Hat and Spectre monotiles. They leave open the \emph{code dimension} of finite approximants and its relation to the hull's first cohomology. These codes live in the programme's home territory (hulls, transversals, gap labels), so they are where NCG should first pay.
+
+\section{NCG as a computational unlock}
+
+\textbf{The pattern.} The spectral localizer is the model. Let $A$ be invertible on $\ell^2(\Z^d)\otimes\mathbb C^N$ ($d$ odd), with gap $g=\|A^{-1}\|^{-1}$, and let $D=\sum_j\Gamma_jX_j$ be the position Dirac operator. If $\|[D,A]\|\le g^3/(18\|A\|\kappa)$ and $\rho\ge2g/\kappa$, then the finite matrix
+\[L_{\kappa,\rho}=\begin{pmatrix}\kappa D_\rho&A_\rho\\A_\rho^*&-\kappa D_\rho\end{pmatrix}\]
+is invertible, and $\tfrac12\Sig L_{\kappa,\rho}=\Ind(\Pi A\Pi+1-\Pi)$ (Loring--Schulz-Baldes, Thm.~1). Three ingredients make a global invariant finitely computable:
+\begin{itemize}
+\item \emph{integrality}, from $K$-theory;
+\item a \emph{gap};
+\item \emph{locality}, a commutator bound.
+\end{itemize}
+The certificate has radius $\rho\gtrsim\|A\|\,\|[D,A]\|/g^2$ and is read off by a sparse $LDL^\top$ factorization, with no diagonalization and no sampling.
+
+The same NCG toolkit has other finite-volume devices:
+\begin{itemize}
+\item \emph{telescopic approximants} (Anderson--Putnam, Bellissard--Benedetti--Gambaudo; PV cohomology), finite CW complexes whose direct limit computes the hull's cohomology and $K$-theory;
+\item the \emph{gap-labelling theorem}, which computes the possible values of the trace on projections exactly;
+\item \emph{Michon trees}, which turn the metric geometry of a transversal into combinatorics, so that Assouad dimension decides Euclidean embeddability (Bellissard--Julien);
+\item the \emph{Jewett--Krieger construction for tilings} (Bellissard--Palmer), which converts an i.i.d.\ impurity distribution into a uniquely ergodic, repetitive tiling of almost the same entropy, by hierarchies of words with typical empirical statistics.
+\end{itemize}
+Below, each of these becomes a theorem or a computation about codes.
+
+\begin{center}\small
+\begin{tabular}{p{0.42\linewidth}p{0.5\linewidth}}
+\toprule
+NCG / tiling object & coding meaning (this note)\\
+\midrule
+canonical trace $\tau$ on $C(\Omega)\rtimes\Z^d$ & Knill--Laflamme functional $c(O)$ (Lemma~\ref{lem:kl})\\
+unique ergodicity & local indistinguishability (H1)\\
+trivial homoclinic relation on the code's orbits & local recoverability (H2)\\
+gap labels $\tau_*K_0$ & entanglement spectrum of regions (Prop.~\ref{prop:gl})\\
+Anderson--Putnam / Rauzy graph, its $b_1$ & logical capacity per window (Thm.~\ref{thm:betti})\\
+Kirchhoff determinant of the Rauzy Laplacian & exact size of the type class (Thm.~\ref{thm:betti})\\
+Michon tree, Assouad dimension & conditioning of local states (Thm.~\ref{thm:sturm})\\
+Jewett--Krieger hierarchies (typical types) & the extremal codes (Thm.~\ref{thm:tight})\\
+amenable (inner) groupoids, hyperfiniteness & no linear distance (Prop.~\ref{prop:nogo})\\
+spectral localizer & what \emph{is} locally computable: invariants, never logical data (\S\ref{sec:loc})\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Orbit codes and the trace}
+
+Let $\Lambda=(\Z/L)^d$ with $N=L^d$ sites, $A$ a finite alphabet, and $T^t$ the translations of $A^\Lambda$. Write $|w\rangle$ for the configuration basis of $(\mathbb C^A)^{\otimes\Lambda}$. A configuration is \emph{aperiodic} if its stabilizer is trivial. For aperiodic $w$, put $|\Psi_w\rangle=N^{-1/2}\sum_{t\in\Lambda}|T^tw\rangle$. An \emph{orbit code} is $C=\mathrm{span}\{|\Psi_w\rangle:w\in\mathcal W\}$, where $\mathcal W$ is a set of aperiodic configurations in distinct orbits. These states are orthonormal and translation invariant. For $K\subset\Lambda$ and a pattern $u\in A^K$, let $\nu_{w,K}(u)=N^{-1}\#\{t:(T^tw)|_K=u\}$.
+
+\begin{lemma}[Knill--Laflamme for orbit codes]\label{lem:kl}
+\begin{enumerate}
+\item[(i)] If $C$ corrects erasure of $K$, then $\nu_{w,K}$ is the same law $\nu$ for every $w\in\mathcal W$.
+\item[(ii)] Suppose $\nu_{w,K}=\nu$ for all $w$, and suppose
+\[(R_K):\qquad (T^tw)|_{\Lambda\setminus K}=(T^{t'}w')|_{\Lambda\setminus K}\;\Rightarrow\;(w,t)=(w',t').\]
+Then $C$ corrects erasure of $K$. Moreover, for every operator $O$ on $\mathcal H_K$,
+\[P_COP_C=\tau_\nu(O)\,P_C,\qquad\tau_\nu(O)=\sum_u\nu(u)\langle u|O|u\rangle .\]
+\item[(iii)] $C$ corrects erasure of $K$ iff it corrects erasure of every translate of $K$.
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+By orthogonality of configurations,
+\[\Tr_{K^c}|\Psi_w\rangle\langle\Psi_{w'}|=N^{-1}\sum_{t,t'}\mathbf 1\{(T^tw)_{K^c}=(T^{t'}w')_{K^c}\}\,|(T^tw)_K\rangle\langle(T^{t'}w')_K|.\]
+For $w=w'$ the diagonal entry at $u$ counts pairs with $T^tw=T^{t'}w$ and $(T^tw)_K=u$. By aperiodicity $t=t'$, so the entry is $\nu_{w,K}(u)$. The Knill--Laflamme condition, in the form $\Tr_{K^c}|\Psi_w\rangle\langle\Psi_{w'}|=\delta_{ww'}\rho_K$ (Li--Boyle App.~A), forces equal diagonals, which gives (i). Under $(R_K)$ only the terms $(w,t)=(w',t')$ survive, so $\Tr_{K^c}|\Psi_w\rangle\langle\Psi_{w'}|=\delta_{ww'}\sum_u\nu(u)|u\rangle\langle u|$, which gives (ii). For (iii), translations commute with $P_C$, so conjugating a recovery channel by $T^t$ recovers $K+t$.
+\end{proof}
+
+\begin{remark}[infinite volume]
+For a minimal, uniquely ergodic hull $\Omega$ with invariant measure $\mu$, take Li--Boyle's orbit superpositions and Følner averages. The same computation gives $P_COP_C=\tau(O)P_C$, with $\tau$ the canonical trace of $C(\Omega)\rtimes\Z^d$ restricted to local observables. Hypothesis (H1) is unique ergodicity. Hypothesis (H2) asks that the code's orbits meet no nontrivial homoclinic pair (two tilings agreeing off a bounded set). The Fibonacci ``singular pair'' is exactly such a pair.
+\end{remark}
+
+\section{The entropy price of local indistinguishability}
+
+\subsection{One dimension}
+On $\Lambda=\Z/N$, let $\nu$ be a law on $A^\ell$ (an $\ell$-window law). Let $H_\nu(j)$ be the entropy of its $j$-block marginal ($j\le\ell$), $h_\nu(\ell)=H_\nu(\ell)-H_\nu(\ell-1)$ the conditional entropy of a symbol given the previous $\ell-1$, and $p_\nu(\ell)=|\supp\nu|$. Write $k=\log_2\dim C$.
+
+\begin{theorem}[entropy price]\label{thm:price}
+Let $C$ be an orbit code on $\Z/N$ that corrects erasure of one (hence every) interval $K$ of length $\ell$, and let $\nu$ be the common window law. Then
+\[k\;\le\;N\,h_\nu(\ell)\;\le\;\frac{N\,H_\nu(\ell)}{\ell}\;\le\;\frac{N\log_2p_\nu(\ell)}{\ell}\;\le\;\frac{N\log_2N}{\ell}.\]
+\end{theorem}
+
+\begin{proof}
+Let $S$ be the set of words $x\in A^{\Z/N}$ (with origin) whose cyclic $\ell$-window law is $\nu$. Every codeword's necklace is the orbit of an aperiodic element of $S$ (Lemma~\ref{lem:kl}(i)), and such an orbit has $N$ elements, so $\dim C\le|S|/N$.
+
+Let $X$ be uniform on $S$. Since $S$ is translation invariant, so is the law of $X$. Each element of $S$ has window law $\nu$, so averaging over translations shows that the marginal of $X$ on any $\ell$ consecutive sites is exactly $\nu$. By the chain rule,
+\[\log_2|S|=H(X)\le H(X_0^{\ell-2})+\sum_{i=\ell-1}^{N-1}H\big(X_i\,\big|\,X_{i-\ell+1}^{i-1}\big)=H_\nu(\ell-1)+(N-\ell+1)\,h_\nu(\ell).\]
+Since $H_\nu(\ell-1)\le\log_2p_\nu(\ell-1)\le\log_2N$, we get $k\le\log_2|S|-\log_2N\le Nh_\nu(\ell)$.
+
+Conditioning reduces entropy, so the stationary conditional entropies $h_\nu(j)$ are nonincreasing in $j$, and $H_\nu(\ell)=\sum_{j\le\ell}h_\nu(j)\ge\ell\,h_\nu(\ell)$. Finally, $H_\nu\le\log_2p_\nu$, and a length-$N$ necklace has at most $N$ distinct windows.
+\end{proof}
+
+\begin{corollary}[rate $\le$ entanglement density]\label{cor:ent}
+If moreover $(R_K)$ holds, as in all Li--Boyle-type constructions, then $\rho_K=\sum_u\nu(u)|u\rangle\langle u|$ and
+\[\frac kN\;\le\;\frac{S(\rho_K)}{|K|}.\]
+The logical information per site is at most the entanglement entropy per site of a protected window.
+\end{corollary}
+
+\subsection{Tightness}
+
+\begin{theorem}[the bound is attained]\label{thm:tight}
+Let $|A|=q\ge2$, $\ell\ge2$, $m\ge1$ and $N=mq^\ell$, and assume $N\log_2q-q^\ell\log_2(qm+1)\ge(\tfrac N2+\ell)\log_2q+2\log_2N+2$. Then there is an orbit code on $\Z/N$ that corrects erasure of \emph{every} interval of length $\ell$, with
+\[k\;\ge\;N\log_2q-q^\ell\log_2(qm+1)-\log_2(N^2q^\ell+1)-1.\]
+Choosing $q^\ell\approx N/\log_2^2N$ gives $k\,\ell\ge(1-O(\log\log N/\log N))\,N\log_2N$. Hence
+\[\max\,k\ell=(1+o(1))\,N\log_2N\qquad\text{over orbit codes on }\Z/N.\]
+\end{theorem}
+
+\begin{proof}
+Take the uniform window law: every $\ell$-word occurs exactly $m$ times. Cyclic words with this law are Eulerian circuits of the de Bruijn multigraph $G$, whose $V=q^{\ell-1}$ vertices all have in- and out-degree $qm$. By the BEST theorem (with Whittle's labelling correction),
+\[\frac{|S|}N=t_w(G)\,\frac{\big((qm-1)!\big)^{V}}{(m!)^{q^\ell}}\;\ge\;\prod_v\frac{\binom{qm}{m,\dots,m}}{qm}\;\ge\;2^{N\log_2q-q^\ell\log_2(qm+1)},\]
+using $t_w\ge1$ and $\binom{n}{n/q,\dots}\ge q^n/(n+1)^{q-1}$.
+
+Two kinds of word are discarded:
+\begin{itemize}
+\item \emph{Periodic words:} at most $2q^{N/2}$.
+\item \emph{Self-conflicting words}, i.e.\ words agreeing with a nontrivial rotation outside some interval of length $\ell$: at most $N^2q^{N/2+\ell}$. The constraints $w_i=w_{i+x}$ off an interval leave at most $\gcd(x,N)+\ell$ free classes.
+\end{itemize}
+By assumption these are at most half of the necklaces.
+
+Among the remaining necklaces, call $w$ and $w'$ \emph{conflicting} if some rotations agree outside an interval of length $\ell$. Each necklace conflicts with at most $N^2q^\ell$ others (choose the rotation, the interval and its content), so a greedy independent set has at least the stated size. It satisfies Lemma~\ref{lem:kl}(ii) for every interval.
+\end{proof}
+
+\begin{remark}[why this is Jewett--Krieger]
+The extremal codes are approximants of hulls built from \emph{typical types}: words in which every window occurs with prescribed frequency. That is exactly the mechanism of Bellissard--Palmer's Jewett--Krieger construction, which builds uniquely ergodic, repetitive tilings of entropy close to $S(\mu)$ from words whose empirical laws are $\varepsilon$-close to $\mu$. The codes of Theorem~\ref{thm:tight} are the ``$\varepsilon=0$, one level'' version. Quasicrystals (zero entropy) and Jewett--Krieger hulls (maximal entropy) are the two ends of the trade-off in Theorem~\ref{thm:price}.
+\end{remark}
+
+\subsection{Higher dimensions}
+Order $\Z^d$ lexicographically and let $K_r=\{j:|j|_\infty<r,\ j\preceq0\}$ be the past half-cube. Any cube of side $2r-1$ contains a translate of it.
+
+\begin{theorem}[entropy price, $d$ dimensions]\label{thm:priced}
+Let $C$ be an orbit code on $(\Z/L)^d$ that corrects erasure of a region containing a translate of $K_r$. Let $Q_r=[0,r)^d$ and let $p_\nu(Q_r)\le N$ be the number of $Q_r$-patterns that occur. Then
+\[k\;\le\;\frac{N\log_2p_\nu(Q_r)}{r^d}+(2d-1)\,r\,L^{d-1}\log_2|A|\;\le\;\frac{N\log_2N}{r^d}+(2d-1)\,r\,L^{d-1}\log_2|A|.\]
+\end{theorem}
+
+\begin{proof}
+Use the same uniform $X$ on the type class. Write $h=H(X_0\mid X_{K_r\setminus0})$, which is well defined by stationarity. Apply the chain rule in lexicographic order. Sites whose past half-cube does not wrap around the torus contribute at most $h$. The at most $(2d-1)(r-1)L^{d-1}$ others contribute at most $\log_2|A|$ each.
+
+Inside $Q_r$, the earlier sites of $q\in Q_r$ lie in $q+K_r\setminus0$, because lexicographic order is translation invariant and $|q'-q|_\infty<r$. Hence $H_\nu(Q_r)\ge r^dh$, and $Q_r$ fits inside a translate of $K_r$.
+\end{proof}
+
+So $k\cdot|K|\lesssim2^dN\log_2N$ for orbit codes, in the spirit of Bravyi--Poulin--Terhal, though the proof uses only stationarity, never locality of checks. The proof uses amenability exactly once: the translation-invariant past cone, with a boundary of size $o(N)$.
+
+\section{The code computed by NCG: Rauzy graphs, Kirchhoff determinants, Betti numbers}
+
+Let $G_\nu$ be the \emph{Rauzy graph} of the window law. Its vertices are the $(\ell-1)$-words in $\supp\nu$ and its edges are the $\ell$-words, with multiplicities $N\nu(e)$. It is the one-dimensional Anderson--Putnam complex with collar $\ell-1$. Its cycle rank is $b_1(G_\nu)=p_\nu(\ell)-p_\nu(\ell-1)+1$, and its direct limit as $\ell\to\infty$ computes the hull's \v{C}ech $H^1$ (Anderson--Putnam/Gähler).
+
+\begin{theorem}[exact count and Betti bound]\label{thm:betti}
+\begin{enumerate}
+\item[(a)] The number of words (with origin) of length $N$ with window counts $N\nu$ is exactly
+\[N\cdot t_w(G_\nu)\,\frac{\prod_v(d_v-1)!}{\prod_e(N\nu(e))!},\]
+where $d_v=N\nu(v)$ and $t_w$, the number of spanning arborescences toward any vertex, equals the reduced Kirchhoff determinant of the Rauzy Laplacian. Hence $\dim C\le t_w\prod_v(d_v-1)!/\prod_e(N\nu_e)!$, computable in polynomial time.
+\item[(b)] The Betti bound holds:
+\[k\le N\sum_v\nu(v)\log_2\mathrm{outdeg}(v)\;\le\;N\,\big(b_1(G_\nu)-1\big)\max_v\nu(v).\]
+\item[(c)] If the window statistics satisfy $\max_v\nu(v)\le C/\ell$ and $b_1-1\le B$, then $k\ell\le BC\,N$. Linearly recurrent hulls satisfy such bounds (Durand: frequencies $\asymp1/\ell$, bounded first differences of complexity), and this includes all primitive substitutions.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+(a) An Eulerian circuit with a marked starting edge and labelled parallel edges is counted by $t_w\prod_v(d_v-1)!$ (BEST). Marking the start multiplies by $N$, and forgetting labels divides by $\prod_e m_e!$ exactly.
+
+(b) $h_\nu(\ell)=\sum_v\nu(v)H(\text{next}\mid v)\le\sum_v\nu(v)\log_2\mathrm{outdeg}(v)$. Then use $\log_2d\le d-1$ and $\sum_v(\mathrm{outdeg}(v)-1)=|E|-|V|=b_1-1$ for the strongly connected Rauzy graph, and apply Theorem~\ref{thm:price}.
+\end{proof}
+
+\textbf{Reading.} The capacity of a quasicrystal code is carried by the \emph{branching} of its Rauzy/Anderson--Putnam complex, i.e.\ by its first Betti number. The exact count adds a global Kirchhoff-determinant term, the analytic-torsion-like part, which is largest when the window graph expands. This answers the open question of Batle--Bednorz in one dimension: first cohomology enters the code dimension through the rank of the Anderson--Putnam cycle space, which bounds the number of right-special factors.
+
+\textbf{Numerical checks} (\texttt{code/necklace\_bound.py}, \texttt{code/lb\_fib.py}, \texttt{code/uniform\_type.py}).
+\begin{itemize}
+\item \emph{All binary necklaces} of length $16$ and $20$, every window length $\ell\in\{3,\dots,10\}$: every type class satisfies $\log_2|\text{class}|\le Nh_\nu(\ell)$, with equality only for classes of size $1$ with $h=0$. Greedy codes built inside the largest classes satisfy Knill--Laflamme \emph{exactly} on explicit states. For $N=12,\ell=3$ we get $5$ codewords, and for $N=14,\ell=4$ we get $7$; the maximal deviation is $0$.
+\item \emph{Li--Boyle's Fibonacci approximant codes}:
+\begin{center}\small
+\begin{tabular}{lccccc}
+\toprule
+$(k_0,k_1,n)$ & $N$ & $\ell=f_n+1$ & LB code $k$ (bits) & $Nh_\nu(\ell)$ & $N(b_1-1)\max\nu$\\
+\midrule
+$(3,4,4)$ & 47 & 6 & 1.00 & 10.40 & 11.00\\
+$(4,5,4)$ & 60 & 6 & 2.32 & 13.16 & 14.00\\
+$(5,6,5)$ & 118 & 9 & 3.91 & 15.92 & 17.00\\
+$(5,7,6)$ & 212 & 14 & 4.46 & 18.04 & 19.00\\
+$(6,7,6)$ & 225 & 14 & 5.49 & 18.68 & 20.00\\
+\bottomrule
+\end{tabular}
+\end{center}
+In every case the window laws of all seeds coincide at length $f_{n+1}$ and $b_1=2$, matching the Sturmian rank $\check H^1=\Z^2$. The ratio $k\ell/N$ is $0.13$--$0.34$, so $k\ell=\Theta(N)$. Li--Boyle use only the freedom at seed junctions. The bound also counts the interior right-special occurrences, roughly a factor $1.5$ more.
+\item \emph{Tightness}, from exact BEST counts for the uniform binary type (Kirchhoff determinants up to $V=4096$): $k\ge0.987N$ at $\ell=13$. The ratio $k\ell/(N\log_2N)$ climbs as $0.40,0.50,0.55,0.59,0.62,0.63$ for $\ell=4,6,8,10,12,13$ (with $m=\ell^2$), as predicted ($\approx\ell/\log_2N$).
+\end{itemize}
+
+\section{$K$-theory and metric geometry of the code}
+
+\begin{proposition}[entanglement spectra are gap labels]\label{prop:gl}
+For a Li--Boyle code on a minimal, uniquely ergodic $\Z^d$-hull $\Omega$, the reduced state of a region is $\rho_K=\sum_u\mu([u]_K)\,|u\rangle\langle u|$. Its spectrum lies in the frequency module $\mu(C(\Omega,\Z))=\{\int f\,d\mu:f\in C(\Omega,\Z)\}$, which by the gap-labelling theorem (Bellissard--Benedetti--Gambaudo; Benameur--Oyono-Oyono; Kaminker--Putnam) is $\tau_*K_0(C(\Omega)\rtimes\Z^d)$. The entanglement spectrum is thus quantized by $K$-theory. For a Sturmian hull of slope $\alpha$, $\tau_*K_0=\Z+\alpha\Z$.
+\end{proposition}
+
+That eigenvalues are frequencies is immediate. The content is the identification of the group they generate as a $K$-theoretic invariant, computable from the hull (Pimsner--Voiculescu in dimension one).
+
+\begin{theorem}[Sturmian codes]\label{thm:sturm}
+Let $\nu_\ell$ be the $\ell$-factor law of the Sturmian hull of slope $\alpha\notin\Q$.
+\begin{enumerate}
+\item[(a)] $\rho_\ell$ has $\ell+1$ nonzero eigenvalues taking at most three distinct values, each of the form $|p+q\alpha|$ with $p,q\in\Z$. This is the three-distance theorem: factor frequencies are the arcs of the circle cut by $\{-j\alpha\}_{j=0}^\ell$.
+\item[(b)] The following are equivalent:
+\begin{itemize}
+\item[(i)] $\alpha$ has bounded partial quotients;
+\item[(ii)] the hull, with its combinatorial metric, is bi-Lipschitz embeddable in some $\R^n$ (Bellissard--Julien, Thm.~11);
+\item[(iii)] the local states are uniformly conditioned, $\sup_\ell\lambda_{\max}(\rho_\ell)/\lambda_{\min}(\rho_\ell)<\infty$;
+\item[(iv)] $\sup_\ell\,\ell\,\lambda_{\max}(\rho_\ell)<\infty$.
+\end{itemize}
+\item[(c)] Under (i)--(iv), $S(\rho_\ell)=\log_2\ell+O(1)$, and $k\le Nh(\ell)=O(N/\ell)$ for any code with these statistics and $(R_K)$.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+(a) A factor's frequency is the measure of the set of phases coding it, an arc between consecutive points of $\{-j\alpha\}$. Apply the three-distance theorem. (b) (i)$\Leftrightarrow$(iv)$\Leftrightarrow$(iii) is classical Diophantine approximation: since the minimal gap is at most $1/(\ell+1)$, which is at most the maximal gap, $\ell\cdot$(gaps) stay bounded above and below iff $\alpha$ is badly approximable. (i)$\Leftrightarrow$(ii) is Bellissard--Julien. (c) $S\ge-\log_2\lambda_{\max}$, $S\le\log_2(\ell+1)$, and Theorem~\ref{thm:betti}(b) with $b_1=2$.
+\end{proof}
+
+\textbf{Numerical check} (\texttt{code/sturmian.py}). For the Fibonacci word ($\alpha=\varphi^{-2}$) and $\ell\in\{2,3,5,8,\dots,144\}$:
+\begin{itemize}
+\item the eigenvalues take exactly three values, apart from two at $\ell=2$;
+\item each is identified with its gap label, e.g.\ $(-55,144)$, $(34,-89)$, $(-21,55)$ at $\ell=144$;
+\item empirical frequencies from a $2\times10^6$-letter word agree to $5\times10^{-7}$;
+\item $S(\rho_\ell)-\log_2(\ell+1)\in[-0.081,-0.033]$.
+\end{itemize}
+Along $\ell=F_m$ we find $\ell\,h(\ell)\to1.12331$, which agrees to five digits with $\varphi^2H_2(\varphi^{-1})/\sqrt5$. So Fibonacci-statistics codes satisfy $k\lesssim1.123\,N/\ell$. We observed this limit, but did not prove it.
+
+\section{What localizers can and cannot see}\label{sec:loc}
+
+The spectral localizer and a code are two finite-volume statements with complementary content. The localizer says that \emph{invariants} protected by integrality, a gap and locality are readable inside a ball of radius $\rho\sim\|A\|\|[D,A]\|/g^2$. A code that corrects erasure of $K$ says that \emph{no} observable supported in $K$ (so no localizer of radius $<\mathrm{diam}K$) distinguishes codewords: $P_COP_C=\tau(O)P_C$ (Lemma~\ref{lem:kl}). For orbit codes the split is exact.
+\begin{itemize}
+\item Everything \emph{local} is common to all codewords and computable in finite volume: the window law, its gap labels, the bound $Nh_\nu$, the Betti bound and the Kirchhoff determinant. These are certificates of the code's \emph{parameters}.
+\item The logical \emph{data} is the choice of Eulerian circuit in the Rauzy graph, a global arrangement that the determinant counts only in aggregate.
+\end{itemize}
+The same split appears in the frontier constructions: Gay--Jeronimo bound the rate of good qLTCs by an Euler-characteristic count (local) and the distance by cosystolic expansion (global).
+
+\section{Inner never, outer rank two: the coding dichotomy}
+
+\begin{proposition}[inner no-go]\label{prop:nogo}
+Let $(C_n)$ be stabilizer codes whose connectivity graphs form a hyperfinite family of bounded degree. Then $d=o(n)$.
+
+Hyperfinite families include families of finite Schreier graphs of amenable groups (Schramm, Elek). In particular they include the finite levels of inner arrows of the odometer and tail groupoids (notes~I and~IV) and periodic approximants of $\Z^d$ tilings.
+\end{proposition}
+
+\begin{proof}
+Given $\varepsilon$, delete at most $\varepsilon n$ vertices to leave components of size $\le K(\varepsilon)$. Every subgraph $H$ with $|H|\ge3K(\varepsilon)$ then has a $2/3$-separator of size $\le\varepsilon n$, and smaller subgraphs trivially have one of size $\le|H|/3$. Hence the separation profile is $o(n)$, and Baspin--Krishna (Thm.~16, Cor.~18) gives $d=O(\text{separation})=o(n)$.
+\end{proof}
+
+\begin{center}\small
+\begin{tabular}{p{0.24\linewidth}p{0.22\linewidth}p{0.22\linewidth}p{0.22\linewidth}}
+\toprule
+orbit group & geometry & indistinguishability & best parameters\\
+\midrule
+spatial translations ($|\Gamma|=N$), Li--Boyle & amenable (quasicrystal, $\Z^d$) & frequencies (unique ergodicity) & $k|K|\lesssim N\log N$ (Thms.~\ref{thm:price}--\ref{thm:priced}, tight)\\
+inner arrows of AF/odometer & amenable, hyperfinite & --- & $d=o(n)$ (Prop.~\ref{prop:nogo})\\
+additive code $C_2\le\F_2^n$ (CSS, $|\Gamma|=2^{\Theta(n)}$) & left--right Cayley / cubical complexes, non-amenable & dual distance, product expansion & $k,d=\Theta(n)$; qLTC (2026)\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+This is note~IV's classification in coding form. Amenable (inner) symmetry supplies indistinguishability cheaply but cannot carry information at linear distance. Outer, non-amenable symmetry with two commuting actions (left and right multiplication, the square complexes of DELLM, Panteleev--Kalachev and Leverrier--Z\'emor) is where good codes start. That matches note~IV's finding that expansion starts at rank two.
+
+\section{Binary strings: hierarchical quantum expanders at near-optimal size}
+
+\begin{proposition}\label{prop:tashma}
+On the tail algebra $M_{2^N}$, with Weyl labels $w\in\F_2^{2N}$ and level conditional expectations $E_n$ (note~I), there are explicit arrow sets $S$ such that
+\[|S|=O(N/\varepsilon^{2+o(1)})\quad\text{and}\quad\|\Phi_{S,n}-E_n\|\le\varepsilon\ \text{for every level }n\text{ simultaneously.}\]
+Here $\Phi_{S,n}$ is the truncated arrow average. Conversely, any $S$ with $\|\Phi_S-E_0\|\le\varepsilon$ has $|S|=\Omega(N/(\varepsilon^2\log(1/\varepsilon)))$.
+\end{proposition}
+
+\begin{proof}
+By note~I (``bias $=$ sparsification'' and the truncation lemma of its \S5), an $\varepsilon$-biased set for the symplectic pairing works at all levels at once. The symplectic form is nondegenerate, so this is the same as $\varepsilon$-bias in $\F_2^{2N}$. The rows of a Ta-Shma $\varepsilon$-balanced code of dimension $2N$ give such a set. Conversely, $\|\Phi_S-E_0\|\le\varepsilon$ says exactly that $S$ is $\varepsilon$-biased, and Alon's rank bound applies.
+\end{proof}
+
+This closes note~I's gap between $O(N/\varepsilon^2)$ (random) and $O(N^2/\varepsilon^2)$ (AGHP explicit). Explicit hierarchical quantum expanders are now within an $\varepsilon^{o(1)}\log(1/\varepsilon)$ factor of optimal.
+
+\section{For the programme}
+\begin{itemize}
+\item \emph{Where the MLP sits.} By note~V, a ReLU layer's activation tiles are cells of a hyperplane arrangement. That is the de Bruijn dual-grid / cut-and-project picture of quasicrystals, with sign windows. Its neuron codes have Cover complexity $C(k,d)$, which is zero entropy. By Theorems~\ref{thm:price}--\ref{thm:betti}, frequency-type structure of this kind hides only $O(N\log N/|K|)$ bits from windows. The network's hard content (note~V's cancelling labels) is not stored in tile statistics.
+\item \emph{The localizer lesson for estimation.} Exact finite-volume computation needs integrality, a gap and locality. The MLP mean has no integrality: it is a Gaussian trace, an integrated density of states $\E F=\int_0^\infty\gamma(z_{L,j}>t)\,dt$, not a pairing. Computational unlocks for it must therefore come from the other NCG device, smooth functional calculus with locality (Prodan-type finite-volume convergence), or from exact structure (gap labels, hierarchies). Note~IV's criticality (polynomial Hermite decay for He-ReLU) is the obstruction to the first.
+\item \emph{Sophistication.} Jewett--Krieger (Bellissard--Palmer) says i.i.d.\ randomness equals a uniquely ergodic deterministic hierarchy plus entropy. Corollary~\ref{cor:ent} prices the hiding: rate $\le$ entanglement density. In note~II's language, the model (hierarchy) is cheap and the entropy is what hides information.
+\end{itemize}
+
+\section{Open problems}
+\begin{enumerate}
+\item \emph{Two-dimensional Betti bound.} For Penrose, Ammann--Beenker, Hat and Spectre codes ($\check H^1=\Z^4$ for the monotiles), is $k\le c\cdot(\text{rank of the Anderson--Putnam }H^1)\cdot N/r^2$? Theorem~\ref{thm:priced} gives $N\log N/r^2$.
+\item \emph{Approximate codes from Jewett--Krieger hulls.} Bellissard--Palmer words have $\varepsilon$-typical, not identical, statistics, so their orbit codes satisfy Knill--Laflamme only approximately. Do they give approximate erasure codes of rate near $S(\mu)$ with growing windows?
+\item \emph{Non-amenable orbit codes.} Does $k|K|=O(N\log N)$ persist for orbit codes on expander Cayley graphs? Our proof uses amenability once (the invariant past cone). Bethe-entropy heuristics on tree-like graphs leave room in the window range $\log N\lesssim|K|$.
+\item \emph{Localizers for recoverability.} Failure of recoverability is the homoclinic relation (singular pairs). Find a finite-volume (localizer-type) certificate of its triviality from the Anderson--Putnam data, settling Batle--Bednorz's singular-pair question.
+\end{enumerate}
+
+\appendix
+\section{Scripts}
+\texttt{code/necklace\_bound.py}: exhaustive type classes of binary necklaces ($N=16,20$) against Theorem~\ref{thm:price}; greedy codes; explicit Knill--Laflamme check. \texttt{code/lb\_fib.py}: Li--Boyle Fibonacci approximant codes against the entropy and Betti bounds. \texttt{code/uniform\_type.py}: exact BEST/Kirchhoff counts for Theorem~\ref{thm:tight}. \texttt{code/sturmian.py}: Fibonacci entanglement spectra, gap labels, $S(\ell)$ and $\ell h(\ell)$.
+\end{document}
