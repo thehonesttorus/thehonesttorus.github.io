@@ -1,0 +1,5 @@
+L=4: layer 1 k=4: 1.025 | layer 1 k=8: 1.041 | layer 1 k=12: 1.056 | middle k=4: 1.017 | middle k=8: 1.035 | middle k=12: 1.057 | layer L-1 k=4: 1.042 | layer L-1 k=8: 1.071 | layer L-1 k=12: 1.100
+L=8: layer 1 k=4: 1.006 | layer 1 k=8: 1.012 | layer 1 k=12: 1.020 | middle k=4: 1.020 | middle k=8: 1.040 | middle k=12: 1.058 | layer L-1 k=4: 1.043 | layer L-1 k=8: 1.073 | layer L-1 k=12: 1.101
+L=16: layer 1 k=4: 1.003 | layer 1 k=8: 1.006 | layer 1 k=12: 1.010 | middle k=4: 1.015 | middle k=8: 1.023 | middle k=12: 1.031 | layer L-1 k=4: 1.048 | layer L-1 k=8: 1.073 | layer L-1 k=12: 1.094
+
+[exited with code 0]
