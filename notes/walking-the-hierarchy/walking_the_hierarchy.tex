@@ -1,0 +1,202 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{booktabs}
+\usepackage[expansion=false]{microtype}
+\usepackage{xcolor}
+\usepackage[colorlinks=true,linkcolor=blue!50!black,citecolor=blue!50!black,urlcolor=blue!50!black]{hyperref}
+\setlength{\emergencystretch}{3em}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\R}{\mathbb R}
+\newcommand{\N}{\mathbb N}
+\newcommand{\E}{\mathbb E}
+\newcommand{\Var}{\operatorname{Var}}
+
+\title{Walking the hierarchy\\[4pt]
+\large last-point-of-contact Markov kernels, their exact spectra,\\ and what a walk can do for activation means}
+\author{Working note VII for the continuation-algebra programme\\
+\small self-reviewed draft, not independently verified}
+\date{3 October 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+The expander property, stated plainly: the average of node values along a short random walk approximates their mean, with explicit bounds. We build its analogue on a Cantor set, as proposed.
+\begin{itemize}
+\item The groupoid is the pair groupoid of the Cantor set, filtered by ``same cylinder'' relations.
+\item The functions on arrows are kernels $\psi(x\wedge y)$ that depend only on the \emph{last point of contact} $x\wedge y$ of two paths in the Michon tree, the same vertex that defines the ultrametric $d(x,y)=\kappa(x\wedge y)$.
+\item A nonnegative normalized kernel is one Markov step, convolution powers are walks, and the walks are Pearson--Bellissard-type processes on the Cantor set.
+\end{itemize}
+
+\textbf{(1) Exact spectrum (any tree, any masses).} Every such kernel is diagonal in the hierarchical Haar decomposition. On the detail space of vertex $v$ its eigenvalue is
+\[\lambda_v=1-\Pr(\text{contact strictly above }v)-\psi(v)\,\mu[v].\]
+Conversely, a spectrum comes from a Markov kernel iff an explicit recursion for $\psi$ stays nonnegative, so the best walk for given data is a convex program. The formula is verified to $10^{-11}$ on a random tree.
+
+\textbf{(2) Explicit walk bounds.} The exact variance of walk averages, and Hoeffding tails with factor $(1-\lambda^+)/(1+\lambda^+)$.
+
+\textbf{(3) What a walk cannot do.} A walk with nonnegative spectrum (every expander walk, every heat kernel) is never more accurate than independent sampling. It saves random bits, not forward passes. Gains need \emph{negative} eigenvalues, i.e.\ kernels that jump into a sibling subtree, and are capped by the largest single-level share of variance. The tail groupoid's stratification removes all coarse levels exactly.
+
+\textbf{(4) The weights enter through $\kappa$.} If the activation is $L$-Lipschitz for $\kappa$ and the Cantor set has box dimension $D$ in $\kappa$, the error is $O(L\,T^{-1/2-1/D})$, and this rate is optimal. Choosing $\kappa$ from the weights means choosing a hierarchy in which $D$ is small.
+
+\textbf{(5) The verdict for random ReLU networks.} Gaussian inputs admit exact fair Cantor codings along any orthonormal frame, so all of this is implementable. Measured at width $256$, stratification gains are:
+\begin{itemize}
+\item random frames: $\approx1.00\times$;
+\item a frame from the weights alone (the linearized network): $1.30\times$, $1.06\times$, 1.02$\times$ at depths $4,8,16$;
+\item pilot-estimated Stein/Hessian frames: $1.51\times$, $1.33\times$, 1.15$\times$.
+\end{itemize}
+The mechanism is real but its payoff is small, because a deep random network's variance does not live at coarse levels of any cheap hierarchy. In the mean-field limit it sits at Hermite degree $\sim L^2$, by note~IV's critical Galton--Watson law.
+\end{abstract}
+
+\section{The construction, made exact}
+
+\textbf{Tree, Cantor set, contact.} Let $T$ be a rooted, locally finite tree with no leaves (a Michon tree) and $\Omega=\partial T$ its space of infinite paths, a Cantor set. For $x\ne y$, the \emph{last point of contact} $x\wedge y$ is the deepest common vertex. A decreasing weight $\kappa:V\to(0,\infty)$ with $\kappa\to0$ along paths defines the ultrametric $d(x,y)=\kappa(x\wedge y)$; by Michon's theorem every ultrametric Cantor set arises this way (Bellissard--Julien). A probability $\mu$ with $\mu[v]>0$ fixes cylinder masses. Write $\mathcal F_n$ for the $\sigma$-algebra of depth-$n$ cylinders, $E_n$ for conditional expectation, and $\mathrm{sh}_u(x)=[u]\setminus[\text{child of }u\text{ on }x]$ for the shell of $u$ seen from $x$.
+
+\textbf{Groupoid and convolution.} The pair groupoid $\Omega\times\Omega$ is filtered by the closed subgroupoids $R^{(n)}=\{|x\wedge y|\ge n\}$, ``same depth-$n$ cylinder''. Its convolution algebra, with $\mu$ as Haar system, consists of kernels with $(k\star l)(x,y)=\int k(x,z)\,l(z,y)\,d\mu(z)$, acting on $L^2(\mu)$ by $Kf(x)=\int k(x,y)f(y)\,d\mu(y)$.
+\begin{itemize}
+\item A kernel is \emph{radial} if $k(x,y)=\psi(x\wedge y)$ for a function $\psi\ge0$ on vertices.
+\item It is \emph{Markov} if $\int k(x,y)\,d\mu(y)=1$, i.e.\ $\sum_{u\in\text{path}(x)}\psi(u)\,\mu(\mathrm{sh}_u(x))=1$; on a finite-depth tree, holding at the leaf is the deepest contact.
+\item The $t$-fold convolution power is then the $t$-step transition kernel. The process jumps from $x$ to $y$ with probability determined by \emph{where their paths separate}.
+\end{itemize}
+The conditional expectations $E_n$ (kernel $\mathbf 1\{|x\wedge y|\ge n\}/\mu[x]_n$) and the Pearson--Bellissard heat semigroups $e^{-t\Delta_s}$ are in this class.
+
+The \emph{tail groupoid}, whose arrows change a finite prefix and keep the tail, acts by bisections, i.e.\ inner symmetries (notes~I and~IV). It will supply the stratified schemes of \S3.
+
+\section{The exact spectrum}
+
+For a vertex $v$ with children $c_1,\dots,c_b$, the \emph{detail space} $D_v$ consists of the functions $\sum_ig_i\mathbf 1_{[c_i]}$ with $\sum_i\mu[c_i]g_i=0$. Then $L^2(\mu)=\mathbb C\oplus\bigoplus_vD_v$ orthogonally (martingale differences).
+
+\begin{theorem}[spectrum of last-point-of-contact kernels]\label{thm:spec}
+Let $K$ be a radial Markov kernel.
+\begin{enumerate}
+\item[(a)] $K$ is $\mu$-reversible.
+\item[(b)] Each $D_v$ is an eigenspace, with eigenvalue
+\[\lambda_v=1-\bar A_v-\psi(v)\,\mu[v],\qquad\bar A_v=\sum_{u\text{ strict ancestor of }v}\psi(u)\,\mu(\mathrm{sh}_u(v)).\]
+Here $\bar A_v$ is the probability that a step from a point of $[v]$ exits $[v]$, and it does not depend on the point.
+\item[(c)] Conversely, let $\lambda$ be given on vertices. Define $\psi(\text{root})=1-\lambda_{\text{root}}$ and, for a child $v'$ of $v$,
+\[\psi(v')=\psi(v)+\frac{\lambda_v-\lambda_{v'}}{\mu[v']}.\]
+Then the operator equal to $\lambda_v$ on each $D_v$ is a radial Markov kernel iff $\psi\ge0$ (and leaf holding $\ge0$). In particular, spectra that decrease with depth always qualify when $\lambda_{\text{root}}\le1$.
+\item[(d)] Radial kernels form a commutative algebra, and the optimal radial walk for given data $(e_v)$ is a convex program: minimize $\sum_ve_v\frac{1+\lambda_v}{1-\lambda_v}$ subject to the linear constraints of (c).
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+(a) holds because $\psi(x\wedge y)=\psi(y\wedge x)$.
+
+(b) Take $x\in[c_i]$ and $g\in D_v$. Split the integral over the shells of the vertices $u$ on the path of $x$:
+\begin{itemize}
+\item for $u$ strictly below $v$, the shell lies in $[c_i]$, where $g\equiv g_i$;
+\item for $u=v$, $\int_{[v]\setminus[c_i]}g\,d\mu=-\mu[c_i]g_i$;
+\item for $u$ above $v$, the shell misses $[v]$ and contributes $0$.
+\end{itemize}
+Using the Markov normalization, the contribution of the shells strictly below $v$ is $1-\bar A_v-\psi(v)\big(\mu[v]-\mu[c_i]\big)$. Hence
+\[Kg(x)=g_i\Big[1-\bar A_v-\psi(v)\big(\mu[v]-\mu[c_i]\big)-\psi(v)\mu[c_i]\Big]=g_i\big[1-\bar A_v-\psi(v)\mu[v]\big],\]
+which is independent of $i$.
+
+(c) Subtracting the formula of (b) for $v'$ from that for $v$ gives $\lambda_v-\lambda_{v'}=\mu[v'](\psi(v')-\psi(v))$, and $\lambda_{\text{root}}=1-\psi(\text{root})$. Positivity of the kernel is exactly $\psi\ge0$.
+
+(d) The operators are simultaneously diagonal. The objective is convex in $\lambda$, since $\lambda\mapsto(1+\lambda)/(1-\lambda)$ is convex on $[-1,1)$, and the constraints are linear in $\lambda$.
+\end{proof}
+
+For a fair binary tree with depth law $a_n=\Pr(\text{contact at depth }n)$, this reads $\lambda_m=A_{>m}-a_m$. For a fair $b$-ary tree it reads $\lambda_m=A_{>m}-a_m/(b-1)$. A kernel that always jumps exactly at depth $m$ (``into a sibling subtree'') has eigenvalue $-1/(b-1)$ at depth $m$.
+
+\textbf{Check} (\texttt{code/tree\_spectrum.py}). On a random tree (depth $4$, branching $2$--$4$, Dirichlet masses, $79$ leaves) with random $\psi$, $\max\|Kg-\lambda_vg\|=8\times10^{-12}$ over all detail vectors, and detailed balance holds to $10^{-18}$.
+
+\section{Walk bounds, and what a walk can do}
+
+Write $f=\mu(f)+\sum_vf_v$ with $f_v\in D_v$ and $e_v=\|f_v\|^2$, so $\sum_ve_v=\Var f=:E$.
+
+\begin{theorem}[sampling along the walk]\label{thm:walk}
+Let $X_0\sim\mu$ and let $(X_t)$ be the chain of a radial Markov kernel. Then
+\[\Var\Big(\frac1T\sum_{t<T}f(X_t)\Big)=\frac1T\sum_ve_v\,g_T(\lambda_v),\qquad g_T(\lambda)=\frac{1+\lambda}{1-\lambda}-\frac{2\lambda(1-\lambda^T)}{T(1-\lambda)^2}.\]
+If $f$ takes values in $[0,1]$ and $\lambda^+=\max(\sup_v\lambda_v,0)<1$, then
+\[\Pr\big(\bar f_T-\mu f\ge\varepsilon\big)\le\exp\!\Big(-2T\varepsilon^2\,\frac{1-\lambda^+}{1+\lambda^+}\Big)\]
+(León--Perron's optimal Hoeffding bound for reversible chains).
+\end{theorem}
+
+\begin{proof}
+Use $\mathrm{Cov}(f(X_s),f(X_t))=\sum_ve_v\lambda_v^{|s-t|}$ (Theorem~\ref{thm:spec}) and sum the geometric series.
+\end{proof}
+
+\textbf{Check.} For $T=50$ on the random tree, the formula gives $0.01114$ and simulation gives $0.01100$; independent sampling would give $0.00563$.
+
+\begin{theorem}[what walks can and cannot do]\label{thm:nofree}
+\begin{enumerate}
+\item[(a)] \emph{No free lunch.} If every $\lambda_v\ge0$, then $g_T(\lambda_v)\ge1$, so the walk average is never more accurate than $T$ independent samples. This covers every expander walk and every heat kernel. Expansion saves random bits, not evaluations.
+\item[(b)] \emph{Radial walks.} On a fair $b$-ary tree, with $e_m$ the total energy at depth $m$, every radial walk has asymptotic variance ratio
+\[\ge1-\frac2{b-1}\max_m\frac{e_m}{E},\]
+because $\lambda_m\ge-a_m/(b-1)$, $\sum a_m\le1$ and $\frac{1+\lambda}{1-\lambda}\ge1+2\lambda$. Gains require variance concentrated at a few levels.
+\item[(c)] \emph{Stratification (tail groupoid).} Take one independent $\mu$-random point in each of the $b^n$ depth-$n$ cylinders, i.e.\ randomize the tails over the tail groupoid's prefix orbit. The variance is $e_{\ge n}/b^n$ with $e_{\ge n}=\E\Var(f\mid\mathcal F_n)$. Every level above $n$ is removed exactly.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+(a) $g_T(\lambda)=T^{-1}\sum_{s,t<T}\lambda^{|s-t|}\ge1$ for $\lambda\ge0$. (b) Tangent-line bound at $0$ and $\sum_m(e_m/E)a_m\le\max_me_m/E$. (c) Standard: the cells are independent, each contributes $\mu(c)^2\Var(f\mid c)$, and $\mu(c)=b^{-n}$.
+\end{proof}
+
+\begin{theorem}[the weights enter through $\kappa$]\label{thm:kappa}
+Suppose $|f(x)-f(y)|\le L\,\kappa(x\wedge y)$, and suppose that for every $\delta$ the cut $\Gamma_\delta=\{v:\kappa(v)\le\delta<\kappa(\text{parent})\}$ has at most $C\delta^{-D}$ cylinders (upper box dimension $D$). Allocate $T_v=\lceil\mu[v]T\rceil$ points to $v\in\Gamma_\delta$, with $\delta=(C/T)^{1/D}$. The total cost is at most $2T$, and
+\[\big(\E|\hat\mu_T(f)-\mu(f)|^2\big)^{1/2}\le\tfrac12\,L\,C^{1/D}\,T^{-1/2-1/D}.\]
+If $(\Omega,\kappa,\mu)$ is Ahlfors $D$-regular, no randomized algorithm with $T$ evaluations does better than $c\,L\,T^{-1/2-1/D}$ on this Lipschitz class.
+\end{theorem}
+
+\begin{proof}
+On $[v]$, the oscillation of $f$ is at most $L\kappa(v)$, so $\Var(f\mid v)\le L^2\kappa(v)^2/4$. Hence
+\[\Var\hat\mu_T=\sum_v\frac{\mu[v]^2\Var(f\mid v)}{T_v}\le\frac{L^2\delta^2}{4T}.\]
+For the lower bound, use Bakhvalov's argument with ultrametric bumps. In an ultrametric, $L\delta\mathbf 1_{[v]}$ is $L$-Lipschitz whenever $\kappa(\text{parent }v)\ge\delta$. Put random signs on $2T$ disjoint such bumps; the unseen half carries error of order $L\delta\cdot T^{1/2}\cdot T^{-1}$.
+\end{proof}
+
+So the improvement exponent over Monte Carlo is exactly $1/D$, the inverse dimension of the input Cantor set \emph{measured in a metric adapted to the network}. ``Defining $\kappa$ cleverly from the weights'' means choosing the hierarchy so that the activation is Lipschitz with small constant and small $D$: Bellissard--Julien's Michon-tree dimensions, now as a computational exponent.
+
+\section{Gaussian inputs: exact codings, Mehler walks, and where the variance lives}
+
+\begin{proposition}[exact fair Cantor coding]
+Let $Q=(q_1,\dots,q_d)$ be any orthonormal frame and $b\ge2$. The map sending $X\sim N(0,I_d)$ to the $b$-quantile digits of $\langle q_1,X\rangle,\langle q_2,X\rangle,\dots$ (with further digits by refining quantiles, interleaved in any order) is a measure isomorphism onto a fair $b$-ary Cantor set, the Pearson--Bellissard fair Cantor set. Every cylinder has known mass and can be sampled exactly by inverse CDFs. All of \S\S2--3 is therefore implementable exactly on network inputs. The free choice is $(Q,\text{order},\text{resolution})$, and that is where the weights enter.
+\end{proposition}
+
+\begin{proposition}[Mehler walks cannot help even degrees]
+For the walks $X'=\rho X+\sqrt{1-\rho^2}Z$ with $\rho\sim\nu$ on $[-1,1]$ (Ornstein--Uhlenbeck steps, antithetic flips and their mixtures), the eigenvalue on Hermite degree $m$ is $\lambda_m=\E\rho^m$. Hence $\lambda_{2k}\ge0$, and by Theorem~\ref{thm:nofree}(a) no such walk reduces the variance carried by even degrees.
+\end{proposition}
+
+\textbf{Where the variance lives (mean-field).} By Mehler, $\E[F(X)F(X_\rho)]=\sum_m\|F_m\|^2\rho^m$. In the infinite-width limit the left side, normalized, is the $L$-fold composition of note~IV's correlation map $\varrho$, a probability generating function. So the Hermite energy profile of an output is the generation-$L$ law of the critical Galton--Watson process with offspring generating function $\varrho$. Its offspring tail is $\asymp m^{-5/2}$: the coefficients of $\varrho''=(\pi\sqrt{1-c^2})^{-1}$ decay like $m^{-1/2}$. That places it in the $3/2$-stable domain, with survival $\asymp L^{-2}$ (note~IV), and conditioned on survival $Z_L$ is of order $L^2$. The variance therefore sits at Hermite degree $\sim L^2$, \emph{deep} in any hierarchy, and coarse cells capture a vanishing share as depth grows. At finite width the low-degree share is larger, as measured below.
+
+\textbf{Measurement} (\texttt{code/energy.py}). Width $d=n=256$, He weights, $2^{20}$ inputs, eight live outputs per network. The table gives the stratification gain $\Var F/\E\Var(F\mid\text{cell})$, bias-corrected, with $b$ bins per direction along the first $K$ frame directions.
+\begin{center}\small
+\begin{tabular}{llccccc}
+\toprule
+depth & frame & $b{=}2,K{=}6$ & $b{=}2,K{=}12$ & $b{=}4,K{=}3$ & $b{=}4,K{=}6$ & $b{=}8,K{=}4$\\
+\midrule
+4 & random & 1.005 & 1.009 & 1.004 & 1.007 & 1.005\\
+4 & weights only (linearized net) & 1.170 & 1.185 & 1.252 & 1.265 & 1.303\\
+4 & pilot Stein + Hessian & 1.244 & 1.245 & 1.409 & 1.413 & 1.508\\
+8 & random & 1.003 & 1.006 & 1.002 & 1.005 & 1.003\\
+8 & weights only & 1.046 & 1.064 & 1.041 & 1.064 & 1.051\\
+8 & pilot Stein + Hessian & 1.188 & 1.189 & 1.285 & 1.288 & 1.333\\
+16 & random & 1.002 & 1.003 & 1.001 & 1.002 & 1.002\\
+16 & weights only & 1.010 & 1.017 & 1.006 & 1.014 & 1.009\\
+16 & pilot Stein + Hessian & 1.088 & 1.088 & 1.128 & 1.129 & 1.147\\
+\bottomrule
+\end{tabular}
+\end{center}
+The cells have $64$ or $4096$ points. The ``weights only'' frame takes the row of $W_L\tfrac12W_{L-1}\cdots\tfrac12W_1$ for the output, then the top singular vectors of that product: $\kappa$ built from the weights, with no samples. The pilot frame uses $2\times10^4$ extra samples to estimate $\E[XF]$ and the leading eigenvectors of $\E[(XX^\top-I)F]$. It is an optimistic reference: in practice its cost would count against the budget. For comparison, the antithetic per-evaluation gains are $1.19$, $1.09$ and $1.08$ at depths $4$, $8$ and $16$.
+
+\section{Verdict and what would change it}
+\begin{itemize}
+\item \emph{The theory is what was hoped for.} Groupoid convolution by last-point-of-contact kernels gives Markov walks on the Cantor set, their spectra are explicit (Theorem~\ref{thm:spec}), and their sampling errors have explicit bounds (Theorem~\ref{thm:walk}). The weights enter through $\kappa$, and the payoff exponent is $1/D$ (Theorem~\ref{thm:kappa}).
+\item \emph{But a walk only matches independent sampling} unless it anti-correlates (Theorem~\ref{thm:nofree}). For the challenge's metric (forward passes), the value of the whole construction equals the variance share at the coarse levels of a computable hierarchy. For deep random He networks that share is small and falls with depth: weight-only gains of $1.30\times\to1.06\times\to$ 1.02$\times$ over depths $4,8,16$. This is consistent with note~II's design ceiling and with the Galton--Watson picture.
+\item \emph{What would change it:} an activation with low effective dimension $D$ in some weight-computable ultrametric. That would be the case for trained networks with low-rank structure, for strongly anisotropic weights, or for observables that depend on few directions. The theory then predicts $T^{-1/2-1/D}$.
+\end{itemize}
+
+\appendix
+\section{Scripts}
+\texttt{code/tree\_spectrum.py}: Theorem~\ref{thm:spec} on a random tree, reversibility, and the walk variance (Theorem~\ref{thm:walk}) against simulation. \texttt{code/energy.py}: stratification gains on exact Gaussian Cantor codings for random, weight-defined and pilot frames.
+\end{document}

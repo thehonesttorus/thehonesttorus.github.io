@@ -1,0 +1,32 @@
+L=4: antithetic per-evaluation variance ratio 0.837
+   frame=random               b=2 K= 6 cells=   64: stratification variance ratio R mean 0.995 (min 0.988) -> gain 1.005
+   frame=random               b=2 K=12 cells= 4096: stratification variance ratio R mean 0.991 (min 0.985) -> gain 1.009
+   frame=random               b=4 K= 3 cells=   64: stratification variance ratio R mean 0.996 (min 0.994) -> gain 1.004
+   frame=random               b=4 K= 6 cells= 4096: stratification variance ratio R mean 0.993 (min 0.983) -> gain 1.007
+   frame=random               b=8 K= 4 cells= 4096: stratification variance ratio R mean 0.995 (min 0.991) -> gain 1.005
+   frame=lin-weights          b=2 K= 6 cells=   64: stratification variance ratio R mean 0.854 (min 0.755) -> gain 1.170
+   frame=lin-weights          b=2 K=12 cells= 4096: stratification variance ratio R mean 0.844 (min 0.748) -> gain 1.185
+   frame=lin-weights          b=4 K= 3 cells=   64: stratification variance ratio R mean 0.799 (min 0.672) -> gain 1.252
+   frame=lin-weights          b=4 K= 6 cells= 4096: stratification variance ratio R mean 0.791 (min 0.667) -> gain 1.265
+   frame=lin-weights          b=8 K= 4 cells= 4096: stratification variance ratio R mean 0.768 (min 0.640) -> gain 1.303
+   frame=pilot-Stein+Hessian  b=2 K= 6 cells=   64: stratification variance ratio R mean 0.804 (min 0.663) -> gain 1.244
+   frame=pilot-Stein+Hessian  b=2 K=12 cells= 4096: stratification variance ratio R mean 0.803 (min 0.662) -> gain 1.245
+   frame=pilot-Stein+Hessian  b=4 K= 3 cells=   64: stratification variance ratio R mean 0.710 (min 0.544) -> gain 1.409
+   frame=pilot-Stein+Hessian  b=4 K= 6 cells= 4096: stratification variance ratio R mean 0.708 (min 0.539) -> gain 1.413
+   frame=pilot-Stein+Hessian  b=8 K= 4 cells= 4096: stratification variance ratio R mean 0.663 (min 0.496) -> gain 1.508
+L=8: antithetic per-evaluation variance ratio 0.914
+   frame=random               b=2 K= 6 cells=   64: stratification variance ratio R mean 0.997 (min 0.993) -> gain 1.003
+   frame=random               b=2 K=12 cells= 4096: stratification variance ratio R mean 0.994 (min 0.987) -> gain 1.006
+   frame=random               b=4 K= 3 cells=   64: stratification variance ratio R mean 0.998 (min 0.994) -> gain 1.002
+   frame=random               b=4 K= 6 cells= 4096: stratification variance ratio R mean 0.996 (min 0.990) -> gain 1.005
+   frame=random               b=8 K= 4 cells= 4096: stratification variance ratio R mean 0.997 (min 0.992) -> gain 1.003
+   frame=lin-weights          b=2 K= 6 cells=   64: stratification variance ratio R mean 0.956 (min 0.915) -> gain 1.046
+   frame=lin-weights          b=2 K=12 cells= 4096: stratification variance ratio R mean 0.940 (min 0.889) -> gain 1.064
+   frame=lin-weights          b=4 K= 3 cells=   64: stratification variance ratio R mean 0.960 (min 0.915) -> gain 1.041
+   frame=lin-weights          b=4 K= 6 cells= 4096: stratification variance ratio R mean 0.940 (min 0.885) -> gain 1.064
+   frame=lin-weights          b=8 K= 4 cells= 4096: stratification variance ratio R mean 0.951 (min 0.906) -> gain 1.051
+   frame=pilot-Stein+Hessian  b=2 K= 6 cells=   64: stratification variance ratio R mean 0.842 (min 0.747) -> gain 1.188
+   frame=pilot-Stein+Hessian  b=2 K=12 cells= 4096: stratification variance ratio R mean 0.841 (min 0.746) -> gain 1.189
+   frame=pilot-Stein+Hessian  b=4 K= 3 cells=   64: stratification variance ratio R mean 0.778 (min 0.659) -> gain 1.285
+   frame=pilot-Stein+Hessian  b=4 K= 6 cells= 4096: stratification variance ratio R mean 0.776 (min 0.657) -> gain 1.288
+   frame=pilot-Stein+Hessian  b=8 K= 4 cells= 4096: stratification variance ratio R mean 0.750 (min 0.626) -> gain 1.333
