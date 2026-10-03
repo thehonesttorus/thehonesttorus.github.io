@@ -1,0 +1,7 @@
+256 4 0 16000000 time 110.1s final mean of means 0.5247, avg var 0.3193
+256 8 0 16000000 time 175.5s final mean of means 0.5461, avg var 0.1728
+256 16 0 16000000 time 637.6s final mean of means 0.5539, avg var 0.0908
+512 16 0 4000000 time 580.6s final mean of means 0.5124, avg var 0.0816
+256 16 1 16000000 time 825.8s final mean of means 0.7300, avg var 0.1068
+256 16 2 16000000 time 809.2s final mean of means 0.6698, avg var 0.1178
+1024 16 0 10000000 time 2692.2s final mean of means 0.5667, avg var 0.0673

@@ -1,0 +1,10 @@
+n=256 L=16: closure MSE 6.29e-05, oracle-scale 1.32e-05, MC@B 1.39e-06
+   Tc=  250 (0.4% budget): calibrated MSE 1.31e-04 +- 2.8e-05
+   Tc= 1000 (1.5% budget): calibrated MSE 5.71e-05 +- 7.6e-06
+   Tc= 4000 (6.1% budget): calibrated MSE 2.20e-05 +- 2.1e-06
+n=512 L=16: closure MSE 1.61e-05, oracle-scale 5.58e-06, MC@B 1.25e-06
+   Tc=  250 (0.4% budget): calibrated MSE 3.69e-05 +- 7.2e-06
+   Tc= 1000 (1.5% budget): calibrated MSE 1.58e-05 +- 2.6e-06
+   Tc= 4000 (6.1% budget): calibrated MSE 8.62e-06 +- 6.1e-07
+
+[exited with code 0]

@@ -1,0 +1,7 @@
+n=256 L=16: closure MSE 6.29e-05, oracle-scale 1.32e-05, MC@B 1.39e-06
+   Tc=  250 (0.4%): plain 1.31e-04   radial 1.31e-04
+   Tc= 1000 (1.5%): plain 5.71e-05   radial 5.39e-05
+   Tc= 4000 (6.1%): plain 2.20e-05   radial 2.05e-05
+   per-neuron variance ratio radial/plain: 0.981; variance of projection on m: ratio 0.943
+
+[exited with code 0]

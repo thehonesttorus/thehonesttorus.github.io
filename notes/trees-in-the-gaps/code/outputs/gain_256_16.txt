@@ -1,0 +1,18 @@
+layer  1: oracle scale c -0.0000 | gamma (coherent K22 / s^2 s^2) -0.0001 -> gamma/8 -0.0000 | Var(|h|^2)/E^2 0.0257
+layer  2: oracle scale c +0.0013 | gamma (coherent K22 / s^2 s^2) +0.0156 -> gamma/8 +0.0019 | Var(|h|^2)/E^2 0.0431
+layer  3: oracle scale c +0.0024 | gamma (coherent K22 / s^2 s^2) +0.0258 -> gamma/8 +0.0032 | Var(|h|^2)/E^2 0.0580
+layer  4: oracle scale c +0.0032 | gamma (coherent K22 / s^2 s^2) +0.0331 -> gamma/8 +0.0041 | Var(|h|^2)/E^2 0.0657
+layer  5: oracle scale c +0.0044 | gamma (coherent K22 / s^2 s^2) +0.0395 -> gamma/8 +0.0049 | Var(|h|^2)/E^2 0.0760
+layer  6: oracle scale c +0.0053 | gamma (coherent K22 / s^2 s^2) +0.0432 -> gamma/8 +0.0054 | Var(|h|^2)/E^2 0.0812
+layer  7: oracle scale c +0.0055 | gamma (coherent K22 / s^2 s^2) +0.0492 -> gamma/8 +0.0061 | Var(|h|^2)/E^2 0.0899
+layer  8: oracle scale c +0.0062 | gamma (coherent K22 / s^2 s^2) +0.0462 -> gamma/8 +0.0058 | Var(|h|^2)/E^2 0.0965
+layer  9: oracle scale c +0.0067 | gamma (coherent K22 / s^2 s^2) +0.0485 -> gamma/8 +0.0061 | Var(|h|^2)/E^2 0.1060
+layer 10: oracle scale c +0.0061 | gamma (coherent K22 / s^2 s^2) +0.0520 -> gamma/8 +0.0065 | Var(|h|^2)/E^2 0.1146
+layer 11: oracle scale c +0.0066 | gamma (coherent K22 / s^2 s^2) +0.0526 -> gamma/8 +0.0066 | Var(|h|^2)/E^2 0.1173
+layer 12: oracle scale c +0.0068 | gamma (coherent K22 / s^2 s^2) +0.0519 -> gamma/8 +0.0065 | Var(|h|^2)/E^2 0.1251
+layer 13: oracle scale c +0.0063 | gamma (coherent K22 / s^2 s^2) +0.0573 -> gamma/8 +0.0072 | Var(|h|^2)/E^2 0.1182
+layer 14: oracle scale c +0.0069 | gamma (coherent K22 / s^2 s^2) +0.0551 -> gamma/8 +0.0069 | Var(|h|^2)/E^2 0.1182
+layer 15: oracle scale c +0.0070 | gamma (coherent K22 / s^2 s^2) +0.0577 -> gamma/8 +0.0072 | Var(|h|^2)/E^2 0.1218
+layer 16: oracle scale c +0.0073 | gamma (coherent K22 / s^2 s^2) +0.0552 -> gamma/8 +0.0069 | Var(|h|^2)/E^2 0.1292
+
+[exited with code 0]

@@ -1,0 +1,14 @@
+source layer 2 (R rms 0.077):
+   k3: true rms 3.831e-02  pred err 1.310e-03  noise ~1.2e-03
+   k4: true mean 2.508e-02  pred mean 2.492e-02  err rms 5.915e-03  noise ~5.0e-03
+   mean shift: true rms 1.130e-03  pred err 3.282e-04  noise ~5.0e-04
+source layer 6 (R rms 0.132):
+   k3: true rms 1.499e-02  pred err 3.728e-04  noise ~3.6e-04
+   k4: true mean 1.518e-03  pred mean 1.465e-03  err rms 2.676e-03  noise ~1.0e-03
+   mean shift: true rms 9.172e-04  pred err 2.239e-04  noise ~3.3e-04
+source layer 12 (R rms 0.204):
+   k3: true rms 7.831e-03  pred err 1.772e-04  noise ~1.7e-04
+   k4: true mean -2.069e-04  pred mean -2.590e-04  err rms 1.394e-03  noise ~3.9e-04
+   mean shift: true rms 7.458e-04  pred err 1.788e-04  noise ~2.5e-04
+
+[exited with code 0]

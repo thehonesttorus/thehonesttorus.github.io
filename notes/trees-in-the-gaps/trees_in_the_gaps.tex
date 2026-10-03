@@ -1,0 +1,510 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{booktabs}
+\usepackage[expansion=false]{microtype}
+\usepackage{xcolor}
+\usepackage[colorlinks=true,linkcolor=blue!50!black,citecolor=blue!50!black,urlcolor=blue!50!black]{hyperref}
+\setlength{\emergencystretch}{3em}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\E}{\mathbb E}
+\newcommand{\R}{\mathbb R}
+\newcommand{\N}{\mathbb N}
+\newcommand{\Var}{\operatorname{Var}}
+\newcommand{\Cov}{\operatorname{Cov}}
+\newcommand{\Tr}{\operatorname{Tr}}
+\newcommand{\He}{\mathrm{He}}
+\newcommand{\relu}{\operatorname{ReLU}}
+
+\title{Trees in the gaps\\[4pt]
+\large Connes's Cantor-set module, Hermite jets of a neuron,\\
+and a weights-only calculus for activation means}
+\author{Working note IX for the continuation-algebra programme\\
+\small self-reviewed draft, not independently verified}
+\date{3 October 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Note VIII ended with an exact noncommutative-geometry formula for the activation means (they are Dixmier traces), but no faster estimator, because a ReLU network on Gaussian input has no internal randomness to exploit. This note changes \emph{what does what}. It follows Connes's treatment of Cantor sets (\emph{Noncommutative Geometry}, Ch.~IV, \S3.$\varepsilon$), where the quantized differential lives on the \emph{gaps}, not on the pieces. The payoff is a deterministic, weights-only estimator. It is organised exactly like Connes's ``calculus modulo the ideal''.
+
+\textbf{(1) Gaps are arrows.} In Connes's module, $F$ is a direct sum of $2\times2$ swaps, one per gap, and the singular values of $dx$ are the gap lengths. In a ReLU network the gaps are the arrows of object~1: single-bit flips, i.e.\ the facets $\{z_{\ell,k}=0\}$. The mean of any output is \emph{exactly} a sum over gaps: Gaussian Minkowski content of the facet times the jump of the gradient across it (the gap formula). This sum cancels massively, the analogue of Connes's observation that Dixmier (Hausdorff) measure and harmonic measure are mutually singular. So the gaps must be summed analytically, not sampled.
+
+\textbf{(2) Every neuron is a node and a gap.} Expand $\relu$ in Hermite polynomials at the neuron's own Gaussian scale. The degree-one jet $a_1=\sigma\,\mathbb P(\text{bit on})$ is the \emph{node} weight. The jets of degree $j\ge2$, $a_j=(-1)^j\sigma\He_{j-2}(\mu/\sigma)\varphi(\mu/\sigma)$, are the \emph{gap} weights: derivatives of the pre-activation density at the kink. The weights enter only as \emph{edges}: the matrices $W_\ell$ and the correlations $R_\ell$ they induce.
+
+\textbf{(3) Tree theorem.} Joint cumulants of a layer's activations are sums over connected diagrams. Leaves are nodes, internal vertices are gaps, and edges are correlations (Kibble--Slepian plus connectedness). \emph{Tree-shaped} diagrams are exactly those computable by leaf-to-root message passing: $O(n^3)$ per tree shape, for all neurons at once. Each independent cycle costs a further factor $\max|\rho|$.
+
+\textbf{(4) The ideal hierarchy.} Under fresh He weights, Gaussian closure (the ``Dixmier part'') is $O(1)$, tree diagrams are $O(1/n)$ in rms, and every cycle multiplies by $\max|\rho|$. Measured at width $256$ and every depth up to $16$, the first cycle is $1\%$ of the trees.
+
+\textbf{(5) Depth: contracting, except for one critical mode.} Generic non-Gaussian data propagate through the gate-averaged Jacobian. This contracts squared row norms by $\bar\chi=1-2\langle P(1-P)\rangle$ per layer, so \emph{non-Gaussianity is forgotten at twice the mean code-bit variance} (checked against the actual products to within $4\%$). It is created in proportion to the gap content $\varphi(a)$, so both creation and forgetting are carried by the gaps. The exception is the \emph{scale}. ReLU networks are positively homogeneous, so the closure map transports the scale direction with eigenvalue exactly one, at every layer. Whatever lands there is never forgotten. This is the analogue of the pole at the critical dimension.
+
+\textbf{(6) The residue is the gain.} At depth, the closure error is mostly one scalar times the closure means: $79\%$ of the MSE at width $256$ and $65\%$ at width $512$ (depth $16$). That scalar is the input-to-input variance of the network's \emph{gain} $G$ (a scale mixture), with bias $c\approx\operatorname{Var}(G^2)/8$. Measured layer by layer at depth 16 this gives $0.0073$ against $0.0069$, and it holds within $15\%$ from layer~5 on. Each layer injects gain variance through tree diagrams. The injection has an $O(n^2)$ weights-only formula, checked against Monte Carlo to $4$--$18\%$, and is transported almost critically.
+
+\textbf{(7) Numbers} (He, Gaussian inputs, ground truth $1.6\times10^7$ samples at width $256$, $4\times10^6$ at $512$, $10^7$ at $1024$).
+\begin{itemize}
+\item One step: at layer~2 the tree corrections remove the whole closure error, down to the noise floor ($1.9\times10^{-6}\to3.2\times10^{-8}$).
+\item Full tree-level propagation: final-layer MSE improves on closure by $16\times$ at depth $4$, $10\times$ at depth $8$ and $8\times$ at depth $16$ (width $256$), and by $4.6\times$ at width $1024$, depth $16$.
+\item The weights-only estimator ``closure $+$ gain residue'' costs about $3\%$ of the WhestBench budget and cuts the closure MSE $1.6$--$4.5\times$. At width 1024, depth 16 (the WhestBench Phase-2 shape; this network was not used to choose any constant) it reaches $1.50\times10^{-6}$, essentially the oracle-scale value $1.48\times10^{-6}$. Plain closure gives $4.1\times10^{-6}$ and full-budget Monte Carlo $1.03\times10^{-6}$.
+\end{itemize}
+Under the WhestBench rule ($\text{MSE}\times\max(0.1,\text{compute}/\text{budget})$), this estimator scores $0.1\times1.50\times10^{-6}=1.5\times10^{-7}$ against $1.03\times10^{-6}$ for full-budget Monte Carlo at width 1024, depth 16. That is about $7\times$ better ($5\times$ with the parameter-free $\tau=1$; plain closure $2.5\times$). Full tree-level propagation reaches $8.9\times10^{-7}$ in raw MSE, below Monte Carlo, and $2.3\times10^{-7}$ once the residue is exact. In its current form, though, it costs about $1.8$ budgets. Caveats: one network at width 1024, and the residue has a network-dependent random part (three seeds at width 256).
+\end{abstract}
+
+\tableofcontents
+
+\section{What does what}\label{sec:roles}
+
+\subsection{Connes's module for a Cantor set}
+Let $K\subset[0,1]$ be a Cantor set, $[0,1]\setminus K=\bigsqcup_kJ_k$ with $J_k=(a_k,b_k)$ and lengths $l_k=b_k-a_k$ decreasing. Connes takes $H=\ell^2(\{a_k,b_k\}_k)$, lets $C(K)$ act by multiplication, and puts
+\[
+F=\bigoplus_k\begin{pmatrix}0&1\\1&0\end{pmatrix}\quad\text{on }\ell^2(\{a_k,b_k\}).
+\]
+On the $k$-th block, $[F,f]=\begin{pmatrix}0&f(b_k)-f(a_k)\\ f(a_k)-f(b_k)&0\end{pmatrix}$. So the quantized differential $df=[F,f]$ has singular values $|f(b_k)-f(a_k)|$, each twice, and $dx$ has singular values $l_k$. Hence:
+\begin{itemize}
+\item $dx\in\mathcal L^{p,\infty}$ iff $l_k=O(k^{-1/p})$;
+\item $\Tr_\omega(|dx|^p)$ is proportional to the Minkowski content of $K$;
+\item for self-similar $K$, $f\mapsto\Tr_\omega(f|dx|^p)$ is a multiple of Hausdorff measure $H^p|_K$.
+\end{itemize}
+Three features matter here.
+\begin{enumerate}
+\item \emph{The differential lives on the gaps.} Each block is one gap and one swap of its two sides.
+\item \emph{The trace is additive over gaps.} A gap does not interact with other gaps.
+\item \emph{The Dixmier trace sees only the leading order.} The rules of calculus hold modulo $\mathcal L^{p,\infty}_0$ (Connes's Thm.~8 in \S3), and for limit sets the measure it produces is Hausdorff, not harmonic, measure (Thm.~17 and the remark on harmonic measure that follows it).
+\end{enumerate}
+
+\subsection{Dictionary}
+Network: $h_0=x\sim N(0,I_n)$, $z_\ell=W_\ell h_{\ell-1}$, $h_\ell=g(z_\ell)$ with $g=\relu$. Entries of $W_\ell$ are i.i.d.\ $N(0,2/n)$ (He) and there are no biases. The target is $\E h_L$. Object~1 is the code graph: nodes are activation codes $s\in\{0,1\}^n$, arrows flip one bit. Object~2 is the weight-defined hierarchy.
+
+\begin{center}
+\small
+\begin{tabular}{@{}p{0.42\textwidth}p{0.52\textwidth}@{}}
+\toprule
+Connes \S3.$\varepsilon$ & here\\
+\midrule
+gap $J_k$ & facet $\{z_{\ell,k}=0\}$ = arrow of object~1 (flip of bit $(\ell,k)$)\\
+swap of the two endpoints & swap of the two sides of the facet, $s\leftrightarrow s\oplus e_{\ell,k}$\\
+gap length $l_k$ & Gaussian Minkowski content $p_{\ell,k}(0)$ (density of $z_{\ell,k}$ at $0$)\\
+$f(b_k)-f(a_k)$ & jump of $\partial_\nu F$ across the facet\\
+$f\mapsto\Tr_\omega(f|dx|^p)$, Minkowski measure & the gap formula, Theorem~\ref{thm:gap}\\
+Hausdorff $\perp$ harmonic measure & $\sum p|J|\gg|\sum pJ|$: the gap sum cancels (Remark~\ref{rem:cancel})\\
+calculus exact modulo $\mathcal L^{p,\infty}_0$ & Gaussian closure exact modulo $O(1/n)$\\
+the ideal & tree diagrams ($O(1/n)$), then cycles ($O(n^{-1}\max|\rho|)$)\\
+pole at the critical dimension & the scale mode: eigenvalue exactly $1$ by homogeneity (Thm.~\ref{thm:scale})\\
+residue at the pole & accumulated gain variance, closure bias $\approx\operatorname{Var}(G^2)/8$ (Prop.~\ref{prop:gain})\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent The reassignment has two parts. Each neuron has a node part (degree-one Hermite jet) and a gap part (jets of degree $\ge2$). The weights are pure edge data. Section~\ref{sec:jets} makes this precise, and Section~\ref{sec:trees} shows that means are assembled from trees whose leaves are nodes and whose internal vertices are gaps.
+
+\section{The gap formula}\label{sec:gap}
+
+\begin{theorem}[the mean is a sum over gaps]\label{thm:gap}
+Let $F=h_{L,j}$ and $G_{\ell,k}=\partial F/\partial h_{\ell,k}$ (backpropagated through layers $>\ell$). For Gaussian input,
+\[
+\E F=\sum_{\ell=1}^{L}\sum_{k=1}^{n}\E\big[\delta(z_{\ell,k})\,G_{\ell,k}\,|\nabla_xz_{\ell,k}|^2\big]
+=\sum_{\ell,k}p_{\ell,k}(0)\;\E\big[G_{\ell,k}|\nabla_xz_{\ell,k}|^2\,\big|\,z_{\ell,k}=0\big],
+\]
+where $p_{\ell,k}$ is the density of $z_{\ell,k}$. Each term is a (Gaussian Minkowski content of the gap) $\times$ (mean jump across the gap).
+\end{theorem}
+
+\begin{proof}
+$F$ is Lipschitz and positively $1$-homogeneous, so $F(x)=\langle x,\nabla F(x)\rangle$ a.e.\ (Euler). The gradient $\nabla F$ is piecewise constant, hence of locally bounded variation. Its distributional divergence $\Delta F$ is a signed measure on the union of facets. Gaussian integration by parts for $BV$ fields gives $\E\langle x,\nabla F\rangle=\int\Delta F\,d\gamma$.
+
+Across the facet $\{z_{\ell,k}=0\}$, only bit $(\ell,k)$ flips. $G_{\ell,k}$ depends only on gates downstream of layer $\ell$, so it is continuous there, and the gradient jumps by $G_{\ell,k}\nabla z_{\ell,k}$. The normal derivative therefore jumps by $G_{\ell,k}|\nabla z_{\ell,k}|$. Facets of different neurons meet in codimension $\ge2$, a null set.
+
+By the coarea formula, $\int_{\{z=0\}}\psi\,|\nabla z|\,dH^{n-1}=\int\psi\,\delta(z)|\nabla z|^2\,dx$. Apply it with $\psi=G\varphi_n$ and sum over facets.
+\end{proof}
+
+This is the edge formula of note V, read through Connes's module. Put $H=\bigoplus_{\ell,k}L^2(\{z_{\ell,k}=0\},\gamma_{n-1})\otimes\mathbb C^2$, let $F$ swap the two sides of each facet, and let the gradient field act on the two sides. The quantized differential of the gradient then has, on each facet, the jump $G_{\ell,k}|\nabla z_{\ell,k}|$. Theorem~\ref{thm:gap} says that $\E F$ is its trace against the Gaussian surface measure.
+
+\begin{remark}[cancellation: the Hausdorff-versus-harmonic phenomenon]\label{rem:cancel}
+The jumps have both signs. Note~V measured the \emph{cancellation index} $|\E F|/\sum_{\ell,k}p_{\ell,k}(0)\E|G|\nabla z|^2|$ as $\approx1/(L\sqrt n)$. The total gap mass is larger than the mean by a factor $L\sqrt n$, so sampling the gaps (importance sampling over facets) is hopeless. This mirrors Connes's remark that the Dixmier trace produces Hausdorff measure, which can be singular with respect to harmonic measure (Makarov). The geometrically natural measure on the gaps is not the one that integrates to the mean. The next sections do the cancellation analytically: Hermite orthogonality sums the gaps in exactly the combinations that survive.
+\end{remark}
+
+\section{Nodes and gaps: the Hermite jets of a neuron}\label{sec:jets}
+
+\begin{lemma}[jets]\label{lem:jets}
+Let $y\sim N(\mu,\sigma^2)$, $u=(y-\mu)/\sigma$, $a=\mu/\sigma$, and $a_j:=\E[\relu(y)\He_j(u)]$. Then
+\[
+a_0=\sigma\big(a\Phi(a)+\varphi(a)\big),\qquad a_1=\sigma\Phi(a),\qquad a_j=(-1)^j\sigma\He_{j-2}(a)\varphi(a)\quad(j\ge2),
+\]
+and $a_j=\sigma^j(-1)^jp_y^{(j-2)}(0)$ for $j\ge2$. For $\relu^2$, $b_j:=\E[\relu(y)^2\He_j(u)]$:
+\[
+b_0=\sigma^2\big((1+a^2)\Phi+a\varphi\big),\quad b_1=2\sigma^2(a\Phi+\varphi),\quad b_2=2\sigma^2\Phi,\quad b_j=2(-1)^{j-3}\sigma^2\He_{j-3}(a)\varphi(a)\ (j\ge3).
+\]
+\end{lemma}
+
+\begin{proof}
+Gaussian integration by parts gives $\E[f(u)\He_j(u)]=\E[f^{(j)}(u)]$. Take $f(u)=\sigma(u+a)_+$: then $f'=\sigma1_{u>-a}$, $f''=\sigma\delta_{-a}$, and $\int\delta^{(m)}(u+a)\varphi(u)\,du=(-1)^m\varphi^{(m)}(-a)=(-1)^m\He_m(a)\varphi(a)$. The case $\relu^2$ is the same computation with $f=\sigma^2(u+a)_+^2$.
+\end{proof}
+
+\paragraph{Reading the jets.}
+\begin{itemize}
+\item $a_1/\sigma=\mathbb P(s=1)$ is the occupation probability of the code bit: the \emph{node} weight.
+\item $a_2/\sigma^2=p_y(0)$ is the density at the kink: $\gamma(|y|<\varepsilon)=2\varepsilon\,p_y(0)+O(\varepsilon^3)$. This is the Gaussian Minkowski content of the gap, Connes's gap length: the \emph{gap} weight.
+\item Higher $a_j$ are the higher jets of the density at the gap.
+\end{itemize}
+Every $a_j$ with $j\ge2$ carries the factor $\varphi(a)$. A neuron that is almost always on or almost always off ($|a|\gg1$) has negligible gaps and acts linearly on its input.
+
+\begin{lemma}[Cram\'er bound]\label{lem:cramer}
+$|\He_m(x)|e^{-x^2/4}\le K\sqrt{m!}$ with $K<1.087$. Hence $|a_j|\le K\sigma\sqrt{(j-2)!}\,e^{-a^2/4}/\sqrt{2\pi}\le\sigma\sqrt{j!}$ for $j\ge2$, and similarly $|b_j|\le2\sigma^2\sqrt{j!}$.
+\end{lemma}
+
+\begin{proof}
+Cram\'er's inequality for the physicists' $H_m$, $|H_m(t)|e^{-t^2/2}\le K2^{m/2}\sqrt{m!}$, transported by $\He_m(x)=2^{-m/2}H_m(x/\sqrt2)$.
+\end{proof}
+
+\section{The tree theorem}\label{sec:trees}
+
+Fix a layer and write $y\sim N(\mu,\Sigma)$ for its pre-activations under the closure hypothesis. Let $u_k=(y_k-\mu_k)/\sigma_k$, let $R$ be the correlation matrix, and let $R_0$ be $R$ with its diagonal set to zero. For a neuron $k$ write $a_{k,j}$ for its jets (Lemma~\ref{lem:jets}). A \emph{diagram} on vertex set $[r]$ is a loopless multigraph $\Gamma$ with edge multiplicities $m_{vw}=m_{wv}\ge0$ and degrees $d_v=\sum_wm_{vw}$.
+
+\begin{theorem}[diagram expansion]\label{thm:diagram}
+Let $f_1,\dots,f_r$ have Hermite coefficients $c_{v,j}=\E[f_v(\xi)\He_j(\xi)]$ with $|c_{v,j}|\le C\sqrt{j!}$. Let $k_1,\dots,k_r$ be distinct neurons with $(r-1)\max_{v\ne w}|R_{k_vk_w}|<1$. Then
+\[
+\E\Big[\prod_{v}f_v(u_{k_v})\Big]=\sum_{\Gamma}w(\Gamma),\qquad
+\kappa\big(f_1(u_{k_1}),\dots,f_r(u_{k_r})\big)=\sum_{\Gamma\ \mathrm{connected}}w(\Gamma),
+\]
+\[
+w(\Gamma)=\prod_{v}c_{v,d_v}\prod_{v<w}\frac{R_{k_vk_w}^{m_{vw}}}{m_{vw}!},
+\]
+both sums converging absolutely.
+\end{theorem}
+
+\begin{proof}
+For Hermite polynomials, the diagram formula for Wick products ($\He_j(u)={:}u^j{:}$, Isserlis with self-pairings excluded; Janson, \emph{Gaussian Hilbert Spaces}, Thm.~1.36) gives
+\[
+\E\prod_v\He_{j_v}(u_{k_v})=\sum_{\Gamma:\,d=j}\frac{\prod_vj_v!}{\prod_{v<w}m_{vw}!}\prod_{v<w}R^{m_{vw}}_{k_vk_w}.
+\]
+Multilinearity over the expansions $f_v=\sum_jc_{v,j}\He_j/j!$ gives the moment formula. The passage from polynomials to general $f_v$ is the Kibble--Slepian (multivariate Mehler) formula, valid once the series converges absolutely.
+
+For absolute convergence, use the multinomial bound $d_v!\le(r-1)^{d_v}\prod_wm_{vw}!$. Then $\prod_v\sqrt{d_v!}\le(r-1)^{|\Gamma|}\prod_{v<w}m_{vw}!$, where $|\Gamma|=\sum_{v<w}m_{vw}$, so $|w(\Gamma)|\le C^r\prod_{v<w}\big((r-1)|R_{k_vk_w}|\big)^{m_{vw}}$. Summing over the multiplicities is a product of geometric series.
+
+Finally, the weight $w$ is multiplicative over the connected components of $\Gamma$. So the moment formula is an exponential formula over set partitions, and its cumulant inversion keeps exactly the connected diagrams (Peccati--Taqqu, \emph{Wiener Chaos: Moments, Cumulants and Diagrams}, \S7).
+\end{proof}
+
+\begin{corollary}[trees dominate; leaves are nodes, internal vertices are gaps]\label{cor:trees}
+A connected diagram on $r$ vertices has $|\Gamma|\ge r-1$, with equality iff it is a spanning tree. Call $\Gamma$ \emph{tree-shaped} if its underlying simple graph is acyclic, and \emph{cyclic} otherwise. A cyclic diagram has at least $r$ distinct adjacent pairs. Hence
+\[
+\kappa=\sum_{\Gamma\ \text{tree-shaped}}w(\Gamma)+O_r(\rho_{\max}^{\,r}),\qquad \rho_{\max}=\max_{v\ne w}|R_{k_vk_w}|,
+\]
+and the leading part is $\sum_{T}\prod_vc_{v,\deg_Tv}\prod_{e\in T}R_e$ over spanning trees $T$. For $f=\relu$ at the neuron's own scale, leaves carry $a_{k,1}$ (nodes) and internal vertices carry $a_{k,\ge2}$ (gaps).
+\end{corollary}
+
+\begin{proposition}[message passing]\label{prop:mp}
+Let $B\in\R^{n'\times n}$ and let $\tau$ be a rooted tree-shaped diagram with $r$ vertices, edge multiplicities $m_e$, and coefficient sequences $c^{(v)}$. Then
+\[
+S_i(\tau)=\sum_{\substack{k:V(\tau)\to[n]\\ \text{adjacent vertices distinct}}}\ \prod_vB_{ik_v}c^{(v)}_{k_v,d_v}\prod_{e=vw}\frac{R_{k_vk_w}^{m_e}}{m_e!}
+\]
+can be computed for all $i\in[n']$ with $r-1$ matrix products of size $n'\times n\times n$, plus $O(rn'n)$ further work. Recursively from the leaves:
+\[
+X_v[i,k]=B_{ik}\,c^{(v)}_{k,d_v}\prod_{w\ \text{child of}\ v}M_w[i,k],\qquad M_v=X_v\,R_0^{\circ m_v}/m_v!,\qquad S_i=\sum_kX_{\mathrm{root}}[i,k],
+\]
+where $R_0^{\circ m}$ is the entrywise power and $m_v$ is the multiplicity of the edge from $v$ to its parent. Coincidences between non-adjacent vertices are removed by inclusion--exclusion. This produces diagrams with fused vertices, whose coefficients are the jets of products, e.g.\ $c_{k,j}=b_{k,j}-2a_{k,0}a_{k,j}$ for $(g-\E g)^2$. A cyclic diagram cannot be contracted this way: a cycle of length $c$ needs the trace of a $c$-fold product for each $i$, i.e.\ $\Omega(n^4)$ in total.
+\end{proposition}
+
+So the cheap diagrams are exactly the trees, the user's object~2 in a new role. The contraction runs from the leaves to the root, and every internal vertex is a gap where branches meet: a ``last point of contact''.
+
+\begin{example}[one layer: third and fourth cumulants of $z_i=\sum_kW_{ik}h_k$]\label{ex:k3k4}
+Let $\kappa_3(h_k),\kappa_4(h_k)$ be the cumulants of $\relu(y_k)$, let $c_{k,j}=b_{k,j}-2a_{k,0}a_{k,j}$, and let $U^{(p)}=(W\circ a_p)R_0^{\circ p}/p!$, so that $U^{(p)}_{il}=\sum_{k\ne l}W_{ik}a_{k,p}R_{kl}^p/p!$. Grouping $\kappa_3(z_i)=\sum_{k,l,m}W_{ik}W_{il}W_{im}\kappa(h_k,h_l,h_m)$ by index coincidences:
+\begin{align*}
+D_3&=\textstyle\sum_kW_{ik}^3\kappa_3(h_k),\qquad
+P_3=3\sum_{j\ge1}\sum_{k\ne m}W_{ik}^2W_{im}\,c_{k,j}a_{m,j}R_{km}^j/j!,\\
+T_3&=\textstyle 3\sum_{p,q\ge1}\sum_lW_{il}a_{l,p+q}\Big(U^{(p)}_{il}U^{(q)}_{il}-\sum_{k\ne l}W_{ik}^2a_{k,p}a_{k,q}\frac{R_{kl}^{p+q}}{p!q!}\Big)\ +\ \text{cycles}.
+\end{align*}
+$T_3$ consists of the three-vertex path diagrams, with the gap at the centre $l$ and two node leaves. The subtraction removes the fused leaf $k=m$. For the fourth cumulant, the parts that survive averaging over the weights are
+\begin{align*}
+D_4&=\textstyle\sum_kW_{ik}^4\kappa_4(h_k),\qquad PP_4=3\sum_{k\ne l}W_{ik}^2W_{il}^2F_{kl},\\
+F_{kl}&=\textstyle\sum_{j\ge1}c_{k,j}c_{l,j}R_{kl}^j/j!-2\,C_{kl}^2,\qquad C_{kl}=\sum_{j\ge1}a_{k,j}a_{l,j}R_{kl}^j/j!,
+\end{align*}
+together with the star term $PD_4=6\sum_kW_{ik}^2(c_{k,2}-2a_{k,1}^2)\big((U^{(1)}_{ik})^2-\sum_{l\ne k}W_{il}^2a_{l,1}^2R_{kl}^2\big)+\dots$. The two-point versions $K_{21}(k,l)=\kappa(y_k,y_k,y_l)$ and $K_{22}(k,l)=\kappa(y_k,y_k,y_l,y_l)$ of the next layer are the same contractions with the row index split between $k$ and $l$. Every term costs a fixed number of $n^3$ matrix products. The code \texttt{edgeworth.py} and \texttt{twopoint.py} implements them, and its diagonal $K_{21}(k,k)$ agrees with $\kappa_3(z_k)$ to $10^{-15}$.
+\end{example}
+
+\section{From cumulants to means: the layer step}\label{sec:step}
+
+\begin{proposition}[Edgeworth step]\label{prop:edge}
+Let $z$ have mean $\mu$, variance $\sigma^2$ and cumulants $\kappa_3,\kappa_4$ of order $\varepsilon$, and let $a_j$ be the jets of $\relu$ at $(\mu,\sigma)$. To second order in $\varepsilon$ (formally; Gram--Charlier),
+\[
+\E\relu(z)=a_0+\frac{\kappa_3}{6\sigma^3}a_3+\frac{\kappa_4}{24\sigma^4}a_4+\frac{\kappa_3^2}{72\sigma^6}a_6,
+\]
+and the same holds for $\E\relu(z)^2$ with $b_j$ in place of $a_j$. For a pair $(y_k,y_l)$ with Gaussian correlation $R_{kl}$ and bivariate cumulants $\kappa_{ij}$ ($i$ copies of $y_k$, $j$ of $y_l$),
+\[
+\delta\,\E[\relu(y_k)\relu(y_l)]=\sum_{i+j\in\{3,4\}}\frac{\kappa_{ij}}{i!\,j!}\sum_{p\ge0}\frac{a_{k,i+p}\,a_{l,j+p}}{\sigma_k^i\sigma_l^j}\frac{R_{kl}^p}{p!}.
+\]
+\end{proposition}
+
+\begin{proof}
+For the density, $p=\exp\big(\sum_{|\alpha|\ge3}\kappa_\alpha(-\partial)^\alpha/\alpha!\big)\varphi_\Sigma$. Integrate by parts, and note $\E[g^{(i)}(y_k)g^{(j)}(y_l)]=\sum_p\sigma_k^{-i}\sigma_l^{-j}a_{k,i+p}a_{l,j+p}R^p/p!$. This is Mehler applied to derivatives, using $\E[G^{(i)}(u)\He_p(u)]=a_{i+p}$.
+\end{proof}
+
+\begin{definition}[tree-level propagation, TLP]\label{def:tlp}
+Layer by layer:
+\begin{enumerate}
+\item Compute the Gaussian closure $\mu_\ell=W_\ell m_{\ell-1}$ and $\Sigma_\ell=W_\ell C_{\ell-1}W_\ell^\top$, with means $m_\ell=a_0$ and covariances $C_\ell=\sum_{j\ge1}a_ja_j^\top\circ R^{\circ j}/j!$ (Mehler, exact for a Gaussian $y_\ell$).
+\item Compute the tree-level one-point cumulants $\kappa_3(z_{\ell,i})$, $\kappa_4(z_{\ell,i})$ and two-point cumulants $K_{21},K_{22}$ (Example~\ref{ex:k3k4}). The non-Gaussianity of earlier layers is added by \emph{linear-response transport}: replace $W_\ell$ by $B^{(r)}$ and use the closure data of layer $\ell-1-r$, where
+\[
+B^{(0)}=W_\ell,\qquad B^{(r+1)}=(B^{(r)}\circ P_{\ell-1-r}^\top)\,W_{\ell-1-r},\qquad P=\Phi(\mu/\sigma),
+\]
+for $r\le r_{\max}$.
+\item Correct $m_\ell$, the variances $\mathrm{diag}\,C_\ell$, and the off-diagonal $C_\ell$ by Proposition~\ref{prop:edge}.
+\end{enumerate}
+The output is $m_L$. It uses only the weights.
+\end{definition}
+
+\section{The ideal hierarchy}\label{sec:ideal}
+
+\begin{theorem}[order counting under fresh weights]\label{thm:orders}
+Let $W$ have i.i.d.\ $N(0,s/n)$ entries, independent of the source layer's $(\mu,\Sigma)$; this holds exactly for $W_{\ell+1}$ and the closure data of layer $\ell$. Put $\bar r=\max_l\sum_{k}R_{0,kl}^2$ and $\rho_{\max}=\max|R_0|$. Then for every output $i$:
+\begin{enumerate}
+\item $\E_W D_3=0$ and $\E_WD_3^2=15s^3n^{-3}\sum_k\kappa_3(h_k)^2=O(n^{-2})$.
+\item For each tree-shaped three-vertex term $\Theta\in\{P_3,T_3\}$: $\E_W\Theta=0$ and $\E_W\Theta^2\le C s^3n^{-2}\,\bar r^{\,2}$.
+\item The triangle (first cycle) term $\Delta$ satisfies $\E_W\Delta^2\le Cs^3n^{-2}\bar r^{\,2}\rho_{\max}^2$.
+\item $\E_WD_4=3s^2n^{-2}\sum_k\kappa_4(h_k)=O(n^{-1})$. This is coherent (it does not vanish on average), as is the $R^2$ part of $\E_WPP_4$.
+\end{enumerate}
+So the Gaussian closure is $O(1)$, trees are $O(n^{-1})$ (random-signed for $\kappa_3$, coherent for $\kappa_4$), and each cycle is a further factor $\rho_{\max}$. This is a graded ideal in the sense of Connes's calculus modulo $\mathcal L^{p,\infty}_0$.
+\end{theorem}
+
+\begin{proof}
+All terms are polynomials in $W$ of odd degree ($D_3,P_3,T_3,\Delta$) or even degree ($D_4,PP_4$). Use Isserlis on $W$.
+
+(1) $\E W_{ik}^3W_{ik'}^3=15(s/n)^3\delta_{kk'}$.
+
+(2) For $T_3=\sum_{\{k,l,m\}\ \mathrm{distinct}}W_{ik}W_{il}W_{im}t_{klm}$, the expectation of the product with a second copy is nonzero only when the index sets coincide. So $\E T_3^2\le6(s/n)^3\sum t_{klm}^2$. Moreover $t_{klm}^2\le C\,R_{kl}^2R_{lm}^2$ (Lemma~\ref{lem:cramer} bounds the jets, and the $p,q$ sums converge geometrically since $|R|<1$), and $\sum_{k,l,m}R_{kl}^2R_{lm}^2=\sum_l\big(\sum_kR_{kl}^2\big)^2\le n\bar r^{\,2}$. The bound for $P_3$ is the same, with one fused vertex.
+
+(3) The triangle has $t_{klm}\propto R_{kl}R_{lm}R_{km}$ and $R_{km}^2\le\rho_{\max}^2$.
+
+(4) $\E W_{ik}^4=3(s/n)^2$.
+\end{proof}
+
+\noindent For random He layers $\bar r=O(1)$ at fixed depth, so trees are $O(1/n)$ and the triangle is $O(n^{-1}\rho_{\max})$. Table~\ref{tab:cycles} measures the triangle at $1\%$ of the tree total at every depth up to $16$, although $\rho_{\max}$ grows to $0.7$ there.
+
+\section{Depth: contracting transport and the critical scale}\label{sec:depth}
+
+\begin{proposition}[two transports]\label{prop:depth}
+Under the fresh-weight approximation ($W_{\ell-1-r}$ independent of $B^{(r)}$ and of $P_{\ell-1-r}$):
+\begin{enumerate}
+\item (contracting) $\E\|B^{(r+1)}_{i\cdot}\|^2=s\sum_k(B^{(r)}_{ik})^2P_k^2=\bar\chi\,\|B^{(r)}_{i\cdot}\|^2$ with $\bar\chi=s\langle P^2\rangle_B$. If the $B$-weighted law of $a_k=\mu_k/\sigma_k$ is symmetric and $s=2$, then
+\[
+\bar\chi=1-2\big\langle P(1-P)\big\rangle_B,
+\]
+twice the mean Bernoulli variance of the code bits.
+\item (critical) Second moments are transported with the gate variance $\E[g'(y)^2]=P$ instead of $P^2$, so their factor is $s\langle P\rangle=1$. This is He criticality: $q_\ell=\frac1n\E\|z_\ell\|^2$ is preserved.
+\end{enumerate}
+Consequently, an $r$-th order cumulant source injected $t$ layers below the output reaches it, through linear response, with weight $\approx\prod\bar\chi^{\,r/2}$. The depth series $\mathcal Z_r=\sum_{t\ge0}\prod_{j=1}^{t}\bar\chi_{j}^{\,r/2}$ converges for $r\ge3$, with memory $\approx1/(1-\bar\chi^{r/2})$ layers.
+\end{proposition}
+
+\begin{proof}
+(1) $B^{(r+1)}_{i\cdot}=\sum_kB^{(r)}_{ik}P_kW_{k\cdot}$, and the rows $W_{k\cdot}$ are independent with $\E\|W_{k\cdot}\|^2=s$. With symmetry, $\langle P^2\rangle=\langle\frac12(\Phi(a)^2+\Phi(-a)^2)\rangle=\frac12-\langle\Phi(a)\Phi(-a)\rangle$.
+
+(2) $\frac1n\E\|z_{\ell+1}\|^2=\frac sn\sum_k\E g(y_k)^2$, and $g(y)^2+g(-y)^2=y^2$.
+\end{proof}
+
+\noindent Creation of non-Gaussianity is $\propto\varphi(a)$ (gap content, Lemma~\ref{lem:jets}). Forgetting is $\propto P(1-P)=\Phi(a)\Phi(-a)\sim\varphi(a)/|a|$ (Mills). \emph{Both are carried by the gaps}. As neurons freeze with depth ($|a|$ grows), the network creates less non-Gaussianity and forgets it more slowly. Table~\ref{tab:cycles} checks the predicted row-norm contraction against the actual products to within $4\%$, and $r_{\max}=4$ captures the response (Table~\ref{tab:ablate}).
+
+\begin{theorem}[the scale is exactly critical]\label{thm:scale}
+Let $\Phi_\ell:(\mu_\ell,\Sigma_\ell)\mapsto(\mu_{\ell+1},\Sigma_{\ell+1})$ be the closure map of one layer, and $\Psi_\ell$ the exact map on laws, $\mathrm{law}(z_\ell)\mapsto\mathrm{law}(z_{\ell+1})$. For $\lambda>0$,
+\[
+\Phi_\ell(\lambda\mu,\lambda^2\Sigma)=(\lambda\mu_{\ell+1},\lambda^2\Sigma_{\ell+1}),\qquad \Psi_\ell\circ D_\lambda=D_\lambda\circ\Psi_\ell\quad(D_\lambda=\text{dilation}).
+\]
+Hence $D\Phi_\ell(\mu_\ell,2\Sigma_\ell)=(\mu_{\ell+1},2\Sigma_{\ell+1})$: the scale direction is transported with eigenvalue exactly one, at every layer and every width. A relative scale error $\varepsilon$ made at any layer reaches the output as $\varepsilon\,m_L$, undamped.
+\end{theorem}
+
+\begin{proof}
+$\relu(\lambda y)=\lambda\relu(y)$ and $W$ is linear, so both maps commute with dilations. Differentiate $\Phi_\ell(\lambda x)=\lambda\cdot\Phi_\ell(x)$ (graded by degree) at $\lambda=1$ (Euler).
+\end{proof}
+
+\noindent This is the pole. Every error has a component along the current scale vector, and that component is never forgotten. The coherent part of the ideal (Theorem~\ref{thm:orders}(4)) has a nonzero scale component, so it accumulates through depth. What survives at the output is one number $c$, with error $\approx c\,m_L$. In Connes's language it is the residue: the one coefficient that a Dixmier trace keeps.
+
+\begin{proposition}[the gain]\label{prop:gain}
+Suppose $y=G\tilde y$ with $G>0$ independent of $\tilde y$. Then
+\begin{enumerate}
+\item $z=W\relu(y)=G\cdot W\relu(\tilde y)$: scale mixtures pass through a layer unchanged, so the mixing law is transported critically.
+\item If $\E G^2=1$ and $\gamma:=\Var(G^2)$ is small, then $\E\relu(y_k)=\E[G]\,\E\relu(\tilde y_k)$ with $\E G=1-\gamma/8+O(\gamma^2)$.
+\item $\gamma$ is visible in the coherent two-point fourth cumulants. If $\tilde z$ is centred with correlations $\tilde\rho$,
+\[
+\frac{\E[z_k^2z_l^2]-(\text{its Gaussian value})}{\E z_k^2\,\E z_l^2}=\gamma\,(1+2\tilde\rho_{kl}^2)\qquad(k\ne l),
+\]
+and with means the same holds to first order in the mean-carrying terms.
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+(1) $\relu(G\tilde y)=G\relu(\tilde y)$. (2) Write $G^2=1+\varepsilon$; then $\E\sqrt{1+\varepsilon}=1-\E\varepsilon^2/8+O(\E|\varepsilon|^3)$. (3) $\E[z_k^2z_l^2]=\E G^4\,(\tilde\sigma_k^2\tilde\sigma_l^2+2\tilde C_{kl}^2)$, while the Gaussian value with the same covariance ($\E G^2=1$) is $\tilde\sigma_k^2\tilde\sigma_l^2+2\tilde C_{kl}^2$; and $\E G^4-1=\gamma$.
+\end{proof}
+
+\paragraph{The residue law.} Define $\gamma_\ell$ as the average over pairs $k\ne l$ of the normalized excess in Proposition~\ref{prop:gain}(3), measured by Monte Carlo at each layer. Table~\ref{tab:gain} compares $\gamma_\ell/8$ with the oracle scale coefficient $c_\ell=\langle m^{\mathrm{cl}}_\ell,m^{\mathrm{cl}}_\ell-m_\ell\rangle/\|m^{\mathrm{cl}}_\ell\|^2$ of the closure error. They agree within $15\%$ from layer~5 to layer~16 ($0.0073$ against $0.0069$ at layer 16). At layers 2--4, $\gamma/8$ over-predicts by $30$--$45\%$. The gap-shaped alternative $(\gamma/8)\sigma\varphi(a)(1+a^2)$, which is what a single mixed layer would produce, explains almost nothing at the output. The output error is the \emph{accumulated scale}, as Theorem~\ref{thm:scale} predicts.
+
+\begin{proposition}[gain injection, $O(n^2)$ from the weights]\label{prop:inject}
+Let layer $\ell$ be Gaussian with closure data, let $z=W\relu(y_\ell)$, $q_k=\E z_k^2$, $u_a=\sum_kW_{ka}^2/q_k$, $v_a=\sum_kW_{ka}^4/q_k^2$ and $t=W^\top(\mu/q)$. Restricting to the coherent tree diagrams, the fresh gain injected by the layer is
+\[
+f=\frac{1}{n(n-1)}\Big[\sum_a\kappa_4(h_a)(u_a^2-v_a)+u^\top F_0u+4\sum_a\kappa_3(h_a)u_at_a+4\,u^\top K_pt\Big],
+\]
+where $F_0$ (Example~\ref{ex:k3k4}) and $K_p(a,c)=\kappa(h_a,h_a,h_c)$ are $n\times n$ Mehler sums.
+\end{proposition}
+
+\begin{proof}
+Average the excess $\kappa(z_k,z_k,z_l,z_l)+2\mu_l\kappa(z_k,z_k,z_l)+2\mu_k\kappa(z_k,z_l,z_l)$ over $k\ne l$, using the diagonal and pair sources of Example~\ref{ex:k3k4}. The normalized pair sums factorize through $u$ and $t$ after the $k=l$ terms are removed. The cross pairings and star terms average to zero under fresh weights.
+\end{proof}
+
+\noindent Against an exactly Gaussian source, the formula matches Monte Carlo layer by layer: $0.00867$ against $0.00831$ at $3\to4$, $0.00428$/$0.00392$ at $7\to8$, $0.00200$/$0.00214$ at $11\to12$, and $0.00149$/$0.00126$ at $15\to16$. The injection decays with depth roughly like the squared gap content $\langle\varphi(a)\rangle^2$. Summing it critically ($\gamma_\ell=\gamma_{\ell-1}+f_\ell$) overshoots the measured $\gamma$ at depth by up to $48\%$, because the injected coherent cumulant is not a pure scale mixture. Its non-gain part decays.
+
+The oracle scale coefficient also has a \emph{random} part. Quenched per-neuron errors, projected on the critical mode, accumulate like a random walk and differ between networks. At width 256 and depth 16, the three seeds have $c=0.0073,0.0058,0.0045$, while the coherent sums are $0.0102,0.0084,0.0107$. With transport $\gamma_\ell=\tau\gamma_{\ell-1}+f_\ell$, the compromise $\tau=0.95$ comes within $6\%$ of the oracle-scale MSE on seeds 0 and 1 and at width 512. On seed 2 it gains $1.6\times$ where the oracle gains $2.2\times$; there $\tau=1$ overshoots and is worse than no correction (Table~\ref{tab:residue}). Heuristically, the random part should shrink relative to the coherent part, like $n^{-1/2}$, as width grows. Deriving the transport (the left eigenvector of the fourth-order transport at the scale mode) and separating the random part are open.
+
+\section{The two objects together}\label{sec:together}
+
+The roles are now clear.
+\begin{itemize}
+\item \textbf{Object 2 (weights) computes.} The Gaussian closure, which is node and edge data, costs $O(Ln^3)$. The gain residue, which is gap data summed over pairs, costs $O(Ln^2)$. The quenched trees, which are gaps contracted by message passing, cost $O(n^3)$ per tree shape.
+\item \textbf{Object 1 (the code process, i.e.\ sampling) does not need to supply the residue.} One might hope to measure the single number $c$ cheaply by running the network on $T_c$ inputs and setting $\hat c=\langle m^{\mathrm{cl}},m^{\mathrm{cl}}-\bar y_{T_c}\rangle/\|m^{\mathrm{cl}}\|^2$. It is expensive. Monte Carlo noise is concentrated in the same critical direction, because the per-input gain fluctuation \emph{is} the common mode of the outputs. At width 256, depth 16, $T_c=4000$ ($6\%$ of the budget) brings the MSE only to $2.2\times10^{-5}$. The weights-only residue reaches $1.4\times10^{-5}$ for free. Removing $\|x\|$ exactly, using $\E h(x)=\E\|x\|\,\E h(x/\|x\|)$, cuts the variance along the scale direction by only $6\%$. The gain is directional, not radial.
+\end{itemize}
+
+\noindent So the answer to ``how do we use these two together to estimate the means, given the weights'' is: \emph{the weights determine the means up to the residue at the critical (scale) mode; the residue is itself a gap sum that the weights determine to within the transport constant $\tau$; and the remaining error is the random-signed quenched part of the ideal, which the tree calculus computes at $O(n^3)$ per term.}
+
+\section{The one-blob calculus: a transfer operator on the ideal}\label{sec:blob}
+At first order in $1/n$, the law of $y_\ell$ is $N(\mu_\ell,\Sigma_\ell)$ plus a ``blob'' $\beta_\ell$: its third and fourth cumulants, $O(1/n)$ by Theorem~\ref{thm:orders}. Expectations are linear in the blob (Edgeworth), and two blobs never meet at this order. Hence there are linear maps $\mathcal L_\ell$ (blob $\to$ blob), $\mathcal E_\ell$ (blob $\to$ Gaussian data) and $\mathcal J_\ell=D\Phi_\ell$, and fresh tree sources $T_\ell$, such that
+\[
+\beta_{\ell+1}=T_\ell+\mathcal L_\ell\beta_\ell,\qquad(\delta\mu,\delta\Sigma)_{\ell+1}=\mathcal J_\ell(\delta\mu,\delta\Sigma)_\ell+\mathcal E_{\ell+1}\beta_{\ell+1}.
+\]
+The channels of $\mathcal L_\ell$ are the jets of layer $\ell$. A node (degree-one jet $P$) takes one leg of the blob. A gap (jet of degree $d\ge2$) absorbs $j\le d$ legs and emits $d-j$ Gaussian edges.
+\begin{itemize}
+\item Linear response is the all-node channel, contracting at $\bar\chi$ (Proposition~\ref{prop:depth}).
+\item The first gap channel $G_1$ is a fourth-order blob absorbed by one gap into a third-order blob. At layer 3 it correlates $0.93$ with the residual of trees plus linear response, and it halves the layer-3 MSE ($2.26\times10^{-7}\to1.08\times10^{-7}$). Its benefit fades with depth while only the fresh blob is used.
+\end{itemize}
+The operator $\mathcal J$ has spectral radius one, because the scale is exactly critical (Theorem~\ref{thm:scale}). On the non-gain part of the blob, $\mathcal L$ has spectral radius $<1$. The resolvent $\sum_t\mathcal L^t$ is the depth analogue of Connes's zeta function, with a pole at $z=1$ only through the scale mode. TLP (Definition~\ref{def:tlp}) implements $T_\ell$, the node channel, and $\mathcal E_\ell$ for one- and two-point data. The missing gap channels are what limits it at depth.
+
+\section{Numerics}\label{sec:num}
+Setup: He-initialised ReLU MLPs without biases, $x\sim N(0,I_n)$. Ground truth comes from $1.6\times10^7$ samples at width $256$ (depths $4,8,16$; seeds $0,1$ at depth 16), $4\times10^6$ at $512$, and $10^7$ at $1024$ (depth 16). The metric is the final-layer MSE over neurons. MC@B is the MSE of full-budget Monte Carlo, i.e.\ the mean per-neuron variance divided by $65{,}536$ (the WhestBench Phase-2 budget is $\approx65{,}374$ samples). ``Noise'' is the ground truth's own MSE. Within one seed, the networks of different depths share their first layers.
+
+\paragraph{One step is exact.} At layer 2 the source is exactly Gaussian, so Theorem~\ref{thm:diagram} and Proposition~\ref{prop:edge} are the whole story at $O(1/n)$:
+\begin{itemize}
+\item The closure MSE $1.87\times10^{-6}$ drops to $3.24\times10^{-8}$ with all tree terms, against a noise floor of $3.1\times10^{-8}$.
+\item Ablations: $\kappa_3$ terms only, $2.9\times10^{-7}$; $\kappa_4$ only, $1.5\times10^{-6}$; without the path trees $T_3$, $1.0\times10^{-7}$; diagonal terms $D_3+D_4$ only, $5.7\times10^{-7}$.
+\item With an exactly Gaussian but deep-layer-correlated source (layers 2 and 6, $\mathrm{rms}\,\rho=0.08,0.13$), the predicted $\kappa_3(z_i)$ errs by $1.3\times10^{-3}$ and $3.7\times10^{-4}$, equal to the Monte Carlo noise ($1.2\times10^{-3}$, $3.6\times10^{-4}$), while the true rms is $3.8\times10^{-2}$ and $1.5\times10^{-2}$.
+\item The two-point $K_{21}$ prediction correlates $0.997$ with Monte Carlo.
+\end{itemize}
+
+\begin{table}[h]\centering\small
+\begin{tabular}{@{}lcccccc@{}}
+\toprule
+layer transition & $2\to3$ & $4\to5$ & $8\to9$ & $12\to13$ & $15\to16$\\
+\midrule
+$\rho_{\max}$ / rms $\rho$ & $0.32/0.077$ & $0.43/0.110$ & $0.58/0.153$ & $0.74/0.204$ & $0.71/0.214$\\
+rms $\kappa_3$: trees & $3.7\times10^{-2}$ & $2.4\times10^{-2}$ & $7.7\times10^{-3}$ & $8.7\times10^{-3}$ & $4.5\times10^{-3}$\\
+rms $\kappa_3$: triangle & $2.5\times10^{-4}$ & $1.9\times10^{-4}$ & $5.0\times10^{-5}$ & $7.5\times10^{-5}$ & $5.8\times10^{-5}$\\
+\midrule
+row-norm step $r$ & 0 & 1 & 2 & 3 & 4\\
+predicted / actual & $1.61/1.59$ & $1.32/1.34$ & $1.14/1.15$ & $1.02/1.00$ & $0.885/0.887$\\
+\bottomrule
+\end{tabular}
+\caption{Width 256, depth 16. Top: the first cycle (triangle) is $\approx1\%$ of the tree diagrams at every depth (Theorem~\ref{thm:orders}). Bottom: linear-response row norms $\|B^{(r+1)}_i\|^2$ predicted by $2\langle P^2\rangle_B\|B^{(r)}_i\|^2$ against the actual products (Proposition~\ref{prop:depth}).}\label{tab:cycles}
+\end{table}
+
+\begin{table}[h]\centering\footnotesize\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}lccccccc@{}}
+\toprule
+& \multicolumn{5}{c}{width 256, depth 16, by layer} & 512 & 1024\\
+\cmidrule(lr){2-6}\cmidrule(lr){7-7}\cmidrule(lr){8-8}
+ & 2 & 4 & 8 & 12 & 16 & 16 & 16\\
+\midrule
+MC@B & $7.5\times10^{-6}$ & $4.9\times10^{-6}$ & $2.6\times10^{-6}$ & $2.1\times10^{-6}$ & $1.4\times10^{-6}$ & $1.25\times10^{-6}$ & $1.03\times10^{-6}$\\
+closure & $1.9\times10^{-6}$ & $1.2\times10^{-5}$ & $4.2\times10^{-5}$ & $5.9\times10^{-5}$ & $6.3\times10^{-5}$ & $1.6\times10^{-5}$ & $4.1\times10^{-6}$\\
+TLP ($r_{\max}=2$) & $3.2\times10^{-8}$ & $7.3\times10^{-7}$ & $9.0\times10^{-6}$ & $2.3\times10^{-5}$ & $2.8\times10^{-5}$ & -- & --\\
+TLP ($r$ all / $\le4$) & $3.2\times10^{-8}$ & $7.3\times10^{-7}$ & $4.3\times10^{-6}$ & $7.2\times10^{-6}$ & $7.5\times10^{-6}$ & $3.0\times10^{-6}$ & $8.9\times10^{-7}$\\
+noise & $3.1\times10^{-8}$ & $2.0\times10^{-8}$ & $1.1\times10^{-8}$ & $8.8\times10^{-9}$ & $5.7\times10^{-9}$ & $2.0\times10^{-8}$ & $6.7\times10^{-9}$\\
+\bottomrule
+\end{tabular}
+\caption{Tree-level propagation (Definition~\ref{def:tlp}) against Gaussian closure: $J=3$ at widths 256 and 512 (512 with $r_{\max}=4$), and $J=1$, $r_{\max}=4$ at width 1024. Closure MSE scales as $n^{-2}$ ($6.3\to1.6\to0.41\times10^{-5}$). TLP gains $16\times$ at layer 4 and $8$, $5$, $4.6\times$ at depth 16 for widths 256, 512, 1024. At width 1024 it is below full-budget Monte Carlo in raw MSE.}\label{tab:tlp}
+\end{table}
+
+\begin{table}[h]\centering\small
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+width 256, depth 8 & closure & $J{=}1,r_{\max}{=}1$ & $J{=}1,r_{\max}{=}4$ & $J{=}3,r_{\max}{=}4$ & $+G_1$\\
+\midrule
+layer 3 & $6.7\times10^{-6}$ & $2.3\times10^{-7}$ & $2.3\times10^{-7}$ & $2.3\times10^{-7}$ & $1.1\times10^{-7}$\\
+layer 8 & $4.2\times10^{-5}$ & $1.3\times10^{-5}$ & $4.9\times10^{-6}$ & $4.9\times10^{-6}$ & $4.9\times10^{-6}$\\
+\bottomrule
+\end{tabular}
+\caption{Ablations. One Hermite order ($J=1$, path trees with single edges) is enough; the linear-response depth matters; the fresh gap channel $G_1$ helps where it applies (layer 3).}\label{tab:ablate}
+\end{table}
+
+\begin{table}[h]\centering\small
+\begin{tabular}{@{}lcccccccc@{}}
+\toprule
+layer & 2 & 3 & 4 & 6 & 8 & 10 & 12 & 16\\
+\midrule
+oracle scale $c_\ell$ & $.0013$ & $.0024$ & $.0032$ & $.0053$ & $.0062$ & $.0061$ & $.0068$ & $.0073$\\
+$\gamma_\ell/8$ (measured $\gamma$) & $.0019$ & $.0032$ & $.0041$ & $.0054$ & $.0058$ & $.0065$ & $.0065$ & $.0069$\\
+$\gamma_\ell/8$ (weights, $\tau=1$) & $.0020$ & $.0034$ & $.0045$ & $.0062$ & $.0073$ & $.0084$ & $.0089$ & $.0102$\\
+$\gamma_\ell/8$ (weights, $\tau=.95$) & $.0020$ & $.0033$ & $.0043$ & $.0054$ & $.0061$ & $.0065$ & $.0064$ & $.0063$\\
+\bottomrule
+\end{tabular}
+\caption{The residue is the gain (width 256, depth 16, seed 0). The scale coefficient of the closure error tracks $\operatorname{Var}(G^2)/8$ (Proposition~\ref{prop:gain}). $\gamma$ is measured from $2\times10^5$ samples, or computed from the weights by Proposition~\ref{prop:inject}.}\label{tab:gain}
+\end{table}
+
+\begin{table}[h]\centering\small\setlength{\tabcolsep}{3.5pt}
+\begin{tabular}{@{}lcccccc@{}}
+\toprule
+network & MC@B & closure & \multicolumn{2}{c}{$+$residue} & oracle & TLP$+$\\
+ & & & $\tau{=}1$ & $\tau{=}.95$ & scale & oracle scale\\
+\midrule
+$n=256$, $L=4$ & $4.9\times10^{-6}$ & $1.2\times10^{-5}$ & $6.7\times10^{-6}$ & $6.3\times10^{-6}$ & $5.7\times10^{-6}$ & --\\
+$n=256$, $L=8$ & $2.6\times10^{-6}$ & $4.2\times10^{-5}$ & $1.4\times10^{-5}$ & $1.3\times10^{-5}$ & $1.3\times10^{-5}$ & $1.4\times10^{-6}$\\
+$n=256$, $L=16$, s0 & $1.4\times10^{-6}$ & $6.3\times10^{-5}$ & $2.1\times10^{-5}$ & $1.4\times10^{-5}$ & $1.3\times10^{-5}$ & $4.2\times10^{-6}$\\
+$n=256$, $L=16$, s1 & $1.6\times10^{-6}$ & $7.4\times10^{-5}$ & $3.1\times10^{-5}$ & $2.1\times10^{-5}$ & $2.0\times10^{-5}$ & --\\
+$n=256$, $L=16$, s2 & $1.8\times10^{-6}$ & $4.5\times10^{-5}$ & $6.7\times10^{-5}$ & $2.7\times10^{-5}$ & $2.0\times10^{-5}$ & --\\
+$n=512$, $L=16$ & $1.25\times10^{-6}$ & $1.6\times10^{-5}$ & $6.6\times10^{-6}$ & $5.9\times10^{-6}$ & $5.6\times10^{-6}$ & $1.0\times10^{-6}$\\
+$n=1024$, $L=16$ & $1.03\times10^{-6}$ & $4.1\times10^{-6}$ & $2.1\times10^{-6}$ & $1.50\times10^{-6}$ & $1.48\times10^{-6}$ & $2.3\times10^{-7}$\\
+\bottomrule
+\end{tabular}
+\caption{Final-layer MSE. ``Residue'' is the weights-only gain correction $m\leftarrow(1-\gamma_L/8)\,m^{\mathrm{cl}}$. $\tau=0.95$ was chosen from $\{1,0.95,0.9\}$ on seeds 0, 1 at width 256 and on width 512; seed 2 and width 1024 were not used. ``TLP+oracle scale'' ($J=1$, $r_{\max}=4$) shows what the quenched trees achieve once the residue is right: below MC@B at widths 512 and 1024.}\label{tab:residue}
+\end{table}
+
+
+\section{Cost and the WhestBench rule}\label{sec:cost}
+Phase 2 has $n=1024$ and $L=16$. The budget is $B\approx2.2\times10^{12}$ FLOPs ($\approx65{,}374$ forward passes), and the score is $\text{MSE}\times\max(0.1,C/B)$. Counting $n\times n\times n$ products at $2n^3$ FLOPs each:
+\begin{itemize}
+\item \emph{Closure}: $W C W^\top$ per layer, $31$ products in all, i.e.\ $6.7\times10^{10}$ FLOPs $=3.0\%$ of $B$ ($6\%$ if float64 is billed double). The Mehler sums are $O(Kn^2)$. Wall time is $4.3$\,s in plain numpy.
+\item \emph{Gain residue} (Proposition~\ref{prop:inject}): $O(Kn^2)$ per layer, $<0.1\%$ of $B$ ($8.7$\,s of unoptimised elementwise work).
+\item \emph{TLP} with $J=1$: about $26$ products per layer per response step. With $r_{\max}=4$ that is $\approx1800$ products, $\approx1.8B$ (over budget). With $r_{\max}=1$ it is $\approx800$ products, $\approx0.8B$.
+\item \emph{Diagonal-source TLP} (single-neuron sources only, $\approx5$ products per layer per step) removes only $40\%$ of the closure MSE at depth 8. The \emph{annealed} $O(n^2)$ corrections (coherent fourth-cumulant terms, without the scale transport) remove nothing measurable at depth. The accuracy of TLP comes from the quenched, random-signed trees.
+\end{itemize}
+So under the WhestBench rule, the best of these estimators is \emph{closure $+$ gain residue}, at multiplier $0.1$. Applying each width's own MC@B to that row of Table~\ref{tab:residue}:
+\begin{itemize}
+\item width 256: $0.1\times1.4\times10^{-5}=1.4\times10^{-6}$ against MC@B $1.4\times10^{-6}$ (parity);
+\item width 512: $5.9\times10^{-7}$ against $1.25\times10^{-6}$ ($2.1\times$ better);
+\item width 1024 (the Phase-2 shape): $0.1\times1.50\times10^{-6}=1.5\times10^{-7}$ against $1.03\times10^{-6}$, i.e.\ $6.9\times$ better ($4.9\times$ with $\tau=1$, $2.5\times$ for plain closure).
+\end{itemize}
+Full TLP is the accuracy reference. It would win only with an $O(n^2)$ sketch of the quenched trees (open problem 2).
+
+
+\section{Open problems}\label{sec:open}
+\begin{enumerate}
+\item \emph{The transport constant.} Derive $\tau$ from the left eigenvector of the fourth-order transport at the scale mode. Alternatively, track the gain component of the blob exactly.
+\item \emph{Cheap quenched trees.} The random-signed trees ($P_3$, $T_3$, $K_{21}$) carry most of the per-neuron accuracy. They cost $n^3$ per term, and their annealed versions vanish. Find an $O(n^2\,\mathrm{polylog})$ sketch of the message-passing products that keeps per-neuron accuracy.
+\item \emph{All gap channels.} Implement $\mathcal L$ fully and test whether TLP then reaches the cycle floor $O(n^{-1}\rho_{\max})$ at depth.
+\item \emph{A Fredholm module for the tree part.} Find $(H,F)$ on the code space whose Dixmier-type trace reproduces the tree expansion rather than just the gap formula. The first-order (gap) term suggests $F$ = swap across facets, weighted by Gaussian Minkowski content.
+\end{enumerate}
+
+\section*{References}
+\begin{itemize}\small
+\item A.~Connes, \emph{Noncommutative Geometry}, Academic Press 1994, Ch.~IV \S3 (quantized calculus in one variable; \S3.$\varepsilon$ Cantor sets, Dixmier trace and Minkowski measure).
+\item S.~Janson, \emph{Gaussian Hilbert Spaces}, CUP 1997 (diagram formula, Thm.~1.36).
+\item G.~Peccati, M.~S.~Taqqu, \emph{Wiener Chaos: Moments, Cumulants and Diagrams}, Springer 2011.
+\item W.~F.~Kibble, An extension of a theorem of Mehler's on Hermite polynomials, \emph{Proc.\ Cambridge Philos.\ Soc.} 41 (1945); D.~Slepian, On the symmetrized Kronecker power of a matrix and extensions of Mehler's formula for Hermite polynomials, \emph{SIAM J.\ Math.\ Anal.} 3 (1972).
+\item D.~A.~Roberts, S.~Yaida, B.~Hanin, \emph{The Principles of Deep Learning Theory}, CUP 2022 (weight-averaged $1/n$ expansion).
+\item Wu et al., ARC cumulant propagation, arXiv:2605.05179 (fixed-weight cumulant propagation; see note I for the ``extra full trace'' device).
+\item Notes I, V, VII, VIII of this series (edge formula, cancellation index, Hermite energy profile, Dixmier traces of the code law).
+\end{itemize}
+
+\end{document}

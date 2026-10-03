@@ -1,0 +1,16 @@
+layer  2-> 3: rho_max 0.32 rms rho 0.077 | rms kappa3: all-tree 3.73e-02, T3 1.10e-02, triangle 2.53e-04  ratio tri/tree-total 0.01
+layer  4-> 5: rho_max 0.43 rms rho 0.110 | rms kappa3: all-tree 2.44e-02, T3 1.02e-02, triangle 1.85e-04  ratio tri/tree-total 0.01
+layer  8-> 9: rho_max 0.58 rms rho 0.153 | rms kappa3: all-tree 7.74e-03, T3 4.68e-03, triangle 5.00e-05  ratio tri/tree-total 0.01
+layer 12->13: rho_max 0.74 rms rho 0.204 | rms kappa3: all-tree 8.69e-03, T3 5.79e-03, triangle 7.54e-05  ratio tri/tree-total 0.01
+layer 15->16: rho_max 0.71 rms rho 0.214 | rms kappa3: all-tree 4.48e-03, T3 2.79e-03, triangle 5.77e-05  ratio tri/tree-total 0.01
+row-norm transport:
+  r=0: mean ||B_i||^2 2.012 -> next 1.594  predicted 2<P^2>_B ||B||^2 = 1.608   2<P(1-P)> = 0.140
+  r=1: mean ||B_i||^2 1.594 -> next 1.342  predicted 2<P^2>_B ||B||^2 = 1.317   2<P(1-P)> = 0.150
+  r=2: mean ||B_i||^2 1.342 -> next 1.148  predicted 2<P^2>_B ||B||^2 = 1.138   2<P(1-P)> = 0.166
+  r=3: mean ||B_i||^2 1.148 -> next 1.003  predicted 2<P^2>_B ||B||^2 = 1.017   2<P(1-P)> = 0.144
+  r=4: mean ||B_i||^2 1.003 -> next 0.887  predicted 2<P^2>_B ||B||^2 = 0.885   2<P(1-P)> = 0.158
+  r=5: mean ||B_i||^2 0.887 -> next 0.858  predicted 2<P^2>_B ||B||^2 = 0.828   2<P(1-P)> = 0.169
+  r=6: mean ||B_i||^2 0.858 -> next 0.652  predicted 2<P^2>_B ||B||^2 = 0.674   2<P(1-P)> = 0.188
+  r=7: mean ||B_i||^2 0.652 -> next 0.545  predicted 2<P^2>_B ||B||^2 = 0.545   2<P(1-P)> = 0.203
+
+[exited with code 0]
