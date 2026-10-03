@@ -1,0 +1,363 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{booktabs}
+\usepackage[expansion=false]{microtype}
+\usepackage{xcolor}
+\usepackage[colorlinks=true,linkcolor=blue!50!black,citecolor=blue!50!black,urlcolor=blue!50!black]{hyperref}
+\setlength{\emergencystretch}{3em}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{heuristic}[theorem]{Heuristic}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\Z}{\mathbb Z}
+\newcommand{\Q}{\mathbb Q}
+\newcommand{\R}{\mathbb R}
+\newcommand{\N}{\mathbb N}
+\newcommand{\E}{\mathbb E}
+\newcommand{\Var}{\operatorname{Var}}
+\newcommand{\conv}{\operatorname{conv}}
+\newcommand{\ext}{\operatorname{ext}}
+\newcommand{\Hd}{\mathcal H^{d-1}}
+
+\title{Vectors at nodes\\[4pt]
+\large random-hyperplane message passing, Cantor codes,\\ an edge formula for the mean, and expansion for free}
+\author{Working note V for the continuation-algebra programme\\
+\small self-reviewed draft, not independently verified}
+\date{3 October 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+The question: super-expanders carry \emph{vectors} at their nodes rather than numbers. Put the $j$-th row of a weight matrix at node $j$; since the input is random, is there a graph that ReLU naturally builds, related to a tree or a Cantor set? Yes, and the construction is literal. It splits the problem into a part that is free and a part that is hard.
+
+\textbf{(1) Random-hyperplane message passing.} A bias-free ReLU MLP is exactly the following process. Nodes carry vectors in input space; the first layer's are the rows. The Gaussian input is a uniformly random hyperplane; each node's ReLU gate records the side its current vector lies on; the next layer's vectors are weight-combinations of the gated vectors. Every pre-activation is $\langle\text{node vector},x\rangle$ (Euler).
+
+\textbf{(2) Two trees.} Read with i.i.d.\ inputs, each neuron becomes a point of a Cantor set. Two rows at angle $\theta$ split at a geometric depth with parameter $\theta/\pi$; three rows split first according to the Gromov products of the angular metric. The tree has exactly Cover's number $C(k,d)$ of level-$k$ cylinders: it is a zero-entropy Cantor set that remembers the sphere's dimension through polynomial growth $k^{d-1}$. Dually, the inputs fall into the activation tree, whose leaves are tiles carrying gradient vectors: the vertices of tropical Newton polytopes.
+
+\textbf{(3) The mean is an edge functional.} For Gaussian input,
+\[\E F(X)=\sum_{\text{facets }e}\gamma_{d-1}(e)\,\kappa_e ,\]
+where $\kappa_e$ is the jump of the node vector across the facet and $\gamma_{d-1}$ is Gaussian surface measure. This is the polytope edge formula for mean width ($V_1$), extended to virtual polytopes. It decomposes exactly over neurons and layers, and is verified numerically to Monte Carlo accuracy.
+
+\textbf{(4) Expansion is free.} For \emph{every} network, depth and width, the tile graph satisfies an $L^1$ Poincar\'e inequality for \emph{every metric-space-valued} labelling, with the sharp constant $\sqrt{\pi/2}$. Lumped Ornstein--Uhlenbeck kernels have Hilbert gap $\ge 1-e^{-s}$ and a quadratic Poincar\'e inequality for every metric target. Bounded-degree super-expanders cannot do this; the Gaussian rotation can.
+
+\textbf{(5) The labels are hard.} The mean is a signed boundary sum whose absolute mass grows like $(L-1)\sqrt n/\pi$, checked to within about $30\%$ on average, while the mean stays $O(1)$. The cancellation index (mean divided by absolute boundary mass) is already $0.04$ at $n=64$, $L=4$, and the mean-field estimate for WhestBench ($n=1024$, $L=16$) is $4\times10^{-3}$. Expansion lives in the input law; what the network contributes is cancellation in the labels.
+\end{abstract}
+
+\tableofcontents
+
+\section{Setting and the question}
+
+\textbf{Network.} $W_1\in\R^{n\times d}$, $W_\ell\in\R^{n\times n}$ ($2\le\ell\le L$), no biases, $z_\ell=W_\ell h_{\ell-1}$, $h_0=x$, $h_\ell=(z_\ell)_+$, outputs $F_j=h_{L,j}$. Input $X\sim\gamma=N(0,I_d)$ with density $\varphi=\varphi_d$. WhestBench Phase~2 has $d=n=1024$, $L=16$ and He weights $N(0,2/n)$; there ``$n$ inputs'' and ``$n$ nodes'' are the same number. All maps are continuous, piecewise linear and positively $1$-homogeneous, so every \emph{tile} (maximal set with a fixed activation pattern) is a polyhedral cone.
+
+\textbf{Super-expanders.} A family of graphs $G=(V,E)$ is an expander with respect to a metric space $(M,\rho)$ if there is a $C$ such that
+\begin{equation}\label{eq:poinc}
+\frac1{|V|^2}\sum_{u,v\in V}\rho(f(u),f(v))^2\;\le\;\frac{C}{|E|}\sum_{uv\in E}\rho(f(u),f(v))^2\qquad\text{for all }f:V\to M.
+\end{equation}
+Scalar labels give ordinary expanders. Super-expanders are bounded-degree families satisfying \eqref{eq:poinc} for every uniformly convex Banach space. Lafforgue obtained them from strong Banach property (T); Mendel--Naor gave a combinatorial construction (nonlinear spectral calculus and zigzag products). No bounded-degree family satisfies \eqref{eq:poinc} for \emph{every} metric space. Take $M=V$ with its own graph metric: the left side is $\gtrsim(\log|V|)^2$ and the right side is $C$.
+
+\textbf{Question.} Put the $j$-th row of the weight matrix at node $j$. Since the input is random, does ReLU build a graph, tree or Cantor set out of this, and what does it expand?
+
+\section{Random-hyperplane message passing}
+
+\begin{proposition}[the MLP as vector message passing]\label{prop:rhmp}
+Set $g_{1,i}(x)=w_i$ (the rows of $W_1$) and recursively
+\[
+s_{\ell,i}(x)=\mathbf 1\{\langle g_{\ell,i}(x),x\rangle>0\},\qquad g_{\ell+1,k}(x)=\sum_i W_{\ell+1}[k,i]\,s_{\ell,i}(x)\,g_{\ell,i}(x).
+\]
+Then $z_{\ell,i}(x)=\langle g_{\ell,i}(x),x\rangle$ for all $x$. Each $g_{\ell,i}$ is constant on the tiles of depth $\ell-1$ and equals $\nabla z_{\ell,i}$ there. Also $F_j=s_{L,j}\langle g_{L,j},x\rangle$ and $\nabla F_j=s_{L,j}g_{L,j}$ a.e. In matrix form, with $G_\ell(x)\in(\R^d)^n$ the stacked node vectors and $S_\ell=\mathrm{diag}(s_\ell)$,
+\[G_{\ell+1}(x)=W_{\ell+1}S_\ell(x)G_\ell(x),\qquad S_\ell(x)=\mathrm{diag}\big(\mathbf 1\{G_\ell(x)x>0\}\big).\]
+\end{proposition}
+
+\begin{proof}
+$\ell=1$ is the definition. If $z_{\ell,i}=\langle g_{\ell,i},x\rangle$, then $(z_{\ell,i})_+=s_{\ell,i}z_{\ell,i}$, so $z_{\ell+1,k}=\sum_iW_{\ell+1}[k,i]s_{\ell,i}\langle g_{\ell,i},x\rangle=\langle g_{\ell+1,k},x\rangle$. On a tile of depth $\ell-1$ the gates $s_1,\dots,s_{\ell-1}$ are constant, so $g_{\ell,i}$ is constant and $z_{\ell,i}$ is linear with gradient $g_{\ell,i}$.
+\end{proof}
+
+\textbf{Reading.} The gates depend on $x$ only through $x/|x|$, and $X/|X|$ is uniform on $S^{d-1}$. So \emph{the random input is a uniformly random hyperplane $x^\perp$}. Each layer cuts the current cloud of node vectors by this hyperplane and passes the positive side on, weighted by $W$. In super-expander language, $(R^d)^n$ is the space of vector labels on $n$ nodes, and one layer is the graph operator $W\otimes I_d$ composed with a random coordinate projection $S(x)\otimes I_d$, whose randomness is the hyperplane. The labels evolve but always remain vectors.
+
+Backward labels are scalars: with $\delta_{\ell,i}=\partial F_j/\partial h_{\ell,i}$ (gates frozen), $\delta_{L,i}=\mathbf 1\{i=j\}$ and $\delta_\ell=W_{\ell+1}^{\top}(s_{\ell+1}\circ\delta_{\ell+1})$. By the chain rule, $\nabla F_j=\sum_i\delta_{\ell,i}s_{\ell,i}g_{\ell,i}$ for every $\ell$.
+
+\section{Two trees}
+
+\subsection{Neuron side: Cantor codes from random hyperplanes}
+
+Let $x^{(1)},x^{(2)},\dots$ be i.i.d.\ $N(0,I_d)$. The \emph{code} of a nonzero vector $w$ is $c(w)=(\mathbf 1\{\langle w,x^{(k)}\rangle>0\})_{k\ge1}\in\{0,1\}^{\N}$. Its split depth with $w'$ is $\kappa(w,w')=\min\{k:c_k(w)\ne c_k(w')\}$. The PB-type ultrametrics $2^{-\kappa}$ and $1/\kappa$ turn a set of rows into a rooted tree with a Cantor boundary.
+
+\begin{theorem}[split laws and complexity of neuron codes]\label{thm:codes}
+Let $\theta(w,w')\in[0,\pi]$ be the angle and $p=\theta/\pi$.
+\begin{enumerate}
+\item[(i)] $\kappa(w,w')$ is geometric: $P(\kappa>k)=(1-p)^k$. Hence $\E2^{-\kappa}=p/(1+p)\in[p/2,p]$.
+\item[(ii)] For three directions $a,b,c$, the first index at which the three codes are not all equal isolates exactly one of them, and
+\[P(\text{$a$ is isolated first})=\frac{\theta_{ab}+\theta_{ac}-\theta_{bc}}{\theta_{ab}+\theta_{bc}+\theta_{ca}}=\frac{(b|c)_a}{\tfrac12(\theta_{ab}+\theta_{bc}+\theta_{ca})},\]
+where $(b|c)_a$ is the Gromov product in the angular metric. The random tree resolves the outlier first.
+\item[(iii)] Almost surely, the set of level-$k$ cylinders met by $c(S^{d-1})$ has exactly $C(k,d)=2\sum_{i=0}^{d-1}\binom{k-1}{i}$ elements (Cover's function). For $n$ rows, the number of distinct length-$k$ prefixes is at most $\min(n,C(k,d))$. In particular $C(k,d)=2^k$ for $k\le d$ (every prefix occurs on the sphere), while $C(k,d)=O(k^{d-1})$ for $k\gg d$ (Sauer--Shelah).
+\item[(iv)] Let $\mu_k$ be the law of the level-$k$ cylinder of a uniform direction. Then $\E\sum_{C}\mu_k(C)^2=\E(1-\Theta/\pi)^k$, with $\Theta$ the angle between two independent uniform directions, and
+\[\E\Big(1-\frac\Theta\pi\Big)^k\sim\frac{\Gamma(d-1)\,\pi^{d-1}}{B_d\,k^{d-1}},\qquad B_d=\frac{\sqrt\pi\,\Gamma(\frac{d-1}2)}{\Gamma(\frac d2)}.\]
+Hence the topological entropy $\log\#\{\text{cylinders}\}$ and the expected collision entropy $-\log\sum\mu_k(C)^2$ both equal $(d-1)\log k+O(1)$.
+\item[(v)] Almost surely, the closure of $c(S^{d-1})$ is a Cantor set. In the ultrametric $1/\kappa$ its box dimension is $d-1$; in $2^{-\kappa}$ it is $0$.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+(i) The bits for different $k$ are independent, and a uniformly random hyperplane separates two directions with probability $\theta/\pi$ (Sheppard; the Goemans--Williamson lemma). Then $\E2^{-\kappa}=\sum_k2^{-k}(1-p)^{k-1}p=p/(1+p)$.
+
+(ii) Three bits that are not all equal have exactly one bit alone. For one hyperplane let $q_a$ be the probability that $a$ is alone. Then $q_a+q_b=\theta_{ab}/\pi$ and cyclically, so $q_a=(\theta_{ab}+\theta_{ac}-\theta_{bc})/2\pi\ge0$. The first non-constant index has conditional law proportional to $(q_a,q_b,q_c)$.
+
+(iii) The level-$k$ cylinder of $w$ is the cell containing $w$ in the central arrangement $\{x^{(1)\perp},\dots,x^{(k)\perp}\}$. Gaussian normals are a.s.\ in general position, and $k$ central hyperplanes in general position in $\R^d$ have exactly $C(k,d)$ cells (Schl\"afli; Cover 1965). The bound $C(k,d)\le2(e(k-1)/(d-1))^{d-1}$ is Sauer--Shelah for homogeneous half-spaces, which have VC dimension $d$.
+
+(iv) $\sum_C\mu_k(C)^2$ is the probability that two independent uniform directions $U,U'$ share a cell. Given $U,U'$, each hyperplane fails to separate them independently with probability $1-\Theta/\pi$. The density of $\Theta$ is $\sin^{d-2}\theta/B_d$; Laplace's method gives the asymptotics. Since R\'enyi entropies are ordered, $H_2\le H_0=\log C(k,d)$. Jensen gives $\E H_2\ge-\log\E\sum\mu_k^2$, and both bounds are $(d-1)\log k+O(1)$.
+
+(v) Fix an open cell of level $k$. Each later hyperplane cuts it with a fixed positive probability, independently, so a.s.\ every cell is eventually split. The closure of the code set is therefore compact, totally disconnected and has no isolated points. Closed balls of radius $1/(k+1)$ in $1/\kappa$ are level-$k$ cylinders, of which there are $\asymp k^{d-1}$. In $2^{-\kappa}$ the count at radius $r$ is $\asymp(\log_2 1/r)^{d-1}$, so the dimension is $0$.
+\end{proof}
+
+\textbf{Reading.} With $k$ random inputs, a layer is an $n\times k$ sign matrix $\big[\mathbf 1\{\langle w_i,x^{(k')}\rangle>0\}\big]$. Its rows are the neuron codes (this section); its columns are the inputs' activation patterns (the layer-one tiles). Cover's function governs both sides: at most $C(k,d)$ distinct rows and $C(n,d)$ distinct columns. The fair binary Cantor set of the PB paper has $2^k$ cylinders. The coded sphere has $C(k,d)$ of them: a zero-entropy Cantor set that keeps the dimension of $S^{d-1}$ as a polynomial growth exponent. For WhestBench ($d=1024$), the code tree is the full binary tree for the first $1024$ inputs, and is polynomial beyond that.
+
+\begin{remark}[deeper layers]
+For neurons of layer $\ell$, the bits are $\mathbf 1\{z_{\ell,i}(x^{(k)})>0\}$. Parts (i)--(ii) hold verbatim, because the proof of (ii) used only that three bits not all equal isolate one. Replace $\theta/\pi$ by the disagreement probability $d_\ell(i,i')=P(\mathrm{sign}\,z_{\ell,i}(X)\ne\mathrm{sign}\,z_{\ell,i'}(X))$, which is an $L^1$ cut metric: the layer's sign kernel. Part (iii) changes, because sign classes of depth-$\ell$ networks have larger VC dimension.
+\end{remark}
+
+\subsection{Input side: the activation tree and its vector labels}
+
+Tiles of depth $\ell$ refine tiles of depth $\ell-1$, so the activation patterns form a rooted tree $\mathcal T$ of depth $L$. Each leaf $\tau$ carries the vector $g_\tau=\nabla F_j|_\tau$ (and, for each neuron, $g_{\ell,i}|_\tau$). The \emph{tile graph} $\mathcal G$ has the tiles as vertices with masses $\pi(\tau)=\gamma(\tau)$, and the facets $e=\bar\tau\cap\bar\tau'$ as edges with conductances $c_e=\gamma_{d-1}(e)=\int_e\varphi\,d\Hd$.
+
+\begin{proposition}[node vectors are Newton-polytope vertices]\label{prop:newton}
+Write $h_K(x)=\max_{y\in K}\langle y,x\rangle$. Every pre-activation is a difference of support functions, $z_{\ell,i}=h_{P_{\ell,i}}-h_{Q_{\ell,i}}$, with polytopes given by the following recursion. Start from $P_{1,i}=\{w_i\}$, $Q_{1,i}=\{0\}$. Put $\tilde P_i=\conv(P_{\ell,i}\cup Q_{\ell,i})$ and $\tilde Q_i=Q_{\ell,i}$, and split the weights into parts $W^\pm\ge0$ with $W=W^+-W^-$. Then
+\[
+P_{\ell+1,k}=\textstyle\sum_i\big(W^+_{ki}\tilde P_i+W^-_{ki}\tilde Q_i\big),\qquad Q_{\ell+1,k}=\sum_i\big(W^+_{ki}\tilde Q_i+W^-_{ki}\tilde P_i\big)\quad\text{(Minkowski sums)}.
+\]
+Thus $F_j=h_{P}-h_{Q}$ with $P=\conv(P_{L,j}\cup Q_{L,j})$ and $Q=Q_{L,j}$. On a tile, $g_\tau=p_\tau-q_\tau$, where $p_\tau$ and $q_\tau$ are the vertices of $P$ and $Q$ selected by $x\in\tau$. For one layer, $F_j=(\langle w_j,x\rangle)_+=h_{[0,w_j]}$, so the two node vectors are $0$ and $w_j$: the $j$-th node carries the $j$-th row.
+\end{proposition}
+
+\begin{proof}
+Use $h_{\lambda K}=\lambda h_K$ for $\lambda\ge0$, $h_{K+K'}=h_K+h_{K'}$, $\max(h_K,h_{K'})=h_{\conv(K\cup K')}$, and $(a-b)_+=\max(a,b)-b$. This is the homogeneous case of Zhang--Naitzat--Lim's tropical form of ReLU networks.
+\end{proof}
+
+\section{The edge formula for the mean}
+
+\begin{theorem}[edge formula]\label{thm:edge}
+Let $F:\R^d\to\R$ be continuous and positively $1$-homogeneous, and linear on each of finitely many polyhedral cones $C_m$ that cover $\R^d$ with disjoint interiors: $F=\langle g_m,\cdot\rangle$ on $C_m$. Each facet $e=C_m\cap C_{m'}$ (of dimension $d-1$) has unit normal $\nu_e$ pointing from $C_m$ into $C_{m'}$. Then $g_{m'}-g_m=\kappa_e\nu_e$ for a scalar bend $\kappa_e$ that does not depend on the orientation, and
+\begin{equation}\label{eq:edge}
+\E F(X)=\sum_{e}\kappa_e\,\gamma_{d-1}(e)=\int\varphi\,d(\Delta F).
+\end{equation}
+Here $\Delta F=\sum_e\kappa_e\,\Hd\llcorner e$ is the distributional Laplacian, a signed measure on the skeleton.
+\end{theorem}
+
+\begin{proof}
+On $e$, $\langle g_m,x\rangle=\langle g_{m'},x\rangle$ by continuity. Since $e$ spans $\nu_e^\perp$, $g_{m'}-g_m\parallel\nu_e$. Using $\nabla\varphi=-x\varphi$,
+\[\E F=\sum_m\Big\langle g_m,\int_{C_m}x\varphi\,dx\Big\rangle=-\sum_m\Big\langle g_m,\int_{C_m}\nabla\varphi\,dx\Big\rangle=-\sum_m\Big\langle g_m,\int_{\partial C_m}\varphi\,n_m\,d\Hd\Big\rangle.\]
+The last step is the divergence theorem on $C_m\cap B_R$ as $R\to\infty$; the spherical cap contributes $O(R^{d-1}e^{-R^2/2})$. Up to $\Hd$-null faces of dimension $\le d-2$, $\partial C_m$ is a union of facets. A facet between $C_m$ and $C_{m'}$ has $n_m=\nu_e=-n_{m'}$, so it contributes $\langle g_{m'}-g_m,\nu_e\rangle\gamma_{d-1}(e)=\kappa_e\gamma_{d-1}(e)$.
+
+Equivalently, Gaussian integration by parts gives $\E\langle X,\nabla F\rangle=\int\varphi\,d(\Delta F)$, and Euler's identity gives $\langle x,\nabla F\rangle=F$.
+\end{proof}
+
+\begin{corollary}[Steiner's edge formula and virtual polytopes]\label{cor:v1}
+For a polytope $K$, $\E h_K(X)=V_1(K)/\sqrt{2\pi}=\frac1{\sqrt{2\pi}}\sum_{\text{edges }E\subset K}|E|\,\ext(E,K)$, where $\ext$ is the normalized external angle. For a network output $F_j=h_P-h_Q$ (Proposition~\ref{prop:newton}),
+\[\E F_j(X)=\frac{V_1(P)-V_1(Q)}{\sqrt{2\pi}},\]
+the mean width of the virtual polytope $P-Q$.
+\end{corollary}
+
+\begin{proof}
+The facets of the normal fan of $K$ are the normal cones $N(E,K)\subset E^\perp$ of its edges. Across $N(E,K)$, the gradient jumps from one endpoint of $E$ to the other, so $\kappa=|E|$. On a hyperplane through $0$, $\varphi_d=\varphi_1(0)\varphi_{d-1}$, so $\gamma_{d-1}(N(E,K))=\ext(E,K)/\sqrt{2\pi}$. Apply \eqref{eq:edge}. McMullen's formula $V_1=\sum_E|E|\ext(E,K)$ and Minkowski additivity of $V_1$ give the rest.
+\end{proof}
+
+So for convex outputs, \emph{the graph with vectors at its nodes is the $1$-skeleton of the Newton polytope}, and the mean is the sum of its edge lengths weighted by external angles. For a deep network the output is a virtual polytope, and edges inherited from $Q$ count negatively.
+
+\begin{theorem}[neuron and layer decomposition]\label{thm:neuron}
+Let $Z_{\ell,i}=\{z_{\ell,i}=0\}$. Assume:
+
+(G) no $z_{\ell,i}$ vanishes on a nonempty open set, and $\Hd(Z_{\ell,i}\cap Z_{\ell',i'})=0$ for distinct neurons.
+
+Then at $\Hd$-a.e.\ point of $Z_{\ell,i}$, $z_{\ell,i}$ is linear with $\nabla z_{\ell,i}\ne0$, $\delta_{\ell,i}$ is the same on both sides, and
+\begin{equation}\label{eq:neuron}
+\E F_j=\sum_{\ell=1}^L\sum_{i}\int_{Z_{\ell,i}}\delta_{\ell,i}\,|\nabla z_{\ell,i}|\,d\gamma_{d-1}
+=\sum_{\ell,i}\lim_{\varepsilon\to0}\frac1{2\varepsilon}\E\big[\delta_{\ell,i}|\nabla z_{\ell,i}|^2;\,|z_{\ell,i}|<\varepsilon\big].
+\end{equation}
+The total boundary mass $\|\Delta F_j\|_\gamma:=\sum_e|\kappa_e|\gamma_{d-1}(e)$ is the same sum with $|\delta_{\ell,i}|$.
+\end{theorem}
+
+\begin{proof}
+Away from $\bigcup Z$, all gates are locally constant and $F_j$ is locally linear, so its facets lie in $\bigcup Z$. Take a point of $Z_{\ell,i}$ that lies on no other $Z_{\ell',i'}$ ($\Hd$-a.e., by (G)). Near it all other gates are constant, so $z_{\ell,i}$ is linear. Its gradient is nonzero, since otherwise $z_{\ell,i}$ would vanish on an open set. Downstream gates are constant because downstream pre-activations are continuous and nonzero there. Crossing from $\{z<0\}$ to $\{z>0\}$ switches only $s_{\ell,i}$, so by $\nabla F_j=\sum_i\delta_{\ell,i}s_{\ell,i}g_{\ell,i}$ the gradient jumps by $\delta_{\ell,i}\nabla z_{\ell,i}$. With $\nu=\nabla z/|\nabla z|$, $\kappa=\delta_{\ell,i}|\nabla z_{\ell,i}|$. Apply Theorem~\ref{thm:edge}. The second form is the co-area formula $\int u|\nabla z|\,d\gamma=\int_{\R}\int_{\{z=t\}}u\,d\gamma_{d-1}\,dt$ with $u=\delta|\nabla z|\mathbf 1\{|z|<\varepsilon\}/2\varepsilon$. It also needs $t\mapsto\int_{\{z=t\}}\delta|\nabla z|\,d\gamma_{d-1}$ to be continuous at $t=0$, which holds because $z$ is piecewise linear and, by (G), the other zero sets meet $\{z=0\}$ in null sets.
+\end{proof}
+
+\begin{remark}[dead regions]
+(G) fails exactly where some layer is entirely inactive on an open set $D$: there all downstream pre-activations vanish identically. Example with $d=1$: $F=(-(x)_+)_+\equiv0$, yet the window sum in \eqref{eq:neuron} returns $\varphi(0)/2$ from the fake kink of $z_{2}=-(x)_+$ at $0$. Formula \eqref{eq:edge} is unaffected; only the neuron bookkeeping needs the bend across $\partial D$ added once. For square layers ($d=n$, as in WhestBench), $D\supset\{W_1x<0\}\ne\emptyset$, but it is negligible: for fixed $x$ the coordinates of $W_\ell h_{\ell-1}$ are i.i.d.\ symmetric given $h_{\ell-1}\ne0$, so $\E_W\gamma(D)\le L\,2^{-n}$. Away from dead regions, (G) is a generic condition on the weights. We use it as a hypothesis and do not prove genericity here.
+\end{remark}
+
+\begin{corollary}[own kink and mean shift]\label{cor:own}
+Write $z=z_{L,j}$ and $F_j=z_+$. Under (G),
+\[
+\E z=\sum_iW_L[j,i]\,\E h_{L-1,i}=\sum_{\ell<L}\sum_i\int_{Z_{\ell,i}}\delta^z_{\ell,i}|\nabla z_{\ell,i}|\,d\gamma_{d-1},
+\]
+\[
+\E F_j=\underbrace{\int_{Z_{L,j}}|\nabla z|\,d\gamma_{d-1}}_{T_{\rm own}\ \ge0}+\sum_{\ell<L}\sum_i\int_{Z_{\ell,i}\cap\{z>0\}}\delta^z_{\ell,i}|\nabla z_{\ell,i}|\,d\gamma_{d-1}.
+\]
+Here $\delta^z=\partial z/\partial h$ and $\delta^{F}=\mathbf 1\{z>0\}\delta^z$ below layer $L$. The first identity links the two graphs. Its left side is $\langle W_L[j,\cdot],\mu\rangle$ with $\mu=\E h_{L-1}$. The rank-one part $\mu\mu^\top$ of the neuron graph's ReLU kernel $\E[h_{L-1}h_{L-1}^\top]$ dominates for wide He layers and is close to its Perron eigenvector. Its right side is the signed boundary mass of the tile graph below layer $L$.
+\end{corollary}
+
+\begin{proof}
+Apply Theorem~\ref{thm:neuron} to $z$ (which has no own kink) and to $F_j=z_+$. For $F_j$, $\delta_{L,j}=1$, and the gates below $L$ carry the factor $\mathbf 1\{z>0\}$.
+\end{proof}
+
+\textbf{Numerical check} (\texttt{code/edge.py}, \texttt{code/edge\_big.py}). Setup: $d=8$, $n=32$, $L=4$, He weights, $1.2\times10^7$ inputs. We use window estimates of \eqref{eq:neuron} with Richardson extrapolation in $\varepsilon$; the window bias is linear in $\varepsilon$ because the conditional density is kinked at $0$. Standard errors are across chunks.
+\begin{center}\small
+\begin{tabular}{lcccccc}
+\toprule
+output $j$ & 0 & 1 & 2 & 3 & 4 & 5\\
+\midrule
+Monte Carlo $\E F_j$ & $0.2239$ & $0.1937$ & $0.0739$ & $0.0853$ & $0.2476$ & $0.5024$\\
+edge formula \eqref{eq:neuron} & $0.228(5)$ & $0.189(5)$ & $0.072(4)$ & $0.084(3)$ & $0.256(6)$ & $0.504(6)$\\
+own kink $T_{\rm own}$ & $0.775$ & $0.714$ & $0.726$ & $0.459$ & $0.883$ & $0.699$\\
+earlier layers & $-0.547$ & $-0.525$ & $-0.653$ & $-0.375$ & $-0.628$ & $-0.195$\\
+$\|\Delta F_j\|_\gamma$ & $4.67$ & $4.92$ & $3.32$ & $2.61$ & $5.36$ & $7.62$\\
+\bottomrule
+\end{tabular}
+\end{center}
+All six outputs agree within $1.5$ standard errors. Even at $L=4$, the signed sum is $2$--$7\%$ of the absolute boundary mass.
+
+\section{Expansion is free}
+
+\begin{theorem}[Pisier arcs: $L^1$ Poincar\'e for every metric target]\label{thm:arc}
+Let $\mathcal P$ be a finite partition of $\R^d$ into polyhedral cones (e.g.\ the tiles of any bias-free ReLU network, of any depth and width). Let $(M,\rho)$ be any metric space and $f:\mathcal P\to M$ any map. With $X,Y$ independent standard Gaussians,
+\begin{equation}\label{eq:arc}
+\E\,\rho\big(f(\tau(X)),f(\tau(Y))\big)\;\le\;\sqrt{\tfrac\pi2}\sum_{e}\gamma_{d-1}(e)\,\rho\big(f(\tau_e),f(\tau'_e)\big).
+\end{equation}
+The constant is sharp: equality holds for the two half-spaces of any central hyperplane, with any $f$.
+\end{theorem}
+
+\begin{proof}
+Let $X_\theta=X\cos\theta+Y\sin\theta$ for $\theta\in[0,\pi/2]$, so $X_0=X$ and $X_{\pi/2}=Y$. Almost surely the plane spanned by $X$ and $Y$ is two-dimensional and meets each of the finitely many $(d-2)$-dimensional subspaces spanned by faces only at $0$, so the arc avoids $0$ and all faces of codimension $\ge2$. A facet lies in a hyperplane $\nu^\perp$, and $\langle X_\theta,\nu\rangle=a\cos\theta+b\sin\theta$ has at most one zero on $[0,\pi/2]$. So the arc visits a finite chain of tiles $\tau(X)=\tau_0,\tau_1,\dots,\tau_N=\tau(Y)$, crossing each facet at most once. The triangle inequality gives
+\[\rho(f(\tau_0),f(\tau_N))\le\sum_e\mathbf 1\{\text{arc crosses }e\}\,\rho(f(\tau_e),f(\tau'_e)).\]
+For each $\theta$, $(X_\theta,\dot X_\theta)$ are independent standard Gaussians. By Rice's formula for the crossings of $u(\theta)=\langle X_\theta,\nu\rangle$ marked by $X_\theta\in e$,
+\[P(\text{cross }e)=\int_0^{\pi/2}\E|\langle\dot X_\theta,\nu\rangle|\,\varphi_1(0)\,\gamma^{\nu^\perp}(e)\,d\theta=\frac\pi2\cdot\sqrt{\frac2\pi}\cdot\gamma_{d-1}(e)=\sqrt{\frac\pi2}\,\gamma_{d-1}(e).\]
+For a single hyperplane both sides equal $\frac12\rho(f(\tau),f(\tau'))$.
+\end{proof}
+
+\begin{theorem}[lumped Ornstein--Uhlenbeck kernels]\label{thm:ou}
+Let $\mathcal P$ be any measurable partition. Let $X_s=e^{-s}X+\sqrt{1-e^{-2s}}\,Z$ and $K_s(\tau,\tau')=P(X_s\in\tau'\mid X\in\tau)$. Write $f(x)$ for $f(\tau(x))$.
+\begin{enumerate}
+\item[(a)] $K_s$ is $\pi$-reversible and positive semidefinite, and its spectrum on $L^2_0(\pi)$ lies in $[0,e^{-s}]$. For every Hilbert space $H$ and $f:\mathcal P\to H$,
+\[\E\|f(X_s)-f(X)\|^2\ge(1-e^{-s})\,\E\|f(X)-f(Y)\|^2.\]
+\item[(b)] For every metric space, every $p\ge1$ and every $k\ge1$, with $s_k=-\log\cos\frac{\pi}{2k}$,
+\[\E\rho(f(X),f(Y))^p\le k^p\,\E\rho(f(X),f(X_{s_k}))^p.\]
+For example, $s_2=\log\sqrt2\approx0.347$ with constant $4$ for $p=2$.
+\item[(c)] (No uniform quadratic form on the facet graph.) One layer with $N$ rows at angles $\pi m/N$ in $\R^2$ gives $2N$ equal sectors. The facet-weighted Dirichlet form $\sum_e\gamma_{d-1}(e)(f_\tau-f_{\tau'})^2$ has spectral gap $4Nc(1-\cos\frac\pi N)\sim\pi^2/(\sqrt{2\pi}N)\to0$ relative to $\Var_\pi$, where $c=1/(2\sqrt{2\pi})$.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+(a) For $\mathcal P$-measurable $f$, $\langle f,K_sf\rangle_\pi=\E f(X)f(X_s)=\langle f,P_sf\rangle_\gamma$. By Mehler's formula, $P_s$ acts as $e^{-sm}$ on the $m$-th Wiener chaos. So for mean-zero $f$, $0\le\langle f,P_sf\rangle\le e^{-s}\|f\|^2$. In a Hilbert space, after centring, sum over an orthonormal basis: $\E\|f(X_s)-f(X)\|^2=2\E\|f\|^2-2\sum_b\langle f_b,P_sf_b\rangle\ge2(1-e^{-s})\E\|f\|^2=(1-e^{-s})\E\|f(X)-f(Y)\|^2$.
+
+(b) Put $\alpha=\pi/2k$ and use the points $X_{m\alpha}$ ($0\le m\le k$) on the arc of Theorem~\ref{thm:arc}. Consecutive pairs are standard Gaussian pairs with correlation $\cos\alpha=e^{-s_k}$, i.e.\ distributed as $(X,X_{s_k})$. The triangle inequality and $(\sum_1^ka_m)^p\le k^{p-1}\sum a_m^p$ give the claim.
+
+(c) Each ray has $\gamma_1=\int_0^\infty\varphi_2(r)\,dr=1/(2\sqrt{2\pi})=c$, and each sector has mass $1/2N$. The chain on the cycle $\Z/2N$ with rates $c\cdot2N$ has gap $2Nc\,(2-2\cos\frac{2\pi}{2N})$.
+\end{proof}
+
+\begin{remark}[what this says about super-expanders]
+Every tile graph, at every depth and width, is an $L^1$ expander for every metric target (Theorem~\ref{thm:arc}). Every lumped OU kernel is a quadratic expander for every metric target (Theorem~\ref{thm:ou}(b)). Both constants are independent of the network and of $d$. As noted in Section~1, bounded-degree families cannot satisfy \eqref{eq:poinc} for all metrics, which is why Mendel--Naor restrict to uniformly convex targets. The Gaussian evades this obstruction not through sparsity but through \emph{rotation}: $k$ rotations by $\pi/2k$ reach exact independence, so ``local neighbourhood $\Rightarrow$ global mixing'' holds in its strongest form. Part (c) shows that the right local notion on the facet graph is $L^1$ (isoperimetric), not $L^2$: a quadratic statement needs a time scale. The proofs are short; the content is the location of the expansion. It comes entirely from the input law, and the network only chooses the partition.
+\end{remark}
+
+\textbf{Numerical check} (\texttt{code/ou\_gap.py}): $K_s$ estimated from $3\times10^6$ pairs on the activation tiles of random networks. Tiles of mass $<2\times10^{-4}$ are merged, which still gives a partition.
+\begin{center}\small
+\begin{tabular}{lccccc}
+\toprule
+$(d,n,L)$ & tiles & $\lambda_2$ at $s=0.1$ & $s=0.5$ & $s=1$ & smallest eigenvalue\\
+\midrule
+$(3,6,3)$ & $218$ & $0.840$ & $0.520$ & $0.307$ & $\ge-0.011$\\
+$(4,8,3)$ & $3169$ & $0.827$ & $0.517$ & $0.307$ & $\ge-0.021$\\
+$(5,10,4)$ & $51616$ & $0.712$ & $0.416$ & $0.242$ & $\ge-0.024$\\
+bound $e^{-s}$ & & $0.905$ & $0.607$ & $0.368$ & $0$ (theory)\\
+\bottomrule
+\end{tabular}
+\end{center}
+The small negative eigenvalues are sampling noise in the empirical kernel.
+
+\section{The labels are where the difficulty is}
+
+\begin{corollary}[mean versus spread of the node vectors]\label{cor:spread}
+For every network output:
+\begin{enumerate}
+\item[(i)] $\E F_j=\|\Delta F_j^+\|_\gamma-\|\Delta F_j^-\|_\gamma$, the convex bends minus the concave bends.
+\item[(ii)] $\E|\nabla F_j(X)-\nabla F_j(Y)|\le\sqrt{\pi/2}\,\|\Delta F_j\|_\gamma$. This is Theorem~\ref{thm:arc} with $f=$ node vector, using $|g_\tau-g_{\tau'}|=|\kappa_e|$.
+\item[(iii)] For $k\ge0$, $\E F^{k+1}=k\,\E[F^{k-1}|\nabla F|^2]+\int F^k\varphi\,d(\Delta F)$. In particular $\Var F_j=\E|\nabla F_j|^2-(\E F_j)^2+\int F_j\varphi\,d(\Delta F_j)$. Gaussian Poincar\'e then forces $\int F_j\varphi\,d(\Delta F_j)\le(\E F_j)^2$.
+\end{enumerate}
+The \emph{cancellation index} is $\varrho_j=\E F_j/\|\Delta F_j\|_\gamma\in[-1,1]$; it equals $1$ iff $F_j$ is convex.
+\end{corollary}
+
+\begin{proof}
+(iii) $\E F^{k+1}=\E[F^k\langle\nabla F,X\rangle]$ by Euler. Gaussian integration by parts for the piecewise-smooth field $V=F^k\nabla F$ gives $\E\langle V,X\rangle=\E[\operatorname{div}_{\rm ac}V]+\sum_e\int_e\langle[V],\nu_e\rangle\,d\gamma_{d-1}$. Here $\operatorname{div}_{\rm ac}V=kF^{k-1}|\nabla F|^2$, since $\Delta F=0$ inside tiles, and $[V]=F^k\kappa_e\nu_e$, since $F$ is continuous.
+\end{proof}
+
+\begin{proposition}[exact areas]\label{prop:area}
+A conic hypersurface $Z$ has $\gamma_{d-1}(Z)=\frac1{\sqrt{2\pi}}\,\sigma_{d-2}(Z\cap S^{d-1})/\sigma_{d-2}(S^{d-2})$: Gaussian area is $1/\sqrt{2\pi}$ times its size in units of great subspheres. Consequently the first layer's skeleton has Gaussian area exactly $n/\sqrt{2\pi}$, and by Theorem~\ref{thm:arc} the arc from $X$ to $Y$ changes activation pattern $\frac12\sum_{\ell,i}\sigma_{d-2}(Z_{\ell,i}\cap S^{d-1})/\sigma_{d-2}(S^{d-2})$ times on average.
+\end{proposition}
+
+\begin{proof}
+In polar coordinates $\int_{\R_+A}\varphi_d\,d\Hd=\sigma_{d-2}(A)\int_0^\infty r^{d-2}(2\pi)^{-d/2}e^{-r^2/2}dr$. A great subsphere gives $1/\sqrt{2\pi}$. Each crossing count is $\sqrt{\pi/2}\gamma_{d-1}$.
+\end{proof}
+
+\begin{heuristic}[boundary mass of He networks]\label{heur:mass}
+In the mean-field regime: $|\nabla z_{\ell,i}|\approx\sqrt2$ (He is gradient-critical); each bent hyperplane has Gaussian area $\approx1/\sqrt{2\pi}$; and for $\ell<L$, $\delta_{\ell,i}\approx N(0,2s_{L,j}/n)$ independent of the geometry ($\sum_i\delta_{\ell,i}^2$ is preserved by criticality), so $\E|\delta_{\ell,i}|\approx1/\sqrt{\pi n}$. Then
+\[\|\Delta F_j\|_\gamma\approx\frac1{\sqrt\pi}+(L-1)\frac{\sqrt n}{\pi},\qquad T_{\rm own}\approx\frac1{\sqrt\pi},\qquad \E F_j=O(1),\qquad \varrho_j=\Theta\Big(\frac1{L\sqrt n}\Big).\]
+For WhestBench ($n=1024$, $L=16$): $\|\Delta F_j\|_\gamma\approx153$ against $\E F_j\approx0.56$, so $\varrho\approx4\times10^{-3}$. This is not proved.
+\end{heuristic}
+
+\textbf{Scan} (\texttt{code/scan.py}): $d=8$; two networks $\times$ eight outputs per cell; $8\times5\times10^4$ inputs per network. Entries are averages, except $\varrho$, which is a median.
+\begin{center}\small
+\begin{tabular}{rrcccccc}
+\toprule
+$n$ & $L$ & $\E F$ & $T_{\rm own}$ & earlier & $\|\Delta F\|_\gamma$ & heuristic & $\varrho$ (median)\\
+\midrule
+$16$ & $2$ & $0.449$ & $0.493$ & $-0.045$ & $1.59$ & $1.84$ & $0.212$\\
+$16$ & $3$ & $0.380$ & $0.648$ & $-0.262$ & $2.86$ & $3.11$ & $0.095$\\
+$16$ & $4$ & $0.328$ & $0.565$ & $-0.239$ & $3.75$ & $4.38$ & $0.041$\\
+$16$ & $6$ & $0.497$ & $0.257$ & $0.234$ & $6.49$ & $6.93$ & $0.041$\\
+$32$ & $2$ & $0.551$ & $0.551$ & $-0.005$ & $2.27$ & $2.37$ & $0.244$\\
+$32$ & $3$ & $0.525$ & $0.589$ & $-0.070$ & $4.03$ & $4.17$ & $0.110$\\
+$32$ & $4$ & $0.517$ & $0.551$ & $-0.029$ & $5.31$ & $5.97$ & $0.063$\\
+$32$ & $6$ & $1.351$ & $0.336$ & $0.994$ & $11.95$ & $9.57$ & $0.063$\\
+$64$ & $2$ & $0.581$ & $0.560$ & $0.023$ & $3.16$ & $3.11$ & $0.142$\\
+$64$ & $3$ & $0.462$ & $0.439$ & $0.026$ & $4.07$ & $5.66$ & $0.042$\\
+$64$ & $4$ & $0.479$ & $0.490$ & $-0.013$ & $7.02$ & $8.20$ & $0.038$\\
+$64$ & $6$ & $0.294$ & $0.352$ & $-0.055$ & $7.22$ & $13.30$ & $0.009$\\
+\bottomrule
+\end{tabular}
+\end{center}
+Within one network the absolute mass is nearly the same at every layer below $L$. Its level is within about $30\%$ of $\sqrt n/\pi$ on average, with a network-to-network spread of about a factor $2$. At $L=6$ the two-network cells scatter. With eight networks per cell (\texttt{code/scan\_deep.py}) the averages are $7.40$ ($n=32$; heuristic $9.57$) and $13.15$ ($n=64$; heuristic $13.30$). The per-network values range over $3.6$--$9.8$ and $8.1$--$19.3$, tracking the spread of $|\nabla z_{L-1,i}|^2$ ($1.2$--$2.6$ around the critical value $2$).
+
+For $n\ge32$ and $L\le4$, $T_{\rm own}$ averages $0.44$--$0.59$ (compare $1/\sqrt\pi=0.56$), and the earlier-layer terms average to within $0.07$ of $0$. For individual outputs, however, they are $O(1)$ and of either sign: in the first table, five of the six outputs have earlier-layer terms below $-0.37$. The own-kink term correlates with the Gaussian proxy $\sqrt v\,\phi(m/\sqrt v)$ (where $m=\E z$ and $v=\Var z$; correlation $0.80$--$0.97$ for $L\le4$) but exceeds it by a factor $1.4$--$2.5$. So it is not literally ``the Gaussian part''.
+
+\begin{remark}[what this means for the programme]
+Answer to ``why is this mysterious?'': it is not, as far as the graph is concerned. The construction you describe exists, and it is automatically a super-expander: Theorems~\ref{thm:arc}--\ref{thm:ou} hold for every network, every vector- or metric-valued labelling, and every depth. Exactly because they hold for every network, they cannot distinguish one network from another. All network-specific information lies in the \emph{labels}: the node vectors $g_\tau$, i.e.\ the vertices of the virtual Newton polytope. Their bends sum to $\E F_j$ with cancellation index $\Theta(1/L\sqrt n)$. Even the ideal boundary sampler has relative variance $\varrho^{-2}-1$: it draws skeleton points with density $\propto|\kappa|\,d\gamma_{d-1}$ and returns $\|\Delta F_j\|_\gamma\,\mathrm{sign}\,\kappa$, which has mean $\E F_j$. At the heuristic WhestBench value $\varrho^{-2}-1\approx7\times10^4$, against $O(1)$ for plain Monte Carlo. The edge formula is a structural identity, not by itself an estimator.
+\end{remark}
+
+\section{Consistency with notes I--IV}
+
+\begin{itemize}
+\item \emph{Note IV (inner never, outer yes).} The arcs and OU kernels are not built from the network's arrows. They are rotations of the input pair $(X,Y)$: outer symmetries supplied by the input law. On Gaussian input, Theorem~\ref{thm:ou}(a) is the clean version of note~IV's neural Gabber--Galil lemma. It gives gap $1-e^{-s}$ for every partition, with no gain factor and no 2-adic interleaving.
+\item \emph{Note III (stretch--fold--mod out).} Lumping commutes with expansion (the collapse lemma; here $K_s=E_{\mathcal P}P_s$). The network ``mods out'' by cones, and the tile tree of Section~3.2 is the hierarchy it mods out by. Its growth is polynomial: Cover at one layer, and Hanin--Rolnick's bounds for depth.
+\item \emph{Notes I--II (sophistication).} The structure is zero-entropy (Theorem~\ref{thm:codes}): polynomially many cylinders, dimension $d-1$. The randomness that note~II's variance ceiling measures sits in the labels, as cancellation.
+\item \emph{Criticality (notes III--IV).} The $(L-1)\sqrt n$ growth of boundary mass at constant mean is the edge-formula face of He-criticality: $\sum_i\delta_{\ell,i}^2$ is conserved in depth, so each layer adds the same mass $\sqrt n/\pi$, of either sign.
+\end{itemize}
+
+\section{Open problems}
+\begin{enumerate}
+\item Prove Heuristic~\ref{heur:mass}: the asymptotics of $\|\Delta F_j\|_\gamma$ for He networks, and the law of the per-layer signed sums, which numerically are $O(1)$ while their absolute masses are $\Theta(\sqrt n)$.
+\item A local quadratic super-expander. Find conductances on the facet graph, built from network data (e.g.\ the expected inverse dwell times of Pisier arcs), that give a network-uniform quadratic Poincar\'e inequality for uniformly convex targets. Theorem~\ref{thm:ou}(c) rules out plain facet weights.
+\item Generating partitions. Do tile diameters on $S^{d-1}$ shrink to $0$ as $L\to\infty$ for He networks, so that the activation tree codes the sphere injectively, as random hyperplanes do in Theorem~\ref{thm:codes}(v)?
+\item Organizing the cancellation. Per-layer signed sums are $O(1)$ (Section~5). Is there an exact layer-wise telescoping, in the spirit of Corollary~\ref{cor:own}, whose terms each have bounded boundary mass?
+\end{enumerate}
+
+\appendix
+\section{Scripts}
+\texttt{code/edge.py}, \texttt{code/edge\_big.py}: edge/neuron formula versus Monte Carlo, per-layer split, boundary mass, and gradient-spread inequality. \texttt{code/scan.py}, \texttt{code/scan\_deep.py}: boundary mass and cancellation index versus $(n,L)$. \texttt{code/ou\_gap.py}: lumped OU spectra on activation tiles. \texttt{code/codes.py}: neuron-code split laws (Theorem~\ref{thm:codes}(i),(ii)); Cover counts and collision masses ((iii),(iv)). For example, at $d=5$ the averaged collision mass is $0.00289$ against $\E(1-\Theta/\pi)^{16}=0.00308$ at $k=16$, and $0.00028$ against $0.00029$ at $k=32$.
+\end{document}
