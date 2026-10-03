@@ -1,0 +1,250 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{booktabs}
+\usepackage[expansion=false]{microtype}
+\usepackage{xcolor}
+\usepackage[colorlinks=true,linkcolor=blue!50!black,citecolor=blue!50!black,urlcolor=blue!50!black]{hyperref}
+\setlength{\emergencystretch}{3em}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{problem}[theorem]{Problem}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\Z}{\mathbb Z}
+\newcommand{\R}{\mathbb R}
+\newcommand{\N}{\mathbb N}
+\newcommand{\E}{\mathbb E}
+\newcommand{\tr}{\operatorname{tr}}
+\newcommand{\Var}{\operatorname{Var}}
+\newcommand{\relu}{\operatorname{relu}}
+\newcommand{\TV}{\operatorname{TV}}
+
+\title{Seeds, tiles and sophistication\\[4pt]
+\large how a random ReLU network strips randomness from its input}
+\author{Working note II for the continuation-algebra programme\\
+\small self-reviewed draft, not independently verified}
+\date{3 October 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We pursue the intuition that the input of a random ReLU network acts like a \emph{seed}. The network stretches it into a long address (its activation pattern, i.e.\ the tile of input space it lands in) and a readout. Along the way it strips away most of the seed's randomness, in the sense of Kolmogorov sophistication: what survives in the expected output is \emph{structure}, and the rest is \emph{randomness} that only averages out. Four results make this precise.
+
+(1) \emph{Two-part codes in continuation algebras.} The centre of each level of the continuation algebra is the model and the arrows move the randomness. Block entropy splits as statistical complexity plus within-class randomness. For computable states the class label is an algorithmic two-part model, optimal along random sequences up to the model's deficiency. Readout means compress to one representative per class, at a cost bounded by $\sqrt{I(P;U\mid C)/2}$: the information the output keeps about \emph{which} member of a class the input was.
+
+(2) \emph{Depth strips input randomness at a critical rate.} Under the weight average, the input-dependent fraction of the final output is $P(Z_L>0)$ for a critical Galton--Watson process $Z$, about $9\pi^2/(2L^2)$. Activation-pattern bits of layer $\ell$ disagree between independent inputs with probability $\arccos(\varrho^{\circ(\ell-1)}(0))/\pi\approx3/\ell$, and the rest are frozen by the weights. Both match simulations.
+
+(3) \emph{Inputs as seeds: an exact identity, a lower bound and an almost-optimal design.} For any finite set of input directions, the weight-averaged squared error of the induced estimator is a positive sum over moment orders with Galton--Watson weights. Antithetic pairs remove odd orders, and randomly rotated cross-polytope frames (3-designs) also remove order~2. Conversely, \emph{no} nonnegatively weighted point set of size $M\ll n^2$ can remove even orders $\ge4$. So frames are within a factor $2$ of optimal, and no seed design can beat Monte Carlo by more than $P(Z_L>0)/P(Z_L\in2\N,\ Z_L\ge4)\approx3.3$ at depth $16$. Predicted gains of frames over i.i.d.\ sampling are $4.33/2.42/1.66$ at depths $4/8/16$. At width $256$ we observe $4.29/2.64/2.17$, and at the challenge shape ($1024\times16$) we observe $1.73$ for frames and $1.08$ for antithetic pairs (predicted $1.66$ and $1.10$).
+
+(4) \emph{The network's own tiling.} Activation patterns tile the input sphere hierarchically (refining with depth). The network is exactly linear on each tile, so within-tile randomness is stripped exactly and only tile barycentres survive. The nested tile expectations carry the same heat semigroup and continuation-class machinery as the Cantor hierarchy of note~I. This is where the input enters the arrow algebra: as a point of the network-induced hull, addressed by its pattern string.
+\end{abstract}
+
+\tableofcontents
+
+\section{The picture}\label{sec:picture}
+
+\textbf{Sophistication.} A two-part description of an object $x$ names a model $S\ni x$ and then $x$'s index in $S$, so $K(x)\lesssim K(S)+\log|S|$. Models achieving near-equality are (algorithmic) sufficient statistics, and the least complex one measures \emph{sophistication}: the structure, as opposed to the randomness (Koppel; G\'acs--Tromp--Vit\'anyi; Vereshchagin--Vit\'anyi). Its Shannon counterpart for processes is the causal state, the minimal sufficient statistic of the past for the future (Crutchfield--Young, Shalizi--Crutchfield). Note~I showed that continuation classes \emph{are} causal states.
+
+\textbf{PRG reading.} A pseudorandom generator separates a short seed (randomness) from a fixed stretching map (structure), and its output fools a class of tests. Here:
+\begin{itemize}
+\item the \emph{seed} is the network input (by homogeneity, its direction $\theta\in S^{n-1}$);
+\item the \emph{stretch} is the activation-pattern address $\pi(\theta)\in\{0,1\}^{nL}$ together with the output $F(\theta)$;
+\item the \emph{tests} are the readouts, and the quantity of interest $\E F$ is pure structure.
+\end{itemize}
+Monte Carlo pays for the randomness. A mechanistic estimator tries to compute the structure directly. The question is how much of the seed the network actually uses, and at which ``orders''.
+
+\textbf{Standing setting.} Bias-free ReLU MLP, width $n$, depth $L$, ReLU after every layer, weights i.i.d.\ $N(0,s)$ with $s=2/n$ (He), inputs $X\sim N(0,I_n)$ (WhestBench Phase~2: $n=1024$, $L=16$). Write $F:\R^n\to\R^n$ for the final post-ReLU map, $F_j$ for its coordinates, $\sigma$ for the uniform measure on $S^{n-1}$, and $c_n=\E|X|=\sqrt2\,\Gamma(\tfrac{n+1}2)/\Gamma(\tfrac n2)$. Positive homogeneity gives the exact radial reduction
+\begin{equation}\label{eq:radial}
+\E_\gamma F=c_n\,\E_\sigma F(\theta).
+\end{equation}
+From note~I we use the ReLU correlation map $\varrho(c)=\frac c2+\frac1\pi(\sqrt{1-c^2}+c\arcsin c)$ and its iterates $\varrho^{\circ D}(c)=\sum_rb^{(D)}_rc^r$. Here $b^{(D)}_r=P(Z_D=r)$ for the Galton--Watson process with offspring generating function $\varrho$, which is critical ($\varrho'(1)=1$).
+
+\section{Two-part codes in continuation algebras}\label{sec:twopart}
+
+Let $\nu$ be a state on the binary hierarchy with continuation classes $P_n$, level algebras $B_n=\bigoplus_{C\in P_n}M_C$, prefix masses $\nu[p]$, class masses $\nu[C]$, and in-class weights $\rho_C=\mathrm{diag}(\nu[p]/\nu[C])_{p\in C}$.
+
+\begin{definition}
+The \emph{model algebra} at level $n$ is the centre $Z_n=\mathrm{span}\{e_C\}$ of $B_n$, and the \emph{randomness} is the in-class position. $\Psi_n(x)=\sum_C\tr(\rho_Cx_C)\,e_C$ is the $\nu$-preserving conditional expectation onto $Z_n$: ``forget the randomness, keep the model''.
+\end{definition}
+
+\begin{proposition}[structure and randomness]\label{prop:split}
+(a) The arrows $e_{pq}$ of $B_n$ commute with $Z_n$; their orbits on level-$n$ prefixes are exactly the classes. The orbit space is the model and the position in an orbit is the randomness.
+(b) Block entropy splits as
+\[H(P_n)=\underbrace{H(C_n)}_{\text{statistical complexity}}+\underbrace{\textstyle\sum_C\nu[C]\,H(\rho_C)}_{\text{in-class randomness}},\]
+i.e.\ $S(\nu|_{B_n})=S(\nu|_{Z_n})+\sum_C\nu[C]S(\rho_C)$ for the restricted states.
+(c) For $g\in Z_n$ (arrow-invariant readouts), $\nu(g)=\sum_C\nu[C]g_C$. Any $\beta$ with $\beta[C]=\nu[C]$ for all $C$ gives $\beta(g)=\nu(g)$: such readouts are fooled by any seed that reproduces only the class law.
+\end{proposition}
+
+\begin{proof}
+(a) $e_{pq}$ lies in the block $M_C$, which commutes with the centre, and $e_{pq}$ maps $p$ to $q$ within $C$. (b) The restriction $\nu|_{B_n}$ is diagonal with entries $\nu[p]=\nu[C]\rho_C(p)$, so this is the chain rule. (c) Immediate.
+\end{proof}
+
+\begin{proposition}[algorithmic two-part code]\label{prop:alg}
+Let $\nu$ be computable with decidable classes, and let $K$ be prefix complexity. For every prefix $p$ of length $n$,
+\begin{gather*}
+K(p)\le K(C_n(p)\mid n)+\big\lceil\log_2\tfrac{\nu[C_n(p)]}{\nu[p]}\big\rceil+K(n)+O(1),\\
+K(C_n(p)\mid n)\le\log_2|P_n|+2\log_2\log_2|P_n|+O(1).
+\end{gather*}
+If $\xi$ is $\nu$-Martin-L\"of random, then by Levin--Schnorr there is $c_\xi$ with $K(\xi_{1:n})\ge-\log_2\nu[\xi_{1:n}]-c_\xi$. Hence
+\[K(C_n(\xi)\mid n)\ \ge\ -\log_2\nu[C_n(\xi)]-K(n)-c_\xi-O(1).\]
+Along random sequences the class label is incompressible relative to its own probability. The two-part code through classes is optimal up to the \emph{model deficiency} $\delta_n(\xi)=K(C_n(\xi)\mid n)+\log_2\nu[C_n(\xi)]$, which is bounded below by $-K(n)-c_\xi-O(1)$.
+\end{proposition}
+
+\begin{proof}
+Given $n$ and $C$, enumerate $C$ with the computable weights $\rho_C$ and use a Shannon--Fano--Elias code for $p$. Index the classes in a computable order. Combine with Levin--Schnorr.
+\end{proof}
+
+\begin{remark}[sophistication profile]
+Finite rank ($|P_n|\le N$) means the model costs $O(\log N+\log n)$ bits per prefix: low sophistication. Example: golden mean $=$ Fibonacci, two classes. Generic neural gains give singleton classes, where the model \emph{is} the data: maximal sophistication, nothing strippable. Note~I's relaxation, with cost $I_\nu(P;Z\mid C)$ and at most $N$ classes, trades model complexity against discarded predictive information. It is the Shannon analogue of the Kolmogorov structure function $h_x(\alpha)=\min\{\log|S|:x\in S,\ K(S)\le\alpha\}$, and the rate--distortion problem $R(N)$ of note~I is its neural version.
+\end{remark}
+
+\begin{theorem}[readout compression; randomness the network fails to strip]\label{thm:compress}
+Let $H:X\to\R^k_{\ge0}$ be an integrable network output on source sequences with source law $\mu$. Put $S=\|H\|_1$, $M=\mu(S)$, direction $U=H/S$, and gain-weighted law $\nu=S\mu/M$. Fix any partition of level-$n$ prefixes into classes $C$ (coherent or not), and let $q_p$ be the $\nu$-conditional law of $U$ given prefix $p$. Pick one representative $r_C\sim\rho_C$ independently per class. Then for every readout $u_j\in[0,1]$,
+\[\E_{r}\Big|\E_\mu H_j-M\sum_C\nu[C]\,q_{r_C}(u_j)\Big|\ \le\ M\sqrt{\tfrac12\,I_\nu(P;U\mid C)}.\]
+If the classes are \emph{output-continuation classes} ($q_p=q_q$ whenever $p,q$ share a class), the error is $0$. The $2^n$-term prefix integral then collapses exactly to $|P_n|$ class integrals: only $\log_2|P_n|$ of the first $n$ seed bits are structure.
+\end{theorem}
+
+\begin{proof}
+$\E_\mu H_j=M\E_\nu U_j=M\sum_C\nu[C]\bar q_C(u_j)$ with $\bar q_C=\sum_{p\in C}\rho_C(p)q_p$ (tower property). The error is at most $M\sum_C\nu[C]\E_{r_C}\TV(q_{r_C},\bar q_C)$. By Pinsker this is at most $M\sum_p\nu[p]\sqrt{D(q_p\|\bar q_C)/2}$, and by Jensen at most $M\sqrt{\sum_p\nu[p]D(q_p\|\bar q_C)/2}$. The last sum is $I_\nu(P;U\mid C)$.
+\end{proof}
+
+\section{Depth strips input randomness at a critical rate}\label{sec:strip}
+
+\begin{proposition}[structure fraction of the output]\label{prop:frac}
+Let $\kappa(c)=\sum_r\kappa_rc^r=\E_W[F_j(\theta)F_j(\theta')]$ for unit $\theta,\theta'$ with $\langle\theta,\theta'\rangle=c$ (all $\kappa_r\ge0$; note~I), and let $m_r=\E_{\sigma\otimes\sigma}\langle\theta,\theta'\rangle^r$. Then
+\[\E_W\E_\sigma F_j^2=\kappa(1),\qquad \E_W(\E_\sigma F_j)^2=\sum_r\kappa_rm_r=\kappa_0+\sum_{r\ge2\text{ even}}\kappa_rm_r.\]
+So the weight-averaged randomness fraction $\E_W\Var_\sigma F_j/\E_W\E_\sigma F_j^2$ equals $1-\sum_r\kappa_rm_r/\kappa(1)$. At infinite width ($\kappa\to\frac1n\varrho^{\circ L}$, $m_r=O(n^{-r/2})$) this tends to
+\[P(Z_L>0)\ \sim\ \frac{9\pi^2}{2L^2}\qquad(\text{exactly }0.0705\text{ at }L=16).\]
+\end{proposition}
+
+\begin{proof}
+Expand $\kappa$ and use $\E\langle\theta,\theta'\rangle^r=m_r$ (zero for odd $r$). The limit follows from note~I (NNGP limit, Slack's theorem for critical Galton--Watson processes with stable-$3/2$ offspring tail).
+\end{proof}
+
+\begin{proposition}[frozen address bits]\label{prop:frozen}
+At infinite width, the layer-$\ell$ pre-activations of two independent inputs are jointly Gaussian with correlation $\varrho^{\circ(\ell-1)}(\langle\theta,\theta'\rangle)$ (NNGP recursion). So the activation bit of a layer-$\ell$ neuron disagrees with probability
+\[\frac1\pi\E\arccos\big(\varrho^{\circ(\ell-1)}(\langle\theta,\theta'\rangle)\big)\ \to\ \frac{\arccos(\varrho^{\circ(\ell-1)}(0))}{\pi}\ \approx\ \frac3\ell\]
+(Sheppard's formula, plus $1-\varrho^{\circ\ell}(0)\sim9\pi^2/(2\ell^2)$). The address $\pi(\theta)$ is thus a stretched seed whose fresh pairwise randomness per bit decays like $3/\ell$. The rest is structure fixed by the weights.
+\end{proposition}
+
+\begin{center}
+\begin{tabular}{lcccccc}
+\toprule
+layer $\ell$ & 1 & 2 & 4 & 8 & 12 & 16\\
+\midrule
+disagreement, predicted & 0.500 & 0.397 & 0.293 & 0.200 & 0.154 & 0.126\\
+disagreement, observed ($n=512$) & 0.499 & 0.396 & 0.289 & 0.205 & 0.157 & 0.120\\
+bits constant on all 4000 inputs & 0.000 & 0.000 & 0.006 & 0.086 & 0.195 & 0.305\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent The observed final-layer randomness fraction at $n=512$, $L=16$ is $0.090$, against the infinite-width prediction $0.0705$.
+
+\begin{remark}[critical, not gapped]
+Note~I's Cantor heat strips fine levels doubly exponentially (spectral gap $\lambda_1$). That is why a $\log\log(1/\varepsilon)$ seed fools it. Depth strips input randomness only polynomially, because He initialization is exactly the critical point of the branching process. The surviving randomness is also spread over a heavy tail of high moment orders: the ReLU kink gives offspring tail $\sim r^{-5/2}$. The next section shows that this tail is exactly what no short seed can fake.
+\end{remark}
+
+\section{Inputs as seeds: identity, lower bound, near-optimal design}\label{sec:seeds}
+
+For a probability measure $\beta=\sum_iw_i\delta_{d_i}$ on $S^{n-1}$, define the seed estimator $\hat f=c_n\sum_iw_iF(d_i)$ and its moment defects $\Delta_r=\sum_iw_id_i^{\otimes r}-\E_\sigma\theta^{\otimes r}$.
+
+\begin{theorem}[exact seed identity]\label{thm:seed}
+Condition on $W_2,\dots,W_L$ and average over the first-layer weights only. Then for every neuron $j$,
+\[\E_{W_1}(\hat f_j-f_j)^2=c_n^2\sum_{r\ge0}\kappa^{(j)}_r\|\Delta_r\|_F^2,\qquad \|\Delta_r\|_F^2=\sum_{i,k}w_iw_k\langle d_i,d_k\rangle^r-m_r,\]
+where $\kappa^{(j)}(c)=\E_{W_1}[F_j(\theta)F_j(\theta')]$ for $\langle\theta,\theta'\rangle=c$ has nonnegative Taylor coefficients. Random seed sets are handled by taking expectations.
+\end{theorem}
+
+\begin{proof}
+Write $F_j(x)=G(W_1x)$ with $G$ fixed. For unit $a,b$, the rows of $(W_1a,W_1b)$ are i.i.d.\ bivariate normal with correlation $\langle a,b\rangle$, so $\E_{W_1}G(W_1a)G(W_1b)=\kappa(\langle a,b\rangle)$. The coefficients are nonnegative by multivariate Mehler (note~I). Expand $(\hat f-f)^2$ with \eqref{eq:radial} and use $\langle a,b\rangle^r=\langle a^{\otimes r},b^{\otimes r}\rangle$. The cross term is $\sum_iw_i\E_\theta\langle d_i,\theta\rangle^r=m_r$ by rotation invariance. Absolute convergence holds because $\sum_r\kappa_r=\kappa(1)<\infty$.
+\end{proof}
+
+\begin{corollary}[standard seeds]\label{cor:seeds}
+With $M$ points:
+\begin{itemize}
+\item i.i.d.\ uniform: $\E\|\Delta_r\|^2=(1-m_r)/M$ for $r\ge1$;
+\item antithetic pairs $\pm d$: all odd $r$ vanish, and even $r$ behave like $M/2$ i.i.d.\ points;
+\item spherical $t$-designs: all $r\le t$ vanish;
+\item $K$ independent Haar-rotated cross-polytopes $\{\pm Oe_i\}$ ($M=2nK$, a 3-design): $\Delta_r=0$ for $r\le3$ and all odd $r$, and exactly $\E\|\Delta_r\|^2=\frac1K(\frac1n-m_r)$ for even $r\ge4$.
+\end{itemize}
+Therefore
+\[\frac{\text{MSE}_{\text{iid}}}{\text{MSE}_{\text{frames}}}=\frac{\sum_{r\ge1}\kappa_r(1-m_r)}{2\sum_{r\ge4\text{ even}}\kappa_r(1-nm_r)}\ \xrightarrow{\ n\to\infty\ }\ \frac{P(Z_L>0)}{2\,P(Z_L\in2\N,\ Z_L\ge4)}.\]
+\end{corollary}
+
+\begin{theorem}[no seed beats the even high orders]\label{thm:lower}
+For every finitely supported probability $\beta$ on $S^{n-1}$ with nonnegative weights and at most $M$ atoms,
+\[\E_{W_1}(\hat f_j-f_j)^2\ \ge\ c_n^2\sum_{r\ge2\text{ even}}\kappa_r^{(j)}\Big(\frac1M-m_r\Big)_+.\]
+For $n\le M\ll n^2$ the $r=2$ term is vacuous and the bound is $\approx c_n^2\sum_{r\ge4\text{ even}}\kappa_r/M$. Cross-polytope frames achieve $c_n^2\sum_{r\ge4\text{ even}}\kappa_r(\frac2M-\frac{m_r}K)$, which is \textbf{within a factor $2$ of optimal}. Consequently no nonnegatively weighted seed set of size $M\ll n^2$ improves on i.i.d.\ sampling by more than
+\[\frac{P(Z_L>0)}{P(Z_L\in2\N,\ Z_L\ge4)}\approx 8.6,\ 4.8,\ 3.3\qquad(L=4,8,16).\]
+\end{theorem}
+
+\begin{proof}
+For even $r$ every term $\langle d_i,d_k\rangle^r$ is nonnegative, so $\sum_{i,k}w_iw_k\langle d_i,d_k\rangle^r\ge\sum_iw_i^2\ge1/M$. Then apply Theorem~\ref{thm:seed}, dropping the odd terms (which are $\ge0$). For frames, see Corollary~\ref{cor:seeds}.
+\end{proof}
+
+\begin{center}
+\begin{tabular}{lccccc}
+\toprule
+shape & $P(Z_L>0)$ & pred.\ antithetic & obs.\ antithetic & pred.\ frames & obs.\ frames\\
+\midrule
+$n=256$, $L=4$ & 0.319 & 1.31 & 1.36 & 4.33 & 4.29\\
+$n=256$, $L=8$ & 0.166 & 1.18 & 1.20 & 2.42 & 2.64\\
+$n=256$, $L=16$ & 0.0705 & 1.10 & 1.23 & 1.66 & 2.17\\
+$n=1024$, $L=16$ & 0.0705 & 1.10 & 1.08 & 1.66 & 1.73\\
+\bottomrule
+\end{tabular}
+\end{center}
+\noindent Gains are MSE ratios at equal numbers of forward passes ($M=2nK$, $K=4$), against an independent high-precision reference (300 frames at width 256, 120 frames at width 1024; the reference noise inflates the measured MSEs by about 1--3\%). At large $L/n$ the observed gains exceed the infinite-width prediction, which suggests finite-width $\kappa_r$ put more mass on low orders.
+
+\begin{remark}[status and use]
+Orthogonal and antithetic sampling are known variance-reduction devices (orthogonal random features; orthogonal Monte Carlo). What is new here, as far as we know, is the exact error identity, the factor-2 optimality of frames among all nonnegative seed sets, and the Galton--Watson prediction of the achievable gain. A Haar rotation costs $O(n^3)$, negligible next to the $2n$ forward passes of a frame. Frames are therefore a free drop-in replacement for i.i.d.\ inputs in any sampling component. The ceiling (about $3.3\times$ at the challenge depth) says that beating sampling by more requires estimating \emph{structure} directly (mechanistic methods), not better seeds.
+\end{remark}
+
+\section{The network's own tiling of the input}\label{sec:tiles}
+
+\begin{definition}
+For a unit input $\theta$, let $\pi_\ell(\theta)\in\{0,1\}^n$ be the layer-$\ell$ activation pattern and $\pi(\theta)=(\pi_1,\dots,\pi_L)$ the \emph{address}. A depth-$\ell$ \emph{tile} is a nonempty set $\{\theta:\pi_{1..\ell}(\theta)=a\}$, a spherical polyhedral cell (the first layer gives a central hyperplane arrangement, and deeper layers give bent arrangements). Tiles refine with depth, giving a rooted tree, the network's Michon tree, whose boundary points are addresses.
+\end{definition}
+
+\begin{proposition}[exact stripping inside a tile]\label{prop:tile}
+On a depth-$L$ tile $\tau$, $F(x)=A_\tau x$ with $A_\tau=D_LW_L\cdots D_1W_1$ and $D_\ell=\mathrm{diag}(\pi_\ell)$. Hence
+\[\E_\gamma F=\sum_\tau A_\tau\,\E_\gamma[X\,\mathbf 1_\tau(X)],\qquad \E[F\mid\tau]=A_\tau\,\E[X\mid\tau].\]
+The position of the input inside its tile is randomness the network strips exactly: only the tile's Gaussian barycentre survives. For any depth $\ell$, $\E[F\mid\mathcal T_\ell]$ is a Rao--Blackwellization with the same mean and smaller variance.
+\end{proposition}
+
+\begin{proposition}[the Cantor machinery lives on the network's tiles]\label{prop:nettree}
+The $\sigma$-algebras $\mathcal T_\ell$ generated by depth-$\ell$ tiles are nested, so $\E_\ell:=\E[\cdot\mid\mathcal T_\ell]$ satisfy $\E_\ell\E_m=\E_{\min(\ell,m)}$. For any $0=\lambda_0<\lambda_1<\cdots$, the operator
+\[T^{\rm net}_t=\sum_\ell p_\ell(t)\,\E_\ell\]
+is a $\sigma$-symmetric Markov semigroup on $L^2(S^{n-1})$ with gap $\lambda_1$ (the nested-expectation construction of the continuation note, with tiles in place of cylinders). It preserves the readout $\E_\sigma F$ and progressively replaces $F$ by tile averages: it strips the randomness in the tile by diffusion. Continuation laws are the conditional laws of the future address and output given a tile. Their classes are the network's causal states, and Theorem~\ref{thm:compress} applies verbatim with tiles as prefixes.
+\end{proposition}
+
+\begin{remark}[where the input sits in the arrow algebra]
+This is the abstract role of the input. It is a point of the network-induced hull, the space of addresses with the measure induced by $\sigma$, read through its tile address. Arrows join tiles with equal continuation laws, the centre records the network's causal state, and the readout is a state applied to the diffusion. Proposition~\ref{prop:frozen} says deep address bits are increasingly frozen, so continuation laws of different shallow tiles converge with depth and classes merge. Proposition~\ref{prop:frac} says this convergence is only polynomial (critical).
+\end{remark}
+
+\begin{conjecture}[sophistication decreases with depth, critically]
+For the network's tile hierarchy with $\sigma$, let $N_\ell(\varepsilon)$ be the least number of coherent classes at depth $\ell$ for which Theorem~\ref{thm:compress} gives error $\le\varepsilon$ on all output readouts. Then $N_\ell(\varepsilon)$ is eventually non-increasing in the remaining depth $L-\ell$. In the infinite-depth limit the address process has trivial tail (unique KMS$_1$ state in the sense of note~I's KMS theorem), but there is no geometric Birkhoff rate: forgetting is polynomial, with the Galton--Watson survival law $\sim9\pi^2/(2(L-\ell)^2)$.
+\end{conjecture}
+
+\section{What this says about estimation}
+\begin{enumerate}
+\item \emph{Seeds.} The input's randomness reaches the output only through Galton--Watson-weighted moment orders. Frames kill orders $\le3$ for free, and nothing kills even orders $\ge4$. Gain over Monte Carlo is $\approx1.7$--$2.2\times$ at depth~16 (more at small $L/n$), with a hard ceiling of about $3.3\times$ for any seed design.
+\item \emph{Structure.} The remaining factor must come from computing structure: tile barycentres, class integrals (Theorem~\ref{thm:compress}) or cumulants. Proposition~\ref{prop:frac} says the structure is $93\%$ of the output's second moment at depth~16. This is why mechanistic estimates are plausible at depth, and also why their residual error lives in the high-order tail.
+\item \emph{Synthesis target.} A hybrid that computes structure mechanistically and samples only the residual randomness with frames. Whether the residual's Galton--Watson tail is small enough at $1024\times16$ is the next quantitative question.
+\end{enumerate}
+
+\appendix
+\section{Numerical checks}
+Scripts are in \texttt{code/}: \texttt{seeds.py} (width $256$) and \texttt{seeds32.py} (challenge shape; float32) compare i.i.d., antithetic and frame seeds, with three networks at width $256$ and two at width $1024$. \texttt{stripping.py} measures pattern disagreement, frozen bits and the randomness fraction. Galton--Watson spectra come from note~I's \texttt{spectrum.py}.
+
+\end{document}
