@@ -1,0 +1,12 @@
+Exact Gegenbauer accounting (per-pass variance factor vs iid, per degree k), M mutually unbiased bases + antipodes:
+  any M: odd k -> 0 exactly; k=2 -> 0 exactly; even k>=6 -> ~2.0
+  k=4: n=1024: M=1 2.006, M=3 1.998, M=32 1.884, M=513 (complete) 0.000;  n=256: M=32 1.533, M=129 (complete) 0.000
+Measured shares (design-based, no truth needed; deg2.py):
+  n=1024 L=16 (official net 0): degree-2 0.152, even 0.443, odd 0.557 -> predicted frame+antipode factor 0.58 (measured 1/1.67 = 0.60)
+  n= 256 L=32: degree-2 0.232, even 0.426 -> predicted 0.39 (2.6x; leaders measured 2.36x Kerdock vs iid)
+  n= 256 L=16: degree-2 0.248, even 0.404 -> predicted 0.31
+  n=1024 L=32: degree-2 0.144, even 0.493 -> predicted 0.70
+Where the degree-2 energy lives (deg2dir.py):
+  n= 256 L=32: 71% along the mean (gain) direction; mean direction carries 56.5% of all output variance
+  n= 256 L=16: 49% along the mean direction; mean direction carries 35.5%
+  n=1024 L=16: 13% along the mean direction; mean direction carries 8.6%
