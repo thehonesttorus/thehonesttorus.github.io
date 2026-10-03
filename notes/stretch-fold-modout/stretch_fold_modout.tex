@@ -1,0 +1,197 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{booktabs}
+\usepackage[expansion=false]{microtype}
+\usepackage{xcolor}
+\usepackage[colorlinks=true,linkcolor=blue!50!black,citecolor=blue!50!black,urlcolor=blue!50!black]{hyperref}
+\setlength{\emergencystretch}{3em}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{problem}[theorem]{Problem}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\Z}{\mathbb Z}
+\newcommand{\R}{\mathbb R}
+\newcommand{\N}{\mathbb N}
+\newcommand{\Q}{\mathbb Q}
+\newcommand{\E}{\mathbb E}
+\newcommand{\relu}{\operatorname{relu}}
+
+\title{Stretch, fold, mod out\\[4pt]
+\large expanders on Cantor cylinders, and what a ReLU network does to a profinite structure}
+\author{Working note III for the continuation-algebra programme\\
+\small self-reviewed draft, not independently verified}
+\date{3 October 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We make the abstraction explicit. The object is not the weights or hidden vectors as such. It is (i) a Cantor set with a \emph{profinite structure} (Pearson--Bellissard, PB, Def.~7: a nested family of ``mod out at scale $\varepsilon$'' equivalence relations, equivalently a Michon tree), (ii) a finite family of transformations compatible with it, and (iii) a state.
+
+The expander construction recalled from the lecture (vertices are pairs of residues, a few affine maps, local neighbourhood analysis, then a global spectral gap) fits this exactly. The Margulis--Gabber--Galil graphs on $(\Z/p^n)^2$ are the level-$n$ cylinder quotients of one affine action on the $p$-adic plane $\Z_p^2$, a regular ultrametric Cantor set in PB's sense. The uniform second-eigenvalue bound $5\sqrt2/8$ is expansion at every level of the Michon tree at once. From it we obtain an explicit, constant-degree (eight maps per level) operator family sparsifying PB-type hierarchical diffusion. It commutes with every refinement level, and its Dirichlet form is equivalent to the PB form with constants $(1-5\sqrt2/8,\,2)$.
+
+On the network side, a ReLU layer is \emph{stretch} (linear) followed by \emph{fold} (the sign quotient $z\sim-z$). The network induces pseudometrics on a source Cantor set. PB's $\varepsilon$-chains turn these into profinite structures, and Lipschitz layers act on them as tree maps that \emph{only merge}. This is the precise sense in which ``the MLP gradually mods out''. For random He-initialized networks the stretch is critical: fine scales are kept, to first order, while coarse scales are compressed toward $s_\ell\approx3\pi/\ell$. On a Cantor-structured input the coarsest separation falls from $1.30$ to $0.35$ over 16 layers while the finest stays at $0.017$, and $\varepsilon$-chain classes merge from 8 to 2. A Galton--Watson trichotomy (sub-, exactly, super-critical) classifies when such dynamics expand. Random ReLU nets sit exactly at criticality, which is the abstract reason the network itself never supplies a spectral gap. Expanders must enter through the transverse/input side.
+\end{abstract}
+
+\section{The object, stated abstractly}
+
+\begin{definition}[PB, \S4.1 and Def.~7]
+Let $(C,d)$ be a Cantor set with a regular (pseudo)metric. An $\varepsilon$-chain from $x$ to $y$ is $x=x_0,\dots,x_m=y$ with $d(x_i,x_{i+1})<\varepsilon$. The relation $x\overset\varepsilon\sim y$ (``equal modulo scale $\varepsilon$'') is an open equivalence relation with finitely many classes, the \emph{cylinders at scale $\varepsilon$}. The \emph{separation} $\delta(x,y)=\inf\{\varepsilon:x\overset\varepsilon\sim y\}$ is the maximal ultrametric dominated by $d$ (PB Prop.~4). The family $\{\overset\varepsilon\sim\}_{\varepsilon>0}$ is a \emph{profinite structure}. By Michon's correspondence (PB Props.~5--6) it is the same thing as a reduced weighted rooted tree with weight $=$ cylinder diameter.
+\end{definition}
+
+\begin{definition}
+A map $\varphi:C\to C$ is \emph{$\lambda$-compatible} if $x\overset\varepsilon\sim y\Rightarrow\varphi x\overset{\lambda\varepsilon}\sim\varphi y$, equivalently $\delta(\varphi x,\varphi y)\le\lambda\,\delta(x,y)$. It then descends to a map of finite sets $C/\!\overset\varepsilon\sim\ \to\ C/\!\overset{\lambda\varepsilon}\sim$.
+\end{definition}
+
+\begin{proposition}[Lipschitz maps descend]\label{prop:descend}
+If $d'(\varphi x,\varphi y)\le\lambda d(x,y)$, then $\delta'(\varphi x,\varphi y)\le\lambda\delta(x,y)$: an $\varepsilon$-chain maps to a $\lambda\varepsilon$-chain.
+\end{proposition}
+
+Three kinds of compatible transformations will matter:
+\begin{itemize}
+\item \textbf{Contractions} ($\lambda<1$) generate the tree. The triadic Cantor set is the attractor of the \emph{two} maps $x\mapsto x/3$ and $x\mapsto x/3+2/3$. These are the Cuntz isometries $s_0,s_1$ of note~I, \S7, and the ``two transformations'' that produce children of a node.
+\item \textbf{Isometries} ($\lambda=1$, bijective) act inside each level and give a \emph{Schreier graph} on the cylinders at every scale. This is where expanders live.
+\item \textbf{Expansions} ($\lambda>1$), such as the shift, forget the top digit. Their transfer operators carry mixing.
+\end{itemize}
+The \emph{state} is a measure on $C$, e.g.\ the gain-weighted law of the continuation note. ``Modding out'' is passing to a cylinder quotient. ``Expansion'' is a spectral gap of the transformations' action that is uniform over all scales.
+
+\section{The lecture example, made exact inside PB}\label{sec:gg}
+
+Let $C=\Z_p^2$ (the $p$-adic plane) with the ultrametric $\max(|x|_p,|y|_p)$. Its cylinders at level $n$ are the residue classes modulo $p^n$, so ``mod $p^n$'' \emph{is} PB's modding out at scale $p^{-n}$. Its Michon tree has $p^2$ children per vertex, and Haar measure is the uniform state. The eight Gabber--Galil maps
+\[(x,y)\mapsto(x,\,y\pm2x),\ (x,\,y\pm(2x+1)),\ (x\pm2y,\,y),\ (x\pm(2y+1),\,y)\]
+are affine with unimodular linear part. They are therefore Haar-preserving \emph{isometries} that permute the cylinders of every level. The level-$n$ Schreier graph is the Gabber--Galil graph on $(\Z/p^n)^2$.
+
+\begin{theorem}[Gabber--Galil; uniform over levels]
+For every $m$, the second eigenvalue of the normalized $8$-regular Gabber--Galil graph on $(\Z/m)^2$ is at most $\lambda^*=5\sqrt2/8\approx0.884$. Hence the Markov operator $M=\frac18\sum_\varphi U_\varphi$ on $L^2(\Z_p^2)$ commutes with every level expectation $E_n$ and has spectrum in $[-1,\lambda^*]$ on $L^2_0$. In other words, the profinite action has a spectral gap, the profinite form of ``expansion at every level''. (This correspondence between expanding finite quotients and spectral gap of the boundary action is standard; cf.\ Lubotzky, Ab\'ert--Elek.)
+\end{theorem}
+
+\begin{remark}[local to global, in PB's language]
+Gabber--Galil's proof works on the dual lattice. Characters of $\Z_p^2$ are indexed by $(\Q_p/\Z_p)^2$, and a character's \emph{depth} is the $p$-power of its denominator: exactly the depth bands of note~I. The dual maps preserve depth. The local lemma says that for every nonzero frequency, a weighted sum over its images under the generators exceeds its own weight by a fixed factor: a neighbourhood statement. Summed over a band, this gives the global gap. So the expander mechanism is \emph{intra-band} mixing. PB's heat, by contrast, is \emph{inter-band} damping. The two are complementary.
+\end{remark}
+
+\begin{theorem}[explicit constant-degree hierarchical sparsifier]\label{thm:tail}
+For $v=r+p^nw$ ($r$ a residue mod $p^n$, $w\in\Z_p^2$), define the \emph{tail operator} $M_nf(v)=\frac18\sum_\varphi f(r+p^n\varphi(w))$. Then:
+\begin{enumerate}
+\item $M_n$ is a self-adjoint Markov operator. It fixes level-$n$ functions, preserves $L^2(\text{level }m)$ for every $m$, and commutes with every $E_m$.
+\item $(1-\lambda^*)(I-E_n)\le I-M_n\le2(I-E_n)$.
+\item For any $0=\lambda_0<\lambda_1<\cdots$, the generator $\hat L=\sum_n(\lambda_{n+1}-\lambda_n)(M_n-I)$ generates a symmetric Markov semigroup with $(1-\lambda^*)Q_{PB}\le\hat Q\le2Q_{PB}$, where $Q_{PB}(f)=\sum_n(\lambda_{n+1}-\lambda_n)\langle f,(I-E_n)f\rangle$. Its gap is $\ge(1-\lambda^*)\lambda_1$, and it is refinement-compatible.
+\item It uses $8$ explicit maps per level: $8N$ for $N$ levels, against the $O(N^2/\varepsilon^2)$ random jumps of note~I's small-bias construction. The price is constant-factor rather than $(1\pm\varepsilon)$ spectral equivalence.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+(1) On each level-$n$ cylinder, $M_n$ is the Gabber--Galil operator in the rescaled coordinate $w$. Affine maps with integer coefficients preserve residues of $w$ modulo every $p^k$, hence the level-$(n+k)$ partitions, and Haar measure. The generator set is closed under inverses. A self-adjoint operator preserving a closed subspace commutes with its orthogonal projection.
+(2) On the orthocomplement of level-$n$ functions, $M_n$ acts on each cylinder as the Gabber--Galil operator on mean-zero functions of $w$. These are dense in the union over $k$ of functions of $w$ mod $p^k$, where the spectrum is in $[-1,\lambda^*]$.
+(3) Sum (2) with nonnegative weights; each inequality holds termwise as quadratic forms.
+\end{proof}
+
+\noindent\emph{Numerics.} The second eigenvalues of the walk on $(\Z/p^n)^2$ all stay below $\lambda^*=0.884$:
+\begin{center}
+\begin{tabular}{lp{0.82\linewidth}}
+\toprule
+$p$ & modulus $m=p^n$ : second eigenvalue\\
+\midrule
+2 & 2: 0.500, 4: 0.604, 8: 0.703, 16: 0.757, 32: 0.787, 64: 0.807, 128: 0.820\\
+3 & 3: 0.576, 9: 0.731, 27: 0.783, 81: 0.812\\
+5 & 5: 0.666, 25: 0.781, 125: 0.820\\
+7 & 7: 0.722, 49: 0.801\\
+\bottomrule
+\end{tabular}
+\end{center}
+For $p=2$, $N=6$, $n=2$, the tail operator fixes level-2 functions exactly, $[M_n,E_n]=0$, and its spectrum on the complement is $[-0.734,0.757]$.
+
+\section{The network as stretch-and-fold on a profinite structure}
+
+\subsection{Fold $=$ mod out by a sign}
+$\relu(z)=\frac12(z+|z|)$, and $|\cdot|$ is the quotient $\R\to\R/\{\pm1\}$. A layer is a linear \emph{stretch} followed by a coordinatewise \emph{fold}, and its activation bit records which branch was taken.
+
+\begin{example}[the tent map is a ReLU layer and acts as the shift]
+$T(x)=2\min(x,1-x)=2\relu(x)-4\relu(x-\frac12)$ on $[0,1]$ is a width-2 ReLU layer. Its itinerary (which half at each step) is a binary address (Gray-coded binary expansion). $T$ acts on addresses as the shift: a $2$-compatible expansion. Depth-$L$ compositions are Telgarsky's sawtooths with $2^L$ pieces, i.e.\ the level-$L$ cylinders. Stretch $2$ gives exponential mixing (a spectral gap of the transfer operator on Lipschitz/BV observables). So a stretch-and-fold network \emph{can} be an expanding, gapped system.
+\end{example}
+
+\subsection{Network-induced profinite structures}
+Fix a source Cantor set $C$ with a continuous coding $\iota:C\to S^{n-1}$ of input directions (e.g.\ the fair binary source of the continuation note). Each depth $\ell$ gives a pseudometric $d_\ell(\xi,\eta)=\|h_\ell(\iota\xi)-h_\ell(\iota\eta)\|$, or its angular version. PB's $\varepsilon$-chains turn it into a profinite structure $\{\overset{\varepsilon}{\sim}_\ell\}$ with separation $\delta_\ell$ and Michon tree $\mathcal T_\ell$. Points with $\delta_\ell=0$ are identified outright; this happens, for instance, when all of a layer's bits switch off.
+
+\begin{proposition}[the MLP only merges]\label{prop:merge}
+$d_{\ell+1}\le\|W_{\ell+1}\|_{op}\,d_\ell$ because ReLU is $1$-Lipschitz. Hence $\delta_{\ell+1}\le\|W_{\ell+1}\|\delta_\ell$, and each class of $\overset{\varepsilon}{\sim}_\ell$ lies inside a class of $\overset{\|W\|\varepsilon}{\sim}_{\ell+1}$. The trees $\mathcal T_0\to\mathcal T_1\to\cdots\to\mathcal T_L$ form a directed system of tree maps (semigroupoid arrows) that never split a cylinder. This is the precise content of ``the MLP gradually mods out''.
+\end{proposition}
+
+\subsection{How fast a random He network mods out}
+At infinite width, two inputs with correlation $c$ have layer-$\ell$ correlation $\varrho^{\circ\ell}(c)$, with $\varrho(c)=\frac c2+\frac1\pi(\sqrt{1-c^2}+c\arcsin c)$ (NNGP recursion; notes~I--II). With chord distance $s=\sqrt{2(1-c)}$:
+\[1-\varrho(1-x)=x-\tfrac{2\sqrt2}{3\pi}x^{3/2}+O(x^{5/2}),\qquad 1-\varrho^{\circ\ell}(0)\sim\frac{9\pi^2}{2\ell^2}.\]
+
+\begin{proposition}[critical stretch: keep fine scales, flatten coarse ones]\label{prop:flatten}
+Fine separations ($x\to0$) are preserved to first order, with relative contraction $O(x^{1/2})$ per layer. Every coarse separation is driven toward the common scale $s_\ell\approx\sqrt{9\pi^2/\ell^2}=3\pi/\ell$. So the network's Michon tree is the input tree with its top compressed: coarse cylinders become nearly equidistant at scale $s_\ell$, and then merge under $\varepsilon$-chaining for $\varepsilon\gtrsim s_\ell$. Fine structure survives.
+\end{proposition}
+
+\noindent\emph{Numerics} ($n=512$, $L=16$). The input set is $x(\xi)=\sum_kr^{k-1}g_k(\xi_k)$ with $r=0.55$, $K=8$ binary digits and random Gaussian $g_k(0),g_k(1)$: 256 inputs forming a Cantor-like set. The table gives the chord distance for pairs whose first differing digit is $k$, observed and predicted from $\varrho^{\circ\ell}$:
+\begin{center}\small
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{lccccc}
+\toprule
+first differing digit $k$ & input & layer 4 obs & layer 4 pred & layer 16 obs & layer 16 pred\\
+\midrule
+1 (coarsest) & 1.295 & 0.809 & 0.767 & 0.350 & 0.369\\
+2 & 0.697 & 0.533 & 0.523 & 0.285 & 0.305\\
+3 & 0.398 & 0.356 & 0.337 & 0.215 & 0.232\\
+4 & 0.211 & 0.186 & 0.193 & 0.133 & 0.154\\
+5 & 0.116 & 0.110 & 0.111 & 0.088 & 0.097\\
+6 & 0.066 & 0.066 & 0.064 & 0.058 & 0.059\\
+7 & 0.035 & 0.038 & 0.035 & 0.032 & 0.033\\
+8 (finest) & 0.018 & 0.019 & 0.018 & 0.016 & 0.017\\
+\bottomrule
+\end{tabular}
+\end{center}
+The coarse/fine ratio drops from $72$ to $22$. At fixed $\varepsilon=0.239$, the number of PB $\varepsilon$-chain classes among the 256 inputs is $8,8,8,8,7,5,2$ at layers $0,1,2,4,8,12,16$.
+
+\section{When does stretch-and-fold expand? A Galton--Watson trichotomy}
+
+For an activation $\phi$ at its variance fixed point, the normalized correlation map $\rho(c)$ has nonnegative Taylor coefficients (squared Hermite coefficients, plus a bias constant) and $\rho(1)=1$. It is therefore a probability generating function, with mean offspring $\rho'(1)=\chi_1=\sigma_w^2\E\phi'(u)^2$, the usual order/chaos parameter.
+
+\begin{proposition}[trichotomy]
+\begin{itemize}
+\item \emph{Subcritical} ($\chi_1<1$, ordered phase): extinction is certain and $\varrho^{\circ\ell}(c)\to1$ exponentially. The network mods out \emph{everything}, fast.
+\item \emph{Critical} ($\chi_1=1$; ReLU at He initialization for every $\sigma_w$, since ReLU is homogeneous): $1-\varrho^{\circ\ell}\sim C/\ell^2$. This is polynomial flattening with no gap.
+\item \emph{Supercritical} ($\chi_1>1$, chaotic phase): $\varrho^{\circ\ell}(c)\to c^*=q$, the extinction probability, exponentially at rate $\rho'(q)<1$. A fraction $1-q$ of input randomness is never modded out; distinct inputs stay pseudo-independent (PRG-like), and the convergence is gapped.
+\end{itemize}
+The order/chaos picture is the known mean-field theory of signal propagation (Poole et al.; Schoenholz et al.). Its reading as a Galton--Watson process with offspring law given by the dual activation is the observation used here.
+\end{proposition}
+
+\begin{center}\small
+\begin{tabular}{p{0.24\linewidth}p{0.38\linewidth}p{0.3\linewidth}}
+\toprule
+system & transformations on the profinite structure & spectral behaviour\\
+\midrule
+Gabber--Galil on $\Z_p^2$ & bijective isometries, non-amenable group & uniform gap at all levels\\
+tent map / shift & expansion ($\lambda=2$) & exponential mixing\\
+$\Z^d$ tilings (BBG/SB) & bijective isometries, amenable group & no gap (note~I)\\
+random ReLU, He init & critical stretch-and-fold, merging & polynomial, no gap\\
+chaotic smooth nets & supercritical stretch-and-fold & gapped, residual randomness $1-q$\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{What this clarifies}
+\begin{enumerate}
+\item \emph{The MLP's role in the object.} It supplies a profinite structure: which inputs it identifies at each scale (Proposition~\ref{prop:merge}). It also supplies merging tree maps (its layers) and a state (gain-weighted law). Weights and hidden vectors are coordinates for these, not the object itself.
+\item \emph{Why the network itself is not an expander.} Its maps merge and, at He initialization, are exactly critical. This is the abstract reason for note~II's ceiling: the network forgets polynomially, with the Galton--Watson tail.
+\item \emph{Where expanders do enter.} They act on the transverse/input side, as isometric families on the profinite structure: Gabber--Galil tail operators (Theorem~\ref{thm:tail}) or note~I's small-bias arrows realize the hierarchical diffusion with few explicit maps. Expander walks over input codes give randomness-efficient seeds (expander Chernoff bounds), but they cannot beat note~II's variance ceiling.
+\end{enumerate}
+
+\begin{problem}[a neural Gabber--Galil lemma]
+Find isometric, measure-preserving transformation families on the \emph{network-induced} trees $\mathcal T_\ell$, built from weight data (e.g.\ sign-flip or Jacobian symmetries of a layer), whose local expansion on each level of $\mathcal T_\ell$ can be certified. That would give an expander adapted to what the network actually distinguishes, the natural home for a pseudorandom walk that samples the network's structure rather than its seed.
+\end{problem}
+
+\appendix
+\section{Scripts}
+\texttt{code/gg\_levels.py} (Gabber--Galil eigenvalues and tail operator) and \texttt{code/modding\_out.py} (Cantor-structured inputs through a random He network).
+\end{document}
