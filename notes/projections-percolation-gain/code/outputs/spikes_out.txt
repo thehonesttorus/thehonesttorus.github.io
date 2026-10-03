@@ -1,0 +1,20 @@
+n=256 s=0: edge 2.828; W1 top singular values [2.788 2.762 2.692]; max over 16 layers 2.850; spikes above edge*(1+3n^-2/3): 0
+     residual energy on top- 1 eigvecs of Cov(h_L): 0.003  (chance 0.004); top eigs/mean eig [54.1 22.3 19.4]
+     residual energy on top- 4 eigvecs of Cov(h_L): 0.338  (chance 0.016); top eigs/mean eig [54.1 22.3 19.4]
+     residual energy on top-16 eigvecs of Cov(h_L): 0.439  (chance 0.062); top eigs/mean eig [54.1 22.3 19.4]
+n=256 s=1: edge 2.828; W1 top singular values [2.793 2.746 2.716]; max over 16 layers 2.825; spikes above edge*(1+3n^-2/3): 0
+     residual energy on top- 1 eigvecs of Cov(h_L): 0.020  (chance 0.004); top eigs/mean eig [65.  30.5 17.7]
+     residual energy on top- 4 eigvecs of Cov(h_L): 0.453  (chance 0.016); top eigs/mean eig [65.  30.5 17.7]
+     residual energy on top-16 eigvecs of Cov(h_L): 0.642  (chance 0.062); top eigs/mean eig [65.  30.5 17.7]
+n=256 s=2: edge 2.828; W1 top singular values [2.811 2.763 2.721]; max over 16 layers 2.839; spikes above edge*(1+3n^-2/3): 0
+     residual energy on top- 1 eigvecs of Cov(h_L): 0.000  (chance 0.004); top eigs/mean eig [57.8 21.2 19. ]
+     residual energy on top- 4 eigvecs of Cov(h_L): 0.146  (chance 0.016); top eigs/mean eig [57.8 21.2 19. ]
+     residual energy on top-16 eigvecs of Cov(h_L): 0.382  (chance 0.062); top eigs/mean eig [57.8 21.2 19. ]
+n=512 s=0: edge 2.828; W1 top singular values [2.795 2.766 2.756]; max over 16 layers 2.856; spikes above edge*(1+3n^-2/3): 0
+     residual energy on top- 1 eigvecs of Cov(h_L): 0.030  (chance 0.002); top eigs/mean eig [62.7 36.7 29.4]
+     residual energy on top- 4 eigvecs of Cov(h_L): 0.054  (chance 0.008); top eigs/mean eig [62.7 36.7 29.4]
+     residual energy on top-16 eigvecs of Cov(h_L): 0.281  (chance 0.031); top eigs/mean eig [62.7 36.7 29.4]
+n=1024 s=0: edge 2.828; W1 top singular values [2.822 2.797 2.789]; max over 16 layers 2.843; spikes above edge*(1+3n^-2/3): 0
+     residual energy on top- 1 eigvecs of Cov(h_L): 0.001  (chance 0.001); top eigs/mean eig [68.  36.9 31.4]
+     residual energy on top- 4 eigvecs of Cov(h_L): 0.051  (chance 0.004); top eigs/mean eig [68.  36.9 31.4]
+     residual energy on top-16 eigvecs of Cov(h_L): 0.219  (chance 0.016); top eigs/mean eig [68.  36.9 31.4]

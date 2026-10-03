@@ -1,0 +1,10 @@
+n=256 L=4 s=0: MC@B 4.87e-06  closure 1.192e-05
+   frame W1   k=2: mixture MSE 1.133e-05   (2s)
+   frame W1   k=4: mixture MSE 1.103e-05   (3s)
+   frame W1   k=6: mixture MSE 1.037e-05   (9s)
+   frame jac  k=2: mixture MSE 1.099e-05   (2s)
+   frame jac  k=4: mixture MSE 1.039e-05   (3s)
+   frame jac  k=6: mixture MSE 9.615e-06   (8s)
+   frame rand k=2: mixture MSE 1.179e-05   (0s)
+   frame rand k=4: mixture MSE 1.168e-05   (2s)
+   frame rand k=6: mixture MSE 1.138e-05   (18s)

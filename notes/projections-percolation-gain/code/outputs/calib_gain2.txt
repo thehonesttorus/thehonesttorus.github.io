@@ -1,0 +1,24 @@
+n=256 L=16 s=0: closure 6.29e-05, oracle scale 1.32e-05, 8c = 0.0581
+   T=  250 (0.38% budget): gamma_hat 0.0525 +- 0.0088 -> MSE 1.48e-05 (worst 1.84e-05)
+   T= 1000 (1.53% budget): gamma_hat 0.0541 +- 0.0039 -> MSE 1.36e-05 (worst 1.66e-05)
+   T= 4000 (6.12% budget): gamma_hat 0.0546 +- 0.0024 -> MSE 1.35e-05 (worst 1.39e-05)
+n=256 L=16 s=1: closure 7.35e-05, oracle scale 2.04e-05, 8c = 0.0466
+   T=  250 (0.38% budget): gamma_hat 0.0323 +- 0.0059 -> MSE 2.62e-05 (worst 3.41e-05)
+   T= 1000 (1.53% budget): gamma_hat 0.0327 +- 0.0019 -> MSE 2.52e-05 (worst 2.81e-05)
+   T= 4000 (6.12% budget): gamma_hat 0.0331 +- 0.0013 -> MSE 2.49e-05 (worst 2.72e-05)
+n=256 L=16 s=2: closure 4.49e-05, oracle scale 2.03e-05, 8c = 0.0361
+   T=  250 (0.38% budget): gamma_hat 0.0451 +- 0.0067 -> MSE 2.27e-05 (worst 3.28e-05)
+   T= 1000 (1.53% budget): gamma_hat 0.0495 +- 0.0045 -> MSE 2.41e-05 (worst 2.83e-05)
+   T= 4000 (6.12% budget): gamma_hat 0.0485 +- 0.0026 -> MSE 2.33e-05 (worst 2.60e-05)
+n=256 L=8 s=0: closure 4.20e-05, oracle scale 1.32e-05, 8c = 0.0500
+   T=  250 (0.38% budget): gamma_hat 0.0441 +- 0.0077 -> MSE 1.43e-05 (worst 1.87e-05)
+   T= 1000 (1.53% budget): gamma_hat 0.0439 +- 0.0026 -> MSE 1.37e-05 (worst 1.46e-05)
+   T= 4000 (6.12% budget): gamma_hat 0.0455 +- 0.0020 -> MSE 1.35e-05 (worst 1.40e-05)
+n=256 L=4 s=0: closure 1.19e-05, oracle scale 5.73e-06, 8c = 0.0260
+   T=  250 (0.38% budget): gamma_hat 0.0287 +- 0.0042 -> MSE 5.96e-06 (worst 6.53e-06)
+   T= 1000 (1.53% budget): gamma_hat 0.0314 +- 0.0025 -> MSE 6.05e-06 (worst 6.53e-06)
+   T= 4000 (6.12% budget): gamma_hat 0.0325 +- 0.0013 -> MSE 6.14e-06 (worst 6.48e-06)
+n=512 L=16 s=0: closure 1.61e-05, oracle scale 5.58e-06, 8c = 0.0292
+   T=  250 (0.38% budget): gamma_hat 0.0218 +- 0.0032 -> MSE 6.38e-06 (worst 7.91e-06)
+   T= 1000 (1.53% budget): gamma_hat 0.0245 +- 0.0022 -> MSE 5.91e-06 (worst 6.54e-06)
+   T= 4000 (6.12% budget): gamma_hat 0.0248 +- 0.0011 -> MSE 5.84e-06 (worst 6.09e-06)

@@ -1,0 +1,302 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{booktabs}
+\usepackage[expansion=false]{microtype}
+\usepackage{xcolor}
+\usepackage[colorlinks=true,linkcolor=blue!50!black,citecolor=blue!50!black,urlcolor=blue!50!black]{hyperref}
+\setlength{\emergencystretch}{3em}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\E}{\mathbb E}
+\newcommand{\R}{\mathbb R}
+\newcommand{\Var}{\operatorname{Var}}
+\newcommand{\Cov}{\operatorname{Cov}}
+\newcommand{\relu}{\operatorname{ReLU}}
+
+\title{Projections, percolation and the gain\\[4pt]
+\large testing the operator-probability side of the programme against WhestBench Phase 2}
+\author{Working note X for the continuation-algebra programme\\
+\small self-reviewed draft, not independently verified}
+\date{3 October 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+This note takes three sets of ideas and tests each against the actual problem: Phase~2 of WhestBench, width $1024$, depth $16$, He-initialised ReLU, Gaussian inputs, with the mean of the last layer to be estimated. The three sets are the cone-tiling/groupoid estimator proposed in another conversation; the percolation-and-states construction (capacity kernels, projections, completely positive filters) prompted by Maxmud--Suomala, arXiv:2607.01291; and the modular/state side of noncommutative geometry. Everything numerical is measured against Monte Carlo ground truth with $1.6\times10^7$--$10^7$ samples.
+
+\textbf{(1) The rules, as they bind.} Read from the WhestBench source:
+\begin{itemize}
+\item the score is final-layer MSE against $10^9$-sample ground truth, times $\max(0.1,C/B)$, with $B=2^{41}$;
+\item all arithmetic goes through flopscope (matmul $\approx2mnk$, float64 billed $2\times$, transcendentals $16\times$), with no numpy, BLAS or threads;
+\item residual Python time has a hard $0.4$\,s cap.
+\end{itemize}
+The bundled full-covariance baseline costs $5.2\times10^{10}$ FLOPs ($2.4\%$) and reaches MSE $4.17\times10^{-6}$, the same as our Gaussian closure ($4.14\times10^{-6}$ on our width-1024 network).
+
+\textbf{(2) What the operator side gets exactly right.} Three identities:
+\begin{itemize}
+\item \emph{Projection memory is criticality.} He criticality is the identity $\varphi(e^2)=\varphi(e)$ for gate projections. Mean-field transport loses exactly $2\langle\varphi(e)-\varphi(e)^2\rangle$ per layer, which is note IX's forgetting rate.
+\item \emph{Capacity is variance.} The Lyons energy of a pruned tree computation is its second moment. With signed contributions it is divided by the squared cancellation ratio.
+\item \emph{The residue is a pressure gap.} Under the dilation flow, scale mixtures pass through layers unchanged. The closure is pinned to degree-2 data, so the mean error is $e^{P(1)}-e^{P(2)/2}$ for the pressure $P(\beta)=\log\E G^\beta$ of the gain.
+\end{itemize}
+
+\textbf{(3) What fails, with numbers.}
+\begin{itemize}
+\item \emph{Cone mixtures} (closures conditioned on the $2^k$ cylinders of $k$ frame directions) reduce MSE by $3\%$ with the proposed $W_1$ frames, and by at most $13\%$ with the best frame (mean Jacobian, $k=6$) at depth 16. They cost $2^k$ closures. The cylinders carry $3$--$4\%$ of the log-gain variance.
+\item \emph{Percolation-sketched tree sums} have relative error $1.7$--$36$ at $50$--$1\%$ of the work. The tree terms are random-signed (cancellation ratio $\approx1$), and the capacity identity then forbids compression.
+\end{itemize}
+
+\textbf{(4) What survives: measure the gain, not the bias.} The closure's dominant error is $c\,m$ with $c\approx\operatorname{Var}(G^2)/8$ (note IX). Calibrating $c$ from the means needs thousands of samples, because Monte Carlo noise lives in the same critical direction. But $\gamma=\operatorname{Var}(G^2)$ is a coherent average over $n^2$ neuron pairs, so it is measurable from $1000$ samples ($1.5\%$ of the budget) with no fitted constant. At width 1024 this gives MSE $1.56\times10^{-6}$, against $1.50\times10^{-6}$ for the weights-only version, an oracle of $1.48\times10^{-6}$, and $1.03\times10^{-6}$ for full-budget Monte Carlo. At the $0.1$ multiplier that is $\approx6.6\times$ better than Monte Carlo (one network).
+
+\textbf{(5) The ``type-III spikes'' reading.} Its own test is that $W^{(1)}$ should have spectral spikes above the Marchenko--Pastur edge. There are none in $80$ He matrices. The layer algebras are also abelian, so they are type I. What is true is weaker: depth creates outliers in the layer covariance, and $5$--$45\%$ of the non-scale residual sits on its top $4$ eigenvectors.
+
+\textbf{(6) Where percolation is real.} Depth is a critical branching process (note I). Maxmud--Suomala's Theorem~A(i), stability of critical non-percolation under level-dependent enhancement, suggests a criterion for when finite-width gain stops the deep representation from collapsing. We state it as a conjecture; it concerns depth $\gg$ width, not Phase 2.
+\end{abstract}
+
+\section{Phase 2 as it actually binds}\label{sec:rules}
+
+From the WhestBench repository (\texttt{docs/reference/rounds.md}, \texttt{estimator-contract.md}, \texttt{flopscope-primer.md}, \texttt{budget.py}):
+
+\begin{center}\small
+\begin{tabular}{@{}ll@{}}
+\toprule
+shape & width $1024$, depth $16$, $W_{ij}\sim N(0,2/n)$, ReLU, no bias\\
+target & per-layer means; scored on the final layer only, against $10^9$-sample Monte Carlo\\
+score & $\text{MSE}\times\max(0.1,\;C_m/B_m)$, $B_m=2^{41}$; failure $\Rightarrow$ zeros $\times1$\\
+FLOP prices & matmul $m\cdot k\cdot(2n-1)$; pointwise $1$; gather, \texttt{where}, sort $4$; \texttt{exp}, \texttt{log} $16$; float64 $\times2$\\
+time & residual (non-flopscope) Python $\le0.4$\,s per MLP (hard); \texttt{predict()} $\le120$\,s\\
+forbidden & numpy, scipy, BLAS, compiled code, threads, FFI; data files allowed (load in \texttt{setup})\\
+MC reference & $33{,}637{,}376$ FLOPs per sample, so $N\approx65{,}374$ samples at $B$\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent The consequences for estimator design:
+\begin{enumerate}
+\item Below $10\%$ of $B$, only MSE matters. Full-covariance closure ($2.4\%$, using flopscope's symmetric-einsum rate) leaves $\approx1.7\times10^{11}$ FLOPs, i.e.\ $\approx80$ products of size $n^3$, or $\approx5000$ forward passes.
+\item Loops must run over layers, Hermite orders or a few dozen cylinders, never over neurons. A $2^k$-cylinder estimator with full covariance costs $2^k\times2.4\%$ of $B$, so only $k\le2$ fits under the floor.
+\item The bundled covariance example reports final-layer MSE $4.17\times10^{-6}$ at the competition shape. Our Mehler closure gives $4.14\times10^{-6}$ on our width-1024 network: the same estimator class. Full-budget Monte Carlo gives $1.03\times10^{-6}$ there, so the bundled baseline already scores $\approx2.5\times$ better than Monte Carlo.
+\end{enumerate}
+
+\section{Projection memory is criticality}\label{sec:proj}
+
+The percolation construction starts from a simple observation. If an edge is open with probability $p$ and the walk crosses it twice, the edge has to be open only once: $\varphi(e^2)=\varphi(e)=p$, not $p^2$. In the network the analogous projections are the gates. Let $e_k$ be the indicator that neuron $k$ of a layer is on, a projection in the commutative algebra $L^\infty$ of input space, and let $\varphi$ be the Gaussian input state. Then $\varphi(e_k)=P_k=\Phi(\mu_k/\sigma_k)$.
+
+\begin{proposition}[criticality $=$ projection memory]\label{prop:proj}
+Under the fresh-weight approximation of note IX (Prop.~7.1), with $s=2$:
+\begin{enumerate}
+\item Second moments are transported with factor $s\langle\varphi(e^2)\rangle=s\langle\varphi(e)\rangle$, which is $1$ under sign symmetry (He criticality).
+\item The gate-averaged ("annealed") Jacobian transports with factor $s\langle\varphi(e)^2\rangle$.
+\item The difference is $2\langle\varphi(e)-\varphi(e)^2\rangle=2\langle\Var_\varphi(e)\rangle$: twice the mean variance of the gate projections in the input state.
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+The derivative of $\E[g(y)^2]$ with respect to $\sigma^2$, per unit, is $\E[g'(y)^2]=\E[e^2]=P$. The linear response of $\E g(y)$ is $\E[g'(y)]=P$, so its square enters the transport of a linear functional. The rest is note IX, Prop.~7.1.
+\end{proof}
+
+\noindent So the critical (Dixmier) channel is exactly the channel that remembers $e^2=e$, and the contracting channel is the one that has forgotten it. Lehner--Neuhauser--Woess's correspondence between lamplighter convolution operators and percolation clusters is the same mechanism in a group setting. A deterministic operator remembers repeated visits through idempotents, and the state supplies the probabilities.
+
+\section{Capacity is variance, and signs kill it}\label{sec:capacity}
+
+Let a finite rooted tree carry leaf contributions $\mu_vf_v$ with target $m=\sum_v\mu_vf_v$. Retain edges independently, so that leaf $v$ survives with probability $s_v=\prod_{e\in[o,v]}p_e$ and indicator $I_v$. The Horvitz--Thompson estimator is $\hat m=\sum_v\mu_vf_vI_v/s_v$.
+
+\begin{proposition}[Lyons energy $=$ second moment]\label{prop:ht}
+$\E\hat m=m$ and $\E[I_uI_v]=s_us_v/s_{u\wedge v}$. Hence
+\[
+\E\|\hat m-m\|^2=\sum_{u,v}\mu_u\mu_v\langle f_u,f_v\rangle\Big(\frac1{s_{u\wedge v}}-1\Big)=\sum_{w\ne o}\Big(\frac1{s_w}-\frac1{s_{\mathrm{parent}(w)}}\Big)\|F_w\|^2,
+\]
+where $F_w$ is the aggregate of the subtree below $w$. For $f\equiv1$ and $\mu\ge0$ the second moment is the Lyons energy $\iint s_{\xi\wedge\eta}^{-1}\,d\mu\,d\mu$ of Maxmud--Suomala, eq.~(3).
+\end{proposition}
+
+\begin{proof}
+The common prefix must survive once, which gives the pair formula. Then telescope $1/s_{u\wedge v}-1$ along the path to $u\wedge v$.
+\end{proof}
+
+\begin{corollary}[signed contributions]\label{cor:signed}
+Prune only the last level, with retention $p$ (so $s_{u\wedge v}=1$ for $u\ne v$). Then the relative mean square error is
+\[
+\frac{\E(\hat m-m)^2}{m^2}=\Big(\frac1p-1\Big)\frac{\sum_v\mu_v^2}{\big(\sum_v\mu_v\big)^2}.
+\]
+For $\mu\ge0$ the last factor is $1/N_{\mathrm{eff}}$, so pruning costs almost nothing when $N_{\mathrm{eff}}$ is large. For random-signed contributions the last factor is $\approx1$, so no compression is possible. Pruning internal levels only adds terms.
+\end{corollary}
+
+\paragraph{Test.} The quenched path-tree term $T_3$ of note IX (Example~4.4) is the part that carries the accuracy of tree-level propagation at depth. We sketched it percolation-style: leaves retained with probability $p$, centres with $q$ (uniform, or proportional to the gap jet $|a_{l,2}|$), inverse-survival weights, and the $e^2=e$ correction for coincident leaves.
+
+\begin{center}\small
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+width 256, depth 16 & & $p=0.5$ & $p=0.25$ & $p=0.1$\\
+\midrule
+layer $2\to3$ & uniform / gap-guided & $2.95$ / $2.52$ & $7.2$ / $7.7$ & $29$ / $29$\\
+layer $8\to9$ & uniform / gap-guided & $2.70$ / $2.11$ & $9.2$ / $6.3$ & $32$ / $36$\\
+layer $15\to16$ & uniform / gap-guided & $2.36$ / $1.72$ & $6.3$ / $4.4$ & $31$ / $17$\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent The entries are relative errors $\|\hat T_3-T_3\|/\|T_3\|$; the work fractions are $\approx p\,q$. For one output neuron, the $256$ centre contributions have $|\sum|/\ell_2=1.07$ (layer 2) and $0.81$ (layer 15). Their absolute values have $N_{\mathrm{eff}}=70$ and $51$. Positivity would buy a factor of $\sim50$; the signs take it all back. This is note V's cancellation index reappearing inside Lyons' kernel.
+
+\begin{remark}[positive recursions]\label{rem:positive}
+The other proposal, randomising a \emph{positive} operator recursion $M_v=\sum_eK_e^*M_wK_e$, is exact and unbiased. It needs a positive branch representation of the mean. The network's natural expansions (paths, gaps, Hermite diagrams) are signed, with massive cancellation (note IX, Remark~2.2). Finding a positive gauge for the mean, for instance a Doob-type transform of the gap formula, is the precondition for any percolation compression. We do not know one.
+\end{remark}
+
+\section{The cone mixture}\label{sec:cones}
+
+The tiling proposal conditions on the signs of $k$ frame directions $Px$ (orthonormal rows). It runs the Gaussian closure inside each of the $2^k$ cylinders, from the truncated-Gaussian moments $m_\varepsilon=\sqrt{2/\pi}\,P^\top\varepsilon$ and $\Sigma=I-\tfrac2\pi P^\top P$, and then averages. Final-layer MSE at width 256 is shown below; closure is $1.19\times10^{-5}$ at depth 4 and $6.29\times10^{-5}$ at depth 16.
+
+\begin{center}\small
+\begin{tabular}{@{}lcccccc@{}}
+\toprule
+& \multicolumn{3}{c}{depth 4} & \multicolumn{3}{c}{depth 16}\\
+\cmidrule(lr){2-4}\cmidrule(lr){5-7}
+frame & $k=2$ & $k=4$ & $k=6$ & $k=2$ & $k=4$ & $k=6$\\
+\midrule
+top singular vectors of $W_1$ (proposed) & $1.13$ & $1.10$ & $1.04$ & $6.19$ & $6.10$ & $6.07$\\
+mean Jacobian $\prod\frac12W_\ell$ & $1.10$ & $1.04$ & $0.96$ & $6.12$ & $5.72$ & $5.44$\\
+random & $1.18$ & $1.17$ & $1.14$ & $6.23$ & $6.14$ & $6.13$\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent All entries are MSE in units of $10^{-5}$. The best gain is $19\%$ at depth 4 and $13\%$ at depth 16, at $64$ closures, i.e.\ $1.5B$ at width 1024. By comparison, the free gain residue of note IX gives $4.5\times$ ($6.29\to1.40$).
+
+The reason is direct: the error is not in the cones. The log-gain $\log(\|h_\ell(x)\|^2/\|x\|^2)$ has variance $0.035$ at layer 2 and $0.116$ at layer 16. The 6-bit cylinder label explains $2.7$--$4.0\%$ of it, at every depth tested. Every cone carries almost the whole gain fluctuation, so conditioning on cones cannot remove it. HDX gluing and holonomy diagnostics presuppose that the cones carry the error, so we did not pursue them.
+
+\section{Dilation, degree, and the residue as a pressure gap}\label{sec:dilation}
+
+Let $D_\lambda$ act on laws by $y\mapsto\lambda y$. A function $f$ positively homogeneous of degree $s$ is an eigenvector of the dilation flow: $f(\lambda y)=\lambda^sf(y)$. ReLU outputs have degree $1$, second moments degree $2$. Every layer map commutes with $D_\lambda$ (Theorem~7.2 of note IX).
+
+\begin{proposition}[scale mixtures and the pressure gap]\label{prop:pressure}
+Let the law of a layer be a scale mixture $\psi=\int D_g\tilde\psi\,d\nu(g)$, with gain $G\sim\nu$. Then:
+\begin{enumerate}
+\item the mixing law $\nu$ is transported unchanged through every later layer;
+\item for degree-$s$ observables, $\psi(f)=\E[G^s]\,\tilde\psi(f)=e^{P(s)}\tilde\psi(f)$, with pressure $P(\beta)=\log\E G^\beta$;
+\item a closure that is exact for $\tilde\psi$ and matched to the degree-2 data of $\psi$ (centred neurons) returns $e^{P(2)/2}\tilde\psi(f)$ for a degree-1 $f$, so its relative error is
+\[
+c=1-e^{P(1)-P(2)/2}.
+\]
+If $\log G$ is Gaussian, $c=1-e^{-\Var(\log G)/2}\approx\Var(G^2)/8$, which is note IX's residue law.
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+(1) $D_\lambda$ commutes with $\relu$ and with linear maps. (2) Homogeneity. (3) $P$ is convex with $P(0)=0$. Second-moment matching normalises the scale to $e^{P(2)/2}$, and the lognormal case is a direct computation.
+\end{proof}
+
+\noindent In Renault's correspondence for groupoid C*-algebras, the measures with Radon--Nikodym cocycle $e^{-\beta c}$ are the KMS$_\beta$ states of the dynamics generated by a real cocycle $c$. In that language, tilting by $G^\beta$ is the $\beta$-Gibbs state of the log-gain cocycle. The closure sees $\beta=2$, the mean is $\beta=1$, and the residue is the free-energy gap. We use this as a dictionary, not as a theorem about a specific groupoid. Two measurements pin down which cocycle is meant:
+\begin{itemize}
+\item \emph{The full log-norm is a critical cocycle.} At width 256, depth 16, the per-layer increments of $\log\|h_\ell\|^2$ are nearly uncorrelated: $\Var(\log g_{16})=0.116$ against a sum of increment variances of $0.119$, with lag-1 autocorrelations scattered around $0$. Nothing is forgotten, as Theorem~7.2 of note IX requires.
+\item \emph{But the full norm is the wrong tilt.} It contains Gaussian ($\chi^2$-like) fluctuations that the closure already handles. With $G^2=\|h\|^2/\E\|h\|^2$, the prediction $1-\E\sqrt g/\sqrt{\E g}$ is $0.0142$ at layer 16, twice the observed $c=0.0073$. Tilting the means by $\|h\|$ also overshoots the closure. The right cocycle is the \emph{common} gain, isolated by the coherent pairwise excess $\gamma$ of note IX. With that, $c\approx\gamma/8$ holds to $15\%$ from layer 5 on.
+\end{itemize}
+
+\section{Measure the gain, not the bias}\label{sec:measure}
+
+Sampling enters as a dual measurement: a short run of the code process estimates one coherent statistic of the state. The question is which statistic.
+
+\begin{itemize}
+\item \emph{First moment (bias).} Fit $\hat c=\langle m^{\mathrm{cl}},m^{\mathrm{cl}}-\bar y_T\rangle/\|m^{\mathrm{cl}}\|^2$. At width 256, depth 16: $T=1000$ gives MSE $5.7\times10^{-5}$ and $T=4000$ gives $2.2\times10^{-5}$, against an oracle of $1.32\times10^{-5}$. The Monte Carlo noise is concentrated along $m$, because per-input gain fluctuation is the common mode of the outputs. Removing $\|x\|$ exactly helps only $6\%$: the gain is directional, not radial.
+\item \emph{Norm variance minus the closure's Gaussian part.} This is precise ($\pm0.004$ at $T=1000$) but biased: it overestimates $8c$ by $20$--$110\%$, because the closure's off-diagonal covariances are themselves off at depth.
+\item \emph{Coherent excess from the samples.} Compute, with all moments taken from the samples,
+\[
+\hat\gamma=\frac1{n(n-1)}\sum_{k\ne l}\frac{\widehat{\E z_k^2z_l^2}-\widehat{\E z_k^2}\,\widehat{\E z_l^2}-2(\widehat{\E z_kz_l})^2+2\hat\mu_k^2\hat\mu_l^2}{\widehat{\E z_k^2}\,\widehat{\E z_l^2}},
+\]
+then set $m\leftarrow(1-\hat\gamma/8)m^{\mathrm{cl}}$. Using $\sum_{k\ne l}a_ka_lX_{kl}=a^\top Xa-\sum a_k^2X_{kk}$, the cost is $O(Tn^2)$, i.e.\ $0.1\%$ of $B$ beyond the forward passes. There is no fitted constant.
+\end{itemize}
+
+\begin{center}\small
+\begin{tabular}{@{}lcccccc@{}}
+\toprule
+network & MC@B & closure & weights-only ($\tau{=}.95$) & sample $\hat\gamma$, $T{=}1000$ & oracle scale\\
+\midrule
+$n{=}256$, $L{=}4$ & $4.9\times10^{-6}$ & $1.19\times10^{-5}$ & $6.3\times10^{-6}$ & $6.1\times10^{-6}$ & $5.7\times10^{-6}$\\
+$n{=}256$, $L{=}8$ & $2.6\times10^{-6}$ & $4.20\times10^{-5}$ & $1.32\times10^{-5}$ & $1.37\times10^{-5}$ & $1.32\times10^{-5}$\\
+$n{=}256$, $L{=}16$, s0 & $1.4\times10^{-6}$ & $6.29\times10^{-5}$ & $1.40\times10^{-5}$ & $1.36\times10^{-5}$ & $1.32\times10^{-5}$\\
+$n{=}256$, $L{=}16$, s1 & $1.6\times10^{-6}$ & $7.35\times10^{-5}$ & $2.13\times10^{-5}$ & $2.52\times10^{-5}$ & $2.04\times10^{-5}$\\
+$n{=}256$, $L{=}16$, s2 & $1.8\times10^{-6}$ & $4.49\times10^{-5}$ & $2.73\times10^{-5}$ & $2.41\times10^{-5}$ & $2.03\times10^{-5}$\\
+$n{=}512$, $L{=}16$ & $1.25\times10^{-6}$ & $1.61\times10^{-5}$ & $5.9\times10^{-6}$ & $5.9\times10^{-6}$ & $5.6\times10^{-6}$\\
+$n{=}1024$, $L{=}16$ & $1.03\times10^{-6}$ & $4.14\times10^{-6}$ & $1.50\times10^{-6}$ & $1.56\times10^{-6}$ & $1.48\times10^{-6}$\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent Across the seven networks, both residue estimators come on average within $\approx10\%$ of the oracle-scale MSE. The sample-$\hat\gamma$ version needs no transport constant, which confirms that $c\approx\gamma/8$ is parameter-free once $\gamma$ is known. The remaining scatter (up to $24\%$ above the oracle) is the random part of $c$, not error in $\gamma$. At width 1024 the total cost is $\approx2.4\%$ (closure) $+1.5\%$ (samples) $+0.1\%$, far below the $0.1$ floor.
+
+\section{Where percolation is real: depth as critical branching}\label{sec:branching}
+
+Note I showed that the infinite-width dual kernel of He-ReLU,
+\[
+\varrho(c)=\tfrac c2+\tfrac1\pi\big(\sqrt{1-c^2}+c\arcsin c\big),
+\]
+is the probability generating function of a \emph{critical} Galton--Watson offspring law (mean $1$, stable tail of index $3/2$). Here $P(Z_D>0)\sim9\pi^2/(2D^2)$ is the fraction of input-dependence surviving to depth $D$. That is percolation on a tree at criticality. Maxmud--Suomala Theorem~A(i): at criticality, absence of percolation is preserved under level-dependent enhancement $q_n\ge1$ whenever $\liminf_nQ_n\,P[o\leftrightarrow V_n]=0$, with $Q_n=\prod_{i\le n}q_i$.
+
+\begin{remark}[conjecture, not tested]\label{rem:conj}
+Finite width acts on this process as a level-dependent, input-dependent multiplicative perturbation (the gain). If its cumulative effect on survival behaves like $Q_D$ with $\log Q_D\asymp\Var(\log G_D)\asymp D/n$, then Theorem~A(i) suggests that the deep representation still collapses as long as $Q_D=o(D^2)$. Collapse would then fail only at depth $D\gtrsim n\log n$. This concerns depth much larger than width, not Phase 2 ($D/n=1/64$), and we have not verified that the gain acts as an enhancement in Theorem~A's sense.
+\end{remark}
+
+\section{A falsification test for the ``type-III spikes'' proposal}\label{sec:spikes}
+
+A third proposal (from another assistant) reads the mean as a K-theoretic pairing that is invariant under rewrites of either class. It assigns each layer's von Neumann algebra a type, and it claims that He-ReLU is type III because $W$ has a few spectral spikes. On this reading the leaderboard's remaining error is a ``type-III remainder'' living in $K_0$ of an $r\times r$ AF algebra, $r$ being the number of spikes of $W^{(1)}$ above the Marchenko--Pastur edge. The proposal supplies its own test: if $r=0$ on almost every draw, the story is false for this ensemble.
+
+\paragraph{Result.} $r=0$ for every weight matrix tested ($16$ layers $\times$ $5$ networks, widths $256$--$1024$). The top singular values are $2.79$--$2.86$ against the edge $2\sqrt2=2.83$, within Tracy--Widom fluctuations, and none exceeds $2\sqrt2\,(1+3n^{-2/3})$. This is expected: square i.i.d.\ Gaussian matrices have no outliers.
+
+\paragraph{Three mathematical corrections.}
+\begin{enumerate}
+\item The von Neumann algebra generated by pre-activations and gates, in the GNS representation of the input law, is commutative, hence type I. The modular flow of a faithful state on an abelian algebra is trivial. Types II and III arise only for noncommutative algebras, for instance a groupoid algebra with a non-invariant measure (Krieger type, via the ratio set of the Radon--Nikodym cocycle). That is where the gain cocycle of Section~\ref{sec:dilation} would live, if anywhere.
+\item The mean is not a homotopy-invariant pairing. Index pairings with projections are integers and rigid, while $\E\relu(Z_i)$ moves continuously with $W$: it is a state evaluated on a positive element, not a $K$-theory invariant. Rewriting a representative by a coboundary therefore does not leave the number fixed, and nothing makes the variance of a percolated rewrite vanish.
+\item The Connes cocycle $[D\psi:D\varphi]$ compares two states on one algebra. Consecutive layer laws are pushforwards to different spaces, so the cocycle is not the layer map.
+\end{enumerate}
+
+\paragraph{What is true in it.} Depth does create outliers, in the layer \emph{covariance} rather than in $W$. $\Cov(h_{16})$ has top eigenvalues $54$--$68$ times its mean eigenvalue. After the scale residue is removed, the closure residual puts $15$--$45\%$ of its energy on the top $4$ eigenvectors at width 256 (chance: $1.6\%$), and $5\%$ at width 1024 (chance: $0.4\%$). It puts $22$--$64\%$ on the top $16$. These coarse modes are generated by the product of $16$ layers. A coarse-sector correction would act there, but Monte Carlo cannot calibrate it cheaply: its noise along an eigenvector is $\lambda_v/T$, largest exactly there. It would have to come from the weights, which is what the quenched trees of note IX do.
+
+\section{Verdicts on the pasted proposals}\label{sec:verdicts}
+
+\begin{center}\small
+\begin{tabular}{@{}p{0.47\textwidth}p{0.47\textwidth}@{}}
+\toprule
+claim & verdict\\
+\midrule
+$10^9$-sample truth, $0.4$\,s residual cap, flopscope-only, numpy disqualifying & confirmed (Section~\ref{sec:rules})\\
+full covariance $\approx5.2\times10^{10}$ FLOPs, $\approx2.4\%$ & confirmed (bundled example)\\
+``remaining error is Gaussian closure, not the pairwise formula'' & consistent: $65$--$80\%$ of it is one scale, the gain\\
+64-cylinder mixture beats covariance & $3\%$ (proposed frames), $\le13\%$ (best frame) at depth 16, at $64$ closures\\
+holonomy/HDX gluing of cylinder charts & not pursued: cylinders carry $3$--$4\%$ of the gain variance\\
+capacity kernel $=$ variance of pruned computation & correct (Prop.~\ref{prop:ht})\\
+percolation compression of the computation & fails for signed expansions (Cor.~\ref{cor:signed}, test)\\
+completely positive filter $\Gamma_{uv}=\sqrt{s_us_v}/s_{u\wedge v}$ & correct (a Schur multiplier); no estimator found\\
+modular theory decides admissible projections & yes as stated; here the operative state-side object is the dilation flow (Section~\ref{sec:dilation})\\
+``type-III spikes'' of $W$ carry the residual & falsified by its own test: $0$ spikes above the edge in $80$ matrices (Section~\ref{sec:spikes})\\
+mean as a homotopy-invariant $KK$ pairing; zero-variance rewrites & no: the mean is a continuous state evaluation, the layer algebras are abelian (type I)\\
+residual on a few coarse directions & partly true: top covariance eigenvectors at depth hold $5$--$45\%$ (top 4) of the non-scale residual\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Open problems}
+\begin{enumerate}
+\item \emph{A positive gauge.} Find a representation of the activation mean as a positive tree or operator recursion (Remark~\ref{rem:positive}). Percolation compression, capacity bounds and positive-recursion randomisation all become available the moment one exists.
+\item \emph{The random part of the residue.} The coherent part of $c$ is now measurable or computable. The network-to-network scatter is the projection of quenched errors on the critical mode. Is it computable from the weights at $O(n^2)$?
+\item \emph{The common-gain cocycle.} Identify the common gain as a cocycle exactly (the left eigenvector at the scale mode), so that both $\tau$ and the Gaussian-part subtraction become unnecessary.
+\item \emph{Percolation at depth $\gg$ width.} Test Remark~\ref{rem:conj} on narrow, very deep networks.
+\end{enumerate}
+
+\section*{References}
+\begin{itemize}\small
+\item M.~Maxmud, V.~Suomala, On perturbations that preserve the connectivity properties in tree percolations, arXiv:2607.01291 (Theorem~A, Lyons' capacity characterisation, eq.~(2)--(3)).
+\item R.~Lyons, Random walks, capacity and percolation on trees, \emph{Ann.\ Probab.} 20 (1992); R.~Lyons, Y.~Peres, \emph{Probability on Trees and Networks}, CUP 2016.
+\item F.~Lehner, M.~Neuhauser, W.~Woess, On the spectrum of lamplighter groups and percolation clusters, \emph{Math.\ Ann.} 342 (2008).
+\item J.~Renault, \emph{A Groupoid Approach to C*-Algebras}, LNM 793, Springer 1980 (KMS states and Radon--Nikodym cocycles).
+\item WhestBench and flopscope documentation (AIcrowd), rounds and estimator contract for \texttt{v2-phase2}.
+\item Notes I, V, IX of this series.
+\end{itemize}
+
+\end{document}
