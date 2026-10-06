@@ -139,4 +139,47 @@ fitted 0.8 is paying for.
 
 ## 3. Tests (network 0, base = warm join + feedback, residual rank 4, Strassen level 6: raw 2.1785e-8)
 
-(results pending: the ladder is running; this section is filled in the next commit)
+| variant (zero cost unless stated) | net 0 raw | vs base | net 1 raw | vs base |
+|---|---|---|---|---|
+| base: warm join + feedback, residual rank 4, level 6 | 2.1785e-8 | 0 | 2.0831e-8 | 0 |
+| Mehler order 3 in the pair programs (+0.1% bill) | 2.1753e-8 | -0.15% | | |
+| Mehler order 4 | 2.1772e-8 | -0.06% | | |
+| derived scale-mixture kappa_4 sector, all slices, amplitude g_3 | 2.197e-7 | 10x worse | | |
+| same + the exact Edgeworth tail of the mean | 5.38e-4 | 25,000x worse | | |
+| derived sector, all slices, amplitude 0.8 g_3 | 5.52e-8 | 2.5x worse | | |
+| chain's diagonal and (2,2); (3,1) slice = 3 g_4 d(var) C_off with g_4 from the chain's own diagonal | 2.1476e-8 | -1.4% | 2.2323e-8 | +7.2% |
+| same, (3,1) amplitude 0.7 | 2.1432e-8 | -1.6% | | |
+| same, (3,1) amplitude 0.8 | 2.1250e-8 | -2.5% | 2.1060e-8 | +1.1% |
+| same, (3,1) amplitude 0.9 | 2.1261e-8 | -2.4% | | |
+| derived sector, all slices, amplitude g_3 x measured g_4/g_3 per layer | K4SM4_PLACEHOLDER | | | |
+
+**Readings.**
+
+- **The heat-operator truncation is converged.** Mehler orders 3 and 4 move the raw by 0.1%, as the 1e-4 estimate
+  said; the pair programs are not where the error is.
+- **The chain carries the gain through its sources, not through per-layer Edgeworth terms.** The exact tail of the
+  mixture's mean, added per layer, is catastrophic (25,000x), and the derived sector at the kappa_3 amplitude is 10x
+  worse. This repeats, from the closure side, the arrow-mixture note's finding that conditioning on the mixture
+  double-counts: the identity "mean error = -(g/8) m" is true of the mixture and false of the chain's bookkeeping,
+  because the chain's transported sources already produce most of that error at the output. The per-layer Edgeworth
+  accounting is not a valid ledger for this chain.
+- **The fourth-cumulant sector is at its effective optimum.** The derived shapes at amplitude 0.8 are 2.5x worse
+  than the chain's transported diagonal with its fitted table, although the two agree to cosine 0.99: the chain's
+  diagonal has memory ((W o W) transport of the previous layer's diagonal) and a per-layer amplitude that follows
+  the measured g_4 / g_3 profile (0.5 at layer 1, 1.0 at layer 15), and a uniform 0.8 overshoots the early layers
+  by up to 60%. The one derived move that helps, the (3,1) slice with its per-neuron variance factor at the Monte
+  Carlo amplitude (0.8-0.9 of 3 g_4), is -2.5% on network 0 and +1.1% on network 1: a +-2% effect with a
+  network-dependent optimum, not a shippable win. The sector is identified (scale-mixture shapes, an amplitude that
+  is the fourth cumulant's own g_4 and not the third's g_3, a (3,1) slice the chain under-fits by 20-40%), and it
+  is converged at the chain's precision.
+
+So three of the four named closure defects (Mehler order, the kappa_4 sector, the Edgeworth tail) are measured
+converged or already carried, and the representation round was converged in note XVII. What is left, by
+elimination and in agreement with the arrow-mixture note, is the third-order transport itself: the sources' legs
+carry the all-distinct kappa_3 with product gates, and the (2,1) feedback and slice residual are rank-limited
+patches on the same transport (note XV, section 6 found the residual to be a diagonal rescaling of the carried
+slice, i.e. a transport-coefficient defect). The next ledger is the per-neuron anatomy of the output error against
+the last layer's state, to see whether the defect is coherent (along the mean direction, a transport amplitude) or
+incoherent (per-neuron, a gate-expansion or slice-coefficient defect).
+
+ERR_PLACEHOLDER

@@ -1261,7 +1261,7 @@ class Estimator(BaseEstimator):
                 pk22 = fnp.add(PK2[2], PK2[2].T, out=NN("pk22"))
                 pk22 = _zero_diag(fnp.multiply(pk22, 0.5, out=pk22))
             pk1v, pk2v, pk3v, pk4v = PK1[0], PK1[1], PK1[2], PK1[3]
-            if K4SM >= 2 and mode == 1 and regen:
+            if K4SM == 2 and mode == 1 and regen:
                 # V30: E relu(G y) = E[G] m exactly; the kappa3 + kappa4 Edgeworth terms give -(g/8) sigma phi (1 + a^2),
                 # the exact -(g/8) m differs by the tail -(g/8) mu (Phi - alpha phi)
                 pk1v = pk1v - (_g_sm / 8.0) * mu * (Phi - alpha * phi)
