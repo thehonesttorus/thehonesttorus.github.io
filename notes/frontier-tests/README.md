@@ -96,6 +96,7 @@ contribution. Truncating the legs of all sources older than a given age (SVD eac
 | 64, a = 4 | 2.45e-7 | 55% |
 | 64, a = 3 | 4.81e-7 | 66% |
 | 128, a = 2 | 6.33e-7 | 78% |
+| 32, a = 6 | 1.61e-7 | 38% |
 
 The compressible part of the chain is score-neutral at best: the cost saved is matched by the accuracy lost, and
 the dense legs of the five or six youngest sources, which no basis compresses, are the chain's cost floor (about

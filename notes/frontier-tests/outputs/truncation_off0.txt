@@ -6,3 +6,4 @@ net 0 truncate old legs to rank 64 for age >= 4: final MSE 2.4503e-07  layers 8,
 net 0 truncate old legs to rank 256 for age >= 2: final MSE 2.2908e-07  layers 8,12: 1.12e-07 1.86e-07  (196s)
 net 0 truncate old legs to rank 128 for age >= 2: final MSE 6.3279e-07  layers 8,12: 3.65e-07 5.71e-07  (191s)
 net 0 truncate old legs to rank 64 for age >= 3: final MSE 4.8055e-07  layers 8,12: 2.16e-07 3.79e-07  (175s)
+net 0 truncate old legs to rank 32 for age >= 6: final MSE 1.6148e-07  layers 8,12: 2.34e-08 1.08e-07  (126s)
