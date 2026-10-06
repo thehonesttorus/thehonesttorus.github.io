@@ -1,0 +1,6 @@
+setup skipped: TypeError("SetupContext.__init__() missing 4 required positional arguments: 'wid
+/tmp/claude-0/-home-user-thehonesttorus-github-io/2cab30f0-c454-5769-8d9a-8195cd80a5f3/scratchpad/k3work/est_v29.py:1182: FlopscopeWarning: stats.norm.pdf promoted its float32 input to float64 to match scipy.stats. If float64 output was not intended, cast the result back with result.astype(np.float32) before downstream operations; float64 operations are billed at twice the float32 dtype rate.
+  phi = flops.stats.norm.pdf(alpha).astype(f32)
+/tmp/claude-0/-home-user-thehonesttorus-github-io/2cab30f0-c454-5769-8d9a-8195cd80a5f3/scratchpad/k3work/est_v29.py:1183: FlopscopeWarning: stats.norm.cdf promoted its float32 input to float64 to match scipy.stats. If float64 output was not intended, cast the result back with result.astype(np.float32) before downstream operations; float64 operations are billed at twice the float32 dtype rate.
+  Phi = flops.stats.norm.cdf(alpha).astype(f32)
+net 0 k4sm4: raw 2.4508e-08  C/B 0.2566  adjusted 6.2890e-09  wall 105s  residual nans

@@ -151,7 +151,7 @@ fitted 0.8 is paying for.
 | same, (3,1) amplitude 0.7 | 2.1432e-8 | -1.6% | | |
 | same, (3,1) amplitude 0.8 | 2.1250e-8 | -2.5% | 2.1060e-8 | +1.1% |
 | same, (3,1) amplitude 0.9 | 2.1261e-8 | -2.4% | | |
-| derived sector, all slices, amplitude g_3 x measured g_4/g_3 per layer | K4SM4_PLACEHOLDER | | | |
+| derived sector, all slices, amplitude g_3 x measured g_4/g_3 per layer | 2.4508e-8 | +12.5% | | |
 
 **Readings.**
 
