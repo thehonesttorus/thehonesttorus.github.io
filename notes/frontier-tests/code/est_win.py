@@ -291,6 +291,9 @@ G4LAYERS = ()
 ORACLE_PREV = None  # true post-activation means per layer (oracle tests)
 GOLD = None  # per-layer gain variance born in dropped (old) layers; set by the runner
 DUMP = []
+SPEC = []
+TRUNC_R = int(_os.environ.get('K3_TRUNC_R', '0'))
+TRUNC_AGE = int(_os.environ.get('K3_TRUNC_AGE', '99'))
 DEBUG = []  # parity_v17.py: per-layer dict of diagnostics when V17_DEBUG=1
 
 # pruned V16b table + the 4 (3,1)-slice use-side terms
@@ -493,6 +496,15 @@ class Estimator(BaseEstimator):
                     Zf_st = fnp.matmul(WDb, Zf_st)
                 legs["A0"], legs["A1"] = legs["A1"], legs["A0"]
                 legs["P0"], legs["P1"] = legs["P1"], legs["P0"]
+                if TRUNC_R > 0:
+                    # Lyapunov compression test: old sources' dense legs truncated to rank TRUNC_R (numpy SVD, unbilled)
+                    import numpy as _np
+                    for j in range(k):
+                        if li - j >= TRUNC_AGE:
+                            for nm in ("A0", "P0"):
+                                M = _np.asarray(legs[nm][j], dtype=_np.float64)
+                                U, sv, Vt = _np.linalg.svd(M, full_matrices=False)
+                                fnp.copyto(legs[nm][j], fnp.asarray((U[:, :TRUNC_R] * sv[:TRUNC_R]) @ Vt[:TRUNC_R], dtype=f32))
             else:
                 k = 0
             if newborn is not None and not skip_src:
@@ -555,6 +567,12 @@ class Estimator(BaseEstimator):
                 if bufs is None:
                     bufs = {nm: fnp.empty((L - 1, n, n), dtype=f32)
                             for nm in ("ap", "pp", "t", "mp", "la", "lp", "xt", "yt", "u")}
+                if _os.environ.get("K3_SPEC", "0") == "1" and li in (5, 10, 15):
+                    import numpy as _np
+                    for j in range(A_st.shape[0]):
+                        sa = _np.linalg.svd(_np.asarray(A_st[j], dtype=_np.float64), compute_uv=False)
+                        sp = _np.linalg.svd(_np.asarray(P_st[j], dtype=_np.float64), compute_uv=False)
+                        SPEC.append(dict(layer=li, source=j, age=li - j, sA=sa, sP=sp))
                 D3, D21 = self._dslices(A_st, P_st, Z_st, L_st, w2b_list, s_list, e_list,
                                         c1_list, c2_list, y_list, n, bufs,
                                         r, rfb, Zf_st, R1T_st, R2T_st,

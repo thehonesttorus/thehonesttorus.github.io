@@ -74,3 +74,29 @@ layer; `run_oracle_dump.py`, `noisefloor.py`, `decode.py`, `tdecode.py`, `subdec
 `../arrow-mixture/README.md`. Running the chain on the gain-conditional state with the output rescaled by E[G_L]
 double-counts the radial zero mode (2.19e-8 -> 1.84e-6); the chain's own kappa_3 sources and second-order terms
 carry about 70% of E[G_L] - 1 and its kappa_4 channel the remaining 30% (kappa_4 channel off: 2.11e-7).
+
+**Lyapunov compression of old sources** (`run_spec.py`, `run_trunc.py`, `outputs/leg_spectra_off0.txt`,
+`outputs/truncation_off0.txt`). The chain's cost is the dense n x n legs of its kappa_3 sources (transport W D A,
+W D P and the two D21 contractions: about 8 n^3 per source and layer, 120 source-layers). The transported P leg
+starts as the raw weight matrix (21% of its energy in the top 64 singular directions, the Marchenko-Pastur
+spectrum) and loses rank with age under the gated random-matrix product, a continuous Lyapunov spectrum: energy in
+the top 64 directions 0.39 / 0.62 / 0.75 / 0.83 / 0.89 / 0.95 at ages 2 / 4 / 6 / 8 / 10 / 15, and in the top 256
+0.87 / 0.98 / 0.996 / 0.999 / 1.000 / 1.000. The A legs are born in the covariance's outlier subspace (96% in the
+top 64 at any age). The readout, however, is a Hadamard contraction (D3_i = sum_j A_ij^2 P_ij w2_j and the like),
+an incoherent sum over entries, so a 1% energy loss is a 10% entry error and a 10% error of that source's
+contribution. Truncating the legs of all sources older than a given age (SVD each layer, unbilled):
+
+| rank r for ages >= a | final MSE (chain 2.19e-8) | share of the dense source-layers compressed |
+|---|---|---|
+| 256, a = 4 | 3.61e-8 | 55% |
+| 128, a = 6 | 3.45e-8 | 38% |
+| 64, a = 8 | 3.62e-8 | 23% |
+| 256, a = 2 | 2.29e-7 | 78% |
+TRUNC_MORE
+
+The compressible part of the chain is score-neutral at best: the cost saved is matched by the accuracy lost, and
+the dense legs of the five or six youngest sources, which no basis compresses, are the chain's cost floor (about
+5 x 4-8 n^3 per layer, 10-15% of the budget with the usual matmul tricks, which is where the leaderboard sits).
+A merged Tucker core for the old sources in the future (backward) Lyapunov basis, computed from the gates of a
+cheap closure run in advance, is exact for far readouts and lossy for the near ones, and the near readouts feed a
+mean channel that forgets nothing, so it does not change this.

@@ -43,13 +43,14 @@ Width 64, depth 8, four networks, 1e7-sample truth (`code/grid64.py`):
 
 Width 256, depth 16, three networks (`code/grid_n.py`, `code/diag256.py`):
 
-| estimator | network 0 | networks 1, 2 |
+| estimator | mean of 3 networks | ratio to closure |
 |---|---|---|
-| Gaussian closure | 6.29e-5 | pending |
-| **GAC** | **1.33e-5** | |
-| neuron k=1, q=7, memory 1 / 2 / 3 (no gain) | 6.21 / 6.20 / 6.82e-5 | |
-| GAC + neuron k=4, q=3, level-2 sparse grid, memory 2 | 4.08e-5 | |
-| GAC + eig k=4, q=3, level-2 sparse grid, memory 2 | 1.20e-5 | |
+| Gaussian closure | 6.04e-5 | 1 |
+| **GAC** | **1.74e-5** | **0.29** |
+| neuron k=1, q=7, memory 1 / 2 / 3, no gain (network 0; closure 6.29e-5) | 6.21 / 6.20 / 6.82e-5 | 0.99 / 0.99 / 1.08 |
+| GAC + eig k=4, q=3, level-2 sparse grid, memory 2 | 1.60e-5 | 0.27 |
+| GAC + neuron k=4, q=3, level-2 sparse grid, memory 2 | 5.51e-5 | 0.91 |
+| GAC + neuron k=8, q=3, level-1 sparse grid, memory 2 | 5.43e-4 | 9.0 |
 
 Width 1024, depth 16, official WhestBench network 0 (1e9-sample truth):
 
