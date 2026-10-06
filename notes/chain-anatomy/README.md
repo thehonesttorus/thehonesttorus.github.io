@@ -101,3 +101,47 @@ Everything else (K4_vec, the harmonic projection constants cA, cI, the online co
 - Combined, zero-cost warm starts plus level 6 take the adjusted score down 6.3% (network 0) and 2.7% (network 1):
   real, derived, small. On the public board (5.40e-9) that is about 5.1-5.2e-9, rank unchanged. The 1.7x to the
   leaders is not in this chain's computations; it is in its representation (section 2).
+
+## 6. The remaining gaps, pursued (network 0, warm join + warm feedback as the base: 2.183e-8 at 0.2671 B)
+
+**Rank and age gates of the old tier.** The gates v29 ships (rank 384 after age 4, nested rank 224 after age 7) were
+retuned on the warm-started chain; every move is worse on the adjusted score, so the gates sit at their optimum and
+the warm start did not shift it.
+
+| variant | raw | C/B | adjusted |
+|---|---|---|---|
+| base (warm join + feedback) | 2.183e-8 | 0.2671 | 5.830e-9 |
+| shared rank 320 | 2.396e-8 | 0.2506 | 6.004e-9 |
+| shared rank 256 | 2.653e-8 | 0.2277 | 6.041e-9 |
+| age gate 3 | 2.480e-8 | 0.2581 | 6.401e-9 |
+| age gate 3, rank 448 | 2.280e-8 | 0.2796 | 6.374e-9 |
+| nested rank 160 | 2.274e-8 | 0.2588 | 5.883e-9 |
+
+The slope is the measurement that matters: cutting 64 of rank costs 10% raw for 6% bill, so the old tier is not
+over-provisioned, and the quenched content it drops at rank 384 is already the cheapest content to drop. There is no
+cost win left in the gates.
+
+**What the slice residual holds** (`code/rres_analysis.py` on the dump of layers 5, 10, 14, `outputs/rres_off0.txt`).
+Rres = K21 - rep21 - S_sep is the part of the (2,1) slice that v29 carries at rank 16. Measured:
+
+- It is small and low-rank: 7-9% of K21 in norm, with 76/87/92% of its energy in the top 16 singular directions at
+  layers 5/10/14; the leading singular value is 14-19 times the 17th and its right singular vector is the mean
+  direction (overlap 0.97-0.99). The residual is dominated by one mean-coupled term, as the E10 picture says it should
+  be: the (2,1) slice's odd content lives on the mean direction.
+- It is a diagonal rescaling of the carried slice. A bilinear fit Rres ~ sum beta_pq d(f_p) D21 d(f_q) with features
+  {1, Phi, phi, Phi^2, phi m/sigma, m/sigma, alpha phi} explains 86/92/95% of it alone and 98-99% jointly with the
+  Mehler-2 Gaussian term d(.)(C_off o C_off)d(.) and the mean couplings; the transpose family explains 26-29%. So
+  Rres is not new content: it is the carried (2,1) slice with the wrong pair coefficients, plus the Gaussian second
+  Mehler term. My explicit guess for the coefficient, d(Phi - phi m/sigma - Phi^2) D21 d(Phi), has the right sign and
+  size (scale 0.45-0.68) but explains only 33-42%: the mismatch is spread over the whole feature family, not one term.
+- The rank-16 truncation drops 49/37/29% of the residual's norm, and the dropped part is 95-98% explained by the same
+  rescaling family. What is dropped is therefore as physical as what is kept.
+
+Two conclusions. First, the residual leg could in principle be replaced by a coefficient correction of the carried
+slice (49 scalars per layer fitted where K21 is formed), which would carry the dropped half for nothing; but the
+transported object would then be d(f) D21 d(g) for several (f, g), and each needs its own n^3 transport unless it is
+rank-structured, so the only free part is the rank-one mean-coupled term, which rank 16 already keeps. Second, the
+shipped ladder (16/32/64 -> 2.35/2.39/2.41e-8 on the v17 chain) says carrying more of the residual made the answer
+worse. A deterministic correction that hurts when carried more fully means its transport downstream is wrong, not its
+content; the residual is transported by the legs with Phi^2 coefficients while its content is precisely the deviation
+from Phi^2. The right fix is at the transport, not the rank.

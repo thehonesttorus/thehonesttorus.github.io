@@ -425,6 +425,8 @@ WARM_JOIN = _os.environ.get('V29_WARM_JOIN', '0') == '1'
 WARM_NEST = _os.environ.get('V29_WARM_NEST', '0') == '1'
 WARM_RES = _os.environ.get('V29_WARM_RES', '0') == '1'
 WARM_FB = _os.environ.get('V29_WARM_FB', '0') == '1'
+DUMP_LAYERS = tuple(int(x) for x in _os.environ.get('V29_DUMP_LAYERS', '').split(',') if x)
+DUMPS = []
 
 
 class _Strassen:
@@ -671,7 +673,7 @@ class Estimator(BaseEstimator):
     R_OLD2 = int(_os.environ.get("V24_R_OLD2", "224"))    # V24: rank of the nested sub-basis U (8-dump frontier runs/v24_7_*_d0-7.log: 224 best, 128 cliff)
     QPASS2 = int(_os.environ.get("V24_QPASS2", "2"))      # V24: passes of the r1-space range finder
     R_FB = 16    # V18: rank of the D21 feedback thin legs (F69 lean ladder: 8/16/32 -> 2.17/2.14/2.14e-8)
-    R_RES = 16   # rank of the S21 residual leg (V17 ladder on dumps 0/1: 16/32/64 -> 2.35/2.39/2.41e-8 at 0.492/0.502/0.518xB)
+    R_RES = int(_os.environ.get("V17_R_RES", "16"))   # rank of the S21 residual leg (V17 ladder on dumps 0/1: 16/32/64 -> 2.35/2.39/2.41e-8 at 0.492/0.502/0.518xB)
 
     def __init__(self) -> None:
         self._setup_rng = None
@@ -1429,6 +1431,12 @@ class Estimator(BaseEstimator):
             S_sep = fnp.multiply((e_b)[:, None], C_off, out=NN("ssep"))
             S_sep = _zero_diag(fnp.multiply(S_sep, (w1)[None, :], out=S_sep))
             Rres = fnp.subtract(S21, S_sep, out=S21)
+            if DUMP_LAYERS and li in DUMP_LAYERS:
+                import numpy as _np
+                _g = lambda x: None if x is None else _np.array(_np.asarray(x), dtype=_np.float64)
+                DUMPS.append(dict(layer=li, K21=_g(K21), D21_w=_g(D21_w), D21_new=_g(D21_new), rep21=_g(rep21), S_sep=_g(S_sep), Rres=_g(Rres),
+                                  D21=_g(D21), D3=_g(D3), mu=_g(mu), var=_g(var), W_all=_g(W_all), pk1v=_g(pk1v), e_b=_g(e_b), w1=_g(w1), w2=_g(w2),
+                                  C_off=_g(C_off), K11=_g(K11), K3v=_g(K3v), S3c=_g(S3c), g4row=_g(g4row), wk4m=_g(wk4m)))
             Om = pool.get("om_r", (n, r))  # V20: contiguous sketch
             fnp.copyto(Om, w32[:, :r])
             if WARM_RES and L_st is not None and k_b > 0:

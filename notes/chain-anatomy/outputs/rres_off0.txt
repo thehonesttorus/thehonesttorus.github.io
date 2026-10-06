@@ -1,0 +1,21 @@
+
+layer 5: |Rres|_F 3.702e-01  |K21| 5.018e+00  |rep21| 2.092e+00  |S_sep| 4.437e+00  |D21| 5.498e+00
+   energy fraction in top 16/64/256 singular directions: Rres 0.763/0.863/0.969   K21 0.543/0.845/0.957   D21 0.812/0.911/0.984
+   R^2 of Rres against: d(.) D21 d(.) 0.864 | d(.) D21^T d(.) 0.260 | d(.) (C_off*C_off) d(.) 0.292 | d(.) mu_i C_ij d(.) 0.067 | all jointly 0.988
+   explicit mismatch d(Phi - phi m/s - Phi^2) D21 d(Phi): best scale +0.681, R^2 0.418; same with D21^T: scale +0.076, R^2 0.005
+   joint fit explains: of the top-16 part 0.693 (by overlap), of the dropped part 0.977 (regression slope); |drop|/|Rres| 0.487
+   top singular vectors of Rres: |<u1,mean>| left 0.378 right 0.972; |<.,topeig C>| left 0.410 right 0.530; singular values s1..s4/s17 [13.74067499  2.3488835   1.48031613  1.40842557]
+
+layer 10: |Rres|_F 2.138e-01  |K21| 2.439e+00  |rep21| 1.632e+00  |S_sep| 1.718e+00  |D21| 3.685e+00
+   energy fraction in top 16/64/256 singular directions: Rres 0.866/0.935/0.988   K21 0.772/0.933/0.982   D21 0.897/0.959/0.992
+   R^2 of Rres against: d(.) D21 d(.) 0.922 | d(.) D21^T d(.) 0.290 | d(.) (C_off*C_off) d(.) 0.318 | d(.) mu_i C_ij d(.) 0.138 | all jointly 0.985
+   explicit mismatch d(Phi - phi m/s - Phi^2) D21 d(Phi): best scale +0.591, R^2 0.416; same with D21^T: scale +0.098, R^2 0.009
+   joint fit explains: of the top-16 part 0.844 (by overlap), of the dropped part 0.961 (regression slope); |drop|/|Rres| 0.366
+   top singular vectors of Rres: |<u1,mean>| left 0.291 right 0.982; |<.,topeig C>| left 0.355 right 0.690; singular values s1..s4/s17 [16.31110138  1.85296003  1.79403652  1.73835038]
+
+layer 14: |Rres|_F 1.735e-01  |K21| 1.970e+00  |rep21| 1.638e+00  |S_sep| 1.012e+00  |D21| 3.626e+00
+   energy fraction in top 16/64/256 singular directions: Rres 0.917/0.964/0.995   K21 0.878/0.962/0.991   D21 0.938/0.977/0.995
+   R^2 of Rres against: d(.) D21 d(.) 0.945 | d(.) D21^T d(.) 0.267 | d(.) (C_off*C_off) d(.) 0.339 | d(.) mu_i C_ij d(.) 0.194 | all jointly 0.983
+   explicit mismatch d(Phi - phi m/s - Phi^2) D21 d(Phi): best scale +0.454, R^2 0.326; same with D21^T: scale +0.078, R^2 0.007
+   joint fit explains: of the top-16 part 0.904 (by overlap), of the dropped part 0.947 (regression slope); |drop|/|Rres| 0.287
+   top singular vectors of Rres: |<u1,mean>| left 0.206 right 0.985; |<.,topeig C>| left 0.260 right 0.692; singular values s1..s4/s17 [19.27951827  1.99160961  1.86118562  1.77700509]
