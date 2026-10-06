@@ -224,3 +224,39 @@ no cheap carrier, and carrying it exactly would double the bill. Its magnitude c
 layer's legs dumped, the n^3 contraction done once) to confirm that it accounts for the 1.5e-4; that is the next
 measurement, and the design question after it is whether the leaders' 0.15 B buys a representation of this term
 that the CP legs cannot express.
+
+## 5. The gate-covariance term, measured (`code/run_v29legs.py`, `code/gatecov.py`, `outputs/gatecov_0_l10.txt`)
+
+The live source legs of layer 10 (all ten sources dense, plus the layer's newborn) were dumped and the two
+contractions done exactly, offline, on 48 output neurons of layer 11:
+
+- the product-gate value rebuilt from the legs, 3 sum_j w2_j (A^T v)_j^2 (P^T v)_j + sum_j (M^T v)_j (P^T v)_j^2 with
+  v = W_i o Phi, reproduces the chain's own D3 at layer 11 with correlation 0.88 and slope 1.10 (the rest is the
+  feedback thin legs and the birth content not rebuilt here), so the tensor T carried by the legs is the one assumed;
+- the first-order gate-covariance correction, 3 sum_abc W_ia W_ib W_ic rho_ab phi_a phi_b Phi_c T_abc, has rms
+  1.31e-4 = 1.09% of the product-gate value, correlation 0.09 with it and mean 0.04 of its rms: incoherent, as the
+  anatomy requires;
+- through the third Hermite coefficient of the gate it injects a post-activation mean error of 1.09e-5 rms at
+  layer 11.
+
+Against the output error of 1.48e-4: a kappa_3 error injected at one layer persists in the carried content with the
+channel's transport (0.80-0.92 per layer, E10), each later layer's mean error maps to the output with unit rms gain
+and the pieces are mutually incoherent, so one layer's injection reaches the output at about 1.1e-5 times
+sqrt(sum_k 0.85^2k), about 2e-5 rms, and fifteen layers give 8e-5 rms, i.e. about 6.5e-9 of the 2.2e-8. So the
+dropped gate covariance of the all-distinct third-cumulant transport is a real, incoherent defect of the measured
+size and signature, and it is about a third of the error, not all of it. The remaining two thirds are of the same
+class by elimination (an incoherent transport defect invisible to the local state): the all-distinct
+fourth-cumulant content the chain never carries, and the second-order gate terms of the same transport.
+
+**Cost of carrying it.** Per output neuron the correction is a quadratic form of the correlation matrix on every
+source index: two n^3 products per source per output neuron (19 s for 48 neurons here), n^4 per source-layer in
+any ordering. Written as a tensor it is the Hadamard product of the carried CP tensor with R o (phi phi^T) on two
+indices, and R = B B^T is full rank, so the exact gated tensor has CP rank n^2: the Khatri-Rao wall of note XV,
+reached from the closure side with its magnitude attached. There is no Hutchinson route (the probe would have to
+be applied per source index) and no low-rank route (R is the bulk correlation).
+
+**Where this leaves the programme.** The v29 chain is at the floor of its representation class: its compression is
+converged (2.7%), its local closure terms are converged or carried, and the residual is a sum of incoherent
+transport defects each of which costs n^4 per source-layer to remove. A 1.7x better raw at 0.15 B cannot be this
+chain with more terms; it has to be a representation in which the gate acts exactly on the carried object, which
+the CP legs cannot provide. That is the design question, and it is now posed with numbers rather than by analogy.
