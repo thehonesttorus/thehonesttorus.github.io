@@ -99,6 +99,15 @@ amplitudes differ by the skewness of the activity fluctuation, and their measure
 fluctuation is skewed and that the skewness falls with depth. That is the next derivation; the chain's lambda
 table is its fitted shadow.
 
+**The first-order closure is exact enough for the mixture** (`code/mixcheck.py`, `outputs/mixcheck_off0.txt`). On
+the chain's own states (256-neuron sub-blocks of layers 5, 10, 14) the pair moments of a pure scale mixture are known
+exactly by homogeneity (E r(z_a) r(z_c) = E[G^2] M(mu, S), E r(z_a)^2 r(z_c) = E[G^3] M21(mu, S)); feeding the
+mixture's own first four cumulant slices into the chain's first-order integration-by-parts programs reproduces them to
+0.4-0.6% of the correction for the (1,1) moment and 0.1-0.2% for the (2,1) moment, which is the O(g^2) one expects.
+The (3,1) slice's own term is 7-30 times that residual. So a 0.6-0.8 effective amplitude of the (3,1) slice is not a
+second-order correction of the first-order programs; if the truth's (3,1) amplitude is right, the chain's is simply
+under-fitted.
+
 **The Mehler truncation drops 1e-4 of the covariance.** The off-diagonal correlations of the pre-activations have
 rms 0.07, 0.10, 0.12 at layers 5, 10, 14 (99.9th percentile 0.23-0.42). The dropped Mehler terms of the (1,1) and
 (2,1) programs, relative to the first-order term in Frobenius norm, are k = 3: 0.8-1.5e-4, k = 4: 0.2-1.4e-4;
