@@ -1,0 +1,2 @@
+last-layer |z_L|^2: total Var/E^2 (MC 1e6) 0.03258 | Gaussian part (2tr S^2 + 4 mu'S mu)/E^2 from GAC state 0.00988 | excess 0.02270 | GAC gamma_L 0.01838 | scale-mixture total (1+gamma)(1+gauss)-1 = 0.02844
+random-direction excess kurtosis: measured +0.0657; scale-mixture prediction 3*gamma_L = 0.0551

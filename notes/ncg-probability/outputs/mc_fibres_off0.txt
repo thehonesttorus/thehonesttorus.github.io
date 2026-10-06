@@ -1,0 +1,38 @@
+net 0: 1000000 samples in 171s
+[E6] last layer: mean of true means 0.5766, spread across neurons (quenched 1/sqrt(n) fluctuation) rms 0.7817; free-limit constant-vector MSE 6.110e-01; closure 4.06e-6, GAC 1.56e-6, K3 chain 2.19e-8, leaders ~1.2e-8 (raw)
+[E2] layer | Var(|h|^2)/E^2 (total) | Gaussian part 2tr(S^2)/tr(S)^2 (closure) | excess = gain | GAC gamma_l | l/n
+   0 | 0.00676 | (gamma_l 0.00000, l/n 0.00098)
+   1 | 0.01109 | (gamma_l 0.00421, l/n 0.00195)
+   2 | 0.01428 | (gamma_l 0.00694, l/n 0.00293)
+   3 | 0.01703 | (gamma_l 0.00871, l/n 0.00391)
+   4 | 0.01901 | (gamma_l 0.01013, l/n 0.00488)
+   5 | 0.02130 | (gamma_l 0.01124, l/n 0.00586)
+   6 | 0.02280 | (gamma_l 0.01248, l/n 0.00684)
+   7 | 0.02423 | (gamma_l 0.01349, l/n 0.00781)
+   8 | 0.02625 | (gamma_l 0.01433, l/n 0.00879)
+   9 | 0.02830 | (gamma_l 0.01535, l/n 0.00977)
+  10 | 0.02977 | (gamma_l 0.01594, l/n 0.01074)
+  11 | 0.03117 | (gamma_l 0.01663, l/n 0.01172)
+  12 | 0.03234 | (gamma_l 0.01725, l/n 0.01270)
+  13 | 0.03274 | (gamma_l 0.01765, l/n 0.01367)
+  14 | 0.03314 | (gamma_l 0.01802, l/n 0.01465)
+  15 | 0.03239 | (gamma_l 0.01838, l/n 0.01562)
+[E5] |z_L|^2/E: Var 0.03258 (gamma_L from GAC 0.01838); skew 0.492 (Gamma law 2/sqrt(A)=0.361, lognormal 0.547); excess kurt 0.409 (Gamma 6/A=0.195)
+     E[sqrt(q/E q)] empirical 0.995983; Gamma law 0.995937; lognormal 0.996001; first order 1-V/8 0.995928
+[E4] conditioning on eig1-projection bins vs radial bins (|z_L|^2):
+      direction   excess-kurt: all / radial-bins / dir-bins   |  skew: all / radial-bins / dir-bins
+      eig1        +0.0856 / +0.0930 / -0.7221   |  -0.2439 / +0.1751 / -0.0192
+      eig2        -0.0306 / -0.1189 / -0.0794   |  +0.0488 / -0.0212 / +0.0197
+      eig3        -0.0199 / -0.1163 / -0.0855   |  -0.0246 / -0.0158 / -0.0193
+      eig4        -0.0195 / -0.1246 / -0.0885   |  +0.0961 / +0.0170 / +0.0572
+      mean        +0.0646 / +0.1722 / +0.1308   |  +0.2149 / -0.1429 / +0.1812
+      rand(avg of 32)   +0.0657 / -0.0011 / +0.0190   |  +0.0165 / +0.0005 / -0.0039
+[E4] conditioning on mean-projection bins vs radial bins (|z_L|^2):
+      direction   excess-kurt: all / radial-bins / dir-bins   |  skew: all / radial-bins / dir-bins
+      eig1        +0.0856 / +0.0930 / +0.0628   |  -0.2439 / +0.1751 / +0.0538
+      eig2        -0.0306 / -0.1189 / -0.0992   |  +0.0488 / -0.0212 / -0.0126
+      eig3        -0.0199 / -0.1163 / -0.0972   |  -0.0246 / -0.0158 / -0.0176
+      eig4        -0.0195 / -0.1246 / -0.1066   |  +0.0961 / +0.0170 / +0.0262
+      mean        +0.0646 / +0.1722 / -0.7172   |  +0.2149 / -0.1429 / +0.0185
+      rand(avg of 32)   +0.0657 / -0.0011 / +0.0077   |  +0.0165 / +0.0005 / +0.0012
+[E4] corr(|z_L|^2, proj^2): eig1 +0.2142 eig2 +0.1202 eig3 +0.1321 mean +0.2120 random mean +0.1094 +- 0.0079  (scale mixture: all equal; shift mixture: direction-specific)

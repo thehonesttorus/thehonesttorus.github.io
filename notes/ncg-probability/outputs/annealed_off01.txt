@@ -1,0 +1,19 @@
+deg2=False lam=0.01: fit net0 -> in-sample R2 0.0085, out-of-sample net1 R2 -0.0002; reverse: 0.0041 / 0.0038
+deg2=False lam=1: fit net0 -> in-sample R2 0.0085, out-of-sample net1 R2 -0.0002; reverse: 0.0041 / 0.0038
+deg2=False lam=100: fit net0 -> in-sample R2 0.0084, out-of-sample net1 R2 -0.0003; reverse: 0.0039 / 0.0038
+deg2=True lam=0.01: fit net0 -> in-sample R2 0.0791, out-of-sample net1 R2 0.0428; reverse: 0.0565 / 0.0648
+deg2=True lam=1: fit net0 -> in-sample R2 0.0779, out-of-sample net1 R2 0.0429; reverse: 0.0554 / 0.0631
+deg2=True lam=100: fit net0 -> in-sample R2 0.0503, out-of-sample net1 R2 0.0270; reverse: 0.0359 / 0.0378
+leave-one-layer-out on net 0 (deg2, lam=1):
+  layer  3: out-of-layer R2 +0.1417   (rms r 3.39e-05)
+  layer  4: out-of-layer R2 +0.1654   (rms r 3.75e-05)
+  layer  5: out-of-layer R2 +0.1139   (rms r 4.25e-05)
+  layer  6: out-of-layer R2 +0.1085   (rms r 4.48e-05)
+  layer  7: out-of-layer R2 +0.0390   (rms r 5.05e-05)
+  layer  8: out-of-layer R2 +0.0710   (rms r 5.09e-05)
+  layer  9: out-of-layer R2 +0.0161   (rms r 5.12e-05)
+  layer 10: out-of-layer R2 +0.0851   (rms r 5.63e-05)
+  layer 11: out-of-layer R2 +0.0714   (rms r 6.22e-05)
+  layer 12: out-of-layer R2 +0.0321   (rms r 5.42e-05)
+  layer 13: out-of-layer R2 +0.0355   (rms r 5.97e-05)
+  layer 14: out-of-layer R2 -0.0049   (rms r 6.58e-05)
