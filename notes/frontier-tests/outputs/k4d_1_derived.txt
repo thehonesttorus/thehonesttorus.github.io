@@ -1,0 +1,16 @@
+net 1 mode=derived scale=1.0: final MSE 2.9271e-08
+   layer  1: g 0.00642 (corr +0.707)  chain g4row = 0.00926 var^2 (corr +0.739)  3g = 0.01926  ratio chain/derived 0.481
+   layer  2: g 0.00874 (corr +0.836)  chain g4row = 0.01516 var^2 (corr +0.920)  3g = 0.02623  ratio chain/derived 0.578
+   layer  3: g 0.01082 (corr +0.875)  chain g4row = 0.02003 var^2 (corr +0.959)  3g = 0.03247  ratio chain/derived 0.617
+   layer  4: g 0.01219 (corr +0.892)  chain g4row = 0.02518 var^2 (corr +0.967)  3g = 0.03658  ratio chain/derived 0.688
+   layer  5: g 0.01378 (corr +0.915)  chain g4row = 0.02902 var^2 (corr +0.978)  3g = 0.04134  ratio chain/derived 0.702
+   layer  6: g 0.01476 (corr +0.920)  chain g4row = 0.03378 var^2 (corr +0.979)  3g = 0.04429  ratio chain/derived 0.763
+   layer  7: g 0.01628 (corr +0.932)  chain g4row = 0.03737 var^2 (corr +0.982)  3g = 0.04884  ratio chain/derived 0.765
+   layer  8: g 0.01714 (corr +0.940)  chain g4row = 0.03996 var^2 (corr +0.984)  3g = 0.05142  ratio chain/derived 0.777
+   layer  9: g 0.01747 (corr +0.936)  chain g4row = 0.04267 var^2 (corr +0.986)  3g = 0.05242  ratio chain/derived 0.814
+   layer 10: g 0.01871 (corr +0.942)  chain g4row = 0.04502 var^2 (corr +0.985)  3g = 0.05612  ratio chain/derived 0.802
+   layer 11: g 0.01951 (corr +0.953)  chain g4row = 0.04705 var^2 (corr +0.985)  3g = 0.05853  ratio chain/derived 0.804
+   layer 12: g 0.01958 (corr +0.955)  chain g4row = 0.04748 var^2 (corr +0.983)  3g = 0.05875  ratio chain/derived 0.808
+   layer 13: g 0.01991 (corr +0.953)  chain g4row = 0.04943 var^2 (corr +0.984)  3g = 0.05974  ratio chain/derived 0.827
+   layer 14: g 0.01978 (corr +0.956)  chain g4row = 0.05094 var^2 (corr +0.984)  3g = 0.05935  ratio chain/derived 0.858
+   layer 15: g 0.01975 (corr +0.962)  chain g4row = 0.05043 var^2 (corr +0.978)  3g = 0.05925  ratio chain/derived 0.851

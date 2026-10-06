@@ -286,6 +286,9 @@ REPLICA_SEED = int(_os.environ.get("REPLICA_SEED", "0"))
 ORACLE_LAYERS = ()
 DUMP2 = []
 G4SCALE = 1.0
+K4_DERIVED = int(_os.environ.get('K4_DERIVED', '0'))  # 1: replace the regenerated kappa4 diagonal by 3 g var^2 (E10); 2: log only
+K4_DERIVED_SCALE = float(_os.environ.get('K4_DERIVED_SCALE', '1'))
+K4LOG = []
 GAIN_K4 = None  # per-layer gain variance gamma_l; replaces the kappa4 diagonal by the scale-mixture law
 G4LAYERS = ()
 ORACLE_PREV = None  # true post-activation means per layer (oracle tests)
@@ -545,6 +548,15 @@ class Estimator(BaseEstimator):
                     g4row = dG * METRIC_C
                     if NO_G4: g4row = g4row * 0.0
                     if li in G4LAYERS: g4row = g4row * G4SCALE
+                    if K4_DERIVED:
+                        # E10: the kappa4 diagonal a chain carrying kappa3 exactly still needs is 3 g var^2, with g the
+                        # coefficient of its own mean-coupled D3 = 1.5 g mu var (O(n), no fitted constant)
+                        import numpy as _np
+                        _mu = _np.asarray(mu, dtype=_np.float64); _v = _np.asarray(var, dtype=_np.float64); _d3 = _np.asarray(D3, dtype=_np.float64)
+                        _x = 1.5 * _mu * _v; _g = float(_x @ _d3) / float(_x @ _x)
+                        _old = _np.asarray(g4row, dtype=_np.float64)
+                        K4LOG.append(dict(layer=li, g=_g, corr=float(_np.corrcoef(_x, _d3)[0, 1]), old_over_var2=float((_v * _v) @ _old) / float((_v * _v) @ (_v * _v)), old_corr_var2=float(_np.corrcoef(_old, _v * _v)[0, 1])))
+                        if K4_DERIVED == 1: g4row = fnp.asarray(3.0 * K4_DERIVED_SCALE * _g * _v * _v, dtype=f32)
                     if GAIN_K4 is not None and li in G4LAYERS:
                         import numpy as _np
                         from math import lgamma as _lg, exp as _ex
@@ -603,6 +615,15 @@ class Estimator(BaseEstimator):
                     g4row = dG * METRIC_C
                     if NO_G4: g4row = g4row * 0.0
                     if li in G4LAYERS: g4row = g4row * G4SCALE
+                    if K4_DERIVED:
+                        # E10: the kappa4 diagonal a chain carrying kappa3 exactly still needs is 3 g var^2, with g the
+                        # coefficient of its own mean-coupled D3 = 1.5 g mu var (O(n), no fitted constant)
+                        import numpy as _np
+                        _mu = _np.asarray(mu, dtype=_np.float64); _v = _np.asarray(var, dtype=_np.float64); _d3 = _np.asarray(D3, dtype=_np.float64)
+                        _x = 1.5 * _mu * _v; _g = float(_x @ _d3) / float(_x @ _x)
+                        _old = _np.asarray(g4row, dtype=_np.float64)
+                        K4LOG.append(dict(layer=li, g=_g, corr=float(_np.corrcoef(_x, _d3)[0, 1]), old_over_var2=float((_v * _v) @ _old) / float((_v * _v) @ (_v * _v)), old_corr_var2=float(_np.corrcoef(_old, _v * _v)[0, 1])))
+                        if K4_DERIVED == 1: g4row = fnp.asarray(3.0 * K4_DERIVED_SCALE * _g * _v * _v, dtype=f32)
                     if GAIN_K4 is not None and li in G4LAYERS:
                         import numpy as _np
                         from math import lgamma as _lg, exp as _ex

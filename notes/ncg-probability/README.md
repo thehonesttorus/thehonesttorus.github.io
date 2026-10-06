@@ -155,3 +155,53 @@ shifted Hermite coefficients).
 What E10 changes in the reading: the critical zero mode is not a fourth-order "trace fluctuation" but the odd,
 mean-coupled channel (the delta_1 (x) Y term of the Connes-Moscovici coproduct was the right name for the wrong
 object); it is transported at 0.9, not 1; and the chain already carries it exactly. The remaining floor is untouched.
+
+**E11. The scorer re-read, the cost anatomy, and what E10 buys the chain** (`../frontier-tests/code/run_k4d.py`,
+`../frontier-tests/outputs/k4d_*.txt`). Asked to proceed from E10 to a leaderboard system with the flop bill thought
+through first.
+
+*The cost model, re-read from flopscope's own reference.* Every charge is flop_cost x dtype_rate x complex_factor x
+weight. flop_cost is the textbook operation count at FMA = 2 (a matmul (m,k)(k,n) is 2mkn - mn; inv 2n^3; eigh 9n^3;
+thin SVD 6ab^2 + 20b^3; top-k SVD min(4mnk, economy); qr 2(2mnk - 2k^3/3)); dtype_rate is 2 for every 64-bit class;
+weight is the tier ladder {0, 1, 4, 16}: views and metadata free, sequential arithmetic and every materialised write 1
+(copies, concatenates, adds, reshape-with-copy all bill numel), gathers and sorts 4, transcendentals 16. Symmetry
+reduces a contraction's output count to the orbit count only when the engine can prove it (aliased operands such as
+inner(A, A), or an as_symmetric tag that is checked), so a Gram costs half and nothing else does; A @ A bills full. The
+Strassen-Winograd recursion written as ordinary ops is billed at its analytical count, which is how v26-v29 cut
+0.367 -> 0.253 B at identical arithmetic; its depth is capped by the 0.4 s residual clock (C = F + 1e11 R), and the
+meter boundary (tobytes and friends) is a strict loss at that rate. There is no free tier for anything the chain does,
+and the chain team's audits (F49/F56/F64/F77: no symmetric, dtype or einsum lever) are consistent with the document.
+
+*Where v29's 260 units go (F86).* 116 young dense tier (4 sources alive, 2.17 units per source-layer under Strassen),
+107 old shared-basis tier (~1.1 units per old source-layer: a dense leg formed from the rank-384/224 basis costs n^2 r,
+the same as transporting it, and the Hadamard products of factored legs have Khatri-Rao rank r^2, so nothing is done
+in factor space), 25 thin and elementwise, 7 covariance, 6 closure. The leaders' bill (0.149-0.164 B on the day the
+team compared) equals the young tier alone (0.150 B), with raw 1.7e-8 then and 1.1-1.5e-8 now, below the 1.94e-8 (LB
+scale) ceiling of "K3 + memoryless kappa_4". Breaking the board therefore means carrying the old-source content and
+fourth-order content at the price of the young tier; windowed chains show the old content is worth 6x raw.
+
+*E10's components, costed and tested in the chain.*
+- The gain's rank-one covariance term (g/4) mu mu^T: already in the chain's covariance (variance error has no mu^2
+  component, c = 1e-5 against g/4 = 5.6e-3). Nothing to add.
+- The gain recursion g_{l+1} = rho g_l + phi: the chain's own D3 carries g to 2%. Nothing to add; a separate scalar
+  channel only pays in a gain-stripped representation, and the old content that matters is not gain (above).
+- The kappa_4 diagonal. The chain's regenerated diagonal g4row is 0.98 correlated with var^2 from layer 5 on (0.72 at
+  layer 1) and equals 0.48, 0.57, 0.65, 0.70, 0.73, ..., 0.81, 0.84 of the derived 3 g var^2 at layers 1-15 (network
+  1: 0.61 at layer 3, 0.77 at 8, 0.82 at 13): the identity gives the fitted table's shape and a larger amplitude.
+  Replacing it by 3 g var^2 with g read from the chain's D3 (free, no constant): 2.19e-8 -> 3.36e-8 (network 0),
+  2.12e-8 -> 2.93e-8 (network 1). A uniform x1.19 of the fitted diagonal: 3.46e-8. The fitted diagonal is a sharp
+  counterterm: the chain's kappa_3 machinery (D21 feedback, the K4 -> K3 feed, all Mehler orders) already carries part
+  of what the pure scale-mixture bookkeeping assigns to kappa_4, and the derived amplitude double counts it. Reading:
+  the chain's lambda is the Birkhoff counterterm of ITS truncation, not the physical coefficient, which is what the
+  Connes-Kreimer note should have said.
+- A derived pair kappa_4 core from the first variation (O(K n^2) pointwise, 0.1 unit per layer) replacing lambda C_off:
+  cheap, but the team's test of eight extra modes moved the final MSE by 1%, and the fitted core is 90% of the full
+  channel's value (F68); the exact (2,1,1) core is worth 9% at 0.5-1.0 B.
+
+*Verdict.* No component of E10 changes the chain's cost, and its one free accuracy candidate is worse than the fitted
+value. The old-tier cost is set by the number of dense legs formed per layer, every closure that avoids per-source legs
+measured 10^2-10^4 from the kill line (slices F65, mixtures F78/E8, atoms F76, Tucker core by arithmetic), and the
+adjoint is symmetric to the forward problem (L readouts x L sources, no sharing beyond what forward transport already
+has). The leaders' expansion is not derivable from what we have measured; the gate it must pass, stated once: carry
+the quenched off-slice content of ten old sources to 2% of the (2,1) energy at under one unit per layer, with
+fourth-order content beyond a memoryless core.

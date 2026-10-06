@@ -61,9 +61,12 @@ Injectivity says the outside determines the hole; it does not say from how far.
   Connes-Kreimer note was wrong to present it as one.
 - **The coherent part of the defect is the gain, and it lives in the odd channel.** E10: the one rigid, forced
   structure is the mean-coupled third cumulant kappa_3(z_k) = 1.5 g mu_k sigma_k^2, transported with retention 0.9 and
-  fed by a one-loop source; its "empire" (what it forces at infinity) is the critical mean channel. An old source
-  forces the output only through this channel, which is why age-gated bases, rank truncation and the gain fill of
-  dropped sources were all score-neutral.
+  fed by a one-loop source; its "empire" (what it forces at infinity) is the critical mean channel. But an old source
+  does not force the output only through this channel: dropping the sources older than 8 transports costs 6x in the
+  chain and refilling their gain content recovers 1-8% (frontier tests). What survives of an old source is quenched,
+  18-23% of the (2,1) energy per layer, confined to the slowly decaying top Lyapunov directions (rank ~3n/8 at age 4),
+  and it is exactly the content whose carrier costs n^2 r per leg per layer. That is the worm with a bent trajectory:
+  pinned by neither end.
 - **The maximal equicontinuous factor of depth is the dilation group.** ReLU homogeneity is the one exact symmetry of
   the layer map; the radial coordinate is the one address whose fibres the outside fills (E4: quasi-free fibres only
   under radial conditioning; the arrow mixture's gain base; GAC). Everything else is mixing: no further eigenvalues,

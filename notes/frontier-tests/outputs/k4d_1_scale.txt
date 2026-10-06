@@ -1,0 +1,1 @@
+net 1 mode=scale scale=1.19: final MSE 3.0389e-08
