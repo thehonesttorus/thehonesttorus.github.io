@@ -672,7 +672,7 @@ class Estimator(BaseEstimator):
     AGE_OLD2 = int(_os.environ.get("V24_AGE_OLD2", "7"))  # V24: age gate of the nested tier (0 = off)
     R_OLD2 = int(_os.environ.get("V24_R_OLD2", "224"))    # V24: rank of the nested sub-basis U (8-dump frontier runs/v24_7_*_d0-7.log: 224 best, 128 cliff)
     QPASS2 = int(_os.environ.get("V24_QPASS2", "2"))      # V24: passes of the r1-space range finder
-    R_FB = 16    # V18: rank of the D21 feedback thin legs (F69 lean ladder: 8/16/32 -> 2.17/2.14/2.14e-8)
+    R_FB = int(_os.environ.get("V18_R_FB", "16"))    # V18: rank of the D21 feedback thin legs (F69 lean ladder: 8/16/32 -> 2.17/2.14/2.14e-8)
     R_RES = int(_os.environ.get("V17_R_RES", "16"))   # rank of the S21 residual leg (V17 ladder on dumps 0/1: 16/32/64 -> 2.35/2.39/2.41e-8 at 0.492/0.502/0.518xB)
 
     def __init__(self) -> None:

@@ -145,3 +145,27 @@ shipped ladder (16/32/64 -> 2.35/2.39/2.41e-8 on the v17 chain) says carrying mo
 worse. A deterministic correction that hurts when carried more fully means its transport downstream is wrong, not its
 content; the residual is transported by the legs with Phi^2 coefficients while its content is precisely the deviation
 from Phi^2. The right fix is at the transport, not the rank.
+
+**The slice-residual rank ladder** (`V17_R_RES`, warm join + feedback, no level 6 unless stated):
+
+| residual rank | net 0 raw | C/B | net 0 adjusted | net 1 raw | C/B | net 1 adjusted |
+|---|---|---|---|---|---|---|
+| 2 | 2.257e-8 | 0.2602 | 5.874e-9 | | | |
+| 4 | 2.179e-8 | 0.2612 | 5.690e-9 | 2.083e-8 | 0.2612 | 5.441e-9 |
+| 8 | 2.155e-8 | 0.2632 | 5.670e-9 | 2.091e-8 | 0.2632 | 5.504e-9 |
+| 16 (shipped) | 2.183e-8 | 0.2671 | 5.830e-9 | 2.063e-8 | 0.2671 | 5.510e-9 |
+| 32 | 2.144e-8 | 0.2749 | 5.893e-9 | | | |
+| **4 + level 6** | **2.179e-8** | **0.2566** | **5.590e-9** | **2.083e-8** | **0.2566** | **5.345e-9** |
+| 8 + level 6 | 2.153e-8 | 0.2585 | 5.566e-9 | 2.090e-8 | 0.2585 | 5.404e-9 |
+
+The raw is flat to +-1.5% from rank 4 to rank 32 and not monotone (rank 16 is the worst of the four on network 0
+and the best on network 1), while the bill rises 0.5% per doubling. That is the signature the anatomy predicted: the
+residual holds one mean-coupled direction and a few more of physical size, and beyond rank 4 its singular values sit
+at the chain's own defect floor, so carrying them buys nothing either way. Rank 2 is clearly worse (+3.4% raw), so the
+floor is between 2 and 4. Rank 4 with warm starts and level 6 is the new combined best: adjusted 5.590e-9 and
+5.345e-9, a two-network mean of 5.47e-9 against 5.84e-9 as shipped (-6.3%), with network 0 at -8.6% and network 1
+at -4.1%. The residual clock at level 6 is still unmeasured on the grader's machine.
+
+**The representation round in isolation** (note XVII, section 4): with the shared basis off and the residual and
+feedback ranks at 64, the raw improves by 2.7% in total for 42% more bill. The representation is converged; the error
+is closure.
