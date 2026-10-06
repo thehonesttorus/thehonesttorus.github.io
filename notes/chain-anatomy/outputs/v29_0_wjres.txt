@@ -1,0 +1,1 @@
+net 0 wj_res: raw 2.2552e-08  C/B 0.2673  adjusted 6.0274e-09  wall 80s  residual nans

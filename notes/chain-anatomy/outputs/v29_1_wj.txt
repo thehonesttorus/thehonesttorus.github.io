@@ -1,0 +1,1 @@
+net 1 warmjoin: raw 2.0724e-08  C/B 0.2671  adjusted 5.5345e-09  wall 82s  residual nans

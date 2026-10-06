@@ -1,0 +1,1 @@
+net 0 L6: raw 2.2934e-08  C/B 0.2624  adjusted 6.0189e-09  wall 99s  residual nans

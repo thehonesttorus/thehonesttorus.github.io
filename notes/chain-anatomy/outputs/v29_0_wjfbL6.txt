@@ -1,0 +1,1 @@
+net 0 wj_fb_L6: raw 2.1825e-08  C/B 0.2624  adjusted 5.7279e-09  wall 93s  residual nans

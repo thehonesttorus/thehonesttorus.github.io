@@ -1,0 +1,1 @@
+net 1 base: raw 2.0860e-08  C/B 0.2671  adjusted 5.5708e-09  wall 87s  residual nans

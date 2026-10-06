@@ -72,3 +72,32 @@ Everything else (K4_vec, the harmonic projection constants cA, cI, the online co
 - **Not wins:** symmetric or dtype pricing (exhausted, F77); a cheaper exact algorithm for the hub (none: the
   contraction is a non-symmetric matmul on legs); dropping or merging hubs (flat importance); a Tucker core of the
   old tier (n r^3 per layer); Cholesky-aliased Gram for C_pre (1.7 u against 0.95 u).
+
+## 5. Results (official networks 0 and 1; `code/est_v29.py` = v29 with the variants behind environment flags,
+`code/run_v29.py`; raw = final-layer MSE, adjusted = raw x C/B under the Phase 2 rule; outputs in `outputs/`)
+
+| variant | net 0 raw | C/B | net 0 adjusted | net 1 raw | C/B | net 1 adjusted |
+|---|---|---|---|---|---|---|
+| v29 as shipped | 2.290e-8 | 0.2671 | 6.116e-9 | 2.086e-8 | 0.2671 | 5.571e-9 |
+| warm join (sketch = transported old basis) | 2.222e-8 | 0.2671 | 5.934e-9 | 2.072e-8 | 0.2671 | 5.535e-9 |
+| warm join + warm nested sketch | 2.242e-8 | 0.2671 | 5.987e-9 | 2.070e-8 | 0.2671 | 5.527e-9 |
+| warm join + warm feedback sketch | 2.183e-8 | 0.2671 | 5.830e-9 | 2.063e-8 | 0.2671 | 5.510e-9 |
+| warm join + warm residual sketch | 2.255e-8 | 0.2673 | 6.027e-9 | | | |
+| all four warm sketches | 2.221e-8 | 0.2673 | 5.936e-9 | | | |
+| two cold passes (v29 + QPASS 2) | 2.259e-8 | 0.2873 | 6.490e-9 | | | |
+| two warm passes | 2.233e-8 | 0.2873 | 6.415e-9 | | | |
+| Strassen level 6, leaf 16 | 2.293e-8 | 0.2624 | 6.019e-9 | | | |
+| **warm join + warm feedback + level 6** | **2.188e-8** | **0.2624** | **5.741e-9** | **2.066e-8** | **0.2624** | **5.421e-9** |
+
+- The warm-started join is strictly better than a second cold pass (which costs 7.6% more and still loses), and a
+  second warm pass adds nothing: the join's basis is saturated at zero cost, as the Lyapunov argument predicts (the
+  target subspace is the transported previous one plus what the joiner brings).
+- The feedback finder benefits from the same warm start (the (2,1) feedback basis of consecutive layers is related
+  by transport); the slice-residual finder does not (warm residual is worse than cold): Rres is newly generated
+  content and transport error, not a propagated object. That is a measurement of what the residual leg holds.
+- Level 6 saves 1.8% of the bill at an unchanged raw (2.293 against 2.290e-8), less than the per-product count
+  suggests because the block additions grow; the residual clock was not measured here and must be checked on the
+  grader's machine before shipping.
+- Combined, zero-cost warm starts plus level 6 take the adjusted score down 6.1% (network 0) and 2.7% (network 1):
+  real, derived, small. On the public board (5.40e-9) that is about 5.1-5.2e-9, rank unchanged. The 1.7x to the
+  leaders is not in this chain's computations; it is in its representation (section 2).
