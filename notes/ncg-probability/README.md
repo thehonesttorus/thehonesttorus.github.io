@@ -205,3 +205,28 @@ adjoint is symmetric to the forward problem (L readouts x L sources, no sharing 
 has). The leaders' expansion is not derivable from what we have measured; the gate it must pass, stated once: carry
 the quenched off-slice content of ten old sources to 2% of the (2,1) energy at under one unit per layer, with
 fourth-order content beyond a memoryless core.
+
+*Adjusted, under the Phase 2 rule* (per MLP: final-layer MSE x max(0.1, F/B), lambda = 0 with the residual gated at
+0.4 s, overruns zeroed at multiplier 1, arithmetic mean over MLPs; `whestbench/budget.py`). The hook changes F by a
+few thousand FLOPs, so the multiplier is unchanged: 0.478 for the v19 fork these runs use, 0.253 for v29's
+arithmetic.
+
+| kappa_4 diagonal | raw net 0 / net 1 | adjusted at 0.478 | adjusted at v29's 0.253 |
+|---|---|---|---|
+| fitted | 2.19e-8 / 2.12e-8 | 1.05e-8 / 1.01e-8 | 5.5e-9 / 5.4e-9 |
+| derived 3 g var^2 | 3.36e-8 / 2.93e-8 | 1.61e-8 / 1.40e-8 | 8.5e-9 / 7.4e-9 |
+| fitted x 1.19 | 3.46e-8 / 3.04e-8 | 1.66e-8 / 1.45e-8 | 8.8e-9 / 7.7e-9 |
+
+The floor binds below F = 2.2e11 (102 units); v29 is at 260, its young tier alone at 153, the leaders at 0.11-0.15.
+
+*The same term on a chain in the identity's regime (report from another team, pasted).* A "pair birth" chain whose
+fourth cumulant entering the mean is the transported diagonal sum_j W_ja^4 kappa_4(h_j) (O(1/n) of kappa_4(h), i.e.
+effectively absent) replaced it by 3 g sigma^4 with g the through-origin fit of its own pre-activation kappa_3:
+100-net mini raw 2.497e-6 -> 2.366e-6 (-5.2%), adjusted 2.497e-7 -> 2.366e-7 at the 0.1 floor (F = 8.7% of B). That
+is the regime the identity was derived for: kappa_3 enters the mean through the first-order Edgeworth term only, so
+the scale-mixture remainder 3 g sigma^4 is missing and adding it helps. Their fitted g runs 5.6e-3 at layer 2 down to
+1.2e-3 at layer 16, against the measured channel 9.5e-3 rising to 2.2e-2 (E10): their closure loses the channel with
+depth (product-gate transport), so the term they add is 2-18x below the physical one, and their chain sits at
+GAC-class accuracy at 3.6x GAC's cost (note XI: 1.42e-6 at 2.4%, adjusted 1.4e-7; the derived closure of E10,
+1.54e-6). The two results together: 3 g sigma^4 is the right fourth for a chain that carries only the Edgeworth
+kappa_3 term, and a double count for one that carries the K4 -> K3 feed, the D21 feedback and the fitted core.
