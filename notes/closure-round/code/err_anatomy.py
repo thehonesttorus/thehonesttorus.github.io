@@ -6,7 +6,7 @@ net = int(sys.argv[1]) if len(sys.argv) > 1 else 0
 P = pickle.load(open(f"v29err_off{net}.pkl", "rb")); out, mt = P["out"], P["truth"]; D = {d["layer"]: d for d in P["dumps"]}
 err = out[-1] - mt[-1]; n = len(err); mse = np.mean(err**2)
 print(f"net {net}: raw MSE {mse:.4e}; rms err {np.sqrt(mse):.3e}; |truth| rms {np.sqrt(np.mean(mt[-1]**2)):.3f}; mean err {err.mean():+.3e} (coherent part of MSE {err.mean()**2/mse:.1%})")
-d = D[15]; mu, var, D3 = d["mu"], d["var"], d["D3"]; sig = np.sqrt(var); a = mu / sig; Ph = ndtr(a); ph = np.exp(-a*a/2)/np.sqrt(2*np.pi); m = sig*(a*Ph+ph)
+d = D[max(D)]; print(f"state from layer {max(D)}"); mu, var, D3 = d["mu"], d["var"], d["D3"]; sig = np.sqrt(var); a = mu / sig; Ph = ndtr(a); ph = np.exp(-a*a/2)/np.sqrt(2*np.pi); m = sig*(a*Ph+ph)
 print(f"last-layer pre-activation: alpha quantiles 1/10/50/90/99% {np.quantile(a,[.01,.1,.5,.9,.99]).round(2)}")
 def bins(x, name, edges):
     print(f"  by {name}:")

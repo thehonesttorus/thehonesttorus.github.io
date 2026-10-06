@@ -1,0 +1,24 @@
+net 0: raw MSE 2.1785e-08; rms err 1.476e-04; |truth| rms 0.971; mean err +3.959e-06 (coherent part of MSE 0.1%)
+state from layer 15
+last-layer pre-activation: alpha quantiles 1/10/50/90/99% [-6.71 -4.14  0.13  4.19  6.66]
+  by alpha:
+    [ -9.00, -1.00) n= 393  share of MSE   3.0%  rms err 4.16e-05  mean err +5.23e-06  rms truth 0.008
+    [ -1.00, -0.50) n=  55  share of MSE   4.1%  rms err 1.29e-04  mean err +1.03e-06  rms truth 0.055
+    [ -0.50, +0.00) n=  43  share of MSE   5.1%  rms err 1.63e-04  mean err -3.33e-05  rms truth 0.118
+    [ +0.00, +0.50) n=  65  share of MSE   7.8%  rms err 1.64e-04  mean err -8.33e-06  rms truth 0.213
+    [ +0.50, +1.00) n=  60  share of MSE  11.1%  rms err 2.03e-04  mean err -6.01e-06  rms truth 0.338
+    [ +1.00, +1.50) n=  51  share of MSE   9.1%  rms err 2.00e-04  mean err +2.22e-05  rms truth 0.507
+    [ +1.50, +2.00) n=  57  share of MSE  12.5%  rms err 2.21e-04  mean err +1.82e-06  rms truth 0.718
+    [ +2.00, +3.00) n= 106  share of MSE  14.5%  rms err 1.74e-04  mean err +1.99e-05  rms truth 0.995
+    [ +3.00,+99.00) n= 194  share of MSE  32.8%  rms err 1.94e-04  mean err +4.78e-06  rms truth 2.041
+  by sigma / mean sigma:
+    [ +0.75, +1.00) n= 548  share of MSE  50.5%  rms err 1.43e-04  mean err +9.50e-06  rms truth 0.652
+    [ +1.00, +1.25) n= 461  share of MSE  48.8%  rms err 1.54e-04  mean err -3.75e-06  rms truth 1.171
+    [ +1.25, +1.50) n=  15  share of MSE   0.7%  rms err 9.93e-05  mean err +3.85e-05  rms truth 2.597
+  relative error rms 6.93e-03; corr(err, truth) +0.052; corr(err, m_gauss - truth) +0.307; corr(err, D3) +0.019; corr(err, alpha) +0.032
+  last-step Gaussian mean from the chain's (mu, sigma): MSE 1.928e-07; the chain's correction (out - m): rms 4.240e-04; corr(correction, needed) +0.915; slope 0.910
+Traceback (most recent call last):
+  File "/tmp/claude-0/-home-user-thehonesttorus-github-io/2cab30f0-c454-5769-8d9a-8195cd80a5f3/scratchpad/k3work/err_anatomy.py", line 24, in <module>
+    C = d["C_off"] + np.diag(var); ev, V = np.linalg.eigh(C); u1 = V[:, -1]; mh = mt[-1] / np.linalg.norm(mt[-1])
+        ~~~~~~~~~~~^~~~~~~~~~~~~~
+TypeError: unsupported operand type(s) for +: 'NoneType' and 'float'

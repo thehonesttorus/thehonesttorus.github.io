@@ -1,0 +1,13 @@
+net 0: last layer g(D3) = 0.0217; residual rms 1.476e-04; needed-correction rms 4.391e-04; chain correction rms 4.240e-04
+residual explained by all features jointly: R^2 0.040
+   chain k3 term D3 c3/6                          coef -0.124  single-feature R^2 0.006  (feature rms 4.42e-04)
+   chain k4 term g4 c4/24                         coef -0.760  single-feature R^2 0.005  (feature rms 1.52e-04)
+   sm tail -(g/8) mu (Phi - a phi)                coef -0.040  single-feature R^2 0.003  (feature rms 2.59e-03)
+   sm k5 term: 1.5 g mu sig^2 * sig^2 c5 (shape)  coef -0.000  single-feature R^2 0.001  (feature rms 1.35e-02)
+   sm k6 term: g sig^6 c6 (shape)                 coef -0.014  single-feature R^2 0.004  (feature rms 3.73e-03)
+   m                                              coef -0.000  single-feature R^2 0.003  (feature rms 9.71e-01)
+   sigma phi                                      coef -0.001  single-feature R^2 0.003  (feature rms 6.79e-02)
+   mu Phi                                         coef +0.000  single-feature R^2 0.004  (feature rms 9.64e-01)
+   D3 (raw)                                       coef +0.003  single-feature R^2 0.001  (feature rms 9.21e-03)
+   D3 c5 sig^2                                    coef -0.006  single-feature R^2 0.002  (feature rms 4.38e-03)
+needed correction explained by the chain's own two terms: R^2 0.888; by the chain's full correction: 0.888

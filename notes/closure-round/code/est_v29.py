@@ -1285,6 +1285,10 @@ class Estimator(BaseEstimator):
                 delta = None
 
             if last:
+                if DUMP_LAYERS and li in DUMP_LAYERS:
+                    import numpy as _np
+                    _g = lambda x: None if x is None else _np.array(_np.asarray(x), dtype=_np.float64)
+                    DUMPS.append(dict(layer=li, mu=_g(mu), var=_g(var), D3=_g(D3), pk1v=_g(pk1v), g4row=_g(g4row), C_off=_g(C_off), W_all=_g(W_all)))
                 rows.append(pk1v if delta is None else pk1v + delta)
                 break
 

@@ -182,4 +182,45 @@ slice, i.e. a transport-coefficient defect). The next ledger is the per-neuron a
 the last layer's state, to see whether the defect is coherent (along the mean direction, a transport amplitude) or
 incoherent (per-neuron, a gate-expansion or slice-coefficient defect).
 
-ERR_PLACEHOLDER
+## 4. Where the error lives (`code/run_v29err.py`, `code/err_anatomy.py`, `code/err_regress.py`; network 0)
+
+The official truth is a 1e9-sample Monte Carlo (avg_variance 0.079, so its own floor is 8e-11 per neuron, 0.4% of
+the chain's MSE); the chain's error is real. Its anatomy on the best configuration (raw 2.1785e-8):
+
+- **It is white across neurons.** The mean error is 4e-6 (0.1% of the MSE); the component along the output mean
+  direction is 0.3%, along the top 16 eigenvectors of the last pre-activation covariance 0.8%. Correlation of the
+  error with the truth is 0.05, with the carried kappa_3 diagonal 0.02, with alpha 0.03.
+- **It enters as an incoherent error of the pre-activation mean, uniform in alpha.** Binned by the last layer's
+  alpha, the output error rms is 4e-5 for the 38% of neurons with alpha < -1 (whose means are 0.008), 1.3-1.6e-4
+  for alpha in [-1, 0.5), 2.0-2.2e-4 for [0.5, 2) and 1.7-1.9e-4 above 2, i.e. rms(output error) is Phi(alpha)
+  times a pre-activation error of about 2.5e-4 rms at every alpha. Nothing concentrates on saturated or on
+  small-variance neurons.
+- **It is not a missing local term.** At the last step the chain's own correction (kappa_3 and kappa_4 Edgeworth
+  terms) explains 88.8% of the variance of the needed correction m_Gauss(mu, sigma) - truth (slope 0.91); the
+  remaining 11% is the whole MSE. Regressing that residual on every derived per-neuron function of the carried
+  last-layer state (the chain's two terms, the scale-mixture tail, the kappa_5 and kappa_6 scale-mixture shapes,
+  m, sigma phi, mu Phi, D3, D3 c_5 sigma^2) gives R^2 = 0.04 jointly and at most 0.6% per feature. No function of
+  (mu, sigma, D3, g4) at the last layer predicts the residual.
+
+So the error is in the transported state itself: an incoherent error of the carried objects, accumulated along the
+depth and propagated with marginal gain (the critical point of note XVII: a white error on the post-activation mean
+of layer l reaches layer l + 1 with rms gain sqrt(2) Phi, about 1, so the output error of 1.5e-4 is the quadrature
+sum of per-layer injections of a few 1e-5). This closes the closure round from the side of local terms: the four
+named defects (Mehler order, the fourth-cumulant sector, the Edgeworth tail, a missing per-neuron term) are
+measured converged, carried, double-counting, or absent, and the representation round was closed in note XVII.
+
+**What is left is derived, and it sits at the wall.** The one closure approximation that is incoherent, per
+neuron, invisible to the local state and present at every layer is the product-gate transport of the all-distinct
+third cumulant: the sources' legs carry kappa_3(h)_abc through a gate as Phi_a Phi_b Phi_c kappa_3(h)_abc, while
+the exact coefficient is the trivariate orthant probability P(a, b, c), whose first-order Mehler correction
+(rho_ab phi_a phi_b Phi_c + two permutations) is the gates' conditional covariance of note XIV, measured in E3 of
+the ncg-probability note at 1.5-2.4% rms of the product gates and odd in the correlations, hence incoherent. Its
+effect on the next layer's kappa_3 diagonal is
+D3corr_i = 3 sum_s sum_j (W d(phi o A_j) R d(phi o A_j) W^T)_ii (W (Phi o P_j))_i,
+a quadratic form in the correlation matrix R per output neuron and per source index: n^3 per source and layer
+however it is ordered, and a Hutchinson sketch does not lower it because the probe must be applied per source
+index. That is the Khatri-Rao wall of note XV, met from the closure side: the dropped content is quenched, it has
+no cheap carrier, and carrying it exactly would double the bill. Its magnitude can still be measured offline (one
+layer's legs dumped, the n^3 contraction done once) to confirm that it accounts for the 1.5e-4; that is the next
+measurement, and the design question after it is whether the leaders' 0.15 B buys a representation of this term
+that the CP legs cannot express.
