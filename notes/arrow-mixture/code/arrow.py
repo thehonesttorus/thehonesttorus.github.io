@@ -125,32 +125,46 @@ def arrow(Ws, k=0, q=3, w=2, base="eig", K=10, maxM=4096, verbose=False, gain=Fa
             labels = [lab[:-kk] + (lab[-kk:],) for lab in labels]
         else:
             labels = [lab + ((),) for lab in labels]
-        # ---- ReLU per component, shared reduced fiber ----
+        # ---- ReLU per component, shared reduced fiber (chunked over components to bound memory) ----
         sig = np.sqrt(np.clip(np.diag(S), 1e-12, None)); R = S / np.outer(sig, sig)
-        A, var, _ = relu_stats(mu, sig[None, :], K)      # (K+1, M, n)
-        post = A[0]                                      # (M, n) component post means
-        sw = np.sqrt(wts)[:, None]
-        Cpost = np.zeros((n, n)); Rk = np.ones((n, n))
-        for m in range(1, K + 1):
-            Rk = Rk * R
-            G = (sw * A[m]).T @ (sw * A[m])
-            Cpost += G * Rk / factorial(m)
-        np.fill_diagonal(Cpost, wts @ var)
-        out.append(g1 * (wts @ post))
-        # ---- merge: drop the oldest split beyond memory w, moment-match groups ----
         if len(labels[0]) > w:
             labels = [lab[1:] for lab in labels]
         groups = {}
         for j, lab in enumerate(labels):
             groups.setdefault(lab, []).append(j)
-        if len(groups) < len(labels):
+        gkeys = list(groups.keys()); gid = np.empty(len(wts), dtype=int)
+        for gi, g in enumerate(groups.values()):
+            gid[g] = gi
+        G = [np.zeros((n, n)) for _ in range(K + 1)]
+        Cdiag = np.zeros(n); P2 = np.zeros((n, n)); gsum = np.zeros((len(gkeys), n)); mean_out = np.zeros(n)
+        CH = max(1, int(2.5e8 // ((K + 2) * n * 8)))
+        for c0 in range(0, len(wts), CH):
+            sl = slice(c0, c0 + CH)
+            A, var, _ = relu_stats(mu[sl], sig[None, :], K)      # (K+1, chunk, n)
+            post = A[0]; sw = np.sqrt(wts[sl])[:, None]
+            for m in range(1, K + 1):
+                G[m] += (sw * A[m]).T @ (sw * A[m])
+            Cdiag += wts[sl] @ var
+            mean_out += wts[sl] @ post
+            np.add.at(gsum, gid[sl], wts[sl][:, None] * post)
+            if len(gkeys) < len(wts):
+                P2 += (sw * post).T @ (sw * post)
+            else:
+                Mh_new = post if c0 == 0 else np.concatenate([Mh_new, post])
+        Cpost = np.zeros((n, n)); Rk = np.ones((n, n))
+        for m in range(1, K + 1):
+            Rk = Rk * R
+            Cpost += G[m] * Rk / factorial(m)
+        np.fill_diagonal(Cpost, Cdiag)
+        out.append(g1 * mean_out)
+        # ---- merge: groups share the last w split labels; moment-match, spread returned to the fibre ----
+        if len(gkeys) < len(wts):
             gw = np.array([wts[g].sum() for g in groups.values()])
-            gm = np.array([(wts[g] @ post[g]) / wts[g].sum() for g in groups.values()])
-            D = np.concatenate([np.sqrt(wts[g])[:, None] * (post[g] - gm[i][None, :]) for i, g in enumerate(groups.values())])
-            Cpost = Cpost + D.T @ D
-            wts, Mh, labels = gw, gm, list(groups.keys())
+            gm = gsum / gw[:, None]
+            Cpost = Cpost + (P2 - (gm * gw[:, None]).T @ gm)
+            wts, Mh, labels = gw, gm, gkeys
         else:
-            Mh = post
+            Mh = Mh_new
         if len(wts) > maxM:
             raise RuntimeError(f"{len(wts)} components > maxM")
         Cf = Cpost
