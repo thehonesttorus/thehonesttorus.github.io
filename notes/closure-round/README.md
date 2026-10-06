@@ -260,3 +260,45 @@ converged (2.7%), its local closure terms are converged or carried, and the resi
 transport defects each of which costs n^4 per source-layer to remove. A 1.7x better raw at 0.15 B cannot be this
 chain with more terms; it has to be a representation in which the gate acts exactly on the carried object, which
 the CP legs cannot provide. That is the design question, and it is now posed with numbers rather than by analogy.
+
+## 6. Restriction and refilling, placed
+
+A third reading was pasted into the session: a calculus of restriction and refilling (conditional expectations
+E_S f = E[f | Omega_S] as orthogonal projections, their averages P = sum p_i E_{S_i} as reversible walks with
+Dirichlet energy sum p_i E Var(f | Omega_{S_i}), higher-order random walks and spectral independence for the
+local-to-global step, expanderized schedules choosing which part to refill, the detectability lemma for ordered
+sweeps of non-commuting projections, and a proposed target: a small weight-dependent atlas of partial continuation
+descriptions whose conditional fills are cheaper than the forward pass, with the retained description chosen
+dynamically). The algebra is correct and the standard it sets (representation, local-to-global, compilation, each
+proved separately) is the right one. Against the measurements of this programme it has no primitive here, for one
+structural reason with two measured faces.
+
+**The dichotomy.** The network is a deterministic function of one Gaussian input. A retained description either
+retains enough of x to fix f, in which case every refill is trivial and its cost is the forward pass (the proposal's
+own Penrose-exterior caveat), or it does not, in which case the conditional variance is the Dirichlet energy and we
+have measured it: E Var(f | S) is at least 99.1% of Var f for every cheap S tried (addresses of 1-8 input directions
+explain 0.1-0.9%, E9 of the ncg-probability note; a 256-coordinate first-layer frame 16%; the antithetic pair 9%;
+the radial split 0.7%; frontier-tests). So the gap of any walk built from cheap fills is below 1% per step, and
+matching the chain by sampling at the 10% floor needs 573 times less variance than any such description leaves.
+The proposal's three questions have numbers: what is unresolved is 99% of the variance for any cheap description;
+no change of description that makes a fill simpler has been found (the one dynamic choice we made, the transported
+basis at the joins, saturated at -3%); and the cheapest evaluators of the fills are the integration-by-parts
+programs.
+
+**The chain is the exception the proposal does not name.** The moment chain escapes the dichotomy because its
+descriptions are of the law, not of a configuration: it integrates x out exactly through the Gaussian calculus and
+retains cumulant slices. Its "fills" are the term programs, which section 3 measured exact to O(g^2) on the mixture
+and converged in Mehler order, and its residual is the n^4 gate-covariance term of section 5 plus terms of the same
+class. In the proposal's two-bit language every link of this system has large beta: at He criticality each layer's
+gates are strongly dependent on the previous layer's state (transport 0.80-0.92 on the cubic channel, 1 on the
+mean direction), so "forgetting and refilling one side changes little" and the right response, as the proposal
+itself says, is to retain more context, which is what the sources' birth-and-transport structure does up to the
+rank where it is converged.
+
+**What survives.** The detectability lemma and the expanderized walks transfer convergence from cheap local
+projections to the global one; they do not create cheap projections, and the agreement-expansion remark that a
+missing sheet or frame label can block gluing has no computational handle identified here. The honest statement
+of the design question is unchanged from section 5 and now has the sampling side closed as well: a representation
+in which the gate acts exactly on the carried object, below n^3 per source-layer, is what a 1.7x better raw at
+0.15 B must be made of, and neither the configuration side (E9, 573x) nor the moment side (section 5, n^4) of
+the refilling calculus supplies it.
