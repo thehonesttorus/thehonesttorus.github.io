@@ -86,3 +86,56 @@ Injectivity says the outside determines the hole; it does not say from how far.
 A clean statement of the floor, and the identification of the single Penrose-like structure (the odd gain channel and
 its derived transport, E10). It does not supply a filling rule the outside can run cheaply, because the hull of the
 code process is not an almost one-to-one extension of a low-dimensional factor beyond the radial one.
+
+## 5. The Smale-space reading (Gerontogiannis, "Ahlfors regularity and fractal dimension of Smale spaces", arXiv 2004.07367)
+
+Read in full. The paper is the formal home of sections 1 and 2 of this note, and it sharpens them in three places; it
+has nothing for the chain's closure problem (note XVII, section 4), and says so itself in its Remark 7.9.
+
+**What it proves.** For a Smale space (compact metric space with a hyperbolic homeomorphism and a local product
+structure), Bowen's Markov partition R_1 generates a refining sequence R_n of Markov partitions by pulling back
+through the dynamics (Prop 5.6): diameters decay like lambda^(-n), the number of rectangles grows like e^(2hn), the
+multiplicity is at most (#R_1)^2, the number of rectangles neighbouring any rectangle is bounded uniformly in n
+(Lemma 5.16, proved by the diamond trick: the factor map from the symbolic model has no diamonds), and the path space
+of the approximation graph is the topological Markov chain. The closed rectangles are fattened by delta along their
+stable and unstable boundaries into open covers that keep the nerve of the partition (Lemmas 6.8-6.10) and have
+Lebesgue numbers decaying like Lambda^(-n) (Theorem 6.2). When the contraction constant equals the Lipschitz constant
+(self-similar or semi-conformal dynamics), the Bowen measure of a rectangle is comparable to its diameter to the power
+s_0 = 2h/log lambda (Prop 7.2, via the Parry measure of a cylinder), and with uniform finite clustering the measure is
+Ahlfors s_0-regular, so Hausdorff, box and Assouad dimensions coincide (Theorem 7.6). Artigue's self-similar metrics
+exist on every Smale space, so every mixing Smale space is conjugate to one with an Ahlfors regular Bowen measure
+(Corollary 7.8). Non-conformal horseshoes, where Hausdorff and box dimensions differ, have no such measure
+(Remark 7.9).
+
+**What it sharpens here.**
+
+- **Removing is injective, stated exactly.** The factor map from pattern sequences to the hull is injective off the
+  orbit of the partition boundary and at most (#R_1)^2 to one on it (Theorem 5.5). The boundary orbit is the set of
+  singular tilings, the worms of section 1, and it has Bowen measure zero. Lemma 5.15 is the forcing statement at
+  the level of patches: two disjoint rectangles of generation n have no common neighbour at generation n + N, with N
+  independent of n. So the patch at resolution lambda^(-n) is determined by the surrounding at a bounded number N of
+  further inflation levels, uniformly in the hole, and non-uniqueness lives only on the null boundary orbit. The
+  quadratic forcing radius of section 2 is a different statement: it pins the window coordinate exactly, which is
+  all generations at once.
+- **Collaring preserves the Markov property.** The delta-fattening of Theorem 6.2 is the metric form of collared
+  tiles: fatten each rectangle along its stable and unstable boundary without creating new intersections. That the
+  nerve survives (Lemma 6.8) is why forcing the border can always be arranged by collaring, and it is the mechanism
+  behind the bounded N above.
+- **The transversal's dimension.** For a substitution hull in d dimensions, h = d log lambda, so s_0 = 2d: d for
+  the Euclidean leaf and d for the Cantor transversal in the self-similar metric. Patch counting at radius R growing
+  like R^d and patch frequencies like R^(-d), the inputs to the entropy count of section 2, are the Ahlfors
+  regularity of the transversal.
+
+**What it says about the chain, and what it misses.** The depth dynamics of the network is the same construction
+with the gate pattern as the generator: the cells of input space at depth n are the join of the pulled-back pattern
+partitions of layers 1 to n, the pattern sequence is the symbolic coding, and the chain tracks moments of the Gaussian
+pushforward on that symbolic model. The paper's hypothesis is exactly what the network lacks: the dynamics is
+non-conformal, with a spread Lyapunov spectrum (the mean direction expands, the bulk is marginal, half the directions
+are killed by every gate), and the relevant measure is not the measure of maximal entropy but the pushforward of a
+Gaussian, an equilibrium state for a non-constant potential. Both put us in Remark 7.9: the cell measure is
+multifractal, no Ahlfors regularity, and the spread of cell measures is the quenched content. Nothing in the paper
+addresses that regime, and it has no finite-generation statements (everything is as n tends to infinity) and no
+constants. For the record, two diagnostics it suggests, neither a win: the pattern entropy per layer, computable from
+the carried mu and var as the sum over neurons of the binary entropy of Phi(alpha), which falls with depth as the
+mean direction saturates the gates; and the spread of log cell measures at fixed depth, the multifractal spectrum,
+whose width is the non-conformality.
