@@ -87,7 +87,7 @@ Everything else (K4_vec, the harmonic projection constants cA, cI, the online co
 | two cold passes (v29 + QPASS 2) | 2.259e-8 | 0.2873 | 6.490e-9 | | | |
 | two warm passes | 2.233e-8 | 0.2873 | 6.415e-9 | | | |
 | Strassen level 6, leaf 16 | 2.293e-8 | 0.2624 | 6.019e-9 | | | |
-| **warm join + warm feedback + level 6** | **2.188e-8** | **0.2624** | **5.741e-9** | **2.066e-8** | **0.2624** | **5.421e-9** |
+| **warm join + warm feedback + level 6** | **2.183e-8** | **0.2624** | **5.728e-9** | **2.066e-8** | **0.2624** | **5.421e-9** |
 
 - The warm-started join is strictly better than a second cold pass (which costs 7.6% more and still loses), and a
   second warm pass adds nothing: the join's basis is saturated at zero cost, as the Lyapunov argument predicts (the
@@ -98,6 +98,6 @@ Everything else (K4_vec, the harmonic projection constants cA, cI, the online co
 - Level 6 saves 1.8% of the bill at an unchanged raw (2.293 against 2.290e-8), less than the per-product count
   suggests because the block additions grow; the residual clock was not measured here and must be checked on the
   grader's machine before shipping.
-- Combined, zero-cost warm starts plus level 6 take the adjusted score down 6.1% (network 0) and 2.7% (network 1):
+- Combined, zero-cost warm starts plus level 6 take the adjusted score down 6.3% (network 0) and 2.7% (network 1):
   real, derived, small. On the public board (5.40e-9) that is about 5.1-5.2e-9, rank unchanged. The 1.7x to the
   leaders is not in this chain's computations; it is in its representation (section 2).
