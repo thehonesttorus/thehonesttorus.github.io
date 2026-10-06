@@ -96,3 +96,62 @@ Measured explained fraction Var(E[F|T])/Var(F): top-k right singular vectors of 
 0.02% / 0.10% / 0.24%; k = 8 by nearest-neighbour pairs (an upper bound biased in the proposal's favour): <= 0.86%.
 The address term of the proposal's own conditional-variance decomposition is therefore two orders of magnitude
 short before any learner is trained, which is the 300x exchange rate of the frontier tests measured a third way.
+
+**E10. The gain is the mean-coupled third cumulant, and E2 was an artefact** (`code/mc_cum.py`, `code/pairvar.py`,
+`code/twoloop_gain.py`, `code/gain_defs.py`, `code/k3channel.py`, `code/local_ledger.py`, `code/gac2.py`; outputs in
+`outputs/`, networks 0 and 1, 4e5 Monte Carlo inputs with every pair moment of order <= 4 accumulated, pre- and
+post-activation). This was the "two-loop gain injection" item of the Connes-Kreimer reading, done as a first-variation
+calculation with no fitted coefficient: the fresh gain created by a layer is the first variation of the coherent pair
+functional under the third and fourth cumulant slices of the pre-activation (Gaussian integration by parts,
+dE[F] = 1/6 sum kappa_ijk E[d_ijk F] + 1/24 sum kappa_ijkl E[d_ijkl F], with the Mehler sums carrying the derivatives as
+shifted Hermite coefficients).
+
+- *E2 withdrawn.* The "excess 0.0227" subtracted a Gaussian part computed on GAC's conditional state (0.0099). On the
+  true marginal state the Gaussian part of Var(|z_L|^2)/E^2 is 0.0284, and the excess is 0.0042. The plain pair average
+  of the normalised fourth-order excess is 0.0121 and the q-weighted one 0.0042: the fourth-order content is not a
+  common factor (it scales like 1/(q_k q_l), quintiles 0.020 -> 0.0036), and the scale-mixture fit of kappa_4(z_k) to
+  3 sigma^4 + 6 mu^2 sigma^2 gives 0.0004 against GAC's 0.018. There is no fourth-order gain of size 0.02.
+- *Where the gain is.* The third cumulant of every pre-activation has the scale-mixture shape
+  kappa_3(z_k) = 1.5 g_l mu_k sigma_k^2 with correlation 0.63 (layer 1) rising to 0.967 (layer 15), and the pair slice
+  kappa(z_a, z_a, z_c) = g (mu_a S_ac + sigma_a^2 mu_c / 2) with both coefficients equal to g (R^2 0.87 at depth).
+  g_l grows 0.0064, 0.0127, 0.0176, 0.0215, 0.0223 (layers 1, 4, 8, 12, 15; network 1: 0.0200 at the output). GAC's
+  gamma_l is 0.82 g_l at every depth from layer 4 on (network 1: 0.84). The K3 chain's own transported D3 has the same
+  coefficient to 2% (0.0218 against 0.0223; 0.0197 against 0.0200): the chain carries the gain in its sources.
+- *The ledger closes without a fitted coefficient.* g_{l+1} = phi_l + (kappa_3 variation) + (kappa_4 variation), where
+  phi_l is the coefficient generated from the Gaussian conditional state and the variations use the measured slices:
+  measured 0.0095 / 0.0140 / 0.0176 / 0.0215 / 0.0223 against 0.0095 / 0.0138 / 0.0173 / 0.0214 / 0.0219 at layers
+  2, 5, 8, 13, 15 (every layer within 2%; network 1 within 4%). The kappa_3 variation is entirely the scale-mixture
+  part of the carried kappa_3 (the tree remainder contributes |.| <= 0.0003): the channel transports itself. Its
+  transport factor rho_l = (kappa_3 + kappa_4 variations)/g_l is 0.80, 0.85, 0.87, 0.89, 0.90, 0.90, 0.90, 0.93, 0.92,
+  0.92, 0.92, 0.91, 0.92, 0.92 (layers 1-14): the 0.9 per layer retention of the frontier tests, derived. The fresh
+  source phi_l is 0.0066, 0.0044, 0.0031, 0.0027, 0.0024, ..., 0.0013.
+- *GAC's two compensating errors.* Its injection (the fourth-order pair functional) is 0.0042 at the first step where
+  the channel is born at 0.0066, and 0.0004 at depth against 0.0013; it transports critically (rho = 1) where the
+  channel's rho is 0.8-0.92. Critical summation of the true source reaches 0.041 at the output (1.8x the measured g,
+  the overshoot note IX saw at width 256). Note XI's "20% short" was right about the number and wrong about the object.
+- *The fourth order is slaved to the third.* At the fourth-order pair level the one-step ledger also closes
+  (f1 + f2 + f3 equals the coherent sum from the true post-activation cumulants to 1e-5), but the pair content at
+  depth is generated each layer from the kappa_3 channel (f2 = 0.011 of 0.014 at layer 14) and transported weakly
+  (kappa_4 variation 0.17-0.45 of Gamma_l); the coherent index restriction overshoots the measured pair average by 1%
+  at layer 1 and 17% at layer 14.
+- *An identity.* To first order in g, the exact scale-mixture mean error (g/8) sigma phi(a)(1 + a^2) equals the
+  Edgeworth kappa_3 term with kappa_3 = 1.5 g mu sigma^2 plus the kappa_4 term with kappa_4 = 3 g sigma^4 (the
+  mean-independent part only; the 6 g mu^2 sigma^2 part and all higher cumulants cancel in the mean). A chain that
+  carries kappa_3 exactly therefore needs a memoryless kappa_4 diagonal of 3 g sigma^4, where g is read off its own
+  D3, and nothing else from the gain: the fitted lambda's role, derived. The local one-step closure error from the
+  true moments has scale 8c = 0.002-0.004 per layer; the scale-mixture shape with the measured g explains it to 10% at
+  layers 1-5 and a third of it at depth (0.0006 of 0.0021 at layer 15), the kappa_3 term 45-53% of its MSE at depth.
+- *The spike is the gain.* At layer 14 the top covariance eigenvector is the mean direction (overlap^2 0.94,
+  eigenvalue 16.2, next 6.0) and two thirds of its variance is the gain's rank-one term (g/4)|mu|^2 = 10.1 of 15.5.
+  This is why the injection functional is 30% sensitive to the conditional/marginal choice of state, and it is the
+  E4/note XII observation (top mode = mean direction retains non-Gaussianity) in closed form.
+- *Derived closure* (`code/gac2.py`): run the recursion g_{l+1} = rho_l g_l + phi_l on the closure's own conditional
+  state (rho_l and phi_l from the first variations with the scale-mixture slices of unit gain; no constant) and output
+  E[G](g_L) x closure mean. Final MSE 1.541e-6 (network 0; GAC 1.559e-6, oracle scale 1.560e-6) and 1.551e-6
+  (network 1; GAC 1.707e-6, oracle scale 1.479e-6); residual scale -0.0011 / +0.0002 against GAC's +0.0020 / +0.0032.
+  With rho = 1 it is worse than GAC (1.73e-6). On the closure state rho_l is 0.93-0.96 and g_L lands at 0.0188: the
+  closure's state, not the recursion, is what separates it from the measured 0.0223.
+
+What E10 changes in the reading: the critical zero mode is not a fourth-order "trace fluctuation" but the odd,
+mean-coupled channel (the delta_1 (x) Y term of the Connes-Moscovici coproduct was the right name for the wrong
+object); it is transported at 0.9, not 1; and the chain already carries it exactly. The remaining floor is untouched.

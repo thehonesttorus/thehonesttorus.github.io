@@ -1,0 +1,20 @@
+  layer  0: g_l 0.00000 (measured nan)  phi 0.00642  rho 1.0851 (kappa3 part 0.0000)   [8s]
+  layer  1: g_l 0.00642 (measured nan)  phi 0.00339  rho 1.0011 (kappa3 part 0.6196)   [15s]
+  layer  2: g_l 0.00981 (measured nan)  phi 0.00301  rho 0.9721 (kappa3 part 0.7493)   [23s]
+  layer  3: g_l 0.01255 (measured nan)  phi 0.00197  rho 0.9609 (kappa3 part 0.8097)   [30s]
+  layer  4: g_l 0.01403 (measured nan)  phi 0.00198  rho 0.9639 (kappa3 part 0.8574)   [38s]
+  layer  5: g_l 0.01550 (measured nan)  phi 0.00153  rho 0.9501 (kappa3 part 0.8754)   [44s]
+  layer  6: g_l 0.01626 (measured nan)  phi 0.00135  rho 0.9378 (kappa3 part 0.8889)   [51s]
+  layer  7: g_l 0.01660 (measured nan)  phi 0.00110  rho 0.9456 (kappa3 part 0.9027)   [59s]
+  layer  8: g_l 0.01680 (measured nan)  phi 0.00097  rho 0.9370 (kappa3 part 0.9050)   [66s]
+  layer  9: g_l 0.01671 (measured nan)  phi 0.00123  rho 0.9385 (kappa3 part 0.9141)   [74s]
+  layer 10: g_l 0.01691 (measured nan)  phi 0.00137  rho 0.9418 (kappa3 part 0.9122)   [81s]
+  layer 11: g_l 0.01730 (measured nan)  phi 0.00091  rho 0.9288 (kappa3 part 0.9130)   [88s]
+  layer 12: g_l 0.01698 (measured nan)  phi 0.00075  rho 0.9491 (kappa3 part 0.9364)   [95s]
+  layer 13: g_l 0.01687 (measured nan)  phi 0.00088  rho 0.9544 (kappa3 part 0.9396)   [103s]
+  layer 14: g_l 0.01698 (measured nan)  phi 0.00061  rho 0.9192 (kappa3 part 0.9097)   [110s]
+
+net 1 (full): final g_L 0.01622 (measured nan), E[G] 0.997974
+  final MSE: closure 4.719e-06 | GAC 1.707e-06 (gamma_L 0.01688) | derived 1.551e-06 | oracle scale 1.479e-06
+  8 x residual scale: closure +0.01357 | GAC +0.00320 | derived +0.00017
+  per layer MSE (closure / GAC / derived): 6.4e-10/6.4e-10/6.4e-10 1.6e-07/6.4e-08/7.2e-08 4.6e-07/1.8e-07/1.9e-07 8.1e-07/3.1e-07/3.3e-07 1.1e-06/4.1e-07/4.3e-07 1.6e-06/5.8e-07/5.4e-07 2.0e-06/7.3e-07/6.9e-07 2.2e-06/8.3e-07/7.8e-07 2.5e-06/9.4e-07/8.6e-07 2.7e-06/1.0e-06/9.4e-07 3.2e-06/1.1e-06/1.0e-06 3.9e-06/1.4e-06/1.3e-06 4.5e-06/1.6e-06/1.4e-06 4.9e-06/1.8e-06/1.6e-06 4.7e-06/1.7e-06/1.5e-06 4.7e-06/1.7e-06/1.6e-06
