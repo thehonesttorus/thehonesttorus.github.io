@@ -262,6 +262,7 @@ LAM = [1.9516e-03, 7.5412e-03, 9.9784e-03, 1.0922e-02, 1.1267e-02, 1.1241e-02,
 METRIC_C = 2.0
 # debug kill-switches (parity_v17.py): set from the environment before import
 import os as _os
+import math as _math
 NO_FEED = _os.environ.get("V17_NO_FEED", "0") == "1"
 NO_WK431 = _os.environ.get("V17_NO_WK431", "0") == "1"
 NO_REGEN = _os.environ.get("V17_NO_REGEN", "0") == "1"
@@ -274,7 +275,19 @@ NO_SRC_LAST = _os.environ.get("V19_NO_SRC_LAST", "0") == "1"  # V19 probe: D3(la
 NO_CORR = _os.environ.get("V17_NO_CORR", "1") == "1"
 LAM = [c * float(_os.environ.get("V17_LAM_SCALE", "1")) for c in LAM]
 WIN = int(_os.environ.get("K3_WIN", "0"))
+MEHLER_K = int(_os.environ.get("MEHLER_K", "2"))    # Gaussian Mehler orders c_off^k, k<=MEHLER_K, in the (1,1) slice
+MEHLER_K2 = int(_os.environ.get("MEHLER_K2", "2"))  # same for the (2,1) and (2,2) slices
+GAIN_COND = _os.environ.get("GAIN_COND", "0") == "1"   # GAC wrapper: run the chain on the gain-conditional state, output E[G] x mean
+GAIN_LAW = _os.environ.get("GAIN_LAW", "gamma")
+GAIN_SCALE = float(_os.environ.get("GAIN_SCALE", "1"))
+NO_G4 = _os.environ.get("GAIN_NO_G4", "0") == "1"      # zero the regenerated kappa4 diagonal (its gain part is then carried by GAC)
+REPLICA = float(_os.environ.get("REPLICA", "0"))  # +-1: transport gate Phi + REPLICA*phi*g, g ~ N(0, R_layer) (address-modulated gating)
+REPLICA_SEED = int(_os.environ.get("REPLICA_SEED", "0"))
 ORACLE_LAYERS = ()
+DUMP2 = []
+G4SCALE = 1.0
+GAIN_K4 = None  # per-layer gain variance gamma_l; replaces the kappa4 diagonal by the scale-mixture law
+G4LAYERS = ()
 ORACLE_PREV = None  # true post-activation means per layer (oracle tests)
 GOLD = None  # per-layer gain variance born in dropped (old) layers; set by the runner
 DUMP = []
@@ -413,6 +426,7 @@ class Estimator(BaseEstimator):
         c2_list = []   # per source: w1_b^2 * dG_pre_b
         y_list = []    # per source: (m/4) w2_b       (Y3 = y 1^T)
         g_prev = None  # post-ReLU kappa4 diagonal core of the previous layer
+        gam = 0.0; g1 = 1.0; gprev = None  # GAC state
         var_prev = None
         lam_prev = 0.0
         regen = riders and not NO_REGEN  # memoryless kappa4 channel: suite shape only
@@ -445,6 +459,23 @@ class Estimator(BaseEstimator):
                 var = fnp.maximum(fnp.sum(w32 * (C @ w32), axis=0), 1e-10)
             else:
                 C_pre = fnp.einsum("ij,ia,jb->ab", C, w32, w32)
+            if GAIN_COND:
+                import numpy as _np, sys as _sys
+                if "../num12" not in _sys.path: _sys.path.insert(0, "../num12")
+                from gac import inject, EG
+                Wn = _np.asarray(W, dtype=_np.float64); mu0 = _np.asarray(mu, dtype=_np.float64)
+                S0 = (Wn @ _np.asarray(C, dtype=_np.float64) @ Wn.T) if trim else _np.asarray(C_pre, dtype=_np.float64)
+                if li > 0:
+                    gam = gam + GAIN_SCALE * inject(Wn, mu0, S0, gprev); g1_new = EG(gam, GAIN_LAW)
+                    rho = g1 / g1_new; g1 = g1_new
+                    if _os.environ.get('GAIN_VERBOSE', '0') == '1': print(f'   layer {li}: gam {gam:.5f} g1 {g1:.6f} rho {rho:.6f}', flush=True)
+                    mu = mu * f32(rho)
+                    if trim:
+                        var = var + fnp.asarray((1 - rho * rho) * mu0 * mu0, dtype=f32)
+                    else:
+                        C_pre = flops.as_symmetric(C_pre + fnp.asarray((1 - rho * rho) * _np.outer(mu0, mu0), dtype=f32), symmetry=(0, 1))
+                    S0 = S0 + (1 - rho * rho) * _np.outer(mu0, mu0); mu0 = rho * mu0
+                sg = _np.sqrt(_np.diag(S0)); gprev = (mu0, sg, S0 / _np.outer(sg, sg))
             # Source stacks evolve by W @ diag(w1_prev); the newborn (added after
             # last layer's wick) evolves by the raw W. Fold the wick into WD so
             # the stacks never need a separate (k,n,n) scaling pass.
@@ -500,6 +531,19 @@ class Estimator(BaseEstimator):
                     WW = W * W
                     dG = WW @ (g_prev - var_prev * lam_prev) + var * lam_prev
                     g4row = dG * METRIC_C
+                    if NO_G4: g4row = g4row * 0.0
+                    if li in G4LAYERS: g4row = g4row * G4SCALE
+                    if GAIN_K4 is not None and li in G4LAYERS:
+                        import numpy as _np
+                        from math import lgamma as _lg, exp as _ex
+                        _g = float(GAIN_K4[li]); _A = 1.0/_g
+                        _E = [_ex(_lg(_A + k/2) - _lg(_A) - (k/2)*_np.log(_A)) for k in range(5)]
+                        _mu = _np.asarray(mu, dtype=_np.float64); _v = _np.asarray(var, dtype=_np.float64)
+                        _mc = _mu/_E[1]; _s2 = (_v + _mu**2)/_E[2] - _mc**2
+                        _y = [_mc, _mc**2 + _s2, _mc**3 + 3*_mc*_s2, _mc**4 + 6*_mc**2*_s2 + 3*_s2**2]
+                        _z = [_E[k+1]*_y[k] for k in range(4)]
+                        _k4 = _z[3] - 4*_z[2]*_z[0] - 3*_z[1]**2 + 12*_z[1]*_z[0]**2 - 6*_z[0]**4
+                        g4row = fnp.asarray(_k4, dtype=f32)
                     wk4m = wk431 = None
                 elif riders:
                     g4row = ((W * W) @ K4_vec) * 0.5 * float(st["wk4_c4"] * metric2)
@@ -529,6 +573,7 @@ class Estimator(BaseEstimator):
                     DUMP.append(dict(layer=li, D3=_np.asarray(D3, dtype=_np.float64),
                                      D21=None if D21 is None else _np.asarray(D21, dtype=_np.float64),
                                      mu=_np.asarray(mu, dtype=_np.float64),
+                                     var=_np.asarray(var, dtype=_np.float64),
                                      C_pre=None if C_pre is None else _np.asarray(C_pre, dtype=_np.float64)))
                 if regen:
                     # F68: exact transported diagonal of the regenerated core
@@ -538,6 +583,19 @@ class Estimator(BaseEstimator):
                     WW = W * W
                     dG = WW @ (g_prev - var_prev * lam_prev) + var * lam_prev  # var == diag(C_pre)
                     g4row = dG * METRIC_C
+                    if NO_G4: g4row = g4row * 0.0
+                    if li in G4LAYERS: g4row = g4row * G4SCALE
+                    if GAIN_K4 is not None and li in G4LAYERS:
+                        import numpy as _np
+                        from math import lgamma as _lg, exp as _ex
+                        _g = float(GAIN_K4[li]); _A = 1.0/_g
+                        _E = [_ex(_lg(_A + k/2) - _lg(_A) - (k/2)*_np.log(_A)) for k in range(5)]
+                        _mu = _np.asarray(mu, dtype=_np.float64); _v = _np.asarray(var, dtype=_np.float64)
+                        _mc = _mu/_E[1]; _s2 = (_v + _mu**2)/_E[2] - _mc**2
+                        _y = [_mc, _mc**2 + _s2, _mc**3 + 3*_mc*_s2, _mc**4 + 6*_mc**2*_s2 + 3*_s2**2]
+                        _z = [_E[k+1]*_y[k] for k in range(4)]
+                        _k4 = _z[3] - 4*_z[2]*_z[0] - 3*_z[1]**2 + 12*_z[1]*_z[0]**2 - 6*_z[0]**4
+                        g4row = fnp.asarray(_k4, dtype=f32)
                     g22c = fnp.reshape(dG * (METRIC_C / 6.0), (-1, 1))
                     wk4m = _zero_diag(g22c + g22c.T)
                     wk431 = None if trim else C_off * (0.5 * METRIC_C * lam_prev)
@@ -633,6 +691,20 @@ class Estimator(BaseEstimator):
                 pk21 = _zero_diag(PK2[1])
                 pk22 = PK2[2]
                 pk22 = _zero_diag((pk22 + pk22.T) * 0.5)
+                # Mehler completion: E f(x) g(y) = sum_k c^k/k! E f^(k) E g^(k) for a Gaussian
+                # pair; the term table stops at k = 2. W_all[:, (k,p)] = E d^k relu^p.
+                if max(MEHLER_K, MEHLER_K2) >= 3:
+                    cpow = C_off * C_off
+                    for kk in range(3, max(MEHLER_K, MEHLER_K2) + 1):
+                        cpow = cpow * C_off
+                        inv_f = 1.0 / float(_math.factorial(kk))
+                        f1 = W_all[:, _I((kk, 1))]
+                        if kk <= MEHLER_K:
+                            pk11 = pk11 + fnp.reshape(f1 * inv_f, (-1, 1)) * cpow * fnp.reshape(f1, (1, -1))
+                        if kk <= MEHLER_K2 and (kk, 2) in WICK_PAIRS:
+                            f2 = W_all[:, _I((kk, 2))]
+                            pk21 = pk21 + fnp.reshape(f2 * inv_f, (-1, 1)) * cpow * fnp.reshape(f1, (1, -1))
+                            pk22 = pk22 + fnp.reshape(f2 * inv_f, (-1, 1)) * cpow * fnp.reshape(f2, (1, -1))
             pk1v, pk2v, pk3v, pk4v = PK1[0], PK1[1], PK1[2], PK1[3]
 
             # ---- online mean correction: delta = feats @ beta[l] (13 dots/neuron);
@@ -654,17 +726,33 @@ class Estimator(BaseEstimator):
                 delta = None
 
             if last:
-                rows.append(pk1v if delta is None else pk1v + delta)
+                if _os.environ.get('K3_DUMP2', '0') == '1':
+                    import numpy as _np
+                    DUMP2.append(dict(var=_np.asarray(var, dtype=_np.float64), D3=_np.asarray(D3, dtype=_np.float64),
+                                      g4row=None if g4row is None else _np.asarray(g4row, dtype=_np.float64),
+                                      mu_pre=_np.asarray(mu, dtype=_np.float64), pk1=_np.asarray(pk1v, dtype=_np.float64)))
+                rows.append((pk1v if delta is None else pk1v + delta) * (f32(g1) if GAIN_COND else 1))
                 break
 
             # ---- wick old blocks + dslice scalings ----
             w1 = W_all[:, self._i11]
             w2 = W_all[:, self._i21]
             w1col = fnp.reshape(w1, (-1, 1))
-            w1_prev = w1  # stacks pick up this wick via WD at the next linear
+            w1g = w1
+            if REPLICA != 0.0:
+                # E_g prod_legs (Phi + phi g) = Phi Phi Phi + sum_pairs phi phi R Phi: first-order joint orthant gate
+                import numpy as _np
+                _s = _np.sqrt(_np.asarray(var, dtype=_np.float64))
+                _R = _np.asarray(C_off, dtype=_np.float64) / _np.outer(_s, _s); _np.fill_diagonal(_R, 1.0)
+                _ev, _U = _np.linalg.eigh(_R); _ev = _np.clip(_ev, 0.0, None)
+                _xi = _np.random.default_rng(1000 * REPLICA_SEED + li).standard_normal(n)
+                _g = _U @ (_np.sqrt(_ev) * (_U.T @ _xi))
+                w1g = w1 + fnp.asarray(REPLICA * _g, dtype=f32) * phi
+            w1gcol = fnp.reshape(w1g, (-1, 1))
+            w1_prev = w1g  # stacks pick up this wick via WD at the next linear
             if mode == 1:
-                D3_w = D3 * w1 ** 3
-                D21_w = (w1col * w1col) * D21 * fnp.reshape(w1, (1, -1))
+                D3_w = D3 * w1g ** 3
+                D21_w = (w1gcol * w1gcol) * D21 * fnp.reshape(w1g, (1, -1))
             else:
                 D3_w = None
                 D21_w = None
@@ -823,7 +911,11 @@ class Estimator(BaseEstimator):
             if riders:
                 K4_vec = (K4v * float(st["k4_c4"])
                           + (K22 @ ones_n) * float(st["k4_c22"])) * float(n * st["P2"])
-            rows.append(mu)
+            if last and _os.environ.get('K3_DUMP2', '0') == '1':
+                import numpy as _np
+                DUMP2.append(dict(var=_np.asarray(var, dtype=_np.float64), D3=_np.asarray(D3, dtype=_np.float64),
+                                  g4row=None if g4row is None else _np.asarray(g4row, dtype=_np.float64), mu_post=_np.asarray(mu, dtype=_np.float64)))
+            rows.append(mu * f32(g1) if GAIN_COND else mu)
 
         return fnp.stack(rows, axis=0)
 

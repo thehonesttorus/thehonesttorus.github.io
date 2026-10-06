@@ -43,3 +43,34 @@ To match the frontier by sampling at the 10% floor, the variance would have to f
   input.
 - A single deep birth is low-rank in input space: participation ratio 120 at layer 5, down to 50 at layer 11.
 - The union of old births is not: participation ratio 350-410.
+
+**Where the chain's error is** (official network 0, the true post-activation mean injected at the input of every
+layer; `run_oracle_dump.py`, `noisefloor.py`, `decode.py`, `tdecode.py`, `subdecode.py`, `gating2.py`,
+`mehler_probe.py`, `run_mehler.py`, `k4theory.py`, `run_g4.py`, `run_gaink4.py`):
+
+- The one-step residual r_l = m*_l - chain_l(true mean in) is 90-96% signal after the 1e9-sample truth noise
+  is subtracted; it grows from 0.9e-9 (layer 4) to 4e-9 (layers 14-15).
+- One retention factor closes the budget: sum_l 0.9^(15-l) r_l = 2.16e-8 against the measured 2.19e-8. The
+  defects enter a mean channel that loses almost nothing per layer, and the final error is about 70x a
+  per-layer increment.
+- Decoding r_l through the fresh weights (the next-layer error of neuron i is w_i^T Delta w_i for a covariance
+  defect Delta, and the cubic contraction for a kappa_3 defect) finds no low-dimensional structure: the
+  gain, the Mehler orders, the kappa_4 shapes, the D21 scale and the common mode explain at most a few percent,
+  one step back or transported through all layers, in and out of sample (R^2 0.02-0.04); the top covariance
+  eigen-subspaces explain no more than random subspaces of the same dimension.
+- The kappa_3-driven terms are large (readout skew 5e-4, variance moved by D21 2-3e-4 per neuron) against
+  r ~ 6e-5, so an incoherent 10% error of the bulk third-cumulant tensor accounts for the whole residual.
+- One ingredient is identified: the chain gates every all-distinct kappa_3 entry by Phi_a Phi_b Phi_c, while
+  the exact first-order gate is the joint orthant probability. The difference is 1.3-1.9% of the gate per
+  layer, mean zero, spread over the bulk (its top coherent mode carries 0.1-0.3%), and the first-order Mehler
+  pair term phi_a phi_b R_ab Phi_c captures it to 0.1%.
+- Completing the Gaussian Mehler series of the chain's off-diagonal covariance to order 5 (it stops at order 2)
+  changes the final MSE by 0.05%: the missing orders are 1e-6 of the second-order term.
+- The kappa_4 diagonal is not the bottleneck: the parameter-free gain scale-mixture kappa_4 at the last layer
+  gives 2.185e-8 against the chain's 2.191e-8 (it matches the fitted lambda); at all layers 2.298e-8; scaling the
+  chain's kappa_4 to the Monte Carlo value makes the last step worse (4.18e-9 -> 7.29e-9).
+
+**The chain already contains the gain** (`run_gain.py`, `outputs/gain_conditioned_chain.txt`): see
+`../arrow-mixture/README.md`. Running the chain on the gain-conditional state with the output rescaled by E[G_L]
+double-counts the radial zero mode (2.19e-8 -> 1.84e-6); the chain's own kappa_3 sources and second-order terms
+carry about 70% of E[G_L] - 1 and its kappa_4 channel the remaining 30% (kappa_4 channel off: 2.11e-7).

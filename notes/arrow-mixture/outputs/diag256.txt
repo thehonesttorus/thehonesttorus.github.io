@@ -1,0 +1,4 @@
+closure 6.286e-05
+neuron k=1 q=7 w=1 gain=False: 6.207e-05  per-layer: 2.0e-05 4.6e-05 6.3e-05 6.2e-05  (0s)
+neuron k=1 q=7 w=2 gain=False: 6.202e-05  per-layer: 2.0e-05 4.6e-05 6.3e-05 6.2e-05  (1s)
+neuron k=1 q=7 w=3 gain=False: 6.817e-05  per-layer: 1.9e-05 4.5e-05 6.3e-05 6.8e-05  (6s)

@@ -1,0 +1,16 @@
+seed 100: closure 9.10e-04  gac 1.62e-04  eig:0:3:1:-:g 1.62e-04  neuron:1:7:2:-:g 1.37e-04  neuron:1:7:3:-:g 1.40e-04  neuron:2:5:2:-:g 1.72e-04  neuron:4:3:2:2:g 2.34e-03  neuron:8:3:2:1:g 5.39e-02  eig:4:3:2:2:g 4.29e-03  eig:8:3:2:1:g 1.49e-01  sign:4:2:2:-:g 2.16e-04
+seed 101: closure 7.20e-04  gac 1.90e-04  eig:0:3:1:-:g 1.90e-04  neuron:1:7:2:-:g 2.16e-04  neuron:1:7:3:-:g 2.15e-04  neuron:2:5:2:-:g 3.83e-04  neuron:4:3:2:2:g 4.65e-03  neuron:8:3:2:1:g 1.10e-01  eig:4:3:2:2:g 3.38e-03  eig:8:3:2:1:g 1.06e-01  sign:4:2:2:-:g 6.34e-04
+seed 102: closure 2.76e-04  gac 5.37e-05  eig:0:3:1:-:g 5.37e-05  neuron:1:7:2:-:g 3.41e-05  neuron:1:7:3:-:g 3.49e-05  neuron:2:5:2:-:g 4.44e-05  neuron:4:3:2:2:g 1.29e-03  neuron:8:3:2:1:g 3.27e-02  eig:4:3:2:2:g 9.83e-04  eig:8:3:2:1:g 2.66e-02  sign:4:2:2:-:g 1.27e-04
+seed 103: closure 4.99e-04  gac 1.28e-04  eig:0:3:1:-:g 1.28e-04  neuron:1:7:2:-:g 9.65e-05  neuron:1:7:3:-:g 8.66e-05  neuron:2:5:2:-:g 8.99e-05  neuron:4:3:2:2:g 1.14e-03  neuron:8:3:2:1:g 3.92e-02  eig:4:3:2:2:g 1.30e-03  eig:8:3:2:1:g 3.17e-02  sign:4:2:2:-:g 2.96e-04
+MEAN over seeds:
+  closure            6.013e-04   ratio to closure 1.000
+  gac                1.334e-04   ratio to closure 0.222
+  eig:0:3:1:-:g      1.334e-04   ratio to closure 0.222
+  neuron:1:7:2:-:g   1.210e-04   ratio to closure 0.201
+  neuron:1:7:3:-:g   1.190e-04   ratio to closure 0.198
+  neuron:2:5:2:-:g   1.723e-04   ratio to closure 0.287
+  neuron:4:3:2:2:g   2.355e-03   ratio to closure 3.917
+  neuron:8:3:2:1:g   5.889e-02   ratio to closure 97.935
+  eig:4:3:2:2:g      2.491e-03   ratio to closure 4.142
+  eig:8:3:2:1:g      7.832e-02   ratio to closure 130.246
+  sign:4:2:2:-:g     3.182e-04   ratio to closure 0.529
