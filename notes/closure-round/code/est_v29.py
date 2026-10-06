@@ -343,6 +343,10 @@ TERM_SPECS[(2, 2)].append(('wk431', 'ones2', _I((1, 2)), _I((3, 2)), 1.0 / 3.0))
 MEHLER = int(_os.environ.get("V30_MEHLER", "2"))   # V30: Mehler order of the Gaussian pair programs (2 = shipped)
 K4SM = int(_os.environ.get("V30_K4SM", "0"))        # V30: 1 = derived scale-mixture kappa4 sector (k4 = 3 g var^2, K22 = g var var^T, K31 = 3 g d(var) C_off), 2 = + exact Edgeworth tail of the mean
 K4SM_AMP = float(_os.environ.get("V30_K4SM_AMP", "1.0"))
+# V30 (K4SM=4): measured ratio g4/g3 of the fourth- to the third-cumulant amplitude of the scale mixture per layer
+# (Monte Carlo kappa4 slices of the pre-activation over E10's kappa3 channel, mean of official networks 0 and 1,
+# notes/closure-round/outputs/k4truth_off{0,1}.txt); index = layer of the pre-activation
+K4SM_RATIO = [0.48, 0.48, 0.58, 0.63, 0.71, 0.74, 0.77, 0.78, 0.82, 0.84, 0.85, 0.86, 0.91, 0.93, 0.98, 1.03]
 if MEHLER >= 3:
     TERM_SPECS[(1, 1)].append(('c_off3', 'ones2', _I((3, 1)), _I((3, 1)), 1.0 / 6.0))
     TERM_SPECS[(2, 1)].append(('c_off3', 'ones2', _I((3, 2)), _I((3, 1)), 1.0 / 6.0))
@@ -1131,17 +1135,24 @@ class Estimator(BaseEstimator):
                     g22c = (dG * (METRIC_C / 6.0))[:, None]
                     wk4m = _zero_diag(fnp.add(g22c, g22c.T, out=NN("wk4m")))
                     wk431 = None if trim else fnp.multiply(C_off, (0.5 * METRIC_C * lam_prev), out=NN("wk431"))
-                    if K4SM:
+                    if K4SM in (1, 2, 4):
                         # V30: the fourth-cumulant sector of the scale mixture z = G y, Var G^2 = g, with g read from
                         # the chain's own kappa3 diagonal (D3 ~ 1.5 g mu var): k4 = 3 g var^2, K22 = g var var^T,
                         # K31_ac = 3 g var_a C_ac (stored transposed, as the (1,1) program's symmetrisation expects)
                         _v = 1.5 * mu * var
                         _g = fnp.maximum(fnp.sum(_v * D3) / fnp.sum(_v * _v), 0.0) * K4SM_AMP
+                        if K4SM == 4:
+                            _g = _g * float(K4SM_RATIO[min(li, len(K4SM_RATIO) - 1)])
                         g4row = 3.0 * _g * var * var
                         wk4m = _zero_diag(fnp.multiply((var * _g)[:, None], (var)[None, :], out=NN("wk4m")))
                         if not trim:
                             wk431 = fnp.multiply(C_off, (3.0 * _g * var)[None, :], out=NN("wk431"))
                         _g_sm = _g
+                    elif K4SM == 3 and not trim:
+                        # V30: scale-mixture consistency only: keep the chain's fitted diagonal and (2,2) slice, and set the
+                        # (3,1) slice from the diagonal's own implied amplitude, K31_ac = 3 g4 var_a C_ac with g4 = g4row / (3 var^2)
+                        _g4 = fnp.maximum(fnp.sum(g4row * var * var) / fnp.sum(3.0 * var * var * var * var), 0.0) * K4SM_AMP
+                        wk431 = fnp.multiply(C_off, (3.0 * _g4 * var)[None, :], out=NN("wk431"))
                     if _os.environ.get("V17_DEBUG", "0") == "1":
                         DEBUG.append(dict(layer=li, dG=dG, g_prev=g_prev, var_prev=var_prev,
                                           lam=lam_prev, var=var, D3=D3, D21=D21))

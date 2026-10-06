@@ -75,6 +75,30 @@ So the chain's lambda table and its adaptive rule are a fit of one number per la
 derived scale-mixture fourth-cumulant sector, and its (3,1) ansatz lambda C_off differs from the derived
 3 g d(var) C_off only by the per-neuron variance factor.
 
+**The truth of the fourth-cumulant sector** (`code/k4truth.py`, `outputs/k4truth_off{0,1}.txt`): the Monte Carlo
+accumulators of E10 give the pre-activation's kappa_4 slices directly. Projected on the scale-mixture shapes, the
+diagonal and the (2,2) slice carry one amplitude g_4 per layer (R^2 0.90-0.94 from layer 4 on), and the (3,1) slice
+projected on 3 d(var) C_off carries the same amplitude within noise (its R^2 is low because fourth-order
+off-diagonal moments are noisy at T = 4e5, but the implied g tracks the diagonal's at every layer on both networks).
+So the sector's shape is the scale mixture's. Its amplitude is not the kappa_3 amplitude: g_4 / g_3 (g_3 from E10's
+kappa_3 channel) rises from 0.72-0.75 at layer 5 through 0.84-0.85 at layer 10 to 0.96-1.05 at layers 14-15, on both
+networks. The chain's fitted diagonal, 0.77-0.83 of 3 g_3 var^2, is therefore the truth at layers 5-10 and about 15%
+low at layer 14: the "counterterm" of E11 is the real amplitude of a mixture whose fourth cumulant grows into its
+third with depth. The chain's (3,1) slice, lambda C_off with lambda = 0.0069-0.0103, is 0.55-0.80 of the truth's
+3 g_4 d(var) C_off at depth, the one slice it has under-fitted.
+
+| layer (net 0 / net 1) | g_4 from k4 diag | g_4 from K22 | g_4 from K31 | g_3 (E10) | g_4 / g_3 |
+|---|---|---|---|---|---|
+| 5 | 0.0105 / 0.0100 | 0.0106 / 0.0100 | 0.0089 / 0.0084 | 0.0140 / 0.0138 | 0.75 / 0.72 |
+| 10 | 0.0166 / 0.0159 | 0.0171 / 0.0163 | 0.0150 / 0.0139 | 0.0197 / 0.0188 | 0.84 / 0.85 |
+| 14 | 0.0215 / 0.0201 | 0.0220 / 0.0210 | 0.0226 / 0.0210 | 0.0223 / 0.0201 | 0.96 / 1.00 |
+
+For a scale mixture z = G y with G^2 = 1 + eps, the exact fourth cumulant is 3 sigma^4 E eps^2 + 1.5 sigma^2 mu^2
+E eps^3 + ..., and the third is 1.5 sigma^2 mu (E eps^2 - E eps^3 / 4) + mu^3 E eps^3 / 8 + ...: the two
+amplitudes differ by the skewness of the activity fluctuation, and their measured ratio is the statement that the
+fluctuation is skewed and that the skewness falls with depth. That is the next derivation; the chain's lambda
+table is its fitted shadow.
+
 **The Mehler truncation drops 1e-4 of the covariance.** The off-diagonal correlations of the pre-activations have
 rms 0.07, 0.10, 0.12 at layers 5, 10, 14 (99.9th percentile 0.23-0.42). The dropped Mehler terms of the (1,1) and
 (2,1) programs, relative to the first-order term in Frobenius norm, are k = 3: 0.8-1.5e-4, k = 4: 0.2-1.4e-4;
