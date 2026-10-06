@@ -189,7 +189,7 @@ fourth-order content at the price of the young tier; windowed chains show the ol
   layer 1) and equals 0.48, 0.57, 0.65, 0.70, 0.73, ..., 0.81, 0.84 of the derived 3 g var^2 at layers 1-15 (network
   1: 0.61 at layer 3, 0.77 at 8, 0.82 at 13): the identity gives the fitted table's shape and a larger amplitude.
   Replacing it by 3 g var^2 with g read from the chain's D3 (free, no constant): 2.19e-8 -> 3.36e-8 (network 0),
-  2.12e-8 -> 2.93e-8 (network 1). A uniform x1.19 of the fitted diagonal: 3.46e-8. The fitted diagonal is a sharp
+  2.12e-8 -> 2.93e-8 (network 1). A uniform x1.19 of the fitted diagonal: 3.46e-8 (network 1: 3.04e-8). The fitted diagonal is a sharp
   counterterm: the chain's kappa_3 machinery (D21 feedback, the K4 -> K3 feed, all Mehler orders) already carries part
   of what the pure scale-mixture bookkeeping assigns to kappa_4, and the derived amplitude double counts it. Reading:
   the chain's lambda is the Birkhoff counterterm of ITS truncation, not the physical coefficient, which is what the
