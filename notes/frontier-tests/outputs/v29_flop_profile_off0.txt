@@ -1,0 +1,39 @@
+net 0: final MSE 2.2919e-08  C/B 0.2671  wall 92.6s
+{
+ "flop_budget": 2199023255552,
+ "flops_used": 587262754287,
+ "flops_remaining": 1611760501265,
+ "wall_time_s": 92.57749068,
+ "flopscope_backend_time_s": 87.44998207899907,
+ "flopscope_overhead_time_s": 4.61049782299979,
+ "residual_wall_time_s": 0.5170107780011364
+}
+keys: ['flop_budget', 'flops_used', 'flops_remaining', 'operations', 'wall_time_s', 'flopscope_backend_time_s', 'flopscope_overhead_time_s', 'residual_wall_time_s']
+flopscope FLOP Budget Summary
+=============================
+  Total budget:       2,199,023,255,552
+  Used:                 587,262,754,287  (26.7%)
+  Remaining:          1,611,760,501,265  (73.3%)
+
+  By operation:
+    matmul               535,640,208,384  ( 91.2%)  [1085 calls]
+    einsum               19,553,226,240  (  3.3%)  [166 calls]
+    add                  9,074,806,814  (  1.5%)  [4116 calls]
+    linalg.qr            6,214,505,900  (  1.1%)  [82 calls]
+    copyto               5,893,257,216  (  1.0%)  [1634 calls]
+    multiply             4,406,446,169  (  0.8%)  [2809 calls]
+    subtract             3,697,793,024  (  0.6%)  [1685 calls]
+    reshape              1,479,225,344  (  0.3%)  [107 calls]
+    sum                  1,180,575,686  (  0.2%)  [204 calls]
+    as_symmetric          117,440,496  (  0.0%)  [16 calls]
+    stats.norm.cdf          1,572,864  (  0.0%)  [16 calls]
+    stack                   1,128,448  (  0.0%)  [124 calls]
+    stats.norm.pdf            884,736  (  0.0%)  [16 calls]
+    copy                      602,112  (  0.0%)  [7 calls]
+    concatenate               491,520  (  0.0%)  [15 calls]
+    power                     229,616  (  0.0%)  [29 calls]
+    fill_diagonal             183,296  (  0.0%)  [179 calls]
+    astype                     65,536  (  0.0%)  [32 calls]
+    true_divide                32,798  (  0.0%)  [62 calls]
+    mean                       30,720  (  0.0%)  [30 calls]
+    maximum                    16,384  (  0.0%)  [16 calls]

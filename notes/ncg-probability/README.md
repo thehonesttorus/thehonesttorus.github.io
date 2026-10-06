@@ -68,3 +68,19 @@ quenched.
 - The chain's residual and the gate defect are quenched to within a few percent: no per-neuron (annealed)
   correction recovers them, which is the operational content of "the recoverable part at O(n^2) is the annealed
   part".
+
+**E8. "Spike + annealed bulk" covariance (proposal from another conversation).** Replace the quenched covariance by
+its top-r eigenpart plus the remaining trace spread uniformly on the complement, and let the gate read only
+w_i' Sigma_r w_i (`code/spike_bulk.py`, `outputs/spike_bulk_off0.txt`). The relative rms error of the per-neuron
+variance and the mean MSE it implies at one layer (chain final MSE 2.2e-8 for scale):
+
+| layer | PR(Sigma) | r = 0 | 16 | 64 | 256 | 512 | 768 |
+|---|---|---|---|---|---|---|---|
+| 4 | 198 | 9.1% -> 1.8e-4 | 6.8% -> 1.0e-4 | 3.9% -> 3.4e-5 | 0.83% -> 1.6e-6 | 0.16% -> 6e-8 | 0.02% -> 7e-10 |
+| 12 | 70 | 16% -> 1.0e-4 | 8.0% -> 2.5e-5 | 2.8% -> 3.2e-6 | 0.37% -> 5e-8 | 0.06% -> 1.5e-9 | 0.00% -> 1e-12 |
+| 14 | 57 | 18% -> 9e-5 | 8.4% -> 2.1e-5 | 2.5% -> 1.9e-6 | 0.30% -> 2.8e-8 | 0.04% -> 5e-10 | 0.00% -> 1e-13 |
+
+The quenched overlap of a row with the bulk, w_i' E w_i, has relative rms sqrt(2/PR) and is a 3-18% signal; the
+proposal discards it. Freeness says that overlap is unpredictable *from the past*; the next weight is known, so the
+frontier computes it, and r = n is not a mistaken special case but the requirement below r ~ 700. The same
+annealed/quenched distinction as E6, from the other side.
