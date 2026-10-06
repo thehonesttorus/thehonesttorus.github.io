@@ -1,0 +1,11 @@
+net 0 layer 10: 10 sources, legs (10, 1024, 1024), Z (10, 1024, 6); chain D3(l) rms 9.952e-03
+  newborn of layer 10 added as source 11
+  8/48 neurons, 3s
+  16/48 neurons, 6s
+  24/48 neurons, 9s
+  32/48 neurons, 13s
+  40/48 neurons, 16s
+  48/48 neurons, 19s
+product-gate D3(l+1) from the legs: rms 1.202e-02; chain's own D3(l+1) on these neurons: rms 9.625e-03, corr +0.880, slope 1.097
+gate-covariance correction D3corr(l+1): rms 1.312e-04 = 1.09% of the product-gate value; corr(D3corr, D3prod) +0.087; mean/rms -0.04
+implied post-activation mean error at layer 11 from the dropped correction: rms 1.088e-05 (the output error is 1.48e-4 rms; a per-layer injection of 3-4e-5 rms accumulating in quadrature over the depth reproduces it)

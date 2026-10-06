@@ -441,6 +441,8 @@ WARM_NEST = _os.environ.get('V29_WARM_NEST', '0') == '1'
 WARM_RES = _os.environ.get('V29_WARM_RES', '0') == '1'
 WARM_FB = _os.environ.get('V29_WARM_FB', '0') == '1'
 DUMP_LAYERS = tuple(int(x) for x in _os.environ.get('V29_DUMP_LAYERS', '').split(',') if x)
+DUMP_LEGS = _os.environ.get('V30_DUMP_LEGS', '0') == '1'
+LEGS = []
 DUMPS = []
 
 
@@ -1113,6 +1115,12 @@ class Estimator(BaseEstimator):
                                         apb=legs["AP0"], apb4=legs4["AP0"],
                                         sb1=(fap4[2 * fa_off:2 * (fa_off + ka - kb)] if ka > kb else None),
                                         sb2=(fap24[:2 * kb] if kb > 0 else None), s_sb=s_sb)
+                if DUMP_LEGS and li in DUMP_LAYERS:
+                    import numpy as _np
+                    _f = lambda x: None if x is None else _np.array(_np.asarray(x), dtype=_np.float32)
+                    LEGS.append(dict(layer=li, A=_f(A_st), P=_f(P_st), Z=_f(Z_st), L=_f(L_st), w2b=[_f(x) for x in w2b_list],
+                                     s=[_f(x) for x in s_list], e=[_f(x) for x in e_list], ka=int(ka), kb=int(kb), D3=_f(D3), D21=_f(D21),
+                                     mu=_f(mu), var=_f(var)))
                 if regen:
                     # F68: exact transported diagonal of the regenerated core
                     # G = diag(g) + lam C_off:  dG = (W*W) g + lam (diag(C_pre)
