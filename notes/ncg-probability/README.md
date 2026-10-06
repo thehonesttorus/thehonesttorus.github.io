@@ -84,3 +84,15 @@ The quenched overlap of a row with the bulk, w_i' E w_i, has relative rms sqrt(2
 proposal discards it. Freeness says that overlap is unpredictable *from the past*; the next weight is known, so the
 frontier computes it, and r = n is not a mistaken special case but the requirement below r ~ 700. The same
 annealed/quenched distinction as E6, from the other side.
+
+**E9. The learner-independent bound on address-based control variates** (`code/address_bound.py`,
+`outputs/address_bound_off0.txt`; proposal from another conversation: train a weight-specific control variate
+c(P'x) with analytic Gaussian mean, updated between batches). Whatever the learner, a control variate that depends
+on the address T = P'x removes at most Var(E[F|T]). Official network 0, 1e6 inputs, final-layer output F in R^n:
+total per-sample variance sum_i Var(F_i) = 80.5 (0.079 per neuron). At the 10% floor (about 6,500 full passes)
+matching the chain's 2.2e-8 needs the residual variance below 0.18% of the total, i.e. an address explaining 99.8%.
+Measured explained fraction Var(E[F|T])/Var(F): top-k right singular vectors of W_1 as address, k = 1 / 2 / 3:
+0.10% / 0.22% / 0.42% (binned; the bin-noise floor is bins/N, 0.006% / 0.06% / 0.17%); random directions
+0.02% / 0.10% / 0.24%; k = 8 by nearest-neighbour pairs (an upper bound biased in the proposal's favour): <= 0.86%.
+The address term of the proposal's own conditional-variance decomposition is therefore two orders of magnitude
+short before any learner is trained, which is the 300x exchange rate of the frontier tests measured a third way.

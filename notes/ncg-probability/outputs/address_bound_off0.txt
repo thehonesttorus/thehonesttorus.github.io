@@ -1,0 +1,10 @@
+net 0: 1000000 samples, 248s
+total per-sample variance sum_i Var(F_i) = 80.5414 (avg 0.0787); to match the chain at the 10% floor the residual must be <= 0.0018 of it
+explained-variance fraction Var(E[F|T])/Var(F) by binning:
+  address svd  k=1: 0.00098  (bins 64)
+  address svd  k=2: 0.00223  (bins 576)
+  address svd  k=3: 0.00417  (bins 1728)
+  address rand k=1: 0.00021  (bins 64)
+  address rand k=2: 0.00096  (bins 576)
+  address rand k=3: 0.00236  (bins 1728)
+  address svd  k=8 (NN pairs, mean NN distance 0.725): explained fraction <= 0.00863
