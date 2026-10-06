@@ -1,0 +1,7 @@
+  n=1024 off0 closure 4.057e-06  (2s)
+  n=1024 off0 gac 1.559e-06  (7s)
+  n=1024 off0 eig:4:3:2:2:g 1.447e-06  (370s)
+MEAN over ['off0'] at n=1024:
+  closure                4.057e-06   ratio to closure 1.000
+  gac                    1.559e-06   ratio to closure 0.384
+  eig:4:3:2:2:g          1.447e-06   ratio to closure 0.357

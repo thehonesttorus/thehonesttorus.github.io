@@ -54,19 +54,21 @@ Width 256, depth 16, three networks (`code/grid_n.py`, `code/diag256.py`):
 
 Width 1024, depth 16, official WhestBench network 0 (1e9-sample truth):
 
-| estimator | MSE |
-|---|---|
-| Gaussian closure | 4.06e-6 |
-| **GAC** | **1.56e-6** |
-| GAC + eig k=4, memory 2 | pending |
-| K3 chain (reference) | 2.19e-8 |
+| estimator | MSE | ratio to closure |
+|---|---|---|
+| Gaussian closure | 4.06e-6 | 1 |
+| **GAC** | **1.56e-6** | **0.38** |
+| GAC + eig k=4, q=3, level-2 sparse grid, memory 2 | 1.45e-6 | 0.36 |
+| GAC + fresh kappa_3 trees (note XI) | 1.3e-6 | 0.32 |
+| K3 chain (reference) | 2.19e-8 | 0.005 |
 
 **Reading.**
 
 - The radial coordinate is the whole story of the coherent part: GAC removes 78% (width 64), 79% (256), 62%
   (1024) of the closure MSE with one scalar per layer and no fitted constant.
-- A directional base on top of it is worth 10% at width 64 (one neuron), nothing at width 256, and it turns
-  negative as soon as it is carried for more than one layer. More directions make it worse, not better. The
+- A directional base on top of it is worth 7-10% at every width (the top covariance eigenvectors; one
+  neuron at width 64), a neuron window turns negative as soon as it is carried for more than one layer, and
+  more neuron directions make it worse, not better. The
   literal cone split is worse than the closure at every width because two truncated-Gaussian children are a
   two-node quadrature for every other neuron.
 - The reason it turns negative is specific. With a shared fibre the mixture carries the between-node skewness
