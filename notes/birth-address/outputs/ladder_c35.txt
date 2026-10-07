@@ -1,0 +1,16 @@
+net 4 c35: raw 2.2786e-08  C/B 0.1811  adjusted 4.1275e-09  wall 145.1s  residual 0.561s  first-call C/B 0.1978 residual 0.704s  VmPeak 11.65GB VmHWM 10.30GB
+net 0 c35: raw 2.2625e-08  C/B 0.1807  adjusted 4.0877e-09  wall 146.5s  residual 0.574s  first-call C/B 0.1978 residual 0.719s  VmPeak 11.66GB VmHWM 10.31GB
+net 2 c35: raw 2.6210e-08  C/B 0.1798  adjusted 4.7115e-09  wall 147.6s  residual 0.576s  first-call C/B 0.1978 residual 0.696s  VmPeak 11.66GB VmHWM 10.31GB
+net 1 c35: raw 2.1271e-08  C/B 0.1799  adjusted 3.8257e-09  wall 148.1s  residual 0.574s  first-call C/B 0.1977 residual 0.703s  VmPeak 11.66GB VmHWM 10.31GB
+net 7 c35: raw 2.4308e-08  C/B 0.1799  adjusted 4.3719e-09  wall 147.1s  residual 0.571s  first-call C/B 0.1993 residual 0.709s  VmPeak 11.64GB VmHWM 10.29GB
+net 3 c35: raw 2.5836e-08  C/B 0.1799  adjusted 4.6467e-09  wall 146.8s  residual 0.572s  first-call C/B 0.1994 residual 0.711s  VmPeak 11.66GB VmHWM 10.31GB
+net 5 c35: raw 2.1731e-08  C/B 0.1799  adjusted 3.9084e-09  wall 148.7s  residual 0.584s  first-call C/B 0.1978 residual 0.725s  VmPeak 11.65GB VmHWM 10.30GB
+net 6 c35: raw 2.2233e-08  C/B 0.1799  adjusted 3.9987e-09  wall 162.1s  residual 0.636s  first-call C/B 0.1978 residual 0.740s  VmPeak 11.67GB VmHWM 10.32GB
+net 8 c35: raw 2.3483e-08  C/B 0.1810  adjusted 4.2507e-09  wall 145.2s  residual 0.549s  first-call C/B 0.1973 residual 0.683s  VmPeak 11.65GB VmHWM 10.30GB
+net 11 c35: raw 2.4873e-08  C/B 0.1794  adjusted 4.4634e-09  wall 145.7s  residual 0.570s  first-call C/B 0.1978 residual 0.695s  VmPeak 11.65GB VmHWM 10.30GB
+net 13 c35: raw 2.1303e-08  C/B 0.1797  adjusted 3.8276e-09  wall 144.8s  residual 0.574s  first-call C/B 0.1973 residual 0.713s  VmPeak 11.65GB VmHWM 10.30GB
+net 12 c35: raw 2.1052e-08  C/B 0.1799  adjusted 3.7863e-09  wall 148.9s  residual 0.586s  first-call C/B 0.1976 residual 0.713s  VmPeak 11.65GB VmHWM 10.30GB
+net 14 c35: raw 2.4080e-08  C/B 0.1794  adjusted 4.3210e-09  wall 146.7s  residual 0.567s  first-call C/B 0.1983 residual 0.719s  VmPeak 11.65GB VmHWM 10.30GB
+net 9 c35: raw 2.6358e-08  C/B 0.1794  adjusted 4.7299e-09  wall 148.6s  residual 0.593s  first-call C/B 0.1962 residual 0.753s  VmPeak 11.65GB VmHWM 10.30GB
+net 10 c35: raw 2.3322e-08  C/B 0.1786  adjusted 4.1659e-09  wall 150.8s  residual 0.592s  first-call C/B 0.1973 residual 0.736s  VmPeak 11.65GB VmHWM 10.30GB
+net 15 c35: raw 2.4723e-08  C/B 0.1803  adjusted 4.4566e-09  wall 144.4s  residual 0.561s  first-call C/B 0.1983 residual 0.708s  VmPeak 11.64GB VmHWM 10.30GB

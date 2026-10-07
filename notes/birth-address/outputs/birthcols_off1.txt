@@ -1,0 +1,48 @@
+
+== net 1 read layer 5: 5 sources (slot s born at layer s)
+  tau -2.5: birth columns dropped 0.000 (max 0.000); dropped part of D3: relative energy 0.00e+00, corr with d +nan
+  tau -2.0: birth columns dropped 0.016 (max 0.062); dropped part of D3: relative energy 2.32e-05, corr with d +0.047
+  tau -1.5: birth columns dropped 0.062 (max 0.125); dropped part of D3: relative energy 4.85e-04, corr with d -0.013
+  tau -1.0: birth columns dropped 0.141 (max 0.188); dropped part of D3: relative energy 3.71e-03, corr with d +0.045
+  tau -0.5: birth columns dropped 0.266 (max 0.312); dropped part of D3: relative energy 2.36e-02, corr with d +0.223
+  column weight sum_i t_ij^2 by birth alpha (relative to |alpha| < 0.25):
+    [-9.0,-2.5] n=58 w=2.65e-04 (phi^2 ratio 1.47e-04)
+    [-2.5,-2.0] n=100 w=4.65e-03 (phi^2 ratio 7.43e-03)
+    [-2.0,-1.5] n=183 w=3.14e-02 (phi^2 ratio 5.35e-02)
+    [-1.5,-1.0] n=352 w=1.27e-01 (phi^2 ratio 2.24e-01)
+    [-1.0,-0.5] n=565 w=3.67e-01 (phi^2 ratio 5.81e-01)
+    [-0.5,+0.0] n=788 w=8.00e-01 (phi^2 ratio 9.39e-01)
+    [+0.0,+0.5] n=745 w=1.07e+00 (phi^2 ratio 9.42e-01)
+    [+0.5,+9.0] n=1305 w=6.11e-01 (phi^2 ratio 2.31e-01)
+
+== net 1 read layer 9: 9 sources (slot s born at layer s)
+  tau -2.5: birth columns dropped 0.039 (max 0.125); dropped part of D3: relative energy 4.23e-06, corr with d +0.021
+  tau -2.0: birth columns dropped 0.070 (max 0.125); dropped part of D3: relative energy 3.45e-05, corr with d -0.034
+  tau -1.5: birth columns dropped 0.125 (max 0.188); dropped part of D3: relative energy 5.31e-04, corr with d -0.183
+  tau -1.0: birth columns dropped 0.203 (max 0.312); dropped part of D3: relative energy 4.50e-03, corr with d -0.015
+  tau -0.5: birth columns dropped 0.320 (max 0.375); dropped part of D3: relative energy 2.37e-02, corr with d +0.309
+  column weight sum_i t_ij^2 by birth alpha (relative to |alpha| < 0.25):
+    [-9.0,-2.5] n=463 w=4.71e-04 (phi^2 ratio 1.63e-05)
+    [-2.5,-2.0] n=324 w=8.64e-03 (phi^2 ratio 6.43e-03)
+    [-2.0,-1.5] n=486 w=5.52e-02 (phi^2 ratio 5.03e-02)
+    [-1.5,-1.0] n=657 w=1.96e-01 (phi^2 ratio 2.20e-01)
+    [-1.0,-0.5] n=957 w=4.52e-01 (phi^2 ratio 5.66e-01)
+    [-0.5,+0.0] n=1209 w=8.47e-01 (phi^2 ratio 9.38e-01)
+    [+0.0,+0.5] n=1197 w=1.10e+00 (phi^2 ratio 9.41e-01)
+    [+0.5,+9.0] n=2899 w=4.48e-01 (phi^2 ratio 8.41e-02)
+
+== net 1 read layer 13: 13 sources (slot s born at layer s)
+  tau -2.5: birth columns dropped 0.073 (max 0.188); dropped part of D3: relative energy 7.20e-06, corr with d -0.141
+  tau -2.0: birth columns dropped 0.109 (max 0.188); dropped part of D3: relative energy 6.21e-05, corr with d +0.080
+  tau -1.5: birth columns dropped 0.167 (max 0.250); dropped part of D3: relative energy 6.65e-04, corr with d -0.065
+  tau -1.0: birth columns dropped 0.240 (max 0.312); dropped part of D3: relative energy 4.34e-03, corr with d +0.068
+  tau -0.5: birth columns dropped 0.339 (max 0.375); dropped part of D3: relative energy 1.59e-02, corr with d +0.411
+  column weight sum_i t_ij^2 by birth alpha (relative to |alpha| < 0.25):
+    [-9.0,-2.5] n=1118 w=6.20e-04 (phi^2 ratio 2.87e-06)
+    [-2.5,-2.0] n=543 w=1.34e-02 (phi^2 ratio 6.61e-03)
+    [-2.0,-1.5] n=742 w=7.46e-02 (phi^2 ratio 4.97e-02)
+    [-1.5,-1.0] n=954 w=2.54e-01 (phi^2 ratio 2.18e-01)
+    [-1.0,-0.5] n=1240 w=5.66e-01 (phi^2 ratio 5.66e-01)
+    [-0.5,+0.0] n=1484 w=8.72e-01 (phi^2 ratio 9.38e-01)
+    [+0.0,+0.5] n=1499 w=1.09e+00 (phi^2 ratio 9.42e-01)
+    [+0.5,+9.0] n=4708 w=3.71e-01 (phi^2 ratio 2.93e-02)
