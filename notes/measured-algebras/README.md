@@ -97,6 +97,51 @@ saturated-off neurons, the weighted basis divides by the square root of the weig
 some networks, killed on others). With a floor added they reduce to the measured constant version; on network 0 the
 (alpha phi)^2 form was 1.5% worse in raw before any floor.
 
+## 3b. The ladder under the new metric (`outputs/age_gates_16nets.txt`)
+
+With the projection now taken in the reading state, the question was whether the age gates should move (confine
+earlier, nest earlier or later) and whether the thin legs' ranks are still right. Paired against the current best
+on networks 0-15 (an earlier submission of this sweep dropped the first flag of each variant in the job builder;
+these are the corrected runs):
+
+| variant | raw | C/B | adjusted |
+|---|---|---|---|
+| confine after age 3 (rank 320 / 352 / 384 / 416) | +16.9% / +5.3% / +0.6% / -2.5% | 0.2149 / 0.2251 / 0.2356 / 0.2466 | +9.4% / +3.2% / +3.2% / +4.7% |
+| confine after age 2 (rank 384 / 448) | +33.2% / +5.5% | 0.2228 / 0.2464 | +29.3% / +13.2% |
+| nested tier after age 6 / 8 (rank 192) | +4.75% / -0.79% | 0.2281 / 0.2308 | +4.07% / -0.27% +- 0.41 |
+| confine after 3 and nest after 6 | +19.8% | 0.2134 | +11.4% |
+| feedback thin legs rank 16 -> 8 | +1.70% +- 0.21 | 0.2220 | **-1.67% +- 0.21** |
+
+Confining earlier does not pay at any rank: the age-3 and age-2 content needs a rank whose formation and joins
+cost about what the dense legs it replaces cost, which is the diffusion-wavelet ladder of note XXV read
+quantitatively (the scaling space after three transports is still wider than the knee). The age gates of v29
+(4 and 7) stay. The feedback legs carry less than their rank 16: rank 8 loses 1.7% of raw and saves 3.3% of the bill,
+consistently on every network (follow-ups at ranks 4, 6, 12 and with the nested gate at 8 running).
+
+## 3c. A second pasted synthesis: Markov geometry, index and source-query bounds
+
+A further synthesis (pasted; its companion PDF was a link to another sandbox and did not arrive) builds the calculus
+from a single conditional expectation: the Stinespring identity Phi(a^* b) - Phi(a)^* Phi(b) = d(a)^* d(b) with
+d = (I - VV^*) pi(.) V, the composition law Gamma_{Psi Phi} = Psi(Gamma_Phi) + Gamma_Psi(Phi, Phi) (total
+covariance), the relative bimodule A (x)_B A with delta_E a = a (x) 1 - 1 (x) a and partial^* partial = I - E, the
+hierarchy L = sum c_j (I - E_j) with the martingale details as eigencomponents, the circle example
+\|\|[F, M_f]\|\|_HS^2 = 4 sum_k \|k\| \|f^(k)\|^2 with Index T_u = A_- - A_+ and (1/4)\|\|[F, M_u]\|\|^2 = A_- + A_+ for
+unitary symbols, the Pimsner-Popa uniform bound \|\|a - Ea\|\|^2 <= Ind_PP(E) \|\|Gamma_E(a, a)\|\|, Fisher-information
+loss \|\|h - Eh\|\|^2, Petz sufficiency through Connes cocycles, and, for the network, the signed source-query error
+epsilon(c, s) = sum_{j not kept} <Q_j c, Q_j s> with backward readouts c_l = T_l^* c_{l+1} and the exact
+accumulation <c_N, e_N> = <c_0, e_0> + sum_l <c_{l+1}, r_l>. I checked the identities (the Fourier count of the
+Hilbert-Schmidt norm, the trace identity for the index, the bimodule energy, the projection counterexample
+(5/6, 1/3, -1/6)); they are correct.
+
+Its operational conclusion, that the source and the query must be jointly compressible and the query is the
+backward readout through the actual transport, is the principle the V32 join implements and measures: the
+one-step backward readout (W, then the gate) is the reading metric of the new best, and the two-step readout
+(section 3) is real but costs more than it returns. The intrinsic geometry it proposes from the transport,
+D_T = [[0, T^*], [T, 0]] with energy 2 sum \|T_ij\|^2 \|f_j - g_i\|^2, is the post-W metric written as a Dirac
+operator. So the "missing implication" it names (cheap geometry compatible with the transport, plus regular sources
+and queries, gives cheap signed transport) has a measured instance with its limit: the first backward step pays
+7.86%, the second does not, and the closure-side residual is not a compression error at all.
+
 ## 4. Decision
 
 | from the synthesis | what it is here | decision |
