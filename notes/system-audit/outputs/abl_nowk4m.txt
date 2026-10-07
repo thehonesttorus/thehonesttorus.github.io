@@ -1,0 +1,16 @@
+net 15 nowk4m: raw 3.5571e-07  C/B 0.2186  adjusted 7.7765e-08  wall 76s  residual nans
+net 8 nowk4m: raw 3.9268e-07  C/B 0.2186  adjusted 8.5847e-08  wall 81s  residual nans
+net 13 nowk4m: raw 3.9866e-07  C/B 0.2186  adjusted 8.7156e-08  wall 81s  residual nans
+net 3 nowk4m: raw 3.8973e-07  C/B 0.2186  adjusted 8.5203e-08  wall 83s  residual nans
+net 1 nowk4m: raw 4.0237e-07  C/B 0.2186  adjusted 8.7966e-08  wall 83s  residual nans
+net 6 nowk4m: raw 3.6637e-07  C/B 0.2186  adjusted 8.0096e-08  wall 84s  residual nans
+net 9 nowk4m: raw 4.0863e-07  C/B 0.2186  adjusted 8.9336e-08  wall 84s  residual nans
+net 14 nowk4m: raw 3.2489e-07  C/B 0.2186  adjusted 7.1028e-08  wall 85s  residual nans
+net 7 nowk4m: raw 4.3931e-07  C/B 0.2186  adjusted 9.6043e-08  wall 86s  residual nans
+net 12 nowk4m: raw 3.5996e-07  C/B 0.2186  adjusted 7.8694e-08  wall 86s  residual nans
+net 10 nowk4m: raw 3.1888e-07  C/B 0.2186  adjusted 6.9713e-08  wall 86s  residual nans
+net 5 nowk4m: raw 3.5517e-07  C/B 0.2186  adjusted 7.7647e-08  wall 87s  residual nans
+net 0 nowk4m: raw 5.3743e-07  C/B 0.2186  adjusted 1.1749e-07  wall 87s  residual nans
+net 4 nowk4m: raw 3.7858e-07  C/B 0.2186  adjusted 8.2765e-08  wall 87s  residual nans
+net 11 nowk4m: raw 4.3454e-07  C/B 0.2186  adjusted 9.4999e-08  wall 87s  residual nans
+net 2 nowk4m: raw 3.5298e-07  C/B 0.2186  adjusted 7.7170e-08  wall 88s  residual nans

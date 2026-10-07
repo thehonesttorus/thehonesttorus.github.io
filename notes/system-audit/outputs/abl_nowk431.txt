@@ -1,0 +1,16 @@
+net 9 nowk431: raw 2.9368e-08  C/B 0.2184  adjusted 6.4139e-09  wall 62s  residual nans
+net 2 nowk431: raw 2.9016e-08  C/B 0.2184  adjusted 6.3371e-09  wall 79s  residual nans
+net 6 nowk431: raw 2.3192e-08  C/B 0.2184  adjusted 5.0651e-09  wall 80s  residual nans
+net 4 nowk431: raw 2.7756e-08  C/B 0.2184  adjusted 6.0619e-09  wall 80s  residual nans
+net 11 nowk431: raw 2.9530e-08  C/B 0.2184  adjusted 6.4494e-09  wall 80s  residual nans
+net 13 nowk431: raw 2.7207e-08  C/B 0.2184  adjusted 5.9420e-09  wall 80s  residual nans
+net 8 nowk431: raw 2.7728e-08  C/B 0.2184  adjusted 6.0557e-09  wall 81s  residual nans
+net 1 nowk431: raw 2.4895e-08  C/B 0.2184  adjusted 5.4371e-09  wall 82s  residual nans
+net 10 nowk431: raw 2.6325e-08  C/B 0.2184  adjusted 5.7493e-09  wall 83s  residual nans
+net 12 nowk431: raw 2.3133e-08  C/B 0.2184  adjusted 5.0523e-09  wall 83s  residual nans
+net 7 nowk431: raw 2.5830e-08  C/B 0.2184  adjusted 5.6412e-09  wall 84s  residual nans
+net 14 nowk431: raw 2.5675e-08  C/B 0.2184  adjusted 5.6073e-09  wall 84s  residual nans
+net 5 nowk431: raw 2.3397e-08  C/B 0.2184  adjusted 5.1099e-09  wall 84s  residual nans
+net 0 nowk431: raw 2.7589e-08  C/B 0.2184  adjusted 6.0254e-09  wall 84s  residual nans
+net 3 nowk431: raw 3.1005e-08  C/B 0.2184  adjusted 6.7713e-09  wall 85s  residual nans
+net 15 nowk431: raw 3.1831e-08  C/B 0.2184  adjusted 6.9518e-09  wall 85s  residual nans
