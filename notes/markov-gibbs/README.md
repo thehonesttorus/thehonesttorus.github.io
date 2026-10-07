@@ -155,9 +155,12 @@ Four facts are in this table.
   of the mass, and a linear map creates no cumulants.
 - **The transport is the mixture's, and it mixes the channels only while the gates are half open.** The row sums of
   M_l are 1.006 and 1.041 at layer 1, where homogeneity predicts 1 for the full cumulants, and they fall to 0.93 and
-  0.83 at depth, the same deficits as the true-h restriction (2% and 14%) plus the fourth-order truncation of the
-  integration by parts, which for a mixture whose fifth and sixth cumulants are also first order in g costs a few
-  percent. The off-diagonal entries are the mixing of the channels by the nonlinearity: a fourth-cumulant gain feeds
+  0.83 at depth, the same deficits as the true-h restriction (2% and 14%) plus the reference drift of the scale
+  tangent (the mean shrinks by mu / 8 and the covariance grows by mu mu^T / 4 per unit gain), which the slice
+  variations at fixed (mu, S) do not include; note XXII measures it at 4-7% and shows the rows sum to 1 within 3-4%
+  once it and the dropped output classes are added. (An earlier version of this sentence attributed the gap to the
+  fourth-order truncation of the integration by parts; the scale tangent of a Gaussian reference has no fifth or
+  sixth cumulant component, note XXII section 2.) The off-diagonal entries are the mixing of the channels by the nonlinearity: a fourth-cumulant gain feeds
   the third at 0.43 per layer at layer 1 and at 0.01 at layer 14; a third-cumulant gain feeds the fourth at 0.12 and
   0.02. Normalising the rows to 1 (homogeneity), the second eigenvalue of M_l, which is the survival per layer of the
   non-mixture component of the state (the skew), is 0.46 at layer 2, 0.72 at layer 4, 0.82 at layer 7, 0.88 at layer

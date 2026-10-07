@@ -57,8 +57,8 @@ relu(G y~) = G relu(y~) makes the next pre-activation G z~, whose third and four
 3 g sigma^4 with the same g to first order, so the family's image under the layer is the family with the same gain
 plus the fresh generation, and (1, 1) is an eigenvector of the exact transport with eigenvalue 1. The projection
 onto the gain coordinates (least squares against the patterns with the true marginal moments) adds second-order
-terms, and the pair-slice restriction with the fourth-order truncation of the integration by parts loses 7% and
-17% of the rows at depth. Note XIX reported both the raw matrix and the normalised one and used the normalised one
+terms, and the pair-slice restriction loses 7% and 17% of the rows at depth (note XXII accounts for both: the
+reference drift of the scale tangent and the dropped output classes). Note XIX reported both the raw matrix and the normalised one and used the normalised one
 as a model; this note keeps that discipline and reports the one-step residuals against the raw matrix, so that the
 normalisation is never used to generate the residual it is then credited with explaining.
 
