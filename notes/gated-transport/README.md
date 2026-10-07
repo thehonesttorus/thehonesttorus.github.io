@@ -92,8 +92,13 @@ slices and diagonal receive the y (2,1,1) and (1,1,1,1) classes through contract
    classes, 6 g sigma_diag^2 sigma_off^2 on the diagonal (note XXI), belong here.
 
 This is the precise form of E_l for the chain's fourth-cumulant state: the triple and quadruple classes, fed by the legs,
-by their own memory and by second-order products of the covariance. Note XXXII's F2 (the defect is regenerated at each
-step) says the memory term, source 2, carries little; sources 1 and 3 are what the fitted lam C_off term stands in for.
+by their own memory and by second-order products of the covariance. The fitted lam C_off term stands in for all three.
+Note XXXII's F2 (the defect is regenerated at each step) cannot rank them: its oracle supplies true pair slices but never
+the triple class, so source 2 is absent from both runs it compares. The theory says source 2 is not small. The scale
+mixture's triple entries g var_a C_bc are exactly such memory, and the Ward identity transports the scale mode with
+eigenvalue one, so this memory never decays. It is also the cheapest to carry: one scalar g per layer, whose triple and
+quadruple content is a closed-form function of the covariance. In the gain projection it is the whole (2,1,1) gap
+(note XXI); per neuron the split between the scale mode and the rest of source 2 is not measured.
 
 **What the readout of the triple class costs.** If the triple entries factorise as (a per-neuron vector at a) times (a
 matrix in b, c), as the scale mixture's and the leg-fed ones do (2 m_a (1 - Phi_a) times the gated leg contraction), their
