@@ -1,0 +1,28 @@
+net 1 onestep: raw 1.11360e-08  per-layer 2.03e-08 2.36e-08 2.43e-08 2.08e-08 2.00e-08 1.79e-08 1.48e-08 1.28e-08 1.31e-08 1.12e-08 1.18e-08 1.13e-08 1.17e-08 1.13e-08 1.20e-08 1.11e-08
+net 1: chain kappa3 readouts (one-step, oracle inputs) by class; slices D3 | D21
+layer  1-> 2: D3: total 0.0455 pair 0.0113 legs 0.0452 (legs part/R3 err 0.131); legs err ~ -facet: coef +0.01 expl +0.00, ~ leg1: coef -0.02 expl +0.01
+             D21: total 0.0644 pair 0.0124 legs 0.0643 (legs part/R3 err 0.132); legs err ~ -facet: coef +0.00 expl +0.00, ~ leg1: coef -0.01 expl +0.00
+layer  2-> 3: D3: total 0.0375 pair 0.0091 legs 0.0372 (legs part/R3 err 0.112); legs err ~ -facet: coef +0.01 expl +0.00, ~ leg1: coef -0.01 expl +0.00
+             D21: total 0.0555 pair 0.0097 legs 0.0554 (legs part/R3 err 0.114); legs err ~ -facet: coef +0.00 expl +0.00, ~ leg1: coef -0.01 expl +0.00
+layer  3-> 4: D3: total 0.0352 pair 0.0071 legs 0.0352 (legs part/R3 err 0.114); legs err ~ -facet: coef -0.00 expl +0.00, ~ leg1: coef -0.01 expl +0.01
+             D21: total 0.0524 pair 0.0079 legs 0.0524 (legs part/R3 err 0.108); legs err ~ -facet: coef -0.00 expl +0.00, ~ leg1: coef -0.01 expl +0.00
+layer  4-> 5: D3: total 0.0369 pair 0.0059 legs 0.0369 (legs part/R3 err 0.118); legs err ~ -facet: coef -0.01 expl +0.00, ~ leg1: coef +0.00 expl +0.00
+             D21: total 0.0541 pair 0.0067 legs 0.0541 (legs part/R3 err 0.114); legs err ~ -facet: coef -0.01 expl +0.00, ~ leg1: coef -0.00 expl +0.00
+layer  5-> 6: D3: total 0.0349 pair 0.0052 legs 0.0347 (legs part/R3 err 0.125); legs err ~ -facet: coef -0.02 expl +0.01, ~ leg1: coef -0.01 expl +0.00
+             D21: total 0.0523 pair 0.0058 legs 0.0522 (legs part/R3 err 0.116); legs err ~ -facet: coef -0.01 expl +0.00, ~ leg1: coef +0.00 expl +0.00
+layer  6-> 7: D3: total 0.0354 pair 0.0050 legs 0.0355 (legs part/R3 err 0.127); legs err ~ -facet: coef -0.02 expl +0.01, ~ leg1: coef +0.01 expl +0.01
+             D21: total 0.0535 pair 0.0055 legs 0.0536 (legs part/R3 err 0.119); legs err ~ -facet: coef -0.01 expl +0.00, ~ leg1: coef +0.01 expl +0.00
+layer  7-> 8: D3: total 0.0363 pair 0.0044 legs 0.0363 (legs part/R3 err 0.132); legs err ~ -facet: coef -0.03 expl +0.01, ~ leg1: coef +0.02 expl +0.01
+             D21: total 0.0561 pair 0.0048 legs 0.0562 (legs part/R3 err 0.126); legs err ~ -facet: coef -0.02 expl +0.01, ~ leg1: coef +0.01 expl +0.01
+layer  8-> 9: D3: total 0.0372 pair 0.0041 legs 0.0372 (legs part/R3 err 0.134); legs err ~ -facet: coef -0.04 expl +0.02, ~ leg1: coef +0.01 expl +0.01
+             D21: total 0.0601 pair 0.0046 legs 0.0601 (legs part/R3 err 0.132); legs err ~ -facet: coef -0.02 expl +0.01, ~ leg1: coef +0.02 expl +0.01
+layer  9->10: D3: total 0.0401 pair 0.0041 legs 0.0401 (legs part/R3 err 0.141); legs err ~ -facet: coef -0.02 expl +0.00, ~ leg1: coef +0.02 expl +0.02
+             D21: total 0.0630 pair 0.0045 legs 0.0631 (legs part/R3 err 0.137); legs err ~ -facet: coef -0.03 expl +0.01, ~ leg1: coef +0.02 expl +0.02
+layer 10->11: D3: total 0.0401 pair 0.0035 legs 0.0402 (legs part/R3 err 0.144); legs err ~ -facet: coef -0.05 expl +0.02, ~ leg1: coef +0.02 expl +0.02
+             D21: total 0.0637 pair 0.0040 legs 0.0637 (legs part/R3 err 0.145); legs err ~ -facet: coef -0.04 expl +0.01, ~ leg1: coef +0.03 expl +0.03
+layer 11->12: D3: total 0.0420 pair 0.0031 legs 0.0419 (legs part/R3 err 0.150); legs err ~ -facet: coef -0.06 expl +0.02, ~ leg1: coef +0.03 expl +0.03
+             D21: total 0.0673 pair 0.0036 legs 0.0673 (legs part/R3 err 0.155); legs err ~ -facet: coef -0.05 expl +0.01, ~ leg1: coef +0.03 expl +0.04
+layer 12->13: D3: total 0.0475 pair 0.0033 legs 0.0475 (legs part/R3 err 0.186); legs err ~ -facet: coef -0.04 expl +0.01, ~ leg1: coef +0.04 expl +0.04
+             D21: total 0.0713 pair 0.0037 legs 0.0713 (legs part/R3 err 0.164); legs err ~ -facet: coef -0.05 expl +0.01, ~ leg1: coef +0.04 expl +0.04
+layer 13->14: D3: total 0.0469 pair 0.0031 legs 0.0468 (legs part/R3 err 0.181); legs err ~ -facet: coef -0.04 expl +0.01, ~ leg1: coef +0.05 expl +0.05
+             D21: total 0.0724 pair 0.0034 legs 0.0723 (legs part/R3 err 0.172); legs err ~ -facet: coef -0.06 expl +0.02, ~ leg1: coef +0.04 expl +0.04

@@ -4,10 +4,12 @@
 import sys, os, importlib.util, numpy as np, flopscope as flops
 from whestbench import MLP
 net, orc, mcf, tag = int(sys.argv[1]), sys.argv[2], sys.argv[3], sys.argv[4]
-os.environ.update({"V29_WARM_JOIN": "1", "V29_WARM_FB": "1", "V17_R_RES": "4", "V26_STRASSEN": "6", "V26_STRASSEN_MIN": "16",
+_prod = ({"V29_WARM_JOIN": "1", "V29_WARM_FB": "1", "V17_R_RES": "4", "V26_STRASSEN": "6", "V26_STRASSEN_MIN": "16",
                    "V32_JOIN_SMM": "1", "V32_ROT_SMM": "1", "V32_JOIN_POST": "3", "V32_JP_C": "0.1", "V21_R_OLD": "320",
                    "V24_R_OLD2": "192", "V18_R_FB": "2", "V24_AGE_OLD2": "8", "V33_K4Q": "3", "V33_K4Q_RANK": "4",
                    "V34_OPT": "abcde"})
+for _k, _v in _prod.items():
+    os.environ.setdefault(_k, _v)   # production values unless the caller overrides them
 # "dump:ORACLES" dumps a run with oracles on (the one-step closure test reads it), written to chain_off{net}_o.npz
 dump = orc.startswith("dump"); orcs = orc.split(":", 1)[1] if orc.startswith("dump:") else ("" if dump else orc)
 if dump:

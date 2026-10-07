@@ -189,6 +189,45 @@ and second order:
 Var(s^2) ~ g_conn, the legs' error is mostly the scale mode's. If not, it is in the legs' genuine all-distinct
 content or in the facet term.
 
+### 3c. The third cumulant's transport law is exact; the chain's error is the legs' representation
+
+`code/mclegs.py` re-runs the Monte Carlo on the same samples with the true gates Phi_l. It accumulates the contractions
+E[d_a U_i^2], E[U_i^2 U_c] and E[U_i^3] of U = (W o Phi) d. Their all-distinct parts (inclusion-exclusion with the
+true D21 and kappa3 diagonal) are the contractions of the true all-distinct third cumulant T of z_l that the theorem
+transports at first order. They are checked against the brute-force tensor in `code/check_legs_contractions.py`. The
+second-order one-facet term has a closed form, checked in `code/check_facet_transport.py`:
+
+    kappa(y_a, y_b, y_c) |_(C^2) = rho_a Phi_b Phi_c C_ab C_ac + 2 perms,   rho = phi/s.
+
+Results, network 1 (`outputs/mclegs_mc4_off1.txt`; the independent replicate `outputs/mclegs_mc5_off1.txt` agrees to
+the third digit):
+- **R3 is the first-order gated transport of the legs plus the one-facet term, both at coefficient 1.**
+  - Together they explain 99.1-99.4% of R3 in the D3 slice at every layer from 1 to 14. The fitted coefficients are
+    0.98-1.00 (legs) and 0.94-1.00 (facet).
+  - At layer 0, where z_0 is Gaussian and T = 0, the facet term alone explains 92% at coefficient 1.000.
+  - The legs alone explain 64-88%. The facet term, one gate-boundary density with two covariances (note XXXIII's
+    mechanism), is a quarter of the all-distinct transport and is not optional.
+  - This is note XXXIV's support-preservation theorem plus the Mehler second order, confirmed at the network's
+    correlated reference with nothing fitted.
+- **The leg-fed (2,1,1) class of kappa4 is real but minor.** Jointly with D, its coefficient is near its theoretical
+  value of 1 (0.83-1.43). It adds 5-15 points of explained R at layers 1-5 and nothing at depth. D plus leg-fed
+  explains 44-82%. The rest of R (about 20-30% at depth) is in second-order products beyond the Gaussian C x C term.
+
+**Where the chain's kappa3 readout error is** (`code/k3chain.py`, `outputs/k3chain_off1.txt`). The one-step dump with
+every oracle on records the chain's own D3 and D21 at l + 1 before replacement. Its y-level K3v and K21 give the pair
+part, and the rest is the chain's legs part. Against the exact law:
+- **Total error.** It is D3 3.5-4.8% and D21 5.2-7.2% of the truth slice.
+- **The pair part is negligible:** 0.3-1.2%.
+- **The legs part carries essentially all of it.** That is an 11-19% error relative to R3, growing with depth.
+- **The legs error is orthogonal to both terms of the law.** On the facet term its coefficient is about 0 (explaining
+  <= 2%); on the first-order legs term, also about 0 (<= 5%). The chain's legs carry the facet term and the right
+  transport. Their error is representation: the finite-rank, compressed storage of the sources.
+
+With note XXXI's precision law (Delta MSE / MSE ~ 180 x the readout error energy), a 4-5% rms readout error is about
+30-40% of the MSE, which is the D3 + D21 oracle's measured -40%. This locates note XXXIII's conclusion, that the binding
+constraint is computing the retained statistics, in one place: the fidelity of the legs' compressed representation.
+Section 3e measures which compression stage it comes from.
+
 ### 3d. In the chain: G D in place of the lam core (V39_KD)
 
 `est_v29.py` switch V39_KD builds G_l D_l at every layer from the chain's own state:
