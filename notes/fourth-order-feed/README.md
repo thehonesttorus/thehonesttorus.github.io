@@ -186,4 +186,78 @@ lambda C_off ansatz under-fits (note XVIII section 2) and the route is the one a
 
 ## 5. Generation against transport, and the closed channel
 
-<!-- PENDING_GAUSS -->
+The one-loop generation of z_(l+1) was decomposed by the same five classes at every source layer, with y_l Gaussian at
+the true marginal state (`code/k4classes_gauss.py`, `outputs/k4classes_gauss_off0.txt`, T = 3e5), so that the dropped
+classes of the true fourth cumulant can be split into what the layer generates and what it transports. At the three
+targets where the true classes were measured (`outputs/k4classes_off0.txt`), with the pair ledger of note XIX at the
+same layers (one loop + variation under the true third-cumulant slices + variation under the true fourth-cumulant
+slices, all pair-restricted) and the mixture's closed-form transport of the dropped classes at the measured gain of
+the source layer:
+
+| target | g_4 measured | pair classes, true | pair ledger | dropped classes, true | dropped, one loop | mixture transport of dropped | remainder |
+|---|---|---|---|---|---|---|---|
+| 8 | 0.01457 | 0.01392 | 0.01387 | 0.00078 | -0.00017 | 0.00083 | +0.00012 |
+| 11 | 0.01770 | 0.01645 | 0.01638 | 0.00121 | -0.00012 | 0.00158 | -0.00025 |
+| 15 | 0.02278 | 0.01961 | 0.01966 | 0.00337 | -0.00013 | 0.00309 | +0.00041 |
+
+- **The fourth-cumulant channel is closed to 1%.** Pair ledger plus mixture transport of the dropped classes plus
+  the one loop's dropped classes gives 0.01453, 0.01784, 0.02262 against the measured 0.01457, 0.01770, 0.02278: 0.3%,
+  0.8%, 0.7%. The remainder (+0.0001, -0.0003, +0.0004) is at the noise of the (1+1+1+1) class. The one loop
+  generates nothing in the dropped classes at any depth (-0.0001 to -0.0002); what the pair restriction misses is
+  transport, and it is the mixture's own, in closed form.
+- **The feed the synthesis asked for is therefore derived.** For the gain carried as a scale mixture, the dropped
+  classes of the next fourth cumulant are 6 g sigma_diag^2 sigma_off^2 + 3 g sigma_off^4 per output neuron. Nothing
+  needs accumulating and no tensor is touched: the two variances are O(n^2) from the carried state.
+
+**Why the two-gain recursion still does not close.** `code/gac3c.py` (`outputs/gac3c_off0.txt`) reruns the closed
+recursion of note XIX with the fourth row completed: the mixture's dropped-class transport added to r44 (0.82 to
+0.93-0.96 at depth) and the one loop taken with all five classes.
+
+| l | measured g_3, g_4, ratio | A: note XIX, pair | B: pair + dropped-class transport, full one loop | C: rows normalised, full one loop |
+|---|---|---|---|---|
+| 4 | 0.0127 0.0090 0.71 | 0.0132 0.0091 0.69 | 0.0133 0.0094 0.71 | 0.0138 0.0090 0.65 |
+| 7 | 0.0170 0.0128 0.75 | 0.0176 0.0117 0.66 | 0.0177 0.0128 0.72 | 0.0205 0.0127 0.62 |
+| 10 | 0.0197 0.0166 0.84 | 0.0203 0.0117 0.58 | 0.0205 0.0147 0.72 | 0.0263 0.0159 0.61 |
+| 13 | 0.0220 0.0207 0.94 | 0.0210 0.0091 0.44 | 0.0214 0.0146 0.68 | 0.0316 0.0178 0.57 |
+| 15 | 0.0223 0.0228 1.02 | 0.0205 0.0069 0.34 | 0.0210 0.0141 0.67 | 0.0342 0.0184 0.54 |
+
+Variant B tracks the measured g_4 to 2% through layer 7 and then falls behind (0.0141 against 0.0228 at layer 15),
+even though its per-step transport is now the mixture's. The ledger says where the rest is: the column "d3 true
+against r43 g_3" of the attribution is 0.00181 against 0.00090 at target 8, 0.00251 against 0.00143 at 11 and
+0.00229 against 0.00036 at 15. The true third-cumulant pair slices of y feed the next fourth cumulant two to six
+times more than the mixture-shaped slices at the fitted gain do, while they feed the next third cumulant exactly as
+the mixture does (d3 = 0.0204 against r33 g_3 = 0.0206 at layer 14). The third-cumulant content of the law is not
+one number: note XIX's record already showed the two patterns of its (2,1) slice, mu_a S_ac and sigma_a^2 mu_c,
+carrying different amplitudes at depth (0.0164 and 0.0234 at layer 15, equal for a mixture), and it is the
+non-mixture part that drives the fourth cumulant. This is the synthesis's question answered: the additional
+information that changes the fourth-order feed while leaving the third-order behaviour intact is the shape of the
+third-cumulant slices beyond their mixture projection, and a two-gain state cannot carry it. The chain can and
+does: its sources are the full third-cumulant tensor.
+
+**What this says about the chain's fourth-cumulant sector.** The chain regenerates the sector from a transported
+diagonal and a fitted per-layer table, with no feed from the sources. The ledger now gives the three pieces the
+table stands in for at depth, in g_4 units per layer: generation about zero (-0.0001 to -0.0007), the mixture's
+dropped-class transport +0.001 to +0.002, and the sources' feed into the fourth cumulant through the pair programs
++0.002 to +0.003 (the "d3" column, two to six times what a mixture-shaped feed would be). Both of the latter are
+computable inside the chain at O(n^2) per layer: the first from (W o W) var_h and sigma^2, the second from the
+(2,2)-pattern term program that the chain already has for pair moments (`TERM_SPECS` column (2,2)) applied to the
+carried D3 and D21 slices. That is a derived replacement for the fitted table with the physics that K4SM = 3 and 4
+lacked (both tied the sector to the mixture shape, which is the part the table was not missing), and it is the one
+chain experiment this note proposes. Its expected size is the table's measured misfit, 15% of the sector at layer 14
+(note XVIII section 2), and the sector's leverage on the error was measured there at the few-percent level, so the
+experiment is worth one round and not more. The network 1 one-loop decomposition is queued and will be appended to
+`outputs/` when it completes.
+
+## 6. What transfers
+
+| from the synthesis | what it is here | number or decision |
+|---|---|---|
+| a cumulant recursion is not a g-function | accepted; note XIX amended | wording changed; the measured transport of the scale survives |
+| homogeneity gives unit row sums only for a specified family and projection | accepted; the family and projection are the ones used; raw and normalised both kept | 7% and 17% raw deficits at depth, now attributed |
+| common / disagreement coordinates | the common channel is closed, the disagreement forcing is channel-specific and grows with depth | e_3 within 3%; e_4 - e_3 = 0.004-0.005 per layer at 12-15 |
+| measure the missing contracted quantity first | it was the ledger's true-h column; its class decomposition is new | (2+1+1) is the whole gap; (3+1), (1+1+1+1) zero |
+| the index-multiplicity classes without a tensor | done, one Monte Carlo pass, power sums | pair classes match the ledger to three digits |
+| derive the source response of the missing feed | the mixture's closed form for the dropped classes, and the measured d3 feed in the pair classes | channel closed to 1% at targets 8, 11, 15 |
+| a two-channel model with a memory operator | the missing information is the non-mixture shape of the third-cumulant slices, which the chain carries | d3 feed 2-6x the mixture's |
+| keep the chain and the table frozen | agreed for this round; one derived replacement proposed | expected size: the 15% misfit of the sector at layer 14 |
+
