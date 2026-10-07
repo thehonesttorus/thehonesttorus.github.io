@@ -94,7 +94,31 @@ that.
 **Validation on all 100 networks** (Strassen join products, post-W projection, shared basis 320, nested 192;
 `outputs/v32_100nets.txt`): raw +4.30% +- 0.31, C/B 0.2326, adjusted **-5.45% +- 0.31**, mean adjusted
 **5.432e-9** against 5.742e-9 for the shipped chain. Ranks 336 and 304 on nets 0-15 give -5.88% and -5.34% against
--6.08% for 320 on the same nets, so 320 is the optimum. This is the new best configuration.
+-6.08% for 320 on the same nets, so 320 is the optimum.
+
+**The renormalised metric (`V32_JOIN_POST=3`, `outputs/v32_renorm_metric.txt`).** The post-W metric is still flat
+across the rows of layer l, but a row's content reaches every later layer through its own gate (the legs are scaled
+by w1 = Phi(alpha) before the next transport), and its local reads (D3, D21 at layer l) are what is left. So the
+metric in which the join's error is read is diag(om) with om_i = Phi(alpha_i)^2 + c: Mallat's renormalisation of
+the wavelet coefficients (note XXV), with the weight set by observability instead of variance. alpha is exact for
+the mean (mu is formed before the join) and uses the diagonal transport of the previous post-activation variance
+for sigma, which is enough for a weight. Same cost as the plain projection (a row scaling and a weighted QR). With
+the factor rotations and the D21 lift also through the Strassen family (`V32_ROT_SMM=1`, raw unchanged, 1.3% of
+the bill saved):
+
+| variant (rank 320 / nested 192 unless stated) | nets | raw | C/B | adjusted |
+|---|---|---|---|---|
+| post-W projection + Strassen rotations | 16 | +3.61% | 0.2295 | -7.34% |
+| renormalised metric, c = 0.1 | 16 | +2.20% +- 0.49 | 0.2296 | -8.56% |
+| renormalised metric, c = 0.5 / 0.03 | 16 | +2.73% / +2.73% | 0.2296 | -8.08% / -8.08% |
+| renormalised metric, c = 0.1, rank 288 / 352 | 16 | +7.47% / +0.12% | 0.2213 / 0.2383 | -7.32% / -7.02% |
+| **renormalised metric, c = 0.1** | **100** | **+2.98% +- 0.27** | **0.2296** | **-7.86%; mean adjusted 5.2925e-9** |
+
+This is the new best configuration: `V29_WARM_JOIN=1 V29_WARM_FB=1 V17_R_RES=4 V26_STRASSEN=6 V26_STRASSEN_MIN=16
+V32_JOIN_SMM=1 V32_ROT_SMM=1 V32_JOIN_POST=3 V32_JP_C=0.1 V21_R_OLD=320 V24_R_OLD2=192`, mean adjusted 5.2925e-9
+on the 100 official networks against 5.742e-9 shipped. The renormalisation is worth 1.4 points of raw at zero
+cost on top of the flat post-W projection, so the observability content of the join is not exhausted by the
+gateway W; the gate is the second factor of the same Gramian.
 
 ## What transfers
 
@@ -105,4 +129,4 @@ that.
 | relative determinant, Witten moving harmonic state | further exact descriptions of the same displacement | relabelling with proofs |
 | modular cross-ratio bound on maximal correlation | a sufficient condition for memory decay on a conditional Markov family | the network is deterministic; the decay we have is measured, not certified |
 | memory counterexamples (norm one, nilpotent delay, hidden global mode) | the formal record of note XIX section 1 | confirmation |
-| balanced truncation with observability | the join's projection taken in the post-W metric, where the legs are read | measured: -5.45% adjusted on 100 networks with Strassen join products at rank 320 (new best, 5.432e-9) |
+| balanced truncation with observability | the join's projection taken in the post-W metric, where the legs are read | measured: post-W projection -5.45%, gate-renormalised metric + Strassen rotations -7.86% adjusted on 100 networks (new best, 5.2925e-9) |
