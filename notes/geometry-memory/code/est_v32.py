@@ -448,6 +448,7 @@ ROT_SMM = _os.environ.get('V32_ROT_SMM', '0') == '1'   # V32: Strassen for the f
 JOIN_SMM = _os.environ.get('V32_JOIN_SMM', '0') == '1'   # V32: Strassen for the join's n x n x r products and the basis transport
 JOIN_POST = int(_os.environ.get('V32_JOIN_POST', '0'))   # V32: 1 = range finder + truncation in post-W coordinates; 2 = pre-W subspace, post-W projection; 3 = 2 in the gate-renormalised metric
 JP_C = float(_os.environ.get('V32_JP_C', '0.1'))   # V32: local-read floor of the renormalised join metric (JOIN_POST=3)
+JP_MODE = int(_os.environ.get('V32_JP_MODE', '0'))   # V32: local-read weight of the metric: 0 constant JP_C, 1 JP_C (alpha phi)^2 / mean, 2 JP_C phi^2 / mean
 WARM_NEST = _os.environ.get('V29_WARM_NEST', '0') == '1'
 WARM_RES = _os.environ.get('V29_WARM_RES', '0') == '1'
 WARM_FB = _os.environ.get('V29_WARM_FB', '0') == '1'
@@ -1005,7 +1006,14 @@ class Estimator(BaseEstimator):
                         _ve = fnp.maximum(fnp.multiply(W, W, out=NN("ww")) @ fnp.diag(C), 1e-10)
                         _al = mu / fnp.sqrt(_ve)
                         _ph = flops.stats.norm.cdf(_al).astype(f32)
-                        _sq = (fnp.sqrt(_ph * _ph + JP_C))[:, None]
+                        if JP_MODE == 0:
+                            _loc = JP_C
+                        else:
+                            _pd = flops.stats.norm.pdf(_al).astype(f32)
+                            _lw = _al * _pd if JP_MODE == 1 else _pd
+                            _lw = _lw * _lw
+                            _loc = _lw * (JP_C / fnp.maximum(fnp.mean(_lw), 1e-12))
+                        _sq = (fnp.sqrt(_ph * _ph + _loc))[:, None]
                         fnp.multiply(_sq, _mmj(W, Qn, Yq), out=Yq)
                         _Qt, _ = fnp.linalg.qr(Yq)
                         QnF = _mmj(W.T, fnp.multiply(_sq, _Qt, out=Yq1), pool.get("zt", (n, r_old)))

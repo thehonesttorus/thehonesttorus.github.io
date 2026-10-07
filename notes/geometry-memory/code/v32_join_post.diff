@@ -1,6 +1,6 @@
 --- a/est_v29.py
 +++ b/est_v29.py
-@@ -444,6 +444,10 @@
+@@ -444,6 +444,11 @@
  STRASSEN_FUSE_P = int(_os.environ.get("V28_STRASSEN_FUSE_P", "343"))  # V28: fused per-product leaf when the leaf batch has >= this many blocks (deep levels: 7x smaller pools, +4 ops per leaf)  # V28: level cap of the first predict() of a process (see _predict_core)
  WARM = _os.environ.get("V26_WARM", "1") == "1"
  WARM_JOIN = _os.environ.get('V29_WARM_JOIN', '0') == '1'
@@ -8,10 +8,11 @@
 +JOIN_SMM = _os.environ.get('V32_JOIN_SMM', '0') == '1'   # V32: Strassen for the join's n x n x r products and the basis transport
 +JOIN_POST = int(_os.environ.get('V32_JOIN_POST', '0'))   # V32: 1 = range finder + truncation in post-W coordinates; 2 = pre-W subspace, post-W projection; 3 = 2 in the gate-renormalised metric
 +JP_C = float(_os.environ.get('V32_JP_C', '0.1'))   # V32: local-read floor of the renormalised join metric (JOIN_POST=3)
++JP_MODE = int(_os.environ.get('V32_JP_MODE', '0'))   # V32: local-read weight of the metric: 0 constant JP_C, 1 JP_C (alpha phi)^2 / mean, 2 JP_C phi^2 / mean
  WARM_NEST = _os.environ.get('V29_WARM_NEST', '0') == '1'
  WARM_RES = _os.environ.get('V29_WARM_RES', '0') == '1'
  WARM_FB = _os.environ.get('V29_WARM_FB', '0') == '1'
-@@ -843,6 +847,13 @@
+@@ -843,6 +848,13 @@
          self._ncall = ncall + 1
          s_lev = STRASSEN_LEVELS if ncall > 0 else min(STRASSEN_LEVELS, STRASSEN_FIRST)
          s_sb = STRASSEN_SB
@@ -25,7 +26,7 @@
          self._s_hub = s_lev
          r = min(int(self.R_RES), n)  # smoke shapes can be narrower than the rank
          rfb = 0 if NO_FB else min(int(self.R_FB), n)  # V18 feedback rank
-@@ -935,14 +946,43 @@
+@@ -935,14 +947,43 @@
                      Yq = pool.get("yq", (n, r_old))
                      Yq1 = pool.get("yq1", (n, r_old))
                      Yq2 = pool.get("yq2", (n, r_old))
@@ -74,7 +75,7 @@
                          fnp.add(Yq, Yq2, out=Yq)
                          if ka > 0:
                              # V24: full core of the confined legs = tier-1 core + lifted tier-2 core
-@@ -951,17 +991,40 @@
+@@ -951,17 +992,47 @@
                              fnp.add(Yq, Yq2, out=Yq)
                          Qn, _ = fnp.linalg.qr(Yq)           # (n, r) orthonormal
                          Om = Qn
@@ -92,7 +93,14 @@
 +                        _ve = fnp.maximum(fnp.multiply(W, W, out=NN("ww")) @ fnp.diag(C), 1e-10)
 +                        _al = mu / fnp.sqrt(_ve)
 +                        _ph = flops.stats.norm.cdf(_al).astype(f32)
-+                        _sq = (fnp.sqrt(_ph * _ph + JP_C))[:, None]
++                        if JP_MODE == 0:
++                            _loc = JP_C
++                        else:
++                            _pd = flops.stats.norm.pdf(_al).astype(f32)
++                            _lw = _al * _pd if JP_MODE == 1 else _pd
++                            _lw = _lw * _lw
++                            _loc = _lw * (JP_C / fnp.maximum(fnp.mean(_lw), 1e-12))
++                        _sq = (fnp.sqrt(_ph * _ph + _loc))[:, None]
 +                        fnp.multiply(_sq, _mmj(W, Qn, Yq), out=Yq)
 +                        _Qt, _ = fnp.linalg.qr(Yq)
 +                        QnF = _mmj(W.T, fnp.multiply(_sq, _Qt, out=Yq1), pool.get("zt", (n, r_old)))
@@ -119,7 +127,7 @@
                              Sg = Tq @ (Sg @ Tq.T)
                          else:
                              Sg = None
-@@ -999,7 +1062,10 @@
+@@ -999,7 +1070,10 @@
                          fnp.matmul(Un.T, FP1, out=fap2_new[kb, 1])
                          if kb > 0:
                              T2 = Un.T @ U                                       # (r2, r2)
@@ -131,7 +139,7 @@
                          FAP2 = fap2_new[:kb + 1]
                          fap24 = fap24_new
                          FA2 = FAP2[:, 0]
-@@ -1013,11 +1079,15 @@
+@@ -1013,11 +1087,15 @@
                          Sg = Sg - S_s
                          kb = kb_t
                      qc_side ^= 1
@@ -149,7 +157,7 @@
                  if ka > kb:
                      # formed dense legs of the tier-1 sources (pre-wick of this layer):
                      # V28 ONE Strassen family over the interleaved (A, P) factor slab
-@@ -1615,6 +1685,14 @@
+@@ -1615,6 +1693,14 @@
          return out
  
      # ------------------------------------------------------------------
@@ -164,7 +172,7 @@
      def _dslices(self, A_st, P_st, Z_st, L_st, w2b_list, s_list, e_list,
                   c1_list, c2_list, y_list, n, bufs, rres, rfb, Zf_st, R1T_st, R2T_st,
                   need_d21=True, ka=0, FAo=None, FPo=None, Qc=None,
-@@ -1746,9 +1824,9 @@
+@@ -1746,9 +1832,9 @@
              # hub-first order is bit-identical to V26's D21 + hub)
              if ka < k and STRASSEN_HUB > 0:
                  D21 = self._hub2(bufs, apb4, ka, k, n)
