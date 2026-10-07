@@ -1,0 +1,85 @@
+--- a/est_v29.py
++++ b/est_v29.py
+@@ -444,6 +444,7 @@
+ STRASSEN_FUSE_P = int(_os.environ.get("V28_STRASSEN_FUSE_P", "343"))  # V28: fused per-product leaf when the leaf batch has >= this many blocks (deep levels: 7x smaller pools, +4 ops per leaf)  # V28: level cap of the first predict() of a process (see _predict_core)
+ WARM = _os.environ.get("V26_WARM", "1") == "1"
+ WARM_JOIN = _os.environ.get('V29_WARM_JOIN', '0') == '1'
++JOIN_POST = int(_os.environ.get('V32_JOIN_POST', '0'))   # V32: 1 = range finder + truncation in post-W coordinates; 2 = pre-W subspace, post-W projection
+ WARM_NEST = _os.environ.get('V29_WARM_NEST', '0') == '1'
+ WARM_RES = _os.environ.get('V29_WARM_RES', '0') == '1'
+ WARM_FB = _os.environ.get('V29_WARM_FB', '0') == '1'
+@@ -935,7 +936,36 @@
+                     Yq = pool.get("yq", (n, r_old))
+                     Yq1 = pool.get("yq1", (n, r_old))
+                     Yq2 = pool.get("yq2", (n, r_old))
+-                    for _pass in range(QPASS):
++                    if JOIN_POST == 1:
++                        # V32: every later use reads the legs through W, so take the rank-r truncation of
++                        # W [Aj | Pj | Qp] (Euclidean in layer-li rows) instead of [Aj | Pj | Qp] itself:
++                        # G' = W G W^T, Qn' its range, factors Qn'^T W X, Qc = Qn' (no W Qn product)
++                        WQp = fnp.matmul(W, Qp, out=pool.get("wqp", (n, r_old))) if ka > 0 else None
++                        if WARM_JOIN and WQp is not None:
++                            fnp.copyto(Om, WQp)
++                        Zt = pool.get("zt", (n, r_old))
++                        for _pass in range(QPASS):
++                            fnp.matmul(W.T, Om, out=Zt)
++                            fnp.matmul(Aj.T, Zt, out=Yq1)
++                            fnp.multiply(dAj, Yq1, out=Yq1)
++                            fnp.matmul(Aj, Yq1, out=Yq2)
++                            fnp.matmul(Pj.T, Zt, out=Yq1)
++                            fnp.multiply(dPj, Yq1, out=Yq1)
++                            fnp.matmul(Pj, Yq1, out=Zt)
++                            fnp.add(Yq2, Zt, out=Yq2)
++                            fnp.matmul(W, Yq2, out=Yq)
++                            if ka > 0:
++                                Sfull = Sg if kb == 0 else Sg + U @ (S2 @ U.T)
++                                fnp.matmul(WQp, Sfull @ (WQp.T @ Om), out=Yq2)
++                                fnp.add(Yq, Yq2, out=Yq)
++                            Qn, _ = fnp.linalg.qr(Yq)
++                            Om = Qn
++                        WtQ = fnp.matmul(W.T, Qn, out=Zt)     # (n, r): factors Qn^T W X = WtQ^T X
++                        QnF = WtQ
++                        QcF = Qn
++                    else:
++                        QnF = None
++                    for _pass in range(QPASS if JOIN_POST != 1 else 0):
+                         # Yq = G Om with G = Aj dA Aj^T + Pj dP Pj^T + Qp Sg Qp^T
+                         fnp.matmul(Aj.T, Om, out=Yq1)
+                         fnp.multiply(dAj, Yq1, out=Yq1)
+@@ -951,15 +981,20 @@
+                             fnp.add(Yq, Yq2, out=Yq)
+                         Qn, _ = fnp.linalg.qr(Yq)           # (n, r) orthonormal
+                         Om = Qn
++                    if JOIN_POST == 2:
++                        # V32: keep the pre-W subspace, orthonormalise W Qn (the would-be Qc) and project W X onto it
++                        # orthogonally in layer-li rows: factors Qt^T W X = (W^T Qt)^T X, one extra n x n x r product
++                        QcF, _ = fnp.linalg.qr(fnp.matmul(W, Qn, out=Yq))
++                        QnF = fnp.matmul(W.T, QcF, out=pool.get("zt", (n, r_old)))
+                     # V27: factors live in ping-pong slot buffers (rotation reads one side,
+                     # writes the other; the joiner takes slot m1 = number of tier-1 members)
+                     fa_side ^= 1
+                     fap_new, fap4_new = pool.get_pair(("fap", fa_side), (L - 1, 2, r_old, n))
+                     m1 = ka - kb
+-                    FAj = fnp.matmul(Qn.T, Aj, out=fap_new[m1, 0])
+-                    FPj = fnp.matmul(Qn.T, Pj, out=fap_new[m1, 1])
++                    FAj = fnp.matmul((Qn if QnF is None else QnF).T, Aj, out=fap_new[m1, 0])
++                    FPj = fnp.matmul((Qn if QnF is None else QnF).T, Pj, out=fap_new[m1, 1])
+                     if ka > 0:
+-                        Tq = Qn.T @ Qp                      # (r, r) rotation of the old factors
++                        Tq = Qn.T @ Qp if QnF is None else QnF.T @ Qp   # (r, r) rotation of the old factors
+                         if ka > kb:
+                             fnp.matmul(Tq[None, None], FAP, out=fap_new[:m1])
+                             Sg = Tq @ (Sg @ Tq.T)
+@@ -1013,7 +1048,11 @@
+                         Sg = Sg - S_s
+                         kb = kb_t
+                     qc_side ^= 1
+-                    Qc = fnp.matmul(W, Qn, out=pool.get(("qc", qc_side), (n, r_old)))  # wick already inside Qn
++                    if QnF is None:
++                        Qc = fnp.matmul(W, Qn, out=pool.get(("qc", qc_side), (n, r_old)))  # wick already inside Qn
++                    else:
++                        Qc = pool.get(("qc", qc_side), (n, r_old))
++                        fnp.copyto(Qc, QcF)
+                     ka = ka_t
+                 elif ka > 0:
+                     qc_side ^= 1

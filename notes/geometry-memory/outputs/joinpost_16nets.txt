@@ -1,0 +1,74 @@
+# post-W join A/B, 16 official nets, against best config (best100: warm join, warm feedback, residual rank 4, Strassen L6 leaf 16)
+# summary (log raw ratio per net, mean +- standard error)
+p384: 16 nets | raw -0.76% +- 0.43% | better on 10/16 | C/B 0.2672 | adjusted +3.34%
+p320: 16 nets | raw +4.21% +- 0.71% | better on 1/16 | C/B 0.2459 | adjusted -0.14%
+b320: 16 nets | raw +8.40% +- 0.57% | better on 0/16 | C/B 0.2370 | adjusted +0.12%
+p256: 16 nets | raw +19.94% +- 1.04% | better on 0/16 | C/B 0.2261 | adjusted +5.68%
+# p384
+net 0 p384: raw 2.1870e-08  C/B 0.2672  adjusted 5.8441e-09  wall 101s  residual nans
+net 1 p384: raw 2.0710e-08  C/B 0.2672  adjusted 5.5341e-09  wall 127s  residual nans
+net 2 p384: raw 2.5046e-08  C/B 0.2672  adjusted 6.6928e-09  wall 127s  residual nans
+net 3 p384: raw 2.5767e-08  C/B 0.2672  adjusted 6.8853e-09  wall 101s  residual nans
+net 4 p384: raw 2.1948e-08  C/B 0.2672  adjusted 5.8650e-09  wall 100s  residual nans
+net 5 p384: raw 2.1234e-08  C/B 0.2672  adjusted 5.6742e-09  wall 127s  residual nans
+net 6 p384: raw 2.1150e-08  C/B 0.2672  adjusted 5.6516e-09  wall 127s  residual nans
+net 7 p384: raw 2.4006e-08  C/B 0.2672  adjusted 6.4148e-09  wall 100s  residual nans
+net 8 p384: raw 2.3063e-08  C/B 0.2672  adjusted 6.1630e-09  wall 100s  residual nans
+net 9 p384: raw 2.3837e-08  C/B 0.2672  adjusted 6.3696e-09  wall 100s  residual nans
+net 10 p384: raw 2.2994e-08  C/B 0.2672  adjusted 6.1445e-09  wall 127s  residual nans
+net 11 p384: raw 2.3658e-08  C/B 0.2672  adjusted 6.3218e-09  wall 101s  residual nans
+net 12 p384: raw 2.0593e-08  C/B 0.2672  adjusted 5.5029e-09  wall 128s  residual nans
+net 13 p384: raw 2.1461e-08  C/B 0.2672  adjusted 5.7347e-09  wall 101s  residual nans
+net 14 p384: raw 2.3956e-08  C/B 0.2672  adjusted 6.4015e-09  wall 128s  residual nans
+net 15 p384: raw 2.4486e-08  C/B 0.2672  adjusted 6.5431e-09  wall 102s  residual nans
+# p320
+net 0 p320: raw 2.2128e-08  C/B 0.2459  adjusted 5.4407e-09  wall 127s  residual nans
+net 1 p320: raw 2.0957e-08  C/B 0.2459  adjusted 5.1526e-09  wall 126s  residual nans
+net 2 p320: raw 2.6022e-08  C/B 0.2459  adjusted 6.3980e-09  wall 98s  residual nans
+net 3 p320: raw 2.6789e-08  C/B 0.2459  adjusted 6.5867e-09  wall 99s  residual nans
+net 4 p320: raw 2.2650e-08  C/B 0.2459  adjusted 5.5689e-09  wall 98s  residual nans
+net 5 p320: raw 2.2225e-08  C/B 0.2459  adjusted 5.4645e-09  wall 100s  residual nans
+net 6 p320: raw 2.2503e-08  C/B 0.2459  adjusted 5.5328e-09  wall 127s  residual nans
+net 7 p320: raw 2.5376e-08  C/B 0.2459  adjusted 6.2393e-09  wall 98s  residual nans
+net 8 p320: raw 2.4062e-08  C/B 0.2459  adjusted 5.9160e-09  wall 97s  residual nans
+net 9 p320: raw 2.6438e-08  C/B 0.2459  adjusted 6.5003e-09  wall 128s  residual nans
+net 10 p320: raw 2.5314e-08  C/B 0.2459  adjusted 6.2239e-09  wall 127s  residual nans
+net 11 p320: raw 2.4935e-08  C/B 0.2459  adjusted 6.1308e-09  wall 127s  residual nans
+net 12 p320: raw 2.1640e-08  C/B 0.2459  adjusted 5.3205e-09  wall 126s  residual nans
+net 13 p320: raw 2.1369e-08  C/B 0.2459  adjusted 5.2541e-09  wall 127s  residual nans
+net 14 p320: raw 2.5183e-08  C/B 0.2459  adjusted 6.1917e-09  wall 127s  residual nans
+net 15 p320: raw 2.6941e-08  C/B 0.2459  adjusted 6.6239e-09  wall 99s  residual nans
+# b320
+net 0 b320: raw 2.3984e-08  C/B 0.2370  adjusted 5.6847e-09  wall 100s  residual nans
+net 1 b320: raw 2.2105e-08  C/B 0.2370  adjusted 5.2393e-09  wall 100s  residual nans
+net 2 b320: raw 2.9154e-08  C/B 0.2370  adjusted 6.9101e-09  wall 99s  residual nans
+net 3 b320: raw 2.8360e-08  C/B 0.2370  adjusted 6.7218e-09  wall 98s  residual nans
+net 4 b320: raw 2.3769e-08  C/B 0.2370  adjusted 5.6336e-09  wall 100s  residual nans
+net 5 b320: raw 2.2943e-08  C/B 0.2370  adjusted 5.4381e-09  wall 128s  residual nans
+net 6 b320: raw 2.3466e-08  C/B 0.2370  adjusted 5.5620e-09  wall 99s  residual nans
+net 7 b320: raw 2.6386e-08  C/B 0.2370  adjusted 6.2541e-09  wall 123s  residual nans
+net 8 b320: raw 2.3708e-08  C/B 0.2370  adjusted 5.6193e-09  wall 99s  residual nans
+net 9 b320: raw 2.6666e-08  C/B 0.2370  adjusted 6.3203e-09  wall 98s  residual nans
+net 10 b320: raw 2.5774e-08  C/B 0.2370  adjusted 6.1090e-09  wall 99s  residual nans
+net 11 b320: raw 2.6669e-08  C/B 0.2370  adjusted 6.3212e-09  wall 103s  residual nans
+net 12 b320: raw 2.2803e-08  C/B 0.2370  adjusted 5.4047e-09  wall 126s  residual nans
+net 13 b320: raw 2.3219e-08  C/B 0.2370  adjusted 5.5034e-09  wall 99s  residual nans
+net 14 b320: raw 2.4506e-08  C/B 0.2370  adjusted 5.8084e-09  wall 123s  residual nans
+net 15 b320: raw 2.6359e-08  C/B 0.2370  adjusted 6.2476e-09  wall 97s  residual nans
+# p256
+net 0 p256: raw 2.5780e-08  C/B 0.2261  adjusted 5.8284e-09  wall 98s  residual nans
+net 1 p256: raw 2.5003e-08  C/B 0.2261  adjusted 5.6528e-09  wall 126s  residual nans
+net 2 p256: raw 3.3053e-08  C/B 0.2261  adjusted 7.4728e-09  wall 127s  residual nans
+net 3 p256: raw 3.1465e-08  C/B 0.2261  adjusted 7.1138e-09  wall 127s  residual nans
+net 4 p256: raw 2.7669e-08  C/B 0.2261  adjusted 6.2556e-09  wall 125s  residual nans
+net 5 p256: raw 2.5203e-08  C/B 0.2261  adjusted 5.6980e-09  wall 125s  residual nans
+net 6 p256: raw 2.5617e-08  C/B 0.2261  adjusted 5.7917e-09  wall 99s  residual nans
+net 7 p256: raw 3.0206e-08  C/B 0.2261  adjusted 6.8291e-09  wall 126s  residual nans
+net 8 p256: raw 2.6693e-08  C/B 0.2261  adjusted 6.0350e-09  wall 125s  residual nans
+net 9 p256: raw 3.0346e-08  C/B 0.2261  adjusted 6.8608e-09  wall 126s  residual nans
+net 10 p256: raw 2.8211e-08  C/B 0.2261  adjusted 6.3781e-09  wall 125s  residual nans
+net 11 p256: raw 2.7391e-08  C/B 0.2261  adjusted 6.1926e-09  wall 101s  residual nans
+net 12 p256: raw 2.6585e-08  C/B 0.2261  adjusted 6.0106e-09  wall 126s  residual nans
+net 13 p256: raw 2.4254e-08  C/B 0.2261  adjusted 5.4835e-09  wall 126s  residual nans
+net 14 p256: raw 2.8138e-08  C/B 0.2261  adjusted 6.3617e-09  wall 125s  residual nans
+net 15 p256: raw 2.7045e-08  C/B 0.2261  adjusted 6.1146e-09  wall 97s  residual nans
