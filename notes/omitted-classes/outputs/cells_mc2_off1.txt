@@ -1,0 +1,118 @@
+net 1: inputs mc2_off1_h0 (true z_l), truth mc2_off1_h1 (z_(l+1)); rel err / corr per slice (diag | (2,2) | (3,1))
+layer  1-> 2: lam 0.00740; MC noise of truth 0.118 0.139 0.666; replication 2.8e-07 8.5e-08 2.5e-08
+    chain 0.155/+0.639 | 0.183/+0.465 | 0.898/+0.501
+    c00   0.155/+0.639 | 0.179/+0.471 | 0.884/+0.483
+    c10   0.154/+0.637 | 0.179/+0.468 | 0.888/+0.481
+    c01   0.154/+0.637 | 0.178/+0.472 | 0.883/+0.490
+    c6    0.148/+0.674 | 0.174/+0.507 | 0.860/+0.528
+    c6-noλ 0.160/+0.599 | 0.180/+0.450 | 0.875/+0.484
+    diag ledger: D_metric 0.006 (corr w/ residual +0.05) D_known 0.000 (corr w/ residual -0.04) D_unres 0.016 (corr w/ residual +0.07)
+    (3,1)_y transport size vs truth: 0.035 0.033 0.168; (2,2) cross term / main term on 3000 pairs: 0.0180
+layer  2-> 3: lam 0.00915; MC noise of truth 0.089 0.106 0.524; replication 4.5e-07 1.4e-07 2.5e-08
+    chain 0.142/+0.685 | 0.162/+0.521 | 0.838/+0.589
+    c00   0.142/+0.685 | 0.159/+0.524 | 0.845/+0.560
+    c10   0.142/+0.684 | 0.159/+0.523 | 0.846/+0.559
+    c01   0.142/+0.685 | 0.159/+0.525 | 0.843/+0.563
+    c6    0.136/+0.715 | 0.156/+0.548 | 0.827/+0.586
+    c6-noλ 0.160/+0.570 | 0.168/+0.433 | 0.877/+0.481
+    diag ledger: D_metric 0.002 (corr w/ residual -0.04) D_known 0.000 (corr w/ residual +0.00) D_unres 0.011 (corr w/ residual +0.05)
+    (3,1)_y transport size vs truth: 0.027 0.026 0.141; (2,2) cross term / main term on 3000 pairs: 0.0132
+layer  3-> 4: lam 0.01022; MC noise of truth 0.071 0.085 0.414; replication 7.2e-07 1.1e-07 2.5e-08
+    chain 0.142/+0.701 | 0.156/+0.539 | 0.795/+0.635
+    c00   0.142/+0.701 | 0.153/+0.553 | 0.818/+0.605
+    c10   0.142/+0.701 | 0.153/+0.553 | 0.819/+0.604
+    c01   0.142/+0.701 | 0.153/+0.554 | 0.817/+0.606
+    c6    0.138/+0.723 | 0.150/+0.577 | 0.801/+0.625
+    c6-noλ 0.169/+0.523 | 0.167/+0.412 | 0.880/+0.475
+    diag ledger: D_metric 0.001 (corr w/ residual -0.01) D_known 0.000 (corr w/ residual -0.01) D_unres 0.009 (corr w/ residual +0.05)
+    (3,1)_y transport size vs truth: 0.026 0.024 0.126; (2,2) cross term / main term on 3000 pairs: 0.0109
+layer  4-> 5: lam 0.01039; MC noise of truth 0.061 0.073 0.336; replication 7.3e-07 1.0e-07 2.5e-08
+    chain 0.146/+0.737 | 0.162/+0.560 | 0.772/+0.656
+    c00   0.146/+0.737 | 0.159/+0.574 | 0.804/+0.623
+    c10   0.146/+0.737 | 0.159/+0.574 | 0.804/+0.623
+    c01   0.146/+0.738 | 0.159/+0.575 | 0.803/+0.624
+    c6    0.142/+0.755 | 0.156/+0.594 | 0.789/+0.639
+    c6-noλ 0.187/+0.488 | 0.178/+0.395 | 0.891/+0.454
+    diag ledger: D_metric 0.000 (corr w/ residual +0.01) D_known 0.000 (corr w/ residual +0.07) D_unres 0.007 (corr w/ residual +0.06)
+    (3,1)_y transport size vs truth: 0.023 0.022 0.112; (2,2) cross term / main term on 3000 pairs: 0.0097
+layer  5-> 6: lam 0.01032; MC noise of truth 0.052 0.063 0.269; replication 7.5e-07 9.1e-08 2.5e-08
+    chain 0.158/+0.759 | 0.167/+0.598 | 0.750/+0.681
+    c00   0.158/+0.759 | 0.165/+0.607 | 0.783/+0.644
+    c10   0.158/+0.759 | 0.165/+0.607 | 0.783/+0.643
+    c01   0.157/+0.760 | 0.165/+0.608 | 0.783/+0.644
+    c6    0.153/+0.779 | 0.162/+0.624 | 0.770/+0.657
+    c6-noλ 0.211/+0.464 | 0.191/+0.382 | 0.900/+0.435
+    diag ledger: D_metric 0.000 (corr w/ residual +0.00) D_known 0.000 (corr w/ residual -0.01) D_unres 0.006 (corr w/ residual +0.06)
+    (3,1)_y transport size vs truth: 0.021 0.020 0.091; (2,2) cross term / main term on 3000 pairs: 0.0089
+layer  6-> 7: lam 0.01019; MC noise of truth 0.047 0.056 0.226; replication 7.5e-07 9.8e-08 2.5e-08
+    chain 0.161/+0.787 | 0.178/+0.637 | 0.744/+0.682
+    c00   0.161/+0.787 | 0.175/+0.643 | 0.780/+0.645
+    c10   0.161/+0.786 | 0.175/+0.643 | 0.781/+0.644
+    c01   0.161/+0.786 | 0.175/+0.643 | 0.780/+0.645
+    c6    0.158/+0.798 | 0.173/+0.655 | 0.769/+0.656
+    c6-noλ 0.233/+0.434 | 0.213/+0.358 | 0.914/+0.407
+    diag ledger: D_metric 0.000 (corr w/ residual +0.02) D_known 0.000 (corr w/ residual +0.05) D_unres 0.005 (corr w/ residual +0.01)
+    (3,1)_y transport size vs truth: 0.019 0.018 0.077; (2,2) cross term / main term on 3000 pairs: 0.0075
+layer  7-> 8: lam 0.00974; MC noise of truth 0.045 0.052 0.195; replication 5.4e-07 9.4e-08 2.5e-08
+    chain 0.172/+0.791 | 0.191/+0.641 | 0.746/+0.680
+    c00   0.172/+0.791 | 0.188/+0.647 | 0.779/+0.641
+    c10   0.172/+0.791 | 0.188/+0.647 | 0.779/+0.641
+    c01   0.172/+0.791 | 0.188/+0.647 | 0.779/+0.641
+    c6    0.168/+0.804 | 0.186/+0.659 | 0.768/+0.652
+    c6-noλ 0.246/+0.465 | 0.226/+0.390 | 0.925/+0.381
+    diag ledger: D_metric 0.000 (corr w/ residual -0.02) D_known 0.000 (corr w/ residual +0.00) D_unres 0.004 (corr w/ residual +0.04)
+    (3,1)_y transport size vs truth: 0.018 0.017 0.068; (2,2) cross term / main term on 3000 pairs: 0.0069
+layer  8-> 9: lam 0.00944; MC noise of truth 0.041 0.049 0.171; replication 4.6e-07 1.8e-07 2.5e-08
+    chain 0.188/+0.768 | 0.203/+0.620 | 0.743/+0.684
+    c00   0.188/+0.768 | 0.201/+0.626 | 0.771/+0.645
+    c10   0.188/+0.768 | 0.201/+0.626 | 0.772/+0.645
+    c01   0.188/+0.767 | 0.201/+0.626 | 0.772/+0.645
+    c6    0.185/+0.779 | 0.199/+0.637 | 0.762/+0.655
+    c6-noλ 0.267/+0.393 | 0.242/+0.327 | 0.933/+0.360
+    diag ledger: D_metric 0.000 (corr w/ residual +0.01) D_known 0.000 (corr w/ residual -0.05) D_unres 0.004 (corr w/ residual -0.03)
+    (3,1)_y transport size vs truth: 0.016 0.015 0.058; (2,2) cross term / main term on 3000 pairs: 0.0070
+layer  9->10: lam 0.00890; MC noise of truth 0.037 0.046 0.148; replication 5.7e-07 1.3e-07 2.5e-08
+    chain 0.208/+0.744 | 0.222/+0.620 | 0.750/+0.676
+    c00   0.208/+0.744 | 0.219/+0.626 | 0.776/+0.637
+    c10   0.208/+0.744 | 0.219/+0.626 | 0.776/+0.636
+    c01   0.208/+0.745 | 0.219/+0.626 | 0.776/+0.637
+    c6    0.204/+0.757 | 0.217/+0.636 | 0.767/+0.647
+    c6-noλ 0.286/+0.380 | 0.264/+0.317 | 0.941/+0.339
+    diag ledger: D_metric 0.000 (corr w/ residual -0.04) D_known 0.000 (corr w/ residual -0.01) D_unres 0.003 (corr w/ residual +0.04)
+    (3,1)_y transport size vs truth: 0.015 0.015 0.052; (2,2) cross term / main term on 3000 pairs: 0.0067
+layer 10->11: lam 0.00886; MC noise of truth 0.036 0.043 0.124; replication 6.4e-07 1.5e-07 2.5e-08
+    chain 0.250/+0.738 | 0.246/+0.622 | 0.750/+0.684
+    c00   0.250/+0.738 | 0.244/+0.624 | 0.769/+0.640
+    c10   0.250/+0.738 | 0.244/+0.624 | 0.769/+0.640
+    c01   0.250/+0.738 | 0.244/+0.624 | 0.769/+0.640
+    c6    0.245/+0.753 | 0.241/+0.636 | 0.760/+0.651
+    c6-noλ 0.343/+0.304 | 0.297/+0.262 | 0.952/+0.308
+    diag ledger: D_metric 0.000 (corr w/ residual -0.03) D_known 0.000 (corr w/ residual -0.00) D_unres 0.003 (corr w/ residual +0.03)
+    (3,1)_y transport size vs truth: 0.014 0.014 0.043; (2,2) cross term / main term on 3000 pairs: 0.0067
+layer 11->12: lam 0.00890; MC noise of truth 0.034 0.041 0.110; replication 4.5e-07 9.5e-08 2.5e-08
+    chain 0.274/+0.758 | 0.264/+0.651 | 0.750/+0.690
+    c00   0.274/+0.758 | 0.263/+0.651 | 0.766/+0.644
+    c10   0.274/+0.758 | 0.263/+0.651 | 0.766/+0.644
+    c01   0.274/+0.757 | 0.263/+0.651 | 0.766/+0.644
+    c6    0.270/+0.770 | 0.260/+0.661 | 0.757/+0.654
+    c6-noλ 0.388/+0.262 | 0.329/+0.236 | 0.958/+0.288
+    diag ledger: D_metric 0.000 (corr w/ residual +0.01) D_known 0.000 (corr w/ residual -0.03) D_unres 0.002 (corr w/ residual -0.03)
+    (3,1)_y transport size vs truth: 0.014 0.013 0.037; (2,2) cross term / main term on 3000 pairs: 0.0062
+layer 12->13: lam 0.00879; MC noise of truth 0.031 0.040 0.103; replication 3.9e-07 1.1e-07 2.5e-08
+    chain 0.275/+0.730 | 0.276/+0.620 | 0.751/+0.682
+    c00   0.275/+0.730 | 0.275/+0.621 | 0.771/+0.636
+    c10   0.275/+0.730 | 0.275/+0.621 | 0.771/+0.636
+    c01   0.275/+0.730 | 0.274/+0.621 | 0.771/+0.636
+    c6    0.270/+0.744 | 0.272/+0.632 | 0.762/+0.648
+    c6-noλ 0.375/+0.321 | 0.333/+0.272 | 0.960/+0.280
+    diag ledger: D_metric 0.000 (corr w/ residual -0.00) D_known 0.000 (corr w/ residual -0.07) D_unres 0.003 (corr w/ residual +0.00)
+    (3,1)_y transport size vs truth: 0.015 0.014 0.039; (2,2) cross term / main term on 3000 pairs: 0.0066
+layer 13->14: lam 0.00873; MC noise of truth 0.031 0.037 0.088; replication 5.5e-07 9.2e-08 2.5e-08
+    chain 0.292/+0.760 | 0.299/+0.663 | 0.736/+0.719
+    c00   0.292/+0.760 | 0.298/+0.656 | 0.749/+0.668
+    c10   0.292/+0.760 | 0.298/+0.656 | 0.749/+0.668
+    c01   0.292/+0.760 | 0.298/+0.656 | 0.749/+0.668
+    c6    0.287/+0.771 | 0.295/+0.667 | 0.740/+0.678
+    c6-noλ 0.413/+0.256 | 0.371/+0.221 | 0.966/+0.262
+    diag ledger: D_metric 0.000 (corr w/ residual -0.06) D_known 0.000 (corr w/ residual +0.02) D_unres 0.003 (corr w/ residual -0.03)
+    (3,1)_y transport size vs truth: 0.013 0.013 0.032; (2,2) cross term / main term on 3000 pairs: 0.0065
