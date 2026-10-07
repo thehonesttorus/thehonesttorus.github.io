@@ -261,3 +261,21 @@ experiment is worth one round and not more. The network 1 one-loop decomposition
 | a two-channel model with a memory operator | the missing information is the non-mixture shape of the third-cumulant slices, which the chain carries | d3 feed 2-6x the mixture's |
 | keep the chain and the table frozen | agreed for this round; one derived replacement proposed | expected size: the 15% misfit of the sector at layer 14 |
 
+
+## 7. The proposed chain experiment, run (Azure, 16 networks, paired)
+
+The chain's regenerated fourth-cumulant core is dG = (W o W) g_prev + lam s_off^2, a scalar per layer times the
+off-diagonal part of the pre-activation variance, so it already has the structure of the dropped (2+1+1) class. The
+derivation gives a per-neuron coefficient lam_i = g (3 s_diag_i^2 + 1.5 s_off_i^2). Three variants (switch V31_K4D in
+`est_v29.py`) were run on networks 0-15 against the best configuration on the same networks:
+
+| variant | raw error change | better on |
+|---|---|---|
+| fitted amplitude, derived per-neuron shape | +9.4% +- 0.7% | 0/16 |
+| derived amplitude g from the chain's D3 | +49.5% +- 2.2% | 0/16 |
+| half the derived amplitude | +13.6% +- 0.9% | 0/16 |
+
+The fitted scalar wins on every network. The derived shape is the truth's for the pre-activation fourth cumulant
+(section 4), but inside the chain the fitted term also absorbs the dropped gate-covariance and second-order terms
+(note XVIII), and redistributing it by the truth's shape breaks that compensation, which is the adjoint-error
+mechanism of note XXII section 3. The lever is closed; the switch stays off.
