@@ -300,6 +300,37 @@ all-oracle one-step dump (`outputs/k3_feedback_weights.txt`):
 Note XXXI's precision law (Delta MSE / MSE ~ 180 x the readout error energy) turns the measured drop into about -5% of
 the MSE, at no cost. Being derived rather than fitted, it is tested on 32 networks, paired.
 
+### 3g. The derived feedback weight in the chain, and what the two in-chain tests share
+
+**Free-running, paired over 32 networks** (`outputs/fb_paired_32nets.txt`, production against V40_FB_SY = 2, the same
+cost): the output is worse on 25 of 32, +2.3% +- 0.5% (mean of per-network ratios).
+
+On network 1 the free-running chain behaves as the theory says in its own channel (`outputs/fb_free_off1.txt`):
+- **Mid-depth readouts improve.** The kappa3 readouts are better at layers 3-11 (layer 10: D3 0.0421 -> 0.0394, D21
+  0.0639 -> 0.0580).
+- **The adjoint kappa3 channel improves.** Its output content falls 10% (0.725 -> 0.650, units 1e-8 n). Per source
+  layer it falls 10-17% at layers 11-15, even where the L2 error of D3 rose (layers 14-15).
+- **The variance channel worsens.** It rises 7% (1.31 -> 1.40), mostly at layers 8-13 and 15, although the variance
+  and covariance L2 errors fell slightly.
+
+Section 3d's G D core failed the same way:
+- **The targeted channel.** The kappa4 channel's output content was flat while its L2 error fell 30%.
+- **The variance channel** rose 10%.
+
+Two theory-correct local repairs, each verified against the exact law in its own statistic, both lose through the
+variance channel. The fitted elements (the lam table, its adaptive rule REF_R and its 0.95 scale) were tuned on the
+trajectory of the uncorrected chain, so this is note XXI section 7's compensation, now seen per channel.
+
+**It is not the (3,1) slice acting on the covariance program** (`outputs/k31_covariance_attribution.txt`). With every
+other input true, the one-step error of the chain's y covariance is the same, 1.4% at layer 1 falling to 0.4%, whether
+the z (3,1) slice is the truth, the lam core, the G D core, or absent.
+
+What remains open is the route by which a better kappa3 or kappa4 state raises the variance channel's output content.
+The adjoint functional measures each channel's first-order output content to within 2 points (section 2). The
+principled next step is therefore to weight corrections by that functional rather than by L2 accuracy: fit the derived
+shapes' few amplitudes (the D coefficient per layer, the feedback weights) to the adjoint-predicted output error.
+Re-tuning the fitted tables on output would not be a result.
+
 ### 3d. In the chain: G D in place of the lam core (V39_KD)
 
 `est_v29.py` switch V39_KD builds G_l D_l at every layer from the chain's own state:
