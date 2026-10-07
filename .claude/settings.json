@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 infra/azure/arm.py *)",
+      "mcp__plugin_azure_azure__compute",
+      "mcp__plugin_azure_azure__storage",
+      "mcp__plugin_azure_azure__quota"
+    ]
+  }
+}
