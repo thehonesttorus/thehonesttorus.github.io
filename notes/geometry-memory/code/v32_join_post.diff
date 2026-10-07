@@ -1,14 +1,29 @@
 --- a/est_v29.py
 +++ b/est_v29.py
-@@ -444,6 +444,7 @@
+@@ -444,6 +444,8 @@
  STRASSEN_FUSE_P = int(_os.environ.get("V28_STRASSEN_FUSE_P", "343"))  # V28: fused per-product leaf when the leaf batch has >= this many blocks (deep levels: 7x smaller pools, +4 ops per leaf)  # V28: level cap of the first predict() of a process (see _predict_core)
  WARM = _os.environ.get("V26_WARM", "1") == "1"
  WARM_JOIN = _os.environ.get('V29_WARM_JOIN', '0') == '1'
++JOIN_SMM = _os.environ.get('V32_JOIN_SMM', '0') == '1'   # V32: Strassen for the join's n x n x r products and the basis transport
 +JOIN_POST = int(_os.environ.get('V32_JOIN_POST', '0'))   # V32: 1 = range finder + truncation in post-W coordinates; 2 = pre-W subspace, post-W projection
  WARM_NEST = _os.environ.get('V29_WARM_NEST', '0') == '1'
  WARM_RES = _os.environ.get('V29_WARM_RES', '0') == '1'
  WARM_FB = _os.environ.get('V29_WARM_FB', '0') == '1'
-@@ -935,7 +936,36 @@
+@@ -843,6 +845,13 @@
+         self._ncall = ncall + 1
+         s_lev = STRASSEN_LEVELS if ncall > 0 else min(STRASSEN_LEVELS, STRASSEN_FIRST)
+         s_sb = STRASSEN_SB
++
++        def _mmj(X, Y, out):
++            # V32: join-side (m, kd) @ (kd, w) through the Strassen family when JOIN_SMM (dense matmul otherwise)
++            if JOIN_SMM:
++                smm.mm(X[None, None], Y[None, None], out[None, None], smm.level(X.shape[0], X.shape[1], Y.shape[1], s_sb))
++                return out
++            return fnp.matmul(X, Y, out=out)
+         self._s_hub = s_lev
+         r = min(int(self.R_RES), n)  # smoke shapes can be narrower than the rank
+         rfb = 0 if NO_FB else min(int(self.R_FB), n)  # V18 feedback rank
+@@ -935,14 +944,43 @@
                      Yq = pool.get("yq", (n, r_old))
                      Yq1 = pool.get("yq1", (n, r_old))
                      Yq2 = pool.get("yq2", (n, r_old))
@@ -44,17 +59,28 @@
 +                        QnF = None
 +                    for _pass in range(QPASS if JOIN_POST != 1 else 0):
                          # Yq = G Om with G = Aj dA Aj^T + Pj dP Pj^T + Qp Sg Qp^T
-                         fnp.matmul(Aj.T, Om, out=Yq1)
+-                        fnp.matmul(Aj.T, Om, out=Yq1)
++                        _mmj(Aj.T, Om, Yq1)
                          fnp.multiply(dAj, Yq1, out=Yq1)
-@@ -951,15 +981,20 @@
+-                        fnp.matmul(Aj, Yq1, out=Yq)
+-                        fnp.matmul(Pj.T, Om, out=Yq1)
++                        _mmj(Aj, Yq1, Yq)
++                        _mmj(Pj.T, Om, Yq1)
+                         fnp.multiply(dPj, Yq1, out=Yq1)
+-                        fnp.matmul(Pj, Yq1, out=Yq2)
++                        _mmj(Pj, Yq1, Yq2)
+                         fnp.add(Yq, Yq2, out=Yq)
+                         if ka > 0:
+                             # V24: full core of the confined legs = tier-1 core + lifted tier-2 core
+@@ -951,15 +989,20 @@
                              fnp.add(Yq, Yq2, out=Yq)
                          Qn, _ = fnp.linalg.qr(Yq)           # (n, r) orthonormal
                          Om = Qn
 +                    if JOIN_POST == 2:
 +                        # V32: keep the pre-W subspace, orthonormalise W Qn (the would-be Qc) and project W X onto it
 +                        # orthogonally in layer-li rows: factors Qt^T W X = (W^T Qt)^T X, one extra n x n x r product
-+                        QcF, _ = fnp.linalg.qr(fnp.matmul(W, Qn, out=Yq))
-+                        QnF = fnp.matmul(W.T, QcF, out=pool.get("zt", (n, r_old)))
++                        QcF, _ = fnp.linalg.qr(_mmj(W, Qn, Yq))
++                        QnF = _mmj(W.T, QcF, pool.get("zt", (n, r_old)))
                      # V27: factors live in ping-pong slot buffers (rotation reads one side,
                      # writes the other; the joiner takes slot m1 = number of tier-1 members)
                      fa_side ^= 1
@@ -62,24 +88,29 @@
                      m1 = ka - kb
 -                    FAj = fnp.matmul(Qn.T, Aj, out=fap_new[m1, 0])
 -                    FPj = fnp.matmul(Qn.T, Pj, out=fap_new[m1, 1])
-+                    FAj = fnp.matmul((Qn if QnF is None else QnF).T, Aj, out=fap_new[m1, 0])
-+                    FPj = fnp.matmul((Qn if QnF is None else QnF).T, Pj, out=fap_new[m1, 1])
++                    FAj = _mmj((Qn if QnF is None else QnF).T, Aj, fap_new[m1, 0])
++                    FPj = _mmj((Qn if QnF is None else QnF).T, Pj, fap_new[m1, 1])
                      if ka > 0:
 -                        Tq = Qn.T @ Qp                      # (r, r) rotation of the old factors
 +                        Tq = Qn.T @ Qp if QnF is None else QnF.T @ Qp   # (r, r) rotation of the old factors
                          if ka > kb:
                              fnp.matmul(Tq[None, None], FAP, out=fap_new[:m1])
                              Sg = Tq @ (Sg @ Tq.T)
-@@ -1013,7 +1048,11 @@
+@@ -1013,11 +1056,15 @@
                          Sg = Sg - S_s
                          kb = kb_t
                      qc_side ^= 1
 -                    Qc = fnp.matmul(W, Qn, out=pool.get(("qc", qc_side), (n, r_old)))  # wick already inside Qn
 +                    if QnF is None:
-+                        Qc = fnp.matmul(W, Qn, out=pool.get(("qc", qc_side), (n, r_old)))  # wick already inside Qn
++                        Qc = _mmj(W, Qn, pool.get(("qc", qc_side), (n, r_old)))  # wick already inside Qn
 +                    else:
 +                        Qc = pool.get(("qc", qc_side), (n, r_old))
 +                        fnp.copyto(Qc, QcF)
                      ka = ka_t
                  elif ka > 0:
                      qc_side ^= 1
+-                    Qc = fnp.matmul(WD, Qc, out=pool.get(("qc", qc_side), (n, r_old)))
++                    Qc = _mmj(WD, Qc, pool.get(("qc", qc_side), (n, r_old)))
+                 if ka > kb:
+                     # formed dense legs of the tier-1 sources (pre-wick of this layer):
+                     # V28 ONE Strassen family over the interleaved (A, P) factor slab
