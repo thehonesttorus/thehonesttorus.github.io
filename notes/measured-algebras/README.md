@@ -116,7 +116,12 @@ Confining earlier does not pay at any rank: the age-3 and age-2 content needs a 
 cost about what the dense legs it replaces cost, which is the diffusion-wavelet ladder of note XXV read
 quantitatively (the scaling space after three transports is still wider than the knee). The age gates of v29
 (4 and 7) stay. The feedback legs carry less than their rank 16: rank 8 loses 1.7% of raw and saves 3.3% of the bill,
-consistently on every network (follow-ups at ranks 4, 6, 12 and with the nested gate at 8 running).
+consistently on every network. Lower is better down to rank 1-2 (16 networks: rank 12 / 8 / 6 / 4 / 3 / 2 / 1 give
+-1.03 / -1.67 / -1.92 / -2.27 / -2.34 / -2.59 / -2.60% adjusted; removing the legs is +3.1%), and on all 100 networks
+(`outputs/feedback_rank.txt`) rank 4 gives -2.75% +- 0.10 (mean adjusted 5.1478e-9) and rank 2 with the nested gate at
+8 gives **-3.45% +- 0.17, mean adjusted 5.1091e-9 (raw 2.3468e-8 at C/B 0.2177)**, the current best: add
+`V18_R_FB=2 V24_AGE_OLD2=8` to the configuration of note XXIV. The D21 feedback carries two or three directions of
+content, not sixteen. This closes the parameter work; what follows is the representation question.
 
 ## 3c. A second pasted synthesis: Markov geometry, index and source-query bounds
 
