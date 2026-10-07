@@ -1,0 +1,10 @@
+net 0 L0 10 k 10 subset old (6 sources) r 64: CP rebuild vs chain D3 corr 0.998
+  it     0 loss 5.4037  rel err D3/D21  L10:0.563/1.168 L11:0.271/1.108 L12:0.974/1.066 L13:0.990/1.059  (0s)
+  it   500 loss 0.0020  rel err D3/D21  L10:0.001/0.018 L11:0.000/0.041 L12:0.299/0.462 L13:0.279/0.434  (87s)
+  it  1000 loss 0.0005  rel err D3/D21  L10:0.000/0.005 L11:0.000/0.022 L12:0.301/0.465 L13:0.281/0.437  (161s)
+  it  1500 loss 0.0003  rel err D3/D21  L10:0.000/0.003 L11:0.000/0.017 L12:0.301/0.466 L13:0.281/0.437  (206s)
+  it  2000 loss 0.0003  rel err D3/D21  L10:0.000/0.003 L11:0.000/0.017 L12:0.301/0.466 L13:0.282/0.438  (250s)
+  yardstick shared basis rank 64: L10:0.263/0.319 L11:0.236/0.297 L12:0.233/0.272 L13:0.215/0.256
+  yardstick shared basis rank 128: L10:0.127/0.161 L11:0.115/0.147 L12:0.105/0.132 L13:0.090/0.121
+  yardstick shared basis rank 320: L10:0.019/0.023 L11:0.017/0.021 L12:0.015/0.019 L13:0.013/0.017
+params: matrix-trace 4259840, CP legs 18874368; per-layer transport+reads ~ 8.37 units (one unit = 2 n^3)
