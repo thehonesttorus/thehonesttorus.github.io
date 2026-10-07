@@ -256,7 +256,10 @@ network 0: the measured transport or its rows normalised to 1, and E[G] fed by g
   of the mean of +0.0008 and -0.0012 (GAC +0.0020). The g_4-fed variants are worse because the derived g_4 is low.
   This is the closure-level estimator (no transported sources), so it is a test of the gain derivation, not of the
   chain; it says the mean's scale is a derived quantity to a part in a thousand, and that the quantity which sets it
-  is the third-cumulant channel's gain on the conditional state.
+  is the third-cumulant channel's gain on the conditional state. Network 1 repeats it (`outputs/gac2b_off1_*.txt`):
+  with the rows normalised, g_3 = 0.0220 at layer 15 against the measured 0.0200 (10% high, where the marginal state
+  was 54% high on network 0), g_4 is 35% low, and the derived mean has MSE 1.552e-6 against GAC's 1.707e-6 with a
+  residual scale of +0.0003 (GAC +0.0032); with the measured transport, 1.600e-6 and +0.0021.
 
 ### 2.5 What this says about the chain
 
