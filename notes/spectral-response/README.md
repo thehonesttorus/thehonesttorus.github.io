@@ -186,5 +186,31 @@ pieces it stands for, not by one.
 | adjoint error identity (sec. 8) | why a wrong gain can give the best mean, and why the table beats its replacements | notes XIX 2.4, XVIII, XXI 2.5 |
 | what a deep-profile theorem needs (10.3) | exact closure fails by one measured direction; the chain carries the full slice | the three-coordinate closure is the test; the chain experiment of XXI is the decision |
 
-Network 1's Ward accounting and the completion of its one-loop decomposition are appended to `outputs/` as they
-finish.
+## 5. A flop lever proposed from the theory, tested and closed
+
+In the discussion that followed this note a lever was proposed: the coherent part of every source is now known in
+closed form (three numbers per layer with the mixture and skew shapes), so if that part occupies many of the ranks
+the legs carry, stripping it before compression would lower the rank ladder and save transport flops at equal
+error. The estimate offered was 70-100 of the 384 shared ranks, i.e. 20-25% of the flops. The test
+(`code/coherent_strip.py`, `outputs/coherent_strip_off0_l10.txt`) forms the (2,1) slice of each source's
+third-cumulant tensor from the live legs of layer 10 (uncompressed, correlation 0.994 with the chain's own carried
+D21), projects it on the two coherent patterns mu_a S_ac and sigma_a^2 mu_c, and compares the singular spectra of
+the slice and of its residual:
+
+| object | coherent share (R^2) | ranks for 50 / 90 / 99% of the Frobenius mass | after stripping the coherent part |
+|---|---|---|---|
+| all sources, (2,1) slice from the legs | 0.436 | 1 / 21 / 190 | 1 / 48 / 251 |
+| chain's carried D21 | 0.442 | 1 / 17 / 220 | 1 / 47 / 308 |
+| per source, ages 10 to 1 | 0.09-0.31 | 1 / 22-107 / 91-335 | 1-9 / 34-116 / 107-345 |
+
+The coherent part is the top singular direction and nothing else: it carries half the slice's mass in rank one (the
+mean direction), and removing it leaves a flatter spectrum that needs more ranks, not fewer, for any given share
+of the mass. Carrying the coherent sector analytically would save about one rank per source. The lever is closed;
+the estimate of 20-25% is withdrawn. This is the same fact as note XVII's "the mean direction has a flat spectrum
+in the shared basis" read correctly: the ranks are spent on the incoherent, per-neuron content, which is the content
+the output needs, and the coherent content costs nothing to carry. What the theory of notes XIX-XXII derived in
+closed form is, in the legs, one direction.
+
+Network 1's Ward accounting (`outputs/ward_off1.txt`) matches network 0: with the drift the third-cumulant row is
+1.04 at layer 2 falling to 0.99 at layer 11 and 0.92-0.99 at layers 12-15, and the fourth-cumulant row with the
+dropped output classes is 1.05 at layer 2 and 0.98-1.00 at layers 6-8.
