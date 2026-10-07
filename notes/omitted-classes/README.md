@@ -317,19 +317,194 @@ Section 3d's G D core failed the same way:
 - **The targeted channel.** The kappa4 channel's output content was flat while its L2 error fell 30%.
 - **The variance channel** rose 10%.
 
-Two theory-correct local repairs, each verified against the exact law in its own statistic, both lose through the
-variance channel. The fitted elements (the lam table, its adaptive rule REF_R and its 0.95 scale) were tuned on the
-trajectory of the uncorrected chain, so this is note XXI section 7's compensation, now seen per channel.
+Two theory-correct local repairs, each verified against the exact law in its own statistic, both raise the final error,
+and in both the adjoint's variance channel grows.
+
+**Correction (checkpoint J).** An earlier version of this paragraph called this note XXI section 7's compensation through
+the fitted tables. That causal reading is not established. The evidence shows an adverse signed terminal effect, and that
+has other sufficient explanations, none involving a fitted element:
+- **Ordinary signed cancellation.** Removing one of two opposing errors raises the total.
+- **Recentering.** A mean change compels a variance change, v = q - m^2.
+- **A closure derivative.** It can be wrong along the free-running trajectory while the closure's values on true inputs
+  are accurate.
+
+Moreover, the size of a channel's "content" depends on the chart: transforming between (mean, covariance) and
+(mean, raw second moment) coordinates moves 2 A m mdot between the mean and variance attributions.
+
+Section 3h runs checkpoint J's discriminating protocol on the paired arrays, starting with the exact raw-moment /
+recentering split and a closed signed budget.
 
 **It is not the (3,1) slice acting on the covariance program** (`outputs/k31_covariance_attribution.txt`). With every
 other input true, the one-step error of the chain's y covariance is the same, 1.4% at layer 1 falling to 0.4%, whether
 the z (3,1) slice is the truth, the lam core, the G D core, or absent.
 
-What remains open is the route by which a better kappa3 or kappa4 state raises the variance channel's output content.
-The adjoint functional measures each channel's first-order output content to within 2 points (section 2). The
-principled next step is therefore to weight corrections by that functional rather than by L2 accuracy: fit the derived
-shapes' few amplitudes (the D coefficient per layer, the feedback weights) to the adjoint-predicted output error.
-Re-tuning the fitted tables on output would not be a result.
+The route by which a better kappa3 or kappa4 state raises the final error is found in section 3h. (An earlier version
+proposed setting the derived amplitudes by the adjoint-predicted output error. Fitted against final truth, that is output
+calibration, not a derivation. The adjoint's right use is to locate the adverse route and to test independently derived
+coefficients.)
+
+### 3h. Checkpoint J's protocol: the feedback repair loses a cancellation, the G D core misreads its own slice
+
+Free-running dumps, at the same cost, of three chains on networks 0 and 1:
+- production;
+- y2 = V40_FB_SY = 2, the derived feedback weight of section 3f;
+- KD = V39_KD = 1, the G D core of section 3d.
+
+The comparisons are paired: each repair against production on the same network, with no amplitude fitted to anything.
+
+**Steps 1-2: raw second moment, recentering, and a closed signed budget** (`code/sbudget.py`;
+`outputs/protocol_steps12_off1.txt`, `outputs/protocol_all_off0.txt`).
+- **Recentering identity.** The per-layer identity Delta var = Delta S2 - (mu_1 + mu_0) Delta mu (and q = v + m^2
+  post-activation) splits the variance channel into a raw-second-moment part and a recentering part.
+- **Allocation.** With d = e_1 - e_0, the allocation <tau_X, e_0 + e_1> of each adjoint channel sums exactly to
+  n Delta MSE. The check 2<e_0, d> + |d|^2 = Delta holds to print precision, and the tangent remainder is |rho|/|d| = 0.03.
+
+| % of the baseline n MSE | net 1 y2 | net 1 KD | net 0 y2 | net 0 KD |
+|---|---|---|---|---|
+| Delta MSE | +9.82 | +8.56 | +0.51 | +10.48 |
+| var channel | +6.09 | +4.32 | -1.36 | +2.80 |
+| - raw second moment | +8.22 | +4.34 | -1.50 | +6.24 |
+| - recentering | -2.13 | -0.02 | +0.14 | -3.44 |
+| kappa3 channel | +3.69 | +1.41 | +2.01 | +1.27 |
+| kappa4 channel | +0.10 | +2.84 | -0.29 | +6.26 |
+| tangent remainder | -0.05 | -0.02 | +0.14 | +0.15 |
+
+Recentering is not the adverse route. Wherever the variance channel is adverse, the raw second moment carries it, and
+recentering opposes it.
+
+**Steps 3-4: first entry into the second-moment block, and the closure derivative there.**
+- **Off-diagonal entry** (`code/sbudget.py` step 3, `outputs/protocol_step3_off1.txt`). The raw second-moment change of
+  z_l enters through the off-diagonal second moments (net 1: +8.05 of the y2 change, +4.34 of the KD change).
+- **The unary route is null.** The kappa3 -> q, kappa4 -> q and (mu, var) -> q entries together carry at most 0.14%.
+  Their Gaussian coefficients (checkpoint J proposition 3.1) reproduce the chain's Delta q to 1-10%, with correlation
+  at least 0.994.
+- **The closure derivative is physical** (`code/covroute.py`, `outputs/protocol_covroute_off1.txt`). The chain's change
+  of the post-activation covariance is reproduced by the gated coefficients at the true reference (note XXXIV) to
+  2-3%, with correlation 1.000 at every layer. The residual's allocation is at most 0.14% of the MSE.
+- **The baseline error routes are all adverse** (`code/errroute.py`). Split the same way against Monte Carlo truth, the
+  baseline's covariance error routes do not cancel one another: C +30.5, D21 +14.7, mean products +17.1, K31 +5.1
+  (net 1).
+
+These steps rule out recentering and a closure-derivative defect. They read the state accumulated at each layer,
+however, so they cannot say where a change first enters, nor whether its terminal effect is a cancellation.
+- **The one-step D21 projection is not the full response** (`code/gradd21.py`). Projected on the one-step
+  output-relevant direction, the y2 change of D21 is adverse on net 1 (+0.75) and favourable on net 0 (-0.92), with
+  the same sign free-running and one-step.
+- **What that projection omits.** It counts only the first read of D21, not its continuation through the covariance
+  recursion.
+
+**The first-entry ledger** (`code/fentry.py`, `code/pairx.py`; `outputs/fentry_off0.txt`, `outputs/fentry_off1.txt`).
+- **State and reference maps.** The observable state is X_k = (m_k, C^y_k), with the full covariance and var_y on its
+  diagonal, and Z_k = (mu_k, C^z_k). The reference maps at the Monte Carlo truth are:
+  - A_k: Z_k <- X_(k-1), exact (mu = W m, C^z = W C^y W^T);
+  - B_k: X_k <- Z_k, the gated transport: dm = Phi dmu + (phi/2s) dvar,
+    dvar_y = 2m(1 - Phi) dmu + (Phi - 2m phi/2s) dvar,
+    dC^y_ab = (Phi_a Phi_b + rho_a rho_b C_ab) dC_ab + (u_a Phi_b + Phi_a u_b) C_ab.
+- **First entries.** For a run, Delta = run - truth, with
+  N^z_k = Delta Z_k - A_k Delta X_(k-1) and N^y_k = Delta X_k - B_k Delta Z_k.
+- **The ledger is exact.** Telescoping gives Delta m_out = sum_k (prop N^z_k + prop N^y_k) with no remainder: N absorbs
+  every nonlinearity. Measured: |sum - e|/|e| = 2e-15.
+- **Routes.** N^y is split by route with the gated coefficients:
+  - the kappa3 and kappa4 diagonals, into m, var_y and (through Phi) C^y;
+  - D21, K22 and K31;
+  - the residual, the chain's response minus the reference linearisation.
+
+  N^z is the representation step (0.1% of Delta C^z).
+- **Forward and adjoint.** Forward images delta_X give e = sum_X delta_X. The full mean-covariance adjoint
+  (Lambda_(k-1) = W^T [Lambda_off o K + diag(beta)] W) gives per-layer entries, agreeing with the forward images to
+  1e-16. The Monte Carlo halves give noise-free Grams.
+
+**1. The production chain's error enters through its cumulant state, not its closure.** Route shares
+<delta_X, e>/|e|^2:
+
+| | kappa3 diag | kappa4 diag | D21 | K22 | K31 | residual |
+|---|---|---|---|---|---|---|
+| net 1 | 0.254 | 0.243 | 0.306 | 0.016 | 0.166 | 0.012 |
+| net 0 | 0.217 | 0.277 | 0.274 | -0.007 | 0.193 | 0.059 |
+
+The residual includes the reference's Monte Carlo noise; the representation share is at most 0.012.
+- **Where the error enters.** The error enters mostly at layers 7-15: the kappa3 diagonal and kappa4 diagonal at the
+  last three layers, and D21 and K31 from layer 5 on.
+- **Overlaps.** The route images overlap weakly and mostly negatively: noise-free Gram off-diagonals are at most 0.06
+  of |e|^2. The residual and representation routes are dominated by the reference's noise.
+
+**How the comparisons split.** For a comparison 0 -> r:
+- n Delta MSE = sum_X own_X + sum_(X<Y) pair_XY;
+- own_X = Delta|delta_X|^2 and pair_XY = 2 Delta<delta_X, delta_Y>;
+- each term is <tau_X, delta_Y^0 + delta_Y^r> with tau = delta^r - delta^0.
+
+tau does not depend on the truth, so Monte Carlo noise enters only through delta^0 + delta^r. The noise bar is
+|half 0 - half 1| / 2.
+
+**2. y2: the repair improves its own routes and loses a cancellation** (% of the baseline n MSE).
+
+| | net 1 | net 0 |
+|---|---|---|
+| Delta MSE | +9.82 | +0.51 |
+| own: kappa3 diag | -3.23 +- 0.70 | -3.71 +- 1.15 |
+| own: D21 | -2.37 +- 0.56 | -1.31 +- 1.03 |
+| own: all routes | -5.09 | -4.86 |
+| pairs: all | +14.91 | +5.37 |
+| pair kappa3-D21 | +6.25 +- 0.77 | +2.17 +- 0.87 |
+| pair kappa3-kappa4 | +3.74 +- 0.53 | +3.99 +- 0.15 |
+
+- **The repair works in its own routes.** On both networks the output images of the kappa3-diagonal and D21 errors
+  shrink (net 0's D21 only at 1.3 sigma).
+- **The final error still rises.** The change in one route lines up with the error left in another, so the pair
+  terms grow.
+- **The opposition it removes was helping.** In the baseline the kappa3-diagonal image opposes the D21 image (noise-free
+  Gram -0.05 of |e|^2 on net 1) and the kappa4 image (-0.03). The repair removes much of that opposition:
+  - on net 1 the combined kappa3-state image |delta_k3 + delta_D21|^2 is unchanged within noise
+    (-3.23 - 2.37 + 6.25 = +0.7 +- 1.2);
+  - the remaining rise is the kappa3-kappa4 pair (+3.7), then kappa4-D21 and D21-K31 (+1.8, +1.2), plus noisier pairs
+    with the residual route.
+- **The common pair.** On both networks the kappa3-kappa4 pair alone costs +3.7 to +4.0.
+- **Where it first enters.** On net 1 the first adverse entry is D21 and the kappa3 diagonal at layers 7-8
+  (+0.51, then +2.23 and +1.09). Layers 1-6 are net favourable (cumulative -0.54).
+- **Net 0.** The per-layer kappa3 entries alternate in sign from layer 10 (-0.56, +0.78, +1.13, -1.51, +1.73, -1.44).
+
+This is checkpoint J's first alternative, ordinary signed cancellation. It is now established in the first-entry chart,
+where every term is located and the budget has no remainder.
+
+**3. KD: the G D core's slices are closer in L2 and worse in what the output reads.**
+
+| | net 1 | net 0 |
+|---|---|---|
+| Delta MSE | +8.56 | +10.48 |
+| own: K31 | +5.04 +- 0.11 | +2.64 +- 0.73 |
+| own: kappa4 diag | +1.92 +- 0.54 | +2.26 +- 0.24 |
+| own: all routes | +6.17 | +5.82 |
+| pairs: all | +2.39 | +4.66 |
+| pair kappa3-kappa4 | +4.96 +- 0.07 | +0.46 +- 0.83 |
+| pair D21-K31 | +2.57 +- 1.08 | +2.93 +- 1.07 |
+
+- **The slices are closer in L2.** The (3,1) slice and the kappa4 diagonal are closer to truth in L2: one-step (3,1)
+  error 0.73 -> 0.59; diagonal error -30%.
+- **Their output images grow.** The own terms are +6.2 and +5.8, more than half of the change on both networks. The
+  G D shape errs in the direction the output reads.
+- **The pairs add to it rather than offset it.** The main pairs are kappa3-kappa4 on net 1 and D21-K31 on both.
+- **Where it first enters.** On net 1 the K31 route turns adverse at layer 5 (+1.60), and the cumulative turns
+  positive at layer 8.
+
+**What the protocol settles.**
+- **Ruled out.** Recentering, and a closure-derivative defect at the entry.
+- **y2.** The failure is cross-route cancellation among the cumulant-state routes. The repair is locally right in its
+  own routes.
+- **KD.** The failure is a local error in the readout direction of the repaired slices.
+- **Fitted-table compensation is not needed for either.**
+  - Whether the anti-alignments that y2 removes were produced by a fitted element is a separate question.
+  - The pair that recurs, kappa3-kappa4 in three of the four comparisons, involves the kappa4 diagonal. Its (2+1+1)
+    stand-in is lam s_off^2, one fitted scalar per layer (system-audit note, section 3).
+  - The discriminating test is this ledger with that class at a derived amplitude. That means the D transport of
+    section 3 at the derived gain g_conn (the table's "lam -> g_conn D" column), not a coefficient fitted to any output.
+- **Step 5 is not needed.** The ledger closes exactly at one step and the residual route carries at most 0.2%, so
+  checkpoint J's step 5 (the discarded two-step return) adds nothing here.
+
+**For the estimator.**
+- **The kappa3 readout is joint.** The output reads the kappa3 state through the sum of its diagonal and D21 images, and
+  that sum overlaps the kappa4 image.
+- **Repairs must be paired.** A repair of either cumulant sector must be judged on that joint readout, not per slice and
+  not in L2. A kappa3 repair has to be paired with the kappa4 error it currently cancels.
 
 ### 3d. In the chain: G D in place of the lam core (V39_KD)
 

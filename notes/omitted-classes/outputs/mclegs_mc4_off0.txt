@@ -1,0 +1,75 @@
+layer  0-> 1: |R3|/|t3| 0.226 0.295; legs-1st-order |.|/|R3| 0.185 0.177
+    R3 vs legs (coef 1): corr +0.160 coef1 +0.025 fit +0.868->+0.026 | corr +0.177 coef1 +0.031 fit +1.002->+0.031
+    R3 D3 vs facet 2nd order: corr +0.955 coef1 +0.912 fit +0.990->+0.912; legs+facet fit coefs +1.051 +0.997 -> 0.950
+    R diag |R|/|t4| 0.139; leg-fed |.|/|R| 0.072: corr +0.068 coef1 +0.005 fit +0.957->+0.005; D alone: corr +0.026 coef1 -0.061 fit +0.095->+0.001
+    R diag = a D + b leg-fed: a 0.091 b +0.952 explained 0.005; with leg-fed fixed at 1: +0.005, then + D (coef 0.091): +0.005
+layer  1-> 2: |R3|/|t3| 0.324 0.468; legs-1st-order |.|/|R3| 0.828 0.833
+    R3 vs legs (coef 1): corr +0.843 coef1 +0.710 fit +1.018->+0.710 | corr +0.835 coef1 +0.698 fit +1.003->+0.698
+    R3 D3 vs facet 2nd order: corr +0.554 coef1 +0.307 fit +1.043->+0.307; legs+facet fit coefs +0.999 +0.996 -> 0.990
+    R diag |R|/|t4| 0.126; leg-fed |.|/|R| 0.409: corr +0.500 coef1 +0.240 fit +1.217->+0.248; D alone: corr +0.475 coef1 +0.170 fit +1.997->+0.227
+    R diag = a D + b leg-fed: a 1.699 b +1.054 explained 0.408; with leg-fed fixed at 1: +0.240, then + D (coef 1.715): +0.407
+layer  2-> 3: |R3|/|t3| 0.324 0.478; legs-1st-order |.|/|R3| 0.825 0.824
+    R3 vs legs (coef 1): corr +0.838 coef1 +0.701 fit +1.015->+0.702 | corr +0.829 coef1 +0.688 fit +1.006->+0.688
+    R3 D3 vs facet 2nd order: corr +0.558 coef1 +0.311 fit +1.030->+0.312; legs+facet fit coefs +1.000 +0.995 -> 0.993
+    R diag |R|/|t4| 0.150; leg-fed |.|/|R| 0.309: corr +0.563 coef1 +0.252 fit +1.822->+0.317; D alone: corr +0.645 coef1 +0.233 fit +2.972->+0.416
+    R diag = a D + b leg-fed: a 2.365 b +1.260 explained 0.550; with leg-fed fixed at 1: +0.252, then + D (coef 2.491): +0.544
+layer  3-> 4: |R3|/|t3| 0.295 0.462; legs-1st-order |.|/|R3| 0.802 0.809
+    R3 vs legs (coef 1): corr +0.811 coef1 +0.657 fit +1.010->+0.657 | corr +0.817 coef1 +0.668 fit +1.011->+0.668
+    R3 D3 vs facet 2nd order: corr +0.597 coef1 +0.356 fit +1.032->+0.357; legs+facet fit coefs +0.995 +1.002 -> 0.993
+    R diag |R|/|t4| 0.163; leg-fed |.|/|R| 0.255: corr +0.469 coef1 +0.174 fit +1.840->+0.220; D alone: corr +0.726 coef1 +0.258 fit +3.503->+0.527
+    R diag = a D + b leg-fed: a 3.097 b +1.042 explained 0.590; with leg-fed fixed at 1: +0.174, then + D (coef 3.113): +0.590
+layer  4-> 5: |R3|/|t3| 0.280 0.464; legs-1st-order |.|/|R3| 0.819 0.829
+    R3 vs legs (coef 1): corr +0.809 coef1 +0.655 fit +0.988->+0.655 | corr +0.834 coef1 +0.696 fit +1.007->+0.696
+    R3 D3 vs facet 2nd order: corr +0.575 coef1 +0.330 fit +0.978->+0.330; legs+facet fit coefs +0.994 +0.989 -> 0.992
+    R diag |R|/|t4| 0.192; leg-fed |.|/|R| 0.227: corr +0.542 coef1 +0.195 fit +2.383->+0.294; D alone: corr +0.757 coef1 +0.259 fit +3.849->+0.572
+    R diag = a D + b leg-fed: a 3.269 b +1.253 explained 0.640; with leg-fed fixed at 1: +0.195, then + D (coef 3.386): +0.637
+layer  5-> 6: |R3|/|t3| 0.296 0.456; legs-1st-order |.|/|R3| 0.830 0.829
+    R3 vs legs (coef 1): corr +0.847 coef1 +0.717 fit +1.021->+0.717 | corr +0.841 coef1 +0.708 fit +1.015->+0.708
+    R3 D3 vs facet 2nd order: corr +0.573 coef1 +0.327 fit +1.086->+0.329; legs+facet fit coefs +0.984 +0.998 -> 0.994
+    R diag |R|/|t4| 0.202; leg-fed |.|/|R| 0.209: corr +0.517 coef1 +0.173 fit +2.470->+0.267; D alone: corr +0.786 coef1 +0.274 fit +3.943->+0.618
+    R diag = a D + b leg-fed: a 3.473 b +1.025 explained 0.655; with leg-fed fixed at 1: +0.173, then + D (coef 3.484): +0.655
+layer  6-> 7: |R3|/|t3| 0.279 0.456; legs-1st-order |.|/|R3| 0.844 0.842
+    R3 vs legs (coef 1): corr +0.847 coef1 +0.718 fit +1.004->+0.718 | corr +0.851 coef1 +0.725 fit +1.011->+0.725
+    R3 D3 vs facet 2nd order: corr +0.551 coef1 +0.302 fit +1.044->+0.302; legs+facet fit coefs +0.984 +0.993 -> 0.992
+    R diag |R|/|t4| 0.221; leg-fed |.|/|R| 0.192: corr +0.560 coef1 +0.178 fit +2.913->+0.314; D alone: corr +0.784 coef1 +0.266 fit +4.062->+0.615
+    R diag = a D + b leg-fed: a 3.500 b +1.083 explained 0.647; with leg-fed fixed at 1: +0.178, then + D (coef 3.543): +0.646
+layer  7-> 8: |R3|/|t3| 0.277 0.443; legs-1st-order |.|/|R3| 0.858 0.840
+    R3 vs legs (coef 1): corr +0.853 coef1 +0.727 fit +0.994->+0.727 | corr +0.851 coef1 +0.723 fit +1.013->+0.723
+    R3 D3 vs facet 2nd order: corr +0.531 coef1 +0.282 fit +1.022->+0.282; legs+facet fit coefs +0.982 +0.990 -> 0.991
+    R diag |R|/|t4| 0.247; leg-fed |.|/|R| 0.169: corr +0.456 coef1 +0.126 fit +2.699->+0.208; D alone: corr +0.795 coef1 +0.254 fit +4.427->+0.633
+    R diag = a D + b leg-fed: a 4.050 b +1.035 explained 0.659; with leg-fed fixed at 1: +0.126, then + D (coef 4.063): +0.659
+layer  8-> 9: |R3|/|t3| 0.274 0.441; legs-1st-order |.|/|R3| 0.871 0.872
+    R3 vs legs (coef 1): corr +0.891 coef1 +0.794 fit +1.023->+0.794 | corr +0.889 coef1 +0.790 fit +1.020->+0.790
+    R3 D3 vs facet 2nd order: corr +0.525 coef1 +0.271 fit +1.160->+0.276; legs+facet fit coefs +0.975 +0.984 -> 0.991
+    R diag |R|/|t4| 0.262; leg-fed |.|/|R| 0.163: corr +0.563 coef1 +0.157 fit +3.453->+0.317; D alone: corr +0.803 coef1 +0.241 fit +4.795->+0.645
+    R diag = a D + b leg-fed: a 4.170 b +1.242 explained 0.675; with leg-fed fixed at 1: +0.157, then + D (coef 4.292): +0.674
+layer  9->10: |R3|/|t3| 0.266 0.433; legs-1st-order |.|/|R3| 0.882 0.892
+    R3 vs legs (coef 1): corr +0.892 coef1 +0.795 fit +1.012->+0.795 | corr +0.899 coef1 +0.808 fit +1.008->+0.808
+    R3 D3 vs facet 2nd order: corr +0.504 coef1 +0.251 fit +1.104->+0.254; legs+facet fit coefs +0.976 +0.972 -> 0.991
+    R diag |R|/|t4| 0.296; leg-fed |.|/|R| 0.131: corr +0.587 coef1 +0.137 fit +4.467->+0.345; D alone: corr +0.838 coef1 +0.262 fit +4.794->+0.702
+    R diag = a D + b leg-fed: a 4.208 b +1.440 explained 0.727; with leg-fed fixed at 1: +0.137, then + D (coef 4.387): +0.725
+layer 10->11: |R3|/|t3| 0.268 0.422; legs-1st-order |.|/|R3| 0.867 0.881
+    R3 vs legs (coef 1): corr +0.906 coef1 +0.820 fit +1.046->+0.821 | corr +0.902 coef1 +0.814 fit +1.024->+0.814
+    R3 D3 vs facet 2nd order: corr +0.541 coef1 +0.280 fit +1.259->+0.293; legs+facet fit coefs +0.975 +0.970 -> 0.991
+    R diag |R|/|t4| 0.332; leg-fed |.|/|R| 0.123: corr +0.569 coef1 +0.124 fit +4.633->+0.323; D alone: corr +0.844 coef1 +0.269 fit +4.730->+0.712
+    R diag = a D + b leg-fed: a 4.343 b +0.971 explained 0.721; with leg-fed fixed at 1: +0.124, then + D (coef 4.331): +0.721
+layer 11->12: |R3|/|t3| 0.246 0.401; legs-1st-order |.|/|R3| 0.901 0.897
+    R3 vs legs (coef 1): corr +0.915 coef1 +0.837 fit +1.016->+0.837 | corr +0.916 coef1 +0.839 fit +1.022->+0.840
+    R3 D3 vs facet 2nd order: corr +0.454 coef1 +0.204 fit +1.121->+0.206; legs+facet fit coefs +0.986 +0.973 -> 0.992
+    R diag |R|/|t4| 0.363; leg-fed |.|/|R| 0.113: corr +0.584 coef1 +0.119 fit +5.186->+0.342; D alone: corr +0.895 coef1 +0.285 fit +5.074->+0.801
+    R diag = a D + b leg-fed: a 4.616 b +1.353 explained 0.818; with leg-fed fixed at 1: +0.119, then + D (coef 4.735): +0.817
+layer 12->13: |R3|/|t3| 0.255 0.403; legs-1st-order |.|/|R3| 0.934 0.917
+    R3 vs legs (coef 1): corr +0.938 coef1 +0.881 fit +1.005->+0.881 | corr +0.934 coef1 +0.871 fit +1.018->+0.872
+    R3 D3 vs facet 2nd order: corr +0.406 coef1 +0.161 fit +1.170->+0.165; legs+facet fit coefs +0.977 +0.964 -> 0.992
+    R diag |R|/|t4| 0.419; leg-fed |.|/|R| 0.096: corr +0.666 coef1 +0.119 fit +6.906->+0.443; D alone: corr +0.900 coef1 +0.279 fit +5.255->+0.810
+    R diag = a D + b leg-fed: a 4.799 b +1.216 explained 0.817; with leg-fed fixed at 1: +0.119, then + D (coef 4.880): +0.817
+layer 13->14: |R3|/|t3| 0.251 0.406; legs-1st-order |.|/|R3| 0.916 0.930
+    R3 vs legs (coef 1): corr +0.945 coef1 +0.892 fit +1.032->+0.893 | corr +0.943 coef1 +0.890 fit +1.015->+0.890
+    R3 D3 vs facet 2nd order: corr +0.451 coef1 +0.189 fit +1.360->+0.204; legs+facet fit coefs +0.981 +0.963 -> 0.993
+    R diag |R|/|t4| 0.428; leg-fed |.|/|R| 0.082: corr +0.613 coef1 +0.094 fit +7.444->+0.375; D alone: corr +0.903 coef1 +0.298 fit +4.925->+0.816
+    R diag = a D + b leg-fed: a 4.483 b +1.719 explained 0.829; with leg-fed fixed at 1: +0.094, then + D (coef 4.668): +0.827
+layer 14->15: |R3|/|t3| 0.237 0.401; legs-1st-order |.|/|R3| 0.938 0.935
+    R3 vs legs (coef 1): corr +0.941 coef1 +0.886 fit +1.004->+0.886 | corr +0.942 coef1 +0.888 fit +1.008->+0.888
+    R3 D3 vs facet 2nd order: corr +0.396 coef1 +0.154 fit +1.140->+0.157; legs+facet fit coefs +0.977 +0.933 -> 0.990
+    R diag |R|/|t4| 0.459; leg-fed |.|/|R| 0.075: corr +0.596 coef1 +0.084 fit +7.930->+0.354; D alone: corr +0.912 coef1 +0.285 fit +5.284->+0.832
+    R diag = a D + b leg-fed: a 4.912 b +1.505 explained 0.841; with leg-fed fixed at 1: +0.084, then + D (coef 5.037): +0.840

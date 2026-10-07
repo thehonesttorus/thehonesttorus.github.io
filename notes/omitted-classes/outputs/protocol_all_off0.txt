@@ -1,0 +1,87 @@
+y2 net 0 free: raw 2.26389e-08  per-layer 6.98e-10 6.98e-10 1.08e-09 1.96e-09 2.82e-09 4.05e-09 5.02e-09 6.25e-09 7.87e-09 1.00e-08 1.14e-08 1.34e-08 1.60e-08 1.88e-08 1.92e-08 2.26e-08
+one-base net 0 onestep: raw 6.23911e-09  per-layer 2.03e-08 2.35e-08 2.43e-08 2.19e-08 1.99e-08 1.84e-08 1.75e-08 1.25e-08 1.12e-08 1.05e-08 8.99e-09 8.39e-09 7.85e-09 7.44e-09 6.16e-09 6.24e-09
+kd net 0 free: raw 2.48867e-08  per-layer 6.98e-10 7.32e-10 1.05e-09 1.92e-09 2.81e-09 4.16e-09 5.21e-09 6.57e-09 8.36e-09 1.09e-08 1.31e-08 1.53e-08 1.76e-08 2.06e-08 2.16e-08 2.49e-08
+base net 0 free: raw 2.25251e-08  per-layer 6.98e-10 6.98e-10 1.07e-09 1.96e-09 2.84e-09 4.08e-09 5.13e-09 6.26e-09 7.87e-09 1.01e-08 1.19e-08 1.35e-08 1.62e-08 1.91e-08 1.89e-08 2.25e-08
+one-y2 net 0 onestep: raw 6.23911e-09  per-layer 2.03e-08 2.35e-08 2.43e-08 2.19e-08 1.99e-08 1.84e-08 1.75e-08 1.25e-08 1.12e-08 1.05e-08 8.99e-09 8.39e-09 7.85e-09 7.44e-09 6.16e-09 6.24e-09
+net 0: chain_off0_fk_base.npz -> chain_off0_fk_y2.npz
+  MSE 2.25251e-08 -> 2.26389e-08 (+0.51%); check 2<e0,d>+|d|^2 = 1.1652e-07 vs 1.1652e-07; <e0,d>/|e0||d| -0.123, |d|/|e0| 0.265
+  step 1, per layer (relative norms; pre-activation | post-activation):
+    layer: |dvar|/|var*|  |dS2|  |rec|  corr(dS2,rec) | err0 var: S2-part rec-part | err1 var: S2-part rec-part || |dv|/|v*| |dq| |rec| | err0 v: q rec | err1 v: q rec
+  step 2: signed allocation of n x Delta MSE = 1.1652e-07 (sum check 1.1652e-07); |rho|/|d| 0.031
+    var      : -3.1316e-07  (-1.36% of baseline n x MSE)
+    k3       : +4.6476e-07  (+2.01% of baseline n x MSE)
+    k4       : -6.7983e-08  (-0.29% of baseline n x MSE)
+    remainder: +3.2909e-08  (+0.14% of baseline n x MSE)
+    var split: raw second moment -3.4591e-07, recentering +3.2745e-08
+  per source layer, allocation <prop(l, .), e0 + e1> as % of baseline (var = S2 + rec | k3 | k4):
+    layer  1: var  +0.00 = S2  +0.00 + rec  +0.00 | k3  +0.00 | k4  +0.00
+    layer  2: var  +0.00 = S2  +0.00 + rec  +0.00 | k3  +0.03 | k4  +0.00
+    layer  3: var  -0.02 = S2  -0.02 + rec  +0.00 | k3  +0.01 | k4  -0.00
+    layer  4: var  -0.07 = S2  -0.08 + rec  +0.01 | k3  -0.10 | k4  +0.00
+    layer  5: var  +0.19 = S2  +0.18 + rec  +0.01 | k3  -0.01 | k4  -0.00
+    layer  6: var  +0.01 = S2  +0.08 + rec  -0.07 | k3  -0.03 | k4  +0.01
+    layer  7: var  -0.44 = S2  -0.53 + rec  +0.10 | k3  +0.56 | k4  +0.00
+    layer  8: var  -0.63 = S2  -0.49 + rec  -0.14 | k3  +0.76 | k4  +0.02
+    layer  9: var  -0.78 = S2  -0.79 + rec  +0.02 | k3  +0.15 | k4  -0.03
+    layer 10: var  -1.01 = S2  -1.41 + rec  +0.40 | k3  -0.44 | k4  -0.02
+    layer 11: var  +0.93 = S2  +1.02 + rec  -0.09 | k3  +0.89 | k4  -0.08
+    layer 12: var  -0.21 = S2  -0.07 + rec  -0.15 | k3  +1.34 | k4  +0.04
+    layer 13: var  +0.70 = S2  +0.86 + rec  -0.16 | k3  -1.45 | k4  -0.10
+    layer 14: var  -0.46 = S2  -0.53 + rec  +0.07 | k3  +1.74 | k4  -0.08
+    layer 15: var  +0.42 = S2  +0.28 + rec  +0.14 | k3  -1.44 | k4  -0.05
+  step 3: entries into Delta S2 of z_l, allocation as % of baseline n x MSE; and the unary closure check
+    layer: k3->q  k4->q  (mu,var)->q  q-resid  offdiag || Delta q check: |pred-actual|/|actual| corr
+    total: k3 +0.03 k4 -0.00 mv +0.37 res +0.00 off -1.90
+    total: meanprod -1.18 C +0.15 D21 -0.82 K22 +0.01 K31 -0.01 unary -0.01 resid -0.05
+net 0: chain_off0_fk_base.npz -> chain_off0_fk_kd.npz
+  MSE 2.25251e-08 -> 2.48867e-08 (+10.48%); check 2<e0,d>+|d|^2 = 2.4183e-06 vs 2.4183e-06; <e0,d>/|e0||d| -0.041, |d|/|e0| 0.367
+  step 1, per layer (relative norms; pre-activation | post-activation):
+    layer: |dvar|/|var*|  |dS2|  |rec|  corr(dS2,rec) | err0 var: S2-part rec-part | err1 var: S2-part rec-part || |dv|/|v*| |dq| |rec| | err0 v: q rec | err1 v: q rec
+  step 2: signed allocation of n x Delta MSE = 2.4183e-06 (sum check 2.4183e-06); |rho|/|d| 0.032
+    var      : +6.4594e-07  (+2.80% of baseline n x MSE)
+    k3       : +2.9288e-07  (+1.27% of baseline n x MSE)
+    k4       : +1.4441e-06  (+6.26% of baseline n x MSE)
+    remainder: +3.5453e-08  (+0.15% of baseline n x MSE)
+    var split: raw second moment +1.4400e-06, recentering -7.9406e-07
+  per source layer, allocation <prop(l, .), e0 + e1> as % of baseline (var = S2 + rec | k3 | k4):
+    layer  1: var  +0.00 = S2  +0.00 + rec  +0.00 | k3  +0.00 | k4  +0.02
+    layer  2: var  +0.03 = S2  +0.02 + rec  +0.01 | k3  +0.00 | k4  -0.08
+    layer  3: var  -0.09 = S2  -0.09 + rec  +0.00 | k3  -0.00 | k4  -0.05
+    layer  4: var  +0.19 = S2  +0.13 + rec  +0.06 | k3  -0.06 | k4  +0.20
+    layer  5: var  -0.70 = S2  -0.64 + rec  -0.06 | k3  -0.10 | k4  +0.06
+    layer  6: var  +0.15 = S2  +0.40 + rec  -0.26 | k3  +0.10 | k4  +0.60
+    layer  7: var  +0.99 = S2  +0.85 + rec  +0.15 | k3  +0.09 | k4  +1.09
+    layer  8: var  +0.57 = S2  +0.95 + rec  -0.37 | k3  -0.07 | k4  +1.68
+    layer  9: var  +0.24 = S2  +0.68 + rec  -0.44 | k3  +0.07 | k4  -0.20
+    layer 10: var  +2.06 = S2  +2.69 + rec  -0.63 | k3  -0.66 | k4  +0.95
+    layer 11: var  -0.43 = S2  -0.03 + rec  -0.40 | k3  +0.04 | k4  -0.94
+    layer 12: var  +0.07 = S2  +0.30 + rec  -0.23 | k3  +0.47 | k4  -0.41
+    layer 13: var  -0.39 = S2  +0.36 + rec  -0.75 | k3  +0.52 | k4  +1.40
+    layer 14: var  +1.07 = S2  +1.01 + rec  +0.06 | k3  +0.37 | k4  +0.40
+    layer 15: var  -0.96 = S2  -0.37 + rec  -0.59 | k3  +0.51 | k4  +1.54
+  step 3: entries into Delta S2 of z_l, allocation as % of baseline n x MSE; and the unary closure check
+    layer: k3->q  k4->q  (mu,var)->q  q-resid  offdiag || Delta q check: |pred-actual|/|actual| corr
+    total: k3 -0.04 k4 +0.05 mv +0.24 res +0.00 off +5.99
+    total: meanprod +2.25 C +2.37 D21 -0.37 K22 +0.35 K31 +1.19 unary +0.05 resid +0.14
+net 0 chain_off0_fk_base.npz: MSE 2.2525e-08; covariance error by input route, % of this run's n x MSE (signed, <tau, e>/<e, e>)
+    total: C +32.61 D21 +6.93 K22 -0.39 K31 +5.84 unary -0.00 value -0.19 meanprod +14.95
+net 0 chain_off0_fk_y2.npz: MSE 2.2639e-08; covariance error by input route, % of this run's n x MSE (signed, <tau, e>/<e, e>)
+    total: C +34.20 D21 +5.59 K22 -0.34 K31 +6.12 unary +0.01 value +0.08 meanprod +13.11
+net 0 chain_off0_fk_kd.npz: MSE 2.4887e-08; covariance error by input route, % of this run's n x MSE (signed, <tau, e>/<e, e>)
+    total: C +32.73 D21 +6.80 K22 -0.36 K31 +5.71 unary -0.14 value -0.07 meanprod +19.15
+net 0: projection of the D21 error on the output-relevant direction, % of baseline n x MSE
+    layer k: free base  free rep  (delta) | one-step base  one-step rep  (delta) || L2 err free base rep | one-step base rep | cos(grad, one-step delta)
+     2:  -0.20  -0.22 (-0.01) |  -0.21  -0.22 (-0.01) || 0.0622 0.0621 | 0.0625 0.0624 | -0.001
+     3:  +0.25  +0.22 (-0.03) |  +0.32  +0.29 (-0.03) || 0.0551 0.0548 | 0.0551 0.0548 | -0.001
+     4:  -0.06  -0.02 (+0.04) |  -0.16  -0.12 (+0.04) || 0.0505 0.0498 | 0.0504 0.0497 | +0.000
+     5:  -0.09  -0.02 (+0.07) |  -0.14  -0.07 (+0.06) || 0.0536 0.0523 | 0.0533 0.0520 | +0.000
+     6:  +0.92  +0.82 (-0.10) |  +0.83  +0.72 (-0.11) || 0.0530 0.0510 | 0.0524 0.0503 | -0.000
+     7:  +0.88  +0.51 (-0.37) |  +0.70  +0.33 (-0.37) || 0.0548 0.0515 | 0.0542 0.0509 | -0.001
+     8:  +0.09  -0.29 (-0.38) |  +0.07  -0.32 (-0.39) || 0.0576 0.0533 | 0.0567 0.0523 | -0.001
+     9:  +0.22  -0.08 (-0.29) |  +0.21  -0.07 (-0.28) || 0.0600 0.0549 | 0.0586 0.0532 | -0.001
+    10:  +0.11  +0.16 (+0.05) |  +0.03  +0.02 (-0.01) || 0.0620 0.0572 | 0.0607 0.0551 | -0.000
+    11:  +0.92  +0.90 (-0.02) |  +0.92  +0.91 (-0.01) || 0.0639 0.0585 | 0.0628 0.0559 | -0.000
+    12:  +0.52  +0.61 (+0.09) |  +0.58  +0.72 (+0.14) || 0.0636 0.0616 | 0.0621 0.0578 | +0.000
+    13:  +2.07  +2.01 (-0.06) |  +1.86  +1.80 (-0.06) || 0.0666 0.0659 | 0.0645 0.0612 | -0.000
+    14:  +1.40  +1.51 (+0.10) |  +1.34  +1.44 (+0.09) || 0.0701 0.0697 | 0.0683 0.0647 | +0.000
+    total: +7.02 +6.11 -0.91 +6.35 +5.43 -0.92
