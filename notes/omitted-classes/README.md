@@ -152,6 +152,22 @@ checked against the brute-force empirical fourth-cumulant tensor on a width-7 ne
 - the pair program's closure error, transported;
 - the exact split of the chain's one-step error into closure, omitted classes net of the lam core, and representation.
 
+**Replicate.** An independent Monte Carlo of network 1 (mc5, seed 403, no chain dump; `outputs/yclasses_mc5_off1.txt`)
+reproduces every number to the third digit. Averaged over layers 2-14:
+- D explains 62.3/45.9/52.5%, against 63.0/46.1/52.7%.
+- The fitted coefficients are 2.69 -> 4.70, against 2.72 -> 4.72.
+- g_conn is identical.
+
+These are properties of the network, not of the sample.
+
+**The chain's post-activation arrays are literal cumulants** (`code/ysem.py`, `outputs/ysem_off1.txt`). In the one-step dump
+(true pre-activation inputs), against the Monte Carlo of y:
+- the mean pk1v, the variance K2v and the kappa3 diagonal K3v match to <= 0.4%;
+- K11 is the full off-diagonal covariance, matched to <= 1.4%;
+- K21[a, b] = kappa(y_a, y_a, y_b), matched to 2%.
+
+Every ingredient of G D is therefore in the chain's state at the end of each layer.
+
 ### 3b. The same split for the third cumulant (prediction written before the data)
 
 The kappa3 readouts carry about 40% of the error (note XXXI). The same identity holds for kappa3:
