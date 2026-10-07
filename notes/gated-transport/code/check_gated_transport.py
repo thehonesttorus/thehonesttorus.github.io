@@ -100,3 +100,24 @@ for nm, got, pred in cases:
 p0 = {0: (0.0, 1.0), 1: (0.0, 1.0)}; cc = 1 / math.sqrt(2 * math.pi)
 print("N(0,I) witness:", dcumulant([0, 0, 0, 1], p0, (0.5, {0: 2, 1: 1})), "vs", 3 * cc / 8 + 1.5 * cc ** 3,
       "|", dcumulant([1, 1, 1, 0], p0, (0.5, {0: 2, 1: 1})), "vs", 3 * cc / 8 - 1.5 * cc ** 3)
+
+# --- Ward consistency: the radial tangent of a Gaussian state, pushed through the gated transport, is the radial tangent of y.
+# At z ~ N(mu, diag s^2) the mean-preserving radial tangent (note XXXII section 4, per unit v) has entries
+#   C_ab = mu_a mu_b,  Gamma_ab = kappa3-tangent(a,a,b) = 2 mu_b s_a^2,  K_ab = 4 s_a^2 s_b^2  (and unary parts),
+# and the exact image is the radial tangent of y: d Cov(y_a,y_b) = m_a m_b, d kappa(y_a,y_a,y_b,y_b) = 4 v_a v_b,
+# d kappa(y_a,y_a,y_a,y_b) = 3 m_b kappa3(y_a), d kappa(y_a,y_a,y_b,y_c) = 0 (y's covariance and kappa3 are diagonal here).
+print("\nWard consistency of the gated transport (radial tangent in, radial tangent out):")
+def radial_tangent_terms(a, b):
+    mua, sa = prm[a]; mub, sb = prm[b]
+    return [(mua * mub, {a: 1, b: 1}), (2 * mub * sa ** 2 / 2, {a: 2, b: 1}), (2 * mua * sb ** 2 / 2, {a: 1, b: 2}),
+            (4 * sa ** 2 * sb ** 2 / 4, {a: 2, b: 2})]
+def ystats(a):
+    mu, s = prm[a]
+    m = E(lambda z: relu(z), mu, s); v = E(lambda z: (relu(z) - m) ** 2, mu, s); k3 = E(lambda z: (relu(z) - m) ** 3, mu, s)
+    return m, v, k3
+for idx, name, exact in [([0, 1], "Cov(y0,y1)", lambda: ystats(0)[0] * ystats(1)[0]),
+                         ([0, 0, 1, 1], "kappa(y0,y0,y1,y1)", lambda: 4 * ystats(0)[1] * ystats(1)[1]),
+                         ([0, 0, 0, 1], "kappa(y0,y0,y0,y1)", lambda: 3 * ystats(1)[0] * ystats(0)[2]),
+                         ([1, 1, 1, 0], "kappa(y1,y1,y1,y0)", lambda: 3 * ystats(0)[0] * ystats(1)[2])]:
+    got = sum(dcumulant(idx, prm, t) for t in radial_tangent_terms(0, 1))
+    print(f"  {name:20s} gated transport {got:+.10f}   radial tangent of y {exact():+.10f}   diff {abs(got - exact()):.1e}")

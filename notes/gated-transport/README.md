@@ -60,6 +60,29 @@ The cumulant theory's witness is the special case alpha = 0, s = 1, Gamma_12 = t
 kappa(y1, y1, y1, y2) = t(3c/8 + 3c^3/2) and kappa(y2, y2, y2, y1) = t(3c/8 - 3c^3/2). The formulas above extend it to every
 alpha, every scale, and every pattern of order four.
 
+## 2b. Ward covariance, and why product tangents stay products
+
+At the product reference the mean-preserving radial tangent (note XXXII section 4) has, per unit v, the pair entries
+C_ab = mu_a mu_b, Gamma_ab = 2 mu_b s_a^2 and K_ab = 4 s_a^2 s_b^2 (plus unary parts); its triple and quadruple entries vanish.
+Each entry factorises over the neurons of its support: the tangent is product-form, with per-neuron factors
+x_a(1) = mu_a and x_a(2) = s_a^2 up to the ordering weights. The gated transport maps a product-form tangent to a product
+over neurons of sum_k x_a(k) c_a(p_a, k), and three one-line identities close it:
+
+    mu c(1,1) + s^2 c(1,2) = mu Phi + s phi = m,
+    mu c(2,1) + s^2 c(2,2) = 2 (mu m - m^2 + s^2 Phi) = 2 v,
+    mu [c(3,1) - 3 v Phi] + s^2 [c(3,2) - 3 v phi/s] = 3 kappa3(y).
+
+So the image of the radial tangent of z is d Cov(y_a, y_b) = m_a m_b, d kappa(y_a, y_a, y_b, y_b) = (2 v_a)(2 v_b) and
+d kappa(y_a, y_a, y_a, y_b) = 3 m_b kappa3(y_a): exactly the radial tangent of y (Sigma_y + m m^T, 4 Sym3(Sigma_y, Sigma_y),
+3 Sym4(m, kappa3_y)). The gated transport is radially covariant, as the exact layer map must be (checked by quadrature in
+`code/check_gated_transport.py`, to 6e-14 for all four pair classes).
+
+The mechanism is more general than the radial direction. Any tangent produced by a background variable acting on each
+neuron separately is product-form; the gate maps it to a product-form tangent; and the linear layer maps a product-form
+pair tensor to a product core. That is the structure the frontier's covariance-response cores assume (note XXXIII
+section 5). Here it is derived for a conditionally independent background, together with the per-neuron factors that
+the cores must carry.
+
 ## 3. Consequences for the chain
 
 **The pair-supported sector is closed under the gate.** The y classes (4), (2,2), (3,1) respond only to pair-supported
