@@ -1,0 +1,29 @@
+net 1 free: raw 2.30865e-08  per-layer 6.41e-10 7.02e-10 9.28e-10 1.50e-09 2.49e-09 3.42e-09 5.06e-09 6.36e-09 8.51e-09 9.59e-09 1.21e-08 1.51e-08 1.81e-08 1.97e-08 2.15e-08 2.31e-08
+net 1: free-running relative error vs truth, chain_off1.npz | chain_off1_kd.npz  (and corr of the two error vectors)
+layer  1: var 0.0003|0.0003 (+1.00)  D3 0.0641|0.0641 (+1.00)  D21 0.0826|0.0826 (+1.00)  g4row 0.1572|0.1626 (+1.00)  wk4m 0.1920|0.1942 (+1.00)  C_off 0.0065|0.0065 (+1.00)
+layer  2: var 0.0004|0.0004 (+1.00)  D3 0.0451|0.0451 (+1.00)  D21 0.0641|0.0642 (+1.00)  g4row 0.1372|0.1285 (+0.97)  wk4m 0.1547|0.1508 (+0.99)  C_off 0.0052|0.0052 (+1.00)
+layer  3: var 0.0004|0.0004 (+1.00)  D3 0.0376|0.0376 (+1.00)  D21 0.0554|0.0554 (+1.00)  g4row 0.1355|0.1279 (+0.96)  wk4m 0.1446|0.1409 (+0.98)  C_off 0.0047|0.0047 (+1.00)
+layer  4: var 0.0004|0.0004 (+0.99)  D3 0.0358|0.0357 (+1.00)  D21 0.0525|0.0525 (+1.00)  g4row 0.1315|0.1249 (+0.93)  wk4m 0.1451|0.1405 (+0.97)  C_off 0.0045|0.0045 (+0.99)
+layer  5: var 0.0005|0.0005 (+0.98)  D3 0.0373|0.0371 (+1.00)  D21 0.0543|0.0543 (+1.00)  g4row 0.1405|0.1293 (+0.92)  wk4m 0.1550|0.1478 (+0.96)  C_off 0.0045|0.0046 (+0.98)
+layer  6: var 0.0005|0.0006 (+0.97)  D3 0.0361|0.0358 (+0.99)  D21 0.0528|0.0526 (+1.00)  g4row 0.1582|0.1418 (+0.88)  wk4m 0.1652|0.1528 (+0.93)  C_off 0.0048|0.0049 (+0.97)
+layer  7: var 0.0006|0.0006 (+0.97)  D3 0.0362|0.0363 (+0.99)  D21 0.0543|0.0541 (+1.00)  g4row 0.1650|0.1484 (+0.83)  wk4m 0.1773|0.1616 (+0.92)  C_off 0.0051|0.0053 (+0.97)
+layer  8: var 0.0007|0.0007 (+0.96)  D3 0.0375|0.0371 (+0.99)  D21 0.0570|0.0568 (+1.00)  g4row 0.1800|0.1538 (+0.80)  wk4m 0.1950|0.1734 (+0.90)  C_off 0.0055|0.0057 (+0.96)
+layer  9: var 0.0008|0.0008 (+0.96)  D3 0.0393|0.0389 (+0.98)  D21 0.0610|0.0608 (+0.99)  g4row 0.1972|0.1709 (+0.81)  wk4m 0.2082|0.1823 (+0.89)  C_off 0.0059|0.0061 (+0.95)
+layer 10: var 0.0009|0.0009 (+0.95)  D3 0.0421|0.0416 (+0.98)  D21 0.0639|0.0635 (+0.99)  g4row 0.2170|0.1732 (+0.76)  wk4m 0.2283|0.1968 (+0.88)  C_off 0.0063|0.0066 (+0.95)
+layer 11: var 0.0010|0.0011 (+0.94)  D3 0.0429|0.0413 (+0.98)  D21 0.0648|0.0642 (+0.99)  g4row 0.2650|0.1956 (+0.76)  wk4m 0.2566|0.2071 (+0.85)  C_off 0.0067|0.0071 (+0.94)
+layer 12: var 0.0012|0.0013 (+0.94)  D3 0.0448|0.0428 (+0.97)  D21 0.0688|0.0678 (+0.99)  g4row 0.2908|0.1948 (+0.64)  wk4m 0.2810|0.2163 (+0.81)  C_off 0.0073|0.0077 (+0.94)
+layer 13: var 0.0013|0.0014 (+0.93)  D3 0.0504|0.0484 (+0.97)  D21 0.0726|0.0717 (+0.99)  g4row 0.2888|0.2107 (+0.75)  wk4m 0.2917|0.2277 (+0.83)  C_off 0.0078|0.0081 (+0.94)
+layer 14: var 0.0014|0.0015 (+0.92)  D3 0.0509|0.0478 (+0.97)  D21 0.0742|0.0727 (+0.99)  g4row 0.3153|0.2006 (+0.59)  wk4m 0.3240|0.2295 (+0.76)  C_off 0.0080|0.0084 (+0.93)
+layer 15: var 0.0016|0.0017 (+0.92)  D3 0.0509|0.0474 (+0.97)  g4row 0.3626|0.3340 (+1.00)
+==== errbudget KD=0
+net 1: chain output MSE 2.1266e-08 (vs official truth); first-order channel content, noise-free:
+  k3        : predicted oracle change  -14.4% | |Delta|^2/|e|^2 0.341 (with MC noise at full N 0.363) | corr(e, Delta) +0.416
+  k4        : predicted oracle change  -13.5% | |Delta|^2/|e|^2 0.357 (with MC noise at full N 0.365) | corr(e, Delta) +0.412
+  k3+k4     : predicted oracle change  -35.3% | |Delta|^2/|e|^2 0.625 (with MC noise at full N 0.654) | corr(e, Delta) +0.618
+  var+k3+k4 : predicted oracle change  -88.6% | |Delta|^2/|e|^2 1.090 (with MC noise at full N 1.224) | corr(e, Delta) +0.946
+==== errbudget KD=1
+net 1: chain output MSE 2.3086e-08 (vs official truth); first-order channel content, noise-free:
+  k3        : predicted oracle change  -16.0% | |Delta|^2/|e|^2 0.299 (with MC noise at full N 0.319) | corr(e, Delta) +0.420
+  k4        : predicted oracle change  -17.7% | |Delta|^2/|e|^2 0.329 (with MC noise at full N 0.336) | corr(e, Delta) +0.441
+  k3+k4     : predicted oracle change  -34.9% | |Delta|^2/|e|^2 0.616 (with MC noise at full N 0.642) | corr(e, Delta) +0.615
+  var+k3+k4 : predicted oracle change  -89.5% | |Delta|^2/|e|^2 1.110 (with MC noise at full N 1.233) | corr(e, Delta) +0.952

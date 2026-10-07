@@ -189,6 +189,42 @@ and second order:
 Var(s^2) ~ g_conn, the legs' error is mostly the scale mode's. If not, it is in the legs' genuine all-distinct
 content or in the facet term.
 
+### 3d. In the chain: G D in place of the lam core (V39_KD)
+
+`est_v29.py` switch V39_KD builds G_l D_l at every layer from the chain's own state:
+- the post-activation C, mean, variance, kappa3 diagonal and K21 slice from the end of the previous layer;
+- the pre-activation covariance, mean, D3 and D21 of the current layer;
+- the exact transport of the pair part (six n^3 products per layer).
+
+It replaces the lam core in the three slices, with G_l the network-1 fit (coefficients 2.06 -> 4.72; layer 1 -> 2 uses
+0.20). Bits of V39_KD_BITS select the slices. The pair parts and the K4 -> K3 birth feed are unchanged.
+- **One step (all oracles on, `outputs/kd_onestep_off1.txt`).** The chain's own slices reproduce the prediction
+  exactly. At layers 12-14 the diagonal error falls from 0.27-0.29 to 0.19-0.21, the (2,2) from 0.27-0.29 to
+  0.22-0.23, the (3,1) from 0.73-0.75 to 0.59-0.64.
+- **Free-running (`outputs/kd_free_off1.txt`).** The kappa4 diagonal error is lower at every layer from 2 on (0.315 ->
+  0.201 at layer 14). The (2,2) slice error falls 0.32 -> 0.23 and the kappa3 readouts improve slightly (D3 0.051 ->
+  0.048). The variance and off-diagonal covariance errors rise 5-7%.
+- **Output.** The output is worse: net 1 2.1266e-8 -> 2.3086e-8 (+8.6%), net 0 2.2530e-8 -> 2.4873e-8 (+10.4%), at +8%
+  of the budget. Every slice subset is worse (`outputs/kd_ablation.txt`):
+  - diagonal only +6.5% / +1.8%;
+  - (2,2) only +2.9% / +10.5%;
+  - (3,1) only +5.0% / +1.1%;
+  - the output worsens monotonically as the amplitude falls (0: +71%/+84%; 0.5: +24%/+33%).
+- **Why, from the adjoint functional (section 2, rerun on the KD dump).**
+  - In absolute terms the kappa4 channel's output content is unchanged: |Delta_k4|^2 = 0.760 against 0.759, in units
+    of 1e-8 n. A 30% lower L2 error of the kappa4 diagonal has the same projection on the output.
+  - The kappa3 channel improves slightly (0.725 -> 0.690).
+  - The variance channel worsens by 10% (1.31 -> 1.45): the changed (2,2) and (3,1) slices reach the next covariance
+    through the pair program's use-side terms.
+
+This is note XXI section 7's result again, now located:
+- **What it is not.** The compensation is not with the pair closure; the closure is exact (section 3).
+- **What it is.** The output reads the kappa4 sector only through two projections: the mean map's weights on the
+  diagonal, and the covariance use-side terms of the next pair program. L2 accuracy of the slices is the wrong target.
+- **The output-relevant part.** It lies in what D does not capture. The remaining third of R is the theory's
+  source 1 (the leg-fed class) and second-order products, which section 3c tests directly.
+- **What would not be a result.** Tuning the amplitude on the output would only re-fit lam in another shape.
+
 ## 4. Theory: the input radius cancels, the gain mode survives, and it lives in the trace sector
 
 **The radius factorises the whole stack.** The official networks are bias-free ReLU MLPs with x ~ N(0, I_n). Positive

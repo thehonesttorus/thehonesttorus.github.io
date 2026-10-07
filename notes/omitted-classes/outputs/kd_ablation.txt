@@ -1,0 +1,14 @@
+bits=1 net 1 KD=1: raw 2.26587e-08  cost/B 0.2955
+bits=1 net 0 KD=1: raw 2.29462e-08  cost/B 0.2955
+bits=2 net 1 KD=1: raw 2.18769e-08  cost/B 0.2955
+bits=2 net 0 KD=1: raw 2.48883e-08  cost/B 0.2955
+bits=4 net 1 KD=1: raw 2.23218e-08  cost/B 0.2955
+bits=4 net 0 KD=1: raw 2.27735e-08  cost/B 0.2955
+bits=3 net 1 KD=1: raw 2.15692e-08  cost/B 0.2955
+bits=3 net 0 KD=1: raw 2.42755e-08  cost/B 0.2955
+bits=5 net 1 KD=1: raw 2.52793e-08  cost/B 0.2955
+bits=5 net 0 KD=1: raw 2.41529e-08  cost/B 0.2955
+bits=6 net 1 KD=1: raw 2.17765e-08  cost/B 0.2956
+bits=6 net 0 KD=1: raw 2.45328e-08  cost/B 0.2956
+amp=0.5 net 1 KD=1: raw 2.62776e-08  cost/B 0.2956
+amp=0.5 net 0 KD=1: raw 3.00478e-08  cost/B 0.2956
