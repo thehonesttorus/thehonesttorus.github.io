@@ -1,0 +1,43 @@
+/opt/work/src/k3work/est_v29.py:1585: FlopscopeWarning: stats.norm.pdf promoted its float32 input to float64 to match scipy.stats. If float64 output was not intended, cast the result back with result.astype(np.float32) before downstream operations; float64 operations are billed at twice the float32 dtype rate.
+  phi = flops.stats.norm.pdf(alpha).astype(f32)
+/opt/work/src/k3work/est_v29.py:1586: FlopscopeWarning: stats.norm.cdf promoted its float32 input to float64 to match scipy.stats. If float64 output was not intended, cast the result back with result.astype(np.float32) before downstream operations; float64 operations are billed at twice the float32 dtype rate.
+  Phi = flops.stats.norm.cdf(alpha).astype(f32)
+/opt/work/src/k3work/est_v29.py:1145: FlopscopeWarning: stats.norm.cdf promoted its float32 input to float64 to match scipy.stats. If float64 output was not intended, cast the result back with result.astype(np.float32) before downstream operations; float64 operations are billed at twice the float32 dtype rate.
+  _ph = flops.stats.norm.cdf(_al).astype(f32)
+/opt/work/src/k3work/est_v29.py:1214: SymmetryLossWarning: Symmetry lost along dims (0, 1): add — no symmetry groups shared by both operands. Use as_symmetric() to re-tag if you know the result is symmetric. Suppress with flops.configure(symmetry_warnings=False).
+  Sg = Sj if Sg is None else Sg + Sj
+/opt/work/src/k3work/est_v29.py:1258: SymmetryLossWarning: Symmetry lost along dims (0, 1): subtract — no symmetry groups shared by both operands. Use as_symmetric() to re-tag if you know the result is symmetric. Suppress with flops.configure(symmetry_warnings=False).
+  Sg = Sg - S_s
+/opt/work/src/k3work/est_v29.py:1233: SymmetryLossWarning: Symmetry lost along dims (0, 1): add — no symmetry groups shared by both operands. Use as_symmetric() to re-tag if you know the result is symmetric. Suppress with flops.configure(symmetry_warnings=False).
+  G2 = S_s if kb == 0 else S_s + U @ (S2 @ U.T)
+net 1 chain: raw 2.12658e-08  per-layer 6.41e-10 6.74e-10 9.51e-10 1.60e-09 2.55e-09 3.40e-09 5.02e-09 6.06e-09 7.90e-09 8.78e-09 1.09e-08 1.33e-08 1.64e-08 1.78e-08 1.95e-08 2.13e-08
+net 1 WK4M:h0: raw 2.42345e-08  per-layer 6.41e-10 6.74e-10 1.11e-09 1.83e-09 2.86e-09 3.52e-09 5.05e-09 6.11e-09 7.88e-09 8.94e-09 1.08e-08 1.33e-08 1.73e-08 1.94e-08 2.12e-08 2.42e-08
+net 1 COFF:h0: raw 2.06796e-08  per-layer 6.41e-10 5.93e-09 8.82e-09 9.12e-09 1.09e-08 1.07e-08 1.13e-08 1.17e-08 1.19e-08 1.14e-08 1.45e-08 1.71e-08 1.99e-08 2.07e-08 2.14e-08 2.07e-08
+net 1 WK4M:h1: raw 2.39251e-08  per-layer 6.41e-10 6.74e-10 1.08e-09 1.82e-09 2.82e-09 3.65e-09 5.27e-09 6.30e-09 8.19e-09 9.18e-09 1.09e-08 1.32e-08 1.71e-08 1.93e-08 2.13e-08 2.39e-08
+net 1 VAR+COFF:h1: raw 1.81638e-08  per-layer 2.16e-08 2.39e-08 2.27e-08 2.38e-08 2.12e-08 1.54e-08 1.50e-08 1.61e-08 1.56e-08 1.43e-08 1.44e-08 1.67e-08 1.93e-08 1.80e-08 1.85e-08 1.82e-08
+net 1 VAR:full: raw 1.63404e-08  per-layer 1.08e-08 1.12e-08 1.13e-08 1.15e-08 1.20e-08 1.02e-08 9.97e-09 1.10e-08 1.10e-08 1.03e-08 1.17e-08 1.41e-08 1.72e-08 1.69e-08 1.75e-08 1.63e-08
+net 1 VAR:h0: raw 1.96787e-08  per-layer 2.03e-08 2.24e-08 2.23e-08 1.93e-08 1.91e-08 1.76e-08 1.54e-08 1.59e-08 1.60e-08 1.51e-08 1.78e-08 1.94e-08 2.22e-08 2.19e-08 2.24e-08 1.97e-08
+net 1 K31:h0: raw 2.02362e-08  per-layer 6.41e-10 6.74e-10 1.00e-09 1.70e-09 2.78e-09 3.61e-09 5.20e-09 5.78e-09 7.24e-09 7.55e-09 9.13e-09 1.16e-08 1.48e-08 1.60e-08 1.87e-08 2.02e-08
+net 1 K31:h1: raw 2.04837e-08  per-layer 6.41e-10 6.74e-10 9.98e-10 1.68e-09 2.56e-09 3.41e-09 4.98e-09 5.75e-09 7.09e-09 7.32e-09 8.89e-09 1.16e-08 1.45e-08 1.56e-08 1.84e-08 2.05e-08
+net 1 K31:full: raw 2.01767e-08  per-layer 6.41e-10 6.74e-10 9.40e-10 1.57e-09 2.50e-09 3.32e-09 4.89e-09 5.54e-09 6.95e-09 7.21e-09 8.78e-09 1.14e-08 1.44e-08 1.56e-08 1.83e-08 2.02e-08
+net 1 VAR+COFF:h0: raw 1.92869e-08  per-layer 2.03e-08 2.24e-08 2.22e-08 1.92e-08 1.90e-08 1.74e-08 1.53e-08 1.57e-08 1.58e-08 1.50e-08 1.76e-08 1.92e-08 2.19e-08 2.16e-08 2.20e-08 1.93e-08
+net 1 COFF:h1: raw 2.14180e-08  per-layer 6.41e-10 5.67e-09 8.29e-09 9.71e-09 1.16e-08 1.04e-08 1.25e-08 1.28e-08 1.40e-08 1.37e-08 1.46e-08 1.69e-08 2.09e-08 1.97e-08 1.97e-08 2.14e-08
+net 1 COFF:full: raw 1.89083e-08  per-layer 6.41e-10 3.24e-09 4.85e-09 5.47e-09 7.35e-09 7.37e-09 8.62e-09 9.08e-09 9.87e-09 9.49e-09 1.14e-08 1.42e-08 1.78e-08 1.78e-08 1.82e-08 1.89e-08
+net 1 VAR+COFF:full: raw 1.60304e-08  per-layer 1.08e-08 1.12e-08 1.13e-08 1.15e-08 1.19e-08 1.01e-08 9.88e-09 1.09e-08 1.09e-08 1.01e-08 1.15e-08 1.39e-08 1.68e-08 1.67e-08 1.72e-08 1.60e-08
+net 1 WK4M+K31:h0: raw 2.12969e-08  per-layer 6.41e-10 6.74e-10 1.15e-09 1.91e-09 2.99e-09 3.64e-09 5.13e-09 5.79e-09 7.20e-09 7.70e-09 9.01e-09 1.17e-08 1.53e-08 1.70e-08 1.93e-08 2.13e-08
+net 1 VAR:h1: raw 1.88058e-08  per-layer 2.16e-08 2.39e-08 2.28e-08 2.39e-08 2.14e-08 1.56e-08 1.52e-08 1.63e-08 1.57e-08 1.44e-08 1.45e-08 1.70e-08 1.98e-08 1.85e-08 1.91e-08 1.88e-08
+net 1 WK4M:full: raw 2.40264e-08  per-layer 6.41e-10 6.74e-10 1.03e-09 1.72e-09 2.72e-09 3.46e-09 5.02e-09 6.08e-09 7.92e-09 8.95e-09 1.07e-08 1.31e-08 1.71e-08 1.93e-08 2.12e-08 2.40e-08
+net 1 G4+WK4M+K31:h1: raw 1.53379e-08  per-layer 6.41e-10 1.04e-09 1.36e-09 1.88e-09 2.29e-09 2.97e-09 4.02e-09 4.58e-09 5.52e-09 6.08e-09 6.86e-09 8.44e-09 1.07e-08 1.13e-08 1.36e-08 1.53e-08
+net 1 WK4M+K31:h1: raw 2.14575e-08  per-layer 6.41e-10 6.74e-10 1.11e-09 1.89e-09 2.83e-09 3.55e-09 5.06e-09 5.73e-09 7.15e-09 7.62e-09 8.76e-09 1.15e-08 1.51e-08 1.66e-08 1.94e-08 2.15e-08
+net 1 WK4M+K31:full: raw 2.10535e-08  per-layer 6.41e-10 6.74e-10 1.01e-09 1.70e-09 2.63e-09 3.29e-09 4.76e-09 5.40e-09 6.83e-09 7.30e-09 8.55e-09 1.13e-08 1.48e-08 1.64e-08 1.90e-08 2.11e-08
+net 1 D3+D21+G4:h1: raw 1.26650e-08  per-layer 6.41e-10 1.91e-09 3.61e-09 4.86e-09 5.93e-09 6.06e-09 6.19e-09 6.29e-09 6.25e-09 6.71e-09 7.54e-09 8.82e-09 9.60e-09 1.03e-08 1.14e-08 1.27e-08
+net 1 D3+D21+G4:h0: raw 1.27713e-08  per-layer 6.41e-10 1.87e-09 3.61e-09 5.30e-09 6.88e-09 6.58e-09 6.53e-09 6.57e-09 7.45e-09 6.89e-09 8.13e-09 9.22e-09 1.07e-08 1.12e-08 1.27e-08 1.28e-08
+net 1 G4+WK4M+K31:full: raw 1.47525e-08  per-layer 6.41e-10 7.76e-10 9.75e-10 1.32e-09 1.71e-09 2.35e-09 3.30e-09 3.88e-09 5.17e-09 5.50e-09 6.42e-09 8.12e-09 1.03e-08 1.10e-08 1.32e-08 1.48e-08
+net 1 G4+WK4M+K31:h0: raw 1.52720e-08  per-layer 6.41e-10 1.05e-09 1.51e-09 1.99e-09 2.56e-09 3.17e-09 3.99e-09 4.59e-09 6.07e-09 6.24e-09 7.31e-09 9.10e-09 1.12e-08 1.19e-08 1.39e-08 1.53e-08
+net 1 D3+D21+G4+WK4M+K31+VAR+COFF:h0: raw 1.11261e-08  per-layer 2.03e-08 2.36e-08 2.43e-08 2.08e-08 2.00e-08 1.79e-08 1.47e-08 1.28e-08 1.31e-08 1.12e-08 1.18e-08 1.13e-08 1.17e-08 1.13e-08 1.20e-08 1.11e-08
+net 1 D3+D21+G4:full: raw 1.10318e-08  per-layer 6.41e-10 1.19e-09 1.93e-09 2.71e-09 3.40e-09 3.50e-09 3.62e-09 3.86e-09 4.44e-09 4.48e-09 5.62e-09 6.77e-09 7.99e-09 8.68e-09 1.02e-08 1.10e-08
+net 1 D3+D21+G4+WK4M+K31:h1: raw 5.84858e-09  per-layer 6.41e-10 1.91e-09 3.83e-09 5.27e-09 6.05e-09 6.02e-09 6.36e-09 6.03e-09 5.41e-09 5.61e-09 5.43e-09 5.74e-09 5.76e-09 5.34e-09 5.54e-09 5.85e-09
+net 1 D3+D21+G4+WK4M+K31+VAR+COFF:h1: raw 7.50706e-09  per-layer 2.16e-08 2.51e-08 2.40e-08 2.43e-08 2.05e-08 1.43e-08 1.22e-08 1.07e-08 9.41e-09 8.92e-09 8.40e-09 8.86e-09 8.60e-09 7.26e-09 7.40e-09 7.51e-09
+net 1 D3+D21+G4+WK4M+K31:h0: raw 5.94524e-09  per-layer 6.41e-10 1.87e-09 3.94e-09 5.73e-09 7.47e-09 7.46e-09 6.75e-09 6.61e-09 6.87e-09 5.96e-09 5.89e-09 6.49e-09 6.94e-09 6.55e-09 6.95e-09 5.95e-09
+net 1 D3+D21+G4+WK4M+K31+VAR+COFF:full: raw 6.18858e-09  per-layer 1.08e-08 1.16e-08 1.17e-08 1.11e-08 1.04e-08 8.34e-09 6.85e-09 5.95e-09 5.93e-09 5.23e-09 5.16e-09 5.68e-09 6.04e-09 5.84e-09 6.12e-09 6.19e-09
+net 1 D3+D21+G4+WK4M+K31:full: raw 3.86258e-09  per-layer 6.41e-10 1.19e-09 2.07e-09 2.95e-09 3.54e-09 3.67e-09 3.54e-09 3.52e-09 3.55e-09 3.25e-09 3.18e-09 3.58e-09 3.90e-09 3.59e-09 3.97e-09 3.86e-09
