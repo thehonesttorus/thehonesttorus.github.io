@@ -16,7 +16,9 @@ Wcol = np.load(f"../official/W_off{net}.npy"); mt = np.load(f"../official/truth_
 mlp = MLP(width=1024, depth=16, weights=[np.ascontiguousarray(W.T).astype(np.float32) for W in Wcol])
 with flops.BudgetContext(flop_budget=2**44, wall_time_limit_s=900.0, quiet=True):
     out = np.asarray(mod.Estimator().predict(mlp, 2**41), dtype=np.float64)
-print(f"net {net} {tag}: raw {np.mean((out[-1] - mt[-1]) ** 2):.5e}", flush=True)
+pl = np.mean((out - mt) ** 2, axis=1) if mt.shape == out.shape else None
+print(f"net {net} {tag}: raw {np.mean((out[-1] - mt[-1]) ** 2):.5e}" +
+      ("" if pl is None else "  per-layer " + " ".join(f"{x:.2e}" for x in pl)), flush=True)
 if orc == "dump":
     d3 = {}; d21 = {}; var = {}
     for d in mod.DUMPS:
