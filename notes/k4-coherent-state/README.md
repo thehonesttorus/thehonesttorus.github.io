@@ -245,9 +245,11 @@ Terminal effect of replacing statistics by truth at every layer (raw 2.1266e-8 f
 | kappa_3 readouts + diagonal + (2,2) + (3,1) | **-91%** (raw 1.8e-9) |
 | all of the above + variance + off-diagonal covariance | -86% (noisier) |
 
-On network 0 (independent Monte Carlo replica, raw 2.2525e-8): kappa_3 readouts + diagonal -78%; with the (2,2) and
-(3,1) slices also true -98% (noise-free raw 4.4e-10, at the reference's own noise floor of 7e-10, so within the
-extrapolation noise of zero); variance alone -52%, off-diagonal covariance alone -36%.
+On network 0 the full oracle set (`oracle_mc2_off0.txt`, raw 2.2525e-8) repeats every entry of the network-1 table with
+larger effects: (2,2) slice alone **+24.7%** (worse); (3,1) slice alone -22%; (2,2) + (3,1) -6%; diagonal + (2,2) + (3,1)
+**-41%**; kappa_3 readouts + diagonal -72%; with the (2,2) and (3,1) slices also true **-96%** (raw 9.2e-10); variance alone
+-52%, covariance alone -34%, both -52%; everything -96%. An independent Monte Carlo replica (`oracle_mc3_off0.txt`) gives
+-78% and -98% for the two combined oracles.
 
 - The coherence prediction holds in its sharpest form: one true slice in an otherwise incoherent state makes the
   output worse; the whole sector true is worth twice the diagonal alone; with the kappa_3 readouts true, the sector
