@@ -1,0 +1,16 @@
+net 3 sat225: raw 2.5926e-08  C/B 0.1839  adjusted 4.7679e-09  wall 70.6s  residual 0.436s  first-call C/B 0.2013 residual 0.506s  VmPeak 9.52GB VmHWM 8.17GB
+net 2 sat225: raw 2.6207e-08  C/B 0.1826  adjusted 4.7849e-09  wall 73.4s  residual 0.449s  first-call C/B 0.2013 residual 0.521s  VmPeak 9.54GB VmHWM 8.20GB
+net 0 sat225: raw 2.2075e-08  C/B 0.1843  adjusted 4.0680e-09  wall 72.5s  residual 0.444s  first-call C/B 0.2018 residual 0.538s  VmPeak 9.51GB VmHWM 8.17GB
+net 4 sat225: raw 2.3204e-08  C/B 0.1839  adjusted 4.2673e-09  wall 73.3s  residual 0.444s  first-call C/B 0.1997 residual 0.522s  VmPeak 9.55GB VmHWM 8.21GB
+net 7 sat225: raw 2.4555e-08  C/B 0.1835  adjusted 4.5049e-09  wall 72.2s  residual 0.454s  first-call C/B 0.2023 residual 0.537s  VmPeak 9.55GB VmHWM 8.21GB
+net 6 sat225: raw 2.2901e-08  C/B 0.1830  adjusted 4.1908e-09  wall 73.4s  residual 0.454s  first-call C/B 0.2008 residual 0.533s  VmPeak 9.51GB VmHWM 8.17GB
+net 1 sat225: raw 2.1456e-08  C/B 0.1843  adjusted 3.9538e-09  wall 73.6s  residual 0.452s  first-call C/B 0.1996 residual 0.537s  VmPeak 9.51GB VmHWM 8.17GB
+net 5 sat225: raw 2.2543e-08  C/B 0.1826  adjusted 4.1167e-09  wall 74.7s  residual 0.464s  first-call C/B 0.2002 residual 0.531s  VmPeak 9.51GB VmHWM 8.17GB
+net 8 sat225: raw 2.3306e-08  C/B 0.1847  adjusted 4.3042e-09  wall 70.0s  residual 0.436s  first-call C/B 0.2002 residual 0.520s  VmPeak 9.54GB VmHWM 8.20GB
+net 9 sat225: raw 2.6342e-08  C/B 0.1830  adjusted 4.8204e-09  wall 73.1s  residual 0.456s  first-call C/B 0.1992 residual 0.516s  VmPeak 9.51GB VmHWM 8.16GB
+net 11 sat225: raw 2.5657e-08  C/B 0.1830  adjusted 4.6950e-09  wall 70.6s  residual 0.436s  first-call C/B 0.2008 residual 0.536s  VmPeak 9.51GB VmHWM 8.16GB
+net 10 sat225: raw 2.3738e-08  C/B 0.1822  adjusted 4.3252e-09  wall 73.6s  residual 0.458s  first-call C/B 0.2002 residual 0.537s  VmPeak 9.51GB VmHWM 8.17GB
+net 13 sat225: raw 2.1273e-08  C/B 0.1834  adjusted 3.9016e-09  wall 72.8s  residual 0.449s  first-call C/B 0.2003 residual 0.527s  VmPeak 9.52GB VmHWM 8.17GB
+net 14 sat225: raw 2.3913e-08  C/B 0.1831  adjusted 4.3781e-09  wall 72.6s  residual 0.457s  first-call C/B 0.2023 residual 0.537s  VmPeak 9.52GB VmHWM 8.17GB
+net 12 sat225: raw 2.1071e-08  C/B 0.1835  adjusted 3.8664e-09  wall 72.8s  residual 0.454s  first-call C/B 0.2007 residual 0.528s  VmPeak 9.51GB VmHWM 8.17GB
+net 15 sat225: raw 2.5573e-08  C/B 0.1847  adjusted 4.7230e-09  wall 73.0s  residual 0.455s  first-call C/B 0.2012 residual 0.548s  VmPeak 9.54GB VmHWM 8.20GB

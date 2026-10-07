@@ -1,0 +1,16 @@
+net 7 skipL2: raw 2.4323e-08  C/B 0.1851  adjusted 4.5015e-09  wall 72.3s  residual 0.442s  first-call C/B 0.2034 residual 0.496s  VmPeak 10.64GB VmHWM 9.29GB
+net 1 skipL2: raw 2.1268e-08  C/B 0.1851  adjusted 3.9363e-09  wall 71.7s  residual 0.441s  first-call C/B 0.2018 residual 0.509s  VmPeak 10.67GB VmHWM 9.32GB
+net 5 skipL2: raw 2.1736e-08  C/B 0.1851  adjusted 4.0228e-09  wall 72.2s  residual 0.451s  first-call C/B 0.2019 residual 0.527s  VmPeak 10.67GB VmHWM 9.32GB
+net 4 skipL2: raw 2.2768e-08  C/B 0.1864  adjusted 4.2430e-09  wall 72.6s  residual 0.440s  first-call C/B 0.2019 residual 0.513s  VmPeak 10.67GB VmHWM 9.32GB
+net 6 skipL2: raw 2.2251e-08  C/B 0.1851  adjusted 4.1181e-09  wall 75.0s  residual 0.453s  first-call C/B 0.2019 residual 0.508s  VmPeak 10.66GB VmHWM 9.31GB
+net 0 skipL2: raw 2.2625e-08  C/B 0.1859  adjusted 4.2058e-09  wall 73.9s  residual 0.451s  first-call C/B 0.2019 residual 0.527s  VmPeak 10.63GB VmHWM 9.28GB
+net 3 skipL2: raw 2.5810e-08  C/B 0.1851  adjusted 4.7768e-09  wall 74.7s  residual 0.452s  first-call C/B 0.2035 residual 0.519s  VmPeak 10.67GB VmHWM 9.32GB
+net 2 skipL2: raw 2.6216e-08  C/B 0.1850  adjusted 4.8495e-09  wall 75.2s  residual 0.457s  first-call C/B 0.2019 residual 0.520s  VmPeak 10.63GB VmHWM 9.29GB
+net 8 skipL2: raw 2.3460e-08  C/B 0.1862  adjusted 4.3691e-09  wall 71.6s  residual 0.446s  first-call C/B 0.2014 residual 0.516s  VmPeak 10.66GB VmHWM 9.31GB
+net 12 skipL2: raw 2.1053e-08  C/B 0.1851  adjusted 3.8964e-09  wall 70.8s  residual 0.439s  first-call C/B 0.2017 residual 0.520s  VmPeak 10.67GB VmHWM 9.32GB
+net 15 skipL2: raw 2.4719e-08  C/B 0.1855  adjusted 4.5851e-09  wall 73.6s  residual 0.453s  first-call C/B 0.2024 residual 0.500s  VmPeak 10.67GB VmHWM 9.33GB
+net 13 skipL2: raw 2.1308e-08  C/B 0.1849  adjusted 3.9399e-09  wall 72.5s  residual 0.457s  first-call C/B 0.2014 residual 0.521s  VmPeak 10.63GB VmHWM 9.29GB
+net 10 skipL2: raw 2.3312e-08  C/B 0.1838  adjusted 4.2859e-09  wall 74.3s  residual 0.461s  first-call C/B 0.2014 residual 0.527s  VmPeak 10.63GB VmHWM 9.29GB
+net 9 skipL2: raw 2.6374e-08  C/B 0.1847  adjusted 4.8703e-09  wall 75.5s  residual 0.458s  first-call C/B 0.2003 residual 0.518s  VmPeak 10.67GB VmHWM 9.32GB
+net 14 skipL2: raw 2.4101e-08  C/B 0.1847  adjusted 4.4507e-09  wall 72.2s  residual 0.445s  first-call C/B 0.2024 residual 0.523s  VmPeak 10.66GB VmHWM 9.32GB
+net 11 skipL2: raw 2.4860e-08  C/B 0.1847  adjusted 4.5908e-09  wall 75.9s  residual 0.452s  first-call C/B 0.2019 residual 0.531s  VmPeak 10.67GB VmHWM 9.32GB

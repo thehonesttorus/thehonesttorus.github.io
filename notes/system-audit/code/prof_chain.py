@@ -28,8 +28,20 @@ cls._append_op_record = rec
 spec = importlib.util.spec_from_file_location("estmod", est); mod = importlib.util.module_from_spec(spec); spec.loader.exec_module(mod)
 Wcol = np.load(f"../official/W_off{net}.npy"); mt = np.load(f"../official/truth_off{net}.npz")["m"].astype(np.float64)
 mlp = MLP(width=1024, depth=16, weights=[np.ascontiguousarray(W.T).astype(np.float32) for W in Wcol])
+E = mod.Estimator()
+try:
+    from whestbench import SetupContext
+    E.setup(SetupContext(width=1024, depth=16, flop_budget=2**41, api_version="1", seed=0))
+except Exception:
+    pass
+for w in range(int(os.environ.get("W_WARM", "0"))):   # warm-up predicts on other networks (scored regime: profile predict #W_WARM+1)
+    Ww = np.load(f"../official/W_off{(net + 1 + w) % 100}.npy")
+    with flops.BudgetContext(flop_budget=2**44, wall_time_limit_s=900.0, quiet=True):
+        E.predict(MLP(width=1024, depth=16, weights=[np.ascontiguousarray(W.T).astype(np.float32) for W in Ww]), 2**41)
+for c_ in (inner, outer, byop, cnt_in): c_.clear()
+shapes_in.clear()
 with flops.BudgetContext(flop_budget=2**44, wall_time_limit_s=900.0, quiet=True) as bc:
-    out = np.asarray(mod.Estimator().predict(mlp, 2**41), dtype=np.float64)
+    out = np.asarray(E.predict(mlp, 2**41), dtype=np.float64)
     total = bc.flops_used
 U = 2 * 1024 ** 3
 print(f"net {net}: raw {np.mean((out[-1] - mt[-1])**2):.4e}  total {total:.4e} FLOPs = {total / 2**41:.4f} B = {total / U:.1f} units (2n^3)")

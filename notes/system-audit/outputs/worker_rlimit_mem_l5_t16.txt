@@ -1,0 +1,5 @@
+setup ok 0.46s
+net 0: ok raw 2.2525e-08 C/B 0.2131 residual 0.356s wall 28.6s | worker VmHWM 5.41GB VmPeak 7.62GB
+net 1: FAILED after 15.6s RunnerError: Unable to allocate 225. MiB for an array with shape (6, 7, 343, 64, 64) and data type float32 | worker VmHWM 6.14GB VmPeak 7.93GB
+net 2: FAILED after 6.1s RunnerError: Worker stdin closed. | worker VmHWM 6.21GB VmPeak 8.00GB
+net 3: ok raw 2.5951e-08 C/B 0.2131 residual 0.359s wall 28.4s | worker VmHWM 6.21GB VmPeak 8.00GB

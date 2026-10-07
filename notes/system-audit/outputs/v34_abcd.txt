@@ -1,0 +1,16 @@
+net 13 abcd: raw 2.1648e-08  C/B 0.1934  adjusted 4.1869e-09  wall 69.0s  residual 0.434s  first-call C/B 0.2134 residual 0.505s
+net 6 abcd: raw 2.2414e-08  C/B 0.1934  adjusted 4.3351e-09  wall 68.7s  residual 0.432s  first-call C/B 0.2134 residual 0.510s
+net 3 abcd: raw 2.5944e-08  C/B 0.1934  adjusted 5.0179e-09  wall 68.7s  residual 0.426s  first-call C/B 0.2134 residual 0.523s
+net 11 abcd: raw 2.5242e-08  C/B 0.1934  adjusted 4.8820e-09  wall 69.6s  residual 0.436s  first-call C/B 0.2134 residual 0.526s
+net 4 abcd: raw 2.2505e-08  C/B 0.1934  adjusted 4.3526e-09  wall 72.3s  residual 0.448s  first-call C/B 0.2134 residual 0.506s
+net 1 abcd: raw 2.1281e-08  C/B 0.1934  adjusted 4.1160e-09  wall 71.5s  residual 0.441s  first-call C/B 0.2134 residual 0.519s
+net 12 abcd: raw 2.0684e-08  C/B 0.1934  adjusted 4.0006e-09  wall 69.9s  residual 0.431s  first-call C/B 0.2134 residual 0.528s
+net 7 abcd: raw 2.4428e-08  C/B 0.1934  adjusted 4.7247e-09  wall 72.1s  residual 0.446s  first-call C/B 0.2134 residual 0.524s
+net 15 abcd: raw 2.4926e-08  C/B 0.1934  adjusted 4.8211e-09  wall 71.8s  residual 0.451s  first-call C/B 0.2134 residual 0.525s
+net 9 abcd: raw 2.6279e-08  C/B 0.1934  adjusted 5.0828e-09  wall 71.9s  residual 0.442s  first-call C/B 0.2134 residual 0.525s
+net 8 abcd: raw 2.3597e-08  C/B 0.1934  adjusted 4.5640e-09  wall 72.5s  residual 0.439s  first-call C/B 0.2134 residual 0.521s
+net 2 abcd: raw 2.6247e-08  C/B 0.1934  adjusted 5.0766e-09  wall 72.5s  residual 0.438s  first-call C/B 0.2134 residual 0.519s
+net 0 abcd: raw 2.2533e-08  C/B 0.1934  adjusted 4.3581e-09  wall 72.5s  residual 0.455s  first-call C/B 0.2134 residual 0.532s
+net 10 abcd: raw 2.3587e-08  C/B 0.1934  adjusted 4.5620e-09  wall 72.5s  residual 0.450s  first-call C/B 0.2134 residual 0.529s
+net 5 abcd: raw 2.1847e-08  C/B 0.1934  adjusted 4.2254e-09  wall 73.0s  residual 0.448s  first-call C/B 0.2134 residual 0.535s
+net 14 abcd: raw 2.4221e-08  C/B 0.1934  adjusted 4.6847e-09  wall 73.0s  residual 0.452s  first-call C/B 0.2134 residual 0.533s

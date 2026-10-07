@@ -1,0 +1,16 @@
+net 3 abd: raw 2.5956e-08  C/B 0.1951  adjusted 5.0646e-09  wall 74.0s  residual 0.471s  first-call C/B 0.2151 residual 0.541s
+net 9 abd: raw 2.6252e-08  C/B 0.1951  adjusted 5.1223e-09  wall 74.3s  residual 0.468s  first-call C/B 0.2151 residual 0.552s
+net 1 abd: raw 2.1273e-08  C/B 0.1951  adjusted 4.1508e-09  wall 74.0s  residual 0.459s  first-call C/B 0.2151 residual 0.540s
+net 14 abd: raw 2.4209e-08  C/B 0.1951  adjusted 4.7236e-09  wall 75.8s  residual 0.462s  first-call C/B 0.2151 residual 0.549s
+net 10 abd: raw 2.3580e-08  C/B 0.1951  adjusted 4.6009e-09  wall 75.1s  residual 0.462s  first-call C/B 0.2151 residual 0.557s
+net 11 abd: raw 2.5237e-08  C/B 0.1951  adjusted 4.9243e-09  wall 76.1s  residual 0.471s  first-call C/B 0.2151 residual 0.566s
+net 12 abd: raw 2.0696e-08  C/B 0.1951  adjusted 4.0382e-09  wall 74.2s  residual 0.468s  first-call C/B 0.2151 residual 0.581s
+net 7 abd: raw 2.4384e-08  C/B 0.1951  adjusted 4.7578e-09  wall 76.1s  residual 0.473s  first-call C/B 0.2151 residual 0.575s
+net 5 abd: raw 2.1848e-08  C/B 0.1951  adjusted 4.2630e-09  wall 78.5s  residual 0.505s  first-call C/B 0.2151 residual 0.559s
+net 0 abd: raw 2.2552e-08  C/B 0.1951  adjusted 4.4003e-09  wall 79.2s  residual 0.468s  first-call C/B 0.2151 residual 0.558s
+net 4 abd: raw 2.2492e-08  C/B 0.1951  adjusted 4.3886e-09  wall 79.1s  residual 0.487s  first-call C/B 0.2151 residual 0.564s
+net 13 abd: raw 2.1634e-08  C/B 0.1951  adjusted 4.2213e-09  wall 78.5s  residual 0.476s  first-call C/B 0.2151 residual 0.570s
+net 8 abd: raw 2.3590e-08  C/B 0.1951  adjusted 4.6028e-09  wall 79.6s  residual 0.476s  first-call C/B 0.2151 residual 0.543s
+net 2 abd: raw 2.6259e-08  C/B 0.1951  adjusted 5.1235e-09  wall 78.3s  residual 0.482s  first-call C/B 0.2151 residual 0.575s
+net 6 abd: raw 2.2435e-08  C/B 0.1951  adjusted 4.3774e-09  wall 77.3s  residual 0.477s  first-call C/B 0.2151 residual 0.575s
+net 15 abd: raw 2.4915e-08  C/B 0.1951  adjusted 4.8615e-09  wall 77.4s  residual 0.485s  first-call C/B 0.2151 residual 0.580s

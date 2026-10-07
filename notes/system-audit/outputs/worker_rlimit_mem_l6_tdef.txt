@@ -1,0 +1,5 @@
+setup ok 0.63s
+net 0: FAILED after 25.9s RunnerError: Unable to allocate 48.0 MiB for an array with shape (6, 1024, 1024) and data type float64 | worker VmHWM 4.35GB VmPeak 7.97GB
+net 1: FAILED after 6.2s RunnerError: Worker stdin closed. | worker VmHWM 4.42GB VmPeak 8.00GB
+net 2: FAILED after 27.3s RunnerError: Unable to allocate 48.0 MiB for an array with shape (6, 1024, 1024) and data type float64 | worker VmHWM 4.42GB VmPeak 8.00GB
+net 3: FAILED after 6.3s RunnerError: Worker stdin closed. | worker VmHWM 4.43GB VmPeak 8.00GB
