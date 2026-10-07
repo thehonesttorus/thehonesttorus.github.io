@@ -1,0 +1,16 @@
+net 3 wk2: raw 2.9102e-08  C/B 0.2186  adjusted 6.3628e-09  wall 70s  residual nans
+net 14 wk2: raw 2.8819e-08  C/B 0.2186  adjusted 6.3010e-09  wall 71s  residual nans
+net 1 wk2: raw 2.3819e-08  C/B 0.2186  adjusted 5.2077e-09  wall 71s  residual nans
+net 0 wk2: raw 2.6069e-08  C/B 0.2186  adjusted 5.6998e-09  wall 71s  residual nans
+net 15 wk2: raw 2.7952e-08  C/B 0.2186  adjusted 6.1115e-09  wall 71s  residual nans
+net 9 wk2: raw 3.1072e-08  C/B 0.2186  adjusted 6.7936e-09  wall 72s  residual nans
+net 5 wk2: raw 2.3063e-08  C/B 0.2186  adjusted 5.0426e-09  wall 73s  residual nans
+net 6 wk2: raw 2.3372e-08  C/B 0.2186  adjusted 5.1101e-09  wall 73s  residual nans
+net 11 wk2: raw 2.6912e-08  C/B 0.2186  adjusted 5.8842e-09  wall 73s  residual nans
+net 12 wk2: raw 2.2575e-08  C/B 0.2186  adjusted 4.9358e-09  wall 73s  residual nans
+net 2 wk2: raw 3.1132e-08  C/B 0.2186  adjusted 6.8068e-09  wall 75s  residual nans
+net 7 wk2: raw 2.7956e-08  C/B 0.2186  adjusted 6.1123e-09  wall 75s  residual nans
+net 13 wk2: raw 2.3274e-08  C/B 0.2186  adjusted 5.0886e-09  wall 74s  residual nans
+net 8 wk2: raw 2.6467e-08  C/B 0.2186  adjusted 5.7867e-09  wall 75s  residual nans
+net 4 wk2: raw 2.5099e-08  C/B 0.2186  adjusted 5.4876e-09  wall 75s  residual nans
+net 10 wk2: raw 2.7328e-08  C/B 0.2186  adjusted 5.9751e-09  wall 75s  residual nans

@@ -83,7 +83,19 @@ zeroed D21 rows at the read (networks 0-15, against the current best):
 | -1.0 | 21% -> 38% | +688% |
 
 Only the deep tail is free: at alpha <= -2.5 (w1 <= 0.006) the drop is exact within noise, and a quarter of the rows
-at depth go with it. Below -2 the damage is steep. Section 6 separates the transport rows from the reads.
+at depth go with it. Below -2 the damage is steep, and it is mostly in the reads:
+
+| drop | raw | better on |
+|---|---|---|
+| alpha <= -2.0, transport rows only | +1.81% +- 0.67 | 3/16 |
+| alpha <= -2.0, D21 rows only | +7.79% +- 0.74 | 0/16 |
+| alpha <= -1.5, transport rows only | +26.3% +- 1.8 | 0/16 |
+| alpha <= -1.0, transport rows only | +159% | 0/16 |
+
+A saturated neuron's own (2,1) reads matter more than its forward transport, and both turn on steeply between -2.5 and
+-2. The cost lever is therefore the alpha <= -2.5 drop of both, which removes about 11% of rows on average (23% at
+layer 15) from the transports, the D21 contractions and the old-tier formings, about 75% of the bill. Rounded to
+Strassen-compatible sizes (multiples of 64, leaf side >= 14) that is 5-6% of the bill.
 
 ## 5. The (2,2) slice against Monte Carlo truth (`code/k4mc2.py`, `code/k4w_an.py`, `outputs/k22_slice_truth_off0.txt`)
 
@@ -106,3 +118,36 @@ Monte Carlo's own noise at 0.11, 0.08, 0.06, 0.05 of the signal):
   a few percent; the mixture's 2 g C_ij^2 term is the one structured piece the chain lacks. The chain's residual
   correlates with C_ij^2 increasingly with depth (0.07, 0.10, 0.19, 0.42), with three times the mixture's amplitude at
   layer 13: the (2,2) slice carries more C^2 content than a scale mixture of one gain does.
+
+**In the chain the truer shapes lose** (`V33_WK4M`, networks 0-15, paired):
+
+| wk4m | raw | better on |
+|---|---|---|
+| scale mixture sqrt(g_i g_j)(v_i v_j + 2 C_ij^2), g from the chain's own diagonal | +4.80% +- 0.71 | 0/16 |
+| chain's (g4_i + g4_j)/6 + 2 sqrt(g_i g_j) C_ij^2 | +12.08% +- 1.05 | 0/16 |
+| geometric mean sqrt(g4_i g4_j)/3 | -0.61% +- 0.42 | 11/16 |
+
+The structure that matches the truth better offline makes the chain worse: the fitted fourth-cumulant sector
+compensates the dropped gate-covariance and second-order terms (note XXI section 7), and a truer (2,2) shape breaks
+that balance. The (2,2) slice is closed; its quenched remainder is not pair-class content, and its mixture refinements
+do not transfer.
+
+## 6. Randomized evaluation of the residual operators, measured (`code/hutch_var.py`, `outputs/hutch_variance_off0.txt`)
+
+A further synthesis (`THEORY.md`, "quenched residual queries") proposes keeping the chain and evaluating each
+fixed-weight residual operator either exactly at low rank or by sign probes, Z = eps o (A eps), E Z = diag A,
+Var Z_i = sum_(j != i) A_ij^2, and states the acceptance rule as max(0.1, C_new/B)(M_1 + V/K) < max(0.1, C_0/B) M_0.
+Its decisive quantity, the off-diagonal energy of the operator, was measured on the chain's stored K22 at four
+layers (network 0):
+
+| operator (diagonal = the wanted correction) | probes for SNR 1 | units per layer at SNR 1 |
+|---|---|---|
+| pair class 3 (W o W) K22 (W o W)^T | 1015-1018 | 3.0 |
+| deflated by the row means of W o W (the quenched operator) | 414-486 | 1.2-1.4 |
+| remainder after the exact rank-4 part (V33) | 132-320 | 0.4-0.9 |
+
+A weight-sandwiched operator has off-diagonal rows of n entries each of the diagonal's own size, so the probe count
+for SNR 1 is of order n before deflation and a few hundred after; a useful 10% error costs a hundred times that. The
+exact rank-4 contraction that V33 ships costs 0.05 units per layer with no noise. The synthesis's ordering (exact
+low-rank first, probes only for a cheap low-variance remainder) is the right one, and on these operators it ends at
+the exact branch.
