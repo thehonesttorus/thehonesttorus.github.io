@@ -1,15 +1,16 @@
 --- a/est_v29.py
 +++ b/est_v29.py
-@@ -444,6 +444,8 @@
+@@ -444,6 +444,9 @@
  STRASSEN_FUSE_P = int(_os.environ.get("V28_STRASSEN_FUSE_P", "343"))  # V28: fused per-product leaf when the leaf batch has >= this many blocks (deep levels: 7x smaller pools, +4 ops per leaf)  # V28: level cap of the first predict() of a process (see _predict_core)
  WARM = _os.environ.get("V26_WARM", "1") == "1"
  WARM_JOIN = _os.environ.get('V29_WARM_JOIN', '0') == '1'
++ROT_SMM = _os.environ.get('V32_ROT_SMM', '0') == '1'   # V32: Strassen for the factor rotations (both tiers) and the D21 shared-basis lift
 +JOIN_SMM = _os.environ.get('V32_JOIN_SMM', '0') == '1'   # V32: Strassen for the join's n x n x r products and the basis transport
 +JOIN_POST = int(_os.environ.get('V32_JOIN_POST', '0'))   # V32: 1 = range finder + truncation in post-W coordinates; 2 = pre-W subspace, post-W projection
  WARM_NEST = _os.environ.get('V29_WARM_NEST', '0') == '1'
  WARM_RES = _os.environ.get('V29_WARM_RES', '0') == '1'
  WARM_FB = _os.environ.get('V29_WARM_FB', '0') == '1'
-@@ -843,6 +845,13 @@
+@@ -843,6 +846,13 @@
          self._ncall = ncall + 1
          s_lev = STRASSEN_LEVELS if ncall > 0 else min(STRASSEN_LEVELS, STRASSEN_FIRST)
          s_sb = STRASSEN_SB
@@ -23,7 +24,7 @@
          self._s_hub = s_lev
          r = min(int(self.R_RES), n)  # smoke shapes can be narrower than the rank
          rfb = 0 if NO_FB else min(int(self.R_FB), n)  # V18 feedback rank
-@@ -935,14 +944,43 @@
+@@ -935,14 +945,43 @@
                      Yq = pool.get("yq", (n, r_old))
                      Yq1 = pool.get("yq1", (n, r_old))
                      Yq2 = pool.get("yq2", (n, r_old))
@@ -72,7 +73,7 @@
                          fnp.add(Yq, Yq2, out=Yq)
                          if ka > 0:
                              # V24: full core of the confined legs = tier-1 core + lifted tier-2 core
-@@ -951,15 +989,20 @@
+@@ -951,17 +990,26 @@
                              fnp.add(Yq, Yq2, out=Yq)
                          Qn, _ = fnp.linalg.qr(Yq)           # (n, r) orthonormal
                          Om = Qn
@@ -94,9 +95,28 @@
 -                        Tq = Qn.T @ Qp                      # (r, r) rotation of the old factors
 +                        Tq = Qn.T @ Qp if QnF is None else QnF.T @ Qp   # (r, r) rotation of the old factors
                          if ka > kb:
-                             fnp.matmul(Tq[None, None], FAP, out=fap_new[:m1])
+-                            fnp.matmul(Tq[None, None], FAP, out=fap_new[:m1])
++                            if ROT_SMM:
++                                smm.mm(Tq[None, None], fap4[2 * fa_off:2 * (fa_off + m1)], fap4_new[:2 * m1],
++                                       smm.level(r_old, r_old, n, s_sb))
++                            else:
++                                fnp.matmul(Tq[None, None], FAP, out=fap_new[:m1])
                              Sg = Tq @ (Sg @ Tq.T)
-@@ -1013,11 +1056,15 @@
+                         else:
+                             Sg = None
+@@ -999,7 +1047,10 @@
+                         fnp.matmul(Un.T, FP1, out=fap2_new[kb, 1])
+                         if kb > 0:
+                             T2 = Un.T @ U                                       # (r2, r2)
+-                            fnp.matmul(T2[None, None], FAP2, out=fap2_new[:kb])
++                            if ROT_SMM:
++                                smm.mm(T2[None, None], fap24[:2 * kb], fap24_new[:2 * kb], smm.level(r2, r2, n, s_sb))
++                            else:
++                                fnp.matmul(T2[None, None], FAP2, out=fap2_new[:kb])
+                         FAP2 = fap2_new[:kb + 1]
+                         fap24 = fap24_new
+                         FA2 = FAP2[:, 0]
+@@ -1013,11 +1064,15 @@
                          Sg = Sg - S_s
                          kb = kb_t
                      qc_side ^= 1
@@ -114,3 +134,30 @@
                  if ka > kb:
                      # formed dense legs of the tier-1 sources (pre-wick of this layer):
                      # V28 ONE Strassen family over the interleaved (A, P) factor slab
+@@ -1615,6 +1670,14 @@
+         return out
+ 
+     # ------------------------------------------------------------------
++    def _lift(self, inner, Qc, out, lev):
++        # V32: inner (n, r) @ Qc^T (r, n) -> out (n, n), through the Strassen family when ROT_SMM
++        if ROT_SMM:
++            n_, r_ = inner.shape
++            self._smm.mm(inner[None, None], Qc.T[None, None], out[None, None], self._smm.level(n_, r_, Qc.shape[0], lev))
++            return out
++        return fnp.matmul(inner, Qc.T, out=out)
++
+     def _dslices(self, A_st, P_st, Z_st, L_st, w2b_list, s_list, e_list,
+                  c1_list, c2_list, y_list, n, bufs, rres, rfb, Zf_st, R1T_st, R2T_st,
+                  need_d21=True, ka=0, FAo=None, FPo=None, Qc=None,
+@@ -1746,9 +1809,9 @@
+             # hub-first order is bit-identical to V26's D21 + hub)
+             if ka < k and STRASSEN_HUB > 0:
+                 D21 = self._hub2(bufs, apb4, ka, k, n)
+-                fnp.add(D21, fnp.matmul(inner, Qc.T, out=bufs["t1"]), out=D21)
++                fnp.add(D21, self._lift(inner, Qc, bufs["t1"], s_sb), out=D21)
+             else:
+-                D21 = fnp.matmul(inner, Qc.T, out=bufs["d21"])
++                D21 = self._lift(inner, Qc, bufs["d21"], s_sb)
+                 if ka < k:
+                     D21 = (D21 + fnp.einsum("kij,kcj->ic", LA[ka:], A_st[ka:])
+                            + fnp.einsum("kij,kcj->ic", LP[ka:], P_st[ka:]))

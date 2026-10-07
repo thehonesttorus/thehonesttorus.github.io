@@ -146,3 +146,95 @@ net 12 p352: raw 2.1084e-08  C/B 0.2563  adjusted 5.4047e-09  wall 129s  residua
 net 13 p352: raw 2.1658e-08  C/B 0.2563  adjusted 5.5520e-09  wall 127s  residual nans
 net 14 p352: raw 2.4053e-08  C/B 0.2563  adjusted 6.1659e-09  wall 127s  residual nans
 net 15 p352: raw 2.5241e-08  C/B 0.2563  adjusted 6.4704e-09  wall 128s  residual nans
+
+# round 3: V32_JOIN_SMM=1 (Strassen join products) alone at 384, and with V32_JOIN_POST=2 at 384/352/320/288
+s384: 16 nets | raw -0.06% +- 0.10% | better on 8/16 | C/B 0.2468 | adjusted -3.88%
+qs384: 16 nets | raw -1.13% +- 0.39% | better on 12/16 | C/B 0.2515 | adjusted -3.09%
+qs352: 16 nets | raw +0.91% +- 0.26% | better on 3/16 | C/B 0.2418 | adjusted -4.91%
+qs320: 16 nets | raw +3.61% +- 0.58% | better on 1/16 | C/B 0.2326 | adjusted -6.08%
+qs288: 16 nets | raw +9.42% +- 0.62% | better on 0/16 | C/B 0.2238 | adjusted -4.57%
+# s384
+net 0 s384: raw 2.1612e-08  C/B 0.2468  adjusted 5.3345e-09  wall 155s  residual nans
+net 1 s384: raw 2.0805e-08  C/B 0.2468  adjusted 5.1352e-09  wall 153s  residual nans
+net 2 s384: raw 2.5638e-08  C/B 0.2468  adjusted 6.3280e-09  wall 112s  residual nans
+net 3 s384: raw 2.5718e-08  C/B 0.2468  adjusted 6.3479e-09  wall 164s  residual nans
+net 4 s384: raw 2.2050e-08  C/B 0.2468  adjusted 5.4425e-09  wall 112s  residual nans
+net 5 s384: raw 2.0938e-08  C/B 0.2468  adjusted 5.1681e-09  wall 153s  residual nans
+net 6 s384: raw 2.1549e-08  C/B 0.2468  adjusted 5.3188e-09  wall 165s  residual nans
+net 7 s384: raw 2.4381e-08  C/B 0.2468  adjusted 6.0179e-09  wall 120s  residual nans
+net 8 s384: raw 2.2847e-08  C/B 0.2468  adjusted 5.6391e-09  wall 117s  residual nans
+net 9 s384: raw 2.4851e-08  C/B 0.2468  adjusted 6.1338e-09  wall 153s  residual nans
+net 10 s384: raw 2.3522e-08  C/B 0.2468  adjusted 5.8059e-09  wall 155s  residual nans
+net 11 s384: raw 2.4346e-08  C/B 0.2468  adjusted 6.0091e-09  wall 155s  residual nans
+net 12 s384: raw 2.0883e-08  C/B 0.2468  adjusted 5.1544e-09  wall 153s  residual nans
+net 13 s384: raw 2.1449e-08  C/B 0.2468  adjusted 5.2942e-09  wall 156s  residual nans
+net 14 s384: raw 2.3618e-08  C/B 0.2468  adjusted 5.8296e-09  wall 155s  residual nans
+net 15 s384: raw 2.4245e-08  C/B 0.2468  adjusted 5.9843e-09  wall 164s  residual nans
+# qs384
+net 0 qs384: raw 2.1677e-08  C/B 0.2515  adjusted 5.4520e-09  wall 114s  residual nans
+net 1 qs384: raw 2.1020e-08  C/B 0.2515  adjusted 5.2867e-09  wall 166s  residual nans
+net 2 qs384: raw 2.4968e-08  C/B 0.2515  adjusted 6.2796e-09  wall 166s  residual nans
+net 3 qs384: raw 2.4787e-08  C/B 0.2515  adjusted 6.2341e-09  wall 166s  residual nans
+net 4 qs384: raw 2.1399e-08  C/B 0.2515  adjusted 5.3821e-09  wall 115s  residual nans
+net 5 qs384: raw 2.0836e-08  C/B 0.2515  adjusted 5.2404e-09  wall 155s  residual nans
+net 6 qs384: raw 2.1112e-08  C/B 0.2515  adjusted 5.3098e-09  wall 161s  residual nans
+net 7 qs384: raw 2.4310e-08  C/B 0.2515  adjusted 6.1143e-09  wall 155s  residual nans
+net 8 qs384: raw 2.3067e-08  C/B 0.2515  adjusted 5.8015e-09  wall 166s  residual nans
+net 9 qs384: raw 2.4307e-08  C/B 0.2515  adjusted 6.1135e-09  wall 167s  residual nans
+net 10 qs384: raw 2.3541e-08  C/B 0.2515  adjusted 5.9207e-09  wall 164s  residual nans
+net 11 qs384: raw 2.3613e-08  C/B 0.2515  adjusted 5.9388e-09  wall 166s  residual nans
+net 12 qs384: raw 2.0871e-08  C/B 0.2515  adjusted 5.2492e-09  wall 115s  residual nans
+net 13 qs384: raw 2.1321e-08  C/B 0.2515  adjusted 5.3625e-09  wall 113s  residual nans
+net 14 qs384: raw 2.3518e-08  C/B 0.2515  adjusted 5.9149e-09  wall 157s  residual nans
+net 15 qs384: raw 2.3997e-08  C/B 0.2515  adjusted 6.0354e-09  wall 167s  residual nans
+# qs352
+net 0 qs352: raw 2.2034e-08  C/B 0.2418  adjusted 5.3286e-09  wall 166s  residual nans
+net 1 qs352: raw 2.1151e-08  C/B 0.2418  adjusted 5.1151e-09  wall 165s  residual nans
+net 2 qs352: raw 2.5469e-08  C/B 0.2418  adjusted 6.1593e-09  wall 157s  residual nans
+net 3 qs352: raw 2.6177e-08  C/B 0.2418  adjusted 6.3307e-09  wall 117s  residual nans
+net 4 qs352: raw 2.1981e-08  C/B 0.2418  adjusted 5.3159e-09  wall 113s  residual nans
+net 5 qs352: raw 2.0869e-08  C/B 0.2418  adjusted 5.0469e-09  wall 112s  residual nans
+net 6 qs352: raw 2.1588e-08  C/B 0.2418  adjusted 5.2209e-09  wall 112s  residual nans
+net 7 qs352: raw 2.5067e-08  C/B 0.2418  adjusted 6.0622e-09  wall 155s  residual nans
+net 8 qs352: raw 2.3202e-08  C/B 0.2418  adjusted 5.6112e-09  wall 166s  residual nans
+net 9 qs352: raw 2.5110e-08  C/B 0.2418  adjusted 6.0727e-09  wall 114s  residual nans
+net 10 qs352: raw 2.3807e-08  C/B 0.2418  adjusted 5.7575e-09  wall 113s  residual nans
+net 11 qs352: raw 2.4307e-08  C/B 0.2418  adjusted 5.8785e-09  wall 163s  residual nans
+net 12 qs352: raw 2.1139e-08  C/B 0.2418  adjusted 5.1123e-09  wall 115s  residual nans
+net 13 qs352: raw 2.1467e-08  C/B 0.2418  adjusted 5.1917e-09  wall 113s  residual nans
+net 14 qs352: raw 2.3685e-08  C/B 0.2418  adjusted 5.7278e-09  wall 165s  residual nans
+net 15 qs352: raw 2.5043e-08  C/B 0.2418  adjusted 6.0564e-09  wall 165s  residual nans
+# qs320
+net 0 qs320: raw 2.2178e-08  C/B 0.2326  adjusted 5.1585e-09  wall 165s  residual nans
+net 1 qs320: raw 2.0836e-08  C/B 0.2326  adjusted 4.8464e-09  wall 154s  residual nans
+net 2 qs320: raw 2.6143e-08  C/B 0.2326  adjusted 6.0806e-09  wall 166s  residual nans
+net 3 qs320: raw 2.6905e-08  C/B 0.2326  adjusted 6.2579e-09  wall 164s  residual nans
+net 4 qs320: raw 2.2493e-08  C/B 0.2326  adjusted 5.2317e-09  wall 155s  residual nans
+net 5 qs320: raw 2.1871e-08  C/B 0.2326  adjusted 5.0870e-09  wall 165s  residual nans
+net 6 qs320: raw 2.2504e-08  C/B 0.2326  adjusted 5.2343e-09  wall 163s  residual nans
+net 7 qs320: raw 2.6405e-08  C/B 0.2326  adjusted 6.1417e-09  wall 153s  residual nans
+net 8 qs320: raw 2.3418e-08  C/B 0.2326  adjusted 5.4469e-09  wall 154s  residual nans
+net 9 qs320: raw 2.5181e-08  C/B 0.2326  adjusted 5.8569e-09  wall 153s  residual nans
+net 10 qs320: raw 2.4910e-08  C/B 0.2326  adjusted 5.7939e-09  wall 155s  residual nans
+net 11 qs320: raw 2.6393e-08  C/B 0.2326  adjusted 6.1388e-09  wall 162s  residual nans
+net 12 qs320: raw 2.1413e-08  C/B 0.2326  adjusted 4.9805e-09  wall 154s  residual nans
+net 13 qs320: raw 2.1721e-08  C/B 0.2326  adjusted 5.0521e-09  wall 155s  residual nans
+net 14 qs320: raw 2.4422e-08  C/B 0.2326  adjusted 5.6805e-09  wall 164s  residual nans
+net 15 qs320: raw 2.5523e-08  C/B 0.2326  adjusted 5.9364e-09  wall 155s  residual nans
+# qs288
+net 0 qs288: raw 2.3727e-08  C/B 0.2238  adjusted 5.3094e-09  wall 152s  residual nans
+net 1 qs288: raw 2.2544e-08  C/B 0.2238  adjusted 5.0445e-09  wall 150s  residual nans
+net 2 qs288: raw 2.8297e-08  C/B 0.2238  adjusted 6.3318e-09  wall 165s  residual nans
+net 3 qs288: raw 2.7964e-08  C/B 0.2238  adjusted 6.2574e-09  wall 151s  residual nans
+net 4 qs288: raw 2.3542e-08  C/B 0.2238  adjusted 5.2678e-09  wall 163s  residual nans
+net 5 qs288: raw 2.2660e-08  C/B 0.2238  adjusted 5.0705e-09  wall 153s  residual nans
+net 6 qs288: raw 2.4035e-08  C/B 0.2238  adjusted 5.3782e-09  wall 163s  residual nans
+net 7 qs288: raw 2.7424e-08  C/B 0.2238  adjusted 6.1365e-09  wall 156s  residual nans
+net 8 qs288: raw 2.4210e-08  C/B 0.2238  adjusted 5.4175e-09  wall 152s  residual nans
+net 9 qs288: raw 2.7803e-08  C/B 0.2238  adjusted 6.2214e-09  wall 165s  residual nans
+net 10 qs288: raw 2.6469e-08  C/B 0.2238  adjusted 5.9228e-09  wall 152s  residual nans
+net 11 qs288: raw 2.6387e-08  C/B 0.2238  adjusted 5.9046e-09  wall 151s  residual nans
+net 12 qs288: raw 2.3817e-08  C/B 0.2238  adjusted 5.3295e-09  wall 164s  residual nans
+net 13 qs288: raw 2.2286e-08  C/B 0.2238  adjusted 4.9870e-09  wall 164s  residual nans
+net 14 qs288: raw 2.6458e-08  C/B 0.2238  adjusted 5.9204e-09  wall 153s  residual nans
+net 15 qs288: raw 2.6023e-08  C/B 0.2238  adjusted 5.8231e-09  wall 165s  residual nans
