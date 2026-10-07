@@ -1,0 +1,3 @@
+k4d2: 16 nets | raw change +9.40% +- 0.73% | better on 0/16 | C/B 0.2566
+k4d1: 16 nets | raw change +49.52% +- 2.20% | better on 0/16 | C/B 0.2566
+k4d1h: 16 nets | raw change +13.60% +- 0.88% | better on 0/16 | C/B 0.2566

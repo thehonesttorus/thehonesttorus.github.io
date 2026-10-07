@@ -1,0 +1,3 @@
+L6m8: 16 nets | raw +0.008% +- 0.023% | C/B 0.2533 vs 0.2566 | adjusted score -1.26%
+L7m8: 16 nets | raw +0.008% +- 0.023% | C/B 0.2533 vs 0.2566 | adjusted score -1.26%
+L8m4: 16 nets | raw -0.009% +- 0.020% | C/B 0.2538 vs 0.2566 | adjusted score -1.10%
