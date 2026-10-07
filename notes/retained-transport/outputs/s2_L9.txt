@@ -1,0 +1,46 @@
+selftest projection: 3.9968028886505635e-15
+selftest transport: 1.5631940186722204e-13
+selftest reads: 2.6645352591003757e-15 3.1086244689504383e-15
+selftest He optimum: risk 1949.668207, frobenius projection 2096.922724, min perturbation change 0.00e+00 (>= 0 expected)
+net 0 L0 9: 5 old sources; J-form D3 vs chain-form D3 max rel diff 2.76e-16
+  frame apm r  32  Sym3(U)  [chain kind]   L9:0.509/0.563 L10:0.469/0.530 L11:0.463/0.508 L12:0.428/0.468 L13:0.429/0.461 L14:0.414/0.439
+  frame apm r  32  S>=2 frobenius  L9:0.379/0.399 L10:0.364/0.383 L11:0.358/0.371 L12:0.346/0.354 L13:0.334/0.348 L14:0.327/0.334
+  frame apm r  32  S>=2 He-metric  L9:0.184/0.279 L10:0.163/0.259 L11:0.162/0.242 L12:0.150/0.224 L13:0.135/0.214 L14:0.126/0.205
+      cost per layer in units of 2n^3: transport 0.52, D21 read 0.52, one graduating source 2.06; Sym3 at r: ~0.09 per source  (1s)
+  frame apm r  48  Sym3(U)  [chain kind]   L9:0.391/0.457 L10:0.363/0.430 L11:0.355/0.404 L12:0.330/0.370 L13:0.322/0.356 L14:0.300/0.334
+  frame apm r  48  S>=2 frobenius  L9:0.256/0.272 L10:0.246/0.261 L11:0.244/0.253 L12:0.235/0.242 L13:0.230/0.237 L14:0.220/0.226
+  frame apm r  48  S>=2 He-metric  L9:0.119/0.188 L10:0.108/0.174 L11:0.106/0.161 L12:0.101/0.149 L13:0.091/0.141 L14:0.081/0.133
+      cost per layer in units of 2n^3: transport 1.15, D21 read 1.15, one graduating source 4.59; Sym3 at r: ~0.14 per source  (1s)
+  frame apm r  64  Sym3(U)  [chain kind]   L9:0.300/0.375 L10:0.285/0.348 L11:0.276/0.325 L12:0.255/0.293 L13:0.243/0.279 L14:0.222/0.258
+  frame apm r  64  S>=2 frobenius  L9:0.176/0.187 L10:0.169/0.179 L11:0.166/0.172 L12:0.161/0.164 L13:0.156/0.161 L14:0.151/0.155
+  frame apm r  64  S>=2 He-metric  L9:0.079/0.127 L10:0.070/0.118 L11:0.071/0.108 L12:0.065/0.100 L13:0.059/0.093 L14:0.056/0.088
+      cost per layer in units of 2n^3: transport 2.03, D21 read 2.03, one graduating source 8.12; Sym3 at r: ~0.19 per source  (2s)
+  frame apm r  96  Sym3(U)  [chain kind]   L9:0.204/0.259 L10:0.185/0.239 L11:0.181/0.222 L12:0.172/0.203 L13:0.150/0.184 L14:0.136/0.170
+  frame apm r  96  S>=2 frobenius  L9:0.086/0.091 L10:0.083/0.088 L11:0.082/0.086 L12:0.081/0.082 L13:0.076/0.078 L14:0.073/0.075
+  frame apm r  96  S>=2 He-metric  L9:0.039/0.062 L10:0.037/0.057 L11:0.033/0.053 L12:0.032/0.048 L13:0.027/0.044 L14:0.027/0.041
+      cost per layer in units of 2n^3: transport 4.55, D21 read 4.55, one graduating source 18.19; Sym3 at r: ~0.28 per source  (3s)
+  frame apm r 128  Sym3(U)  [chain kind]   L9:0.145/0.187 L10:0.132/0.169 L11:0.129/0.157 L12:0.116/0.142 L13:0.101/0.128 L14:0.094/0.121
+  frame apm r 128  S>=2 frobenius  L9:0.044/0.046 L10:0.043/0.044 L11:0.041/0.043 L12:0.040/0.041 L13:0.038/0.039 L14:0.038/0.039
+  frame apm r 128  S>=2 He-metric  L9:0.020/0.031 L10:0.019/0.028 L11:0.016/0.026 L12:0.016/0.024 L13:0.014/0.022 L14:0.013/0.021
+      cost per layer in units of 2n^3: transport 8.06, D21 read 8.06, one graduating source 32.25; Sym3 at r: ~0.38 per source  (6s)
+  frame apm r 320  Sym3(U)  [chain kind]   L9:0.019/0.025 L10:0.019/0.023 L11:0.016/0.021 L12:0.015/0.019 L13:0.013/0.017 L14:0.013/0.016
+  frame ab r  32  Sym3(U)  [chain kind]   L9:0.535/0.580 L10:0.488/0.544 L11:0.474/0.518 L12:0.441/0.478 L13:0.444/0.474 L14:0.428/0.451
+  frame ab r  32  S>=2 frobenius  L9:0.379/0.399 L10:0.365/0.383 L11:0.355/0.371 L12:0.347/0.356 L13:0.337/0.350 L14:0.327/0.335
+  frame ab r  32  S>=2 He-metric  L9:0.183/0.279 L10:0.165/0.260 L11:0.161/0.242 L12:0.150/0.226 L13:0.138/0.216 L14:0.126/0.206
+      cost per layer in units of 2n^3: transport 0.52, D21 read 0.52, one graduating source 2.06; Sym3 at r: ~0.09 per source  (1s)
+  frame ab r  48  Sym3(U)  [chain kind]   L9:0.410/0.469 L10:0.373/0.440 L11:0.357/0.406 L12:0.329/0.370 L13:0.325/0.357 L14:0.304/0.335
+  frame ab r  48  S>=2 frobenius  L9:0.259/0.274 L10:0.248/0.263 L11:0.245/0.254 L12:0.239/0.244 L13:0.232/0.239 L14:0.225/0.229
+  frame ab r  48  S>=2 He-metric  L9:0.121/0.189 L10:0.109/0.175 L11:0.107/0.162 L12:0.103/0.151 L13:0.092/0.143 L14:0.084/0.134
+      cost per layer in units of 2n^3: transport 1.15, D21 read 1.15, one graduating source 4.59; Sym3 at r: ~0.14 per source  (1s)
+  frame ab r  64  Sym3(U)  [chain kind]   L9:0.309/0.379 L10:0.289/0.351 L11:0.277/0.326 L12:0.252/0.293 L13:0.244/0.279 L14:0.224/0.258
+  frame ab r  64  S>=2 frobenius  L9:0.176/0.188 L10:0.169/0.180 L11:0.166/0.173 L12:0.163/0.166 L13:0.156/0.161 L14:0.152/0.156
+  frame ab r  64  S>=2 He-metric  L9:0.080/0.129 L10:0.071/0.119 L11:0.071/0.109 L12:0.067/0.101 L13:0.059/0.094 L14:0.056/0.089
+      cost per layer in units of 2n^3: transport 2.03, D21 read 2.03, one graduating source 8.12; Sym3 at r: ~0.19 per source  (2s)
+  frame ab r  96  Sym3(U)  [chain kind]   L9:0.219/0.270 L10:0.199/0.249 L11:0.193/0.231 L12:0.186/0.213 L13:0.163/0.193 L14:0.148/0.180
+  frame ab r  96  S>=2 frobenius  L9:0.087/0.092 L10:0.084/0.089 L11:0.083/0.087 L12:0.081/0.083 L13:0.076/0.080 L14:0.074/0.076
+  frame ab r  96  S>=2 He-metric  L9:0.041/0.063 L10:0.038/0.058 L11:0.034/0.054 L12:0.032/0.049 L13:0.027/0.045 L14:0.027/0.042
+      cost per layer in units of 2n^3: transport 4.55, D21 read 4.55, one graduating source 18.19; Sym3 at r: ~0.28 per source  (3s)
+  frame ab r 128  Sym3(U)  [chain kind]   L9:0.154/0.193 L10:0.138/0.175 L11:0.134/0.162 L12:0.122/0.146 L13:0.106/0.132 L14:0.102/0.126
+  frame ab r 128  S>=2 frobenius  L9:0.044/0.047 L10:0.043/0.045 L11:0.041/0.043 L12:0.040/0.041 L13:0.038/0.040 L14:0.038/0.039
+  frame ab r 128  S>=2 He-metric  L9:0.020/0.032 L10:0.019/0.029 L11:0.017/0.027 L12:0.016/0.024 L13:0.014/0.022 L14:0.013/0.021
+      cost per layer in units of 2n^3: transport 8.06, D21 read 8.06, one graduating source 32.25; Sym3 at r: ~0.38 per source  (5s)
