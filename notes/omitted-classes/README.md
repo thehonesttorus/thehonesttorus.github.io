@@ -93,6 +93,27 @@ checked against the brute-force empirical fourth-cumulant tensor on a width-7 ne
 - the pair program's closure error, transported;
 - the exact split of the chain's one-step error into closure, omitted classes net of the lam core, and representation.
 
+### 3b. The same split for the third cumulant (prediction written before the data)
+
+The kappa3 readouts carry about 40% of the error (note XXXI). The same identity holds for kappa3:
+
+    (D3, D21 slices of z') = T3_pair(y) + R3,
+    T3_pair = W#[diagonal and (2,1) classes of kappa3(y)].
+
+R3 is exactly the transport of the all-distinct class kappa(y_a, y_b, y_c). The pair part is local: the pair program
+computes it from pair statistics of z. R3 is what only the legs carry. Checked against the brute-force tensor on the
+width-7 network (`code/check_k3_split.py`, 1e-6). By note XXXIV's support preservation, R3 has three sources at first
+and second order:
+- **The legs' own all-distinct z entries**, gated: Phi_a Phi_b Phi_c T_abc.
+- **The Gaussian second-order term**, one facet and two covariances:
+  rho_a Phi_b Phi_c C_ab C_ac + rho_b Phi_a Phi_c C_ab C_bc + rho_c Phi_a Phi_b C_ac C_bc, with rho = phi/s.
+- **The scale mode's kappa3 tangent**, Cov(s, s^2) Sym3(mu, Sigma) with Cov(s, s^2) ~ Var(s^2)/2. On all-distinct
+  indices it is mu_a C_bc + 2 perms, first order in C, and carries the large ReLU means.
+
+`yclasses.py` reports |R3|/|t3| and the scale-mode fit on R3. If the scale-mode term explains R3 with
+Var(s^2) ~ g_conn, the legs' error is mostly the scale mode's. If not, it is in the legs' genuine all-distinct
+content or in the facet term.
+
 ## 4. Theory: the input radius cancels, the gain mode survives, and it lives in the trace sector
 
 **The radius factorises the whole stack.** The official networks are bias-free ReLU MLPs with x ~ N(0, I_n). Positive
