@@ -228,6 +228,78 @@ With note XXXI's precision law (Delta MSE / MSE ~ 180 x the readout error energy
 constraint is computing the retained statistics, in one place: the fidelity of the legs' compressed representation.
 Section 3e measures which compression stage it comes from.
 
+### 3e. The legs error is not compression
+
+Each compression stage of the legs was relaxed in turn in the all-oracle one-step dump, and the legs-part error measured
+against the exact law (`outputs/k3_representation_budget.txt`; D3 | D21, mean over layers):
+
+| variant | D3 legs error | D21 legs error |
+|---|---|---|
+| production | 0.0396 | 0.0605 |
+| residual leg rank 4 -> 32 | 0.0388 | 0.0598 |
+| D21 feedback rank 2 -> 16 | 0.0391 | 0.0596 |
+| no confinement of old sources | 0.0384 | 0.0591 |
+| shared basis 320 -> 640 | 0.0385 | 0.0592 |
+| nested tier off | 0.0395 | 0.0604 |
+| three range-finder passes | 0.0393 | 0.0603 |
+| exact matmul (no Strassen) | 0.0396 | 0.0605 |
+| everything relaxed at once | 0.0371 | 0.0575 |
+
+About 94% of the legs error survives every relaxation, and Mehler order 3 in the pair programs changes nothing. The
+error is in what the births contain.
+
+**The births implement the second-order law, and the error is its remainder** (`outputs/k3chain_off1.txt`, rerun with the
+law's remainder). The birth hub is B1 = Sym(X1 x P x Y1), with P = I at birth, X1 = 3 a_b and Y1 = a_b d(w2),
+a_b = d(Phi) C_off. The chain's Wick weights are exactly the gate coefficients: w1 = Phi, w2 = rho = c(1,2),
+w3 = c(1,3), checked numerically. So B1 is the one-facet term exactly. The chain's legs error correlates with minus
+the law's own remainder, rem = R3 - legs - facet:
+- the correlation is +0.71 at layer 1, falling to +0.43 at layer 13;
+- the coefficient is 0.73-0.97, close to 1;
+- it explains 50% of the legs error at layer 1 and 18-25% at depth.
+
+The rest is the same remainder born at earlier layers and carried in the legs. The chain is the second-order law, and
+its kappa3 error is the law's next order, born fresh at each layer and accumulated.
+
+**The next order, in closed form** (`code/k3rem.py`, `outputs/k3rem_mc4_off1.txt`; contractions checked in
+`code/check_k3_remainder_terms.py`). Second-order cross terms between two tangent entries carry
+omega1 omega2 prod_v c_v(1, k1 + k2): the derivative orders add, because the cumulant expansion is the exponential of
+commuting derivative operators.
+- **GC1 dominates.** It is the D21 source with a covariance on its doubled index,
+  (Gamma_uv/2) c_u(1,3) Phi_v Phi_w C_uw, with c(1,3) = -alpha phi/s^2 the slope of the gate density.
+  - At coefficient 1 it explains 10-53% of rem (34-53% from layer 5 on), with fitted coefficient 0.73-0.94.
+  - Its norm is 0.24 of rem at layer 1, rising to 0.75-0.87 at depth.
+- **GC2 adds 2-9%.** It is the covariance on the single index, (Gamma_uv/2) rho_u rho_v Phi_w C_vw.
+- **The third-order Gaussian terms are negligible.** These are the double edge and the triangle
+  rho rho rho C C C. The layer-0 remainder is Monte Carlo noise.
+- **GC1 + GC2 + DS explain 41-57% of rem at depth.** The rest is presumably the legs' own gate covariance
+  T_abc rho_a rho_b C_ab, the Edgeworth correction of the gates, and Gamma x Gamma.
+
+GC1 is note XXXIII's "third-chaos response of the D21 source", the facet mechanism, now with its exact coefficient.
+
+### 3f. The D21 feedback carries the Gamma x C terms at half weight
+
+The chain's V18 feedback (X1 += 1.5 d(w2) D21, Y1 += 0.5 d(w1) D21^T d(w3)) has exactly the GC1 (via Yt) and GC2 (via
+Xt) structures, plus one of the four Gamma x Gamma cases. Normalised against the facet part of the same hub, per
+unordered pair of leaves:
+- the facet enters at 6 times its theoretical weight (rho_j);
+- GC1, GC2 and the Gamma x Gamma case enter at 3 times theirs.
+
+So every D21 feedback term is at half the theorem's weight. Regressing the chain's legs error on -GC1 gives coefficient
+0.6-0.7 at every layer (`outputs/k3chain_gc_regression.txt`), and the rank of the D21 approximation does not change it.
+
+Switch V40_FB_SY = 2 doubles the Yt weight (GC1 at the theorem's value); V40_FB_SX = 2 doubles Xt (GC2). In the
+all-oracle one-step dump (`outputs/k3_feedback_weights.txt`):
+- **With Yt doubled, GC1 disappears from the legs error.** Its coefficient goes from 0.66 to 0.01, -0.03 and -0.10.
+- **The legs error falls.** D3 goes 0.0396 -> 0.0379 and D21 0.0605 -> 0.0566 (at layers 10-14, 0.0433 -> 0.0412 and
+  0.0676 -> 0.0614). That is 8% and 12% of the error energy.
+- **The other variants.** Doubling Xt alone is slightly worse; both doubled is the same as Yt alone. Feedback rank 16
+  on top gives 0.0376 / 0.0561.
+- **What the hub cannot do.** Being bilinear, it cannot set GC1, GC2 and Gamma x Gamma independently; the theorem
+  would also need the three Gamma x Gamma cases the hub lacks.
+
+Note XXXI's precision law (Delta MSE / MSE ~ 180 x the readout error energy) turns the measured drop into about -5% of
+the MSE, at no cost. Being derived rather than fitted, it is tested on 32 networks, paired.
+
 ### 3d. In the chain: G D in place of the lam core (V39_KD)
 
 `est_v29.py` switch V39_KD builds G_l D_l at every layer from the chain's own state:

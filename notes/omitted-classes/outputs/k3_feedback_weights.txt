@@ -1,0 +1,16 @@
+y2 SUMMARY mean over layers: D3 total 0.0379 legs 0.0379 | D21 total 0.0566 legs 0.0566; layers 10-14: D3 legs 0.0412 D21 legs 0.0614
+y2              D3 legs err ~ -GC1: coef +0.01 expl +0.000; ~ -GC2: coef +0.76 expl +0.020; ~ -(GC1+GC2): coef +0.10 expl +0.003
+y2              D3 legs err ~ -GC1: coef -0.03 expl +0.000; ~ -GC2: coef +0.26 expl +0.001; ~ -(GC1+GC2): coef -0.02 expl +0.000
+y2              D3 legs err ~ -GC1: coef -0.10 expl +0.002; ~ -GC2: coef +0.02 expl +0.000; ~ -(GC1+GC2): coef -0.09 expl +0.002
+xy2 SUMMARY mean over layers: D3 total 0.0381 legs 0.0381 | D21 total 0.0569 legs 0.0569; layers 10-14: D3 legs 0.0414 D21 legs 0.0619
+xy2              D3 legs err ~ -GC1: coef +0.03 expl +0.000; ~ -GC2: coef +0.57 expl +0.011; ~ -(GC1+GC2): coef +0.10 expl +0.003
+xy2              D3 legs err ~ -GC1: coef -0.00 expl +0.000; ~ -GC2: coef +0.11 expl +0.000; ~ -(GC1+GC2): coef +0.00 expl +0.000
+xy2              D3 legs err ~ -GC1: coef -0.08 expl +0.001; ~ -GC2: coef -0.17 expl +0.000; ~ -(GC1+GC2): coef -0.09 expl +0.001
+x2 SUMMARY mean over layers: D3 total 0.0402 legs 0.0401 | D21 total 0.0613 legs 0.0613; layers 10-14: D3 legs 0.0440 D21 legs 0.0687
+x2              D3 legs err ~ -GC1: coef +0.51 expl +0.062; ~ -GC2: coef +0.45 expl +0.007; ~ -(GC1+GC2): coef +0.53 expl +0.072
+x2              D3 legs err ~ -GC1: coef +0.74 expl +0.138; ~ -GC2: coef -0.07 expl +0.000; ~ -(GC1+GC2): coef +0.74 expl +0.136
+x2              D3 legs err ~ -GC1: coef +0.67 expl +0.083; ~ -GC2: coef -0.83 expl +0.004; ~ -(GC1+GC2): coef +0.65 expl +0.076
+xy2r16 SUMMARY mean over layers: D3 total 0.0377 legs 0.0376 | D21 total 0.0561 legs 0.0561; layers 10-14: D3 legs 0.0409 D21 legs 0.0608
+xy2r16              D3 legs err ~ -GC1: coef -0.03 expl +0.000; ~ -GC2: coef +0.46 expl +0.007; ~ -(GC1+GC2): coef +0.03 expl +0.000
+xy2r16              D3 legs err ~ -GC1: coef -0.08 expl +0.002; ~ -GC2: coef -0.11 expl +0.000; ~ -(GC1+GC2): coef -0.08 expl +0.002
+xy2r16              D3 legs err ~ -GC1: coef -0.14 expl +0.004; ~ -GC2: coef -0.26 expl +0.000; ~ -(GC1+GC2): coef -0.15 expl +0.004

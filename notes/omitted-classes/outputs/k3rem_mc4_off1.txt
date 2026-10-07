@@ -1,0 +1,106 @@
+net 1: kappa3 law remainder (D3 slice) against closed-form next terms; coefficient 1 and fitted
+layer  0-> 1: |rem|/|R3| 0.218 |R3|/|t3| 0.228
+      GC1 |.|/|rem| 0.000 corr -0.03 coef1 -0.000 fit -3098.50
+      GC2 |.|/|rem| 0.027 corr +0.03 coef1 +0.001 fit +1.10
+      DS |.|/|rem| 0.000 corr +0.04 coef1 +0.000 fit +1178.82
+      TRI(sub) |.|/|rem| 0.047 corr +0.15 coef1 +0.013
+      GC1+GC2+DS coef1 +0.001; +TRI(sub) coef1 +0.014
+      joint fit coefs -2924.34 +1.00 +1160.20 -> 0.003
+layer  1-> 2: |rem|/|R3| 0.096 |R3|/|t3| 0.346
+      GC1 |.|/|rem| 0.236 corr +0.19 coef1 +0.033 fit +0.80
+      GC2 |.|/|rem| 0.229 corr +0.22 coef1 +0.046 fit +0.94
+      DS |.|/|rem| 0.075 corr -0.04 coef1 -0.012 fit -0.55
+      TRI(sub) |.|/|rem| 0.047 corr +0.04 coef1 +0.002
+      GC1+GC2+DS coef1 +0.082; +TRI(sub) coef1 +0.136
+      joint fit coefs +0.89 +1.02 -0.09 -> 0.090
+layer  2-> 3: |rem|/|R3| 0.083 |R3|/|t3| 0.331
+      GC1 |.|/|rem| 0.389 corr +0.32 coef1 +0.102 fit +0.84
+      GC2 |.|/|rem| 0.267 corr +0.31 coef1 +0.094 fit +1.16
+      DS |.|/|rem| 0.126 corr +0.00 coef1 -0.016 fit +0.01
+      TRI(sub) |.|/|rem| 0.048 corr -0.01 coef1 -0.003
+      GC1+GC2+DS coef1 +0.212; +TRI(sub) coef1 +0.200
+      joint fit coefs +0.93 +1.42 +0.53 -> 0.235
+layer  3-> 4: |rem|/|R3| 0.083 |R3|/|t3| 0.309
+      GC1 |.|/|rem| 0.533 corr +0.46 coef1 +0.205 fit +0.86
+      GC2 |.|/|rem| 0.285 corr +0.25 coef1 +0.060 fit +0.87
+      DS |.|/|rem| 0.153 corr +0.07 coef1 -0.002 fit +0.45
+      TRI(sub) |.|/|rem| 0.056 corr +0.07 coef1 +0.004
+      GC1+GC2+DS coef1 +0.308; +TRI(sub) coef1 +0.388
+      joint fit coefs +0.92 +1.25 +0.67 -> 0.322
+layer  4-> 5: |rem|/|R3| 0.083 |R3|/|t3| 0.314
+      GC1 |.|/|rem| 0.577 corr +0.53 coef1 +0.278 fit +0.92
+      GC2 |.|/|rem| 0.257 corr +0.24 coef1 +0.056 fit +0.92
+      DS |.|/|rem| 0.155 corr +0.05 coef1 -0.010 fit +0.30
+      TRI(sub) |.|/|rem| 0.047 corr +0.14 coef1 +0.009
+      GC1+GC2+DS coef1 +0.360; +TRI(sub) coef1 +0.484
+      joint fit coefs +0.94 +1.26 +0.73 -> 0.370
+layer  5-> 6: |rem|/|R3| 0.091 |R3|/|t3| 0.279
+      GC1 |.|/|rem| 0.678 corr +0.58 coef1 +0.331 fit +0.86
+      GC2 |.|/|rem| 0.249 corr +0.23 coef1 +0.052 fit +0.92
+      DS |.|/|rem| 0.154 corr +0.04 coef1 -0.012 fit +0.25
+      TRI(sub) |.|/|rem| 0.047 corr +0.18 coef1 +0.014
+      GC1+GC2+DS coef1 +0.407; +TRI(sub) coef1 +0.264
+      joint fit coefs +0.89 +1.26 +0.62 -> 0.425
+layer  6-> 7: |rem|/|R3| 0.089 |R3|/|t3| 0.280
+      GC1 |.|/|rem| 0.713 corr +0.61 coef1 +0.364 fit +0.86
+      GC2 |.|/|rem| 0.224 corr +0.15 coef1 +0.018 fit +0.68
+      DS |.|/|rem| 0.141 corr +0.09 coef1 +0.004 fit +0.61
+      TRI(sub) |.|/|rem| 0.040 corr +0.02 coef1 -0.000
+      GC1+GC2+DS coef1 +0.420; +TRI(sub) coef1 +0.360
+      joint fit coefs +0.91 +1.27 +0.38 -> 0.444
+layer  7-> 8: |rem|/|R3| 0.094 |R3|/|t3| 0.275
+      GC1 |.|/|rem| 0.749 corr +0.66 coef1 +0.428 fit +0.88
+      GC2 |.|/|rem| 0.204 corr +0.22 coef1 +0.047 fit +1.07
+      DS |.|/|rem| 0.134 corr +0.14 coef1 +0.019 fit +1.02
+      TRI(sub) |.|/|rem| 0.036 corr +0.05 coef1 +0.002
+      GC1+GC2+DS coef1 +0.505; +TRI(sub) coef1 +0.511
+      joint fit coefs +0.89 +1.61 +0.89 -> 0.531
+layer  8-> 9: |rem|/|R3| 0.094 |R3|/|t3| 0.278
+      GC1 |.|/|rem| 0.748 corr +0.67 coef1 +0.436 fit +0.89
+      GC2 |.|/|rem| 0.194 corr +0.17 coef1 +0.029 fit +0.88
+      DS |.|/|rem| 0.132 corr +0.05 coef1 -0.003 fit +0.41
+      TRI(sub) |.|/|rem| 0.040 corr +0.08 coef1 +0.004
+      GC1+GC2+DS coef1 +0.478; +TRI(sub) coef1 +0.369
+      joint fit coefs +0.89 +1.18 +0.65 -> 0.489
+layer  9->10: |rem|/|R3| 0.096 |R3|/|t3| 0.284
+      GC1 |.|/|rem| 0.778 corr +0.73 coef1 +0.530 fit +0.94
+      GC2 |.|/|rem| 0.174 corr +0.22 coef1 +0.044 fit +1.24
+      DS |.|/|rem| 0.121 corr +0.05 coef1 -0.003 fit +0.39
+      TRI(sub) |.|/|rem| 0.031 corr +0.08 coef1 +0.004
+      GC1+GC2+DS coef1 +0.574; +TRI(sub) coef1 +0.400
+      joint fit coefs +0.95 +1.51 +0.22 -> 0.598
+layer 10->11: |rem|/|R3| 0.086 |R3|/|t3| 0.280
+      GC1 |.|/|rem| 0.855 corr +0.67 coef1 +0.414 fit +0.78
+      GC2 |.|/|rem| 0.183 corr +0.12 coef1 +0.010 fit +0.64
+      DS |.|/|rem| 0.133 corr +0.04 coef1 -0.008 fit +0.26
+      TRI(sub) |.|/|rem| 0.034 corr +0.06 coef1 +0.003
+      GC1+GC2+DS coef1 +0.449; +TRI(sub) coef1 +0.426
+      joint fit coefs +0.80 +1.13 +0.43 -> 0.487
+layer 11->12: |rem|/|R3| 0.091 |R3|/|t3| 0.279
+      GC1 |.|/|rem| 0.846 corr +0.70 coef1 +0.468 fit +0.83
+      GC2 |.|/|rem| 0.149 corr +0.15 coef1 +0.022 fit +0.99
+      DS |.|/|rem| 0.116 corr +0.04 coef1 -0.005 fit +0.31
+      TRI(sub) |.|/|rem| 0.022 corr -0.20 coef1 -0.009
+      GC1+GC2+DS coef1 +0.488; +TRI(sub) coef1 +0.596
+      joint fit coefs +0.84 +1.33 +0.06 -> 0.528
+layer 12->13: |rem|/|R3| 0.099 |R3|/|t3| 0.256
+      GC1 |.|/|rem| 0.829 corr +0.69 coef1 +0.454 fit +0.83
+      GC2 |.|/|rem| 0.151 corr +0.11 coef1 +0.010 fit +0.71
+      DS |.|/|rem| 0.121 corr +0.05 coef1 -0.003 fit +0.39
+      TRI(sub) |.|/|rem| 0.020 corr -0.08 coef1 -0.004
+      GC1+GC2+DS coef1 +0.472; +TRI(sub) coef1 +0.667
+      joint fit coefs +0.84 +1.05 +0.37 -> 0.497
+layer 13->14: |rem|/|R3| 0.091 |R3|/|t3| 0.258
+      GC1 |.|/|rem| 0.868 corr +0.63 coef1 +0.342 fit +0.73
+      GC2 |.|/|rem| 0.160 corr +0.13 coef1 +0.017 fit +0.84
+      DS |.|/|rem| 0.118 corr +0.04 coef1 -0.005 fit +0.31
+      TRI(sub) |.|/|rem| 0.028 corr -0.11 coef1 -0.007
+      GC1+GC2+DS coef1 +0.373; +TRI(sub) coef1 +0.231
+      joint fit coefs +0.74 +1.32 +0.39 -> 0.438
+layer 14->15: |rem|/|R3| 0.099 |R3|/|t3| 0.258
+      GC1 |.|/|rem| 0.818 corr +0.68 coef1 +0.443 fit +0.83
+      GC2 |.|/|rem| 0.138 corr +0.13 coef1 +0.017 fit +0.94
+      DS |.|/|rem| 0.100 corr +0.07 coef1 +0.005 fit +0.73
+      TRI(sub) |.|/|rem| 0.020 corr -0.07 coef1 -0.003
+      GC1+GC2+DS coef1 +0.469; +TRI(sub) coef1 +0.480
+      joint fit coefs +0.84 +1.33 +0.63 -> 0.493

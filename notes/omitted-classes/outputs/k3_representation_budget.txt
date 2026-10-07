@@ -1,0 +1,9 @@
+nostr SUMMARY mean over layers: D3 total 0.0397 legs 0.0396 | D21 total 0.0605 legs 0.0605; layers 10-14: D3 legs 0.0433 D21 legs 0.0676
+fb16 SUMMARY mean over layers: D3 total 0.0392 legs 0.0391 | D21 total 0.0596 legs 0.0596; layers 10-14: D3 legs 0.0426 D21 legs 0.0662
+res32 SUMMARY mean over layers: D3 total 0.0390 legs 0.0388 | D21 total 0.0598 legs 0.0598; layers 10-14: D3 legs 0.0423 D21 legs 0.0667
+base SUMMARY mean over layers: D3 total 0.0397 legs 0.0396 | D21 total 0.0605 legs 0.0605; layers 10-14: D3 legs 0.0433 D21 legs 0.0676
+old2off SUMMARY mean over layers: D3 total 0.0396 legs 0.0395 | D21 total 0.0604 legs 0.0604; layers 10-14: D3 legs 0.0431 D21 legs 0.0673
+noconf SUMMARY mean over layers: D3 total 0.0384 legs 0.0384 | D21 total 0.0591 legs 0.0591; layers 10-14: D3 legs 0.0417 D21 legs 0.0660
+qpass3 SUMMARY mean over layers: D3 total 0.0394 legs 0.0393 | D21 total 0.0603 legs 0.0603; layers 10-14: D3 legs 0.0431 D21 legs 0.0675
+old640 SUMMARY mean over layers: D3 total 0.0385 legs 0.0385 | D21 total 0.0592 legs 0.0592; layers 10-14: D3 legs 0.0420 D21 legs 0.0663
+all SUMMARY mean over layers: D3 total 0.0373 legs 0.0371 | D21 total 0.0576 legs 0.0575; layers 10-14: D3 legs 0.0401 D21 legs 0.0638

@@ -1,0 +1,23 @@
+net 0: chain output MSE 2.2525e-08 (vs official truth); first-order channel content, noise-free:
+  var       : predicted oracle change  -52.8% | |Delta|^2/|e|^2 0.380 (with MC noise at full N 0.530) | corr(e, Delta) +0.736
+  k3        : predicted oracle change  -15.2% | |Delta|^2/|e|^2 0.268 (with MC noise at full N 0.286) | corr(e, Delta) +0.405
+  k4        : predicted oracle change  -28.5% | |Delta|^2/|e|^2 0.274 (with MC noise at full N 0.280) | corr(e, Delta) +0.534
+  k3+k4     : predicted oracle change  -48.8% | |Delta|^2/|e|^2 0.491 (with MC noise at full N 0.515) | corr(e, Delta) +0.699
+  var+k3+k4 : predicted oracle change -104.3% | |Delta|^2/|e|^2 0.844 (with MC noise at full N 1.007) | corr(e, Delta) +1.027
+  unexplained by the three channels to first order: |e - Delta|^2/|e|^2 = -0.043
+  per source layer, noise-free |J s_l|^2 / |e|^2 and its correlation with e (var | k3 | k4):
+    layer  1: -0.004 (-0.11) |  0.000 (-0.10) |  0.001 (+0.08)
+    layer  2:  0.000 (+0.17) |  0.001 (+0.02) |  0.000 (+0.09)
+    layer  3:  0.004 (-0.08) |  0.001 (-0.10) |  0.002 (-0.01)
+    layer  4:  0.001 (+0.56) |  0.001 (+0.24) |  0.004 (-0.05)
+    layer  5:  0.001 (+0.51) |  0.003 (+0.06) |  0.005 (+0.04)
+    layer  6:  0.009 (+0.00) |  0.005 (+0.10) |  0.006 (+0.14)
+    layer  7:  0.013 (+0.11) |  0.013 (-0.04) |  0.009 (+0.07)
+    layer  8:  0.021 (+0.05) |  0.009 (+0.07) |  0.012 (+0.13)
+    layer  9:  0.022 (+0.15) |  0.020 (-0.00) |  0.015 (+0.26)
+    layer 10:  0.036 (+0.23) |  0.027 (+0.17) |  0.021 (+0.19)
+    layer 11:  0.050 (+0.16) |  0.024 (+0.19) |  0.035 (+0.20)
+    layer 12:  0.046 (+0.26) |  0.029 (+0.06) |  0.024 (+0.19)
+    layer 13:  0.055 (+0.15) |  0.032 (+0.26) |  0.036 (+0.23)
+    layer 14:  0.104 (+0.36) |  0.056 (+0.05) |  0.043 (+0.12)
+    layer 15:  0.094 (+0.34) |  0.049 (+0.31) |  0.043 (+0.24)

@@ -1,0 +1,28 @@
+== base
+             D3 legs err ~ -GC1: coef +0.66 expl +0.013; ~ -GC2: coef +0.80 expl +0.018; ~ -(GC1+GC2): coef +0.80 expl +0.034
+             D3 legs err ~ -GC1: coef +0.61 expl +0.030; ~ -GC2: coef +0.83 expl +0.027; ~ -(GC1+GC2): coef +0.77 expl +0.064
+             D3 legs err ~ -GC1: coef +0.57 expl +0.049; ~ -GC2: coef +0.62 expl +0.017; ~ -(GC1+GC2): coef +0.66 expl +0.075
+             D3 legs err ~ -GC1: coef +0.68 expl +0.078; ~ -GC2: coef +0.24 expl +0.002; ~ -(GC1+GC2): coef +0.65 expl +0.079
+             D3 legs err ~ -GC1: coef +0.49 expl +0.058; ~ -GC2: coef +0.64 expl +0.014; ~ -(GC1+GC2): coef +0.54 expl +0.075
+             D3 legs err ~ -GC1: coef +0.68 expl +0.114; ~ -GC2: coef +0.19 expl +0.001; ~ -(GC1+GC2): coef +0.70 expl +0.122
+             D3 legs err ~ -GC1: coef +0.68 expl +0.132; ~ -GC2: coef +0.65 expl +0.009; ~ -(GC1+GC2): coef +0.71 expl +0.149
+             D3 legs err ~ -GC1: coef +0.64 expl +0.112; ~ -GC2: coef +0.60 expl +0.007; ~ -(GC1+GC2): coef +0.65 expl +0.122
+             D3 legs err ~ -GC1: coef +0.70 expl +0.139; ~ -GC2: coef +0.15 expl +0.000; ~ -(GC1+GC2): coef +0.69 expl +0.139
+             D3 legs err ~ -GC1: coef +0.71 expl +0.132; ~ -GC2: coef +0.08 expl +0.000; ~ -(GC1+GC2): coef +0.72 expl +0.133
+             D3 legs err ~ -GC1: coef +0.71 expl +0.132; ~ -GC2: coef +0.46 expl +0.002; ~ -(GC1+GC2): coef +0.72 expl +0.137
+             D3 legs err ~ -GC1: coef +0.70 expl +0.094; ~ -GC2: coef +0.24 expl +0.000; ~ -(GC1+GC2): coef +0.70 expl +0.095
+             D3 legs err ~ -GC1: coef +0.66 expl +0.081; ~ -GC2: coef -0.63 expl +0.003; ~ -(GC1+GC2): coef +0.64 expl +0.076
+== fb16
+             D3 legs err ~ -GC1: coef +0.63 expl +0.012; ~ -GC2: coef +0.77 expl +0.017; ~ -(GC1+GC2): coef +0.77 expl +0.031
+             D3 legs err ~ -GC1: coef +0.58 expl +0.028; ~ -GC2: coef +0.78 expl +0.024; ~ -(GC1+GC2): coef +0.74 expl +0.058
+             D3 legs err ~ -GC1: coef +0.54 expl +0.045; ~ -GC2: coef +0.58 expl +0.015; ~ -(GC1+GC2): coef +0.63 expl +0.068
+             D3 legs err ~ -GC1: coef +0.65 expl +0.072; ~ -GC2: coef +0.18 expl +0.001; ~ -(GC1+GC2): coef +0.61 expl +0.071
+             D3 legs err ~ -GC1: coef +0.46 expl +0.053; ~ -GC2: coef +0.58 expl +0.011; ~ -(GC1+GC2): coef +0.51 expl +0.068
+             D3 legs err ~ -GC1: coef +0.65 expl +0.106; ~ -GC2: coef +0.16 expl +0.001; ~ -(GC1+GC2): coef +0.67 expl +0.112
+             D3 legs err ~ -GC1: coef +0.64 expl +0.122; ~ -GC2: coef +0.59 expl +0.008; ~ -(GC1+GC2): coef +0.67 expl +0.137
+             D3 legs err ~ -GC1: coef +0.60 expl +0.104; ~ -GC2: coef +0.51 expl +0.005; ~ -(GC1+GC2): coef +0.61 expl +0.112
+             D3 legs err ~ -GC1: coef +0.67 expl +0.129; ~ -GC2: coef +0.06 expl +0.000; ~ -(GC1+GC2): coef +0.65 expl +0.127
+             D3 legs err ~ -GC1: coef +0.68 expl +0.122; ~ -GC2: coef -0.03 expl +0.000; ~ -(GC1+GC2): coef +0.68 expl +0.122
+             D3 legs err ~ -GC1: coef +0.67 expl +0.123; ~ -GC2: coef +0.31 expl +0.001; ~ -(GC1+GC2): coef +0.67 expl +0.126
+             D3 legs err ~ -GC1: coef +0.66 expl +0.088; ~ -GC2: coef +0.09 expl +0.000; ~ -(GC1+GC2): coef +0.66 expl +0.088
+             D3 legs err ~ -GC1: coef +0.63 expl +0.077; ~ -GC2: coef -0.69 expl +0.003; ~ -(GC1+GC2): coef +0.60 expl +0.071

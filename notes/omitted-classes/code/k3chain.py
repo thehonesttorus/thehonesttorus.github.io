@@ -42,13 +42,22 @@ for l in range(1, L - 1):
     rho = phi[l] / sd[l]; Wr = W * rho[None, :]; Gm = Cz @ X.T; C2 = Cz * Cz
     fac = (3 * np.einsum("ia,ia->i", Wr, Gm.T ** 2 - XX @ C2),
            offd((Wr @ (Gm * Gm - C2 @ XX.T)).T + 2 * ((Wr * Gm.T) @ Gm - (X * (Wr @ C2)) @ X.T)))
+    c13 = -al[l] * phi[l] / sd[l] ** 2; GX = D21z @ X.T; CX = Cz @ X.T
+    gc1 = 3 * np.einsum("iu,ui->i", W * c13[None, :], GX * CX - (D21z * Cz) @ XX.T)
+    Yg = Wr * CX.T
+    gc2 = 3 * (np.einsum("iu,ui->i", Wr, D21z @ Yg.T) - np.einsum("iu,ui->i", Wr * X, (D21z * Cz) @ Wr.T))
     out = []; rowacc = []
     for s in range(2):
         e_tot = own[s] - t3[s]; e_pair = pair_ch[s] - pair_true[s]; e_legs = legs_ch[s] - R3[s]
         bf, ef = fit(e_legs, -fac[s]); bl, el = fit(e_legs, leg1[s]); rowacc += [rel(e_tot, t3[s]), rel(e_legs, t3[s])]
+        rem = R3[s] - leg1[s] - fac[s]                     # the law's remainder beyond second order (true)
+        br, er = fit(e_legs, -rem); cr = float(np.corrcoef(e_legs.ravel(), -rem.ravel())[0, 1])
         out.append(f"total {rel(e_tot, t3[s]):.4f} pair {rel(e_pair, t3[s]):.4f} legs {rel(e_legs, t3[s]):.4f} "
-                   f"(legs part/R3 err {rel(e_legs, R3[s]):.3f}); legs err ~ -facet: coef {bf:+.2f} expl {ef:+.2f}, ~ leg1: coef {bl:+.2f} expl {el:+.2f}")
-    print(f"layer {l:2d}->{l + 1:2d}: D3: {out[0]}\n             D21: {out[1]}", flush=True)
+                   f"(legs part/R3 err {rel(e_legs, R3[s]):.3f}); legs err ~ -facet: coef {bf:+.2f} expl {ef:+.2f}, ~ leg1: coef {bl:+.2f} expl {el:+.2f}; "
+                   f"~ -(law remainder, |.|/|R3| {rel(rem, R3[s]):.3f}): corr {cr:+.2f} coef {br:+.2f} expl {er:+.2f}")
+    eL = own[0] - pair_ch[0] - R3[0]
+    b1, e1 = fit(eL, -gc1); b2, e2 = fit(eL, -gc2); b12, e12 = fit(eL, -(gc1 + gc2))
+    print(f"layer {l:2d}->{l + 1:2d}: D3: {out[0]}\n             D21: {out[1]}\n             D3 legs err ~ -GC1: coef {b1:+.2f} expl {e1:+.3f}; ~ -GC2: coef {b2:+.2f} expl {e2:+.3f}; ~ -(GC1+GC2): coef {b12:+.2f} expl {e12:+.3f}", flush=True)
     acc.append(rowacc)
 a = np.array(acc)
 print("SUMMARY mean over layers: D3 total %.4f legs %.4f | D21 total %.4f legs %.4f; layers 10-14: D3 legs %.4f D21 legs %.4f"

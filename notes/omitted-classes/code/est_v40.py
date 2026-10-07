@@ -352,6 +352,10 @@ K4SM_AMP = float(_os.environ.get("V30_K4SM_AMP", "1.0"))
 # (2,1,1)/(1,1,1,1) classes of the post-activation fourth cumulant, transported exactly from the chain's own state
 # (full form at the pre-activation minus the exact transport of its pair-supported part), in all three slices, at the
 # amplitude G_l fitted on Monte Carlo (one coefficient per layer, the same in all three slices).
+# V40 (note XXXVI section 3f): the D21 feedback of the birth hub at the theorem's weights.  Relative to the facet term the
+# hub carries the Gamma x C terms (GC1 via Yt, GC2 via Xt) at half their second-order coefficients; 2 = the theorem.
+FB_SX = float(_os.environ.get("V40_FB_SX", "1.0"))
+FB_SY = float(_os.environ.get("V40_FB_SY", "1.0"))
 KD = int(_os.environ.get("V39_KD", "0"))
 KD_AMP = float(_os.environ.get("V39_KD_AMP", "1.0"))
 KD_BITS = int(_os.environ.get("V39_KD_BITS", "0"))   # 1 diagonal, 2 (2,2), 4 (3,1); 0 with KD=1 means all
@@ -1447,8 +1451,10 @@ class Estimator(BaseEstimator):
                         import numpy as _np
                         _ORACLE_DATA.update({k: v for k, v in _np.load(ORACLE_FILE).items()})
                     if "D3" in ORACLE:
+                        _own("D3", li, D3)
                         D3 = fnp.asarray(_ORACLE_DATA["k3"][li], dtype=f32)
                     if "D21" in ORACLE and D21 is not None:
+                        _own("D21", li, D21)
                         D21 = _zero_diag(fnp.asarray(_ORACLE_DATA["D21"][li], dtype=f32))
                         if sat_mask is not None:
                             D21 = D21 * sat_mask[:, None]
@@ -1810,9 +1816,9 @@ class Estimator(BaseEstimator):
                 Qf, _ = fnp.linalg.qr(Yf)
                 Bf = Qf.T @ D21                       # D21 ~= Qf @ Bf
                 F1_b = (w2)[:, None] * Qf            # Xt = F1 R1, R1 = 1.5 Bf
-                R1T_b = Bf.T * 1.5                              # (n, rfb) = R1^T
+                R1T_b = Bf.T * (1.5 * FB_SX)                    # (n, rfb) = R1^T
                 F2_b = w1col * Bf.T                             # Yt = F2 R2, R2 = 0.5 Qf^T d(w3)
-                R2T_b = Qf * (w3 * 0.5)[:, None]     # (n, rfb) = R2^T
+                R2T_b = Qf * (w3 * (0.5 * FB_SY))[:, None]     # (n, rfb) = R2^T
                 Xt_b = fnp.matmul(F1_b, R1T_b.T, out=NN("xtb"))
                 Yt_b = fnp.matmul(F2_b, R2T_b.T, out=NN("ytb"))
                 X1_b = fnp.multiply(a_b, 3.0, out=NN("x1b"))
