@@ -57,3 +57,71 @@ He 0.061/0.091; at r = 96, 0.153/0.197, 0.061/0.064, 0.028/0.042.
   q = r(r+1)/2: 8 units each at r = 128, plus 32 units per graduating source for the projection. That is more than the
   whole old tier (about 7-10 units per layer). The family is the right object; its r(r+1)/2 coordinates per neuron
   are the price, which is what the shared-actions note addresses (section 3).
+
+## 3. Shared quadratic actions, and the He repair of the chain's own tier (`code/s2fit2.py`, `outputs/s2b_L9.txt`, `outputs/s2b_L11.txt`)
+
+**The traceless remainder has no small action rank.** The He-corrected two-address-leg state was split canonically,
+T = U^(x3) H + Phi_U(D) with U^T D = 0, D_i = d_i I / sqrt(r) + D_i^o, keeping the core H and the trace channel d exact.
+The traceless remainder carries a large share of the tensor ((1/3)|D^o|^2 = 61 against a core of at most 167 at r = 64;
+21 against 205 at r = 128), and its singular spectrum decays slowly and identically at every r and at both L0:
+
+| s (shared actions) | 4 | 8 | 16 | 32 | 64 | 128 | 256 |
+|---|---|---|---|---|---|---|---|
+| fraction of \|D^o\|^2 left out | 0.90 | 0.82 | 0.67-0.69 | 0.46-0.49 | 0.23-0.25 | 0.06 | 0.003 |
+
+On the reads, at r = 128 (L0 = 9): s = 16 gives 0.083/0.131, s = 64 gives 0.054/0.082, s = 128 gives 0.032/0.049,
+against 0.020/0.031 for the full state and 0.019/0.025 for production. Matching production needs s of order 256, where
+the source write (the p N r^2 term of the note's own cost formula, with N = 2n hub stars per source) is about 8 units
+per graduating source: no saving against the tier it would replace. The algebra is right (core and trace exact, the
+SVD tail is the exact local He risk) and the representation is honest; the chain's sources are close to the note's own
+flat-spectrum counterexample, not to a small-tail case. Closed for cost.
+
+**The He repair rides on the production tier, but there is little left to win there.** The family Sym^3(U) plus one
+scalar-return vector {Phi_U(v I): v perp U} contains the He correction's K(v), so THEORY.md's formula applies to the
+chain's own tier at the price of one n-vector (transport n^2, reads about r/(2n) = 0.16 units per layer):
+
+| r = 320, reads D3/D21 | L9 | L11 | L14 | L15 |
+|---|---|---|---|---|
+| Sym^3 (production) | 0.019/0.025 | 0.015/0.020 (L0 = 11) | 0.013/0.016 | 0.010/0.014 |
+| + He repair, U part only | unchanged | unchanged | unchanged | unchanged |
+| + scalar return (Frobenius or He, equal here) | 0.014/0.022 | 0.011/0.017 | 0.009/0.014 | 0.008/0.012 |
+
+A quarter off the D3 error and an eighth off D21, nearly free. But the whole representation defect of the shared-basis
+tier is 1.4% of the raw error (note XIX, finite-volume round), so this is worth at most a few tenths of a percent and is
+not implemented. At r = 128 the same channel takes Sym^3 from 0.145/0.187 to 0.098/0.156: useful only for a much
+cheaper tier, which the action spectrum above rules out.
+
+## 4. The quartic weight dependence of the kappa4 pair class (`code/k4mc.py`, `code/k4q_an.py`, `outputs/k4q_off0.txt`)
+
+The chain's regenerated fourth-cumulant core transports its diagonal as t_g = (W o W) g_prev with
+g_prev = cA (K4 + K22 1) + cI (totals): the row-sum (mean-field) form of the exact pair class
+
+    Q_i = sum_a W_ia^4 K4_a + 3 sum_(a != b) W_ia^2 W_ib^2 K22_ab = 3 (w_i^2)^T K w_i^2 - 2 diag(K)^T w_i^4,
+
+the PDF's full quartic readout. A Monte Carlo of 6e6 inputs (two halves for the noise) through network 0 gave, at
+source layers 3, 6, 9, 12, the true per-neuron pair class of kappa4(z_(l+1)) by note XXI's power sums, the true total
+kappa4, and the true post-activation slices K22 and K4; the production chain (current best, raw 2.271e-8 on this
+network) was dumped at the same layers. The power-sum class equals the exact contraction of the true K22 to 1e-5, and
+the chain's lambda part rebuilds at correlation 1.0000, so both sides are the quantities named.
+
+| target layer | pair class (truth) | quenched part Q - Q_mf (truth) | chain's own Q - Q_mf vs truth | corr(chain exact Q, truth) vs mean-field | chain kappa4 residual rms (noise) | corr(residual, quenched) | LS coefficient | d(mean) per layer of the quenched part |
+|---|---|---|---|---|---|---|---|---|
+| 4 | 0.0111 | 0.00049 | corr 1.000 | 0.999 vs 0.939 | 0.00166 (0.00086) | +0.32 | 1.09 | 1.2e-5 |
+| 7 | 0.0059 | 0.00026 | 1.000 | 0.999 vs 0.947 | 0.00107 (0.00032) | +0.29 | 1.18 | 1.4e-5 |
+| 10 | 0.0032 | 0.00014 | 1.000 | 0.997 vs 0.944 | 0.00075 (0.00015) | +0.24 | 1.37 | 1.3e-5 |
+| 13 | 0.0023 | 0.00010 | 1.000 | 0.994 vs 0.947 | 0.00083 (0.00009) | +0.14 | 1.13 | 1.4e-5 |
+
+- **The mean-field row sum is right on average and drops a per-neuron part of 4-5% of the pair class.** The two means
+  agree to three digits at every layer; the quenched part is purely incoherent, which is the signature of the chain's
+  residual (closure round, section 4).
+- **The chain already holds everything needed to compute it.** Its own slices give the quenched part at correlation
+  1.000 with the truth: the part is fixed by the known weights, not by the slices' errors.
+- **It is genuinely missing from the chain's kappa4 diagonal, at the derived coefficient.** It correlates +0.14 to
+  +0.32 with the chain's per-neuron residual, with least-squares coefficient 1.0-1.4 against the derived 1. It removes
+  1-5% of that residual's rms; the rest is the dropped (2+1+1) class and the regenerated lambda part (note XXI).
+- **Its leverage on the mean is 1.2-1.5e-5 rms per layer** through the fourth Hermite coefficient of the gate,
+  (kappa4/24) (alpha^2 - 1) phi / sigma^3. Fifteen incoherent layers of that size are about 2.5e-9 of output MSE if
+  nothing compensates it, a tenth of the raw error. The chain test (section 5) is the arbiter.
+
+Its cost is one n^3 product per layer, (W o W) K22, on the Strassen family: the PDF's selected-gate O(mnk) evaluation is
+the cheaper form if the dense one pays.

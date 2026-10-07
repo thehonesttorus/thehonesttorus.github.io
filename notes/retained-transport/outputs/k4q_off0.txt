@@ -1,0 +1,45 @@
+net 0, Monte Carlo T = 3000000 per half (two halves)
+
+ source 3 -> target 4
+  checks: pair class (power sums) vs exact contraction of true K22: rel diff 1.96e-05;  chain lam part vs lam*(var - W2 var_prev): corr 1.0000
+  truth: pair class mean +0.01107 rms 0.01113 (noise 0.00003); mean-field mean +0.01107; quenched part rms 0.00049 (noise 0.00001), corr with pair class +0.826
+  truth: total kappa4 mean +0.01105 rms 0.01130 (noise 0.00086)
+  chain: pair class (own slices) mean +0.01099, mean-field +0.01099, quenched rms 0.00049; corr(chain quenched, true quenched) +1.000; corr(chain exact, true pair) +0.999 vs mean-field +0.939
+  chain g4row: mean +0.01100; residual true - g4row: mean +0.00005 rms 0.00166 (noise 0.00086); corr(residual, chain quenched) +0.323, corr(residual, true quenched) +0.323
+    adding chain quenched: LS coefficient +1.093; residual rms 0.00166 -> 0.00157; at coefficient 1: 0.00157
+    adding true quenched: LS coefficient +1.086; residual rms 0.00166 -> 0.00157; at coefficient 1: 0.00157
+  mean leverage: rms d(mean) of the chain quenched part 1.23e-05, of the true quenched part 1.23e-05, of the chain's kappa4 residual 3.98e-05 (noise 2.12e-05)
+  K22 slice, chain vs truth: corr +0.998, rel err 0.060; row sums corr +0.998
+
+ source 6 -> target 7
+  checks: pair class (power sums) vs exact contraction of true K22: rel diff 1.58e-05;  chain lam part vs lam*(var - W2 var_prev): corr 1.0000
+  truth: pair class mean +0.00587 rms 0.00591 (noise 0.00002); mean-field mean +0.00585; quenched part rms 0.00026 (noise 0.00000), corr with pair class +0.809
+  truth: total kappa4 mean +0.00587 rms 0.00606 (noise 0.00032)
+  chain: pair class (own slices) mean +0.00569, mean-field +0.00567, quenched rms 0.00025; corr(chain quenched, true quenched) +1.000; corr(chain exact, true pair) +0.999 vs mean-field +0.947
+  chain g4row: mean +0.00567; residual true - g4row: mean +0.00020 rms 0.00107 (noise 0.00032); corr(residual, chain quenched) +0.286, corr(residual, true quenched) +0.286
+    adding chain quenched: LS coefficient +1.182; residual rms 0.00105 -> 0.00101; at coefficient 1: 0.00101
+    adding true quenched: LS coefficient +1.147; residual rms 0.00105 -> 0.00101; at coefficient 1: 0.00101
+  mean leverage: rms d(mean) of the chain quenched part 1.35e-05, of the true quenched part 1.40e-05, of the chain's kappa4 residual 5.18e-05 (noise 1.74e-05)
+  K22 slice, chain vs truth: corr +0.995, rel err 0.094; row sums corr +0.997
+
+ source 9 -> target 10
+  checks: pair class (power sums) vs exact contraction of true K22: rel diff 1.15e-05;  chain lam part vs lam*(var - W2 var_prev): corr 1.0000
+  truth: pair class mean +0.00321 rms 0.00323 (noise 0.00001); mean-field mean +0.00320; quenched part rms 0.00014 (noise 0.00000), corr with pair class +0.739
+  truth: total kappa4 mean +0.00319 rms 0.00337 (noise 0.00015)
+  chain: pair class (own slices) mean +0.00299, mean-field +0.00299, quenched rms 0.00013; corr(chain quenched, true quenched) +1.000; corr(chain exact, true pair) +0.997 vs mean-field +0.944
+  chain g4row: mean +0.00300; residual true - g4row: mean +0.00019 rms 0.00075 (noise 0.00015); corr(residual, chain quenched) +0.239, corr(residual, true quenched) +0.240
+    adding chain quenched: LS coefficient +1.369; residual rms 0.00073 -> 0.00071; at coefficient 1: 0.00071
+    adding true quenched: LS coefficient +1.279; residual rms 0.00073 -> 0.00071; at coefficient 1: 0.00071
+  mean leverage: rms d(mean) of the chain quenched part 1.29e-05, of the true quenched part 1.38e-05, of the chain's kappa4 residual 6.12e-05 (noise 1.51e-05)
+  K22 slice, chain vs truth: corr +0.986, rel err 0.159; row sums corr +0.994
+
+ source 12 -> target 13
+  checks: pair class (power sums) vs exact contraction of true K22: rel diff 1.02e-05;  chain lam part vs lam*(var - W2 var_prev): corr 1.0000
+  truth: pair class mean +0.00233 rms 0.00235 (noise 0.00001); mean-field mean +0.00232; quenched part rms 0.00010 (noise 0.00000), corr with pair class +0.741
+  truth: total kappa4 mean +0.00233 rms 0.00260 (noise 0.00009)
+  chain: pair class (own slices) mean +0.00207, mean-field +0.00206, quenched rms 0.00009; corr(chain quenched, true quenched) +1.000; corr(chain exact, true pair) +0.994 vs mean-field +0.947
+  chain g4row: mean +0.00206; residual true - g4row: mean +0.00027 rms 0.00083 (noise 0.00009); corr(residual, chain quenched) +0.135, corr(residual, true quenched) +0.135
+    adding chain quenched: LS coefficient +1.133; residual rms 0.00079 -> 0.00078; at coefficient 1: 0.00078
+    adding true quenched: LS coefficient +1.010; residual rms 0.00079 -> 0.00078; at coefficient 1: 0.00078
+  mean leverage: rms d(mean) of the chain quenched part 1.36e-05, of the true quenched part 1.53e-05, of the chain's kappa4 residual 8.28e-05 (noise 1.40e-05)
+  K22 slice, chain vs truth: corr +0.971, rel err 0.236; row sums corr +0.987

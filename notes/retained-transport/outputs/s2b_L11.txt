@@ -1,0 +1,18 @@
+net 0 L0 11: 7 old sources
+  r 320 Sym3 (chain)                 L11:0.015/0.020 L12:0.014/0.017 L13:0.012/0.016 L14:0.011/0.015 L15:0.010/0.014
+  r 320 Sym3 + He U-part             L11:0.015/0.019 L12:0.014/0.017 L13:0.012/0.016 L14:0.011/0.015 L15:0.010/0.014
+  r 320 Sym3 + scalar return (Frob)  L11:0.011/0.017 L12:0.010/0.015 L13:0.008/0.014 L14:0.008/0.013 L15:0.008/0.012
+  r 320 Sym3 + scalar return (He)    L11:0.011/0.017 L12:0.010/0.015 L13:0.008/0.014 L14:0.008/0.013 L15:0.008/0.012
+      (74s; scalar channel: one n-vector, transport n^2, reads ~ r/(2n) = 0.16 units per layer)
+  r  96: traceless remainder energy (1/3)|D^o|^2 = 4.327e+01; trace channel (1/3)|d|^2 = 8.271e-01; core <= 3.317e+02
+      tail fraction of |D^o|^2 beyond s: s=4:0.892  s=8:0.809  s=16:0.672  s=32:0.468  s=64:0.230  s=128:0.056  s=256:0.003  s=512:0.000
+  r  96 s  16  He S>=2, core+trace exact, D^o rank s  L11:0.085/0.139 L12:0.079/0.123 L13:0.071/0.114 L14:0.069/0.107 L15:0.060/0.098   [~units/layer: transport+read 0.22, write 0.55]
+  r  96 s  32  He S>=2, core+trace exact, D^o rank s  L11:0.075/0.118 L12:0.068/0.105 L13:0.061/0.097 L14:0.058/0.091 L15:0.049/0.083   [~units/layer: transport+read 0.25, write 0.63]
+  r  96 s  64  He S>=2, core+trace exact, D^o rank s  L11:0.056/0.088 L12:0.051/0.078 L13:0.045/0.072 L14:0.044/0.068 L15:0.037/0.062   [~units/layer: transport+read 0.31, write 0.79]
+  r  96 full He S>=2 (s = all)                   L11:0.028/0.042 L12:0.024/0.037 L13:0.022/0.035 L14:0.021/0.033 L15:0.019/0.031  (5s)
+  r 128: traceless remainder energy (1/3)|D^o|^2 = 2.410e+01; trace channel (1/3)|d|^2 = 3.406e-01; core <= 3.480e+02
+      tail fraction of |D^o|^2 beyond s: s=4:0.894  s=8:0.813  s=16:0.674  s=32:0.468  s=64:0.230  s=128:0.055  s=256:0.002  s=512:0.000
+  r 128 s  16  He S>=2, core+trace exact, D^o rank s  L11:0.063/0.101 L12:0.057/0.089 L13:0.053/0.083 L14:0.051/0.079 L15:0.044/0.072   [~units/layer: transport+read 0.28, write 1.20]
+  r 128 s  32  He S>=2, core+trace exact, D^o rank s  L11:0.053/0.085 L12:0.048/0.075 L13:0.043/0.069 L14:0.043/0.066 L15:0.036/0.060   [~units/layer: transport+read 0.31, write 1.34]
+  r 128 s  64  He S>=2, core+trace exact, D^o rank s  L11:0.038/0.061 L12:0.035/0.054 L13:0.032/0.050 L14:0.029/0.047 L15:0.026/0.044   [~units/layer: transport+read 0.38, write 1.60]
+  r 128 full He S>=2 (s = all)                   L11:0.013/0.021 L12:0.012/0.018 L13:0.011/0.017 L14:0.010/0.016 L15:0.009/0.015  (10s)

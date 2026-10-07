@@ -1,0 +1,35 @@
+net 0 L0 9: 5 old sources
+  r 128 Sym3 (chain)                 L9:0.145/0.187 L10:0.132/0.169 L11:0.129/0.157 L12:0.116/0.142 L13:0.101/0.128 L14:0.094/0.121
+  r 128 Sym3 + He U-part             L9:0.141/0.184 L10:0.127/0.166 L11:0.123/0.153 L12:0.109/0.137 L13:0.094/0.123 L14:0.087/0.116
+  r 128 Sym3 + scalar return (Frob)  L9:0.104/0.160 L10:0.095/0.146 L11:0.091/0.134 L12:0.083/0.121 L13:0.074/0.110 L14:0.068/0.104
+  r 128 Sym3 + scalar return (He)    L9:0.098/0.156 L10:0.087/0.143 L11:0.084/0.130 L12:0.076/0.117 L13:0.067/0.106 L14:0.062/0.101
+      (8s; scalar channel: one n-vector, transport n^2, reads ~ r/(2n) = 0.06 units per layer)
+  r 320 Sym3 (chain)                 L9:0.019/0.025 L10:0.019/0.023 L11:0.016/0.021 L12:0.015/0.019 L13:0.013/0.017 L14:0.013/0.016
+  r 320 Sym3 + He U-part             L9:0.019/0.025 L10:0.019/0.023 L11:0.016/0.021 L12:0.015/0.019 L13:0.013/0.017 L14:0.013/0.016
+  r 320 Sym3 + scalar return (Frob)  L9:0.014/0.022 L10:0.013/0.020 L11:0.011/0.018 L12:0.010/0.016 L13:0.009/0.015 L14:0.009/0.014
+  r 320 Sym3 + scalar return (He)    L9:0.014/0.022 L10:0.013/0.020 L11:0.011/0.018 L12:0.010/0.016 L13:0.009/0.015 L14:0.009/0.014
+      (75s; scalar channel: one n-vector, transport n^2, reads ~ r/(2n) = 0.16 units per layer)
+  r  64: traceless remainder energy (1/3)|D^o|^2 = 6.075e+01; trace channel (1/3)|d|^2 = 2.974e+00; core <= 1.669e+02
+      tail fraction of |D^o|^2 beyond s: s=4:0.897  s=8:0.814  s=16:0.670  s=32:0.463  s=64:0.227  s=128:0.057  s=256:0.003  s=512:0.000
+  r  64 s   8  He S>=2, core+trace exact, D^o rank s  L9:0.162/0.269 L10:0.147/0.247 L11:0.145/0.224 L12:0.134/0.203 L13:0.118/0.187 L14:0.115/0.177   [~units/layer: transport+read 0.14, write 0.18]
+  r  64 s  16  He S>=2, core+trace exact, D^o rank s  L9:0.151/0.250 L10:0.135/0.230 L11:0.136/0.208 L12:0.127/0.190 L13:0.110/0.174 L14:0.104/0.164   [~units/layer: transport+read 0.16, write 0.20]
+  r  64 s  32  He S>=2, core+trace exact, D^o rank s  L9:0.134/0.219 L10:0.119/0.203 L11:0.119/0.183 L12:0.113/0.167 L13:0.096/0.154 L14:0.091/0.144   [~units/layer: transport+read 0.19, write 0.24]
+  r  64 s  64  He S>=2, core+trace exact, D^o rank s  L9:0.112/0.179 L10:0.098/0.164 L11:0.097/0.150 L12:0.089/0.137 L13:0.081/0.127 L14:0.075/0.120   [~units/layer: transport+read 0.25, write 0.31]
+  r  64 s 128  He S>=2, core+trace exact, D^o rank s  L9:0.089/0.142 L10:0.079/0.131 L11:0.079/0.120 L12:0.070/0.110 L13:0.066/0.103 L14:0.062/0.097   [~units/layer: transport+read 0.38, write 0.47]
+  r  64 full He S>=2 (s = all)                   L9:0.079/0.127 L10:0.070/0.118 L11:0.071/0.108 L12:0.065/0.100 L13:0.059/0.093 L14:0.056/0.088  (4s)
+  r  96: traceless remainder energy (1/3)|D^o|^2 = 3.701e+01; trace channel (1/3)|d|^2 = 8.906e-01; core <= 1.899e+02
+      tail fraction of |D^o|^2 beyond s: s=4:0.901  s=8:0.819  s=16:0.682  s=32:0.477  s=64:0.239  s=128:0.061  s=256:0.003  s=512:0.000
+  r  96 s   8  He S>=2, core+trace exact, D^o rank s  L9:0.119/0.195 L10:0.107/0.180 L11:0.102/0.162 L12:0.099/0.147 L13:0.084/0.134 L14:0.080/0.125   [~units/layer: transport+read 0.21, write 0.51]
+  r  96 s  16  He S>=2, core+trace exact, D^o rank s  L9:0.110/0.180 L10:0.099/0.165 L11:0.094/0.149 L12:0.088/0.134 L13:0.076/0.123 L14:0.073/0.116   [~units/layer: transport+read 0.22, write 0.55]
+  r  96 s  32  He S>=2, core+trace exact, D^o rank s  L9:0.097/0.155 L10:0.086/0.141 L11:0.082/0.128 L12:0.075/0.115 L13:0.065/0.105 L14:0.062/0.100   [~units/layer: transport+read 0.25, write 0.63]
+  r  96 s  64  He S>=2, core+trace exact, D^o rank s  L9:0.076/0.118 L10:0.069/0.108 L11:0.064/0.098 L12:0.055/0.088 L13:0.051/0.081 L14:0.048/0.076   [~units/layer: transport+read 0.31, write 0.79]
+  r  96 s 128  He S>=2, core+trace exact, D^o rank s  L9:0.051/0.080 L10:0.047/0.073 L11:0.043/0.067 L12:0.040/0.061 L13:0.035/0.056 L14:0.034/0.052   [~units/layer: transport+read 0.44, write 1.10]
+  r  96 full He S>=2 (s = all)                   L9:0.039/0.062 L10:0.037/0.057 L11:0.033/0.053 L12:0.032/0.048 L13:0.027/0.044 L14:0.027/0.041  (6s)
+  r 128: traceless remainder energy (1/3)|D^o|^2 = 2.074e+01; trace channel (1/3)|d|^2 = 3.700e-01; core <= 2.052e+02
+      tail fraction of |D^o|^2 beyond s: s=4:0.897  s=8:0.819  s=16:0.688  s=32:0.486  s=64:0.246  s=128:0.062  s=256:0.003  s=512:0.000
+  r 128 s   8  He S>=2, core+trace exact, D^o rank s  L9:0.089/0.142 L10:0.082/0.130 L11:0.076/0.118 L12:0.067/0.105 L13:0.060/0.096 L14:0.056/0.092   [~units/layer: transport+read 0.27, write 1.14]
+  r 128 s  16  He S>=2, core+trace exact, D^o rank s  L9:0.083/0.131 L10:0.077/0.120 L11:0.069/0.108 L12:0.060/0.097 L13:0.055/0.089 L14:0.050/0.084   [~units/layer: transport+read 0.28, write 1.20]
+  r 128 s  32  He S>=2, core+trace exact, D^o rank s  L9:0.072/0.111 L10:0.066/0.102 L11:0.058/0.092 L12:0.052/0.082 L13:0.047/0.076 L14:0.044/0.071   [~units/layer: transport+read 0.31, write 1.34]
+  r 128 s  64  He S>=2, core+trace exact, D^o rank s  L9:0.054/0.082 L10:0.048/0.075 L11:0.042/0.067 L12:0.039/0.060 L13:0.034/0.056 L14:0.034/0.053   [~units/layer: transport+read 0.38, write 1.60]
+  r 128 s 128  He S>=2, core+trace exact, D^o rank s  L9:0.032/0.049 L10:0.029/0.045 L11:0.026/0.041 L12:0.025/0.037 L13:0.021/0.034 L14:0.020/0.032   [~units/layer: transport+read 0.50, write 2.13]
+  r 128 full He S>=2 (s = all)                   L9:0.020/0.031 L10:0.019/0.028 L11:0.016/0.026 L12:0.016/0.024 L13:0.014/0.022 L14:0.013/0.021  (12s)
