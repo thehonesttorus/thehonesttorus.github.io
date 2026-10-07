@@ -504,9 +504,77 @@ where every term is located and the budget has no remainder.
 - **The kappa3 readout is joint.** The output reads the kappa3 state through the sum of its diagonal and D21 images, and
   that sum overlaps the kappa4 image.
 - **Repairs must be paired.** A repair of either cumulant sector must be judged on that joint readout, not per slice and
-  not in L2. A kappa3 repair has to be paired with the kappa4 error it currently cancels.
+  not in L2. A kappa3 repair has to be paired with the kappa4 error it currently cancels. That cancellation happens in
+  the propagated images, not inside one unit's query (section 3i).
 
-### 3d. In the chain: G D in place of the lam core (V39_KD)
+### 3i. Checkpoint K's degree-one state, measured: the physical-cumulant queries are adequate; the loss is in transport
+
+**Checkpoint K's reformulation.** For a bias-free ReLU network every future mean is a functional of one object:
+the radius-weighted angular law nu^(1) of the hidden state. After ReLU that object is equivalently the whole support
+function h_X(w) = E (w^T X)_+.
+- **What the chain already computes.** Each next-layer mean m_(k,i) = E relu(z_(k,i)) is exactly such a degree-one
+  query, at w = row i of W_k.
+- **How it computes it.** It takes the query from the physical cumulants of the marginal through the Edgeworth map of
+  `est_v29` (TERM_SPECS[(1,)]):
+  Gauss(mu, s) + k3/6 E relu''' + k4/24 E relu'''' + k3^2/72 E relu^(6) + k3 k4/144 E relu^(7).
+- **Checkpoint K's question in these terms.** Does that physical-cumulant state lose degree-one information that the
+  suffix queries?
+
+**A refinement of the radial family** (checkpoint K, theorem 5.1). Write the hidden gain as s = 1 + eps, with z = s A
+for a Gaussian A independent of eps.
+- **Gain variance.** Along v = E eps^2, kappa4 = 12 v sigma^4 + O(v^2), and kappa6 is O(v^2) for a symmetric eps. The
+  kappa<=4 map is first-order exact along this direction.
+- **Gain skewness.** Along tau3 = E eps^3, at fixed gain mean and variance (a radial-family direction), the cumulant
+  generating function gains tau3 (sigma^4 t^4 / 2 + sigma^6 t^6 / 6). So kappa4 = 12 tau3 sigma^4 and
+  kappa6 = 120 tau3 sigma^6 appear at the same order.
+- **What that does at mu = 0.** The kappa4 term of the mean is -tau3 sigma phi / 2 and the kappa6 term is
+  +tau3 sigma phi / 2: they cancel, as the invariance requires.
+- **Consequence.** The truncated map's response along such a direction is spurious: its remainder is H = -T4, with
+  coefficient -1.
+
+The invariance therefore bites only through skewed or heavy-tailed gain. For a smooth gain at width n that is second
+order (tau3 ~ v^2 ~ n^-2).
+
+**The measurement** (`code/kquery.py`; `outputs/kquery_off0.txt`, `outputs/kquery_off1.txt`; Monte Carlo halves for
+noise-free norms).
+- **(0) Calibration.** The map reproduces the chain's own means from its dumped state to 0.4-0.6% of the chain's
+  error.
+- **(a) The truncation remainder of the true queries.** H_k = E relu(z_k) - map(true mu, var, k3, k4) is what an exact
+  kappa<=4 state still misses. Rms per unit:
+  - layers 8-15: |H| ~ 1e-5, against |true - Gauss| ~ 5e-4 and |T4| ~ 1.7e-4, so 2% of the non-Gaussian part of the
+    query;
+  - the cross-half coefficient of H on T4 is -0.01 to -0.02, with cos(H, T4) -0.2 to -0.47 and cos(H, T3) -0.3 to
+    -0.7 on both networks.
+  - **Interpretation.** Higher orders cancel part of the kappa4 and kappa3 terms, with the radial family's sign, at
+    about 1.5% of the kappa4 term.
+- **What exact kappa3, kappa4 would leave.** The output image of -H (full mean-covariance propagation) has energy 3.2%
+  (net 0) and 3.5% (net 1) of the baseline MSE. Its share of each run's error is at most 1.4%.
+- **(b) Inside one query.** Split the chain's query error as N_m = P3 + P4 + R, with P3 = c3 dk3 and P4 = c4 dk4.
+  The kappa3 and kappa4 errors are nearly orthogonal across units (cos -0.02 to -0.13 at layers 4-15); within-query
+  compensation is 2<P3, P4> = -6 to -7% of |P3|^2 + |P4|^2. The rest R matches |H|, as it should.
+
+| sum over layers of the query errors (noise-free) | net 1 | net 0 |
+|---|---|---|
+| y2: Delta |P3|^2 | -11% | -10% |
+| y2: Delta |P3 + P4|^2 | -3.8% | -3.8% |
+| KD: Delta |P4|^2 | +6.5% | +4.7% |
+| KD: Delta |P3 + P4|^2 | +4.5% | +3.9% |
+
+**What this settles.**
+- **The coordinates are not the bottleneck.** With exact inputs the physical kappa<=4 state is an adequate coordinate
+  system for the degree-one queries the network makes: 2% of their non-Gaussian part, and a 3-4% floor of the current
+  MSE.
+- **The radial-family mechanism is real but second order.** It is present with the predicted sign at about 1.5% of the
+  kappa4 term.
+- **The loss is in transport.** The chain's error is the inaccuracy of the propagated cumulant state: the 97% of the
+  first-entry ledger in section 3h. In checkpoint K's language, degree-one information is lost in how the state is
+  transported, not in how it is read.
+- **y2 fails in the signed pairing.** y2 improves the queries themselves on both networks, with no within-query
+  compensation lost, yet the output worsens by up to +9.8%. The adverse effect is in the signed suffix pairing of query
+  errors across units and layers: checkpoint K's telescoping identity (section 9), which is this note's first-entry
+  ledger.
+- **KD misreads its own query.** KD worsens the kappa4-weighted query error (c4 is largest where |alpha| is far from 1)
+  while its L2 error falls 30%.
 
 `est_v29.py` switch V39_KD builds G_l D_l at every layer from the chain's own state:
 - the post-activation C, mean, variance, kappa3 diagonal and K21 slice from the end of the previous layer;
