@@ -1,0 +1,98 @@
+--- est_v29_pre33.py	2026-10-07 05:38:34.852298819 +0000
++++ est_v29.py	2026-10-07 06:31:49.420315643 +0000
+@@ -349,6 +349,16 @@
+ # lam_i = g (3 s_diag_i^2 + 1.5 s_off_i^2), g read from the chain's own D3.  1 = derived amplitude (times V31_K4D_AMP),
+ # 2 = fitted amplitude, derived per-neuron shape (lam_i = lam * shape_i / mean(shape)).
+ K4D = int(_os.environ.get("V31_K4D", "0"))
++# V33 (note XXVIII section 4): exact quartic weight dependence of the kappa4 pair class.  The regenerated core's
++# transported diagonal t_g = (W o W) g_prev is the mean-field (row-sum) form of
++#   Q/2 = [ (W o W)^2 K4 + 3 rowsum(((W o W) K22) o (W o W)) ] / 2
++# with K22, K4 the previous layer's post-activation (2,2) slice and diagonal; Monte Carlo puts the dropped quenched
++# part at 4-5% of the pair class, reproduced by the chain's own slices at correlation 1.000.
++# 1 = t_g := Q/2 everywhere; 2 = add only Q/2 - t_g to the kappa4 diagonal (core, (2,2) slice and lambda rule unchanged)
++K4Q = int(_os.environ.get("V33_K4Q", "0"))
++# 3 = mode 2 at low cost: the (4)-class part exactly (n^2) plus the pair part through a rank-k randomized eigen-
++#     approximation of K22 (k + 8 eigenpairs, one power iteration; V33_K4Q_RANK, 0 = diagonal class only)
++K4Q_RANK = int(_os.environ.get("V33_K4Q_RANK", "8"))
+ K4D_AMP = float(_os.environ.get("V31_K4D_AMP", "1.0"))
+ # V30 (K4SM=4): measured ratio g4/g3 of the fourth- to the third-cumulant amplitude of the scale mixture per layer
+ # (Monte Carlo kappa4 slices of the pre-activation over E10's kappa3 channel, mean of official networks 0 and 1,
+@@ -831,6 +841,7 @@
+         c2_list = []   # per source: w1_b^2 * dG_pre_b
+         y_list = []    # per source: (m/4) w2_b       (Y3 = y 1^T)
+         g_prev = None  # post-ReLU kappa4 diagonal core of the previous layer
++        k22q = k4q = None  # V33: previous layer's post-activation (2,2) slice and kappa4 diagonal
+         var_prev = None
+         lam_prev = 0.0
+         regen = riders and not NO_REGEN  # memoryless kappa4 channel: suite shape only
+@@ -1232,9 +1243,37 @@
+                     # - (W*W) var).  NOT an einsum: same-object repeated operands
+                     # crash flopscope (F45).
+                     WW = fnp.multiply(W, W, out=NN("ww"))
++                    t_q = None
++                    if K4Q and k22q is not None:
++                        _wk = NN("k4q_wk")
++                        smm.mm(WW[None, None], k22q[None, None], _wk[None, None], smm.level(n, n, n, s_lev))
++                        fnp.multiply(_wk, WW, out=_wk)
++                        _q = fnp.sum(_wk, axis=1) * 1.5
++                        fnp.multiply(WW, WW, out=_wk)
++                        t_q = _q + (_wk @ k4q) * 0.5
++                    if K4Q == 3 and k22q is not None:
++                        # quenched part of the pair class, Q/2 - (mean-field)/2, without the n^3 product
++                        _cA, _cI = float(st["cA"]), float(st["cI"])
++                        _w4 = fnp.multiply(WW, WW, out=NN("k4q_wk"))
++                        k4corr = (_w4 @ k4q) * 0.5 - WW @ (k4q * _cA + fnp.sum(k4q) * _cI)
++                        if K4Q_RANK > 0:
++                            _p = min(K4Q_RANK + 8, n)
++                            _Y = k22q @ w32[:, :_p]
++                            _Qk, _ = fnp.linalg.qr(_Y)
++                            _Y = k22q @ (k22q @ _Qk)
++                            _Qk, _ = fnp.linalg.qr(_Y)
++                            _lb, _Ub = fnp.linalg.eigh(_Qk.T @ (k22q @ _Qk))
++                            _V = _Qk @ _Ub
++                            _WV = WW @ _V
++                            _Kd = (_V * _V) @ _lb
++                            _rs = _V @ (_lb * fnp.sum(_V, axis=0)) - _Kd
++                            _ex = ((_WV * _WV) @ _lb) * 1.5 - (_w4 @ _Kd) * 1.5
++                            k4corr = k4corr + _ex - WW @ (_rs * _cA + fnp.sum(_rs) * _cI)
+                     if BETA != 0.0:
+                         # V25: adaptive lambda. dG is affine in lam: t_g + lam * t_v.
+                         t_g = WW @ g_prev
++                        if K4Q == 1 and t_q is not None:
++                            t_g = t_q
+                         t_v = var - WW @ var_prev
+                         dG0 = t_g + t_v * lam_prev                # table value first
+                         rr = fnp.mean(dG0) / fnp.mean(var)
+@@ -1248,6 +1287,10 @@
+                     g22c = (dG * (METRIC_C / 6.0))[:, None]
+                     wk4m = _zero_diag(fnp.add(g22c, g22c.T, out=NN("wk4m")))
+                     wk431 = None if trim else fnp.multiply(C_off, (0.5 * METRIC_C * lam_prev), out=NN("wk431"))
++                    if K4Q == 2 and t_q is not None and BETA != 0.0:
++                        g4row = g4row + (t_q - t_g) * METRIC_C
++                    if K4Q == 3 and k22q is not None:
++                        g4row = g4row + k4corr * METRIC_C
+                     if K4D in (1, 2):
+                         _tg = t_g if BETA != 0.0 else WW @ g_prev
+                         _so2 = t_v if BETA != 0.0 else var - WW @ var_prev
+@@ -1616,7 +1659,8 @@
+                 _g = lambda x: None if x is None else _np.array(_np.asarray(x), dtype=_np.float64)
+                 DUMPS.append(dict(layer=li, K21=_g(K21), D21_w=_g(D21_w), D21_new=_g(D21_new), rep21=_g(rep21), S_sep=_g(S_sep), Rres=_g(Rres),
+                                   D21=_g(D21), D3=_g(D3), mu=_g(mu), var=_g(var), W_all=_g(W_all), pk1v=_g(pk1v), e_b=_g(e_b), w1=_g(w1), w2=_g(w2),
+-                                  C_off=_g(C_off), K11=_g(K11), K3v=_g(K3v), S3c=_g(S3c), g4row=_g(g4row), wk4m=_g(wk4m)))
++                                  C_off=_g(C_off), K11=_g(K11), K3v=_g(K3v), S3c=_g(S3c), g4row=_g(g4row), wk4m=_g(wk4m),
++                                  K22=_g(K22), K4v=_g(K4v), K2v=_g(K2v)))
+             Om = pool.get("om_r", (n, r))  # V20: contiguous sketch
+             fnp.copyto(Om, w32[:, :r])
+             if WARM_RES and L_st is not None and k_b > 0:
+@@ -1675,6 +1719,11 @@
+                           + (fnp.sum(K4v) + fnp.sum(k22row)) * float(st["cI"]))
+                 var_prev = K2v
+                 lam_prev = float(LAM[min(li, len(LAM) - 1)])
++                if K4Q:
++                    k22q = NN("k22q")
++                    fnp.add(K22, K22.T, out=k22q)
++                    fnp.multiply(k22q, 0.5, out=k22q)
++                    k4q = fnp.multiply(K4v, 1.0)
+             K4_sigma = (fnp.sum(K4v) * float(st["k4_c4"])
+                         + fnp.sum(K22) * float(st["k4_c22"])) * float(st["P2"])
+             # per-neuron K4 diagonal content (mean equals K4_sigma by construction;

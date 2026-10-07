@@ -125,3 +125,40 @@ the chain's lambda part rebuilds at correlation 1.0000, so both sides are the qu
 
 Its cost is one n^3 product per layer, (W o W) K22, on the Strassen family: the PDF's selected-gate O(mnk) evaluation is
 the cheaper form if the dense one pays.
+
+## 5. The quartic pair class in the chain (`code/v33_k4q.diff`, switch `V33_K4Q`; Azure, networks 0-15, paired)
+
+Implemented in `est_v29.py`: the previous layer's post-activation (2,2) slice and kappa4 diagonal are kept, and at the
+next layer the exact pair class is formed with one n^3 product, (W o W) K22, on the Strassen family. Mode 1 replaces
+the mean-field t_g everywhere (fourth-cumulant core, its (2,2) slice and the adaptive lambda rule); mode 2 adds only
+the per-neuron quenched part Q/2 - t_g to the kappa4 diagonal and leaves the coherent sector, whose fitted amplitude
+compensates other closure defects (note XXI section 7), untouched. Against the current best run on the same code:
+
+| variant | raw | better on | C/B | adjusted |
+|---|---|---|---|---|
+| current best | 2.4134e-8 (mean of 16) | | 0.2177 | |
+| mode 1: exact pair class everywhere | -1.92% +- 0.52 | 14/16 | 0.2266 | +2.09% +- 0.52 |
+| mode 2: quenched part on the diagonal only | **-2.20% +- 0.31** | **16/16** | 0.2266 | +1.80% +- 0.31 |
+
+The derived term lowers the raw error on every network at coefficient one, with nothing fitted: the full quartic
+weight dependence of the PDF is a real, missing, correctly signed piece of the chain's closure, of the size section 4
+predicted (a tenth of the error at most, a fifth of that realised). The dense product costs 0.65 units per layer (+4.1%
+of the bill), more than the 2.2% it buys.
+
+**Most of it is cheap.** Writing W o W = (row mean) + xi, the mean-field core contains every term of the exact pair
+class except 3 diag(xi K22 xi^T) and the (4)-class weighting (W o W)^2 K4, which is n^2. The first is a quadratic form
+whose size is set by the spectrum of K22, so a rank-k eigen-approximation of K22 carries it in proportion to its
+spectral energy, and a randomized range finder (the chain's own recipe) costs about 4(k + 8)/n units per layer.
+Measured on the dumped K22 (`code/k4lr.py`, `outputs/k4lr_off0.txt`):
+
+| source layer | K22 spectral energy in top 1 / 16 / 64 | quenched part captured, k = 1 (corr, rel err) | k = 16 | k = 64 |
+|---|---|---|---|---|
+| 3 | 0.15 / 0.44 / 0.74 | 0.975, 0.22 | 0.983, 0.18 | 0.993, 0.12 |
+| 6 | 0.32 / 0.64 / 0.84 | 0.988, 0.15 | 0.994, 0.11 | 0.998, 0.07 |
+| 9 | 0.53 / 0.78 / 0.89 | 0.995, 0.10 | 0.998, 0.07 | 0.999, 0.05 |
+| 12 | 0.63 / 0.84 / 0.92 | 0.996, 0.08 | 0.998, 0.06 | 0.999, 0.04 |
+
+Rank one already reproduces the quenched part at correlation 0.975-0.996, even at layer 3 where it holds 15% of the
+spectral energy: the bulk of the per-neuron quenched content is the exactly computable (4)-class term plus K22's
+leading coherent mode. Mode 3 (`V33_K4Q=3`, rank `V33_K4Q_RANK`, 0 = the (4)-class term alone) adds this cheap form to
+the kappa4 diagonal as mode 2 does.
