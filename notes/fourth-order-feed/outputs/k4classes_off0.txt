@@ -1,0 +1,18 @@
+  40000/400000 samples, 59s
+  80000/400000 samples, 115s
+  120000/400000 samples, 199s
+  160000/400000 samples, 286s
+  200000/400000 samples, 373s
+  240000/400000 samples, 460s
+  280000/400000 samples, 550s
+  320000/400000 samples, 637s
+  360000/400000 samples, 723s
+  400000/400000 samples, 810s
+net 0, T = 400000: kappa_4 of z_(l+1) by index-multiplicity class of h_l, projected on 3 sigma_z^4 (g_4 by class); 'pair' = (4) + (2+2), the ledger's retained part
+  l+1 | g4 total | (4) | (3+1) | (2+2) | (2+1+1) | (1+1+1+1) | pair | pair/total | sigma check | R^2 of total fit
+    8 | +0.01470 | +0.00032 | +0.00002 | +0.01359 | +0.00081 | -0.00005 | +0.01392 | 0.947 | 1.0000 | 0.34
+        off-diagonal variance share mean -0.0111; mixture prediction for dropped classes at g = 0.0147: (3+1) ~ +0.00001, (2+1+1) ~ +0.00076, (1111) ~ +0.00020
+   11 | +0.01766 | +0.00014 | -0.00001 | +0.01631 | +0.00154 | -0.00032 | +0.01645 | 0.932 | 1.0000 | 0.48
+        off-diagonal variance share mean -0.0186; mixture prediction for dropped classes at g = 0.0177: (3+1) ~ +0.00002, (2+1+1) ~ +0.00131, (1111) ~ +0.00041
+   15 | +0.02298 | +0.00014 | +0.00002 | +0.01947 | +0.00307 | +0.00027 | +0.01961 | 0.853 | 1.0000 | 0.69
+        off-diagonal variance share mean -0.0407; mixture prediction for dropped classes at g = 0.0230: (3+1) ~ +0.00003, (2+1+1) ~ +0.00236, (1111) ~ +0.00094

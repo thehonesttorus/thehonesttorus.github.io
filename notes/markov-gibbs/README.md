@@ -11,7 +11,8 @@ non-summable memory, which here is the scale.
 
 What the reading changed:
 
-- **The chain is a g-measure, not a Gibbs measure, by construction** (section 1). Depth is time, the gate pattern of a
+- **The chain is one-sided by construction: the analogue of a g-measure, not of a Gibbs measure** (section 1; the
+  identification is an analogy in moment coordinates, not a probability specification, see note XXI section 1). Depth is time, the gate pattern of a
   layer given the carried state is the g-function, and the exact object would also condition on the output, which has
   no cheap conditioning event (note XVIII section 1). The variation sequence of this g-function is summable on every
   mode but one: the scale, whose transport is exactly 1 by positive homogeneity. The uniqueness theory of g-measures
@@ -56,8 +57,8 @@ summary of the past, with the summary of bounded size. The exact object of the c
 functional of the pattern process, so the one-sided description is the natural estimator. The two-sided object would
 condition the pattern of layer l on the output as well; that is the bracket of the Smale-space reading, and note XVIII
 section 1 showed it has no cheap conditioning event because the output boundary is the whole final vector. Its exact
-form is the n^4 contraction of note XVIII section 5. So the chain's class is fixed: it is a bounded-memory g-measure
-approximation of a process that is not, as far as we can tell, Gibbs in any useful sense (section 5).
+form is the n^4 contraction of note XVIII section 5. So the chain's class is fixed: it is a bounded-memory, one-sided
+approximation (in moment coordinates, not literally a g-function) of a process that is not, as far as we can tell, Gibbs in any useful sense (section 5).
 
 **The variation sequence has one non-summable mode.** The g-measure literature controls the dependence of the present
 on the remote past by the variation sequence var_k(g), how much the conditional law changes when the past is altered
