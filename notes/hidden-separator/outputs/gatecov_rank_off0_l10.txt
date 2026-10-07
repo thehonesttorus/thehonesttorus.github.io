@@ -1,0 +1,7 @@
+net 0 layer 10: 11 sources; |eigenvalues| of the off-diagonal correlation: top [43.12 25.75 23.14 21.65], 16th 13.15, 64th 3.24, 256th 1.00; sum of squares captured by top K: K=1: 0.186, K=4: 0.353, K=16: 0.671, K=64: 0.912, K=256: 0.946
+exact correction: rms 1.312e-04  [23s]
+  rank   1: captured corr +0.437, slope 0.222, residual rms 1.183e-04 = 90.1% of exact  [47s]
+  rank   4: captured corr +0.639, slope 0.402, residual rms 1.008e-04 = 76.9% of exact  [71s]
+  rank  16: captured corr +0.869, slope 0.738, residual rms 6.537e-05 = 49.8% of exact  [93s]
+  rank  64: captured corr +0.986, slope 0.955, residual rms 2.268e-05 = 17.3% of exact  [116s]
+  rank 256: captured corr +0.994, slope 0.961, residual rms 1.437e-05 = 11.0% of exact  [138s]

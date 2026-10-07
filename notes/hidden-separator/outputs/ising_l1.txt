@@ -1,0 +1,8 @@
+net 0: Sigma eigenvalues min 1.095e-05 max 8.060e+00 (condition 7.36e+05); diag Sigma mean 1.999
+   |J_ij| at typical magnitudes: rms 232.127, median 119.712, 99th pct 743.78, max 1959.5
+   Dobrushin row sums sum_j tanh|J_ij|: min 1001.7, median 1020.1, max 1023.0  (uniqueness needs < 1)
+   one random input: Dobrushin row sums median 1000.1, max 1020.1
+net 1: Sigma eigenvalues min 2.967e-06 max 7.923e+00 (condition 2.67e+06); diag Sigma mean 2.002
+   |J_ij| at typical magnitudes: rms 669.784, median 281.302, 99th pct 2344.69, max 6455.4
+   Dobrushin row sums sum_j tanh|J_ij|: min 1008.1, median 1021.9, max 1023.0  (uniqueness needs < 1)
+   one random input: Dobrushin row sums median 1008.3, max 1022.1
