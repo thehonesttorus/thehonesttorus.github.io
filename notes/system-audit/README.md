@@ -66,3 +66,43 @@ machine.
 
 The (2,2) slice carries by far the most leverage and is the crudest shape, so its quenched remainder is measured first
 (section 5).
+
+## 4. Gate saturation: which neurons the source state can drop (`V33_SAT`, emulated; `outputs/sat_*.txt`)
+
+The retained-transport PDF's saturation certificate says a gate deep in its off state passes almost nothing: a
+neuron's row of every leg enters the next transport weighted by w1 = Phi(alpha), and its own reads move a mean of
+order phi(alpha). If such rows could be dropped, the transports, the D21 contractions and the old-tier formings, about
+80% of the bill, would shrink with the active count. Emulated by w1 -> w1 1[alpha > alpha_c] in every transport and
+zeroed D21 rows at the read (networks 0-15, against the current best):
+
+| drop alpha <= | rows dropped, layer 3 -> 15 | raw |
+|---|---|---|
+| -2.5 | 2% -> 23% (about 11% on average) | +0.22% +- 0.33 |
+| -2.0 | 5% -> 28% | +13.9% +- 1.1 |
+| -1.5 | 10% -> 34% | +125% |
+| -1.0 | 21% -> 38% | +688% |
+
+Only the deep tail is free: at alpha <= -2.5 (w1 <= 0.006) the drop is exact within noise, and a quarter of the rows
+at depth go with it. Below -2 the damage is steep. Section 6 separates the transport rows from the reads.
+
+## 5. The (2,2) slice against Monte Carlo truth (`code/k4mc2.py`, `code/k4w_an.py`, `outputs/k22_slice_truth_off0.txt`)
+
+4e6 inputs through network 0 (two halves for the noise), the true pre-activation slice kappa(y_i, y_i, y_j, y_j) at
+layers 4, 7, 10, 13 against the chain's wk4m and three constructions (off-diagonal entries; relative error, with the
+Monte Carlo's own noise at 0.11, 0.08, 0.06, 0.05 of the signal):
+
+| target layer | chain (g4_i + g4_j)/6 | exact pair class, true K22(x) | pair class, chain's K22(x), rank 4 | scale mixture g(v_i v_j + 2 C_ij^2) |
+|---|---|---|---|---|
+| 4 | corr 0.537, err 0.168 | 0.376, 0.181 | 0.373, 0.183 | 0.544, 0.165 |
+| 7 | 0.602, 0.187 | 0.332, 0.214 | 0.332, 0.217 | 0.612, 0.183 |
+| 10 | 0.653, 0.224 | 0.312, 0.263 | 0.312, 0.271 | 0.663, 0.217 |
+| 13 | 0.715, 0.292 | 0.229, 0.348 | 0.230, 0.362 | 0.738, 0.276 |
+
+- **The quenched pair class is not the (2,2) slice.** Transported exactly through the real weights from the true
+  post-activation slices, it is worse than the chain's annealed shape at every layer. Unlike the diagonal (note XXVIII),
+  the off-diagonal (2,2) slice is carried by the classes with three and four distinct indices, which the pair class
+  leaves out: the mixture's own structure, not per-neuron quenched content.
+- **The chain's shape is close to the mixture's.** Its arithmetic-mean shape and the mixture's product shape agree to
+  a few percent; the mixture's 2 g C_ij^2 term is the one structured piece the chain lacks. The chain's residual
+  correlates with C_ij^2 increasingly with depth (0.07, 0.10, 0.19, 0.42), with three times the mixture's amplitude at
+  layer 13: the (2,2) slice carries more C^2 content than a scale mixture of one gain does.

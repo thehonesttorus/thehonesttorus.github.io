@@ -1,0 +1,40 @@
+
+ source 3 -> target 4: truth K22(y) offdiag rms 3.775e-03, mean +3.702e-03
+  chain wk4m (g4_i + g4_j)/6        corr +0.537 relerr 0.168 LScoef 1.012 (truth noise rel 0.113)
+  pair class, true K22(x), exact W   corr +0.376 relerr 0.181 LScoef 1.001 (truth noise rel 0.113)
+  pair class, chain K22(x), exact W  corr +0.376 relerr 0.181 LScoef 1.010 (truth noise rel 0.113)
+  pair class, chain K22 rank  4     corr +0.373 relerr 0.183 LScoef 1.025 (truth noise rel 0.113)
+  pair class, chain K22 rank 16     corr +0.374 relerr 0.182 LScoef 1.018 (truth noise rel 0.113)
+  scale mixture g(v_i v_j + 2 C^2)   corr +0.544 relerr 0.165 LScoef 1.007 (truth noise rel 0.113)
+  product shape g v_i v_j            corr +0.543 relerr 0.165 LScoef 1.015 (truth noise rel 0.113)
+  chain residual vs 2 g C^2: corr +0.065 relerr 0.996 LScoef 1.052 (truth noise rel 0.672) | vs pair class - wk: corr -0.029 relerr 1.081 LScoef -0.077 (truth noise rel 0.672)
+
+ source 6 -> target 7: truth K22(y) offdiag rms 2.015e-03, mean +1.962e-03
+  chain wk4m (g4_i + g4_j)/6        corr +0.602 relerr 0.187 LScoef 1.041 (truth noise rel 0.080)
+  pair class, true K22(x), exact W   corr +0.332 relerr 0.214 LScoef 1.002 (truth noise rel 0.080)
+  pair class, chain K22(x), exact W  corr +0.332 relerr 0.217 LScoef 1.034 (truth noise rel 0.080)
+  pair class, chain K22 rank  4     corr +0.332 relerr 0.217 LScoef 1.037 (truth noise rel 0.080)
+  pair class, chain K22 rank 16     corr +0.332 relerr 0.217 LScoef 1.033 (truth noise rel 0.080)
+  scale mixture g(v_i v_j + 2 C^2)   corr +0.612 relerr 0.183 LScoef 1.029 (truth noise rel 0.080)
+  product shape g v_i v_j            corr +0.610 relerr 0.186 LScoef 1.043 (truth noise rel 0.080)
+  chain residual vs 2 g C^2: corr +0.097 relerr 0.985 LScoef 1.580 (truth noise rel 0.427) | vs pair class - wk: corr -0.054 relerr 1.157 LScoef -0.085 (truth noise rel 0.427)
+
+ source 9 -> target 10: truth K22(y) offdiag rms 1.109e-03, mean +1.065e-03
+  chain wk4m (g4_i + g4_j)/6        corr +0.653 relerr 0.224 LScoef 1.071 (truth noise rel 0.063)
+  pair class, true K22(x), exact W   corr +0.312 relerr 0.263 LScoef 0.999 (truth noise rel 0.063)
+  pair class, chain K22(x), exact W  corr +0.311 relerr 0.270 LScoef 1.069 (truth noise rel 0.063)
+  pair class, chain K22 rank  4     corr +0.312 relerr 0.271 LScoef 1.071 (truth noise rel 0.063)
+  pair class, chain K22 rank 16     corr +0.311 relerr 0.270 LScoef 1.068 (truth noise rel 0.063)
+  scale mixture g(v_i v_j + 2 C^2)   corr +0.663 relerr 0.217 LScoef 1.059 (truth noise rel 0.063)
+  product shape g v_i v_j            corr +0.654 relerr 0.224 LScoef 1.080 (truth noise rel 0.063)
+  chain residual vs 2 g C^2: corr +0.188 relerr 0.968 LScoef 2.109 (truth noise rel 0.280) | vs pair class - wk: corr -0.182 relerr 1.208 LScoef -0.352 (truth noise rel 0.280)
+
+ source 12 -> target 13: truth K22(y) offdiag rms 8.287e-04, mean +7.741e-04
+  chain wk4m (g4_i + g4_j)/6        corr +0.715 relerr 0.292 LScoef 1.147 (truth noise rel 0.053)
+  pair class, true K22(x), exact W   corr +0.229 relerr 0.348 LScoef 0.999 (truth noise rel 0.053)
+  pair class, chain K22(x), exact W  corr +0.230 relerr 0.362 LScoef 1.123 (truth noise rel 0.053)
+  pair class, chain K22 rank  4     corr +0.230 relerr 0.362 LScoef 1.123 (truth noise rel 0.053)
+  pair class, chain K22 rank 16     corr +0.230 relerr 0.362 LScoef 1.122 (truth noise rel 0.053)
+  scale mixture g(v_i v_j + 2 C^2)   corr +0.738 relerr 0.276 LScoef 1.129 (truth noise rel 0.053)
+  product shape g v_i v_j            corr +0.705 relerr 0.298 LScoef 1.161 (truth noise rel 0.053)
+  chain residual vs 2 g C^2: corr +0.415 relerr 0.927 LScoef 3.261 (truth noise rel 0.180) | vs pair class - wk: corr -0.355 relerr 1.239 LScoef -0.664 (truth noise rel 0.180)

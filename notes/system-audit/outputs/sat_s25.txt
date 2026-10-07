@@ -1,0 +1,16 @@
+net 5 s25: raw 2.2288e-08  C/B 0.2186  adjusted 4.8726e-09  wall 95s  residual nans
+net 11 s25: raw 2.5095e-08  C/B 0.2186  adjusted 5.4863e-09  wall 98s  residual nans
+net 6 s25: raw 2.2263e-08  C/B 0.2186  adjusted 4.8671e-09  wall 98s  residual nans
+net 2 s25: raw 2.6292e-08  C/B 0.2186  adjusted 5.7480e-09  wall 98s  residual nans
+net 7 s25: raw 2.4606e-08  C/B 0.2186  adjusted 5.3794e-09  wall 100s  residual nans
+net 0 s25: raw 2.2741e-08  C/B 0.2186  adjusted 4.9716e-09  wall 101s  residual nans
+net 14 s25: raw 2.3907e-08  C/B 0.2186  adjusted 5.2266e-09  wall 102s  residual nans
+net 1 s25: raw 2.1247e-08  C/B 0.2186  adjusted 4.6450e-09  wall 104s  residual nans
+net 12 s25: raw 2.0968e-08  C/B 0.2186  adjusted 4.5841e-09  wall 105s  residual nans
+net 3 s25: raw 2.5791e-08  C/B 0.2186  adjusted 5.6384e-09  wall 107s  residual nans
+net 4 s25: raw 2.2893e-08  C/B 0.2186  adjusted 5.0050e-09  wall 109s  residual nans
+net 10 s25: raw 2.3685e-08  C/B 0.2186  adjusted 5.1780e-09  wall 109s  residual nans
+net 8 s25: raw 2.3098e-08  C/B 0.2186  adjusted 5.0497e-09  wall 111s  residual nans
+net 9 s25: raw 2.6935e-08  C/B 0.2186  adjusted 5.8886e-09  wall 113s  residual nans
+net 15 s25: raw 2.5025e-08  C/B 0.2186  adjusted 5.4709e-09  wall 113s  residual nans
+net 13 s25: raw 2.1410e-08  C/B 0.2186  adjusted 4.6806e-09  wall 113s  residual nans
