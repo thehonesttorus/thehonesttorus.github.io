@@ -51,21 +51,32 @@ no head: the 16 / 128 / 1024 largest terms of a row carry 4-5% / 17-22% / 51-65%
   against the per-row optima (which no common gauge can reach) is a stable 1.55 for the B|AC cut and 2.4-3.1 for the
   other two, the same at every layer and on both networks. B|AC, keeping [A, P] as the retained address, is the
   best cut throughout.
-- **The floor is set by sign coherence, which no gauge touches.** A positive gauge preserves every t_ia. The best
-  filled cut with the best gauge still costs about 1/kappa^2 per probe: 260-440 here. A 10% relative error on D3
-  needs 26,000-44,000 probes, which is more than the internal rank r that exact quadrature uses. The only
-  transport-implementable cut, the raw cubic, is a further factor r worse (Holder against Cauchy-Schwarz:
-  10^6 per probe). D21 is worse still.
+- **The floor is set by sign coherence, which no gauge touches.** A positive gauge preserves every t_ia; the
+  per-row floor of a filled cut is (sum_a abs(t_ia))^2 / d_i^2 = 1/kappa_i^2. Against exact quadrature (r basis
+  probes, zero variance) a cut with single-probe relative variance V breaks even at relative error
+  delta* = sqrt(V / r). For the best implementable-in-principle cut, B|AC with the shared gauge, delta* is 0.20 at
+  layer 5, 0.15 at layer 9 and 0.10 at layer 13 (both networks): it would match the dense legs only if D3 could
+  carry a 10-20% random error, and only if its paired oracle cost no more than a transported leg column. The raw
+  cubic, the only cut transport implements, has delta* of 10 to 12 (Holder floor 10^6 per probe): about 10^3 times
+  more probes than r at any useful precision. D21 is worse than D3.
 - **The incoherence is quenched.** Per source, D3_i = <A_i^2 o w2, P_i>: a nonnegative weight against P_i, a
   transported weight leg whose signs are those of this network's W. Its net is 6-8% of its absolute mass (about 200
   effective independent terms), spread over the whole birth layer. That is exactly the fluctuation-scale, weight-
   specific content that annealed constructions lose (notes XXVIII-XXIX), and it is why the chain keeps these legs
   dense: there is no address in which a few terms carry the readout.
 
-**Verdict against criterion (30).** At the chain's third-cumulant readouts every implementable conditional filling is
-dominated by exact quadrature, by two orders of magnitude for the filled cuts (which are not implementable under
-transport anyway) and by about six for the raw cut. The cut fails for two measured reasons: sign incoherence of the
-cubic terms over the birth-neuron address (kappa_within 0.07), and the absence of a paired-factor oracle under
-transport. Neither is a universal lower bound. A representation whose internal address made these terms coherent,
-or carried a paired oracle, would reopen the question, and section 1's arithmetic test is what such a
-representation has to pass.
+**Why no address fixes this, for this readout.** D3 is an odd-order form S_b(p_i, p_i, p_i) of the transported
+Jacobian rows p_i (the P legs), with the birth source S_b = sum_j (a_b e_j) (x) (a_b e_j) (x) w2_j e_j. Any
+representation S_b = sum_m lambda_m (v_m)^(x)3 has terms lambda_m (v_m . p_i)^3 whose signs follow sign(v_m . p_i),
+which for quenched random-sign rows is a coin per term. So kappa_i^2 ~ 1/R_eff for every representation, the filled
+floor is ~R_eff per probe, and probes beat exact quadrature in that representation only when delta^2 > R_eff / R,
+that is, only when the term magnitudes are very uneven. Here R_eff is about 200 per source of n = 1024 birth neurons
+(kappa_within 0.07), which is the delta* above. An even-order readout with sign-definite terms (for example a
+diagonal weighted by W o W against a positive kernel) is where this development can pay; D3 and D21 are not.
+
+**Verdict against criterion (30).** At the chain's third-cumulant readouts no implementable conditional filling
+undercuts exact quadrature: the raw cut loses by about three orders of magnitude, and the filled cuts, which would
+break even only at a 10-20% random error in D3, have no paired-factor oracle under transport ((WA) o (WP) !=
+W (A o P)). The two obstructions are measured, not assumed. A representation that carried a paired oracle, or an
+even-order readout with coherent terms, is what would reopen the question; section 1's arithmetic test is the
+first thing such a representation must pass.
