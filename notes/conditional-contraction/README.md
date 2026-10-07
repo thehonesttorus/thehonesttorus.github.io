@@ -54,10 +54,10 @@ no head: the 16 / 128 / 1024 largest terms of a row carry 4-5% / 17-22% / 51-65%
 - **The floor is set by sign coherence, which no gauge touches.** A positive gauge preserves every t_ia; the
   per-row floor of a filled cut is (sum_a abs(t_ia))^2 / d_i^2 = 1/kappa_i^2. Against exact quadrature (r basis
   probes, zero variance) a cut with single-probe relative variance V breaks even at relative error
-  delta* = sqrt(V / r). For the best implementable-in-principle cut, B|AC with the shared gauge, delta* is 0.20 at
-  layer 5, 0.15 at layer 9 and 0.10 at layer 13 (both networks): it would match the dense legs only if D3 could
+  delta* = sqrt(V / r). For the best implementable-in-principle cut, B|AC with the shared gauge, delta* is 0.20-0.21 at
+  layer 5, 0.15 at layer 9 and 0.10-0.12 at layer 13 (networks 0, 1): it would match the dense legs only if D3 could
   carry a 10-20% random error, and only if its paired oracle cost no more than a transported leg column. The raw
-  cubic, the only cut transport implements, has delta* of 10 to 12 (Holder floor 10^6 per probe): about 10^3 times
+  cubic, the only cut transport implements, has delta* of 7 to 10 (Holder floor 1.0-1.7 x 10^6 per probe): about 10^3 times
   more probes than r at any useful precision. D21 is worse than D3.
 - **The incoherence is quenched.** Per source, D3_i = <A_i^2 o w2, P_i>: a nonnegative weight against P_i, a
   transported weight leg whose signs are those of this network's W. Its net is 6-8% of its absolute mass (about 200
