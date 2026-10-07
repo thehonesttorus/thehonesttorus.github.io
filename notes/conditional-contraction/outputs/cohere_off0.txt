@@ -1,0 +1,21 @@
+== net 0 layer 5: k=5 sources (ka=1 old), internal rank r=10240; main+M terms carry corr 0.998, energy share 0.838 of D3
+  sign coherence kappa=|d|/sum|t|: median 0.0399  mean 0.0476  (random signs over r terms ~ 0.0079)
+  single-probe variance / sum d^2:  raw ungauged 5.288e+06 | raw best per-row gauge (Holder) 1.048e+06 | filled per-row floor 2.733e+02
+  A|BC: ungauged 1.412e+03 | shared gauge 7.293e+02 (L-BFGS 199 it, |u| max 5.06) | cycle loss shared/floor 2.668
+  B|AC: ungauged 5.667e+02 | shared gauge 4.237e+02 (L-BFGS 193 it, |u| max 4.24) | cycle loss shared/floor 1.550
+  C|AB: ungauged 1.033e+03 | shared gauge 7.414e+02 (L-BFGS 218 it, |u| max 4.59) | cycle loss shared/floor 2.713
+  D21 hub terms: corr with dumped D21 0.976; kappa median 0.0231; filled per-entry floor / sum d^2 8.339e+02 (probes for 10% rel. error >= 8.34e+04)
+== net 0 layer 9: k=9 sources (ka=5 old), internal rank r=18432; main+M terms carry corr 0.998, energy share 0.836 of D3
+  sign coherence kappa=|d|/sum|t|: median 0.0420  mean 0.0490  (random signs over r terms ~ 0.0059)
+  single-probe variance / sum d^2:  raw ungauged 1.490e+07 | raw best per-row gauge (Holder) 1.506e+06 | filled per-row floor 2.542e+02
+  A|BC: ungauged 2.512e+03 | shared gauge 6.469e+02 (L-BFGS 312 it, |u| max 5.87) | cycle loss shared/floor 2.545
+  B|AC: ungauged 8.597e+02 | shared gauge 3.948e+02 (L-BFGS 356 it, |u| max 4.67) | cycle loss shared/floor 1.553
+  C|AB: ungauged 1.508e+03 | shared gauge 7.545e+02 (L-BFGS 400 it, |u| max 5.95) | cycle loss shared/floor 2.968
+  D21 hub terms: corr with dumped D21 0.983; kappa median 0.0243; filled per-entry floor / sum d^2 7.838e+02 (probes for 10% rel. error >= 7.84e+04)
+== net 0 layer 13: k=13 sources (ka=9 old), internal rank r=26624; main+M terms carry corr 0.998, energy share 0.861 of D3
+  sign coherence kappa=|d|/sum|t|: median 0.0499  mean 0.0563  (random signs over r terms ~ 0.0049)
+  single-probe variance / sum d^2:  raw ungauged 2.606e+07 | raw best per-row gauge (Holder) 1.277e+06 | filled per-row floor 1.666e+02
+  A|BC: ungauged 2.837e+03 | shared gauge 4.031e+02 (L-BFGS 400 it, |u| max 8.00) | cycle loss shared/floor 2.420
+  B|AC: ungauged 9.612e+02 | shared gauge 2.585e+02 (L-BFGS 400 it, |u| max 4.92) | cycle loss shared/floor 1.551
+  C|AB: ungauged 1.916e+03 | shared gauge 5.166e+02 (L-BFGS 400 it, |u| max 6.96) | cycle loss shared/floor 3.101
+  D21 hub terms: corr with dumped D21 0.990; kappa median 0.0291; filled per-entry floor / sum d^2 5.185e+02 (probes for 10% rel. error >= 5.19e+04)

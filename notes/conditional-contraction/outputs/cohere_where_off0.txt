@@ -1,0 +1,7 @@
+  G2 = S_s if kb == 0 else S_s + U @ (S2 @ U.T)
+== net 0 layer 5: k=5 sources (ka=1 old), internal rank r=10240; main+M terms carry corr 0.998, energy share 0.838 of D3
+  cancellation: within a term-source over j kappa median 0.0630; across the 10 term-sources kappa median 0.578; newest source's share of sum_k |d_k| median 0.323; abs-mass share of the top 16/128/1024 terms per row 0.055/0.222/0.645
+== net 0 layer 9: k=9 sources (ka=5 old), internal rank r=18432; main+M terms carry corr 0.998, energy share 0.836 of D3
+  cancellation: within a term-source over j kappa median 0.0714; across the 18 term-sources kappa median 0.526; newest source's share of sum_k |d_k| median 0.197; abs-mass share of the top 16/128/1024 terms per row 0.045/0.185/0.557
+== net 0 layer 13: k=13 sources (ka=9 old), internal rank r=26624; main+M terms carry corr 0.998, energy share 0.861 of D3
+  cancellation: within a term-source over j kappa median 0.0818; across the 26 term-sources kappa median 0.556; newest source's share of sum_k |d_k| median 0.134; abs-mass share of the top 16/128/1024 terms per row 0.040/0.167/0.512
