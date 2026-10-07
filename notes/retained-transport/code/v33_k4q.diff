@@ -1,5 +1,5 @@
 --- est_v29_pre33.py	2026-10-07 05:38:34.852298819 +0000
-+++ est_v29.py	2026-10-07 06:31:49.420315643 +0000
++++ est_v29.py	2026-10-07 06:35:16.332390991 +0000
 @@ -349,6 +349,16 @@
  # lam_i = g (3 s_diag_i^2 + 1.5 s_off_i^2), g read from the chain's own D3.  1 = derived amplitude (times V31_K4D_AMP),
  # 2 = fitted amplitude, derived per-neuron shape (lam_i = lam * shape_i / mean(shape)).
@@ -30,7 +30,7 @@
                      # crash flopscope (F45).
                      WW = fnp.multiply(W, W, out=NN("ww"))
 +                    t_q = None
-+                    if K4Q and k22q is not None:
++                    if K4Q in (1, 2) and k22q is not None:
 +                        _wk = NN("k4q_wk")
 +                        smm.mm(WW[None, None], k22q[None, None], _wk[None, None], smm.level(n, n, n, s_lev))
 +                        fnp.multiply(_wk, WW, out=_wk)

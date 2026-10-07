@@ -159,6 +159,26 @@ Measured on the dumped K22 (`code/k4lr.py`, `outputs/k4lr_off0.txt`):
 | 12 | 0.63 / 0.84 / 0.92 | 0.996, 0.08 | 0.998, 0.06 | 0.999, 0.04 |
 
 Rank one already reproduces the quenched part at correlation 0.975-0.996, even at layer 3 where it holds 15% of the
-spectral energy: the bulk of the per-neuron quenched content is the exactly computable (4)-class term plus K22's
-leading coherent mode. Mode 3 (`V33_K4Q=3`, rank `V33_K4Q_RANK`, 0 = the (4)-class term alone) adds this cheap form to
-the kappa4 diagonal as mode 2 does.
+spectral energy. Mode 3 (`V33_K4Q=3`, rank `V33_K4Q_RANK`, 0 = the (4)-class term alone) adds this cheap form to the
+kappa4 diagonal as mode 2 does: k + 8 eigenpairs from a sketch of the current weight, one power iteration, about
+10 n^2 (k + 8) flops per layer.
+
+| mode 3, against the current best | networks | raw | better on | C/B | adjusted |
+|---|---|---|---|---|---|
+| rank 0: the (4)-class term alone | 0-15 | -0.15% +- 0.05 | 13/16 | (gated with the dense product in this run) | |
+| rank 2 | 0-15 | -2.30% +- 0.30 | 16/16 | 0.2185 vs 0.2177 | -1.94% +- 0.30 |
+| rank 8 | 0-15 | -2.29% +- 0.29 | 16/16 | 0.2189 | -1.76% +- 0.29 |
+| **rank 4** | **0-99** | **-2.25% +- 0.19** | **89/100** | **0.2186 vs 0.2177** | **-1.85% +- 0.19** |
+
+- **The cheap form keeps the whole gain.** Ranks 2-16 give the dense product's -2.2% to -2.3% raw at a cost of
+  0.0008-0.0012 of the budget instead of 0.0089; the effect is flat in rank from 2 on.
+- **It lives in the pair part, not the diagonal class.** The (4)-class reweighting alone is worth 0.15%: the offline
+  correlation at rank one is carried by K22's leading mode, whose quenched contraction ((W o W) v)^2 is the per-neuron
+  content the mean-field row sum averages away.
+- **New best on the 100 official networks:** mean adjusted 5.0143e-9 (was 5.1091e-9), mean raw 2.2938e-8, C/B 0.2186,
+  with the current best flags plus `V33_K4Q=3 V33_K4Q_RANK=4` (`code/est_v33.py`, `outputs/v33_q3r4_100nets.txt`). The
+  default path is bit-identical to the previous best (checked on networks 0-15).
+
+So the retained-transport development delivered one concrete, derived improvement: the full quartic weight
+dependence of the kappa4 pair class, which the chain's mean-field (W o W) row-sum transport had averaged away. Its
+coefficient is one, nothing is fitted, it is better on 89 of 100 networks, and it costs 0.4% of the bill.

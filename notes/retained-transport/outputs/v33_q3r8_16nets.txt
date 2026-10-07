@@ -1,0 +1,16 @@
+net 11 q3r8: raw 2.5263e-08  C/B 0.2189  adjusted 5.5303e-09  wall 51s  residual nans
+net 2 q3r8: raw 2.6198e-08  C/B 0.2189  adjusted 5.7350e-09  wall 51s  residual nans
+net 7 q3r8: raw 2.4418e-08  C/B 0.2189  adjusted 5.3452e-09  wall 51s  residual nans
+net 12 q3r8: raw 2.0701e-08  C/B 0.2189  adjusted 4.5316e-09  wall 53s  residual nans
+net 13 q3r8: raw 2.1627e-08  C/B 0.2189  adjusted 4.7343e-09  wall 53s  residual nans
+net 8 q3r8: raw 2.3640e-08  C/B 0.2189  adjusted 5.1749e-09  wall 53s  residual nans
+net 0 q3r8: raw 2.2540e-08  C/B 0.2189  adjusted 4.9341e-09  wall 53s  residual nans
+net 15 q3r8: raw 2.4933e-08  C/B 0.2189  adjusted 5.4580e-09  wall 53s  residual nans
+net 14 q3r8: raw 2.4205e-08  C/B 0.2189  adjusted 5.2988e-09  wall 53s  residual nans
+net 5 q3r8: raw 2.1820e-08  C/B 0.2189  adjusted 4.7766e-09  wall 54s  residual nans
+net 3 q3r8: raw 2.5963e-08  C/B 0.2189  adjusted 5.6834e-09  wall 54s  residual nans
+net 9 q3r8: raw 2.6232e-08  C/B 0.2189  adjusted 5.7425e-09  wall 54s  residual nans
+net 10 q3r8: raw 2.3571e-08  C/B 0.2189  adjusted 5.1600e-09  wall 54s  residual nans
+net 4 q3r8: raw 2.2495e-08  C/B 0.2189  adjusted 4.9243e-09  wall 54s  residual nans
+net 6 q3r8: raw 2.2412e-08  C/B 0.2189  adjusted 4.9062e-09  wall 54s  residual nans
+net 1 q3r8: raw 2.1258e-08  C/B 0.2189  adjusted 4.6535e-09  wall 54s  residual nans
