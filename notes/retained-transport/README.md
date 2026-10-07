@@ -182,3 +182,30 @@ kappa4 diagonal as mode 2 does: k + 8 eigenpairs from a sketch of the current we
 So the retained-transport development delivered one concrete, derived improvement: the full quartic weight
 dependence of the kappa4 pair class, which the chain's mean-field (W o W) row-sum transport had averaged away. Its
 coefficient is one, nothing is fitted, it is better on 89 of 100 networks, and it costs 0.4% of the bill.
+
+## 6. The adaptive-sampling bundle, placed
+
+A fourth document (`adaptive_sampling_research.zip`: report, scripts, results, audit) develops sampling with injected
+intermediate states. Its identities are right: for any artificial-state generators T_l and the exact suffixes g_l,
+mu = b + sum_j E[phi_(k_(j-1)) - phi_(k_j)] with phi_l = g_l o T_l, and the adaptive version (edges, predictions and
+selection probabilities chosen from the past) stays conditionally unbiased. It is multilevel Monte Carlo with
+artificial levels, and its cut choice is the MLMC shortest path in sqrt(V c). Its value is set entirely by the
+variance of the coupled differences, and the bundle's own measurements, read against ours on the official networks,
+place it:
+
+| mechanism | bundle (synthetic He networks) | ours (official networks) |
+|---|---|---|
+| internal rectified-affine generators | the optimal path keeps only the terminal control; every internal split costs 1.7-7.5x more variance x cost | conditioning on any cheap address leaves >= 99% of the variance (E9; frontier tests) |
+| terminal control | variance x cost 0.58-0.80 of plain, worsening with width and depth (d 16 -> 32) | |
+| Haar orthonormal frames + antipodes | variance 0.623 of independent radial at width 1024, depth 16 (antipodes alone 0.983) | MSE 7.2e-6 against 1.2e-5 at 6144 passes, 1.7x (`../frontier-tests`, `frames.py`) |
+| Stein tangent field | 0.94-0.99 before its second pass, 1.89-1.98 after | |
+| conditional line integration along q | not measured | a direction explains 0.1-0.9% of the output variance (E9), so integrating it exactly buys at most that |
+
+The orthogonal frame is the one real gain and it reproduces the leaders' Phase 1 quadrature family, which we had
+measured at the same 1.7x. The bar is unchanged and now stated for this construction: at the 10% floor the best
+sampler reaches MSE about 7e-6 against the chain's 2.3e-8, a factor of 300; equivalently, an injected generator must
+couple to the true per-sample output within about 4% of its spread, per neuron, at a cost below a forward pass (note
+XXVII section 4). The bundle's first generators and every cheap address we have measured are two orders of magnitude
+from that. Nothing in it changes the verdict that the per-neuron mean at 1.5e-4 has to come from integrated
+(moment) computation; the injection identity is the right exactness tool if a generator that meets the 4% bar is
+ever found, and its suffix-response criterion is the right objective to search with.
