@@ -1018,6 +1018,26 @@ class Estimator(BaseEstimator):
                         _Qt, _ = fnp.linalg.qr(Yq)
                         QnF = _mmj(W.T, fnp.multiply(_sq, _Qt, out=Yq1), pool.get("zt", (n, r_old)))
                         QcF = fnp.divide(_Qt, _sq, out=Yq2)
+                    elif JOIN_POST == 4:
+                        # V32: two-step reading metric (the return of omitted content through the next transport):
+                        # O = JP_C I + D W2^T W2 D / 2, D = diag(Phi(alpha)) at layer li, W2 = the next layer's weights
+                        # (He: E W2^T W2 = 2 I, so the mean of the second term matches JOIN_POST=3). O-orthogonal
+                        # projection onto span(Y), Y = W Qn: G = Y^T O Y = Rc Rc^T, basis Y Rc^-T, factors
+                        # Rc^-1 (O Y)^T W X. Two extra n x n x r products per join.
+                        _ve = fnp.maximum(fnp.multiply(W, W, out=NN("ww")) @ fnp.diag(C), 1e-10)
+                        _al = mu / fnp.sqrt(_ve)
+                        _ph = (flops.stats.norm.cdf(_al).astype(f32))[:, None]
+                        _w2 = mlp.weights[li + 1]
+                        _w2 = _w2 if _w2.dtype == f32 else _w2.astype(f32)
+                        _Y = _mmj(W, Qn, Yq)
+                        _Z = _mmj(_w2.T, fnp.multiply(_ph, _Y, out=Yq1), pool.get("zt2", (n, r_old)))
+                        _OY = _mmj(_w2, _Z, Yq2)
+                        fnp.multiply(_OY, _ph * 0.5, out=_OY)
+                        fnp.add(_OY, _Y * JP_C, out=_OY)
+                        _Rc = fnp.linalg.cholesky(_Y.T @ _OY)
+                        _Li = fnp.linalg.inv(_Rc)
+                        QcF = _Y @ _Li.T
+                        QnF = _mmj(W.T, _OY, pool.get("zt", (n, r_old))) @ _Li.T
                     # V27: factors live in ping-pong slot buffers (rotation reads one side,
                     # writes the other; the joiner takes slot m1 = number of tier-1 members)
                     fa_side ^= 1

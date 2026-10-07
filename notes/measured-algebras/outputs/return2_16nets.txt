@@ -1,0 +1,36 @@
+# V32_JOIN_POST=4 (two-step reading metric) on nets 0-15; common flags: V29_WARM_JOIN=1 V29_WARM_FB=1 V17_R_RES=4 V26_STRASSEN=6 V26_STRASSEN_MIN=16 V32_JOIN_SMM=1 V32_ROT_SMM=1 V21_R_OLD=320 V24_R_OLD2=192
+# paired against wsr320c1 (V32_JOIN_POST=3 V32_JP_C=0.1) on the same nets: p4c1 raw -1.03% +- 0.24 (14/16), adjusted +1.25%; p4c3 raw -0.59% +- 0.23, adjusted +1.70%
+# p4c1
+net 0 p4c1: raw 2.1976e-08  C/B 0.2349  adjusted 5.1620e-09  wall 52s  residual nans
+net 1 p4c1: raw 2.1167e-08  C/B 0.2349  adjusted 4.9720e-09  wall 57s  residual nans
+net 2 p4c1: raw 2.5955e-08  C/B 0.2349  adjusted 6.0965e-09  wall 56s  residual nans
+net 3 p4c1: raw 2.5941e-08  C/B 0.2349  adjusted 6.0934e-09  wall 57s  residual nans
+net 4 p4c1: raw 2.2208e-08  C/B 0.2349  adjusted 5.2165e-09  wall 54s  residual nans
+net 5 p4c1: raw 2.1837e-08  C/B 0.2349  adjusted 5.1294e-09  wall 56s  residual nans
+net 6 p4c1: raw 2.2152e-08  C/B 0.2349  adjusted 5.2033e-09  wall 55s  residual nans
+net 7 p4c1: raw 2.5393e-08  C/B 0.2349  adjusted 5.9645e-09  wall 52s  residual nans
+net 8 p4c1: raw 2.2827e-08  C/B 0.2349  adjusted 5.3619e-09  wall 57s  residual nans
+net 9 p4c1: raw 2.4729e-08  C/B 0.2349  adjusted 5.8087e-09  wall 56s  residual nans
+net 10 p4c1: raw 2.3892e-08  C/B 0.2349  adjusted 5.6121e-09  wall 55s  residual nans
+net 11 p4c1: raw 2.4341e-08  C/B 0.2349  adjusted 5.7176e-09  wall 51s  residual nans
+net 12 p4c1: raw 2.0539e-08  C/B 0.2349  adjusted 4.8245e-09  wall 56s  residual nans
+net 13 p4c1: raw 2.0766e-08  C/B 0.2349  adjusted 4.8777e-09  wall 58s  residual nans
+net 14 p4c1: raw 2.4103e-08  C/B 0.2349  adjusted 5.6615e-09  wall 54s  residual nans
+net 15 p4c1: raw 2.5188e-08  C/B 0.2349  adjusted 5.9165e-09  wall 52s  residual nans
+# p4c3
+net 0 p4c3: raw 2.2174e-08  C/B 0.2349  adjusted 5.2086e-09  wall 54s  residual nans
+net 1 p4c3: raw 2.1129e-08  C/B 0.2349  adjusted 4.9632e-09  wall 54s  residual nans
+net 2 p4c3: raw 2.6273e-08  C/B 0.2349  adjusted 6.1714e-09  wall 52s  residual nans
+net 3 p4c3: raw 2.6082e-08  C/B 0.2349  adjusted 6.1264e-09  wall 49s  residual nans
+net 4 p4c3: raw 2.2380e-08  C/B 0.2349  adjusted 5.2568e-09  wall 55s  residual nans
+net 5 p4c3: raw 2.1645e-08  C/B 0.2349  adjusted 5.0844e-09  wall 55s  residual nans
+net 6 p4c3: raw 2.2231e-08  C/B 0.2349  adjusted 5.2220e-09  wall 55s  residual nans
+net 7 p4c3: raw 2.5471e-08  C/B 0.2349  adjusted 5.9830e-09  wall 55s  residual nans
+net 8 p4c3: raw 2.3000e-08  C/B 0.2349  adjusted 5.4026e-09  wall 54s  residual nans
+net 9 p4c3: raw 2.4773e-08  C/B 0.2349  adjusted 5.8190e-09  wall 53s  residual nans
+net 10 p4c3: raw 2.3981e-08  C/B 0.2349  adjusted 5.6331e-09  wall 54s  residual nans
+net 11 p4c3: raw 2.4843e-08  C/B 0.2349  adjusted 5.8353e-09  wall 55s  residual nans
+net 12 p4c3: raw 2.0682e-08  C/B 0.2349  adjusted 4.8580e-09  wall 54s  residual nans
+net 13 p4c3: raw 2.1012e-08  C/B 0.2349  adjusted 4.9357e-09  wall 55s  residual nans
+net 14 p4c3: raw 2.4039e-08  C/B 0.2349  adjusted 5.6466e-09  wall 49s  residual nans
+net 15 p4c3: raw 2.4965e-08  C/B 0.2349  adjusted 5.8641e-09  wall 51s  residual nans
