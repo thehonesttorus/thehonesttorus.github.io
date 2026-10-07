@@ -52,6 +52,50 @@ content at an intermediate layer, which is a dump of the legs plus a backward pa
 on the Azure VM; it is recorded here as the one item of this note worth a measurement, behind the bounded levers
 already queued.
 
+## Measurement: observability at the gateway (V32, Azure VM, `code/v32_join_post.diff`, `outputs/`)
+
+**The prior above was wrong in one respect, and the correction is exact.** Isotropy of the observability Gramian
+holds on average over the weights, not for the given weights. For one square He matrix, W^T W has the
+Marchenko-Pastur spectrum of ratio one, spread over [0, 4] times its mean, so about a fifth of all directions are
+damped more than tenfold by a single layer. And the chain truncates in exactly the wrong coordinates: the join at
+layer l re-projects the joiner's legs and the old core onto rank 384 in the post-gate rows of layer l - 1, and every
+later use reads the legs only after W_l (Qc = W_l Qn, legs A_s = Qc FA_s). The error that matters is
+W_l (I - Pi) X, so the one-step observability Gramian of the join is W_l^T W_l, with no approximation. Two
+implementations, both behind flags in `est_v29.py`:
+
+- `V32_JOIN_POST=1`: the range finder and the truncation in post-W coordinates (Qn' = range of W G W^T, factors
+  Qn'^T W X, Qc = Qn'). Three extra n x n x r products per join.
+- `V32_JOIN_POST=2`: keep the pre-W subspace, orthonormalise W Qn and project W X onto it orthogonally (factors
+  (W^T Qt)^T X, rotation (W^T Qt)^T Qp). One extra product and a QR. For a fixed subspace the orthogonal projection
+  in the metric where the error is read is optimal (Pythagoras), so this variant never loses in that metric.
+- `V32_JOIN_SMM=1`: the join's n x n x r products (range finder, factor projections, basis transport) through the
+  Strassen family the rest of the chain already uses (they were plain matmuls). Pure arithmetic.
+
+Sixteen official networks, paired against the shipped configuration (best100), all variants in parallel on the VM:
+
+| variant | raw | C/B | adjusted |
+|---|---|---|---|
+| post-W range finder + truncation, rank 384 | -0.76% +- 0.43 (10/16) | 0.2672 | +3.34% |
+| post-W range finder + truncation, rank 320 | +4.21% +- 0.71 | 0.2459 | -0.14% |
+| shipped join, rank 320 (control) | +8.40% +- 0.57 | 0.2370 | +0.12% |
+| post-W projection only, rank 384 | -1.13% +- 0.39 (12/16) | 0.2627 | +1.22% |
+| post-W projection only, rank 320 | +3.59% +- 0.58 | 0.2418 | -2.38% |
+| Strassen join products only, rank 384 | -0.06% +- 0.10 | 0.2468 | -3.88% |
+| Strassen join + post-W projection, rank 384 / 352 / 320 / 288 | -1.13% / +0.91% / +3.61% / +9.42% | 0.2515 / 0.2418 / 0.2326 / 0.2238 | -3.09% / -4.91% / -6.08% / -4.57% |
+
+Three readings. The whole effect is the projection metric, not the subspace: keeping the pre-W subspace and
+projecting after W beats the full post-W range finder at every rank, at a third of the cost (one pass of a
+warm-started finder already sits on the forward Lyapunov subspace; tilting its sketch by W^T W only moves it off).
+At rank 384 the projection removes 1.13% of the 1.4% that the whole shared basis costs (note XVII), and at rank 320
+it halves the truncation loss (+8.4% to +3.6%), which moves the rank optimum down. My cost estimate for the
+first variant ("about 1% of the budget") was 1% of B, i.e. 4% of the chain's bill; the projection-only variant fixes
+that.
+
+**Validation on all 100 networks** (Strassen join products, post-W projection, shared basis 320, nested 192;
+`outputs/v32_100nets.txt`): raw +4.30% +- 0.31, C/B 0.2326, adjusted **-5.45% +- 0.31**, mean adjusted
+**5.432e-9** against 5.742e-9 for the shipped chain. Ranks 336 and 304 on nets 0-15 give -5.88% and -5.34% against
+-6.08% for 320 on the same nets, so 320 is the optimum. This is the new best configuration.
+
 ## What transfers
 
 | from the note | what it is here | decision |
@@ -61,4 +105,4 @@ already queued.
 | relative determinant, Witten moving harmonic state | further exact descriptions of the same displacement | relabelling with proofs |
 | modular cross-ratio bound on maximal correlation | a sufficient condition for memory decay on a conditional Markov family | the network is deterministic; the decay we have is measured, not certified |
 | memory counterexamples (norm one, nilpotent delay, hidden global mode) | the formal record of note XIX section 1 | confirmation |
-| balanced truncation with observability | a possible rank saving in the source compression | candidate; weak prior; measurable on the VM |
+| balanced truncation with observability | the join's projection taken in the post-W metric, where the legs are read | measured: -5.45% adjusted on 100 networks with Strassen join products at rank 320 (new best, 5.432e-9) |
