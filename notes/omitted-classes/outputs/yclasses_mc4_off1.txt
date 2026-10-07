@@ -1,0 +1,169 @@
+net 1: MC mc4_off1 (full / h0 / h1); slices diag | (2,2) on 11993 pairs | (3,1) off-diagonal; chain dump chain_off1_o.npz with inputs mc2_off1_h0
+layer  0-> 1: |R|/|t| 0.141 0.168 0.796  split corr +0.13 +0.04 +0.07  noise share 0.772 0.917 0.876  |Cgauss|/|t_d| 0.048
+    A lam-core : lam* 0.00175 0.00195 0.00052 joint 0.00056; explained 0.004 0.002 0.000 (joint 0.002 0.001 0.000)
+    B scale    : g 0.0004 0.0005 0.0004 joint 0.0004; explained 0.004 0.002 0.001 (joint 0.004 0.002 0.001); lam*/(3 g <sd2>) 0.376
+    C gauss2 (diag): coef +1.004 explained 0.117 (coef fixed 1: +0.117); A+C 0.117 (coefs 0.00025 +1.000); B+C 0.117 (coefs 0.0001 +1.001)
+    D radius   : |D|/|t| 0.040 0.028 0.162 corr +0.062 +0.044 +0.039; coef 1: explained -0.045 -0.013 -0.026; fitted 0.217 0.264 0.193 joint 0.196 (explained +0.004 +0.002 +0.002); D+C diag 0.117 (coefs +0.023 +1.001; both fixed 1: +0.040); after D, scale-mode g -0.00159 (2/n = 0.00195) explains +0.047 +0.016 +0.027
+    gain mode: g_raw 0.00660 (-2/n: 0.00465), g_cen 0.00613 (-2/n: 0.00418) | fitted g_B 0.00037, D coef x Var(r^2) 0.00038; g_conn 0.00422 -> D coef 2.159, explained -0.300 -0.100 -0.159
+    kappa3: |R3|/|t3| (D3 | D21) 0.228 0.289 split corr +0.86 +0.85 noise share 0.076 0.080; scale-mode shape fit coef (x2 = Var(s^2)) -0.0007 0.0008 explained +0.000 +0.001
+layer  1-> 2: |R|/|t| 0.144 0.148 0.835  split corr +0.51 +0.38 +0.42  noise share 0.322 0.447 0.404  |Cgauss|/|t_d| 0.036
+    A lam-core : lam* 0.01395 0.01257 0.00529 joint 0.00552; explained 0.286 0.112 0.064 (joint 0.182 0.077 0.064)
+    B scale    : g 0.0046 0.0041 0.0041 joint 0.0041; explained 0.288 0.113 0.152 (joint 0.285 0.113 0.152); lam*/(3 g <sd2>) 0.439
+    C gauss2 (diag): coef +1.614 explained 0.166 (coef fixed 1: +0.142); A+C 0.365 (coefs 0.01202 +1.152); B+C 0.367 (coefs 0.0039 +1.150)
+    D radius   : |D|/|t| 0.034 0.025 0.162 corr +0.543 +0.348 +0.398; coef 1: explained +0.202 +0.089 +0.117; fitted 2.275 2.074 2.051 joint 2.061 (explained +0.291 +0.121 +0.159); D+C diag 0.373 (coefs +1.971 +1.150; both fixed 1: +0.314); after D, scale-mode g 0.00209 (2/n = 0.00195) explains +0.110 +0.033 +0.045
+    gain mode: g_raw 0.01026 (-2/n: 0.00830), g_cen 0.00989 (-2/n: 0.00794) | fitted g_B 0.00407, D coef x Var(r^2) 0.00402; g_conn 0.00555 -> D coef 2.843, explained +0.276 +0.105 +0.135
+    kappa3: |R3|/|t3| (D3 | D21) 0.346 0.487 split corr +0.98 +0.97 noise share 0.012 0.013; scale-mode shape fit coef (x2 = Var(s^2)) 0.0032 0.0040 explained +0.006 +0.010
+    y slices (chain from true z vs MC): K4v 0.005/+1.000  K22 0.056/+0.998  B^y closed form 0.109/+0.995; transported: K4v 0.000 0.000 0.001 | K22 0.002 0.002 0.010 | B^y 0.004 0.004 0.023
+    chain error 0.137 0.153 0.866 = closure 0.005 0.004 0.025 + classes-lam 0.127 0.141 0.812 + repr 0.038 0.054 0.512; chain lam 0.00740; classes with best scale mode 0.122 0.139 0.769; classes with radius mode D (no lam) 0.129 0.141 0.785
+    compensation cos(closure, lam core - R) +0.02 +0.01 +0.02; chain error with the lam core replaced by: g_conn D 0.127 0.150 0.923 | best-fit D 0.128 0.150 0.922 | nothing 0.156 0.162 1.000
+layer  2-> 3: |R|/|t| 0.156 0.150 0.855  split corr +0.73 +0.60 +0.64  noise share 0.156 0.248 0.218  |Cgauss|/|t_d| 0.035
+    A lam-core : lam* 0.01409 0.01392 0.00738 joint 0.00761; explained 0.368 0.200 0.140 (joint 0.290 0.159 0.140)
+    B scale    : g 0.0057 0.0056 0.0055 joint 0.0055; explained 0.373 0.202 0.260 (joint 0.373 0.202 0.260); lam*/(3 g <sd2>) 0.557
+    C gauss2 (diag): coef +1.563 explained 0.120 (coef fixed 1: +0.105); A+C 0.412 (coefs 0.01291 +0.976); B+C 0.417 (coefs 0.0052 +0.965)
+    D radius   : |D|/|t| 0.035 0.025 0.166 corr +0.626 +0.469 +0.526; coef 1: explained +0.229 +0.129 +0.167; fitted 2.808 2.791 2.716 joint 2.721 (explained +0.391 +0.220 +0.277); D+C diag 0.437 (coefs +2.591 +0.989; both fixed 1: +0.312); after D, scale-mode g 0.00351 (2/n = 0.00195) explains +0.202 +0.095 +0.125
+    gain mode: g_raw 0.01373 (-2/n: 0.01178), g_cen 0.01333 (-2/n: 0.01138) | fitted g_B 0.00554, D coef x Var(r^2) 0.00532; g_conn 0.00634 -> D coef 3.247, explained +0.382 +0.214 +0.267
+    kappa3: |R3|/|t3| (D3 | D21) 0.331 0.486 split corr +0.99 +0.99 noise share 0.007 0.007; scale-mode shape fit coef (x2 = Var(s^2)) 0.0057 0.0054 explained +0.028 +0.025
+    y slices (chain from true z vs MC): K4v 0.006/+1.000  K22 0.066/+0.998  B^y closed form 0.114/+0.995; transported: K4v 0.000 0.000 0.001 | K22 0.003 0.003 0.009 | B^y 0.004 0.003 0.019
+    chain error 0.135 0.144 0.810 = closure 0.005 0.004 0.022 + classes-lam 0.129 0.136 0.796 + repr 0.029 0.045 0.497; chain lam 0.00915; classes with best scale mode 0.124 0.134 0.735; classes with radius mode D (no lam) 0.137 0.140 0.780
+    compensation cos(closure, lam core - R) +0.07 +0.03 +0.01; chain error with the lam core replaced by: g_conn D 0.128 0.140 0.885 | best-fit D 0.128 0.140 0.883 | nothing 0.163 0.158 1.000
+layer  3-> 4: |R|/|t| 0.161 0.157 0.866  split corr +0.83 +0.75 +0.78  noise share 0.094 0.145 0.124  |Cgauss|/|t_d| 0.037
+    A lam-core : lam* 0.01312 0.01340 0.00844 joint 0.00864; explained 0.416 0.236 0.200 (joint 0.368 0.207 0.200)
+    B scale    : g 0.0065 0.0067 0.0068 joint 0.0068; explained 0.415 0.239 0.323 (joint 0.414 0.239 0.323); lam*/(3 g <sd2>) 0.637
+    C gauss2 (diag): coef +1.636 explained 0.138 (coef fixed 1: +0.117); A+C 0.461 (coefs 0.01196 +0.966); B+C 0.461 (coefs 0.0060 +0.979)
+    D radius   : |D|/|t| 0.036 0.026 0.159 corr +0.669 +0.520 +0.590; coef 1: explained +0.247 +0.143 +0.183; fitted 3.015 3.183 3.208 joint 3.198 (explained +0.445 +0.271 +0.348); D+C diag 0.498 (coefs +2.777 +1.018; both fixed 1: +0.342); after D, scale-mode g 0.00471 (2/n = 0.00195) explains +0.250 +0.131 +0.191
+    gain mode: g_raw 0.01615 (-2/n: 0.01420), g_cen 0.01688 (-2/n: 0.01493) | fitted g_B 0.00680, D coef x Var(r^2) 0.00625; g_conn 0.00653 -> D coef 3.342, explained +0.442 +0.270 +0.348
+    kappa3: |R3|/|t3| (D3 | D21) 0.309 0.487 split corr +0.99 +0.99 noise share 0.005 0.004; scale-mode shape fit coef (x2 = Var(s^2)) 0.0066 0.0062 explained +0.049 +0.040
+    y slices (chain from true z vs MC): K4v 0.006/+1.000  K22 0.079/+0.997  B^y closed form 0.115/+0.994; transported: K4v 0.000 0.000 0.000 | K22 0.003 0.003 0.009 | B^y 0.003 0.003 0.017
+    chain error 0.131 0.146 0.773 = closure 0.005 0.004 0.019 + classes-lam 0.125 0.138 0.779 + repr 0.027 0.041 0.478; chain lam 0.01022; classes with best scale mode 0.123 0.137 0.712; classes with radius mode D (no lam) 0.140 0.145 0.782
+    compensation cos(closure, lam core - R) +0.06 +0.02 +0.02; chain error with the lam core replaced by: g_conn D 0.125 0.141 0.853 | best-fit D 0.124 0.141 0.853 | nothing 0.166 0.164 1.000
+layer  4-> 5: |R|/|t| 0.181 0.168 0.883  split corr +0.90 +0.83 +0.86  noise share 0.052 0.094 0.077  |Cgauss|/|t_d| 0.039
+    A lam-core : lam* 0.01308 0.01245 0.00876 joint 0.00898; explained 0.484 0.254 0.236 (joint 0.436 0.234 0.236)
+    B scale    : g 0.0079 0.0075 0.0079 joint 0.0079; explained 0.481 0.256 0.354 (joint 0.481 0.255 0.354); lam*/(3 g <sd2>) 0.694
+    C gauss2 (diag): coef +1.518 explained 0.104 (coef fixed 1: +0.092); A+C 0.508 (coefs 0.01233 +0.755); B+C 0.507 (coefs 0.0074 +0.776)
+    D radius   : |D|/|t| 0.037 0.027 0.158 corr +0.730 +0.555 +0.631; coef 1: explained +0.258 +0.151 +0.194; fitted 3.548 3.486 3.520 joint 3.521 (explained +0.533 +0.307 +0.398); D+C diag 0.567 (coefs +3.370 +0.876; both fixed 1: +0.333); after D, scale-mode g 0.00573 (2/n = 0.00195) explains +0.341 +0.153 +0.230
+    gain mode: g_raw 0.01855 (-2/n: 0.01660), g_cen 0.02015 (-2/n: 0.01820) | fitted g_B 0.00793, D coef x Var(r^2) 0.00688; g_conn 0.00648 -> D coef 3.319, explained +0.531 +0.307 +0.397
+    kappa3: |R3|/|t3| (D3 | D21) 0.314 0.476 split corr +0.99 +0.99 noise share 0.003 0.003; scale-mode shape fit coef (x2 = Var(s^2)) 0.0090 0.0073 explained +0.095 +0.069
+    y slices (chain from true z vs MC): K4v 0.007/+1.000  K22 0.099/+0.995  B^y closed form 0.119/+0.994; transported: K4v 0.000 0.000 0.000 | K22 0.005 0.005 0.010 | B^y 0.003 0.003 0.015
+    chain error 0.138 0.152 0.757 = closure 0.006 0.006 0.018 + classes-lam 0.133 0.146 0.776 + repr 0.024 0.039 0.451; chain lam 0.01039; classes with best scale mode 0.130 0.145 0.709; classes with radius mode D (no lam) 0.156 0.155 0.792
+    compensation cos(closure, lam core - R) +0.12 +0.01 -0.00; chain error with the lam core replaced by: g_conn D 0.128 0.146 0.826 | best-fit D 0.128 0.146 0.825 | nothing 0.185 0.173 1.000
+layer  5-> 6: |R|/|t| 0.205 0.184 0.894  split corr +0.93 +0.89 +0.91  noise share 0.035 0.057 0.047  |Cgauss|/|t_d| 0.036
+    A lam-core : lam* 0.01270 0.01258 0.00920 joint 0.00943; explained 0.489 0.295 0.281 (joint 0.457 0.276 0.281)
+    B scale    : g 0.0095 0.0094 0.0096 joint 0.0096; explained 0.488 0.300 0.396 (joint 0.488 0.299 0.396); lam*/(3 g <sd2>) 0.741
+    C gauss2 (diag): coef +1.733 explained 0.095 (coef fixed 1: +0.078); A+C 0.501 (coefs 0.01210 +0.624); B+C 0.499 (coefs 0.0090 +0.640)
+    D radius   : |D|/|t| 0.040 0.028 0.155 corr +0.746 +0.611 +0.676; coef 1: explained +0.251 +0.165 +0.205; fitted 3.862 3.942 3.892 joint 3.892 (explained +0.556 +0.373 +0.457); D+C diag 0.579 (coefs +3.689 +0.861; both fixed 1: +0.314); after D, scale-mode g 0.00724 (2/n = 0.00195) explains +0.368 +0.202 +0.283
+    gain mode: g_raw 0.02030 (-2/n: 0.01834), g_cen 0.02371 (-2/n: 0.02176) | fitted g_B 0.00961, D coef x Var(r^2) 0.00760; g_conn 0.00630 -> D coef 3.227, explained +0.541 +0.361 +0.444
+    kappa3: |R3|/|t3| (D3 | D21) 0.279 0.452 split corr +1.00 +1.00 noise share 0.002 0.002; scale-mode shape fit coef (x2 = Var(s^2)) 0.0074 0.0078 explained +0.086 +0.097
+    y slices (chain from true z vs MC): K4v 0.008/+1.000  K22 0.116/+0.993  B^y closed form 0.127/+0.993; transported: K4v 0.000 0.000 0.000 | K22 0.006 0.006 0.010 | B^y 0.003 0.003 0.013
+    chain error 0.154 0.161 0.739 = closure 0.006 0.006 0.017 + classes-lam 0.149 0.155 0.760 + repr 0.021 0.037 0.422; chain lam 0.01032; classes with best scale mode 0.146 0.154 0.695; classes with radius mode D (no lam) 0.177 0.168 0.798
+    compensation cos(closure, lam core - R) +0.11 +0.06 +0.00; chain error with the lam core replaced by: g_conn D 0.142 0.152 0.796 | best-fit D 0.140 0.150 0.787 | nothing 0.209 0.189 1.000
+layer  6-> 7: |R|/|t| 0.230 0.209 0.909  split corr +0.96 +0.93 +0.94  noise share 0.020 0.036 0.032  |Cgauss|/|t_d| 0.032
+    A lam-core : lam* 0.01283 0.01286 0.00936 joint 0.00967; explained 0.577 0.358 0.306 (joint 0.542 0.336 0.305)
+    B scale    : g 0.0111 0.0111 0.0109 joint 0.0109; explained 0.582 0.362 0.414 (joint 0.582 0.362 0.414); lam*/(3 g <sd2>) 0.787
+    C gauss2 (diag): coef +1.811 explained 0.064 (coef fixed 1: +0.051); A+C 0.586 (coefs 0.01248 +0.696); B+C 0.592 (coefs 0.0108 +0.727)
+    D radius   : |D|/|t| 0.045 0.033 0.155 corr +0.785 +0.665 +0.705; coef 1: explained +0.269 +0.183 +0.212; fitted 4.013 4.271 4.126 joint 4.124 (explained +0.616 +0.443 +0.497); D+C diag 0.641 (coefs +3.913 +1.136; both fixed 1: +0.313); after D, scale-mode g 0.00837 (2/n = 0.00195) explains +0.471 +0.263 +0.310
+    gain mode: g_raw 0.02191 (-2/n: 0.01996), g_cen 0.02724 (-2/n: 0.02529) | fitted g_B 0.01089, D coef x Var(r^2) 0.00805; g_conn 0.00568 -> D coef 2.910, explained +0.570 +0.398 +0.453
+    kappa3: |R3|/|t3| (D3 | D21) 0.280 0.451 split corr +1.00 +1.00 noise share 0.001 0.002; scale-mode shape fit coef (x2 = Var(s^2)) 0.0080 0.0081 explained +0.139 +0.127
+    y slices (chain from true z vs MC): K4v 0.008/+1.000  K22 0.150/+0.987  B^y closed form 0.123/+0.993; transported: K4v 0.000 0.000 0.000 | K22 0.008 0.008 0.011 | B^y 0.003 0.002 0.011
+    chain error 0.158 0.175 0.735 = closure 0.009 0.008 0.015 + classes-lam 0.154 0.170 0.759 + repr 0.019 0.036 0.393; chain lam 0.01019; classes with best scale mode 0.149 0.167 0.696; classes with radius mode D (no lam) 0.197 0.189 0.807
+    compensation cos(closure, lam core - R) +0.08 +0.02 -0.02; chain error with the lam core replaced by: g_conn D 0.154 0.168 0.786 | best-fit D 0.146 0.161 0.761 | nothing 0.233 0.214 1.000
+layer  7-> 8: |R|/|t| 0.244 0.221 0.922  split corr +0.97 +0.95 +0.96  noise share 0.016 0.028 0.023  |Cgauss|/|t_d| 0.033
+    A lam-core : lam* 0.01223 0.01225 0.00923 joint 0.00952; explained 0.557 0.345 0.317 (joint 0.530 0.328 0.317)
+    B scale    : g 0.0120 0.0121 0.0118 joint 0.0118; explained 0.561 0.352 0.417 (joint 0.561 0.351 0.417); lam*/(3 g <sd2>) 0.818
+    C gauss2 (diag): coef +0.530 explained 0.005 (coef fixed 1: +0.001); A+C 0.558 (coefs 0.01221 +0.177); B+C 0.562 (coefs 0.0120 +0.240)
+    D radius   : |D|/|t| 0.047 0.034 0.157 corr +0.793 +0.673 +0.719; coef 1: explained +0.269 +0.185 +0.216; fitted 4.103 4.346 4.220 joint 4.216 (explained +0.629 +0.453 +0.517); D+C diag 0.641 (coefs +4.131 +0.823; both fixed 1: +0.273); after D, scale-mode g 0.00914 (2/n = 0.00195) explains +0.462 +0.260 +0.317
+    gain mode: g_raw 0.02295 (-2/n: 0.02099), g_cen 0.03059 (-2/n: 0.02864) | fitted g_B 0.01183, D coef x Var(r^2) 0.00823; g_conn 0.00539 -> D coef 2.759, explained +0.562 +0.393 +0.455
+    kappa3: |R3|/|t3| (D3 | D21) 0.275 0.445 split corr +1.00 +1.00 noise share 0.001 0.001; scale-mode shape fit coef (x2 = Var(s^2)) 0.0084 0.0083 explained +0.141 +0.145
+    y slices (chain from true z vs MC): K4v 0.009/+1.000  K22 0.172/+0.983  B^y closed form 0.126/+0.993; transported: K4v 0.000 0.000 0.000 | K22 0.009 0.008 0.012 | B^y 0.003 0.002 0.010
+    chain error 0.171 0.187 0.740 = closure 0.009 0.009 0.015 + classes-lam 0.166 0.181 0.762 + repr 0.018 0.036 0.365; chain lam 0.00974; classes with best scale mode 0.161 0.178 0.704; classes with radius mode D (no lam) 0.208 0.200 0.816
+    compensation cos(closure, lam core - R) +0.04 +0.01 -0.02; chain error with the lam core replaced by: g_conn D 0.165 0.178 0.778 | best-fit D 0.151 0.169 0.741 | nothing 0.248 0.226 1.000
+layer  8-> 9: |R|/|t| 0.264 0.237 0.930  split corr +0.98 +0.96 +0.97  noise share 0.012 0.021 0.017  |Cgauss|/|t_d| 0.029
+    A lam-core : lam* 0.01142 0.01133 0.00922 joint 0.00946; explained 0.533 0.337 0.334 (joint 0.517 0.328 0.333)
+    B scale    : g 0.0126 0.0124 0.0127 joint 0.0127; explained 0.535 0.342 0.421 (joint 0.535 0.342 0.421); lam*/(3 g <sd2>) 0.854
+    C gauss2 (diag): coef +1.367 explained 0.023 (coef fixed 1: +0.022); A+C 0.538 (coefs 0.01129 +0.669); B+C 0.542 (coefs 0.0125 +0.752)
+    D radius   : |D|/|t| 0.048 0.036 0.153 corr +0.782 +0.677 +0.724; coef 1: explained +0.252 +0.184 +0.212; fitted 4.280 4.423 4.392 joint 4.384 (explained +0.611 +0.459 +0.525); D+C diag 0.631 (coefs +4.270 +1.270; both fixed 1: +0.273); after D, scale-mode g 0.00989 (2/n = 0.00195) explains +0.437 +0.252 +0.326
+    gain mode: g_raw 0.02382 (-2/n: 0.02187), g_cen 0.03368 (-2/n: 0.03173) | fitted g_B 0.01267, D coef x Var(r^2) 0.00856; g_conn 0.00525 -> D coef 2.687, explained +0.527 +0.389 +0.446
+    kappa3: |R3|/|t3| (D3 | D21) 0.278 0.454 split corr +1.00 +1.00 noise share 0.001 0.001; scale-mode shape fit coef (x2 = Var(s^2)) 0.0075 0.0085 explained +0.135 +0.161
+    y slices (chain from true z vs MC): K4v 0.010/+1.000  K22 0.187/+0.979  B^y closed form 0.130/+0.992; transported: K4v 0.000 0.000 0.000 | K22 0.009 0.008 0.012 | B^y 0.002 0.002 0.008
+    chain error 0.188 0.199 0.740 = closure 0.009 0.009 0.015 + classes-lam 0.183 0.194 0.760 + repr 0.016 0.034 0.340; chain lam 0.00944; classes with best scale mode 0.180 0.192 0.708; classes with radius mode D (no lam) 0.228 0.214 0.826
+    compensation cos(closure, lam core - R) +0.04 +0.01 -0.02; chain error with the lam core replaced by: g_conn D 0.185 0.190 0.779 | best-fit D 0.167 0.178 0.730 | nothing 0.267 0.241 1.000
+layer  9->10: |R|/|t| 0.284 0.262 0.939  split corr +0.98 +0.97 +0.98  noise share 0.009 0.015 0.013  |Cgauss|/|t_d| 0.032
+    A lam-core : lam* 0.01051 0.01106 0.00900 joint 0.00922; explained 0.507 0.344 0.338 (joint 0.500 0.334 0.338)
+    B scale    : g 0.0133 0.0138 0.0138 joint 0.0137; explained 0.514 0.354 0.422 (joint 0.513 0.354 0.422); lam*/(3 g <sd2>) 0.873
+    C gauss2 (diag): coef +1.036 explained 0.014 (coef fixed 1: +0.014); A+C 0.508 (coefs 0.01045 +0.289); B+C 0.515 (coefs 0.0132 +0.322)
+    D radius   : |D|/|t| 0.054 0.039 0.153 corr +0.813 +0.689 +0.741; coef 1: explained +0.271 +0.185 +0.214; fitted 4.307 4.591 4.561 joint 4.536 (explained +0.658 +0.475 +0.549); D+C diag 0.674 (coefs +4.307 +1.035; both fixed 1: +0.285); after D, scale-mode g 0.01074 (2/n = 0.00195) explains +0.418 +0.265 +0.331
+    gain mode: g_raw 0.02586 (-2/n: 0.02390), g_cen 0.03758 (-2/n: 0.03562) | fitted g_B 0.01370, D coef x Var(r^2) 0.00886; g_conn 0.00507 -> D coef 2.594, explained +0.556 +0.385 +0.447
+    kappa3: |R3|/|t3| (D3 | D21) 0.284 0.461 split corr +1.00 +1.00 noise share 0.001 0.001; scale-mode shape fit coef (x2 = Var(s^2)) 0.0096 0.0089 explained +0.203 +0.187
+    y slices (chain from true z vs MC): K4v 0.011/+1.000  K22 0.211/+0.973  B^y closed form 0.132/+0.992; transported: K4v 0.000 0.000 0.000 | K22 0.011 0.011 0.013 | B^y 0.002 0.002 0.008
+    chain error 0.206 0.220 0.747 = closure 0.012 0.011 0.015 + classes-lam 0.202 0.215 0.764 + repr 0.015 0.034 0.317; chain lam 0.00890; classes with best scale mode 0.198 0.211 0.714; classes with radius mode D (no lam) 0.242 0.237 0.832
+    compensation cos(closure, lam core - R) +0.02 -0.01 -0.04; chain error with the lam core replaced by: g_conn D 0.192 0.210 0.775 | best-fit D 0.168 0.195 0.712 | nothing 0.287 0.267 1.000
+layer 10->11: |R|/|t| 0.342 0.292 0.950  split corr +0.99 +0.98 +0.98  noise share 0.005 0.011 0.009  |Cgauss|/|t_d| 0.029
+    A lam-core : lam* 0.01199 0.01188 0.00995 joint 0.01028; explained 0.532 0.374 0.370 (joint 0.521 0.367 0.370)
+    B scale    : g 0.0164 0.0160 0.0159 joint 0.0159; explained 0.554 0.391 0.453 (joint 0.554 0.391 0.453); lam*/(3 g <sd2>) 0.907
+    C gauss2 (diag): coef -0.067 explained 0.000 (coef fixed 1: -0.008); A+C 0.532 (coefs 0.01200 +0.196); B+C 0.555 (coefs 0.0164 +0.337)
+    D radius   : |D|/|t| 0.060 0.044 0.158 corr +0.836 +0.731 +0.778; coef 1: explained +0.262 +0.198 +0.232; fitted 4.776 4.845 4.673 joint 4.696 (explained +0.699 +0.535 +0.606); D+C diag 0.716 (coefs +4.897 +1.576; both fixed 1: +0.259); after D, scale-mode g 0.01257 (2/n = 0.00195) explains +0.475 +0.307 +0.365
+    gain mode: g_raw 0.02657 (-2/n: 0.02462), g_cen 0.04090 (-2/n: 0.03894) | fitted g_B 0.01594, D coef x Var(r^2) 0.00917; g_conn 0.00482 -> D coef 2.467, explained +0.536 +0.406 +0.471
+    kappa3: |R3|/|t3| (D3 | D21) 0.280 0.440 split corr +1.00 +1.00 noise share 0.001 0.001; scale-mode shape fit coef (x2 = Var(s^2)) 0.0098 0.0087 explained +0.273 +0.225
+    y slices (chain from true z vs MC): K4v 0.011/+1.000  K22 0.255/+0.960  B^y closed form 0.132/+0.992; transported: K4v 0.000 0.000 0.000 | K22 0.008 0.008 0.013 | B^y 0.002 0.002 0.006
+    chain error 0.249 0.240 0.747 = closure 0.009 0.008 0.014 + classes-lam 0.243 0.236 0.757 + repr 0.015 0.033 0.276; chain lam 0.00886; classes with best scale mode 0.229 0.228 0.703; classes with radius mode D (no lam) 0.294 0.262 0.833
+    compensation cos(closure, lam core - R) +0.08 +0.03 -0.00; chain error with the lam core replaced by: g_conn D 0.238 0.228 0.753 | best-fit D 0.191 0.202 0.661 | nothing 0.347 0.295 1.000
+layer 11->12: |R|/|t| 0.383 0.327 0.957  split corr +0.99 +0.98 +0.99  noise share 0.004 0.008 0.007  |Cgauss|/|t_d| 0.030
+    A lam-core : lam* 0.01257 0.01236 0.01068 joint 0.01105; explained 0.574 0.402 0.389 (joint 0.565 0.397 0.389)
+    B scale    : g 0.0177 0.0173 0.0172 joint 0.0173; explained 0.620 0.430 0.479 (joint 0.620 0.430 0.479); lam*/(3 g <sd2>) 0.936
+    C gauss2 (diag): coef -2.236 explained 0.031 (coef fixed 1: -0.034); A+C 0.580 (coefs 0.01239 -1.045); B+C 0.623 (coefs 0.0175 -0.726)
+    D radius   : |D|/|t| 0.074 0.053 0.164 corr +0.872 +0.772 +0.800; coef 1: explained +0.301 +0.225 +0.245; fitted 4.491 4.737 4.654 joint 4.635 (explained +0.759 +0.596 +0.639); D+C diag 0.768 (coefs +4.629 +1.147; both fixed 1: +0.276); after D, scale-mode g 0.01359 (2/n = 0.00195) explains +0.544 +0.341 +0.391
+    gain mode: g_raw 0.02720 (-2/n: 0.02525), g_cen 0.04503 (-2/n: 0.04308) | fitted g_B 0.01732, D coef x Var(r^2) 0.00905; g_conn 0.00438 -> D coef 2.244, explained +0.570 +0.431 +0.468
+    kappa3: |R3|/|t3| (D3 | D21) 0.279 0.436 split corr +1.00 +1.00 noise share 0.001 0.001; scale-mode shape fit coef (x2 = Var(s^2)) 0.0087 0.0083 explained +0.336 +0.267
+    y slices (chain from true z vs MC): K4v 0.013/+1.000  K22 0.279/+0.951  B^y closed form 0.128/+0.992; transported: K4v 0.000 0.000 0.000 | K22 0.011 0.011 0.013 | B^y 0.002 0.002 0.005
+    chain error 0.269 0.264 0.747 = closure 0.011 0.011 0.014 + classes-lam 0.264 0.259 0.754 + repr 0.015 0.032 0.254; chain lam 0.00890; classes with best scale mode 0.236 0.247 0.691; classes with radius mode D (no lam) 0.320 0.288 0.831
+    compensation cos(closure, lam core - R) +0.05 +0.03 -0.02; chain error with the lam core replaced by: g_conn D 0.255 0.251 0.751 | best-fit D 0.190 0.212 0.632 | nothing 0.387 0.331 1.000
+layer 12->13: |R|/|t| 0.370 0.328 0.959  split corr +0.99 +0.99 +0.99  noise share 0.005 0.007 0.006  |Cgauss|/|t_d| 0.030
+    A lam-core : lam* 0.01096 0.01147 0.01007 joint 0.01028; explained 0.503 0.360 0.378 (joint 0.501 0.356 0.377)
+    B scale    : g 0.0165 0.0170 0.0173 joint 0.0172; explained 0.524 0.383 0.459 (joint 0.523 0.383 0.459); lam*/(3 g <sd2>) 0.938
+    C gauss2 (diag): coef -1.862 explained 0.022 (coef fixed 1: -0.030); A+C 0.507 (coefs 0.01084 -0.819); B+C 0.527 (coefs 0.0164 -0.673)
+    D radius   : |D|/|t| 0.066 0.051 0.161 corr +0.833 +0.740 +0.792; coef 1: explained +0.265 +0.205 +0.237; fitted 4.679 4.788 4.730 joint 4.727 (explained +0.695 +0.547 +0.627); D+C diag 0.700 (coefs +4.795 +0.976; both fixed 1: +0.243); after D, scale-mode g 0.01351 (2/n = 0.00195) explains +0.442 +0.297 +0.371
+    gain mode: g_raw 0.02786 (-2/n: 0.02591), g_cen 0.04916 (-2/n: 0.04720) | fitted g_B 0.01719, D coef x Var(r^2) 0.00923; g_conn 0.00415 -> D coef 2.126, explained +0.488 +0.378 +0.437
+    kappa3: |R3|/|t3| (D3 | D21) 0.256 0.436 split corr +1.00 +1.00 noise share 0.001 0.000; scale-mode shape fit coef (x2 = Var(s^2)) 0.0071 0.0085 explained +0.199 +0.257
+    y slices (chain from true z vs MC): K4v 0.013/+1.000  K22 0.352/+0.925  B^y closed form 0.132/+0.992; transported: K4v 0.000 0.000 0.000 | K22 0.012 0.012 0.016 | B^y 0.002 0.002 0.006
+    chain error 0.272 0.270 0.749 = closure 0.012 0.012 0.017 + classes-lam 0.266 0.266 0.761 + repr 0.015 0.033 0.256; chain lam 0.00879; classes with best scale mode 0.256 0.257 0.706; classes with radius mode D (no lam) 0.317 0.292 0.838
+    compensation cos(closure, lam core - R) -0.02 -0.02 -0.02; chain error with the lam core replaced by: g_conn D 0.270 0.262 0.770 | best-fit D 0.207 0.224 0.641 | nothing 0.376 0.332 1.000
+layer 13->14: |R|/|t| 0.409 0.362 0.964  split corr +0.99 +0.99 +0.99  noise share 0.003 0.005 0.004  |Cgauss|/|t_d| 0.030
+    A lam-core : lam* 0.01276 0.01356 0.01167 joint 0.01198; explained 0.584 0.428 0.442 (joint 0.582 0.422 0.442)
+    B scale    : g 0.0201 0.0209 0.0205 joint 0.0205; explained 0.626 0.467 0.540 (joint 0.626 0.467 0.540); lam*/(3 g <sd2>) 0.968
+    C gauss2 (diag): coef -3.562 explained 0.066 (coef fixed 1: -0.042); A+C 0.594 (coefs 0.01241 -1.429); B+C 0.632 (coefs 0.0197 -1.076)
+    D radius   : |D|/|t| 0.081 0.060 0.168 corr +0.884 +0.793 +0.831; coef 1: explained +0.311 +0.237 +0.259; fitted 4.465 4.756 4.770 joint 4.716 (explained +0.778 +0.629 +0.690); D+C diag 0.788 (coefs +4.641 +1.271; both fixed 1: +0.279); after D, scale-mode g 0.01614 (2/n = 0.00195) explains +0.550 +0.378 +0.454
+    gain mode: g_raw 0.02869 (-2/n: 0.02673), g_cen 0.05387 (-2/n: 0.05192) | fitted g_B 0.02049, D coef x Var(r^2) 0.00921; g_conn 0.00394 -> D coef 2.017, explained +0.546 +0.420 +0.460
+    kappa3: |R3|/|t3| (D3 | D21) 0.258 0.420 split corr +1.00 +1.00 noise share 0.000 0.000; scale-mode shape fit coef (x2 = Var(s^2)) 0.0072 0.0077 explained +0.279 +0.301
+    y slices (chain from true z vs MC): K4v 0.013/+1.000  K22 0.322/+0.936  B^y closed form 0.133/+0.991; transported: K4v 0.000 0.000 0.000 | K22 0.016 0.016 0.013 | B^y 0.002 0.002 0.005
+    chain error 0.288 0.292 0.734 = closure 0.017 0.016 0.014 + classes-lam 0.282 0.287 0.738 + repr 0.014 0.031 0.223; chain lam 0.00873; classes with best scale mode 0.250 0.264 0.654; classes with radius mode D (no lam) 0.339 0.316 0.830
+    compensation cos(closure, lam core - R) +0.04 +0.05 -0.03; chain error with the lam core replaced by: g_conn D 0.281 0.281 0.752 | best-fit D 0.195 0.225 0.585 | nothing 0.415 0.367 1.000
+layer 14->15: |R|/|t| 0.479 0.405 0.966  split corr +1.00 +0.99 +0.99  noise share 0.002 0.004 0.003  |Cgauss|/|t_d| 0.028
+    A lam-core : lam* 0.01316 0.01309 0.01154 joint 0.01199; explained 0.640 0.483 0.468 (joint 0.635 0.479 0.467)
+    B scale    : g 0.0219 0.0218 0.0214 joint 0.0216; explained 0.686 0.546 0.574 (joint 0.686 0.546 0.574); lam*/(3 g <sd2>) 1.029
+    C gauss2 (diag): coef -4.318 explained 0.063 (coef fixed 1: -0.033); A+C 0.645 (coefs 0.01289 -1.263); B+C 0.687 (coefs 0.0217 -0.473)
+    D radius   : |D|/|t| 0.091 0.071 0.174 corr +0.902 +0.826 +0.850; coef 1: explained +0.307 +0.258 +0.274; fitted 4.751 4.741 4.708 joint 4.720 (explained +0.814 +0.684 +0.722); D+C diag 0.825 (coefs +4.974 +1.903; both fixed 1: +0.283); after D, scale-mode g 0.01694 (2/n = 0.00195) explains +0.619 +0.454 +0.486
+    gain mode: g_raw 0.02918 (-2/n: 0.02722), g_cen 0.05862 (-2/n: 0.05666) | fitted g_B 0.02156, D coef x Var(r^2) 0.00922; g_conn 0.00363 -> D coef 1.860, explained +0.513 +0.431 +0.458
+    kappa3: |R3|/|t3| (D3 | D21) 0.258 0.432 split corr +1.00 +1.00 noise share 0.000 0.000; scale-mode shape fit coef (x2 = Var(s^2)) 0.0074 0.0078 explained +0.389 +0.373
+summary (mean over transitions 2->3 .. 14->15):
+  rel3  0.283 0.452
+  sc3   0.996 0.996
+  efE3  0.181 0.175
+  rel   0.285 0.254 0.923
+  sc    0.942 0.908 0.921
+  nf    0.032 0.052 0.045
+  efAj  0.496 0.325 0.323
+  efBj  0.535 0.356 0.424
+  efD1  0.269 0.188 0.219
+  efDj  0.630 0.461 0.527
+  efG   0.520 0.368 0.427
+  bAj   0.007611 0.008643 0.008982 0.009433 0.009668 0.009519 0.009462 0.009224 0.01028 0.01105 0.01028 0.01198 0.01199
+  bBj   0.005539 0.006803 0.007928 0.009606 0.01089 0.01183 0.01267 0.0137 0.01594 0.01732 0.01719 0.02049 0.02156
+  g_raw 0.01373 0.01615 0.01855 0.0203 0.02191 0.02295 0.02382 0.02586 0.02657 0.0272 0.02786 0.02869 0.02918
+  g_cen 0.01333 0.01688 0.02015 0.02371 0.02724 0.03059 0.03368 0.03758 0.0409 0.04503 0.04916 0.05387 0.05862
+  g_conn 0.006341 0.006527 0.006482 0.006303 0.005684 0.005389 0.005247 0.005066 0.004818 0.004383 0.004151 0.00394 0.003633
+  bDj   2.721 3.198 3.521 3.892 4.124 4.216 4.384 4.536 4.696 4.635 4.727 4.716 4.72
+  bBrj  0.003509 0.004713 0.00573 0.007239 0.008365 0.009141 0.009888 0.01074 0.01257 0.01359 0.01351 0.01614 0.01694
+  efC   0.1202 0.1383 0.1042 0.0951 0.06402 0.005142 0.02321 0.01377 3.186e-05 0.03112 0.02205 0.06635 0.06318
+  bC    1.563 1.636 1.518 1.733 1.811 0.5301 1.367 1.036 -0.06746 -2.236 -1.862 -3.562 -4.318
+  efAC  0.4124 0.4615 0.508 0.5005 0.5863 0.558 0.5384 0.5085 0.5324 0.5803 0.5075 0.5942 0.6453
+  efBC  0.4167 0.4614 0.507 0.4995 0.5917 0.5625 0.5416 0.5149 0.5548 0.623 0.527 0.6316 0.687
+  efDC1 0.3119 0.3417 0.3331 0.3139 0.3134 0.2729 0.2733 0.2847 0.259 0.2759 0.2427 0.279 0.2826

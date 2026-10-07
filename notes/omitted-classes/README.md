@@ -77,7 +77,66 @@ Measured values are the noise-free oracle extrapolations of note XXXI (`notes/bi
 
 ## 3. The class split on the post-activation level
 
-*(Results pending: section to be completed from `outputs/yclasses_*.txt`.)*
+Network 1, Monte Carlo mc4 (1.6e7 inputs, seed 402), one-step dump inputs from mc2 (`outputs/yclasses_mc4_off1.txt`).
+Slices are diagonal | (2,2) on 12,000 random pairs | (3,1) off-diagonal, each relative to the truth's norm. The chain
+columns give the diagonal and (2,2) slices. "lam -> fitted D" and "lam -> g_conn D" are the chain with its lam core
+replaced by candidate D at its fitted coefficient and at the trace-sector coefficient:
+
+| l -> l+1 | abs R / t | closure (diag) | repr (diag) | chain | lam -> fitted D | lam -> g_conn D | D explains | D coef x 2/n | g_conn | R3 / t3 (D3, D21) |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 1 -> 2 | .144 .148 .835 | .005 | .038 | .137 .153 | .128 .150 | .127 .150 | .29 .12 .16 | .0040 | .0056 | .35 .49 |
+| 3 -> 4 | .161 .157 .866 | .005 | .027 | .131 .146 | .124 .141 | .125 .141 | .45 .27 .35 | .0063 | .0065 | .31 .49 |
+| 5 -> 6 | .205 .184 .894 | .006 | .021 | .154 .161 | .140 .150 | .142 .152 | .56 .37 .46 | .0076 | .0063 | .28 .45 |
+| 7 -> 8 | .244 .221 .922 | .009 | .018 | .171 .187 | .151 .169 | .165 .178 | .63 .45 .52 | .0082 | .0054 | .28 .45 |
+| 9 -> 10 | .284 .262 .939 | .012 | .015 | .206 .220 | .168 .195 | .192 .210 | .66 .48 .55 | .0089 | .0051 | .28 .46 |
+| 11 -> 12 | .383 .327 .957 | .011 | .015 | .269 .264 | .190 .212 | .255 .251 | .76 .60 .64 | .0091 | .0044 | .28 .44 |
+| 13 -> 14 | .409 .362 .964 | .017 | .014 | .288 .292 | .195 .225 | .281 .281 | .78 .63 .69 | .0092 | .0039 | .26 .42 |
+| 14 -> 15 | .479 .405 .966 | | | | | | .81 .68 .72 | .0092 | .0036 | .26 .43 |
+
+R is reproducible. The split-half correlation is 0.83-0.99 from layer 3 on, and its noise share is below 10% from
+layer 4 on (77% at layer 0, where R is small).
+
+- **The pair program is essentially exact; its closure is not the defect.**
+  - From true z inputs, its y slices are K4v to 0.5-1.3% (corr 1.000) and K22 to 6-35% (corr 0.93-0.998, worst at
+    depth). The (3,1)_y closed form of note XXXIV is good to 11-13% (corr 0.99).
+  - Transported, all of it is 0.5-1.7% of the next diagonal and (2,2) slice.
+  - The cosine between the closure error and the lam core's misfit is -0.04 to +0.12, so lam is not compensating the
+    closure.
+  - The representation residual (Ritz approximation, missing (3,1)_y and cross term) is 1.4-3.8% on the diagonal.
+  - The (3,1) slice's 0.2-0.5 representation residual is the chain's lam-only (3,1) slice, which lacks the
+    transported pair part.
+- **The one-step error is the omitted classes net of the lam core.** "Classes - lam" is within 0.01 of the chain's
+  whole error on the diagonal at every layer.
+- **The omitted classes are large, and are most of the (3,1) slice.**
+  - |R|/|t| on the diagonal rises from 0.14 to 0.48 with depth. On the (2,2) slice it is 0.15 to 0.41.
+  - On the (3,1) slice it is 0.80-0.97. The (3,1) slice of z' is almost entirely the transport of the y (2,1,1) and
+    (1,1,1,1) classes.
+  - Note XXI saw only 5-15% of the omitted classes because it measured the projection on 3 sigma^4. Most of R is
+    per-neuron structure that averages out in that projection.
+- **P1 holds: one radial-tangent mode is the leading part of R, coherently in all three slices.**
+  - Candidate D, with one coefficient per layer, explains 29/12/16% of R at layer 1 and 81/68/72% at layer 14
+    (diagonal, (2,2), (3,1)).
+  - The coefficient fitted per slice agrees across the three slices to 1-5%.
+  - D beats the chain's own lam-core shape (A: 50/33/32% on average over layers 2-14) and the centred scale mode
+    (B: 54/36/42%). The mean terms matter.
+  - At layer 0 -> 1, where z_0 is exactly Gaussian, D's fitted coefficient is 0.2 (explaining 0.4%), not 1. The input
+    radius contributes nothing net, as section 4 predicted. The coefficient at depth (2.7-4.7) is generated scale.
+- **P2 holds at shallow depth only, and P3 fails.**
+  - The fitted coefficient, in Var(s^2) units, rises from 0.004 (layer 1) to 0.0092 and saturates from layer 10 on.
+  - g_conn, the connected Var|y|^2, matches it at layers 2-5 (0.0063 against 0.0063 at layer 3). It then falls to
+    0.0036.
+  - So the soft mode that carries R at depth is not the isotropic norm of y. Its amplitude rises while the norm's
+    falls: the scale that couples to the off-diagonal (common-mode) variance is a different collective variable from
+    |y|^2.
+- **The Gaussian second-order class (C) is minor.** It explains 10-14% of R's diagonal at layers 1-5 with coefficient
+  1.5-1.7, and nothing at depth. This confirms note XXI's zero one-loop generation.
+- **The prize.** Replacing the lam core by D at its fitted coefficient lowers the chain's one-step diagonal error at
+  depth from 0.27-0.29 to 0.19-0.21, and the (2,2) error from 0.27-0.29 to 0.21-0.22. With g_conn's coefficient the
+  gain is small at depth, because g_conn is too small there.
+- **kappa3: the legs carry a third to a half of the readouts.** R3, the transported all-distinct class of y, is
+  26-35% of the D3 slice and 42-49% of the D21 slice at every depth. The scale mode explains 2-39% of it, rising with
+  depth. The rest is the legs' own all-distinct content, which section 3c tests against the first-order gated
+  transport.
 
 `code/mcstats.py ... post` accumulates the same slices for y_l = relu(z_l) on the same samples as z_(l+1). On any one
 sample the empirical cumulant tensor of z_(l+1) = W y_l is exactly W# of the empirical cumulant tensor of y_l. So
