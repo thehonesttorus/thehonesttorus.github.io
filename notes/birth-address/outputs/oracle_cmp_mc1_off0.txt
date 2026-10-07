@@ -1,0 +1,16 @@
+net 0: 16000000 samples
+layer  1: var rel err 3.59e-04 | D3 corr 0.9977 rel err 0.068 (MC noise 0.067) skew rms 0.009 | D21 corr 0.9964 rel err 0.084 (MC noise 0.084)
+layer  2: var rel err 3.66e-04 | D3 corr 0.9992 rel err 0.040 (MC noise 0.038) skew rms 0.017 | D21 corr 0.9981 rel err 0.062 (MC noise 0.054)
+layer  3: var rel err 3.78e-04 | D3 corr 0.9993 rel err 0.038 (MC noise 0.028) skew rms 0.023 | D21 corr 0.9985 rel err 0.055 (MC noise 0.041)
+layer  4: var rel err 4.17e-04 | D3 corr 0.9995 rel err 0.032 (MC noise 0.021) skew rms 0.030 | D21 corr 0.9987 rel err 0.051 (MC noise 0.031)
+layer  5: var rel err 4.81e-04 | D3 corr 0.9994 rel err 0.036 (MC noise 0.016) skew rms 0.036 | D21 corr 0.9986 rel err 0.054 (MC noise 0.026)
+layer  6: var rel err 5.26e-04 | D3 corr 0.9994 rel err 0.035 (MC noise 0.014) skew rms 0.044 | D21 corr 0.9986 rel err 0.053 (MC noise 0.021)
+layer  7: var rel err 6.31e-04 | D3 corr 0.9994 rel err 0.035 (MC noise 0.012) skew rms 0.051 | D21 corr 0.9985 rel err 0.055 (MC noise 0.019)
+layer  8: var rel err 7.15e-04 | D3 corr 0.9993 rel err 0.038 (MC noise 0.011) skew rms 0.058 | D21 corr 0.9983 rel err 0.058 (MC noise 0.016)
+layer  9: var rel err 8.40e-04 | D3 corr 0.9992 rel err 0.040 (MC noise 0.009) skew rms 0.065 | D21 corr 0.9982 rel err 0.060 (MC noise 0.014)
+layer 10: var rel err 9.32e-04 | D3 corr 0.9992 rel err 0.041 (MC noise 0.008) skew rms 0.071 | D21 corr 0.9981 rel err 0.062 (MC noise 0.013)
+layer 11: var rel err 1.10e-03 | D3 corr 0.9991 rel err 0.042 (MC noise 0.007) skew rms 0.081 | D21 corr 0.9980 rel err 0.064 (MC noise 0.011)
+layer 12: var rel err 1.17e-03 | D3 corr 0.9991 rel err 0.043 (MC noise 0.006) skew rms 0.092 | D21 corr 0.9980 rel err 0.063 (MC noise 0.010)
+layer 13: var rel err 1.28e-03 | D3 corr 0.9991 rel err 0.043 (MC noise 0.005) skew rms 0.100 | D21 corr 0.9978 rel err 0.066 (MC noise 0.009)
+layer 14: var rel err 1.46e-03 | D3 corr 0.9989 rel err 0.048 (MC noise 0.005) skew rms 0.103 | D21 corr 0.9976 rel err 0.070 (MC noise 0.008)
+layer 15: var rel err 1.51e-03 | D3 corr 0.9989 rel err 0.049 (MC noise 0.005) skew rms 0.112

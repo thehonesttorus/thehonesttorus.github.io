@@ -69,3 +69,42 @@ whole residual", now measured with a controlled perturbation rather than inferre
 representation of the sources must deliver: relative readout error energy below about 1e-5 to stay within 0.2% of
 the MSE. The birth-address drop at alpha <= -2.5 meets that and removes 3-7% of birth columns (a few percent of the
 young-tier bill); nothing more aggressive does.
+
+## 3. Oracle attribution: where the chain's error lives, by statistic
+
+Note XXVII section 6 owed an attribution of the chain's error to the statistics it carries. It is done here by
+substitution: a Monte Carlo pass of 1.6e7 inputs through the network (`code/mcstats.py`, float32 with a per-layer
+shift, two independent halves) gives, at every layer, the true pre-activation statistics the chain carries, and the
+chain is rerun with one or several of them replaced by truth at every layer (`code/est_v37_audit.py`, switch
+`V37_ORACLE`; `code/oracle_one.py`). The replaced value is noisy, so each oracle is run on each half and on the full
+sample, and the noise-free effect is the extrapolation a = 2 MSE(N) - mean MSE(N/2) of MSE(N) = a + b/N
+(`code/oracle_extrap.py`). Networks 0 and 1, the production configuration of note XXVIII (raw 2.2525e-8 and
+2.1266e-8).
+
+**The third-cumulant readouts and the fourth-cumulant diagonal** (`outputs/oracle_mc1_off{0,1}.txt`):
+
+| replaced by truth at every layer | network 0 | network 1 | noise term at full N |
+|---|---|---|---|
+| D3 = kappa_3(z_i) | -14.8% | -15.0% | +2% |
+| D21 = kappa(z_i, z_i, z_c) | -19.4% | -18.0% | +7-8% |
+| D3 + D21 | **-40.0%** | **-38.6%** | +9% |
+| g4 = kappa_4(z_i) | **-30.1%** | **-15.5%** | +1% |
+| D3 + D21 + g4 | **-71.8%** | **-62.6%** | +10% |
+
+The chain's readouts against truth (`outputs/oracle_cmp_mc1_off{0,1}.txt`): D3 has relative error 3.2-5.1% and
+correlation 0.999 at every layer from 3 on (the Monte Carlo noise is 0.5-3% there and the chain is exact at layer 1);
+D21 5-7%; the variance 4e-4 at layer 1 (noise) rising to 1.5e-3 at layer 15.
+
+- **The kappa_3 readouts carry 40% of the error, and the measured precision demand predicts it.** A 4.3% rms
+  relative error of D3 and D21 at every layer is an error energy of about 1.8e-3, which section 2's law
+  (Delta MSE / MSE ~ 180 x energy) turns into about 33%; the oracle measures 39-40%.
+- **The fourth-cumulant diagonal carries 15-30%, uniformly in depth.** Per layer, the g4 oracle lowers the MSE by
+  25-30% (network 0) and 20-30% (network 1) at every layer from 3 to 15, so its defect is at full relative strength
+  by layer 3 rather than accumulated. Note XXI section 7 had put the sector's leverage at the few-percent level by
+  perturbing its fitted table; the oracle shows that the table's per-neuron residual (30% rms at depth, note XXVIII
+  section 4) costs a fifth to a third of the error, the size the fourth Hermite coefficient
+  (kappa_4/24)(alpha^2 - 1) phi / sigma^3 predicts for it.
+- **The two are roughly additive and slightly synergistic.** Jointly they remove 72% and 63%, against 70% and 55%
+  for the sum of the separate oracles: once the kappa_3 readouts are true, the fourth-cumulant error costs more
+  (network 1: -24% marginal against -16% alone), which is the compensation of note XXI section 7 seen from the other
+  side.

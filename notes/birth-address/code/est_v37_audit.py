@@ -348,7 +348,7 @@ K4SM_AMP = float(_os.environ.get("V30_K4SM_AMP", "1.0"))
 # variance) and lam a per-layer scalar; the scale mixture's dropped (2+1+1) and (1+1+1+1) classes give the per-neuron
 # lam_i = g (3 s_diag_i^2 + 1.5 s_off_i^2), g read from the chain's own D3.  1 = derived amplitude (times V31_K4D_AMP),
 # 2 = fitted amplitude, derived per-neuron shape (lam_i = lam * shape_i / mean(shape)).
-K4D = int(_os.environ.get("V31_K4D", "0"))
+K4D = int(_os.environ.get("V31_K4D", "0"))   # V38: 3, 4 = derived dropped classes on top of K4Q = 3 (see the regen block)
 # V33 (note XXVIII section 4): exact quartic weight dependence of the kappa4 pair class.  The regenerated core's
 # transported diagonal t_g = (W o W) g_prev is the mean-field (row-sum) form of
 #   Q/2 = [ (W o W)^2 K4 + 3 rowsum(((W o W) K22) o (W o W)) ] / 2
@@ -399,6 +399,14 @@ BIRTH_MODE = _os.environ.get("V36_BIRTH_MODE", "legs")
 ORACLE = _os.environ.get("V37_ORACLE", "")
 ORACLE_FILE = _os.environ.get("V37_ORACLE_FILE", "")
 _ORACLE_DATA = {}
+_np_T = lambda x: x.T.copy()
+OWN = {}   # V37 audit, dump runs: name -> [(layer, the chain's own value before the oracle replaced it)]
+
+
+def _own(name, li, x):
+    if DUMP_LAYERS and x is not None:
+        import numpy as _np
+        OWN.setdefault(name, []).append((li, _np.array(_np.asarray(x), dtype=_np.float64)))
 # V35 audit (emulated): the full drop -- a dropped neuron also loses its own D3 entry and its D21 column (the c index),
 # so nothing at layer li reads its row of any leg (the transports' output rows and the formings could then shrink too)
 SAT_FULL = _os.environ.get("V35_SAT_FULL", "0") == "1"
@@ -918,6 +926,7 @@ class Estimator(BaseEstimator):
         c2_list = []   # per source: w1_b^2 * dG_pre_b
         y_list = []    # per source: (m/4) w2_b       (Y3 = y 1^T)
         g_prev = None  # post-ReLU kappa4 diagonal core of the previous layer
+        mix_prev = None  # V38: previous layer's scale-mixture gains (from kappa_4, from kappa_3)
         k22q = k4q = None  # V33: previous layer's post-activation (2,2) slice and kappa4 diagonal
         var_prev = None
         lam_prev = 0.0
@@ -1336,6 +1345,16 @@ class Estimator(BaseEstimator):
             else:
                 var = fnp.maximum(fnp.diag(C_pre), 1e-10)
                 C_off = _zero_diag(C_pre)
+            if ORACLE and ("VAR" in ORACLE or "COFF" in ORACLE):
+                if not _ORACLE_DATA:
+                    import numpy as _np
+                    _ORACLE_DATA.update({k: v for k, v in _np.load(ORACLE_FILE).items()})
+                if "VAR" in ORACLE:
+                    _own("var", li, var)
+                    var = fnp.asarray(_ORACLE_DATA["var"][li], dtype=f32)     # V37 audit: Monte Carlo variance
+                if "COFF" in ORACLE and C_off is not None:
+                    _own("C_off", li, C_off)
+                    C_off = _zero_diag(fnp.asarray(_ORACLE_DATA["cov"][li], dtype=f32))   # V37 audit: off-diagonal covariance
             mode = 0 if A_st is None else 1
             sat_mask = None
             sat_perm = sat_ridx = None
@@ -1478,6 +1497,15 @@ class Estimator(BaseEstimator):
                         g4row = g4row + (t_q - t_g) * METRIC_C
                     if K4Q == 3 and k22q is not None:
                         g4row = g4row + k4corr * METRIC_C
+                    if K4D in (3, 4) and K4Q == 3 and k22q is not None and mix_prev is not None:
+                        # V38 (note XXXI): derived diagonal = the pair class (mean-field core + quenched rank-k part,
+                        # as K4Q = 3) plus the scale mixture's dropped classes (note XXI section 5) at the source layer's
+                        # mixture gain g (3: from its kappa_4 diagonal, 4: from its kappa_3 diagonal), in place of the
+                        # fitted lambda s_off^2 term:  6 g s_diag^2 s_off^2 + 3 g s_off^4
+                        _so2 = var - WW @ var_prev
+                        _sd2 = var - _so2
+                        _gm = mix_prev[0 if K4D == 3 else 1] * K4D_AMP
+                        g4row = (WW @ g_prev + k4corr) * METRIC_C + _gm * (6.0 * _sd2 * _so2 + 3.0 * _so2 * _so2)
                     if WK4M and wk4m is not None and not trim:
                         _gp = fnp.maximum(g4row, 0.0) / (3.0 * var * var)
                         _sg = fnp.sqrt(_gp)
@@ -1547,10 +1575,24 @@ class Estimator(BaseEstimator):
                     g4row = ones_n * g4v
                     wk4m = _zero_diag(ones2 * g22v)
             else:
-                D3 = D21 = g4row = wk4m = None
+                D3 = D21 = g4row = wk4m = wk431 = None
 
             if ORACLE and "G4" in ORACLE and mode == 1 and g4row is not None and _ORACLE_DATA:
+                _own("g4row", li, g4row)   # the chain's own one-step prediction from oracle inputs (closure test)
                 g4row = fnp.asarray(_ORACLE_DATA["k4"][li], dtype=f32)   # V37 audit: Monte Carlo kappa_4 diagonal
+            if ORACLE and "WK4M" in ORACLE and mode == 1 and wk4m is not None and _ORACLE_DATA:
+                _own("wk4m", li, wk4m)
+                wk4m = _zero_diag(fnp.asarray(_ORACLE_DATA["K22"][li], dtype=f32))   # V37 audit: Monte Carlo (2,2) slice
+            if ORACLE and "K31" in ORACLE and mode == 1 and wk431 is not None and _ORACLE_DATA:
+                # V37 audit: Monte Carlo (3,1) slice; wk431[a, c] = kappa(z_a, z_c, z_c, z_c) = K31[c, a]
+                _own("wk431", li, wk431)
+                wk431 = _zero_diag(fnp.asarray(_np_T(_ORACLE_DATA["K31"][li]), dtype=f32))
+            if K4D in (3, 4) and mode == 1 and g4row is not None:
+                # V38: this layer's mixture gains, read by the next layer's derived dropped classes
+                _v2 = var * var
+                _b3 = 1.5 * mu * var
+                mix_prev = (float(fnp.sum(g4row * _v2) / fnp.sum(3.0 * _v2 * _v2)),
+                            float(fnp.sum(D3 * _b3) / fnp.sum(_b3 * _b3)) if D3 is not None else 0.0)
             if '_g_sm' not in dir() or not K4SM:
                 _g_sm = 0.0
             # ---- wick matrix ----
@@ -1870,7 +1912,7 @@ class Estimator(BaseEstimator):
                 DUMPS.append(dict(layer=li, K21=_g(K21), D21_w=_g(D21_w), D21_new=_g(D21_new), rep21=_g(rep21), S_sep=_g(S_sep), Rres=_g(Rres),
                                   D21=_g(D21), D3=_g(D3), mu=_g(mu), var=_g(var), W_all=_g(W_all), pk1v=_g(pk1v), e_b=_g(e_b), w1=_g(w1), w2=_g(w2),
                                   C_off=_g(C_off), K11=_g(K11), K3v=_g(K3v), S3c=_g(S3c), g4row=_g(g4row), wk4m=_g(wk4m),
-                                  K22=_g(K22), K4v=_g(K4v), K2v=_g(K2v)))
+                                  K22=_g(K22), K4v=_g(K4v), K2v=_g(K2v), wk431=_g(wk431)))
             Om = pool.get("om_r", (n, r))  # V20: contiguous sketch
             fnp.copyto(Om, w32[:, :r])
             if WARM_RES and L_st is not None and k_b > 0:
