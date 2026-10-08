@@ -421,3 +421,15 @@ A result outside raw -0.5% to -1.3% would mean the per-age split (kappa_5, q) is
   - Splitting the two halves takes two runs: rank 336 alone, and nested rank 160 alone.
 - **What stands.** The production ladder stays. The measured optimum (P1, P2 and the error-share law for tier 1) is
   unaffected. What failed is only the extrapolation of the per-age split below the measured tier-2 rank.
+
+**7.5 What section 7 changes in the programme.**
+- **Compression is not the gap.** The chain without any truncation is 2.17e-8 on the 32 networks. That is still 1.45-2
+  times the front of the leaderboard (1.1-1.5e-8), at 0.29 B. No rank, tier or join metric can close that gap: the
+  shared basis costs 5.2%, and the ladder that spends it is the theory's optimum to within 0.7%.
+- **The order K is not the lever either.** ARC's paper for this chain (arXiv:2605.05179) gives MSE ~ c (L/n)^K, with
+  factorized costs ~30 n^3 L^2 at K = 3 and ~24 n^4 L^2 at K = 4. K = 4 is about 100 times this budget, and the
+  production chain already runs K = 3 about 16 times below the paper's count.
+- **The remaining factor is in the K = 3 closure.** Note XXXIII placed it there and section 3 of note XXXVI measured
+  it: incoherent transport defects. A third is the product-gate transport of the all-distinct kappa3, which costs n^4
+  to remove. The rest is of the same class. Signed cancellations between their output images defeat each local repair
+  tested so far.
