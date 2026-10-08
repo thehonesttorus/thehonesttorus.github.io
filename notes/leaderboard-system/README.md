@@ -84,6 +84,13 @@ All candidates run on V35, networks 0-99, scored regime, outputs saved.
 If P1 fails, the reading of section 2 is wrong for the kappa3 law: y2's loss is not double counting against the
 amplitude family, and the opposition it removes lies outside every per-layer amplitude.
 
+**Amendment (before any held-out analysis).** A pilot inside the training set showed that each candidate's own
+ridge choice is noisy. It was fitted on networks 0-24, judged on 25-49, and the base refit recovered only -0.20% at
+that size. With the ridge chosen per candidate, a candidate compared at ridge 0 against a base at ridge 0.1 measures
+the regularization, not the term. The comparison is therefore made in one counterterm family with one
+regularization: every candidate, every free-amplitude fit and the joint fit use the base's ridge. The candidate's own
+choice is printed alongside. The held-out networks 50-99 had not been analysed when this was fixed.
+
 **Decision (adjusted MSE).** T is adopted only if the measured free-running V35 + T + cal_T beats V35 + cal_35 on the
 held-out networks in adjusted MSE, by more than two standard errors, cost included.
 
@@ -109,3 +116,97 @@ of the top-2 range finder, which changes the feedback by at most the non-additiv
 **Strassen leaf minimum 8 for the whole chain** (task of note XXIX section 10). `V26_STRASSEN_MIN=8` on networks
 0-15: raw unchanged to rounding; C/B about -2.4%; it is adopted if the measured local residual of the measured call
 stays within 10% of V35's and VmHWM within 1 GB.
+
+## 4. Phase A, measured
+
+Scored regime, V35 on all 100 networks (`outputs/pa_rows.json`): raw 2.2899e-8, C/B 0.1802, adjusted **4.1273e-9**. This
+reproduces note XXIX section 12 to the last digit.
+
+| held-out networks 50-99 | raw | C/B | adjusted |
+|---|---|---|---|
+| V35 | 2.2670e-8 | 0.1803 | 4.0882e-9 |
+| V35 + cal33 (the V33-fitted amplitudes) | 2.1807e-8 | 0.1804 | **3.9333e-9** |
+| change | -3.80% (per net -3.77 +- 0.37, better on 46/50) | +0.0% | **-3.79%** |
+
+- **The transfer prediction holds.** The measured -3.80% is at the edge of the predicted -3.0% to -3.8%.
+- **The refit misses its band.** Fitted on V35's own errors (networks 0-49, `outputs/refit_v35.txt`), the refit
+  predicts -3.16% +- 0.37 held-out, with coefficients that correlate 0.9992 with cal33's. That is 0.64 points short
+  of the measured transfer, outside the predicted 0.5-point band.
+- **The bias is systematic.** On V33 the first-order prediction was -3.07% against -3.76% measured. In both cases the
+  second order is favourable by about 0.6-0.7 points.
+- **For submission.** The amplitudes are refitted on all 100 networks; the held-out figure above is the estimate of
+  what that buys.
+
+## 5. The five-component audits of the chain's own slices (`code/d21audit.py`, `outputs/*audit_off{0,1}.txt`)
+
+The attached capture audit split the physical D21 table of one cut into additive parts (S0, S1, A1) and flat
+zero-row-sum parts (S2, A2). Here the same exact orthogonal split is applied to three tables:
+- the chain's own pre-activation slices at every layer (free-running dumps, networks 0 and 1);
+- the Monte Carlo truth (1.6e7 inputs);
+- the chain's error.
+
+Each error is noise-corrected with the two independent halves: the noise energy of the full sample is
+|comp(h0 - h1)|^2 / 4. The noise is 1-2% of the error at depth and 10-40% at layers 2-5.
+
+**D21 = kappa(z_i, z_i, z_c).**
+- **The physical structure holds in the chain's tables.** At every layer, on both networks:
+  - the truth is additive plus flat, with S1 = A1 and S2 = A2 to three digits;
+  - the flat share falls with depth, from 0.69 at layer 1 to 0.18 at layer 14;
+  - the flat parts are spectrally flat. Their rank-16 capture runs from 0.10 at layer 1 to 0.55 at layer 14, with the
+    S2 and A2 curves identical (the attached checkpoint measured 0.197 at its layer-5 cut; here 0.235).
+- **The chain's error is flat.** Noise-corrected, the error energy is 0.0005 of the truth's at layer 2, rising to
+  0.0050-0.0054 at layer 14 (7% rms). 90-93% of it is in S2 + A2.
+- **The additive part is accurate.** Measured against each sector's own energy:
+  - the additive part (row and column effects) is right to about 2% rms;
+  - the flat part is off by about 16% rms at depth.
+- **What the flat part is.** It is the incoherent quenched sector that the product-gate transport defect of note XV
+  and the closure round feeds. Sums over rows or columns average an incoherent defect away, so the additive part
+  survives it.
+- **The compression.** The production feedback compresses D21 to rank 2. The best rank 2 keeps 99.8-100% of the
+  additive part and 1-34% of the flat part.
+
+**K31 = kappa(z_a, z_a, z_a, z_c)** (the chain's lam C_off against the truth's (3,1) slice transposed, as the V37
+oracle uses it).
+- **The truth is flat, with an antisymmetric part.** S2 is 0.71-0.88 of its energy and A2 is 0.12-0.29; the additive
+  share is 0.002. The symmetric part becomes low-rank with depth: rank 16 holds 0.24 of S2 at layer 2 and 0.85 at
+  layer 14.
+- **The chain's slice is flat and symmetric.** Its S2 share is 0.998, so the antisymmetric part is missing entirely.
+- **The error is large.** Noise-corrected, 0.53-0.75 of the truth's energy: about 74% rms at every depth.
+- **The calibration was shrinking a noisy estimate.** The calibration's K31 amplitudes at depth (0.50-0.84) are the
+  Wiener shrinkage this error implies: 1/(1 + 0.55) = 0.65.
+
+**K22 = kappa(z_a, z_a, z_b, z_b)** (the chain's (dG_a + dG_b)/3 against the truth).
+- **The truth is mostly a constant.** It is S0 0.86-0.97, S1 0.01-0.10 and S2 0.02-0.05.
+- **The chain's shape is additive by construction.** It misses the flat part entirely.
+- **The error grows with depth.** It is 0.02 of the truth's energy at layer 2 and 0.09-0.11 at layer 14 (32% rms).
+- **The output barely reads it.** Its route share in the first-entry ledger of note XXXVI is 0.016 / -0.007.
+
+**What K31 resembles** (`code/k31struct.py`, `code/k31rows.py`). Explained shares of the noise-corrected K31
+energy, from the truth's own state:
+
+| candidate | layer 2 | layer 8 | layer 14 |
+|---|---|---|---|
+| C_off, one coefficient (the chain's shape at the optimal amplitude) | 0.49 / 0.45 | 0.51 / 0.48 | 0.58 / 0.52 |
+| C_off, one coefficient per row | 0.50 / 0.45 | 0.52 / 0.50 | 0.62 / 0.56 |
+| C var_c (the physical-metric shape), one coefficient | 0.50 / 0.45 | 0.51 / 0.49 | 0.63 / 0.56 |
+| C^2 | 0.34 / 0.31 | 0.44 / 0.42 | 0.61 / 0.57 |
+| row-scaled flat D21, including the gain mode's 3 var_a / mu_a | 0.02 / 0.02 | 0.09 / 0.08 | 0.23 / 0.19 |
+| C and D21, two coefficients per row | 0.50 | 0.56 / 0.54 | 0.69 / 0.63 |
+| the same with both coefficients cubic in alpha (8 global numbers) | 0.50 | 0.55 / 0.53 | 0.67 / 0.61 |
+
+(network 0 / network 1.)
+- **The relation to D21 is weak.** The D21 row coefficient tracks the unit's own state: correlation +0.85 to +0.97
+  with alpha and with its skewness, layers 4-15. It adds only 1-7 points to the covariance shape.
+- **No function of the pair state closes K31.** About 40% of its energy is not a function of the pair state at all,
+  as the flex theorem (note XXXVIII) requires: the (3,1) slice of the next layer is fed by the omitted classes.
+
+**Reading.**
+- **The sectors fail differently.** In the kappa3 sector the chain transports the coherent parts to about 2% and
+  the incoherent flat parts to about 16%. In the kappa4 sector its slices are closures, 32-74% off, and limited by
+  the flex, not by transport.
+- **One wall under both.** The product-gate correction attaches the correlation matrix to a pair of legs. The
+  kappa3 -> kappa4 feed that drives the omitted classes attaches the covariance to one leg. Either way every CP
+  component becomes rank n, so the exact term costs n^4 per source-layer (note XV, closure round section 5).
+- **For the attached proposal.** Exact additive storage plus a response-aware rank for the flat residual addresses a
+  compression loss. The audit puts the chain's flat-sector loss in transport. Phase B's feedback-rank runs price the
+  compression side directly.

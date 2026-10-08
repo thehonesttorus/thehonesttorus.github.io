@@ -45,16 +45,22 @@ for n in tr + va:
 base = {n: np.load(bpat.format(n=n))[-1] for n in resp if have(n, bpat)}
 
 
-def fit(err, cols, ns):
+def fit(err, cols, ns, ridge=None):
     # err: n -> (1024,), cols: n -> (1024, k). Ridge chosen on the second half of ns from a fit on the first half.
+    # The ridge acts on the K counterterm columns only (scaled by their mean diagonal, as in calfit.py); appended
+    # candidate directions are left unpenalized.
     k = next(iter(cols.values())).shape[1]
     def gram(sub):
         G = sum(cols[m].T @ cols[m] for m in sub); g = sum(cols[m].T @ err[m] for m in sub); return G, g
     def solve(G, g, rg):
-        return -np.linalg.solve(G + rg * np.trace(G) / k * np.eye(k), g)
-    h1, h2 = ns[:len(ns) // 2], ns[len(ns) // 2:]
-    G1, g1 = gram(h1)
-    rg = min(RIDGES, key=lambda r: np.mean([np.mean((err[m] + cols[m] @ solve(G1, g1, r)) ** 2) for m in h2]))
+        pen = np.zeros(k); pen[:K] = np.trace(G[:K, :K]) / K
+        return -np.linalg.solve(G + rg * np.diag(pen), g)
+    if ridge is None:
+        h1, h2 = ns[:len(ns) // 2], ns[len(ns) // 2:]
+        G1, g1 = gram(h1)
+        rg = min(RIDGES, key=lambda r: np.mean([np.mean((err[m] + cols[m] @ solve(G1, g1, r)) ** 2) for m in h2]))
+    else:
+        rg = ridge
     G, g = gram(ns)
     return solve(G, g, rg), rg
 
@@ -76,24 +82,41 @@ print(f"{K} directions; base {bpat}: train {len(trb)}, held-out {len(vab)}")
 print(f"  base: held-out raw {mb0.mean():.5e}; refitted (ridge {rgb:g}) {mb1.mean():.5e} "
       "({:+.2f}% +- {:.2f}, better on {})".format(*pct(mb1, mb0)))
 json.dump({"dirs": dirs, "coef": [float(x) for x in bb], "ridge": rgb}, open("refit_coef_base.json", "w"))
-ba, _ = fit(eb, resp, trb + vab)
+ba, _ = fit(eb, resp, trb + vab, ridge=rgb)
 json.dump({"dirs": dirs, "coef": [float(x) for x in ba]}, open("refit_coef_base_all.json", "w"))
+# One counterterm family, one regularization: every candidate is refitted at the base's ridge (its own choice, which is
+# noisy on small training sets, is printed alongside).
 for name, pat in cands:
     ec = {n: np.load(pat.format(n=n))[-1] - truth[n] for n in eb if have(n, pat)}
     trc = [n for n in trb if n in ec]; vac = [n for n in vab if n in ec]
     if not trc or not vac:
         print(f"  {name}: missing outputs ({len(trc)} train, {len(vac)} held-out)"); continue
-    bc, rgc = fit(ec, resp, trc)
-    mc0, mc1 = mse(ec, resp, None, vac), mse(ec, resp, bc, vac)
+    bc, rgc = fit(ec, resp, trc, ridge=rgb)
+    bco, rgo = fit(ec, resp, trc)
+    mc0, mc1, mco = mse(ec, resp, None, vac), mse(ec, resp, bc, vac), mse(ec, resp, bco, vac)
     mb0v, mb1v = mse(eb, resp, None, vac), mse(eb, resp, bb, vac)
     # free amplitude of T: the direction d_T = out_X - out_base appended to the counterterm family, fitted with it
     ext = {n: np.concatenate([resp[n], (ec[n] - eb[n])[:, None]], axis=1) for n in ec}
-    bf, rgf = fit(eb, ext, trc)
+    bf, rgf = fit(eb, ext, trc, ridge=rgb)
     mf1 = mse(eb, ext, bf, vac)
     print(f"  {name}: held-out raw vs base {'{:+.2f}% +- {:.2f} (better on {})'.format(*pct(mc0, mb0v))}; "
-          f"refitted {mc1.mean():.5e} (ridge {rgc:g}); renormalized change vs refitted base "
+          f"refitted {mc1.mean():.5e}; renormalized change vs refitted base "
           + "{:+.2f}% +- {:.2f} (better on {}/".format(*pct(mc1, mb1v)) + f"{len(vac)})"
-          + f"; free amplitude a = {bf[-1]:.3f}, refitted with a free: " + "{:+.2f}% +- {:.2f}".format(*pct(mf1, mb1v)[:2]))
+          + f"; free amplitude a = {bf[-1]:.3f}, refitted with a free: " + "{:+.2f}% +- {:.2f}".format(*pct(mf1, mb1v)[:2])
+          + f" [own ridge {rgo:g}: " + "{:+.2f}%]".format(pct(mco, mb1v)[0]))
     json.dump({"dirs": dirs, "coef": [float(x) for x in bc], "ridge": rgc}, open(f"refit_coef_{name}.json", "w"))
-    ca, _ = fit(ec, resp, trc + vac)
+    ca, _ = fit(ec, resp, trc + vac, ridge=rgb)
     json.dump({"dirs": dirs, "coef": [float(x) for x in ca]}, open(f"refit_coef_{name}_all.json", "w"))
+    cands_err = globals().setdefault("CERR", {}); cands_err[name] = ec
+# Joint free amplitudes (first-order superposition): every candidate direction d_T = out_T - out_base appended to the
+# counterterm family at once. A diagnostic of which derived terms the output metric wants together, not a derivation.
+CERR = globals().get("CERR", {})
+if len(CERR) > 1:
+    names = sorted(CERR)
+    common = [n for n in eb if all(n in CERR[t] for t in names)]
+    trj = [n for n in trb if n in common]; vaj = [n for n in vab if n in common]
+    ext = {n: np.concatenate([resp[n]] + [(CERR[t][n] - eb[n])[:, None] for t in names], axis=1) for n in common}
+    bj, rgj = fit(eb, ext, trj, ridge=rgb)
+    mj = mse(eb, ext, bj, vaj); mb1j = mse(eb, resp, bb, vaj)
+    print("  joint free amplitudes (ridge %g): " % rgj + " ".join(f"{t} {a:+.3f}" for t, a in zip(names, bj[-len(names):]))
+          + "; held-out vs refitted base " + "{:+.2f}% +- {:.2f} (better on {})".format(*pct(mj, mb1j)))

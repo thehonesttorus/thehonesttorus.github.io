@@ -1,0 +1,6 @@
+10300
+100
+103 directions; base pa/o35_{n}.npy: train 50, held-out 50
+  base: held-out raw 2.26695e-08; refitted (ridge 0) 2.19535e-08 (-3.16% +- 0.37, better on 45)
+
+[exit 0 after 69s on ip-172-31-33-96, 4 cores, threads 4]
