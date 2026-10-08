@@ -323,6 +323,10 @@ _NI = _os.environ.get("V43_NULL_INJ", "")
 NI_LAYER, NI_G, NI_PARTS, NI_EPS = ((int(_NI.split(":")[0]), _NI.split(":")[1], int(_NI.split(":")[2]),
                                      float(_NI.split(":")[3])) if _NI else (-1, "", 0, 0.0))
 NI_GVEC = None
+# V44: physical-metric shape of the lam core at unchanged mean amplitude: the gain mode's (3,1) and (2,1,1) entries
+# are 12 t var_c C_ac and 4 t var_a C_bc (Sigma.Sigma), not var-free (2I.G); scale by var/mean(var)
+PMETRIC = _os.environ.get("V44_PMETRIC", "0") == "1"
+ESEP = _os.environ.get("V45_ESEP", "0") == "1"   # V45: row-scaled separable part of the (2,1) residual onto the A leg
 NI_CONS = _os.environ.get("V43_NI_CONS", "1") == "1"   # 0 reproduces the first (inconsistent) audit
 NO_WK431 = _os.environ.get("V17_NO_WK431", "0") == "1"
 NO_REGEN = _os.environ.get("V17_NO_REGEN", "0") == "1"
@@ -1544,6 +1548,8 @@ class Estimator(BaseEstimator):
                     g22c = (dG * (METRIC_C / 6.0))[:, None]
                     wk4m = _zero_diag(fnp.add(g22c, g22c.T, out=NN("wk4m")))
                     wk431 = None if trim else fnp.multiply(C_off, (0.5 * METRIC_C * lam_prev), out=NN("wk431"))
+                    if PMETRIC and wk431 is not None:
+                        wk431 = fnp.multiply(wk431, (var * (1.0 / fnp.mean(var)))[None, :], out=wk431)
                     if K4Q == 2 and t_q is not None and BETA != 0.0:
                         g4row = g4row + (t_q - t_g) * METRIC_C
                     if K4Q == 3 and k22q is not None:
@@ -1916,6 +1922,8 @@ class Estimator(BaseEstimator):
                 # + (1/3) v u^T;  D3 += dgw*y + u*v.
                 w1sq = w1 * w1
                 y_b = w2 * (0.25 * METRIC_C)
+                if PMETRIC:
+                    y_b = y_b * (var * (1.0 / fnp.mean(var)))
                 if li == NI_LAYER and (NI_PARTS & 8) and NI_GVEC is not None and lam_prev != 0.0:
                     # V43: Sym(lam M x (y + w2 g / (4 lam))) adds the null tuple's (2,1,1) transfer (1/4) Sym(M x w2 g);
                     # the extra pair-supported entries are absorbed by this birth's M-block like the rest of the feed
@@ -2024,6 +2032,17 @@ class Estimator(BaseEstimator):
             S_sep = fnp.multiply((e_b)[:, None], C_off, out=NN("ssep"))
             S_sep = _zero_diag(fnp.multiply(S_sep, (w1)[None, :], out=S_sep))
             Rres = fnp.subtract(S21, S_sep, out=S21)
+            if ESEP:
+                # V45: the post-activation trace core's (2,1) slice holds diag(v) C^y, full rank (ray-compiler note,
+                # section 3k(4)). Its row-scaled part rides on the A leg like S_sep, for free: fit u_i by least
+                # squares on row i of Rres against C_off[i, :] w1, move diag(u) C_off diag(w1) from Rres into S_sep.
+                _B = fnp.multiply(C_off, (w1)[None, :], out=NN("esepb"))
+                _num = fnp.sum(fnp.multiply(Rres, _B), axis=1)
+                _den = fnp.sum(fnp.multiply(_B, _B), axis=1) + 1e-30
+                _u = _num / _den
+                e_b = e_b + _u
+                fnp.multiply(_B, (_u)[:, None], out=_B)
+                fnp.subtract(Rres, _B, out=Rres)
             if DUMP_LAYERS and li in DUMP_LAYERS:
                 import numpy as _np
                 _g = lambda x: None if x is None else _np.array(_np.asarray(x), dtype=_np.float64)

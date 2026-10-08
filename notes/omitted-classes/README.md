@@ -756,6 +756,37 @@ at layers 8-15 against |true - Gauss| ~ 5e-4, and the image of -H is 3.2% of the
 - **For the estimator.** The anomaly that remains has two located sources, the rank-4 Rres and the lam feed's missing
   per-unit shape. Whether removing it lowers the error is an output question (section 3l).
 
+### 3l. The output tests of section 3k's leads (32 networks, paired against production)
+
+All runs used nets 0-31 with the dataset's own truth, paired per network against the production baseline (mean raw
+2.281e-8). FLOPs are from flopscope; the residual wall time is machine-noisy and left out of the comparison.
+
+| variant | raw MSE change (per-net mean +- s.e.) | better on | FLOPs (B) | MSE x FLOPs |
+|---|---|---|---|---|
+| production (R_RES 4) | 0 | - | 0.2131 | 4.86e-9 |
+| birth M-block rank R_RES 16 | -1.38% +- 0.41 | 25/32 | 0.2190 | +1.4% |
+| R_RES 32 | -1.98% +- 0.52 | 24/32 | 0.2268 | +4.3% |
+| R_RES 64 | -2.17% +- 0.59 | 24/32 | 0.2425 | +11% |
+| separable (2,1) projection onto the A leg (V45_ESEP) | +0.36% +- 0.34 | 8/32 | 0.2131 | +0.3% |
+| physical-metric (3,1) and feed shapes (V44_PMETRIC) | +0.28% +- 0.18 | 4/32 | 0.2131 | +0.2% |
+| physical (2,2) slice (V33_WK4M = 1) | +5.48% +- 0.51 | 0/32 | - | - |
+| both of the last two | +8.94% +- 1.09 | 1/32 | - | - |
+
+- **The audit predicted a real accuracy lever.** The rank-4 (2,1) residual is a measured accuracy loss: -2.2% at rank
+  64, significant at 3.6 sigma. An earlier output tuning had read the output as flat from rank 4 to 32. The thin legs
+  carry R_RES + 2 columns through every layer, though, so the cost grows faster than the MSE falls, and the score is
+  worse at every rank tried.
+- **The structured fix does not reproduce the gain.** V45_ESEP moves the row-scaled part diag(u) C_off diag(w1) of the
+  residual onto the A leg for free; it is the post-activation trace core's full-rank part, the audit's anomaly source.
+  It changes nothing. The rank's gain is generic accuracy of the residual, not its gauge structure.
+- **Physical shapes lose, as before.** The fitted lam core is a counterterm; physical shapes at unchanged mean
+  amplitude make the output worse.
+- **Reading.** The chain's free-run error lies almost entirely in visible directions: nullalign (3)-(4), and these
+  tests. Gauge covariance is not where the remaining error is, so the quotient programme will not close the gap by
+  removing an anomaly. What it does offer is a cost argument: the truth's kappa4 is 93-98% null content, so a chain
+  that is covariant by construction need not carry it. That needs a representation in which the gain mode is factored
+  out of kappa3 as well, which note E11 found is not where the old-source content lives.
+
 ### 3d. In the chain: G D in place of the lam core (V39_KD)
 
 `est_v29.py` switch V39_KD builds G_l D_l at every layer from the chain's own state:
