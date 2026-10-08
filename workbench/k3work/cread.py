@@ -82,7 +82,8 @@ for k in range(L):
             dmu = np.zeros(n)
         else:
             dmu = W @ (g(O, "pk1v", k - 1) - mt[k - 1])
-        Cz = offd(sym(g(O, "C_off", k))) + np.diag(g(O, "var", k))
+        Co = g(O, "C_off", k)                         # not formed at the last layer, whose readout uses var only
+        Cz = (offd(sym(Co)) if Co is not None else np.zeros((n, n))) + np.diag(g(O, "var", k))
         dCz = Cz - Czt
         dm = g(O, "pk1v", k) - mt[k]
         bm, bv, bC = B(k, dmu, dCz)

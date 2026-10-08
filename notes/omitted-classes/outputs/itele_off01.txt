@@ -1,0 +1,42 @@
+net 0: free-running n MSE 2.3058e-05; all-oracle through layer 15: noise-free -1.2% of free (half A 38.8%, half B 43.3%)
+  step k: created-error effect = <e_(k-1)^A, e_(k-1)^B> - <e_k^A, e_k^B>, % of the free n MSE (+- half difference); cumulative
+     0:   +1.63 (+- 1.79)   cum   +1.63
+     1:   -0.11 (+- 0.36)   cum   +1.51
+     2:   -1.52 (+- 0.85)   cum   -0.00
+     3:   -0.15 (+- 1.64)   cum   -0.15
+     4:   -0.05 (+- 4.42)   cum   -0.20
+     5:   +3.38 (+- 3.91)   cum   +3.18
+     6:   +1.04 (+- 0.03)   cum   +4.22
+     7:  +10.52 (+- 1.53)   cum  +14.74
+     8:   +6.96 (+- 3.37)   cum  +21.70
+     9:   +9.60 (+- 0.13)   cum  +31.30
+    10:  +10.37 (+- 3.73)   cum  +41.67
+    11:   +8.92 (+- 0.20)   cum  +50.59
+    12:  +11.01 (+- 1.50)   cum  +61.59
+    13:  +14.68 (+- 5.79)   cum  +76.28
+    14:  +12.67 (+- 0.77)   cum  +88.94
+    15:  +12.25 (+- 0.05)   cum +101.19
+net 0 tele    : all-oracle output error, noise-free  -1.19% of the free n MSE (half A 38.77%, half B 43.31%)
+net 0 teleinc : all-oracle output error, noise-free  -1.19% of the free n MSE (half A 38.77%, half B 43.31%)
+
+net 1: free-running n MSE 2.1762e-05; all-oracle through layer 15: noise-free -2.8% of free (half A 41.5%, half B 53.9%)
+  step k: created-error effect = <e_(k-1)^A, e_(k-1)^B> - <e_k^A, e_k^B>, % of the free n MSE (+- half difference); cumulative
+     0:  -11.04 (+- 3.47)   cum  -11.04
+     1:   -1.32 (+- 6.70)   cum  -12.36
+     2:   +2.86 (+- 1.74)   cum   -9.50
+     3:   +1.44 (+- 3.14)   cum   -8.06
+     4:   +8.28 (+- 1.22)   cum   +0.22
+     5:   +2.16 (+- 6.15)   cum   +2.38
+     6:   +0.17 (+- 2.52)   cum   +2.56
+     7:   -0.95 (+- 0.25)   cum   +1.61
+     8:   +1.83 (+- 3.82)   cum   +3.44
+     9:  +13.67 (+- 2.25)   cum  +17.11
+    10:   +4.89 (+- 4.43)   cum  +22.00
+    11:  +20.45 (+- 2.55)   cum  +42.45
+    12:  +12.36 (+- 0.93)   cum  +54.81
+    13:  +15.51 (+- 7.03)   cum  +70.32
+    14:  +16.85 (+- 2.80)   cum  +87.17
+    15:  +15.59 (+- 0.58)   cum +102.76
+net 1 tele    : all-oracle output error, noise-free  -2.76% of the free n MSE (half A 41.52%, half B 53.94%)
+net 1 teleinc : all-oracle output error, noise-free  -2.76% of the free n MSE (half A 41.52%, half B 53.94%)
+

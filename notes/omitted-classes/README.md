@@ -644,6 +644,117 @@ homogeneous F of degree p,
   layer and measures the chain's output response, whose exact value is 0; no truth is needed. It needs injection hooks
   that place mu.G/4 in the kappa3 state (the readouts and the legs), not only in the readouts.
 
+### 3k. The staged tests, run: the error is transport, the truth's kappa4 is a consistent gain mode, and the chain's transport is not gauge-covariant
+
+Everything here ran on Modal (`infra/modal/mjob.py`), after the Azure and AWS pools were dropped.
+- **Monte Carlo.** mc2 (seeds 301/302) and mc4 (401/402, post-activations) were regenerated in 16 independent chunks per
+  pass (`code/mcchunk.py`, `code/mcmerge.py`): 1.6e7 samples per pass, two halves of 8e6.
+- **Comparisons.** The output comparisons use the dataset's own all-layer truth.
+- **Baseline.** Production on nets 0-31 has mean raw MSE 2.281e-8 (standard error 0.045e-8). Nets 0 and 1 are typical.
+
+**(1) Where the error is created: intervention telescoping** (`code/itele.py`, consistent oracles V41_ORC_CONSIST = 1,
+`outputs/itele_off01.txt`). Oracles D3 D21 G4 WK4M K31 VAR COFF MU are applied at layers 0..k, one half of the Monte
+Carlo per run. The step effect is <e_(k-1)^A, e_(k-1)^B> - <e_k^A, e_k^B>, noise-free.
+
+| % of the free n MSE | layers 0-6 (cumulative) | each of layers 7-15 | all layers oracled |
+|---|---|---|---|
+| net 0 | +4.2 | +7 to +15 | -1.2 |
+| net 1 | +2.6 | -1 to +20 (9-15: +5 to +20) | -2.8 |
+
+- **Transport, not readout.** With true inputs at every layer the noise-free output error is zero within the
+  oracle-noise bias. That bias appears as net 1's -11 +- 3.5 at layer 0, where the chain is exact.
+- **Where.** The error is created uniformly over layers 7-15. The suffix kernel's prior (`../ray-compiler`, section 2)
+  puts the higher-order weights there.
+- **Endpoint.** The consistent and inconsistent all-oracle endpoints agree to print precision, as they must: when every
+  layer's readouts are replaced, the legs are never read.
+
+**(2) The readout at true inputs, all channels** (`code/cread.py`, `outputs/cread_off{0,1}.txt`; output images of the
+defect, % of the baseline n MSE).
+
+| | mean | var_y | C_off | all, energy | all, share of e |
+|---|---|---|---|---|---|
+| net 0 | +9.0 (1.7) | +0.5 | +4.9 (1.1) | +4.0 (3.2) | +6.0 +- 3.2 |
+| net 1 | -1.3 (1.6) | -0.3 | -5.1 (1.8) | +1.3 (1.6) | +0.9 +- 1.4 |
+
+The second-moment readout carries at most a few percent. kquery on the new Monte Carlo replicates section 3i: |H| ~ 1e-5
+at layers 8-15 against |true - Gauss| ~ 5e-4, and the image of -H is 3.2% of the MSE on net 1 (`outputs/kquery_modal_off*`).
+
+**(3) The truth's kappa4 is the gain mode, with one amplitude across channels** (`code/nullalign.py`,
+`outputs/nullalign_off{0,1}.txt`). Gain amplitudes are fitted per slice to the gain-tangent templates.
+
+| layer 14 | t4 diag | t4 (2,2) | t4 (3,1) | t3 diag | t3 D21 |
+|---|---|---|---|---|---|
+| truth, net 1 | 4.99e-3 (0.93) | 5.02e-3 (0.93) | 5.08e-3 (0.56) | 5.00e-3 (0.92) | 5.00e-3 (0.84) |
+| chain, net 1 | 4.22e-3 | 4.25e-3 | 2.88e-3 | 4.91e-3 | 4.94e-3 |
+| truth, net 0 | 5.28e-3 (0.95) | 5.26e-3 (0.94) | 5.56e-3 (0.63) | 5.53e-3 (0.93) | 5.48e-3 (0.86) |
+| chain, net 0 | 4.36e-3 | 4.44e-3 | 2.98e-3 | 5.44e-3 | 5.41e-3 |
+
+(in brackets: the template's explained fraction)
+
+- **The truth.**
+  - Its kappa4 diagonal is 93-98% gain shape at every layer, and its (2,2) slice is 76-85% a trace core in either metric.
+  - From layer ~11 on, the kappa3 and kappa4 amplitudes coincide (t3 = t4 within 1-5%). At shallow layers t3 > t4
+    (layer 1: 1.6e-3 against 0.8e-3).
+- **The chain.**
+  - Its kappa3 carries 98% of the true amplitude, its kappa4 diagonal and (2,2) 83-85%, and its (3,1) slice
+    (lam C_off) 54-57%.
+  - Its (3,1) slice is exactly a 2I trace core, while the truth's is only 37-67% trace core.
+- **The per-unit check is null.** The per-unit mean error this inconsistency predicts at the same layer is not aligned
+  with the chain's query errors (cos -0.08 to +0.05). The inconsistency does not act through the readout of its own
+  layer.
+
+**(4) The null-source audit: the chain's transport is not gauge-covariant** (V43_NULL_INJ, `code/nullinj.py`,
+`code/nullinj2.py`, `../ray-compiler/outputs/nullaudit_off01.txt`).
+- **The injection.** At layer l, the exact degree-1 null tuple of a diagonal gauge field G = diag(g), with every
+  part the chain represents:
+  - covariance: dvar = g/12;
+  - kappa3: dD3 = mu g/4, dD21_ab = mu_b g_a/12;
+  - kappa4: dg4row = var g, dwk4m = (var_a g_b + var_b g_a)/6, dwk431_ac = C_ac g_c/2;
+  - the (2,1,1) entries C_bc g_a/6, through the K4 -> K3 feed.
+
+  A diagonal G has no all-distinct entries, so no leg slot is needed. The exact response of every mean is zero.
+- **The protocol.** Two shapes: g = 12 eps var, the diagonal of the gain mode, and g = 12 eps var o (random signs).
+  eps = +-1e-3 with central differences, layers 3, 7, 11, 14, nets 0 and 1. Responses are reported as fractions of the
+  covariance part's own response.
+
+| full tuple / covariance part | layer 3 | layer 7 | layer 11 | layer 14 |
+|---|---|---|---|---|
+| gain shape, net 0 / net 1 | 0.38 / 0.48 | 0.69 / 0.84 | 0.71 / 0.74 | 0.60 / 0.61 |
+| random shape, net 0 / net 1 | 0.38 / 0.31 | 0.35 / 0.37 | 0.25 / 0.22 | 0.11 / 0.11 |
+
+- **Where it fails.** At the injection layer itself the response is 0.01-0.04: the per-unit readout identity holds. The
+  residual appears at the first transport step after it and then persists.
+- **By part.**
+  - The kappa4 part has the right size, 0.7-1.4 of the covariance response, but only 50-85% alignment.
+  - The kappa3 part is mostly orthogonal to what it must cancel; for random g it points slightly the wrong way.
+- **The feed.** The (2,1,1) feed term halves the random-shape residual (layer 7: 0.68 -> 0.35), confirming the
+  feed-shape defect of `../ray-compiler` section 3(a). It does nothing for the gain shape.
+- **Sensitivity.** A 0.1% variance perturbation at layer 3 moves the output by 1.5 times the baseline error, and its
+  exact companions remove only 52-62% of that.
+
+**What (1)-(4) say together.**
+- **The chain is accurate at the true state and anomalous along exact symmetries.** Item (1) says the readout at the
+  true state is essentially exact. Item (4) says the transport mishandles perturbations along exact null directions by
+  O(1). So any null component of the chain's state error is turned into visible error with a factor of about 0.5.
+- **The fitted lam is a counterterm for that anomaly.** The truth's kappa4 is about 95% null content (the gain mode,
+  item 3). Raising the chain's kappa4 to the physical amplitude therefore loads the anomalous direction. This explains
+  why every derived amplitude made the output worse:
+  - derived 3 g var^2: +53% (net 0);
+  - x1.19 diagonal: +58% (net 0);
+  - KD: +9%;
+  - note XXI section 7: +9% and +50%.
+
+  The output-tuned lam is the amplitude at which the chain's partial cancellation of the gain mode is least harmful,
+  not the physical one. This is what note E11 called the Birkhoff counterterm of the chain's truncation, now located.
+- **The anomaly's source.** The kappa4 regeneration models the (2,1,1) transfer as lam s_off^2, with a tabled lam
+  and the 2I metric. Under a gauge perturbation it responds through s_off^2 with a fixed coefficient, while the true
+  transfer responds through the gain amplitude itself. The kappa3 part's orthogonality points to the same mechanism in
+  the newborn's closure. Its first-order-in-C trace core (Sigma^y.v^y, v^y = rho o g/4) is present only through the
+  feed's lam term, at the lam amplitude.
+- **For the estimator.** The route this opens is to make the transport gauge-covariant, then quotient the gain mode
+  out of the carried state ("quotient before truncation"), so that no counterterm is needed. Repairs that only change
+  amplitudes cannot work while the anomaly is there.
+
 ### 3d. In the chain: G D in place of the lam core (V39_KD)
 
 `est_v29.py` switch V39_KD builds G_l D_l at every layer from the chain's own state:

@@ -313,6 +313,16 @@ METRIC_C = 2.0
 import os as _os
 import gc as _gc
 NO_FEED = _os.environ.get("V17_NO_FEED", "0") == "1"
+# V43 (note ray-compiler, section 4): exact null-source audit. "LAYER:GTYPE:PARTS:EPS" injects at the pre-activation of
+# LAYER the degree-1 null tuple of a diagonal gauge field G = diag(g), g = 12 EPS x (var | mean(var) 1 | var o signs):
+#   PARTS & 1: dvar = g/12;   & 2: dD3 = mu g/4, dD21[a,b] = mu_b g_a/12;
+#   & 4: dg4row = var g, dwk4m[a,b] = (var_a g_b + var_b g_a)/6, dwk431[a,c] = C_ac g_c/2;
+#   & 8: the (2,1,1) entries C_bc g_a/6 through the K4 -> K3 feed (y += w2 g/(4 lam)).
+# Diagonal G has no all-distinct kappa3 or kappa4 entries, so nothing else is needed; the exact response of every mean is 0.
+_NI = _os.environ.get("V43_NULL_INJ", "")
+NI_LAYER, NI_G, NI_PARTS, NI_EPS = ((int(_NI.split(":")[0]), _NI.split(":")[1], int(_NI.split(":")[2]),
+                                     float(_NI.split(":")[3])) if _NI else (-1, "", 0, 0.0))
+NI_GVEC = None
 NO_WK431 = _os.environ.get("V17_NO_WK431", "0") == "1"
 NO_REGEN = _os.environ.get("V17_NO_REGEN", "0") == "1"
 NO_FB = _os.environ.get("V18_NO_FB", "0") == "1"  # V18: D21 feedback thin legs off
@@ -1666,6 +1676,32 @@ class Estimator(BaseEstimator):
                             float(fnp.sum(D3 * _b3) / fnp.sum(_b3 * _b3)) if D3 is not None else 0.0)
             if '_g_sm' not in dir() or not K4SM:
                 _g_sm = 0.0
+            if li == NI_LAYER and mode == 1:
+                global NI_GVEC
+                import numpy as _np
+                _v0 = _np.asarray(var, dtype=_np.float64)
+                if NI_G == "one":
+                    _gn = _np.full(n, _v0.mean())
+                elif NI_G == "rnd":
+                    _gn = _v0 * _np.random.default_rng(4321).choice([-1.0, 1.0], n)
+                else:
+                    _gn = _v0.copy()
+                _gn = _gn * (12.0 * NI_EPS)
+                NI_GVEC = fnp.asarray(_gn, dtype=f32)
+                _gv = NI_GVEC
+                _var0 = fnp.multiply(var, 1.0)
+                if NI_PARTS & 1:
+                    var = var + _gv * (1.0 / 12.0)
+                if NI_PARTS & 2:
+                    D3 = D3 + mu * _gv * 0.25
+                    if D21 is not None:
+                        D21 = D21 + _zero_diag(fnp.multiply(_gv[:, None], mu[None, :])) * (1.0 / 12.0)
+                if NI_PARTS & 4:
+                    g4row = g4row + _var0 * _gv
+                    if wk4m is not None:
+                        wk4m = wk4m + _zero_diag(_var0[:, None] * _gv[None, :] + _gv[:, None] * _var0[None, :]) * (1.0 / 6.0)
+                    if wk431 is not None and C_off is not None:
+                        wk431 = wk431 + C_off * (_gv * 0.5)[None, :]
             # ---- wick matrix ----
             sigma = fnp.sqrt(var)
             alpha = mu / sigma
@@ -1875,6 +1911,10 @@ class Estimator(BaseEstimator):
                 # + (1/3) v u^T;  D3 += dgw*y + u*v.
                 w1sq = w1 * w1
                 y_b = w2 * (0.25 * METRIC_C)
+                if li == NI_LAYER and (NI_PARTS & 8) and NI_GVEC is not None and lam_prev != 0.0:
+                    # V43: Sym(lam M x (y + w2 g / (4 lam))) adds the null tuple's (2,1,1) transfer (1/4) Sym(M x w2 g);
+                    # the extra pair-supported entries are absorbed by this birth's M-block like the rest of the feed
+                    y_b = y_b + w2 * NI_GVEC * (0.25 / lam_prev)
                 dgw = w1sq * dG
                 u_b = y_b * dG
                 c1_b = w1 * lam_prev

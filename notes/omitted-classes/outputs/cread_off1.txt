@@ -1,0 +1,25 @@
+net 1: readout of (nearly) true inputs, all channels; oracle runs chain_off1_or_h0.npz, chain_off1_or_h1.npz; baseline n MSE 2.1762e-05
+  oracle run output n MSE 7.5836e-06
+  oracle run output n MSE 8.9336e-06
+  per layer: |dC^y_off|/|C^y_off| of the oracle run, |readout defect|/|dC^y|, |input-response part|/|dC^y|
+     0: 0.0158 0.471 0.881
+     1: 0.0134 0.558 0.829
+     2: 0.0103 0.500 0.864
+     3: 0.0086 0.473 0.879
+     4: 0.0075 0.452 0.889
+     5: 0.0067 0.431 0.900
+     6: 0.0060 0.398 0.914
+     7: 0.0054 0.389 0.921
+     8: 0.0050 0.379 0.923
+     9: 0.0046 0.365 0.929
+    10: 0.0043 0.365 0.929
+    11: 0.0040 0.337 0.941
+    12: 0.0038 0.352 0.937
+    13: 0.0035 0.343 0.941
+    14: 0.0034 0.358 0.932
+  output images of the readout defect, % of the baseline n MSE: energy noise-free (half-split noise) | share <image, e>/|e|^2
+    mean  :   -1.25 (1.55) |  +0.36 +- 0.23
+    var_y :   -0.28 (0.16) |  +0.22 +- 0.99
+    C_off :   -5.13 (1.82) |  +0.29 +- 0.63
+    all   :   +1.31 (1.58) |  +0.88 +- 1.40
+

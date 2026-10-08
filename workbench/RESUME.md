@@ -24,6 +24,17 @@ The research record is `notes/omitted-classes/README.md`; sections 3h-3j are the
 - `stagemap/` holds read-only maps of the transport stages of `est_v29.py`, for the kappa3 legs and the kappa4 sector.
   They come from a design workflow on 2026-10-08; its other parts had not finished.
 
+## Compute (from 2026-10-08)
+
+Modal, through `infra/modal/mjob.py`:
+- **The app.** It is deployed once as claude-whest and called by name; any code change redeploys automatically.
+- **The volume `whest-data`.** It holds all 100 official networks (`/data/official`), the regenerated Monte Carlo and
+  dumps (`/data/k3work`), and every job's outputs (`/data/out/JOB`).
+- **Running jobs.** `mjob.py batch JOB FILE` runs one container per "tag<TAB>command" line.
+- **Monte Carlo.** `k3work/mcchunk.py` and `mcmerge.py` replace the single-process `mcstats.py` pass with 16 merged chunks.
+
+The Azure and AWS pools are retired; the AWS instances are stopped, not terminated.
+
 ## Software
 
 Python 3.12 in a venv, with:

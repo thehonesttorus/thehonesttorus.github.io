@@ -158,9 +158,16 @@ Together they bound where work pays.
 
   Monte Carlo mc2 and mc4 were regenerated on Modal in 16 independent chunks each (`k3work/mcchunk.py`,
   `k3work/mcmerge.py`). The shift is fixed by the dataset's own means, so chunks merge exactly.
-- **Next, by what those return.**
-  - If the truth's kappa4 slices are a trace core in Sigma and the chain's amplitudes are inconsistent: the physical-
-    metric core, with the feed completed by the rho_a dG_a (Phi C Phi)_bc term.
-  - Then the degree-graded gauge field of 3(b).
-  - The Omega(G) audit (a synthetic kappa3 slot, stage map 11) measures the chain's own response to an exact null
-    injection; the true value is zero.
+- **What they returned** (note XXXVI section 3k).
+  - Telescoping: the error is created uniformly over layers 7-15, and with true inputs everywhere the output error
+    vanishes. The readout at true inputs carries at most a few percent (cread).
+  - nullalign: the truth's kappa4 is the gain mode, with t3 = t4 from layer ~11 on. The chain's kappa4 carries 83-85% of
+    that amplitude (54-57% in the (3,1) slice), and its kappa3 98%.
+  - The Omega audit (V43_NULL_INJ, diagonal gauge field, every part the chain represents, including the (2,1,1) feed
+    term of section 3(a)): the chain's output responds to an exact null injection with 0.1-0.8 of the covariance
+    part's own response (`outputs/nullaudit_off01.txt`). The response is about zero at the injection layer; the
+    anomaly is created by the first transport step after it. The feed term halves it for random gauge shapes and does
+    nothing for the gain shape.
+  - Reading: the fitted lam is a counterterm for this anomaly. The next step is gauge-covariant transport, starting
+    with the kappa4 regeneration's lam s_off^2 stand-in for the (2,1,1) transfer, then quotienting the gain mode out of
+    the carried state.
