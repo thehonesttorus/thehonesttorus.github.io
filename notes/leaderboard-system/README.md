@@ -321,3 +321,28 @@ paired against V35 in the same harness, networks 0-15:
 - **P6.** Adding GC2 at the theorem's weight (`V40_FB_SX=2` as well) is within 1 point of P5's run.
 - **P7 (rank).** The gain grows with the feedback rank roughly as the captured flat energy: rank 64 gives 40-50% of
   the exact feedback's gain, rank 256 gives 75-90%.
+
+**The feedback at the production point and at rank 16** (scored regime, 100 networks, paired against V35;
+`outputs/pb_rows.json`, `outputs/fbadd_rows.json`):
+
+| | raw | C/B | adjusted | worse on |
+|---|---|---|---|---|
+| fbadd (exact additive part in place of the top-2 range finder) | +0.70% +- 0.06 | -0.05% | **+0.64%** | 86/100 |
+| fb16 (range finder at rank 16) | -2.92% +- 0.10 | +6.44% | **+3.32%** | 100/100 |
+| exact (rank 1024, cold harness, 16 networks) | -8.59% +- 0.70 | x5.5 | | 16/16 |
+
+- **The attached proposal at rank 2 is adverse.** The top-2 range finder keeps some flat content (section 5: 1-34%),
+  and dropping it costs 0.70%. That is just outside the predicted +-0.5%, in the direction the exact feedback
+  explains.
+- **The gain grows steadily with rank:** -0.7% for the additive part only, -2.9% at rank 16, -8.6% exact. This is
+  the signature of the flat sector, which no rank truncation concentrates.
+- **The cost grows with rank too.** The thin feedback legs are carried, unconfined, by every source: +6.4% C/B at
+  rank 16 and x5.5 at full rank. Every rank tried loses in adjusted MSE.
+- **What the exact feedback is.** It is the GC1/GC2 transport of every existing source, collected into the newborn:
+  the arm of centre u is row u of D21. Its information is the whole n x n table at each birth. An efficient exact
+  form therefore needs one more dense leg per young source: about double the young tier, roughly +57% of the bill
+  against -8.6% raw.
+
+**Strassen leaf minimum 8** (`V26_STRASSEN_MIN=8`, networks 0-15). On V35 it changes nothing: raw and C/B are identical
+to the last digit, and the residual is within noise (-1.2% +- 0.5). V35's own leaf minima (`V35_SB_MN`, `V35_CPRE_MN`,
+`V35_JN_MN`) already took the saving the V33 measurement had found. Not adopted, and nothing is lost.
