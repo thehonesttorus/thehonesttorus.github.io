@@ -206,6 +206,19 @@ energy, from the truth's own state:
 - **No function of the pair state closes K31.** About 40% of its energy is not a function of the pair state at all,
   as the flex theorem (note XXXVIII) requires: the (3,1) slice of the next layer is fed by the omitted classes.
 
+**Which basis concentrates K31** (`code/k31basis.py`, `outputs/k31basis_off{0,1}.txt`; the open question of note
+XXXVIII section 9). Captured share of the noise-corrected K31 energy, two-sided projection, at K = 16 (net 0 / net 1):
+
+| basis | layer 2 | layer 8 | layer 15 |
+|---|---|---|---|
+| K31's own SVD (oracle) | 0.29 / 0.29 | 0.58 / 0.60 | 0.85 / 0.84 |
+| top covariance eigenvectors (test S's choice) | 0.12 / 0.11 | 0.37 / 0.37 | 0.66 / 0.61 |
+| D21's right singular vectors on both sides | 0.11 / 0.11 | 0.39 / 0.39 | 0.68 / 0.64 |
+
+- **No carried basis comes close.** The best one gains 0.02-0.03 on the covariance eigenvectors at depth. K31's own
+  basis would change the cost argument of note XXXVIII, but it is not computable from the carried state.
+- **The verdict stands.** The carried-symbol state remains closed for cost.
+
 **Reading.**
 - **The sectors fail differently.** In the kappa3 sector the chain transports the coherent parts to about 2% and
   the incoherent flat parts to about 16%. In the kappa4 sector its slices are closures, 32-74% off, and limited by
@@ -216,3 +229,62 @@ energy, from the truth's own state:
 - **For the attached proposal.** Exact additive storage plus a response-aware rank for the flat residual addresses a
   compression loss. The audit puts the chain's flat-sector loss in transport. Phase B's feedback-rank runs price the
   compression side directly.
+
+## 6. Phase B, measured: renormalization repairs the conventions, not the law term (`outputs/refit_phaseB_heldout.txt`)
+
+Train on networks 0-49, judge on 50-99, one ridge for all (0, the base's choice). The base refit predicts -3.16% +- 0.37
+held-out. Changes are of raw MSE, paired per network.
+
+| candidate | class | free-running, held-out | renormalized change | better on | free amplitude a |
+|---|---|---|---|---|---|
+| y2 | law (GC1) | +2.15% +- 0.46 | **+2.40% +- 0.39** | 7/50 | 0.20 |
+| x2y2 | law (GC1 + GC2) | +3.09% +- 0.47 | +3.30% +- 0.39 | 4/50 | 0.13 |
+| rres16 | state (control) | -1.04% +- 0.26 | -1.37% +- 0.23 | 41/50 | 0.91 |
+| kd | convention | +8.40% +- 0.68 | +5.09% +- 0.41 | 2/50 | 0.11 |
+| pmetric | convention | +5.76% +- 0.65 | +5.71% +- 0.60 | 3/50 | 0.23 |
+| wk4m | convention | +5.19% +- 0.37 | **-0.02% +- 0.10** | 25/50 | 0.50 |
+| wk4m3 | convention | -1.09% +- 0.23 | -0.23% +- 0.08 | 35/50 | 1.19 |
+| k4d3 | convention | -0.10% +- 0.26 | -0.41% +- 0.21 | 31/50 | 0.47 |
+| k4d4 | convention | +2.51% +- 0.51 | +1.25% +- 0.42 | 16/50 | 0.28 |
+
+**Verdicts on the predictions of section 3.**
+- **P1 fails.** GC1's renormalized change, +2.40% +- 0.39, equals its free-running change, and its free amplitude is
+  0.20. The loss is not double counting against the counterterm family.
+- **P2 fails.** x2y2 is 0.9 points worse than y2: doubling the Xt (GC2) feedback costs on top of GC1.
+- **P3 holds for all six conventions.** None gains more than 0.5% once renormalized.
+- **P4 holds.** The control's renormalized change, -1.37%, is within 0.33 points of its free-running change, with
+  a = 0.91.
+
+**The sorting is the reverse of section 2's hypothesis for the law term.**
+- **Double counting is real, for the conventions.** Renormalization repairs exactly what the conventions break:
+  - wk4m's +5.19% free-running loss vanishes (-0.02% +- 0.10);
+  - kd's shrinks by 40% and k4d4's by half;
+  - k4d3 turns slightly favourable.
+
+  That is the counterterm reading of note XXXVI section 3k, now measured: the lam core and the other amplitudes had
+  absorbed what these shapes add.
+- **No convention gains.** None of them gains anything beyond the counterterms, as the flex theorem requires: a
+  closure of the omitted classes from pair statistics carries no information the pair state lacks.
+- **The law term's loss survives.** It is the signed cancellation of note XXXVI section 3h, and section 5 gives it a
+  location. The kappa3 errors y2 shrinks sit in the incoherent (flat, per-neuron) sector. So do the kappa4 errors
+  they had offset: K31 74% off, g4 30% per neuron. A per-layer amplitude cannot represent a cancellation between
+  incoherent components.
+- **A paired repair is needed.** A law-term repair of the kappa3 sector needs the kappa4 sector's incoherent content
+  carried at the same order: the flex coordinate, or the n^4 gate-covariance terms of section 5.
+
+**The joint free fit (a diagnostic, not adopted).** All nine directions are appended to the counterterms at once:
+-2.69% +- 0.29 held-out, better on 47/50. The amplitudes:
+
+| rres16 | wk4m3 | wk4m | y2 | x2y2 | k4d4 | k4d3 | kd | pmetric |
+|---|---|---|---|---|---|---|---|---|
+| +0.82 | +1.69 | -0.70 | +0.72 | -0.60 | +0.38 | -0.27 | +0.19 | +0.17 |
+
+- **What the amplitudes say.** The output metric wants the geometric-mean (2,2) shape pushed past itself, the rank-16
+  residual (which costs +3.2% C/B), and the Xt (GC2) feedback at 0.4 of its present weight, against the theorem's 2.
+- **Why it is not adopted.** These are fitted amplitudes of derived directions, the same status as the 103
+  counterterms, and none was a pre-registered candidate. Adopting them would mean switching from derivation to
+  calibration.
+
+**Adoption candidates under the rule of section 3.** wk4m3 and k4d3 cost nothing and pass the screen. wk4m3's
+geometric-mean slice sqrt(g4_i g4_j)/3 is the gain mode's var_i var_j term exactly, and the gain mode is 93% of the
+truth's kappa4 at depth. Both, and the pair, are measured free-running on the held-out networks next (section 7).
