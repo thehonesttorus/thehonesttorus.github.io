@@ -644,7 +644,7 @@ homogeneous F of degree p,
   layer and measures the chain's output response, whose exact value is 0; no truth is needed. It needs injection hooks
   that place mu.G/4 in the kappa3 state (the readouts and the legs), not only in the readouts.
 
-### 3k. The staged tests, run: the error is transport, the truth's kappa4 is a consistent gain mode, and the chain's transport is not gauge-covariant
+### 3k. The staged tests, run: the error is transport, the truth's kappa4 is a consistent gain mode, and the chain's transport is nearly gauge-covariant except for rough gauge fields
 
 Everything here ran on Modal (`infra/modal/mjob.py`), after the Azure and AWS pools were dropped.
 - **Monte Carlo.** mc2 (seeds 301/302) and mc4 (401/402, post-activations) were regenerated in 16 independent chunks per
@@ -703,8 +703,8 @@ at layers 8-15 against |true - Gauss| ~ 5e-4, and the image of -H is 3.2% of the
   with the chain's query errors (cos -0.08 to +0.05). The inconsistency does not act through the readout of its own
   layer.
 
-**(4) The null-source audit: the chain's transport is not gauge-covariant** (V43_NULL_INJ, `code/nullinj.py`,
-`code/nullinj2.py`, `../ray-compiler/outputs/nullaudit_off01.txt`).
+**(4) The null-source audit: close to gauge-covariant for the gain mode, not for rough gauge fields** (V43_NULL_INJ,
+`code/nullinj.py`, `code/nullinj2.py`, `code/nullinjv.py`; `../ray-compiler/outputs/nullaudit_off01.txt`).
 - **The injection.** At layer l, the exact degree-1 null tuple of a diagonal gauge field G = diag(g), with every
   part the chain represents:
   - covariance: dvar = g/12;
@@ -712,48 +712,49 @@ at layers 8-15 against |true - Gauss| ~ 5e-4, and the image of -H is 3.2% of the
   - kappa4: dg4row = var g, dwk4m = (var_a g_b + var_b g_a)/6, dwk431_ac = C_ac g_c/2;
   - the (2,1,1) entries C_bc g_a/6, through the K4 -> K3 feed.
 
-  A diagonal G has no all-distinct entries, so no leg slot is needed. The exact response of every mean is zero.
+  A diagonal G has no all-distinct entries. The exact response of every mean is zero.
+- **Consistency.** The birth M-block must subtract what the legs actually carry, which is the pre-injection D3 and D21
+  (V43_NI_CONS = 1, as V41). A first run without this silently removed the injected kappa3 from the post-activation
+  representation, the artifact of stage map 10. That run reported gain-shape ratios of 0.38-0.84, and they are
+  withdrawn.
 - **The protocol.** Two shapes: g = 12 eps var, the diagonal of the gain mode, and g = 12 eps var o (random signs).
   eps = +-1e-3 with central differences, layers 3, 7, 11, 14, nets 0 and 1. Responses are reported as fractions of the
   covariance part's own response.
 
 | full tuple / covariance part | layer 3 | layer 7 | layer 11 | layer 14 |
 |---|---|---|---|---|
-| gain shape, net 0 / net 1 | 0.38 / 0.48 | 0.69 / 0.84 | 0.71 / 0.74 | 0.60 / 0.61 |
-| random shape, net 0 / net 1 | 0.38 / 0.31 | 0.35 / 0.37 | 0.25 / 0.22 | 0.11 / 0.11 |
+| gain shape, net 0 / net 1 | 0.07 / 0.05 | 0.13 / 0.17 | 0.18 / 0.17 | 0.14 / 0.19 |
+| random shape, net 0 / net 1 | 0.29 / 0.34 | 0.34 / 0.36 | 0.22 / 0.22 | 0.09 / 0.09 |
 
-- **Where it fails.** At the injection layer itself the response is 0.01-0.04: the per-unit readout identity holds. The
-  residual appears at the first transport step after it and then persists.
-- **By part.**
-  - The kappa4 part has the right size, 0.7-1.4 of the covariance response, but only 50-85% alignment.
-  - The kappa3 part is mostly orthogonal to what it must cancel; for random g it points slightly the wrong way.
-- **The feed.** The (2,1,1) feed term halves the random-shape residual (layer 7: 0.68 -> 0.35), confirming the
-  feed-shape defect of `../ray-compiler` section 3(a). It does nothing for the gain shape.
-- **Sensitivity.** A 0.1% variance perturbation at layer 3 moves the output by 1.5 times the baseline error, and its
-  exact companions remove only 52-62% of that.
+- **How covariant it is.** The chain cancels 81-95% of a gain-shaped null perturbation and 64-91% of a rough one. At the
+  injection layer the response is 0.01-0.05: the per-unit readout identity holds. The residual is created in the
+  transport.
+- **Where the residual sits** (net 0, layers 7 and 11, gain | random):
+  - **The birth M-block's rank-4 (2,1) residual.** R_RES 64 gives 0.10, 0.10 | 0.22, 0.16; the exact R_RES 1024
+    gives 0.10, 0.10 | 0.20, 0.13, against production's 0.13, 0.18 | 0.34, 0.22. The post-activation trace core's
+    (2,1) slice, (2 C_ij v_i + var_i v_j)/3, has the full-rank part diag(v) C^y, which rank 4 cannot hold. This is the
+    prediction of `../ray-compiler` section 3, confirmed.
+  - **The lam feed.** Without the feed the ratios are 0.10, 0.11 | 0.20, 0.15. For rough shapes the injected (2,1,1)
+    term is half the needed completion.
+  - **The lam machinery is part of the covariance.** lam = 0 gives 0.22, 0.27 | 0.62, 0.48, and freezing the adaptive
+    lam rule gives 0.23, 0.25 | 0.34, 0.23. The lam terms are the chain's representation of the gain mode's
+    off-diagonal kappa4, and the cancellation needs them.
+  - **No effect.** The D21 feedback (V18_NO_FB) does not change the anomaly.
+- **Sensitivity.** A 0.1% variance perturbation at layer 3 moves the output by 1.5 times the baseline error. The scale
+  of any null component of the chain's state error is therefore large, even at a 5-35% anomaly.
 
 **What (1)-(4) say together.**
-- **The chain is accurate at the true state and anomalous along exact symmetries.** Item (1) says the readout at the
-  true state is essentially exact. Item (4) says the transport mishandles perturbations along exact null directions by
-  O(1). So any null component of the chain's state error is turned into visible error with a factor of about 0.5.
-- **The fitted lam is a counterterm for that anomaly.** The truth's kappa4 is about 95% null content (the gain mode,
-  item 3). Raising the chain's kappa4 to the physical amplitude therefore loads the anomalous direction. This explains
-  why every derived amplitude made the output worse:
-  - derived 3 g var^2: +53% (net 0);
-  - x1.19 diagonal: +58% (net 0);
-  - KD: +9%;
-  - note XXI section 7: +9% and +50%.
-
-  The output-tuned lam is the amplitude at which the chain's partial cancellation of the gain mode is least harmful,
-  not the physical one. This is what note E11 called the Birkhoff counterterm of the chain's truncation, now located.
-- **The anomaly's source.** The kappa4 regeneration models the (2,1,1) transfer as lam s_off^2, with a tabled lam
-  and the 2I metric. Under a gauge perturbation it responds through s_off^2 with a fixed coefficient, while the true
-  transfer responds through the gain amplitude itself. The kappa3 part's orthogonality points to the same mechanism in
-  the newborn's closure. Its first-order-in-C trace core (Sigma^y.v^y, v^y = rho o g/4) is present only through the
-  feed's lam term, at the lam amplitude.
-- **For the estimator.** The route this opens is to make the transport gauge-covariant, then quotient the gain mode
-  out of the carried state ("quotient before truncation"), so that no counterterm is needed. Repairs that only change
-  amplitudes cannot work while the anomaly is there.
+- **The chain's state error matters only where it is visible.** The chain is exact at the true state (1). Its readout
+  carries a few percent (2). Its transport is 64-95% covariant along exact null directions (4).
+- **The truth's kappa4 is mostly null content** (3), the gain mode with one amplitude across channels. The chain
+  carries that amplitude at 83-85% in the kappa4 diagonal and (2,2), and 54-57% in (3,1).
+- **The deficit is visible.** Since the chain is nearly covariant for the gain shape, the deficit acts like a visible
+  covariance-plus-kappa3 error, its null companion. Raising the amplitude alone moves the output by that visible
+  equivalent, which other errors currently offset. This is why every derived amplitude made the output worse (derived
+  3 g var^2 +53%, x1.19 +58%, KD +9%, net 0): the fitted lam is a compensating counterterm, as note E11 said. The first
+  audit's reading that it compensates a gain-mode anomaly is withdrawn.
+- **For the estimator.** The anomaly that remains has two located sources, the rank-4 Rres and the lam feed's missing
+  per-unit shape. Whether removing it lowers the error is an output question (section 3l).
 
 ### 3d. In the chain: G D in place of the lam core (V39_KD)
 

@@ -323,6 +323,7 @@ _NI = _os.environ.get("V43_NULL_INJ", "")
 NI_LAYER, NI_G, NI_PARTS, NI_EPS = ((int(_NI.split(":")[0]), _NI.split(":")[1], int(_NI.split(":")[2]),
                                      float(_NI.split(":")[3])) if _NI else (-1, "", 0, 0.0))
 NI_GVEC = None
+NI_CONS = _os.environ.get("V43_NI_CONS", "1") == "1"   # 0 reproduces the first (inconsistent) audit
 NO_WK431 = _os.environ.get("V17_NO_WK431", "0") == "1"
 NO_REGEN = _os.environ.get("V17_NO_REGEN", "0") == "1"
 NO_FB = _os.environ.get("V18_NO_FB", "0") == "1"  # V18: D21 feedback thin legs off
@@ -1690,6 +1691,9 @@ class Estimator(BaseEstimator):
                 NI_GVEC = fnp.asarray(_gn, dtype=f32)
                 _gv = NI_GVEC
                 _var0 = fnp.multiply(var, 1.0)
+                # the legs do not carry the injected kappa3: the birth M-block must subtract what they hold (as V41)
+                D3_keep = None if D3 is None else fnp.multiply(D3, 1.0)
+                D21_keep = None if D21 is None else fnp.multiply(D21, 1.0)
                 if NI_PARTS & 1:
                     var = var + _gv * (1.0 / 12.0)
                 if NI_PARTS & 2:
@@ -1839,8 +1843,9 @@ class Estimator(BaseEstimator):
                 fnp.multiply(legs4["AP0"][2 * ka:2 * kk], w1col[None, None],
                              out=legs4["AP0"][2 * ka:2 * kk])
             if mode == 1:
-                _d3s = D3_keep if (ORC_CONSIST and D3_keep is not None) else D3
-                _d21s = D21_keep if (ORC_CONSIST and D21_keep is not None) else D21
+                _cons = ORC_CONSIST or (li == NI_LAYER and NI_CONS)
+                _d3s = D3_keep if (_cons and D3_keep is not None) else D3
+                _d21s = D21_keep if (_cons and D21_keep is not None) else D21
                 D3_w = _d3s * w1 ** 3
                 D21_w = fnp.multiply(w1col * w1col, _d21s, out=NN("d21w"))
                 fnp.multiply(D21_w, (w1)[None, :], out=D21_w)

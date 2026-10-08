@@ -163,11 +163,10 @@ Together they bound where work pays.
     vanishes. The readout at true inputs carries at most a few percent (cread).
   - nullalign: the truth's kappa4 is the gain mode, with t3 = t4 from layer ~11 on. The chain's kappa4 carries 83-85% of
     that amplitude (54-57% in the (3,1) slice), and its kappa3 98%.
-  - The Omega audit (V43_NULL_INJ, diagonal gauge field, every part the chain represents, including the (2,1,1) feed
-    term of section 3(a)): the chain's output responds to an exact null injection with 0.1-0.8 of the covariance
-    part's own response (`outputs/nullaudit_off01.txt`). The response is about zero at the injection layer; the
-    anomaly is created by the first transport step after it. The feed term halves it for random gauge shapes and does
-    nothing for the gain shape.
-  - Reading: the fitted lam is a counterterm for this anomaly. The next step is gauge-covariant transport, starting
-    with the kappa4 regeneration's lam s_off^2 stand-in for the (2,1,1) transfer, then quotienting the gain mode out of
-    the carried state.
+  - The Omega audit (V43_NULL_INJ, a diagonal gauge field with every part the chain represents, including the (2,1,1)
+    feed term of section 3(a); the M-block subtracts what the legs carry). The chain's output responds to an exact
+    null injection with 0.05-0.19 of the covariance part's own response for the gain shape, and 0.09-0.36 for a rough
+    shape (`outputs/nullaudit_off01.txt`; the exact value is 0).
+  - Where it fails. The residual is created in transport. Its located sources are the birth M-block's rank-4 (2,1)
+    residual, as section 3 predicts (the post-activation trace core's (2,1) slice holds the full-rank diag(v) C^y; rank
+    64 or the exact rank removes 30-45% of the anomaly), and the lam feed's missing per-unit shape.
