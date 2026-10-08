@@ -210,3 +210,41 @@ the sources, 8192 samples with antithetic pairs, `outputs/transport_probe_off0.t
   is not viable at Phase 2 precision. Any sampled component has to target quantities with a far larger signal-to-noise
   ratio per sample than a single source's first-order effect on the output.
 
+## 6. Where the chain's kappa3/kappa4 error lives, and the effective dimension of the state
+
+**The error is visible, not gain** (`code/gainsplit.py`, `outputs/gainsplit_off01.txt`). Each layer's kappa3 diagonal
+is split along the gain template 6 mu var, and the kappa4 diagonal along 12 var^2. The chain's error is readout-weighted
+by the mean's Edgeworth coefficients c3 and c4, which is what the means read.
+- **The truth is mostly gain-shaped.** In norm, the truth's non-gain remainder falls with depth for kappa3 (0.53 at
+  layer 2 to 0.26 at layer 15) and grows for kappa4 (0.12 to 0.27). About three quarters of the slices at depth is
+  gain-shaped (93% in energy).
+- **The chain's error is not.** In readout-weighted norm, the gain component of the chain's error is 1e-5 to 2e-4,
+  against 0.7-1.3e-3 for the remainder (the cross-half noise floor is 1-2e-4). The error is 95-99% in the visible part
+  on both networks.
+- **Consequence.** A gain-quotient representation, carrying the complete gain mode as one exact scalar per layer and
+  only the remainder in the legs, cannot repair accuracy. It is a cost question only: does the remainder compress
+  better than the whole?
+
+**The state's effective dimension contracts with a power-law spectrum** (`code/effdim.py`,
+`outputs/effdim_off0.txt`). These are spectra of the pre-activation covariance C^z_l, network 0.
+
+| layer | participation ratio (tr C)^2/tr C^2 | directions for 90 / 99 / 99.9% of tr C | decay p, lambda_k ~ k^-p (ranks 10-300) |
+|---|---|---|---|
+| 0 | 511 | 521 / 789 / 915 | 0.33 |
+| 3 | 240 | 331 / 654 / 839 | 0.85 |
+| 7 | 129 | 229 / 548 / 743 | 1.23 |
+| 11 | 81 | 179 / 493 / 700 | 1.41 |
+| 15 | 51 | 140 / 428 / 632 | 1.54 |
+
+- **The decay.** The participation ratio halves roughly every three layers early on and every five later. The decay
+  exponent rises steadily.
+- **No sharp cutoff.** This is the measurable form of the fractal/Ahlfors intuition: there is no low-rank cutoff, but
+  strong and increasing concentration. The post-activation spectra are the same within a few percent. At depth the
+  means dominate the second moment: mean^2/var of y grows from 0.47 to 12.
+- **The fixed-rank tiers sit across this profile.** The old tier's rank 320 lies at the measured output knee
+  (288/320/352: +7.5/+2.2/+0.1%), and that knee sits near k99 at depth. The young tier is dense (rank 1024) at every
+  layer, while 99% of the state's variance needs 428-548 directions from layer 7 on.
+- **What the profile prices.** It suggests where a fixed-rank design spends FLOPs that the state does not use. It
+  cannot give the price itself: the legs need Hadamard (Khatri-Rao) products for their readouts, so the leg rank and the
+  covariance rank are not the same object.
+
