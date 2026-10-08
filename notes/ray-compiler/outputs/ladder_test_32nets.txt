@@ -1,0 +1,111 @@
+# Ladder test and its split (ray-compiler note 7.4): 32 official networks, paired against production (R_OLD 320, R_OLD2 192)
+# lad336_160 = V21_R_OLD=336 V24_R_OLD2=160 (nets 0-18 on Modal, 19-31 on AWS); r336 = V21_R_OLD=336; r2_160 = V24_R_OLD2=160 (AWS)
+## lad_raw
+32 nets: base mean 2.2806e-08, variant mean 2.2818e-08; paired change +0.05% (per-net mean +0.08% +- 0.26, better on 17/32)
+## r336_raw
+32 nets: base mean 2.2806e-08, variant mean 2.2472e-08; paired change -1.46% (per-net mean -1.45% +- 0.22, better on 27/32)
+## r2160_raw
+32 nets: base mean 2.2806e-08, variant mean 2.3080e-08; paired change +1.20% (per-net mean +1.22% +- 0.18, better on 3/32)
+## FLOPs (cold): production 4.6867e+11 (0.2131 B)
+lad336_160, r336, r2_160: cost: F 4.7001e+11 (0.2137 B)
+lad336_160, r336, r2_160: cost: F 4.7601e+11 (0.2165 B)
+lad336_160, r336, r2_160: cost: F 4.6273e+11 (0.2104 B)
+## per network: lad_raw
+net 0 lad336_160: raw 2.28080e-08
+net 1 lad336_160: raw 2.14599e-08
+net 2 lad336_160: raw 2.54387e-08
+net 3 lad336_160: raw 2.59375e-08
+net 4 lad336_160: raw 2.25842e-08
+net 5 lad336_160: raw 2.19139e-08
+net 6 lad336_160: raw 2.30290e-08
+net 7 lad336_160: raw 2.43930e-08
+net 8 lad336_160: raw 2.41708e-08
+net 9 lad336_160: raw 2.56816e-08
+net 10 lad336_160: raw 2.33897e-08
+net 11 lad336_160: raw 2.46761e-08
+net 12 lad336_160: raw 2.11589e-08
+net 13 lad336_160: raw 2.13957e-08
+net 14 lad336_160: raw 2.41252e-08
+net 15 lad336_160: raw 2.48324e-08
+net 16 lad336_160: raw 1.87626e-08
+net 17 lad336_160: raw 1.94688e-08
+net 18 lad336_160: raw 2.36012e-08
+net 19 lad336_160: raw 2.00680e-08
+net 20 lad336_160: raw 2.68377e-08
+net 21 lad336_160: raw 2.45750e-08
+net 22 lad336_160: raw 2.33919e-08
+net 23 lad336_160: raw 2.04599e-08
+net 24 lad336_160: raw 2.35826e-08
+net 25 lad336_160: raw 2.39571e-08
+net 26 lad336_160: raw 2.89338e-08
+net 27 lad336_160: raw 1.72884e-08
+net 28 lad336_160: raw 2.22794e-08
+net 29 lad336_160: raw 2.05233e-08
+net 30 lad336_160: raw 2.09141e-08
+net 31 lad336_160: raw 1.85343e-08
+## per network: r336_raw
+net 0 r336: raw 2.22768e-08
+net 1 r336: raw 2.13124e-08
+net 2 r336: raw 2.50948e-08
+net 3 r336: raw 2.57115e-08
+net 4 r336: raw 2.22530e-08
+net 5 r336: raw 2.15188e-08
+net 6 r336: raw 2.23366e-08
+net 7 r336: raw 2.36858e-08
+net 8 r336: raw 2.39125e-08
+net 9 r336: raw 2.56063e-08
+net 10 r336: raw 2.31065e-08
+net 11 r336: raw 2.46243e-08
+net 12 r336: raw 2.09119e-08
+net 13 r336: raw 2.11164e-08
+net 14 r336: raw 2.36697e-08
+net 15 r336: raw 2.46969e-08
+net 16 r336: raw 1.84734e-08
+net 17 r336: raw 1.93208e-08
+net 18 r336: raw 2.31777e-08
+net 19 r336: raw 1.95144e-08
+net 20 r336: raw 2.62580e-08
+net 21 r336: raw 2.43541e-08
+net 22 r336: raw 2.30115e-08
+net 23 r336: raw 2.04622e-08
+net 24 r336: raw 2.34465e-08
+net 25 r336: raw 2.34649e-08
+net 26 r336: raw 2.82685e-08
+net 27 r336: raw 1.68171e-08
+net 28 r336: raw 2.19658e-08
+net 29 r336: raw 1.96872e-08
+net 30 r336: raw 2.06206e-08
+net 31 r336: raw 1.84394e-08
+## per network: r2160_raw
+net 0 r2_160: raw 2.26563e-08
+net 1 r2_160: raw 2.13127e-08
+net 2 r2_160: raw 2.63957e-08
+net 3 r2_160: raw 2.63911e-08
+net 4 r2_160: raw 2.30253e-08
+net 5 r2_160: raw 2.21814e-08
+net 6 r2_160: raw 2.30579e-08
+net 7 r2_160: raw 2.49254e-08
+net 8 r2_160: raw 2.37348e-08
+net 9 r2_160: raw 2.59340e-08
+net 10 r2_160: raw 2.38226e-08
+net 11 r2_160: raw 2.53320e-08
+net 12 r2_160: raw 2.08884e-08
+net 13 r2_160: raw 2.17085e-08
+net 14 r2_160: raw 2.45929e-08
+net 15 r2_160: raw 2.51704e-08
+net 16 r2_160: raw 1.90534e-08
+net 17 r2_160: raw 1.99715e-08
+net 18 r2_160: raw 2.39314e-08
+net 19 r2_160: raw 2.02115e-08
+net 20 r2_160: raw 2.66816e-08
+net 21 r2_160: raw 2.49414e-08
+net 22 r2_160: raw 2.37113e-08
+net 23 r2_160: raw 2.05352e-08
+net 24 r2_160: raw 2.33325e-08
+net 25 r2_160: raw 2.45529e-08
+net 26 r2_160: raw 2.93542e-08
+net 27 r2_160: raw 1.73866e-08
+net 28 r2_160: raw 2.26048e-08
+net 29 r2_160: raw 2.08243e-08
+net 30 r2_160: raw 2.12920e-08
+net 31 r2_160: raw 1.90599e-08

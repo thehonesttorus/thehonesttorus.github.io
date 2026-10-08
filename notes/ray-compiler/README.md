@@ -376,8 +376,8 @@ Both fall inside the predicted ranges.
     8.8e-3 per rank per layer.
   - The comparison. That makes s_1 = 0.25 of the bill, against p X_1 ~ 7 x 4.8% = 0.33: within the flatness of the
     optimum.
-- **Tier 2 is over-provisioned, by a margin worth nothing.** p X_2 ~ 0.02 against s_2 ~ 0.05: the law wants a lower r2.
-  But at that flat optimum the score moves by about 0.1%.
+- **Tier 2, by the tail model, looked over-provisioned:** p X_2 ~ 0.02 against s_2 ~ 0.05. The split runs below
+  measure its elasticity directly and show it is at the optimum. The tail model underrates the nested tier's error.
 
 **The ladder the theory selects** (`outputs/ladder_opt.txt`; score = raw x C with C the cold FLOPs plus the residual
 term, relative to production):
@@ -404,23 +404,29 @@ term, relative to production):
 
 A result outside raw -0.5% to -1.3% would mean the per-age split (kappa_5, q) is wrong, not just imprecise.
 
-**The test, interim (19 of 32 networks; the Modal workspace was paused mid-run).**
+**The test, and its split** (32 networks; nets 19-31 and the split on AWS; `outputs/ladder_test_32nets.txt`).
 
-| | predicted | measured |
-|---|---|---|
-| raw, paired against production | -0.9% (range -0.5% to -1.3%) | -0.12% (per net -0.07 +- 0.36), better on 11/19 |
-| F / B | 0.2138 | 0.2137 |
+| run | predicted raw | measured raw (per net +- se) | better on | F / B |
+|---|---|---|---|---|
+| R_OLD 336, R_OLD2 160 (the test) | -0.9% | +0.05% (+0.08 +- 0.26) | 17/32 | 0.2137 (predicted 0.2138) |
+| R_OLD 336 alone | -1.3% | **-1.46%** (-1.45 +- 0.22) | 27/32 | 0.2165 |
+| R_OLD2 160 alone | +0.6% | **+1.20%** (+1.22 +- 0.18) | 3/32 | 0.2104 |
 
-- **The cost model is exact; the error model is not.** By the criterion stated in advance, the per-age split
-  (kappa_5, q) is wrong, at about 2 standard errors.
-- **Which half is wrong cannot be told from this run.** The prediction is the sum of two parts: -1.3 points for age 5
-  at 336 and +0.6 for ages 9-11 at 160.
-  - The likelier failure is the second. Rank 160 lies below the measured point (192). The nested sub-basis is a
-    two-pass range finder in factor space, not the optimal SVD of the tails, and note XVII's tier-2 scans saw a cliff
-    at 128.
-  - Splitting the two halves takes two runs: rank 336 alone, and nested rank 160 alone.
-- **What stands.** The production ladder stays. The measured optimum (P1, P2 and the error-share law for tier 1) is
-  unaffected. What failed is only the extrapolation of the per-age split below the measured tier-2 rank.
+- **The test failed by its own criterion.** It came out outside -0.5% to -1.3%.
+- **The split locates the failure.** The tier-1 half is right: -1.46% measured against -1.3% predicted, from age 5's
+  spectral tail through the readout law. The tier-2 half is off by a factor of two: +1.20% against +0.6%. Below
+  the measured rank 192, the nested tier's error rises twice as fast as the spectral tails say. The cause is the
+  nested sub-basis: a two-pass range finder in tier-1 factor space, not the optimal SVD.
+- **Both tiers sit exactly at the error-share optimum.** The measured elasticities of raw MSE and of FLOPs with respect
+  to each rank are equal and opposite:
+  - tier 1 (320 -> 336): dlog MSE/dlog r = -0.30, dlog C/dlog r = +0.33;
+  - tier 2 (192 -> 160): dlog MSE/dlog r = -0.066, dlog C/dlog r = +0.071.
+
+  That is p Delta MSE_t / MSE = s_t, satisfied in both tiers to within the noise. Every ladder near production is
+  score-neutral, as the flat optimum requires. The frontier scans that set 320/192 had found the law's stationary
+  point. The law's one wrong claim was "tier 2 is over-provisioned", which rested on the spectral-tail model of the
+  tier-2 error. The measured elasticity removes it.
+- **What stands.** The production ladder stays: it is the optimum, now located by theory and confirmed in both tiers.
 
 **7.5 What section 7 changes in the programme.**
 - **Compression is not the gap.** The chain without any truncation is 2.17e-8 on the 32 networks. That is still 1.45-2
