@@ -113,6 +113,12 @@ note XXXVI). If the exact feedback's raw gain is below its cost share, no respon
 exact feedback bounds every such scheme. At rank 2 the attached proposal reduces to the exact additive part in place
 of the top-2 range finder, which changes the feedback by at most the non-additive energy in the top two directions.
 
+**The attached proposal at rank 2** (`V49_FB_ADD=1`, added after the audit of section 5, before any run of it). At the
+production rank the proposal reduces to the exact additive part of D21, from its row and column sums in O(n^2), in place
+of the top-2 range finder. The audit says the best rank 2 already keeps 99.8-100% of the additive part, plus 1-34% of
+the flat part, which the exact version drops. Prediction, V35 + fbadd on networks 0-99: raw within +-0.5% of V35; C/B
+about -0.1% (no range finder); renormalized change within +-0.5%.
+
 **Strassen leaf minimum 8 for the whole chain** (task of note XXIX section 10). `V26_STRASSEN_MIN=8` on networks
 0-15: raw unchanged to rounding; C/B about -2.4%; it is adopted if the measured local residual of the measured call
 stays within 10% of V35's and VmHWM within 1 GB.

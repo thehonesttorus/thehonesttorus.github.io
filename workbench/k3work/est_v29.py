@@ -383,6 +383,9 @@ K4SM_AMP = float(_os.environ.get("V30_K4SM_AMP", "1.0"))
 # hub carries the Gamma x C terms (GC1 via Yt, GC2 via Xt) at half their second-order coefficients; 2 = the theorem.
 FB_SX = float(_os.environ.get("V40_FB_SX", "1.0"))
 FB_SY = float(_os.environ.get("V40_FB_SY", "1.0"))
+# V49 (note XXXIX): the D21 feedback compressed to its exact additive part (rank 2, from row and column sums) instead of
+# the top-2 range finder; the estimator form of the attached capture-audit proposal at the chain's compression point.
+FB_ADD = _os.environ.get("V49_FB_ADD", "0") == "1"
 KD = int(_os.environ.get("V39_KD", "0"))
 KD_AMP = float(_os.environ.get("V39_KD_AMP", "1.0"))
 KD_BITS = int(_os.environ.get("V39_KD_BITS", "0"))   # 1 diagonal, 2 (2,2), 4 (3,1); 0 with KD=1 means all
@@ -1919,15 +1922,29 @@ class Estimator(BaseEstimator):
                 # V18 (F69): D21 feedback thin legs. D21 ~ Qf Bf (rank rfb range finder,
                 # one power iteration, sketch = a slice of the layer weight).
                 w3 = W_all[:, self._i31]
-                Omf = pool.get("omf", (n, rfb))  # V20: contiguous sketch
-                fnp.copyto(Omf, w32[:, :rfb])
-                if WARM_FB and Zf_st is not None:
-                    fnp.copyto(Omf, Zf_st[-1][:, :rfb])   # previous feedback basis, transported once
-                Yf = D21 @ Omf
-                Qf, _ = fnp.linalg.qr(Yf)
-                Yf = D21 @ (D21.T @ Qf)
-                Qf, _ = fnp.linalg.qr(Yf)
-                Bf = Qf.T @ D21                       # D21 ~= Qf @ Bf
+                if FB_ADD and rfb == 2:
+                    # V49 (note XXXIX): the exact additive part of D21 (row and column effects: the S0 + S1 + A1
+                    # components of the five-component split) in place of the rank-2 range finder,
+                    # D21_add = u 1^T + 1 v^T (off the diagonal), from the row and column sums in O(n^2).
+                    _rs = fnp.sum(D21, axis=1)
+                    _cs = fnp.sum(D21, axis=0)
+                    _c0 = fnp.sum(_rs) / float(n * (n - 1))
+                    _al = ((_rs + _cs) * 0.5 - _c0 * float(n - 1)) / float(n - 2)
+                    _be = (_rs - _cs) * (0.5 / n)
+                    _on = fnp.ones(n, dtype=f32)
+                    _Lf = fnp.stack([_al + _be + _c0, _on], axis=1)          # (n, 2) left factor
+                    Qf, _ = fnp.linalg.qr(_Lf)
+                    Bf = (Qf.T @ _Lf) @ fnp.stack([_on, _al - _be], axis=0)   # D21_add = Qf @ Bf
+                else:
+                    Omf = pool.get("omf", (n, rfb))  # V20: contiguous sketch
+                    fnp.copyto(Omf, w32[:, :rfb])
+                    if WARM_FB and Zf_st is not None:
+                        fnp.copyto(Omf, Zf_st[-1][:, :rfb])   # previous feedback basis, transported once
+                    Yf = D21 @ Omf
+                    Qf, _ = fnp.linalg.qr(Yf)
+                    Yf = D21 @ (D21.T @ Qf)
+                    Qf, _ = fnp.linalg.qr(Yf)
+                    Bf = Qf.T @ D21                       # D21 ~= Qf @ Bf
                 F1_b = (w2)[:, None] * Qf            # Xt = F1 R1, R1 = 1.5 Bf
                 R1T_b = Bf.T * (1.5 * FB_SX)                    # (n, rfb) = R1^T
                 F2_b = w1col * Bf.T                             # Yt = F2 R2, R2 = 0.5 Qf^T d(w3)

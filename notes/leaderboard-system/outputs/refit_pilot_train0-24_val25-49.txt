@@ -1,0 +1,15 @@
+660
+103 directions; base pb/o35_{n}.npy: train 25, held-out 25
+  base: held-out raw 2.31867e-08; refitted (ridge 0.1) 2.31406e-08 (-0.20% +- 0.38, better on 12)
+  y2: held-out raw vs base +2.62% +- 0.59 (better on 4); refitted 2.36433e-08; renormalized change vs refitted base +2.17% +- 0.57 (better on 8/25); free amplitude a = 0.273, refitted with a free: -0.34% +- 0.15 [own ridge 1: +2.11%]
+  x2y2: held-out raw vs base +3.65% +- 0.62 (better on 2); refitted 2.38794e-08; renormalized change vs refitted base +3.19% +- 0.62 (better on 4/25); free amplitude a = 0.195, refitted with a free: -0.19% +- 0.12 [own ridge 1: +3.13%]
+  rres16: held-out raw vs base -1.17% +- 0.56 (better on 17); refitted 2.27890e-08; renormalized change vs refitted base -1.52% +- 0.50 (better on 17/25); free amplitude a = 0.925, refitted with a free: -1.55% +- 0.46 [own ridge 0.1: -1.52%]
+  kd: held-out raw vs base +5.72% +- 1.03 (better on 3); refitted 2.42011e-08; renormalized change vs refitted base +4.58% +- 0.94 (better on 4/25); free amplitude a = 0.123, refitted with a free: -0.33% +- 0.11 [own ridge 0: +0.42%]
+  pmetric: held-out raw vs base +5.49% +- 0.89 (better on 2); refitted 2.43706e-08; renormalized change vs refitted base +5.32% +- 0.86 (better on 3/25); free amplitude a = 0.265, refitted with a free: -0.60% +- 0.22 [own ridge 0.1: +5.32%]
+  wk4m: held-out raw vs base +5.21% +- 0.49 (better on 0); refitted 2.35816e-08; renormalized change vs refitted base +1.91% +- 0.29 (better on 3/25); free amplitude a = -0.478, refitted with a free: -0.20% +- 0.13 [own ridge 0: -2.95%]
+  wk4m3: held-out raw vs base -1.26% +- 0.38 (better on 18); refitted 2.29704e-08; renormalized change vs refitted base -0.74% +- 0.18 (better on 23/25); free amplitude a = 0.926, refitted with a free: -0.73% +- 0.17 [own ridge 1: -0.82%]
+  k4d3: held-out raw vs base +0.26% +- 0.45 (better on 10); refitted 2.31610e-08; renormalized change vs refitted base +0.09% +- 0.38 (better on 12/25); free amplitude a = 0.449, refitted with a free: -0.40% +- 0.18 [own ridge 0.1: +0.09%]
+  k4d4: held-out raw vs base +2.83% +- 0.78 (better on 6); refitted 2.36339e-08; renormalized change vs refitted base +2.13% +- 0.65 (better on 9/25); free amplitude a = 0.255, refitted with a free: -0.59% +- 0.18 [own ridge 0.1: +2.13%]
+  joint free amplitudes (ridge 0.1): k4d3 +0.088 k4d4 +0.123 kd +0.133 pmetric +0.206 rres16 +0.933 wk4m -0.134 wk4m3 +0.718 x2y2 -0.746 y2 +0.841; held-out vs refitted base -3.63% +- 0.61 (better on 22)
+
+[exit 0 after 65s on ip-172-31-36-130, 4 cores, threads 4]

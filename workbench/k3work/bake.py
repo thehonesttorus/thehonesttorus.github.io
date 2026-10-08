@@ -9,8 +9,8 @@ pairs = dict(kv.split("=", 1) for kv in open(cfg).read().split())
 code = open(src).read()
 done = set()
 for name, val in pairs.items():
-    pat = re.compile(r'_os\.environ\.get\(\s*"' + re.escape(name) + r'"\s*,\s*"[^"]*"\s*\)')
-    code, k = pat.subn(f'_os.environ.get("{name}", "{val}")', code)
+    pat = re.compile(r'''_os\.environ\.get\(\s*(["'])''' + re.escape(name) + r'''\1\s*,\s*(["'])[^"']*\2\s*\)''')
+    code, k = pat.subn(lambda m: f'_os.environ.get("{name}", "{val}")', code)
     if k == 0:
         sys.exit(f"switch {name} not found as _os.environ.get(\"{name}\", \"...\") in {src}")
     done.add(name)
