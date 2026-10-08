@@ -295,4 +295,11 @@ configuration, paired; `outputs/calval_50nets.txt`): mean raw 2.2692e-8 -> 2.183
 
 ## 8. What follows
 
-PENDING.
+Sections 6 and 6.2 left one question open: can the omitted fourth-order content be carried as a collective state? Note XXXVIII (`notes/pair-flex`) answers it in two parts.
+- **It has to be carried.** Under conditional independence given the collective coordinates, the pair slices determine the omitted (2,1,1) and (1,1,1,1) classes only modulo an exact kernel of dimension C(K+3, 4) + q(q-1)/2 (its Theorem 2). Any closure computed from pair statistics is therefore a convention.
+- **Carrying it does not pay at affordable K.**
+  - Their transport is reproduced by their own collective projections with nothing fitted (coefficient 1 within 9% from layer 8 on).
+  - Convergence in K is slow: 0.59-0.79 of the (3,1) slice at K = 64.
+  - At K <= 32 the content equals the scale mode, which section 4's core and note XXXVI's KD already tested in the chain.
+
+The collective-state extension is closed for cost there.

@@ -32,6 +32,10 @@ Working note XXXVIII. This note reads seven papers for their mechanisms and turn
    - There are two kinds of invisibility. The null code of note XXXVI is invisible to the readout and can be quotiented out. The flex is invisible to the present state and has to be carried.
 5. **The minimal extension and its price.** The state would carry T4 and the per-unit symbols N_a. Their transport into the next layer's slices costs about 1.5-4 units (2n³) per layer at K = 16-32 (section 5).
 6. **Test S**, pre-registered in section 6: does the truth's omitted-class transport equal the transport of its own collective symbols? Results are in section 8.
+   - The amplitude comes out right with nothing fitted: the coefficient is 0.99-1.08 from 8 -> 9 on, and within 13% everywhere.
+   - At depth the share captured reaches 0.59-0.79 of the (3,1) slice at K = 64. This does not reject ℬ-independence.
+   - Three registered predictions fail: P1 (narrowly at 8 -> 9, clearly at 2 -> 3), the second half of P2 (convergence in K is slow), and P3 (nothing beyond the scale mode at K = 32).
+   - At affordable K the hidden coordinate is the scale mode that the chain already found output-adverse. The carried-symbol extension is closed for cost (section 9).
 
 ## 1. The mechanisms, as used here
 
@@ -227,6 +231,14 @@ That is about 1.5 units per layer at K = 16 and about 4 at K = 32, before Strass
 
   The law is only outlined here. Deriving it is the next obligation if test S passes.
 
+  One piece is closed. At a Gaussian collective state the gate's symbol is rank one along the unit's own loading:
+
+      N_a = c_a (Λ u_a)(Λ u_a)^T,      c_a = E[(f^2)''] - 2 E[f']^2 - 2 E[f] E[f''] + E[g''],
+
+  with f and g the conditional ReLU mean and variance as functions of p = u_a . t. It follows from Stein's identity applied twice and is checked by quadrature to 2e-4, the finite-difference error (`code/check_symbol_gate.py`).
+  - Its (2,1,1) evaluation is c_a C_ac C_ad on collective covariances: the one-loop (tree) content.
+  - Everything beyond it comes from T3, T4 and the transported heteroscedasticity.
+
 ## 6. Test S (pre-registered; written before any run)
 
 **Question.** Is the transport R of the truth's omitted classes equal to the transport of their own collective projections, R_pred(K), with nothing fitted?
@@ -293,7 +305,92 @@ That is about 1.5 units per layer at K = 16 and about 4 at K = 32, before Strass
 - **Local equivalence and potential functions (2510.13777).**
   - The threshold of a local property is decided by the densest coordinate subspace. That is large-width power counting, already used throughout the programme.
   - Relabelling.
+- **Covering radius and the loading cloud.**
+  - Theorem 2's hypotheses and the conditioning of the (2,2) system ask the loading cloud {u_a} for a frame property: the rank-one forms u_a u_a^T must span Sym²(R^K) robustly, an approximate spherical 2-design.
+  - The covering radius of the normalised cloud bounds that conditioning from one side. With n = 1024 points in R^32 it is not the binding quantity; the frame potential is.
+  - No number changed.
+- **The gate-geometry synthesis (supplied PDF, previous round).**
+  - Its arithmetic is correct where it can be checked. Its central claim, that a full-rank gated kernel can be applied at linear cost through interval geometry, is true (its Theorem 9.1 and Proposition 9.2).
+  - Every route it builds on that claim is a conditionally integrated sampler: source planes, finite rotation groups, circle tiles. They meet the precision ceiling of note ray-compiler.
+  - Its premise that cheap transport need not be low rank does not help the fourth-order flex. The data and Theorem 2 place the readout-relevant hidden content in the collective (low-rank) space and in the bulk, and section 8 measures how slowly the collective part converges.
+  - The synthesis says itself that no leaderboard gain follows.
 
-## 8. Results
+## 8. Results (network 1; `outputs/symtest_off1.txt`, `outputs/symread_off1.txt`)
 
-PENDING (test S).
+**Data.**
+- Symbols: 1.6e7 new inputs in 16 chunks (`code/mcsym.py`, seed `[4713, 1, chunk]`), centred on the mc4 means. Every mean correction is exact, and the bookkeeping was checked on a width-7 network (`outputs/check_symtest_tiny.txt`):
+  - the R identity holds to 1e-12;
+  - the symbols match the brute-force projections to 1e-13 at K = 4 and 7;
+  - R_pred = R at K = n to 1e-14.
+- Noise: R's noise share is 0.18-0.24 at 2 -> 3, 0.03-0.06 at 5 -> 6 and below 0.02 deeper. R_pred's is at most 0.005.
+
+**Explained share of R** (noise-corrected, R_pred at coefficient 1; D at its fitted coefficient; slices diagonal | (2,2) | (3,1)):
+
+| transition | D (fitted coef) | K = 8 | K = 16 | K = 32 | K = 64 |
+|---|---|---|---|---|---|
+| 2 -> 3 | .385 .222 .276 (2.7) | .072 .059 .074 | .152 .104 .120 | .245 .151 .193 | .366 .275 .309 |
+| 5 -> 6 | .553 .371 .456 (3.9) | .267 .166 .214 | .347 .218 .285 | .460 .305 .380 | .591 .423 .499 |
+| 8 -> 9 | .615 .458 .523 (4.4) | .375 .282 .321 | .454 .334 .385 | .551 .415 .478 | .668 .527 .592 |
+| 11 -> 12 | .761 .598 .638 (4.6) | .643 .460 .487 | .704 .517 .549 | .761 .583 .625 | .816 .671 .709 |
+| 14 -> 15 | .817 .680 .721 (4.7) | .704 .567 .612 | .743 .605 .655 | .816 .675 .719 | .874 .758 .791 |
+
+- R_pred's best-fit coefficient is 0.92-1.13 everywhere, and 0.99-1.08 at K >= 16 from 8 -> 9 on.
+- The (1,1,1,1) part's norm is 0.09-0.41 of the (2,1,1) part's at K = 32 and 0.17-0.50 at K = 64, rising with depth.
+- The incoherent W_ia W_ja term is 5-7% of the predicted (2,2) slice.
+
+**Verdicts on the registered predictions.**
+- **P1 fails.**
+  - At K = 32 the (3,1) share is 0.478 at 8 -> 9, against the registered 0.5. At 2 -> 3 it is 0.193, and the diagonal 0.245, against the registered 0.3.
+  - The other registered thresholds hold: 5 -> 6 at .460 / .380; 11 -> 12 at .761 / .625; 14 -> 15 at .816 / .719.
+- **P2 fails in its second half.**
+  - The share rises with K at every transition and in every slice.
+  - It does not converge: Δ(16 -> 32) exceeds Δ(8 -> 16) at 8 -> 9 (diagonal .097 against .079; (3,1) .093 against .064), at 11 -> 12 ((3,1) .076 against .062) and at 14 -> 15 (diagonal .073 against .039; (3,1) .064 against .043).
+  - Each doubling of K adds 0.05-0.12, so the content is spread over many collective modes.
+- **P3 fails.**
+  - Fitted jointly with D at K = 32, R_pred adds .009 / .017 / .018 to D alone in the (3,1) slice from 8 -> 9 on, against the registered 0.1.
+  - At K = 64 it adds .073 / .074 / .072.
+- **P4 is not triggered.** At K = 64 the (3,1) share is .592 / .709 / .791 from 8 -> 9 on. ℬ-independence is not rejected for the collective part of the omitted classes.
+
+**Readout-weighted shares (post hoc, `code/symread.py`).** Each slice is weighted by the Hermite coefficients through which the next layer reads it: the mean map's c4 on the diagonal, c(1,2)c(1,2)/4 and c(1,3)Φ/6 in the covariance program. Coefficients are refitted in this metric.
+
+| transition | D: diagonal \| (3,1) (coef) | R_pred K = 32 | R_pred K = 64 | K = 64 jointly with D |
+|---|---|---|---|---|
+| 8 -> 9 | .564 \| .421 (4.5 \| 4.9) | .516 \| .370 | .635 \| .492 | .643 \| .510 |
+| 11 -> 12 | .696 \| .397 (4.7 \| 5.3) | .680 \| .390 | .745 \| .513 | .755 \| .524 |
+| 14 -> 15 | .807 \| .391 (5.2 \| 5.7) | .814 \| .408 | .871 \| .546 | .874 \| .555 |
+
+R_pred's coefficient in this metric is 0.96-1.11 at K >= 32 (0.96-1.09 from 8 -> 9 on).
+
+**What the numbers say** (derived from them, nothing fitted to the output).
+
+1. **The collective symbols carry the omitted-class transport with the right amplitude.**
+   - Their coefficient is 1 within 9% from 8 -> 9 on, in L2 and in the readout metric, and within 13% everywhere.
+   - D needs an amplitude fitted per layer, 2.7 -> 4.7 in Var(r²) units, which note XXXVI could not derive at depth: the trace-sector estimate g_conn falls while the fitted value rises.
+   - D's best amplitude also shifts by 10-20% between the two metrics (14 -> 15 (3,1): 4.71 in L2, 5.66 in the readout metric), the mark of a shape that errs in the direction the next layer reads.
+   - The symbols measure the generated-scale amplitude that the scale-mode core lacked. Proposition 1's structure holds for the collective part of the truth.
+2. **At affordable resolution the hidden coordinate is the scale mode.**
+   - At K <= 32 the symbols span what D spans. Fitted jointly they add at most 0.02 to D in L2 and at most 0.05 in the readout-weighted (3,1) slice.
+   - The flex coordinate that a K <= 32 collective state can hold is therefore, for the readout, the generated-scale amplitude. Carried at its fitted value, that amplitude made the chain worse (KD, +9%).
+3. **Beyond K = 32 the symbols carry what D misses, slowly.**
+   - At K = 64 the readout-weighted (3,1) share is .49-.55 against D's .39-.42 at depth.
+   - Half of the readout-relevant (3,1) content is still missing at K = 64.
+   - Shallow transitions are mostly non-collective: 0.31 at K = 64 at 2 -> 3.
+
+## 9. What follows
+
+**Kept.**
+- *The flex theorem.* The pair state determines the omitted classes only modulo F. So every closure the programme has tried for them, and any pair-slice closure, is a convention, and the hidden coordinate has to be carried to be right.
+- *The two invisibilities.*
+  - The null code is invisible to the readout and is quotiented at no cost.
+  - The flex is invisible to the state and is carried at a cost.
+- *The structural measurement.* The omitted-class transport is collective with the right amplitude, and at affordable K it is the generated-scale mode.
+
+**Closed for cost.** This is the same verdict as note XXVIII section 3. The carried-symbol state:
+- at K <= 32, equals the scale-mode core that the chain already found output-adverse;
+- at K = 64, would cost about 16 units per layer for the T4 contraction (n K^4) plus about 4 for the symbols, roughly 0.3 B over the network. The gain it could buy is bounded by the K31-sector oracles: true slice -6% / -22%; column projection on the top 64 modes -3.2% / -13.9% (note XXXVII section 6.2).
+
+The symbol transport law is therefore not derived further.
+
+**Open.**
+- Whether a basis other than the top variance eigenvectors of Cov(y) concentrates the omitted classes faster. A basis computable from the carried state would change the cost argument.
+- Whether network 0 repeats these numbers. Earlier structural measurements agreed between the two networks to the second digit (notes XXXVI, XXXVII). The decision above does not depend on it.

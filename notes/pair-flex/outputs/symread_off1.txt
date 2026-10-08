@@ -1,0 +1,35 @@
+layer  2 ->  3  (readout-weighted explained share: diag | (2,2) | (3,1))
+  D, coef fitted in this metric 2.70 2.75 2.70: +0.384 +0.204 +0.274
+  K= 8: R_pred (coef 1) +0.044 +0.039 +0.057; coef in this metric 0.87 1.10 1.03; jointly with D +0.389 +0.204 +0.274
+  K=16: R_pred (coef 1) +0.120 +0.072 +0.092; coef in this metric 1.05 1.12 1.03; jointly with D +0.385 +0.205 +0.274
+  K=32: R_pred (coef 1) +0.192 +0.110 +0.149; coef in this metric 1.02 1.02 1.04; jointly with D +0.386 +0.207 +0.277
+  K=64: R_pred (coef 1) +0.286 +0.196 +0.235; coef in this metric 1.05 1.08 1.06; jointly with D +0.397 +0.237 +0.298
+layer  5 ->  6  (readout-weighted explained share: diag | (2,2) | (3,1))
+  D, coef fitted in this metric 3.84 3.61 4.17: +0.534 +0.329 +0.415
+  K= 8: R_pred (coef 1) +0.213 +0.130 +0.155; coef in this metric 1.17 1.05 1.01; jointly with D +0.536 +0.334 +0.417
+  K=16: R_pred (coef 1) +0.309 +0.188 +0.223; coef in this metric 1.09 1.01 1.03; jointly with D +0.534 +0.330 +0.415
+  K=32: R_pred (coef 1) +0.456 +0.272 +0.317; coef in this metric 1.11 1.01 1.06; jointly with D +0.545 +0.338 +0.422
+  K=64: R_pred (coef 1) +0.568 +0.393 +0.433; coef in this metric 1.07 1.04 1.07; jointly with D +0.594 +0.407 +0.469
+layer  8 ->  9  (readout-weighted explained share: diag | (2,2) | (3,1))
+  D, coef fitted in this metric 4.50 4.21 4.89: +0.564 +0.359 +0.421
+  K= 8: R_pred (coef 1) +0.349 +0.248 +0.194; coef in this metric 1.11 1.06 0.95; jointly with D +0.567 +0.359 +0.423
+  K=16: R_pred (coef 1) +0.435 +0.302 +0.260; coef in this metric 1.10 1.08 0.98; jointly with D +0.564 +0.363 +0.421
+  K=32: R_pred (coef 1) +0.516 +0.371 +0.370; coef in this metric 1.01 1.03 1.02; jointly with D +0.574 +0.389 +0.435
+  K=64: R_pred (coef 1) +0.635 +0.489 +0.492; coef in this metric 1.07 1.06 1.04; jointly with D +0.643 +0.492 +0.510
+layer 11 -> 12  (readout-weighted explained share: diag | (2,2) | (3,1))
+  D, coef fitted in this metric 4.71 4.19 5.31: +0.696 +0.482 +0.397
+  K= 8: R_pred (coef 1) +0.558 +0.421 +0.201; coef in this metric 1.14 0.99 0.92; jointly with D +0.700 +0.482 +0.400
+  K=16: R_pred (coef 1) +0.641 +0.466 +0.282; coef in this metric 1.09 0.98 0.98; jointly with D +0.697 +0.488 +0.398
+  K=32: R_pred (coef 1) +0.680 +0.514 +0.390; coef in this metric 1.03 0.96 1.01; jointly with D +0.708 +0.521 +0.430
+  K=64: R_pred (coef 1) +0.745 +0.588 +0.513; coef in this metric 1.03 0.99 1.02; jointly with D +0.755 +0.590 +0.524
+layer 14 -> 15  (readout-weighted explained share: diag | (2,2) | (3,1))
+  D, coef fitted in this metric 5.22 4.71 5.66: +0.807 +0.636 +0.391
+  K= 8: R_pred (coef 1) +0.713 +0.581 +0.239; coef in this metric 1.16 1.02 0.96; jointly with D +0.810 +0.637 +0.392
+  K=16: R_pred (coef 1) +0.753 +0.614 +0.304; coef in this metric 1.12 1.02 0.96; jointly with D +0.808 +0.638 +0.396
+  K=32: R_pred (coef 1) +0.814 +0.679 +0.408; coef in this metric 1.09 1.03 0.99; jointly with D +0.826 +0.682 +0.440
+  K=64: R_pred (coef 1) +0.871 +0.744 +0.546; coef in this metric 1.06 1.02 1.02; jointly with D +0.874 +0.744 +0.555
+
+[exit 0 after 458s on 32 visible cores, cpu=16.0]
+
+
+[exited with code 0]

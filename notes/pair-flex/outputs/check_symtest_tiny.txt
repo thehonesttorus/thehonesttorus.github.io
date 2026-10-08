@@ -1,0 +1,5 @@
+(a) t' - T_pair(y) vs W#[omitted]: 8.9e-13 6.5e-13 4.1e-13
+(b) K=4: N^off rel err 1.7e-14, T4^off rel err 1.1e-13
+    R_pred vs R_true (exact only at K = n): 6.2e-01 5.0e-01 3.9e-01
+(b) K=7: N^off rel err 1.7e-14, T4^off rel err 8.1e-14
+    R_pred vs R_true (exact only at K = n): 6.1e-15 9.1e-15 5.6e-15
