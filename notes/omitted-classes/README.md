@@ -576,6 +576,76 @@ noise-free norms).
 - **KD misreads its own query.** KD worsens the kappa4-weighted query error (c4 is largest where |alpha| is far from 1)
   while its L2 error falls 30%.
 
+### 3j. Quotient before truncation: exact null sources, and what they say about the chain's kappa4 sector
+
+**The identity** (supplied THEORY.md; checked here independently). Take a Gaussian reference N(mu, Sigma), a symmetric G,
+normalised symmetric products, and the source responses L_k[T]F = E[T : nabla^k F] / k!. Then for every positively
+homogeneous F of degree p,
+
+    L4[Sigma.G] F = ((p - 2)/12) L2[G] F - (1/4) L3[mu.G] F.
+
+- **Proof.** g = G : nabla^2 F has degree p - 2, so E[Sigma : nabla^2 g] = E[(Z - mu) . nabla g] = (p - 2) E g - E[mu . nabla g]
+  (Gaussian integration by parts, then Euler). THEORY.md states the case p = 1.
+- **The two null tuples.**
+  - p = 1, every remaining bias-free ReLU suffix, hence every future mean: (dSigma, dk3, dk4) = (G/12, mu.G/4, Sigma.G)
+    is invisible.
+  - p = 2, the post-activation covariance E[y_a y_b] the chain carries: the invisible tuple is (0, mu.G/4, Sigma.G),
+    with no covariance part.
+- **Numerical check** (`code/verify_null.py`). For a two-layer ReLU net in 2D at a correlated, non-centred reference,
+  using sector-wise quadrature of F times the Hermite densities:
+  - degree 1: null combination 7e-18, against individual terms of 0.002-0.10;
+  - degree 2: -6e-17;
+  - controls: swapping the two tuples gives 8e-3 and 4e-3.
+
+**Consequences for the chain's channels.**
+- **The readout respects the quotient.** Per unit, the Edgeworth coefficients satisfy the p = 1 relation identically:
+  c4 s^2 = -cv/12 - c3 mu/4. The variance coefficients satisfy the p = 2 relation: q4 s^2 = -q3 mu/4.
+- **The intermediate covariance is not quotient-invariant.** A degree-1 null source still changes the post-activation
+  covariance, by L2[G]/12 of the degree-2 observable. Exact dynamics cancels this downstream through the induced
+  higher post-activation cumulants. A chain whose covariance channel is exact but whose kappa3/kappa4 transport is
+  approximate can therefore break the equivalence. The candidate breaking points are in transport: the kappa4 core
+  transport (dG with the fitted lam), the K4 -> K3 birth feed, and the leg truncations.
+- **The chain's kappa4 sector is a trace core.** In production (V33_K4Q = 3) the regenerated core is
+  G = diag(dG) + lam C_off, with slices
+  - g4row = 2 dG,
+  - wk4m_ab = (dG_a + dG_b)/3,
+  - B_ab = lam C_ab.
+
+  Since var ~ 2 under He scaling, these match the slices of Sigma.G:
+  - diag var_a G_aa,
+  - (2,2) (var_a G_bb + var_b G_aa + 4 C_ab G_ab)/6,
+  - (3,1) (var_a G_ab + C_ab G_aa)/2.
+
+  To first order the whole kappa4 sector is therefore a covariance shift -G/12 plus a kappa3 shift -mu.G/4. The
+  exceptions are three:
+  - the Euclidean metric METRIC_C = 2 in place of Sigma;
+  - the diagonal-only quenched term k4corr;
+  - the non-trace shape that KD introduces.
+- **The gain mode is invisible.** A mean-one scale mode z = S Z0 (E S = 1, Var S = t) has the law tangent
+  (t (Sigma + mu mu^T), 6 t mu.Sigma, 12 t Sigma.Sigma). It is the sum of the k = 4 null with G = 12 t Sigma and the
+  k = 3 null (t mu mu^T, 3 t mu.Sigma), so it is invisible to every future mean. Per unit,
+  cv (s^2 + mu^2) + 6 c3 mu s^2 + 12 c4 s^4 = 0 identically (this is section 3i's first-order exactness along the gain
+  variance).
+- **What follows for the chain.** The physical covariance carries the network's gain mode exactly. Its effect on the
+  means is cancelled only if the chain's kappa3 and kappa4 carry the same gain amplitude t. Any mismatch between the
+  amplitudes implied by the two channels is a spurious, visible error, of 6 c3 mu var dt3 + 12 c4 var^2 dt4 per unit.
+
+**Staged tests** (the experiment VMs are stopped; Azure subscription in Warned state).
+- **(A) Continuation consistency on the existing arrays** (`code/nullalign.py`). Per layer, for the truth and each chain
+  run:
+  - which metric makes the kappa4 slices a trace core (covariance metric against the chain's 2I);
+  - the gain amplitudes fitted separately on the kappa4 slices (diag, (2,2), (3,1)) and the kappa3 slices (diag, D21);
+  - the mean error that the chain's gain-amplitude inconsistency predicts, against its actual query error P3 + P4;
+  - how far its lower-order errors line up with the null companions (dG/12, mu.dG/4) of its kappa4 error trace core,
+    and how y2 and KD move that.
+
+  The fitter recovers an exact trace core to 3e-16.
+- **(B) The null-source audit** Omega(G) = R4(Sigma.G) + R3(mu.G)/4 + R2(G)/12. This injects the full tuple at one
+  layer and measures the chain's output response, whose exact value is 0; no truth is needed. It needs injection hooks
+  that place mu.G/4 in the kappa3 state (the readouts and the legs), not only in the readouts.
+
+### 3d. In the chain: G D in place of the lam core (V39_KD)
+
 `est_v29.py` switch V39_KD builds G_l D_l at every layer from the chain's own state:
 - the post-activation C, mean, variance, kappa3 diagonal and K21 slice from the end of the previous layer;
 - the pre-activation covariance, mean, D3 and D21 of the current layer;
