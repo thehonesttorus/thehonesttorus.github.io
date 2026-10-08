@@ -357,6 +357,16 @@ Both fall inside the predicted ranges.
   288: +5.3% raw; 320 to 352: -2.1%) this puts the error's local rank exponent at p ~ 5.6-6.7. That is the
   spectrum's own exponent at the age-5 boundary (6.7-7.8), so the readout law holds with the spectral p, not with a
   steeper effective one.
+- **The confinement error is an independent, additive error** (`code/confdelta.py`, `outputs/confdelta_off0-7.txt`,
+  networks 0-7).
+  - What independence predicts. Let delta be the output difference, dense minus production. If e_prod = e_dense -
+    delta with delta orthogonal to e_dense, then |delta|^2 = -Delta MSE, the cross term is -2|delta|^2 and
+    cos(e, delta) = -sqrt(|delta|^2/MSE).
+  - What is measured: |delta|^2 = 5.3% of the MSE, Delta MSE = -4.6%, cross term -10.0% (-10.7% predicted) and
+    cos -0.215 (-0.23 predicted). The nested tier alone: |delta|^2 = 0.57%, Delta MSE = -0.56%.
+  - Where it sits by layer. The confinement's share of the per-layer error is 2.5% at layer 5, where the tier starts.
+    It is a stationary 5-6% from layer 9 on.
+  - What this licenses. The linear, additive form of the readout law is the right one.
 - **The calibration.** The readout law with kappa_a = kappa_5 q^(a-5), calibrated on P1 and P2, gives kappa_5 = 22.2
   and q = 0.46: kappa halves every 0.9 ages (`code/ladder_opt.py`, `outputs/ladder_opt.txt`). Age 5 carries 4.0 of
   the 5.2 points, age 6 0.7 and age 9 0.3; every other age is under 0.1.
@@ -393,3 +403,21 @@ term, relative to production):
 - score about -0.6%.
 
 A result outside raw -0.5% to -1.3% would mean the per-age split (kappa_5, q) is wrong, not just imprecise.
+
+**The test, interim (19 of 32 networks; the Modal workspace was paused mid-run).**
+
+| | predicted | measured |
+|---|---|---|
+| raw, paired against production | -0.9% (range -0.5% to -1.3%) | -0.12% (per net -0.07 +- 0.36), better on 11/19 |
+| F / B | 0.2138 | 0.2137 |
+
+- **The cost model is exact; the error model is not.** By the criterion stated in advance, the per-age split
+  (kappa_5, q) is wrong, at about 2 standard errors.
+- **Which half is wrong cannot be told from this run.** The prediction is the sum of two parts: -1.3 points for age 5
+  at 336 and +0.6 for ages 9-11 at 160.
+  - The likelier failure is the second. Rank 160 lies below the measured point (192). The nested sub-basis is a
+    two-pass range finder in factor space, not the optimal SVD of the tails, and note XVII's tier-2 scans saw a cliff
+    at 128.
+  - Splitting the two halves takes two runs: rank 336 alone, and nested rank 160 alone.
+- **What stands.** The production ladder stays. The measured optimum (P1, P2 and the error-share law for tier 1) is
+  unaffected. What failed is only the extrapolation of the per-age split below the measured tier-2 rank.
