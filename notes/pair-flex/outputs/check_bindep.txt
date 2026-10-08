@@ -1,0 +1,7 @@
+(1,1,1,1) = T4[u_a,u_b,u_c,u_d]          max rel err 1.0e-15
+(2,1,1) = u_c^T kappa(e_a,e_a,t,t) u_d    max rel err 6.3e-15
+(3,1)  = kappa(e_a,e_a,e_a,t) . u_b       max rel err 1.5e-14
+(2,2) residual vs Cov(v_a, v_b)          4.746040e-03 vs 4.746040e-03
+diag   = 4 g.u - 6 uNu + 3 T4 + 3 Var v + E x   max rel err 2.5e-15
+Sym^4 flex          : change of K22 1.8e-15, of diag 1.8e-14 (K31 untouched); change of (2,1,1) 4.84e+00, of (1,1,1,1) 2.39e+00
+antisymmetric flex  : change of K22 1.8e-15, of diag 2.8e-15 (K31 untouched); change of (2,1,1) 1.09e+01, of (1,1,1,1) 0.00e+00

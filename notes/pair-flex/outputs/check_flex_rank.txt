@@ -1,0 +1,4 @@
+K=2 n=6: parameters 41, pair data 51, nullity 9, predicted C(K+3,4) + q(q-1)/2 = 5 + 3 = 8
+K=3 n=9: parameters 105, pair data 117, nullity 33, predicted C(K+3,4) + q(q-1)/2 = 15 + 15 = 30
+K=3 n=14: parameters 155, pair data 287, nullity 30, predicted C(K+3,4) + q(q-1)/2 = 15 + 15 = 30
+K=4 n=12: parameters 215, pair data 210, nullity 89, predicted C(K+3,4) + q(q-1)/2 = 35 + 45 = 80
