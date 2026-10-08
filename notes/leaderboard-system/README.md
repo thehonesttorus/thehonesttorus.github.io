@@ -288,3 +288,36 @@ held-out. Changes are of raw MSE, paired per network.
 **Adoption candidates under the rule of section 3.** wk4m3 and k4d3 cost nothing and pass the screen. wk4m3's
 geometric-mean slice sqrt(g4_i g4_j)/3 is the gain mode's var_i var_j term exactly, and the gain mode is 93% of the
 truth's kappa4 at depth. Both, and the pair, are measured free-running on the held-out networks next (section 7).
+
+## 7. The exact D21 feedback: the prediction fails by a factor of three (`outputs/fbx_cold_16nets/`)
+
+`V18_R_FB=1024` (the feedback range finder at full rank, so Qf Bf = D21 exactly) failed the scored harness: it overruns
+the 2^41 budget on the warm-up predict. So it was measured in the cold harness (`code/oracle_one.py`, budget 2^44),
+paired against V35 in the same harness, networks 0-15:
+
+| | raw | per net | better on | FLOPs (cold) |
+|---|---|---|---|---|
+| V35 | 2.3520e-8 | | | 0.198 B |
+| exact feedback | 2.1501e-8 | **-8.59% +- 0.70** | 16/16 | 1.080 B |
+
+- **Outside the predicted range.** The prediction was -1.5% to -4%: the precision law applied to the one-step legs
+  error at rank 16. The measured gain is three times larger, so the prediction is wrong in kind, not in precision.
+  The rank-16 legs-error change could not see it. Rank 16 holds almost none of the flat sector (section 5: 1-34%,
+  energy-ordered), and the feedback's value lives there.
+- **The attached claim holds, at a different point.** The flat parts respond, as the attached checkpoints said, but
+  the place they matter is the feedback into the births (GC1, GC2 and the Gamma x Gamma case, note XXXVI section 3f),
+  not a compression of the table.
+- **It is the incoherent half of the next-order law.** At rank 2 the feedback carries only the additive (coherent)
+  part of D21, and doubling that part (y2) is adverse even after renormalization (section 6). At full rank the
+  feedback adds the flat (incoherent) part of the same Gamma x C terms, which is where section 5 located the chain's
+  kappa3 transport error.
+- **The cost is the implementation's.** The rank-1024 thin legs are dense, transported for every source at every
+  layer and never confined: 5.5 times the bill. An efficient form must carry the feedback in the main legs, where
+  the tiers compress it.
+
+**Pre-registered next (16 networks, cold harness, against V35 in the same harness):**
+- **P5 (theorem weight).** GC1 at the theorem's weight on the exact feedback (`V18_R_FB=1024 V40_FB_SY=2`) improves on
+  the exact feedback at half weight by 1 to 5 points. At rank 2 the same doubling was adverse.
+- **P6.** Adding GC2 at the theorem's weight (`V40_FB_SX=2` as well) is within 1 point of P5's run.
+- **P7 (rank).** The gain grows with the feedback rank roughly as the captured flat energy: rank 64 gives 40-50% of
+  the exact feedback's gain, rank 256 gives 75-90%.
