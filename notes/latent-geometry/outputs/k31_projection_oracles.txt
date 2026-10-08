@@ -1,0 +1,17 @@
+# oracle: K31 replaced at every layer; noise-free = 2 MSE(full) - mean MSE(halves); phi = (base - X)/(base - true)
+net 0: base raw 2.25251e-08
+  K31 -> true : full-N 1.7658e-08 (-21.6%), halves 1.786e-08 1.788e-08, noise-free 1.7446e-08 (-22.5%)
+  K31 -> col16: full-N 2.4559e-08 (+9.0%), halves 2.464e-08 2.460e-08, noise-free 2.4497e-08 (+8.8%)
+  K31 -> col64: full-N 1.9514e-08 (-13.4%), halves 1.975e-08 1.951e-08, noise-free 1.9396e-08 (-13.9%)
+  K31 -> gain : full-N 2.2986e-08 (+2.0%), halves 2.297e-08 2.301e-08, noise-free 2.2981e-08 (+2.0%)
+  phi(col16) = -0.39
+  phi(col64) = +0.62
+  phi(gain) = -0.09
+net 1: base raw 2.12658e-08
+  K31 -> true : full-N 1.9994e-08 (-6.0%), halves 1.989e-08 2.060e-08, noise-free 1.9740e-08 (-7.2%)
+  K31 -> col16: full-N 2.0587e-08 (-3.2%), halves 2.049e-08 2.080e-08, noise-free 2.0528e-08 (-3.5%)
+  K31 -> col64: full-N 2.0727e-08 (-2.5%), halves 2.041e-08 2.132e-08, noise-free 2.0590e-08 (-3.2%)
+  K31 -> gain : full-N 2.2503e-08 (+5.8%), halves 2.253e-08 2.250e-08, noise-free 2.2494e-08 (+5.8%)
+  phi(col16) = +0.48
+  phi(col64) = +0.44
+  phi(gain) = -0.80

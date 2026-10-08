@@ -251,6 +251,41 @@ already a gain shape with a fitted amplitude: replacing it by a better-fitted ga
 two similar errors. Network 1 has a true-K31 gain of only 6%, so its phi values are noise dominated and are reported
 but not used for the decision.
 
+### 6.2 Result: the prediction fails in part
+
+Noise-free values (2 MSE(full) - mean MSE(halves); `outputs/k31_projection_oracles.txt`), K31 replaced at every layer:
+
+| network (base raw) | true K31 | colK, K = 64 | colK, K = 16 | gain fit |
+|---|---|---|---|---|
+| 0 (2.2525e-8) | -22.5% | -13.9% | **+8.8%** | +2.0% |
+| 1 (2.1266e-8) | -7.2% | -3.2% | -3.5% | +5.8% |
+
+Retained fractions phi (network 0, where the true-K31 gain is large): colK64 +0.62, colK16 **-0.39**, gain **-0.09**;
+network 1 (true-K31 gain only 7%, so noise dominated): +0.44, +0.48, -0.80.
+
+Against section 6.1: colK64 falls inside the registered range (0.62 in 0.5-0.95, below the central 0.75); colK16 falls
+outside it (-0.39 against 0.0-0.7) and the gain fit marginally outside (-0.09 against 0.0-0.5); the registered
+ordering phi_gain < phi_16 < phi_64 FAILS on network 0 (observed phi_16 < phi_gain < phi_64). The premise of the
+prediction, an isotropic response of the output to errors of the slice in the read-metric energy and no interaction with
+the other statistics, is refuted.
+
+What the failure says (derived from these runs and the oracle table of section 3, not fitted):
+
+1. **Truncating K31 to its top 16 collective modes is worse than the chain's own slice** (+8.8%), although the dropped
+   part carries only 20-70% of the read energy (section 5) against the chain's own error energy of 56-72%. The output's
+   sensitivity to the dropped part is therefore several times larger than its energy share: the modes 17-64 of the
+   column index are read.
+2. **The statistics' errors compensate each other, so one slice cannot be improved in isolation.** The same table
+   gives +24.7% / +12.7% for a TRUE K22 alone, and here a truth-fitted gain-shaped K31 (3 g var_i C_ij with g fitted on
+   the slice) is worse than the chain's slot, which is lam C_off without the var factor at a fitted amplitude. The chain
+   sits at an error-cancelling configuration; the all-true oracle (-91% to -96%) is a statement about the whole bundle.
+3. **Minimal collective rank for K31.** Whatever supplies the (3,1) slice must carry its column index at K >= 64
+   (colK64 retains 62% of the gain on network 0); K = 16 does harm.
+
+Decision: a component acting on K31 (a latent model, a response correction, tree births) must be judged inside a
+coherent bundle with g4, K22 and D21 against the all-true direction, never against the K31 oracle alone. The
+isotropic energy bookkeeping used in 6.1 is withdrawn; sensitivity-weighted (adjoint) bookkeeping is required.
+
 ## 7. The calibration holds out of sample
 
 The 103-direction output-metric projection of note ray-compiler section 8 (fitted on networks 0-49: train -6.04%,
