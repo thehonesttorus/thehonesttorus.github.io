@@ -341,6 +341,18 @@ NO_SRC_LAST = _os.environ.get("V19_NO_SRC_LAST", "0") == "1"  # V19 probe: D3(la
 NO_CORR = _os.environ.get("V17_NO_CORR", "1") == "1"
 # V25: table scale 0.95 (8-dump scan 0.9/0.92/0.95/1.0 -> 2.2752/2.2727/2.2704/2.2782e-8)
 LAM = [c * float(_os.environ.get("V17_LAM_SCALE", "0.95")) for c in LAM]
+# V46 (note ray-compiler, section 8): per-layer multipliers of the lam table, comma-separated, LAM[l] *= m_l (default:
+# none). The table was fitted to the kappa4 core in L2; V46 refits it in the metric the output reads.
+# V47 (note ray-compiler, section 8): "X:l:d;X:l:d" rescales statistic X (var D3 D21 g4 k22 k31 coff) read by layer l's
+# Wick stage by 1 + d (default: none). Linear responses of the output to these directions measure how much of the
+# chain's error any per-layer amplitude correction of its carried statistics can remove.
+CAL = {}
+for _ce in [x for x in _os.environ.get("V47_CAL", "").split(";") if x]:
+    _cx, _cl, _cd = _ce.split(":")
+    CAL.setdefault(int(_cl), {})[_cx] = float(_cd)
+if _os.environ.get("V46_LAM_MUL", ""):
+    _lmul = [float(x) for x in _os.environ["V46_LAM_MUL"].split(",")]
+    LAM = [c * (_lmul[i] if i < len(_lmul) else 1.0) for i, c in enumerate(LAM)]
 # V25: reference ratio mean(dG)/mean(var) at layer l+1 (8-dump mean, scratch/lam_obs_d0-7.npz)
 # and the log-log exponent of the adaptive rule (pooled fit 1.08; 1.0 shipped).
 REF_R = [6.58815e-03, 8.18414e-03, 8.53136e-03, 8.38859e-03, 8.10153e-03, 7.74287e-03,
@@ -1712,6 +1724,23 @@ class Estimator(BaseEstimator):
                         wk4m = wk4m + _zero_diag(_var0[:, None] * _gv[None, :] + _gv[:, None] * _var0[None, :]) * (1.0 / 6.0)
                     if wk431 is not None and C_off is not None:
                         wk431 = wk431 + C_off * (_gv * 0.5)[None, :]
+            if li in CAL:
+                # V47 (note ray-compiler, section 8): rescale the statistics this layer's Wick stage reads, X *= 1 + d
+                for _cx, _cd in CAL[li].items():
+                    if _cx == "var":
+                        var = var * (1.0 + _cd)
+                    elif _cx == "D3" and D3 is not None:
+                        D3 = D3 * (1.0 + _cd)
+                    elif _cx == "D21" and D21 is not None:
+                        D21 = D21 * (1.0 + _cd)
+                    elif _cx == "g4" and g4row is not None:
+                        g4row = g4row * (1.0 + _cd)
+                    elif _cx == "k22" and wk4m is not None:
+                        wk4m = wk4m * (1.0 + _cd)
+                    elif _cx == "k31" and wk431 is not None:
+                        wk431 = wk431 * (1.0 + _cd)
+                    elif _cx == "coff" and C_off is not None:
+                        C_off = C_off * (1.0 + _cd)
             # ---- wick matrix ----
             sigma = fnp.sqrt(var)
             alpha = mu / sigma

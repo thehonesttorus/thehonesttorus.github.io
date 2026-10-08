@@ -439,3 +439,43 @@ A result outside raw -0.5% to -1.3% would mean the per-age split (kappa_5, q) is
   it: incoherent transport defects. A third is the product-gate transport of the all-distinct kappa3, which costs n^4
   to remove. The rest is of the same class. Signed cancellations between their output images defeat each local repair
   tested so far.
+
+## 8. The output-metric closure: refitting the regenerated kappa4 core where the output reads it
+
+**The identity.** To first order the chain's final error is the sum of its one-step defects carried to the output by
+the chain's own propagation: e = sum_l J_(l+1) R_l. This is the telescoping ledger of note XI, and section 2 of note
+XXXVI checked it against the oracles.
+- **The principle.** Optimal prediction (Mori-Zwanzig; Chorin, Hald and Kupferman) prescribes the best Markovian closure
+  term: the projection of the omitted dynamics onto functions of the retained state.
+- **The equivalence.** In the output's metric, projecting each defect R_l onto a feature phi_l, weighted by
+  J_(l+1), is the same as a least-squares fit of e on the features' output responses J_(l+1) phi_l.
+- **How it is measured.** Those responses are linear responses along the chain's own trajectory. The only truth
+  they need is the dataset's final-layer means.
+- **What is derived and what is fitted.** The form (which features) is derived; the coefficients are projections,
+  estimated on training networks, frozen, and judged on held-out networks.
+- **Precedent.** This is the standard of Team Puffi's Phase-1 SSC closure (forum topic 18175). Their largest single
+  gain, 13.6% at layer 32, came from changing the target of their fourth-cumulant coupling fit. They stopped fitting
+  marginal fourth-cumulant quantities and fitted the mean correction the next layer consumes.
+
+**Why the lam table first.** The regenerated core's per-layer coefficient lam_l was fitted in L2 to the kappa4 core:
+to the slice, not to what the output reads. Note XXXVI sections 3d and 3h diagnosed exactly this as the failure mode of
+the slice-accurate repairs: the output reads the kappa4 sector only through the mean weights on the diagonal and the
+next pair program's covariance terms.
+- **The design.** Fifteen per-layer multipliers m_l (`V46_LAM_MUL`), each perturbed alone to 1.1 on all 100
+  networks: 1600 chain runs (`code/lamfit.py`).
+- **The fit.** Training networks 0-49; the ridge is chosen inside the training set. The predicted held-out change is
+  stated before the held-out networks are run free with the fitted table.
+
+**The lam refit, measured** (`outputs/lamfit_100nets.txt`).
+- **The responses.** A 10% change of one layer's lam moves the output by 1.0e-5 rms at layer 0, rising to 4.6e-5
+  at layers 11-13. The chain's own error is 1.5e-4 rms.
+- **The projection is tiny.** It removes 0.36% of the training MSE. The predicted held-out change is
+  **-0.28% +- 0.08** (better on 35/50), with multipliers within +-9% of the table.
+- **Measured free-running on the held-out networks:** **-0.28%** (per net -0.29 +- 0.08, better on 33/50). The
+  linear-response prediction is exact. The AWS base agrees with the Modal base to 0.02%.
+- **Two readings.**
+  - The instrument. The output-metric projection predicts free-running changes to within the noise, so it can price
+    any family of closure corrections before a line of it is built.
+  - The lam table. It is already at its output-metric optimum. The chain's error is nearly orthogonal to the kappa4
+    core's amplitude directions, as its whiteness (note XXXIII) implies. Team Puffi's 13.6% came from a closure much
+    further from its optimum.

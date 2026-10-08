@@ -1,0 +1,16 @@
+# Output-metric refit of the lam table (ray-compiler note section 8): fit on networks 0-49, held-out 50-99
+train 50 nets, validation 50 nets; response norms per layer (rms over train): 1.0e-05 1.2e-05 1.4e-05 1.8e-05 2.3e-05 2.8e-05 3.2e-05 3.5e-05 3.8e-05 4.0e-05 4.3e-05 4.5e-05 4.6e-05 4.5e-05 4.4e-05
+ridge chosen inside the training set: 0:2.3244e-08 0.001:2.3244e-08 0.01:2.3242e-08 0.1:2.3234e-08 -> 0.1
+ridge 0: multipliers 0.969 1.153 1.100 1.119 1.033 1.046 1.050 0.902 1.009 0.927 1.007 0.920 1.031 1.079 1.098
+   predicted (first order): train -0.36%, held-out -0.28% (per net -0.29 +- 0.10, better on 34/50)
+ridge 0.001: multipliers 0.971 1.151 1.099 1.119 1.033 1.046 1.050 0.902 1.009 0.927 1.007 0.920 1.031 1.079 1.098
+   predicted (first order): train -0.36%, held-out -0.28% (per net -0.29 +- 0.10, better on 34/50)
+ridge 0.01: multipliers 0.982 1.139 1.095 1.116 1.033 1.046 1.049 0.903 1.009 0.927 1.007 0.921 1.031 1.078 1.097
+   predicted (first order): train -0.36%, held-out -0.29% (per net -0.29 +- 0.09, better on 34/50)
+ridge 0.1 (chosen): multipliers 1.014 1.085 1.071 1.093 1.034 1.045 1.047 0.914 1.009 0.932 1.007 0.925 1.029 1.074 1.093
+   predicted (first order): train -0.36%, held-out -0.28% (per net -0.28 +- 0.08, better on 35/50)
+
+## held-out free-running run with the chosen multipliers (V46_LAM_MUL), paired against the AWS production base
+50 nets: base mean 2.2691e-08, variant mean 2.2628e-08; paired change -0.28% (per-net mean -0.29% +- 0.08, better on 33/50)
+## AWS production base against the Modal base, networks 0-31 (numerical consistency)
+32 nets: base mean 2.2806e-08, variant mean 2.2810e-08; paired change +0.02% (per-net mean +0.01% +- 0.01, better on 13/32)
