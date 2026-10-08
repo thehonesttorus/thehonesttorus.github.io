@@ -420,6 +420,10 @@ ORACLE_FILE = _os.environ.get("V37_ORACLE_FILE", "")
 # for intervention telescoping; "MU" replaces the pre-activation mean of those layers by Monte Carlo truth.
 ORACLE_LAYERS = frozenset(int(x) for x in _os.environ.get("V37_ORACLE_LAYERS", "").split(",") if x)
 _orc = lambda li: bool(ORACLE) and (not ORACLE_LAYERS or li in ORACLE_LAYERS)
+# V41: with the D3/D21 oracles on, the carried legs still hold the chain's own slices, so the gated subtraction
+# D3_w = D3 w1^3, D21_w = (w1 w1) D21 w1 at the birth M-block must use the OWN values (what the legs represent) for the
+# represented y slices to be reset to the pair program's K3v, K21. 1 = consistent oracle interventions.
+ORC_CONSIST = _os.environ.get("V41_ORC_CONSIST", "0") == "1"
 _ORACLE_DATA = {}
 _np_T = lambda x: x.T.copy()
 OWN = {}   # V37 audit, dump runs: name -> [(layer, the chain's own value before the oracle replaced it)]
@@ -1385,6 +1389,7 @@ class Estimator(BaseEstimator):
                     _own("C_off", li, C_off)
                     C_off = _zero_diag(fnp.asarray(_ORACLE_DATA["cov"][li], dtype=f32))   # V37 audit: off-diagonal covariance
             mode = 0 if A_st is None else 1
+            D3_keep = D21_keep = None   # V41: own D3/D21 kept for the consistent oracle subtraction
             sat_mask = None
             sat_perm = sat_ridx = None
             sat_na = n
@@ -1456,10 +1461,14 @@ class Estimator(BaseEstimator):
                         fnp.multiply(D21, sat_mask[None, :], out=D21)
                 if sat_mask is not None and SAT_FULL and D3 is not None:
                     D3 = D3 * sat_mask
+                D3_keep = D21_keep = None
                 if _orc(li):
                     if not _ORACLE_DATA:
                         import numpy as _np
                         _ORACLE_DATA.update({k: v for k, v in _np.load(ORACLE_FILE).items()})
+                    if ORC_CONSIST:
+                        D3_keep = None if D3 is None else fnp.multiply(D3, 1.0)
+                        D21_keep = None if D21 is None else fnp.multiply(D21, 1.0)
                     if "D3" in ORACLE:
                         _own("D3", li, D3)
                         D3 = fnp.asarray(_ORACLE_DATA["k3"][li], dtype=f32)
@@ -1794,8 +1803,10 @@ class Estimator(BaseEstimator):
                 fnp.multiply(legs4["AP0"][2 * ka:2 * kk], w1col[None, None],
                              out=legs4["AP0"][2 * ka:2 * kk])
             if mode == 1:
-                D3_w = D3 * w1 ** 3
-                D21_w = fnp.multiply(w1col * w1col, D21, out=NN("d21w"))
+                _d3s = D3_keep if (ORC_CONSIST and D3_keep is not None) else D3
+                _d21s = D21_keep if (ORC_CONSIST and D21_keep is not None) else D21
+                D3_w = _d3s * w1 ** 3
+                D21_w = fnp.multiply(w1col * w1col, _d21s, out=NN("d21w"))
                 fnp.multiply(D21_w, (w1)[None, :], out=D21_w)
             else:
                 D3_w = None
