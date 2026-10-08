@@ -22,7 +22,8 @@ Design:
   python3 infra/aws/awsrun.py start|stop all|NAME
   python3 infra/aws/awsrun.py terminate NAME
   python3 infra/aws/awsrun.py data LOCALFILE... [--k3work]   upload data files (default data/official/)
-  python3 infra/aws/awsrun.py batch JOB FILE [--threads T]   tasks "tag<TAB>command" (one per line); returns at once
+  python3 infra/aws/awsrun.py batch JOB FILE [--threads T] [--only NAME,...] [--slots K]
+                                                             tasks "tag<TAB>command" (one per line); returns at once
   python3 infra/aws/awsrun.py watch JOB                      stream results as they arrive; summary.txt at the end
   python3 infra/aws/awsrun.py get JOB [PATTERN]              download results/JOB/ to scratchpad/aws/results/JOB
 """
@@ -235,16 +236,16 @@ rm -rf "$W"
 """
 
 
-def batch(job, path, threads=4):
+def batch(job, path, threads=4, only=None, nslots=None):
     st = state(); bkt = st["bucket"]
     tasks = [l.rstrip("\n").split("\t", 1) for l in open(path) if l.strip() and not l.startswith("#")]
-    run = [x for x in fleet(("running",))]
+    run = [x for x in fleet(("running",)) if only is None or _name(x) in only]
     if not run:
         sys.exit("no running fleet instance (awsrun.py start all, or launch)")
     code = bundle()
     cores = {x["InstanceId"]: _vcpus(x["InstanceType"]) for x in run}
-    # weighted round robin: instance i gets tasks in proportion to its slots
-    slots = {i: max(1, c // threads) for i, c in cores.items()}
+    # weighted round robin: instance i gets tasks in proportion to its slots (--slots K caps them, e.g. for timing)
+    slots = {i: max(1, c // threads) if nslots is None else nslots for i, c in cores.items()}
     order = sorted(slots, key=lambda i: -slots[i]); share = {i: [] for i in order}; load = {i: 0.0 for i in order}
     for t in tasks:
         i = min(order, key=lambda k: (load[k] + 1) / slots[k]); share[i].append(t); load[i] += 1
@@ -326,7 +327,9 @@ if __name__ == "__main__":
     elif c == "list": show()
     elif c in ("start", "stop", "terminate"): power(c, a[1])
     elif c == "data": data([x for x in a[1:] if not x.startswith("--")], "k3work" if "--k3work" in a else "official")
-    elif c == "batch": batch(a[1], a[2], int(a[a.index("--threads") + 1]) if "--threads" in a else 4)
+    elif c == "batch": batch(a[1], a[2], int(a[a.index("--threads") + 1]) if "--threads" in a else 4,
+                             a[a.index("--only") + 1].split(",") if "--only" in a else None,
+                             int(a[a.index("--slots") + 1]) if "--slots" in a else None)
     elif c == "watch": watch(a[1])
     elif c == "get": get(a[1], a[2] if len(a) > 2 else "*")
     else: sys.exit(__doc__)

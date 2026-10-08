@@ -438,6 +438,15 @@ BIRTH_LOG = []
 # V36: "legs" = mask the newborn's legs at birth (the joins then see the masked legs too); "reads" = keep every leg
 # whole and mask each source's dropped birth columns only inside the readouts (D3, D21 and their feedback/feed terms)
 BIRTH_MODE = _os.environ.get("V36_BIRTH_MODE", "legs")
+# V48 (note on the deck symmetry, emulated): relu(z) = z + relu(-z) (the Moreau decomposition onto the orthant and its
+# polar) maps a unit saturated on (alpha >= t) to one saturated off (alpha <= -t) with the same hinge coefficients,
+# which are even in alpha (phi(alpha)/sigma, |alpha| phi/sigma^2, the post-activation residual cumulants). So the
+# hinge-weighted reads and the birth hubs of saturated units are negligible on BOTH sides, while the linear
+# transmission Phi vanishes only on the polar (off) side. DECK_ROWS = t: zero the D21 rows of units with |alpha| >= t
+# (the pair program reads row a with phi(alpha_a)/sigma_a); DECK_BIRTH = t: zero the newborn's A and P columns of birth
+# neurons with |alpha| >= t (replaces V36's one-sided top-nb mask).
+DECK_ROWS = float(_os.environ.get("V48_DECK_ROWS", "nan"))
+DECK_BIRTH = float(_os.environ.get("V48_DECK_BIRTH", "nan"))
 # V37 audit (note XXXI): oracle attribution. The chain's third-cumulant readouts of every layer are replaced by Monte
 # Carlo truth from V37_ORACLE_FILE (mcstats.py): "D3" = kappa_3(z_i), "D21" = E[(z_i - m_i)^2 (z_c - m_c)] (zero
 # diagonal, SAT row mask kept), or both. Offline measurement only.
@@ -1442,6 +1451,11 @@ class Estimator(BaseEstimator):
                 if _nb < n:
                     birth_mask = fnp.less(fnp.argsort(fnp.argsort(-_alb)), _nb).astype(f32)
                 BIRTH_LOG.append((li, 1.0 - _nb / n))
+            if DECK_BIRTH == DECK_BIRTH:   # V48: both saturated sides leave the newborn
+                birth_mask = fnp.less(fnp.abs(mu / fnp.sqrt(var)), DECK_BIRTH).astype(f32)
+                BIRTH_LOG.append((li, 1.0 - float(fnp.mean(birth_mask))))
+            deck_rows = (fnp.less(fnp.abs(mu / fnp.sqrt(var)), DECK_ROWS).astype(f32)
+                         if DECK_ROWS == DECK_ROWS else None)   # V48: D21 rows the pair program can read
             if mode == 1 and skip_src:
                 D3, D21 = fnp.zeros(n, dtype=f32), None
                 if regen:
@@ -1488,6 +1502,8 @@ class Estimator(BaseEstimator):
                         fnp.multiply(D21, sat_mask[None, :], out=D21)
                 if sat_mask is not None and SAT_FULL and D3 is not None:
                     D3 = D3 * sat_mask
+                if deck_rows is not None and D21 is not None:
+                    fnp.multiply(D21, deck_rows[:, None], out=D21)
                 D3_keep = D21_keep = None
                 if _orc(li):
                     if not _ORACLE_DATA:
