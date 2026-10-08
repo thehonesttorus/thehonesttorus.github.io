@@ -479,3 +479,25 @@ next pair program's covariance terms.
   - The lam table. It is already at its output-metric optimum. The chain's error is nearly orthogonal to the kappa4
     core's amplitude directions, as its whiteness (note XXXIII) implies. Team Puffi's 13.6% came from a closure much
     further from its optimum.
+
+**The 103-direction amplitude scan** (`code/calfit.py`, `outputs/calfit_103dirs.txt`, `outputs/calfit_coef.json`,
+`outputs/calval_50nets.txt`). The lam refit moved one statistic's amplitude per layer; the same instrument was then used
+for every carried statistic the Wick stage reads: the variance and off-diagonal covariance (layers 0-14), D3, D21, g4,
+K22 and K31 (layers 1-15), 103 directions in all (`V47_CAL="X:l:d;..."` rescales statistic X read by layer l by 1 + d).
+- **The responses.** Each direction perturbed alone by 1e-3 on all 100 networks (10,300 chain runs); the linear responses
+  R_j of the final means, the output-metric projection b = argmin sum_train |e + R b|^2 (training networks 0-49, ridge
+  chosen inside the training set, 0 here).
+- **The prediction, stated before the held-out run.** Train -6.04%; held-out **-3.07% +- 0.38** (better on 45/50). By
+  statistic (held out): var -0.38%, coff -0.13%, D3 -0.31%, g4 -0.61%, K31 -0.66%, K22 -0.86%, D21 -1.44% +- 0.29; by
+  layer band: layers 0-4 -0.16%, 5-9 -1.17%, 10-15 -2.79% +- 0.27.
+- **Measured free-running on the held-out networks 50-99** with the fitted amplitudes: raw 2.2692e-8 to 2.1838e-8,
+  **-3.76%** (per network -3.73% +- 0.37, better on 46/50), at unchanged cost (O(n) rescalings). The prediction is
+  within one standard error and slightly pessimistic.
+- **What the amplitudes are.** Mostly within a few percent of 1. The exceptions are K31 at depth (0.76, 0.84, 0.58,
+  0.68, 0.50 at layers 10-14: the output wants the carried (3,1) slice SMALLER than the chain supplies), K31 at layers
+  1 and 4 (1.39, 1.12), g4 at layers 1-4 and 8-14 (0.92-1.09) and D21 (0.96-0.99 at layers 6-14).
+- **Two readings.** (1) The output-metric projection is a calibrated instrument: predicted and free-running changes
+  agree within the noise on two independent experiments (lam refit: -0.28% predicted and measured; this scan: -3.07%
+  predicted, -3.76% measured). (2) Amplitude directions carry 4% of the error: the all-true oracle removes 91-96%
+  (note XXXVII section 3), so the remaining error is not an amplitude defect of any carried statistic. For submission
+  the amplitudes are to be refitted on all 100 networks; the held-out figure above is the estimate of what that buys.
