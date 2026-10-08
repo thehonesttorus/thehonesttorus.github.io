@@ -1,0 +1,5 @@
+103 directions; base pc/o35_{n}.npy: train 50, held-out 50
+  base: held-out raw 2.26695e-08; refitted (ridge 0) 2.19535e-08 (-3.16% +- 0.37, better on 45)
+  wkboth: held-out raw vs base -0.24% +- 0.28 (better on 29); refitted 2.17599e-08; renormalized change vs refitted base -0.88% +- 0.22 (better on 35/50); free amplitude a = 0.519, refitted with a free: -0.91% +- 0.11 [own ridge 0: -0.88%]
+
+[exit 0 after 73s on ip-172-31-36-130, 4 cores, threads 4]

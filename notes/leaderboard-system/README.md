@@ -15,6 +15,18 @@ in the scored regime (a warm-up predict on another network, then the measured pr
    read the fitted lam core as a compensating counterterm. If that reading is right, those tests counted the same
    physics twice. The fair test renormalizes both sides.
 
+**What it found** (details in sections 4-9):
+- **The assembled system.** V35 plus refitted counterterms is the measured best: adjusted 3.93e-9 on the held-out
+  networks, 3.8% below V35 at unchanged cost (section 8; the closing 100-network figure is in section 9).
+- **Renormalization sorts the derived terms as the flex theorem says.** It repairs every closure convention's
+  free-running loss and lets none of them gain. It does not rescue the law term GC1 (section 6).
+- **The audits localize the error by sector.** The chain's D21 error is the incoherent flat sector of the table,
+  right to 2% in its additive part and off by 16% in its flat part. Its kappa4 slices are flex-limited closures,
+  K31 74% off. No carried basis concentrates K31 (section 5).
+- **The exact D21 feedback is the round's one large accuracy lever.** It gives -8.6% raw, three times the
+  prediction. Rank 64 already holds 73% of that. Its price sits on the same frontier as the tiers: about one percent
+  of raw per percent of cost (section 7).
+
 ## 1. Phase A: predictions (stated before the runs)
 
 - **Transfer.** V35 computes what V33 computes except the alpha <= -2.5 drop (neutral) and the L-2 join (-0.43%).
@@ -392,3 +404,65 @@ to the last digit, and the residual is within noise (-1.2% +- 0.5). V35's own le
   alone. The pair is tested next.
 - **The first-order refit is pessimistic again.** It predicted -3.16% and measured -3.83%, the third time the
   second order has been favourable by 0.6-0.7 points.
+- **The pair** (wk4m3 + k4d3, run free on networks 0-99, `outputs/refit_pair_heldout.txt`). Free-running it is -0.24%
+  +- 0.28 held-out. Renormalized it is -0.88% +- 0.22, better on 35/50, slightly better than the two singles summed
+  (-0.64%), with free amplitude 0.52.
+- **The pair's test and the final runs.** The pair is measured free-running on 50-99 with its own refitted
+  counterterms. In the same batch both possible final systems are baked and run on all 100 networks: V35 +
+  counterterms, and V35 + pair + counterterms.
+
+
+## 9. The leaderboard system
+
+**Adopted** (each part under the rule of section 3, measured free-running on held-out networks). V35, plus:
+- the geometric-mean (2,2) slice, `V33_WK4M=3`: wk4m = sqrt(g4_i g4_j)/3, the gain mode's var_i var_j term;
+- the derived dropped-class kappa4 diagonal, `V31_K4D=3`: 6 g s_diag^2 s_off^2 + 3 g s_off^4, with the mixture gain
+  read from the chain's own kappa4 diagonal, in place of the lam s_off^2 stand-in;
+- the 103 output-metric counterterms, refitted on all 100 networks for this configuration.
+
+The file is `code/estimator_final.py`, baked from `est_v29.py` with `code/bake.py` and
+`code/estimator_final_config.txt`. It runs with no environment, and a baked file reproduces its environment-driven
+run to the last digit (network 50: raw 1.6962e-8, C/B 0.1819, on two different machines).
+
+| scored regime, all 100 networks (`outputs/pd_rows.json`) | raw | C/B | adjusted | against V35 |
+|---|---|---|---|---|
+| V35 (note XXIX) | 2.2899e-8 | 0.1802 | 4.1273e-9 | |
+| V35 + counterterms | 2.1628e-8 | 0.1803 | 3.8986e-9 | -5.54% +- 0.27 |
+| **V35 + pair + counterterms (adopted)** | **2.1526e-8** | **0.1803** | **3.8815e-9** | **-5.95% +- 0.34** |
+
+- **The 100-network figures are in-sample for the counterterms.**
+- **The held-out estimate is the protocol's.** Counterterms fitted on networks 0-49 and judged free-running on
+  50-99 give adjusted 3.8984e-9 against V35's 4.0882e-9: -4.64% (per net -4.59 +- 0.44).
+  - The counterterms alone are -3.83%.
+  - The pair adds -0.85% +- 0.23 (better on 33/50), against a predicted -0.88%.
+- **Residual and memory are V35's.** The local residual of the measured call is 0.61 s mean and 0.68 s max on a
+  loaded fleet machine, against V35's 0.59 / 0.68 in the same harness. The grader counts only our own Python
+  between ops (note XXIX section 8). VmHWM is 10.36 GB in the in-process harness.
+
+**What it is not.** It is not the breakthrough this round set out to find.
+- The leaders sit at adjusted 1.1-2.1e-9; this system is at 3.9e-9.
+- The round located why, sector by sector (sections 5-7):
+  - the kappa3 error is incoherent flat-sector transport;
+  - the kappa4 slices are flex-limited closures;
+  - the one large lever found, the exact D21 feedback (-8.6% raw), is information the chain can use but cannot yet
+    afford.
+
+## 10. What follows
+
+1. **The feedback's carrier is the design problem.**
+   - The information is real: the full D21 table at each birth, worth -8.6% raw.
+   - The present representation re-forms rank-r thin legs densely for every source at every layer, about 8 n^2 r
+     multiply-adds per source-layer. At the margin it buys raw at about one for one with cost:
+     - rank 16: 0.45% raw per 1% cost;
+     - rank 64: 0.24;
+     - young-only at rank 64: about 0.5 (estimated).
+   - To beat the frontier, a carrier must hold the feedback's upper flat spectrum at well under n^2 r per
+     source-layer, for instance without re-forming dense legs for the Hadamard reads. That is the one lever this round
+     found with information to spare.
+2. **The kappa4 sector needs carried information.** K31 is 74% off and no function of the pair state, and no basis
+   computable from the carried state, closes it. The flex theorem now has its quantitative face: about 40% of the
+   (3,1) slice is history, not state.
+3. **Law-term repairs must be paired at the incoherent level.** GC1 at the theorem's weight fails before
+   renormalization, after it, and even with the flat part present (P5). The coherent half-weight the hub carries is
+   the one the output tolerates. Any further law term has to come with the kappa4-side term that cancels it at the
+   same order.
