@@ -1,0 +1,13 @@
+# python ladder_opt.py outputs/legtails_off0.txt outputs/legtails_off1.txt --x1 0.0522 --x2 0.00361
+# X1 = MSE_prod/MSE_dense - 1 from P1 (-4.96% paired), X2 = MSE_prod/MSE_onetier - 1 from P2 (-0.36% paired)
+calibrated: kappa_5 = 22.21, q = 0.458 (kappa halves every 0.89 ages)
+  per-age share of the production confinement error (% of MSE_dense): a5:4.04 a6:0.66 a7:0.11 a8:0.02 a9:0.28 a10:0.07 a11:0.02 a12:0.01 a13:0.00 a14:0.00 a15:0.00
+  production                   err  5.22%  old-tier cost   69.6 u  score vs production +0.00%
+  one tier 320                 err  4.84%  old-tier cost   76.4 u  score vs production +2.46%
+  best 2-tier: ages 5-8 at 336, ages >= 9 at 160: err 4.29%, score vs production -0.59%
+  best 3-tier: ages 5-6 at 352, 7-9 at 256, >= 10 at 128: err 3.99%, score vs production -0.68% (one extra nested move per layer charged)
+  age 4 confined too, tier 1 at 320, nested 192: err 27.82%, score vs production +14.21%
+  age 4 confined too, tier 1 at 352, nested 192: err 14.41%, score vs production +5.23%
+  age 4 confined too, tier 1 at 384, nested 192: err 7.29%, score vs production +1.50%
+  age 4 confined too, tier 1 at 416, nested 192: err 3.50%, score vs production +0.63%
+  age 4 confined too, tier 1 at 448, nested 192: err 1.88%, score vs production +1.73%

@@ -1,0 +1,110 @@
+# Shared-basis confinement measured (ray-compiler note section 7.4): 32 official networks, paired against production
+# production = est_v29 with oracle_one.py's production flags (dense to age 4, R_OLD 320 for ages 5-8, nested R_OLD2 192 for ages >= 9)
+# noconf  = V21_NO_CONFINE=1 (every source dense);  onetier = V24_AGE_OLD2=0 (every old age at 320)
+## paired summaries
+noconf vs production: 32 nets: base mean 2.2806e-08, variant mean 2.1675e-08; paired change -4.96% (per-net mean -4.87% +- 0.47, better on 32/32)
+onetier vs production: 32 nets: base mean 2.2806e-08, variant mean 2.2723e-08; paired change -0.36% (per-net mean -0.36% +- 0.14, better on 22/32)
+noconf vs onetier: 32 nets: base mean 2.2723e-08, variant mean 2.1675e-08; paired change -4.62% (per-net mean -4.53% +- 0.45, better on 32/32)
+## FLOPs (one cold predict per process; the residual wall time on Modal is not the scoring machine's)
+nc: cost: F 6.4157e+11 (0.2918 B), residual wall 0.592 s, C/B 0.3187
+t1: cost: F 4.8332e+11 (0.2198 B), residual wall 0.912 s, C/B 0.2613
+production: cost: F 4.6867e+11 (0.2131 B)
+## per network: production
+net 0 base: raw 2.25178e-08
+net 1 base: raw 2.12521e-08
+net 10 base: raw 2.35534e-08
+net 11 base: raw 2.52653e-08
+net 12 base: raw 2.07016e-08
+net 13 base: raw 2.16434e-08
+net 14 base: raw 2.42341e-08
+net 15 base: raw 2.49032e-08
+net 16 base: raw 1.88015e-08
+net 17 base: raw 1.98854e-08
+net 18 base: raw 2.34001e-08
+net 19 base: raw 1.99254e-08
+net 2 base: raw 2.62195e-08
+net 20 base: raw 2.60734e-08
+net 21 base: raw 2.46374e-08
+net 22 base: raw 2.37400e-08
+net 23 base: raw 2.05739e-08
+net 24 base: raw 2.33028e-08
+net 25 base: raw 2.41562e-08
+net 26 base: raw 2.88979e-08
+net 27 base: raw 1.71514e-08
+net 28 base: raw 2.22777e-08
+net 29 base: raw 1.99959e-08
+net 3 base: raw 2.59662e-08
+net 30 base: raw 2.09322e-08
+net 31 base: raw 1.87772e-08
+net 4 base: raw 2.24962e-08
+net 5 base: raw 2.18449e-08
+net 6 base: raw 2.24178e-08
+net 7 base: raw 2.44053e-08
+net 8 base: raw 2.36156e-08
+net 9 base: raw 2.62372e-08
+## per network: noconf
+net 0 noconf: raw 2.20918e-08
+net 1 noconf: raw 2.12179e-08
+net 2 noconf: raw 2.40472e-08
+net 3 noconf: raw 2.46536e-08
+net 4 noconf: raw 2.21752e-08
+net 5 noconf: raw 2.02112e-08
+net 6 noconf: raw 2.09015e-08
+net 7 noconf: raw 2.29429e-08
+net 8 noconf: raw 2.29264e-08
+net 9 noconf: raw 2.47450e-08
+net 10 noconf: raw 2.27094e-08
+net 11 noconf: raw 2.32665e-08
+net 12 noconf: raw 2.00935e-08
+net 13 noconf: raw 2.14352e-08
+net 14 noconf: raw 2.37777e-08
+net 15 noconf: raw 2.27794e-08
+net 16 noconf: raw 1.76504e-08
+net 17 noconf: raw 1.93696e-08
+net 18 noconf: raw 2.27850e-08
+net 19 noconf: raw 1.82001e-08
+net 20 noconf: raw 2.34428e-08
+net 21 noconf: raw 2.39172e-08
+net 22 noconf: raw 2.20588e-08
+net 23 noconf: raw 1.94720e-08
+net 24 noconf: raw 2.15599e-08
+net 25 noconf: raw 2.29028e-08
+net 26 noconf: raw 2.72241e-08
+net 27 noconf: raw 1.67271e-08
+net 28 noconf: raw 2.13255e-08
+net 29 noconf: raw 1.83012e-08
+net 30 noconf: raw 2.06416e-08
+net 31 noconf: raw 1.80320e-08
+## per network: onetier
+net 0 onetier: raw 2.23983e-08
+net 1 onetier: raw 2.13071e-08
+net 2 onetier: raw 2.61547e-08
+net 3 onetier: raw 2.59748e-08
+net 4 onetier: raw 2.23305e-08
+net 5 onetier: raw 2.15224e-08
+net 6 onetier: raw 2.21282e-08
+net 7 onetier: raw 2.42918e-08
+net 8 onetier: raw 2.32942e-08
+net 9 onetier: raw 2.62461e-08
+net 10 onetier: raw 2.34479e-08
+net 11 onetier: raw 2.53512e-08
+net 12 onetier: raw 2.06023e-08
+net 13 onetier: raw 2.15364e-08
+net 14 onetier: raw 2.40862e-08
+net 15 onetier: raw 2.49174e-08
+net 16 onetier: raw 1.89216e-08
+net 17 onetier: raw 2.02983e-08
+net 18 onetier: raw 2.33838e-08
+net 19 onetier: raw 1.97565e-08
+net 20 onetier: raw 2.58533e-08
+net 21 onetier: raw 2.47841e-08
+net 22 onetier: raw 2.34706e-08
+net 23 onetier: raw 2.03738e-08
+net 24 onetier: raw 2.30133e-08
+net 25 onetier: raw 2.41140e-08
+net 26 onetier: raw 2.87020e-08
+net 27 onetier: raw 1.71159e-08
+net 28 onetier: raw 2.24914e-08
+net 29 onetier: raw 1.96846e-08
+net 30 onetier: raw 2.09714e-08
+net 31 onetier: raw 1.86227e-08

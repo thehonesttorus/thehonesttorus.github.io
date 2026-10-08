@@ -248,3 +248,148 @@ by the mean's Edgeworth coefficients c3 and c4, which is what the means read.
   cannot give the price itself: the legs need Hadamard (Khatri-Rao) products for their readouts, so the leg rank and the
   covariance rank are not the same object.
 
+## 7. Operator theory of the legs: free spectra, the readout law, and the rank a tier needs
+
+The chain truncates the legs of aged sources to a shared basis. Its ladder came from frontier scans (notes XVII, XXIV):
+dense to age 4, rank 320 for ages 5-8, and a nested rank-192 sub-basis for ages 9 and older. This section derives the
+ranks from the operator theory of the legs, states predictions before measuring, and then measures.
+
+**7.1 The legs are free products** (`code/legspec.py`, `outputs/legspec_off0.txt`).
+- **The object.** A source born at the post-activation of layer b reaches the pre-activation of layer l through the
+  gated product J(b->l) = W_l D_(l-1) ... W_(b+1) D_b, with D = diag Phi(alpha) the first-order gate. Age a = l - b.
+- **The free model.** Treat the He weights and the gates as freely independent. W^T W tends to 2 MP(1), whose
+  normalised second moment rho = m2/m1^2 is 2. The gates enter as D^2, with rho_Phi = E Phi^4 / (E Phi^2)^2.
+- **The law.** For free positive elements the normalised second moments add, rho(x [x] y) = rho(x) + rho(y) - 1 (the
+  first two coefficients of the S-transform). So the leg's participation ratio is
+
+      PR(b->l) = (tr J^T J)^2 / tr (J^T J)^2 = n / (1 + a + sum_(k=b)^(l-1) (rho_Phi(k) - 1)).
+
+  Without gates this is the Fuss-Catalan value n/(a + 1).
+- **The check.** On network 0 the law holds to within 2% up to age 8, and within 11% at age 12:
+
+| (birth, age) | (2,1) | (2,4) | (5,2) | (8,4) | (8,6) | (11,4) | (2,12) |
+|---|---|---|---|---|---|---|---|
+| exact PR | 367.1 | 119.0 | 210.1 | 114.5 | 80.8 | 115.9 | 37.7 |
+| free-probability prediction | 367.3 | 119.8 | 210.9 | 115.8 | 80.7 | 115.1 | 42.2 |
+
+- **What it says.** From layer 3 on the gate spread is rho_Phi = 1.9-2.1, so each layer of age costs about two
+  Fuss-Catalan factors: PR ~ n/(1 + 2a).
+- **The whole spectrum is a free product** (`legspec.py --tails`, `outputs/legtails_off{0,1}.txt`). A surrogate with
+  the same gates and fresh He Gaussian weights reproduces the tails eps(a, r), at every rank 64-512 on both networks:
+  - to within 1.7% up to age 7;
+  - to within 4% at ages 8-10;
+  - to within 7% at ages 11-12 (median 1-4%).
+
+  So the rank a leg needs is set by its age and the gate statistics, not by the particular weights.
+- **Where the real legs depart.** Their participation ratio falls below the free value at old ages (37.7 against
+  42.2 at age 12). The cause is a few heavier top directions, not the tail.
+- **Observability.** Weight each row by its observability o_l, the diagonal Gramian. Its terms are the layer's own
+  reads, K'_l (c3^2 + rho^2 E Phi^2) for D3 and D21, plus transmission Phi_l^2 o (W_(l+1)^2)^T o_(l+1). The
+  sqrt(o)-weighted spectra are only a little more concentrated: PR 280-288 against 336-367 at age 1, and equal at the
+  ages the tiers hold.
+- **Transmission dominates.** The reads carry 3-14% of o_l up to layer 9, then 18%, 22%, 30%, 44% and 85% at layers
+  10-14. The production join metric diag(Phi^2 + 0.1) (`V32_JOIN_POST=3`) is the one-step, uniform-o form of this
+  Gramian.
+
+**7.2 What a tier truncates.**
+- **The tails.** The tail eps(a, r) is the fraction of |J|_F^2 outside the top r directions. Network 0, mean over
+  birth layers 2, 5, 8, 11 (network 1 agrees within 10%):
+
+| age | r = 128 | 192 | 256 | 320 | 384 | 512 |
+|---|---|---|---|---|---|---|
+| 1 | 0.49 | 0.34 | 0.22 | 0.14 | 0.086 | 0.025 |
+| 2 | 0.31 | 0.17 | 0.088 | 0.043 | 0.020 | 3.1e-3 |
+| 3 | 0.20 | 0.087 | 0.036 | 0.014 | 4.9e-3 | 4.0e-4 |
+| 4 | 0.13 | 0.046 | 0.016 | 4.8e-3 | 1.3e-3 | 5.4e-5 |
+| 5 | 0.087 | 0.027 | 7.6e-3 | **1.9e-3** | 4.1e-4 | 1.0e-5 |
+| 6 | 0.059 | 0.015 | 3.4e-3 | 6.8e-4 | 1.1e-4 | |
+| 8 | 0.028 | 5.0e-3 | 8.1e-4 | 1.1e-4 | 1.1e-5 | |
+| 9 | 0.020 | **3.0e-3** | 3.9e-4 | 4.1e-5 | | |
+| 10 | 0.014 | 1.7e-3 | 1.8e-4 | 1.5e-5 | | |
+| 12 | 7.2e-3 | 6.5e-4 | 5.0e-5 | 2.9e-6 | | |
+
+- **One tail for both tiers.** The production ladder leaves about the same tail, 2-3e-3, at the youngest member of
+  each tier (age 5 at 320, age 9 at 192): the frontier scans found equal precision at both boundaries. The spectra
+  have a hard lower edge, so the tails fall ever faster: the local exponent p = -dlog eps/dlog r is 6.7-7.8 at
+  (age 5, rank 320) and 6.5 at (age 9, rank 192).
+- **Why the basis can be shared.** It is the forward Lyapunov subspace: J(b->l) = J(b'->l) J(b->b') for b < b', so
+  the range of every older leg lies inside a younger one's. A tier's rank is set by its youngest member.
+
+**7.3 Two laws, and what they predict.**
+- **Readout law.** The readouts are Hadamard contractions of leg entries (D3_i = sum_j A_ij^2 P_ij w2_j and the like).
+  A tail eps of incoherent entry error is therefore a readout error of relative energy about eps. To first order the
+  MSE grows linearly in the tail, Delta MSE = sum_a kappa_a eps_a(r_a), with kappa_a the output weight of age a's
+  readouts.
+- **The old per-source truncation table.** Frontier tests, exact SVD per source, all ages >= a_0 at rank r, network 0.
+  It fits the law with kappa falling by about two per age between ages 4 and 8 (section 7.4 gives the full fit).
+- **Error-share law.** Suppose a tier's error falls as r^-p and its rank-proportional cost is a share s of the bill.
+  Stationarity of S = MSE x C in the tier's rank gives
+
+      p Delta MSE_t / MSE = s_t.
+
+  - **How flat the optimum is.** Near it, delta log S ~ (1/2)(p + 1) s (delta log r)^2. A +-10% rank change costs under
+    1%, which is why the 304/320/336 scan of note XXIV was flat to within its noise.
+- **Per-age form.** Stationarity in each age's own rank gives eps_a = gamma N_a r_a MSE / (C kappa_a p_a). Here N_a is
+  the number of layers age a spends in the tier and gamma the cost per unit rank per member-layer. Since kappa_a falls
+  with age, the optimal tail grows with it: at age 9 it is 3-7 times the age-5 tail, where the ladder holds them
+  equal.
+
+
+**7.4 Predictions, then measurements** (32 networks, paired against production; `outputs/confinement_32nets.txt`).
+
+Stated before the runs:
+- **P1, no confinement** (`V21_NO_CONFINE=1`, every source dense). Raw 4-7% lower. That is about 6% if the readout
+  error falls with rank at the spectral tails' exponent (p ~ 5-7), and 3.6% if at the steeper r^-9 that the other
+  reading of note XXIV's rank knee would imply.
+- **P2, one tier** (`V24_AGE_OLD2=0`, every old age at 320). Raw 0.35-0.9% lower if kappa halves per age (0.9% if it
+  falls by 0.6 per age), at 3-6% more FLOPs.
+
+| variant | raw, paired | better on | F / B (cold) |
+|---|---|---|---|
+| production (320, nested 192) | 2.2806e-8 | | 0.2131 |
+| P1: no confinement | -4.96% (per net -4.87 +- 0.47) | 32/32 | 0.2918 (+37%) |
+| P2: one tier at 320 | -0.36% (per net -0.36 +- 0.14) | 22/32 | 0.2198 (+3.1%) |
+
+Both fall inside the predicted ranges.
+
+**What the two measurements fix.**
+- **The exponent.** The shared basis costs X = 5.2% of the dense chain's MSE. Against note XXIV's knee (rank 320 to
+  288: +5.3% raw; 320 to 352: -2.1%) this puts the error's local rank exponent at p ~ 5.6-6.7. That is the
+  spectrum's own exponent at the age-5 boundary (6.7-7.8), so the readout law holds with the spectral p, not with a
+  steeper effective one.
+- **The calibration.** The readout law with kappa_a = kappa_5 q^(a-5), calibrated on P1 and P2, gives kappa_5 = 22.2
+  and q = 0.46: kappa halves every 0.9 ages (`code/ladder_opt.py`, `outputs/ladder_opt.txt`). Age 5 carries 4.0 of
+  the 5.2 points, age 6 0.7 and age 9 0.3; every other age is under 0.1.
+- **Tier 1 is at its optimum.**
+  - The cost side. The rank-proportional cost is fitted from P1's and P2's FLOP differences and the profile of note
+    XXIX: forming plus the factor-space D21 hub is 2.3e-3 units of 2 n^3 per rank per member-layer, and the join is
+    8.8e-3 per rank per layer.
+  - The comparison. That makes s_1 = 0.25 of the bill, against p X_1 ~ 7 x 4.8% = 0.33: within the flatness of the
+    optimum.
+- **Tier 2 is over-provisioned, by a margin worth nothing.** p X_2 ~ 0.02 against s_2 ~ 0.05: the law wants a lower r2.
+  But at that flat optimum the score moves by about 0.1%.
+
+**The ladder the theory selects** (`outputs/ladder_opt.txt`; score = raw x C with C the cold FLOPs plus the residual
+term, relative to production):
+
+| ladder | predicted confinement error | predicted score |
+|---|---|---|
+| production: 5-8 at 320, >= 9 at 192 | 5.22% | 0 |
+| one tier: >= 5 at 320 (P2, measured +2.7%) | 4.84% | +2.5% |
+| best two-tier: 5-8 at 336, >= 9 at 160 | 4.29% | -0.6% |
+| best three-tier: 5-6 at 352, 7-9 at 256, >= 10 at 128 | 3.99% | -0.7% |
+| age 4 confined too (AGE_OLD 3), best rank 416 | 3.50% | +0.6% |
+
+- **The production ladder is the theory's optimum to within 0.7%.** No tier structure that the law allows is worth
+  more. The dense boundary at age 4/5 is right: confining age 4 costs more accuracy than its FLOPs buy at every rank.
+  The per-age refinement that section 7.3 predicts (lower ranks at older ages) is real but is worth 0.1 point beyond
+  the best two-tier ladder, which needs no new code.
+
+**The one test** (stated before the run). The best two-tier ladder needs only the existing switches:
+`V21_R_OLD=336 V24_R_OLD2=160`. Predicted on the 32 networks:
+- raw -0.9%, as the confinement error falls from 5.22% to 4.29%: age 5 at 336 gains 1.3 points, ages 9-11 at 160 lose
+  0.6;
+- FLOPs +0.3% (0.2138 B);
+- score about -0.6%.
+
+A result outside raw -0.5% to -1.3% would mean the per-age split (kappa_5, q) is wrong, not just imprecise.
