@@ -86,3 +86,26 @@ amplitude family, and the opposition it removes lies outside every per-layer amp
 
 **Decision (adjusted MSE).** T is adopted only if the measured free-running V35 + T + cal_T beats V35 + cal_35 on the
 held-out networks in adjusted MSE, by more than two standard errors, cost included.
+
+**The D21 component audit, asked of the estimator itself.** A parallel line of work (the capture-audit and
+depth-profile checkpoints supplied with this round) measured the physical D21 table. It splits into additive parts
+(row and column effects; captured 0.998 at rank 2) and spectrally flat zero-row-sum parts, which respond at every
+depth. Its gating contract asks what the flat parts are worth at the chain's own compression point.
+
+In V35 the full D21 table is used in the covariance programs. Only the feedback into the birth factors (V18) is
+compressed, to rank 2, which keeps the additive part. So the question has a direct estimator form: the feedback at
+rank 16 and at full rank (exact), against rank 2.
+
+| tag | switch | prediction |
+|---|---|---|
+| fb16 | `V18_R_FB=16` | raw -1% to -3%; C/B +10% to +15% (the thin legs carry 2r columns per source); adjusted worse |
+| fbx | `V18_R_FB=1024` | raw -1.5% to -4%; adjusted much worse |
+
+The raw range is the precision law of note XXXI applied to the one-step legs-error change at rank 16 (section 3e of
+note XXXVI). If the exact feedback's raw gain is below its cost share, no response-aware rank-r scheme can pay: the
+exact feedback bounds every such scheme. At rank 2 the attached proposal reduces to the exact additive part in place
+of the top-2 range finder, which changes the feedback by at most the non-additive energy in the top two directions.
+
+**Strassen leaf minimum 8 for the whole chain** (task of note XXIX section 10). `V26_STRASSEN_MIN=8` on networks
+0-15: raw unchanged to rounding; C/B about -2.4%; it is adopted if the measured local residual of the measured call
+stays within 10% of V35's and VmHWM within 1 GB.
