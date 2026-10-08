@@ -170,3 +170,43 @@ Together they bound where work pays.
   - Where it fails. The residual is created in transport. Its located sources are the birth M-block's rank-4 (2,1)
     residual, as section 3 predicts (the post-activation trace core's (2,1) slice holds the full-rank diag(v) C^y; rank
     64 or the exact rank removes 30-45% of the anomaly), and the lam feed's missing per-unit shape.
+
+## 5. The Gaussian-transport estimator at real magnitudes: exact, 10^4 times quieter, and still far too noisy
+
+Another chat's development proposes a sampled estimator for a cumulant source's effect on the output. One Gaussian
+integration by parts turns the score estimator E[h F] into E[U . grad F]: U is the source's Stein field (quadratic for
+kappa3, cubic for kappa4), and the expectation is evaluated by one tangent channel through the actual network with the
+actual gates. Its use here would be a sampled replacement for the chain's old-source tier, which is about 45% of the
+FLOPs. The aged-out sources' first-order effect on the output would be added by sampling instead of carried as
+compressed legs; to first order the decomposition is consistent.
+
+**The probe** (`code/transport_probe.py`, `code/transport_probe2.py`; network 0, Monte Carlo truth for the reference and
+the sources, 8192 samples with antithetic pairs, `outputs/transport_probe_off0.txt`).
+- **The reference at depth is nearly singular.** Dead units make the post-activation covariance rank-deficient, so
+  W C^y W^T is too: rank 843-950 of 1024 above 1e-6 lambda_max. The reference is restricted to its support (P the
+  pseudo-inverse, U projected onto the range), which is exact because the true kappa3 lies in that range.
+- **A source diagonal in unit coordinates is catastrophic.** Take T_aaa = kappa3_a, which is not the physical tensor.
+  Its dual coordinates v = P (z - mu) blow up along small-variance directions: the per-sample sd is about 25 per
+  neuron, against a signal of order 1e-4. Both estimators are pure noise there.
+- **The physical old source.** This is the diagonal class of a source born at the post-activation of layer b0 = b - age,
+  carried to z_b by the first-order gated transport: T = sum_i s_i l_i^(x3), with l_i the columns of
+  W_b diag(Phi) ... diag(Phi_b0) and s = kappa3(y_b0). Its legs are aligned with Sigma (median l^T P l / |l|^2 of 1.3-3.9,
+  against 1/var of 3.8-5.0).
+
+| source (net 0) | per-sample sd per neuron (transport) | score / transport variance | signal rms per neuron | samples for 10% |
+|---|---|---|---|---|
+| cut 12, age 4 | 1.5e-2 | 2.0e4 | ~2e-4 | ~2e7 |
+| cut 9, age 4 | 1.3e-2 | 9.8e3 | ~1.7e-4 | ~5e7 |
+| cut 12, age 8 | 3.3e-3 | 6.9e3 | ~5e-5 | ~5e6 |
+| whitened-diagonal control (benign) | 7.8e-2 | 2.4e4 | ~1.4e-3 | ~2e6 |
+
+- **The expected-gate control variate.** The same tangent through the fixed gates Phi has an exactly zero mean, since
+  E[U] = 0. It removes only a further 1.5-2.3x, at an optimal coefficient of 1.
+- **Why.** The signal is a third-derivative, gate-boundary effect, E[T : grad^3 F]/6. The variance is the per-sample
+  fluctuation of the actual gates, U . (grad F - E grad F), which no fixed linear control removes.
+- **Verdict.** The integration by parts is real (10^4 over the score estimator, consistent with the other chat's 650x
+  on its own source). But at the physical source's magnitude a sample is still noise of about 100 times the per-neuron
+  signal. 10% accuracy needs 10^6-10^7 samples, about 1e13 FLOPs, against the 1e11 the old tier costs. A sampled old tier
+  is not viable at Phase 2 precision. Any sampled component has to target quantities with a far larger signal-to-noise
+  ratio per sample than a single source's first-order effect on the output.
+

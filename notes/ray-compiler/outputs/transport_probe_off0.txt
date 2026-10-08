@@ -1,0 +1,26 @@
+  cut 8: covariance rank 950 of 1024
+net 0 cut  8 (N 4096): signal rms 3.597e-01 | per-sample sd: transport 2.541e+01, score 1.647e+05 (variance ratio 42002896) | score-transport mean agreement 6085.39 of the signal (score noise 7152.16) | samples for 10%: 498833, suffix FLOPs 1.67e+13 (7.612 B) | 1s
+  cut 11: covariance rank 917 of 1024
+net 0 cut 11 (N 4096): signal rms 2.267e-01 | per-sample sd: transport 1.802e+01, score 1.009e+05 (variance ratio 31392782) | score-transport mean agreement 10995.70 of the signal (score noise 6956.37) | samples for 10%: 631388, suffix FLOPs 1.32e+13 (6.021 B) | 1s
+  cut 13: covariance rank 862 of 1024
+net 0 cut 13 (N 4096): signal rms 1.320e-01 | per-sample sd: transport 1.334e+01, score 6.880e+04 (variance ratio 26613782) | score-transport mean agreement 9676.06 of the signal (score noise 8144.47) | samples for 10%: 1020889, suffix FLOPs 1.28e+13 (5.842 B) | 1s
+  cut 14: covariance rank 843 of 1024
+net 0 cut 14 (N 4096): signal rms 9.031e-02 | per-sample sd: transport 1.067e+01, score 5.047e+04 (variance ratio 22363896) | score-transport mean agreement 7074.59 of the signal (score noise 8731.43) | samples for 10%: 1396315, suffix FLOPs 1.17e+13 (5.327 B) | 1s
+net 0 cut 12 age 4: covariance rank 884; |source D3 at cut| 3.857e-03 against |true D3| 3.179e-01; leg conditioning: median l^T P l / |l|^2 3.859e+00 (1/median var 4.987e+00)
+  legs  expected-gate control: E[control] rms 1.705e-04 (exact 0; noise 1.249e-04); per-sample sd with coefficient 1 9.851e-03, with optimal coefficients 9.850e-03 (median beta 1.00); variance reduction x2.3 / x2.3
+  legs  (N 8192): transport mean rms 2.000e-04 (its noise 1.654e-04) | per-sample sd: transport 1.497e-02, score 2.092e+00 (variance ratio 19524) | score - transport mean rms 7.909e-03 (score noise 2.311e-02) | samples for 10% of the mean: 18727431
+  white expected-gate control: E[control] rms 1.096e-03 (exact 0; noise 6.658e-04); per-sample sd with coefficient 1 5.119e-02, with optimal coefficients 5.117e-02 (median beta 0.99); variance reduction x2.3 / x2.3
+  white (N 8192): transport mean rms 1.396e-03 (its noise 8.666e-04) | per-sample sd: transport 7.843e-02, score 1.215e+01 (variance ratio 23984) | score - transport mean rms 4.737e-02 (score noise 1.342e-01) | samples for 10% of the mean: 2190774
+
+net 0 cut 9 age 4: covariance rank 932; |source D3 at cut| 5.484e-03 against |true D3| 3.085e-01; leg conditioning: median l^T P l / |l|^2 2.218e+00 (1/median var 3.825e+00)
+  legs  expected-gate control: E[control] rms 1.249e-04 (exact 0; noise 8.518e-05); per-sample sd with coefficient 1 1.100e-02, with optimal coefficients 1.100e-02 (median beta 0.99); variance reduction x1.5 / x1.5
+  legs  (N 8192): transport mean rms 1.672e-04 (its noise 1.484e-04) | per-sample sd: transport 1.343e-02, score 1.333e+00 (variance ratio 9846) | score - transport mean rms 5.287e-03 (score noise 1.473e-02) | samples for 10% of the mean: 51200780
+  white expected-gate control: E[control] rms 9.122e-04 (exact 0; noise 6.055e-04); per-sample sd with coefficient 1 7.631e-02, with optimal coefficients 7.630e-02 (median beta 0.97); variance reduction x1.5 / x1.5
+  white (N 8192): transport mean rms 1.602e-03 (its noise 1.031e-03) | per-sample sd: transport 9.330e-02, score 1.247e+01 (variance ratio 17877) | score - transport mean rms 5.379e-02 (score noise 1.378e-01) | samples for 10% of the mean: 2669314
+
+net 0 cut 12 age 8: covariance rank 884; |source D3 at cut| 2.419e-03 against |true D3| 3.179e-01; leg conditioning: median l^T P l / |l|^2 1.253e+00 (1/median var 4.987e+00)
+  legs  expected-gate control: E[control] rms 4.506e-05 (exact 0; noise 2.788e-05); per-sample sd with coefficient 1 2.161e-03, with optimal coefficients 2.161e-03 (median beta 0.99); variance reduction x2.3 / x2.3
+  legs  (N 8192): transport mean rms 5.211e-05 (its noise 3.658e-05) | per-sample sd: transport 3.311e-03, score 2.745e-01 (variance ratio 6871) | score - transport mean rms 1.265e-03 (score noise 3.033e-03) | samples for 10% of the mean: 4548757
+  white expected-gate control: E[control] rms 1.096e-03 (exact 0; noise 6.658e-04); per-sample sd with coefficient 1 5.119e-02, with optimal coefficients 5.117e-02 (median beta 0.99); variance reduction x2.3 / x2.3
+  white (N 8192): transport mean rms 1.396e-03 (its noise 8.666e-04) | per-sample sd: transport 7.843e-02, score 1.215e+01 (variance ratio 23984) | score - transport mean rms 4.737e-02 (score noise 1.342e-01) | samples for 10% of the mean: 2190774
+

@@ -61,8 +61,20 @@ def _threads(cpu):
     return {k: n for k in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS")}
 
 
+def _wb_hash(root):
+    h = hashlib.sha256()
+    for d in CODE_DIRS:
+        p = os.path.join(root, d)
+        for f in sorted(os.listdir(p)):
+            if f.endswith(".py"):
+                h.update(f.encode()); h.update(open(os.path.join(p, f), "rb").read())
+    return h.hexdigest()
+
+
 @app.function(image=image, volumes={"/data": vol}, cpu=16.0, memory=32768, timeout=3600)
-def runcmd(job, tag, cmd, cpu=16.0, keep=False):
+def runcmd(job, tag, cmd, cpu=16.0, keep=False, code=None):
+    if code is not None and _wb_hash("/code") != code:      # a warm container of an older deployment: refuse
+        return tag, 97, f"[stale code in container: expected {code[:10]}, have {_wb_hash('/code')[:10]}; rerun]\n"
     before = _workdir()
     out = f"/data/out/{job}"; os.makedirs(out, exist_ok=True)
     env = dict(os.environ, OUT=out, PYTHONPATH="/work/num12", PYTHONWARNINGS="ignore", **_threads(cpu))
@@ -168,7 +180,9 @@ def _opts(a):
 
 
 def _run(o):
-    return fn("runcmd", cpu=o["cpu"], memory=int(o["mem"] * 1024), timeout=int(o["timeout"]))
+    # the code hash in env gives every code version its own container pool: no warm container of an older
+    # deployment can serve the call (Modal pools containers per option set)
+    return fn("runcmd", cpu=o["cpu"], memory=int(o["mem"] * 1024), timeout=int(o["timeout"]), env={"WB_CODE": _wb_hash(WB)})
 
 
 def _report(t, rc, log):
@@ -213,7 +227,7 @@ if __name__ == "__main__":
     elif c == "ls":
         print(fn("listdir").remote(a[1] if len(a) > 1 else ""))
     elif c == "run":
-        o = _opts(a); tag, rc, log = _run(o).remote(a[1], "0", a[2], o["cpu"], o["keep"])
+        o = _opts(a); tag, rc, log = _run(o).remote(a[1], "0", a[2], o["cpu"], o["keep"], _wb_hash(WB))
         print(log[-4000:])
     elif c in ("batch", "fan"):
         o = _opts(a); f = _run(o)
@@ -221,7 +235,7 @@ if __name__ == "__main__":
             jobs = [l.rstrip("\n").split("\t", 1) for l in open(a[2]) if l.strip() and not l.startswith("#")]
         else:
             jobs = [(str(n), a[2].replace("{net}", str(n))) for n in _nets(a[3])]
-        calls = [(t, f.spawn(a[1], t, cmd, o["cpu"], o["keep"])) for t, cmd in jobs]
+        calls = [(t, f.spawn(a[1], t, cmd, o["cpu"], o["keep"], _wb_hash(WB))) for t, cmd in jobs]
         for t, fc in calls:
             try:
                 _report(*fc.get())
