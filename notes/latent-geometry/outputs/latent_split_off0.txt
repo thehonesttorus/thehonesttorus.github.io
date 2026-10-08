@@ -1,0 +1,57 @@
+net 0: 8 chunks, 8000000 samples, K = 64
+layer  3
+  K31 plain: g +0.0064, non-gain share 0.620 (noise 0.260) | energy shares of the slice: c 0.064, r 0.103 | non-gain part: explained by collective +0.060, by residual +0.106, by c+r +0.165; norms c 0.054 r 0.092 cross 0.835
+  K31 read : g +0.0064, non-gain share 0.621 (noise 0.261) | energy shares of the slice: c 0.062, r 0.106 | non-gain part: explained by collective +0.059, by residual +0.109, by c+r +0.167; norms c 0.053 r 0.095 cross 0.833
+  D21 plain: g +0.0113, non-gain share 0.395 (noise 0.003) | energy shares of the slice: c 0.185, r 0.070 | slice explained by collective +0.451
+  D21 read : g +0.0114, non-gain share 0.345 (noise 0.003) | energy shares of the slice: c 0.173, r 0.063 | slice explained by collective +0.468
+  k4  plain: g +0.0073, non-gain share 0.019 (noise 0.007) | energy shares of the slice: c 0.017, r 0.140 | non-gain part: explained by collective -0.128, by residual -0.009, by c+r +0.177; norms c 0.283 r 0.200 cross 0.823
+  k4  read : g +0.0073, non-gain share 0.018 (noise 0.007) | energy shares of the slice: c 0.014, r 0.148 | non-gain part: explained by collective -0.189, by residual -0.002, by c+r +0.151; norms c 0.307 r 0.218 cross 0.849
+  k3  plain: g +0.0111, non-gain share 0.224 (noise 0.002) | energy shares of the slice: c 0.207, r 0.055 | slice explained by collective +0.552
+  k3  read : g +0.0114, non-gain share 0.256 (noise 0.002) | energy shares of the slice: c 0.209, r 0.063 | slice explained by collective +0.541
+layer  6
+  K31 plain: g +0.0099, non-gain share 0.529 (noise 0.076) | energy shares of the slice: c 0.167, r 0.026 | non-gain part: explained by collective +0.191, by residual +0.028, by c+r +0.216; norms c 0.205 r 0.018 cross 0.784
+  K31 read : g +0.0094, non-gain share 0.545 (noise 0.083) | energy shares of the slice: c 0.134, r 0.032 | non-gain part: explained by collective +0.147, by residual +0.034, by c+r +0.177; norms c 0.185 r 0.022 cross 0.823
+  D21 plain: g +0.0155, non-gain share 0.268 (noise 0.001) | energy shares of the slice: c 0.370, r 0.011 | slice explained by collective +0.697
+  D21 read : g +0.0158, non-gain share 0.253 (noise 0.001) | energy shares of the slice: c 0.341, r 0.011 | slice explained by collective +0.692
+  k4  plain: g +0.0117, non-gain share 0.023 (noise 0.003) | energy shares of the slice: c 0.045, r 0.054 | non-gain part: explained by collective -0.596, by residual -0.054, by c+r -0.029; norms c 1.138 r 0.137 cross 1.029
+  k4  read : g +0.0116, non-gain share 0.021 (noise 0.003) | energy shares of the slice: c 0.030, r 0.066 | non-gain part: explained by collective -0.821, by residual -0.057, by c+r -0.086; norms c 1.289 r 0.187 cross 1.086
+  k3  plain: g +0.0156, non-gain share 0.148 (noise 0.000) | energy shares of the slice: c 0.383, r 0.008 | slice explained by collective +0.782
+  k3  read : g +0.0160, non-gain share 0.296 (noise 0.001) | energy shares of the slice: c 0.341, r 0.019 | slice explained by collective +0.677
+layer  9
+  K31 plain: g +0.0139, non-gain share 0.505 (noise 0.028) | energy shares of the slice: c 0.271, r 0.008 | non-gain part: explained by collective +0.307, by residual +0.011, by c+r +0.316; norms c 0.338 r 0.005 cross 0.684
+  K31 read : g +0.0125, non-gain share 0.555 (noise 0.034) | energy shares of the slice: c 0.201, r 0.012 | non-gain part: explained by collective +0.225, by residual +0.016, by c+r +0.239; norms c 0.292 r 0.007 cross 0.761
+  D21 plain: g +0.0191, non-gain share 0.213 (noise 0.000) | energy shares of the slice: c 0.480, r 0.003 | slice explained by collective +0.792
+  D21 read : g +0.0200, non-gain share 0.191 (noise 0.000) | energy shares of the slice: c 0.447, r 0.003 | slice explained by collective +0.792
+  k4  plain: g +0.0158, non-gain share 0.034 (noise 0.001) | energy shares of the slice: c 0.083, r 0.025 | non-gain part: explained by collective -0.543, by residual -0.021, by c+r -0.139; norms c 1.295 r 0.058 cross 1.139
+  k4  read : g +0.0155, non-gain share 0.031 (noise 0.001) | energy shares of the slice: c 0.050, r 0.034 | non-gain part: explained by collective -1.011, by residual -0.030, by c+r -0.400; norms c 1.593 r 0.097 cross 1.400
+  k3  plain: g +0.0190, non-gain share 0.110 (noise 0.000) | energy shares of the slice: c 0.478, r 0.003 | slice explained by collective +0.849
+  k3  read : g +0.0195, non-gain share 0.320 (noise 0.000) | energy shares of the slice: c 0.425, r 0.009 | slice explained by collective +0.728
+layer 11
+  K31 plain: g +0.0167, non-gain share 0.473 (noise 0.016) | energy shares of the slice: c 0.360, r 0.004 | non-gain part: explained by collective +0.404, by residual +0.006, by c+r +0.409; norms c 0.423 r 0.002 cross 0.591
+  K31 read : g +0.0137, non-gain share 0.581 (noise 0.024) | energy shares of the slice: c 0.246, r 0.007 | non-gain part: explained by collective +0.278, by residual +0.011, by c+r +0.287; norms c 0.353 r 0.004 cross 0.713
+  D21 plain: g +0.0206, non-gain share 0.172 (noise 0.000) | energy shares of the slice: c 0.548, r 0.001 | slice explained by collective +0.845
+  D21 read : g +0.0223, non-gain share 0.159 (noise 0.000) | energy shares of the slice: c 0.502, r 0.001 | slice explained by collective +0.835
+  k4  plain: g +0.0176, non-gain share 0.050 (noise 0.001) | energy shares of the slice: c 0.126, r 0.016 | non-gain part: explained by collective -0.182, by residual -0.009, by c+r +0.070; norms c 1.093 r 0.030 cross 0.930
+  k4  read : g +0.0170, non-gain share 0.040 (noise 0.001) | energy shares of the slice: c 0.068, r 0.024 | non-gain part: explained by collective -0.810, by residual -0.009, by c+r -0.312; norms c 1.481 r 0.067 cross 1.312
+  k3  plain: g +0.0206, non-gain share 0.088 (noise 0.000) | energy shares of the slice: c 0.544, r 0.001 | slice explained by collective +0.891
+  k3  read : g +0.0224, non-gain share 0.312 (noise 0.000) | energy shares of the slice: c 0.466, r 0.005 | slice explained by collective +0.761
+layer 13
+  K31 plain: g +0.0218, non-gain share 0.379 (noise 0.008) | energy shares of the slice: c 0.482, r 0.001 | non-gain part: explained by collective +0.498, by residual +0.003, by c+r +0.500; norms c 0.506 r 0.001 cross 0.500
+  K31 read : g +0.0155, non-gain share 0.586 (noise 0.016) | energy shares of the slice: c 0.300, r 0.004 | non-gain part: explained by collective +0.346, by residual +0.007, by c+r +0.352; norms c 0.404 r 0.002 cross 0.648
+  D21 plain: g +0.0215, non-gain share 0.138 (noise 0.000) | energy shares of the slice: c 0.614, r 0.001 | slice explained by collective +0.890
+  D21 read : g +0.0241, non-gain share 0.141 (noise 0.000) | energy shares of the slice: c 0.544, r 0.001 | slice explained by collective +0.867
+  k4  plain: g +0.0206, non-gain share 0.059 (noise 0.001) | energy shares of the slice: c 0.208, r 0.008 | non-gain part: explained by collective +0.162, by residual -0.014, by c+r +0.292; norms c 0.993 r 0.013 cross 0.708
+  k4  read : g +0.0187, non-gain share 0.045 (noise 0.001) | energy shares of the slice: c 0.085, r 0.019 | non-gain part: explained by collective -0.788, by residual +0.007, by c+r -0.330; norms c 1.513 r 0.055 cross 1.330
+  k3  plain: g +0.0219, non-gain share 0.073 (noise 0.000) | energy shares of the slice: c 0.611, r 0.001 | slice explained by collective +0.926
+  k3  read : g +0.0247, non-gain share 0.306 (noise 0.000) | energy shares of the slice: c 0.513, r 0.003 | slice explained by collective +0.805
+layer 15
+  K31 plain: g +0.0243, non-gain share 0.349 (noise 0.006) | energy shares of the slice: c 0.546, r 0.001 | non-gain part: explained by collective +0.546, by residual +0.002, by c+r +0.547; norms c 0.556 r 0.000 cross 0.453
+  K31 read : g +0.0163, non-gain share 0.613 (noise 0.012) | energy shares of the slice: c 0.346, r 0.003 | non-gain part: explained by collective +0.373, by residual +0.006, by c+r +0.378; norms c 0.459 r 0.001 cross 0.622
+  D21 plain: g +0.0218, non-gain share 0.129 (noise 0.000) | energy shares of the slice: c 0.655, r 0.000 | slice explained by collective +0.911
+  D21 read : g +0.0254, non-gain share 0.128 (noise 0.000) | energy shares of the slice: c 0.580, r 0.001 | slice explained by collective +0.887
+  k4  plain: g +0.0225, non-gain share 0.064 (noise 0.001) | energy shares of the slice: c 0.263, r 0.005 | non-gain part: explained by collective +0.277, by residual -0.014, by c+r +0.372; norms c 0.949 r 0.008 cross 0.628
+  k4  read : g +0.0199, non-gain share 0.046 (noise 0.001) | energy shares of the slice: c 0.097, r 0.013 | non-gain part: explained by collective -1.069, by residual +0.010, by c+r -0.621; norms c 1.810 r 0.043 cross 1.621
+  k3  plain: g +0.0222, non-gain share 0.066 (noise 0.000) | energy shares of the slice: c 0.660, r 0.000 | slice explained by collective +0.940
+  k3  read : g +0.0246, non-gain share 0.346 (noise 0.000) | energy shares of the slice: c 0.574, r 0.004 | slice explained by collective +0.804
+
+[exit 0 after 21s on 20 visible cores, cpu=4.0, code 38a734f98f]

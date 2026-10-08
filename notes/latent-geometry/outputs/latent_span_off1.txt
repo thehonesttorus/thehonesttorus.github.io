@@ -1,0 +1,45 @@
+layer  2
+  D21: K16: plain 0.221/res 0.146; read 0.248/res 0.157  K64: plain 0.572/res 0.422; read 0.618/res 0.451  K256: plain 0.901/res 0.847; read 0.928/res 0.878
+  K31: K16: plain 0.159/res 0.125; read 0.171/res 0.136  K64: plain 0.443/res 0.380; read 0.472/res 0.411  K256: plain 0.797/res 0.804; read 0.838/res 0.843
+layer  3
+  D21: K16: plain 0.447/res 0.182; read 0.497/res 0.188  K64: plain 0.699/res 0.497; read 0.753/res 0.521  K256: plain 0.942/res 0.882; read 0.961/res 0.909
+  K31: K16: plain 0.226/res 0.172; read 0.240/res 0.186  K64: plain 0.543/res 0.469; read 0.573/res 0.503  K256: plain 0.837/res 0.852; read 0.877/res 0.887
+layer  4
+  D21: K16: plain 0.544/res 0.228; read 0.615/res 0.240  K64: plain 0.775/res 0.569; read 0.819/res 0.595  K256: plain 0.958/res 0.902; read 0.974/res 0.928
+  K31: K16: plain 0.281/res 0.223; read 0.302/res 0.242  K64: plain 0.616/res 0.537; read 0.646/res 0.571  K256: plain 0.859/res 0.875; read 0.898/res 0.909
+layer  5
+  D21: K16: plain 0.653/res 0.267; read 0.697/res 0.288  K64: plain 0.831/res 0.616; read 0.862/res 0.643  K256: plain 0.967/res 0.911; read 0.979/res 0.936
+  K31: K16: plain 0.348/res 0.274; read 0.374/res 0.297  K64: plain 0.671/res 0.590; read 0.698/res 0.621  K256: plain 0.877/res 0.890; read 0.914/res 0.922
+layer  6
+  D21: K16: plain 0.749/res 0.326; read 0.793/res 0.331  K64: plain 0.885/res 0.667; read 0.909/res 0.685  K256: plain 0.974/res 0.924; read 0.984/res 0.945
+  K31: K16: plain 0.439/res 0.344; read 0.462/res 0.365  K64: plain 0.728/res 0.647; read 0.751/res 0.674  K256: plain 0.895/res 0.907; read 0.927/res 0.934
+layer  7
+  D21: K16: plain 0.774/res 0.346; read 0.811/res 0.358  K64: plain 0.907/res 0.696; read 0.927/res 0.715  K256: plain 0.978/res 0.931; read 0.987/res 0.951
+  K31: K16: plain 0.483/res 0.383; read 0.514/res 0.412  K64: plain 0.762/res 0.684; read 0.787/res 0.713  K256: plain 0.907/res 0.917; read 0.936/res 0.943
+layer  8
+  D21: K16: plain 0.806/res 0.367; read 0.824/res 0.377  K64: plain 0.922/res 0.717; read 0.933/res 0.738  K256: plain 0.981/res 0.936; read 0.987/res 0.955
+  K31: K16: plain 0.531/res 0.430; read 0.549/res 0.444  K64: plain 0.790/res 0.716; read 0.808/res 0.737  K256: plain 0.918/res 0.927; read 0.943/res 0.949
+layer  9
+  D21: K16: plain 0.811/res 0.402; read 0.839/res 0.416  K64: plain 0.930/res 0.741; read 0.943/res 0.762  K256: plain 0.982/res 0.942; read 0.989/res 0.961
+  K31: K16: plain 0.560/res 0.459; read 0.590/res 0.486  K64: plain 0.811/res 0.739; read 0.832/res 0.765  K256: plain 0.926/res 0.933; read 0.951/res 0.955
+layer 10
+  D21: K16: plain 0.833/res 0.430; read 0.862/res 0.438  K64: plain 0.934/res 0.752; read 0.948/res 0.767  K256: plain 0.983/res 0.947; read 0.990/res 0.963
+  K31: K16: plain 0.609/res 0.500; read 0.642/res 0.530  K64: plain 0.829/res 0.760; read 0.849/res 0.786  K256: plain 0.935/res 0.940; read 0.956/res 0.959
+layer 11
+  D21: K16: plain 0.873/res 0.464; read 0.888/res 0.471  K64: plain 0.947/res 0.763; read 0.955/res 0.775  K256: plain 0.986/res 0.951; read 0.991/res 0.965
+  K31: K16: plain 0.677/res 0.553; read 0.700/res 0.571  K64: plain 0.858/res 0.791; read 0.873/res 0.808  K256: plain 0.946/res 0.948; read 0.964/res 0.964
+layer 12
+  D21: K16: plain 0.888/res 0.492; read 0.902/res 0.507  K64: plain 0.953/res 0.780; read 0.961/res 0.798  K256: plain 0.988/res 0.957; read 0.992/res 0.970
+  K31: K16: plain 0.710/res 0.577; read 0.733/res 0.599  K64: plain 0.874/res 0.805; read 0.889/res 0.824  K256: plain 0.953/res 0.955; read 0.968/res 0.969
+layer 13
+  D21: K16: plain 0.888/res 0.503; read 0.907/res 0.519  K64: plain 0.954/res 0.786; read 0.963/res 0.801  K256: plain 0.988/res 0.959; read 0.993/res 0.972
+  K31: K16: plain 0.720/res 0.596; read 0.749/res 0.618  K64: plain 0.878/res 0.815; read 0.895/res 0.834  K256: plain 0.956/res 0.957; read 0.971/res 0.971
+layer 14
+  D21: K16: plain 0.907/res 0.549; read 0.914/res 0.550  K64: plain 0.962/res 0.808; read 0.966/res 0.819  K256: plain 0.990/res 0.966; read 0.994/res 0.977
+  K31: K16: plain 0.770/res 0.606; read 0.782/res 0.613  K64: plain 0.901/res 0.825; read 0.911/res 0.838  K256: plain 0.965/res 0.963; read 0.978/res 0.975
+layer 15
+  D21: K16: plain 0.913/res 0.551; read 0.920/res 0.567  K64: plain 0.964/res 0.810; read 0.969/res 0.828  K256: plain 0.990/res 0.968; read 0.994/res 0.978
+  K31: K16: plain 0.796/res 0.620; read 0.809/res 0.630  K64: plain 0.912/res 0.834; read 0.922/res 0.848  K256: plain 0.969/res 0.966; read 0.979/res 0.976
+random K-dim subspace share: K/n = 0.016, 0.062, 0.250
+
+[exit 0 after 7s on 20 visible cores, cpu=4.0, code a5523209da]

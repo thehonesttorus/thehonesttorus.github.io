@@ -1,0 +1,99 @@
+layer  1-> 2
+  K31 plain: gain g 0.0052 expl 0.367 | tree b 1.112 expl 0.369 | joint g 0.0034 b 0.730 expl 0.482 | corr(tree, gain residual) +0.362
+  K31 read : gain g 0.0052 expl 0.369 | tree b 1.119 expl 0.373 | joint g 0.0034 b 0.736 expl 0.485 | corr(tree, gain residual) +0.363
+  g4 plain: gain g 0.0056 expl 0.984 | tree b 1.765 expl 0.981 | joint g 0.0033 b 0.740 expl 0.988 | corr(tree, gain residual) +0.066
+  g4 read : gain g 0.0056 expl 0.985 | tree b 1.742 expl 0.979 | joint g 0.0035 b 0.649 expl 0.988 | corr(tree, gain residual) +0.064
+  chain K31: read rel err 0.849; tree b 0.819 explains 0.277 of the (truth - chain) error
+  chain g4: read rel err 0.123; tree b -0.012 explains 0.003 of the (truth - chain) error
+layer  2-> 3
+  K31 plain: gain g 0.0064 expl 0.437 | tree b 1.078 expl 0.204 | joint g 0.0056 b 0.739 expl 0.527 | corr(tree, gain residual) +0.389
+  K31 read : gain g 0.0064 expl 0.435 | tree b 1.077 expl 0.204 | joint g 0.0056 b 0.734 expl 0.524 | corr(tree, gain residual) +0.385
+  g4 plain: gain g 0.0073 expl 0.985 | tree b 3.366 expl 0.947 | joint g 0.0058 b 0.748 expl 0.988 | corr(tree, gain residual) +0.119
+  g4 read : gain g 0.0074 expl 0.985 | tree b 3.291 expl 0.950 | joint g 0.0057 b 0.784 expl 0.988 | corr(tree, gain residual) +0.124
+  chain K31: read rel err 0.790; tree b 0.828 explains 0.193 of the (truth - chain) error
+  chain g4: read rel err 0.126; tree b 0.026 explains 0.004 of the (truth - chain) error
+layer  3-> 4
+  K31 plain: gain g 0.0077 expl 0.481 | tree b 1.014 expl 0.150 | joint g 0.0072 b 0.748 expl 0.561 | corr(tree, gain residual) +0.387
+  K31 read : gain g 0.0077 expl 0.480 | tree b 1.036 expl 0.164 | joint g 0.0071 b 0.750 expl 0.563 | corr(tree, gain residual) +0.394
+  g4 plain: gain g 0.0090 expl 0.985 | tree b 4.285 expl 0.911 | joint g 0.0076 b 0.721 expl 0.987 | corr(tree, gain residual) +0.139
+  g4 read : gain g 0.0089 expl 0.986 | tree b 4.192 expl 0.922 | joint g 0.0076 b 0.703 expl 0.989 | corr(tree, gain residual) +0.130
+  chain K31: read rel err 0.750; tree b 0.812 explains 0.179 of the (truth - chain) error
+  chain g4: read rel err 0.117; tree b -0.019 explains 0.001 of the (truth - chain) error
+layer  4-> 5
+  K31 plain: gain g 0.0088 expl 0.494 | tree b 0.769 expl 0.069 | joint g 0.0088 b 0.757 expl 0.561 | corr(tree, gain residual) +0.363
+  K31 read : gain g 0.0087 expl 0.488 | tree b 0.850 expl 0.090 | joint g 0.0085 b 0.781 expl 0.563 | corr(tree, gain residual) +0.384
+  g4 plain: gain g 0.0104 expl 0.980 | tree b 5.842 expl 0.813 | joint g 0.0092 b 0.855 expl 0.984 | corr(tree, gain residual) +0.211
+  g4 read : gain g 0.0103 expl 0.982 | tree b 5.462 expl 0.851 | joint g 0.0089 b 0.886 expl 0.986 | corr(tree, gain residual) +0.208
+  chain K31: read rel err 0.734; tree b 0.785 explains 0.142 of the (truth - chain) error
+  chain g4: read rel err 0.132; tree b 0.018 explains 0.001 of the (truth - chain) error
+layer  5-> 6
+  K31 plain: gain g 0.0099 expl 0.490 | tree b 0.523 expl 0.027 | joint g 0.0103 b 0.779 expl 0.549 | corr(tree, gain residual) +0.339
+  K31 read : gain g 0.0094 expl 0.475 | tree b 0.643 expl 0.045 | joint g 0.0097 b 0.812 expl 0.546 | corr(tree, gain residual) +0.366
+  g4 plain: gain g 0.0117 expl 0.978 | tree b 7.040 expl 0.661 | joint g 0.0109 b 0.725 expl 0.981 | corr(tree, gain residual) +0.214
+  g4 read : gain g 0.0116 expl 0.980 | tree b 6.530 expl 0.753 | joint g 0.0102 b 1.018 expl 0.985 | corr(tree, gain residual) +0.288
+  chain K31: read rel err 0.735; tree b 0.763 explains 0.116 of the (truth - chain) error
+  chain g4: read rel err 0.131; tree b 0.099 explains 0.010 of the (truth - chain) error
+layer  6-> 7
+  K31 plain: gain g 0.0107 expl 0.475 | tree b 0.377 expl 0.013 | joint g 0.0113 b 0.759 expl 0.525 | corr(tree, gain residual) +0.306
+  K31 read : gain g 0.0100 expl 0.450 | tree b 0.576 expl 0.034 | joint g 0.0105 b 0.819 expl 0.517 | corr(tree, gain residual) +0.348
+  g4 plain: gain g 0.0127 expl 0.971 | tree b 7.012 expl 0.550 | joint g 0.0119 b 0.876 expl 0.975 | corr(tree, gain residual) +0.272
+  g4 read : gain g 0.0126 expl 0.976 | tree b 6.586 expl 0.681 | joint g 0.0115 b 0.841 expl 0.980 | corr(tree, gain residual) +0.248
+  chain K31: read rel err 0.745; tree b 0.753 explains 0.104 of the (truth - chain) error
+  chain g4: read rel err 0.137; tree b 0.073 explains 0.004 of the (truth - chain) error
+layer  7-> 8
+  K31 plain: gain g 0.0127 expl 0.501 | tree b 0.702 expl 0.041 | joint g 0.0128 b 0.735 expl 0.546 | corr(tree, gain residual) +0.300
+  K31 read : gain g 0.0116 expl 0.459 | tree b 0.882 expl 0.080 | joint g 0.0114 b 0.786 expl 0.522 | corr(tree, gain residual) +0.341
+  g4 plain: gain g 0.0146 expl 0.970 | tree b 6.374 expl 0.716 | joint g 0.0133 b 0.833 expl 0.974 | corr(tree, gain residual) +0.208
+  g4 read : gain g 0.0145 expl 0.973 | tree b 6.169 expl 0.791 | joint g 0.0126 b 0.989 expl 0.978 | corr(tree, gain residual) +0.218
+  chain K31: read rel err 0.741; tree b 0.777 explains 0.113 of the (truth - chain) error
+  chain g4: read rel err 0.150; tree b 0.162 explains 0.024 of the (truth - chain) error
+layer  8-> 9
+  K31 plain: gain g 0.0140 expl 0.503 | tree b -0.199 expl 0.002 | joint g 0.0150 b 0.723 expl 0.531 | corr(tree, gain residual) +0.226
+  K31 read : gain g 0.0125 expl 0.452 | tree b 0.239 expl 0.004 | joint g 0.0134 b 0.842 expl 0.500 | corr(tree, gain residual) +0.289
+  g4 plain: gain g 0.0158 expl 0.966 | tree b 5.208 expl 0.136 | joint g 0.0156 b 0.712 expl 0.969 | corr(tree, gain residual) +0.245
+  g4 read : gain g 0.0155 expl 0.970 | tree b 7.511 expl 0.379 | joint g 0.0147 b 0.989 expl 0.975 | corr(tree, gain residual) +0.317
+  chain K31: read rel err 0.744; tree b 0.690 explains 0.061 of the (truth - chain) error
+  chain g4: read rel err 0.161; tree b 0.361 explains 0.034 of the (truth - chain) error
+layer  9->10
+  K31 plain: gain g 0.0150 expl 0.511 | tree b -0.515 expl 0.013 | joint g 0.0160 b 0.646 expl 0.529 | corr(tree, gain residual) +0.181
+  K31 read : gain g 0.0129 expl 0.435 | tree b 0.128 expl 0.001 | joint g 0.0138 b 0.820 expl 0.475 | corr(tree, gain residual) +0.258
+  g4 plain: gain g 0.0166 expl 0.962 | tree b 2.846 expl 0.035 | joint g 0.0165 b 0.697 expl 0.964 | corr(tree, gain residual) +0.230
+  g4 read : gain g 0.0161 expl 0.969 | tree b 7.220 expl 0.300 | joint g 0.0154 b 1.115 expl 0.974 | corr(tree, gain residual) +0.363
+  chain K31: read rel err 0.753; tree b 0.676 explains 0.051 of the (truth - chain) error
+  chain g4: read rel err 0.171; tree b 0.446 explains 0.039 of the (truth - chain) error
+layer 10->11
+  K31 plain: gain g 0.0167 expl 0.532 | tree b -0.572 expl 0.015 | joint g 0.0180 b 0.705 expl 0.552 | corr(tree, gain residual) +0.195
+  K31 read : gain g 0.0137 expl 0.424 | tree b 0.162 expl 0.002 | joint g 0.0149 b 0.840 expl 0.468 | corr(tree, gain residual) +0.267
+  g4 plain: gain g 0.0176 expl 0.951 | tree b 2.054 expl 0.020 | joint g 0.0176 b 0.752 expl 0.953 | corr(tree, gain residual) +0.231
+  g4 read : gain g 0.0170 expl 0.960 | tree b 6.966 expl 0.267 | joint g 0.0162 b 1.278 expl 0.967 | corr(tree, gain residual) +0.379
+  chain K31: read rel err 0.758; tree b 0.686 explains 0.054 of the (truth - chain) error
+  chain g4: read rel err 0.188; tree b 0.669 explains 0.070 of the (truth - chain) error
+layer 11->12
+  K31 plain: gain g 0.0199 expl 0.597 | tree b -0.852 expl 0.025 | joint g 0.0208 b 0.565 expl 0.607 | corr(tree, gain residual) +0.148
+  K31 read : gain g 0.0148 expl 0.421 | tree b 0.339 expl 0.007 | joint g 0.0155 b 0.793 expl 0.458 | corr(tree, gain residual) +0.250
+  g4 plain: gain g 0.0195 expl 0.954 | tree b 3.152 expl 0.046 | joint g 0.0195 b 0.266 expl 0.954 | corr(tree, gain residual) +0.080
+  g4 read : gain g 0.0183 expl 0.969 | tree b 7.419 expl 0.362 | joint g 0.0175 b 0.997 expl 0.973 | corr(tree, gain residual) +0.317
+  chain K31: read rel err 0.761; tree b 0.703 explains 0.052 of the (truth - chain) error
+  chain g4: read rel err 0.168; tree b 0.410 explains 0.039 of the (truth - chain) error
+layer 12->13
+  K31 plain: gain g 0.0218 expl 0.624 | tree b -1.960 expl 0.106 | joint g 0.0228 b 0.438 expl 0.628 | corr(tree, gain residual) +0.091
+  K31 read : gain g 0.0156 expl 0.417 | tree b -0.255 expl 0.003 | joint g 0.0168 b 0.731 expl 0.441 | corr(tree, gain residual) +0.194
+  g4 plain: gain g 0.0207 expl 0.941 | tree b -5.318 expl 0.122 | joint g 0.0206 b -0.180 expl 0.941 | corr(tree, gain residual) -0.043
+  g4 read : gain g 0.0187 expl 0.954 | tree b 3.433 expl 0.057 | joint g 0.0184 b 1.133 expl 0.960 | corr(tree, gain residual) +0.358
+  chain K31: read rel err 0.767; tree b 0.532 explains 0.024 of the (truth - chain) error
+  chain g4: read rel err 0.204; tree b 0.655 explains 0.050 of the (truth - chain) error
+layer 13->14
+  K31 plain: gain g 0.0221 expl 0.625 | tree b -2.113 expl 0.114 | joint g 0.0234 b 0.551 expl 0.630 | corr(tree, gain residual) +0.106
+  K31 read : gain g 0.0157 expl 0.398 | tree b -0.477 expl 0.011 | joint g 0.0171 b 0.681 expl 0.417 | corr(tree, gain residual) +0.165
+  g4 plain: gain g 0.0211 expl 0.946 | tree b -7.000 expl 0.229 | joint g 0.0211 b 0.082 expl 0.946 | corr(tree, gain residual) +0.018
+  g4 read : gain g 0.0192 expl 0.959 | tree b -0.063 expl 0.000 | joint g 0.0192 b 0.874 expl 0.962 | corr(tree, gain residual) +0.300
+  chain K31: read rel err 0.779; tree b 0.458 explains 0.016 of the (truth - chain) error
+  chain g4: read rel err 0.194; tree b 0.492 explains 0.032 of the (truth - chain) error
+layer 14->15
+  K31 plain: gain g 0.0242 expl 0.654 | tree b -1.926 expl 0.086 | joint g 0.0251 b 0.419 expl 0.658 | corr(tree, gain residual) +0.089
+  K31 read : gain g 0.0163 expl 0.390 | tree b 0.062 expl 0.000 | joint g 0.0173 b 0.741 expl 0.416 | corr(tree, gain residual) +0.203
+  g4 plain: gain g 0.0225 expl 0.937 | tree b -2.740 expl 0.032 | joint g 0.0225 b -0.109 expl 0.937 | corr(tree, gain residual) -0.028
+  g4 read : gain g 0.0198 expl 0.954 | tree b 5.143 expl 0.136 | joint g 0.0194 b 0.886 expl 0.958 | corr(tree, gain residual) +0.267
+  chain g4: read rel err 0.203; tree b 0.345 explains 0.015 of the (truth - chain) error
+
+[exit 0 after 6s on 20 visible cores, cpu=4.0, code 3066fb7c26]

@@ -1,0 +1,10 @@
+# births_check.py (paths: c3 = 0, exact = paths + 4-cycles)
+paths, kappa_4 diagonal: MC [ 0.0595  0.754  26.2225]  paths + cycles [ 0.0597  0.7567 26.1647]
+paths, (3,1) slice offdiag: MC [-0.0317  0.1835 -0.2222 -0.0587  3.7699  2.0433] 
+    paths + cycles [-0.0317  0.184  -0.2228 -0.0592  3.7702  2.0505]
+stars, kappa_4 diagonal: MC odd part [-3.6000e-03 -5.9400e-02 -8.3217e+00]  star [-0.0035 -0.0461 -3.4731]
+# births_check_stars.py (stars: linear part in c3 from c3 and 2 c3)
+stars, kappa_4 diagonal: MC linear part [-0.0035 -0.046  -3.4836]  star [-0.0035 -0.0461 -3.4731]
+stars, (3,1) offdiag: MC linear part [ 0.0067  0.0035  0.0184 -0.0159  0.4375 -0.4386] 
+    star [ 0.0067  0.0034  0.0185 -0.0158  0.4376 -0.4368]
+

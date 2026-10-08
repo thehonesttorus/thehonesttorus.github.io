@@ -1,0 +1,39 @@
+net 1: 8000000 samples, K = 64
+layer  3
+  K= 8: cross part of the (3,1) slice explained by shared M' +0.003 (fit on half 0, scored on half 1: +0.001); any row-wise collective matrix +0.094; diagonal cross part: corr with 2 s^2 U^T M' U +0.117, amplitude +0.83
+  K=16: cross part of the (3,1) slice explained by shared M' +0.007 (fit on half 0, scored on half 1: +0.002); any row-wise collective matrix +0.169; diagonal cross part: corr with 2 s^2 U^T M' U +0.144, amplitude +0.63
+  K=32: cross part of the (3,1) slice explained by shared M' +0.018 (fit on half 0, scored on half 1: +0.003); any row-wise collective matrix +0.296; diagonal cross part: corr with 2 s^2 U^T M' U +0.198, amplitude +0.52
+  K=64: cross part of the (3,1) slice explained by shared M' +0.047 (fit on half 0, scored on half 1: +0.004); any row-wise collective matrix +0.478; diagonal cross part: corr with 2 s^2 U^T M' U +0.247, amplitude +0.41
+  non-gain (3,1) slice: collective T4 alone +0.061; + shared matrix gain (K=64) +0.099; cross share of it 0.835; M' symmetric part share 0.716, top eigenvalues of sym M' +1.13e-01 +9.10e-02 +8.59e-02 +8.41e-02
+layer  6
+  K= 8: cross part of the (3,1) slice explained by shared M' +0.028 (fit on half 0, scored on half 1: +0.024); any row-wise collective matrix +0.199; diagonal cross part: corr with 2 s^2 U^T M' U +0.587, amplitude +1.65
+  K=16: cross part of the (3,1) slice explained by shared M' +0.039 (fit on half 0, scored on half 1: +0.032); any row-wise collective matrix +0.302; diagonal cross part: corr with 2 s^2 U^T M' U +0.604, amplitude +1.18
+  K=32: cross part of the (3,1) slice explained by shared M' +0.057 (fit on half 0, scored on half 1: +0.044); any row-wise collective matrix +0.435; diagonal cross part: corr with 2 s^2 U^T M' U +0.626, amplitude +0.89
+  K=64: cross part of the (3,1) slice explained by shared M' +0.086 (fit on half 0, scored on half 1: +0.061); any row-wise collective matrix +0.585; diagonal cross part: corr with 2 s^2 U^T M' U +0.641, amplitude +0.70
+  non-gain (3,1) slice: collective T4 alone +0.176; + shared matrix gain (K=64) +0.242; cross share of it 0.801; M' symmetric part share 0.825, top eigenvalues of sym M' +2.89e-01 +2.06e-01 +1.94e-01 +1.75e-01
+layer  9
+  K= 8: cross part of the (3,1) slice explained by shared M' +0.039 (fit on half 0, scored on half 1: +0.037); any row-wise collective matrix +0.273; diagonal cross part: corr with 2 s^2 U^T M' U +0.679, amplitude +1.71
+  K=16: cross part of the (3,1) slice explained by shared M' +0.055 (fit on half 0, scored on half 1: +0.051); any row-wise collective matrix +0.387; diagonal cross part: corr with 2 s^2 U^T M' U +0.720, amplitude +1.30
+  K=32: cross part of the (3,1) slice explained by shared M' +0.075 (fit on half 0, scored on half 1: +0.068); any row-wise collective matrix +0.519; diagonal cross part: corr with 2 s^2 U^T M' U +0.739, amplitude +0.98
+  K=64: cross part of the (3,1) slice explained by shared M' +0.106 (fit on half 0, scored on half 1: +0.093); any row-wise collective matrix +0.639; diagonal cross part: corr with 2 s^2 U^T M' U +0.759, amplitude +0.84
+  non-gain (3,1) slice: collective T4 alone +0.292; + shared matrix gain (K=64) +0.365; cross share of it 0.699; M' symmetric part share 0.845, top eigenvalues of sym M' +3.93e-01 +3.48e-01 +2.86e-01 +2.62e-01
+layer 11
+  K= 8: cross part of the (3,1) slice explained by shared M' +0.050 (fit on half 0, scored on half 1: +0.049); any row-wise collective matrix +0.314; diagonal cross part: corr with 2 s^2 U^T M' U +0.697, amplitude +1.64
+  K=16: cross part of the (3,1) slice explained by shared M' +0.065 (fit on half 0, scored on half 1: +0.063); any row-wise collective matrix +0.436; diagonal cross part: corr with 2 s^2 U^T M' U +0.726, amplitude +1.27
+  K=32: cross part of the (3,1) slice explained by shared M' +0.081 (fit on half 0, scored on half 1: +0.077); any row-wise collective matrix +0.557; diagonal cross part: corr with 2 s^2 U^T M' U +0.740, amplitude +1.06
+  K=64: cross part of the (3,1) slice explained by shared M' +0.107 (fit on half 0, scored on half 1: +0.099); any row-wise collective matrix +0.655; diagonal cross part: corr with 2 s^2 U^T M' U +0.762, amplitude +0.96
+  non-gain (3,1) slice: collective T4 alone +0.407; + shared matrix gain (K=64) +0.469; cross share of it 0.589; M' symmetric part share 0.847, top eigenvalues of sym M' +5.20e-01 +4.52e-01 +3.81e-01 +3.62e-01
+layer 13
+  K= 8: cross part of the (3,1) slice explained by shared M' +0.056 (fit on half 0, scored on half 1: +0.054); any row-wise collective matrix +0.355; diagonal cross part: corr with 2 s^2 U^T M' U +0.729, amplitude +1.74
+  K=16: cross part of the (3,1) slice explained by shared M' +0.069 (fit on half 0, scored on half 1: +0.067); any row-wise collective matrix +0.477; diagonal cross part: corr with 2 s^2 U^T M' U +0.756, amplitude +1.36
+  K=32: cross part of the (3,1) slice explained by shared M' +0.085 (fit on half 0, scored on half 1: +0.082); any row-wise collective matrix +0.589; diagonal cross part: corr with 2 s^2 U^T M' U +0.775, amplitude +1.16
+  K=64: cross part of the (3,1) slice explained by shared M' +0.111 (fit on half 0, scored on half 1: +0.105); any row-wise collective matrix +0.674; diagonal cross part: corr with 2 s^2 U^T M' U +0.789, amplitude +1.07
+  non-gain (3,1) slice: collective T4 alone +0.444; + shared matrix gain (K=64) +0.505; cross share of it 0.553; M' symmetric part share 0.842, top eigenvalues of sym M' +6.82e-01 +5.86e-01 +4.96e-01 +3.76e-01
+layer 15
+  K= 8: cross part of the (3,1) slice explained by shared M' +0.037 (fit on half 0, scored on half 1: +0.036); any row-wise collective matrix +0.370; diagonal cross part: corr with 2 s^2 U^T M' U +0.684, amplitude +1.82
+  K=16: cross part of the (3,1) slice explained by shared M' +0.048 (fit on half 0, scored on half 1: +0.046); any row-wise collective matrix +0.480; diagonal cross part: corr with 2 s^2 U^T M' U +0.708, amplitude +1.45
+  K=32: cross part of the (3,1) slice explained by shared M' +0.063 (fit on half 0, scored on half 1: +0.060); any row-wise collective matrix +0.589; diagonal cross part: corr with 2 s^2 U^T M' U +0.731, amplitude +1.27
+  K=64: cross part of the (3,1) slice explained by shared M' +0.086 (fit on half 0, scored on half 1: +0.082); any row-wise collective matrix +0.665; diagonal cross part: corr with 2 s^2 U^T M' U +0.755, amplitude +1.23
+  non-gain (3,1) slice: collective T4 alone +0.517; + shared matrix gain (K=64) +0.558; cross share of it 0.482; M' symmetric part share 0.785, top eigenvalues of sym M' +6.63e-01 +5.00e-01 +4.58e-01 +3.77e-01
+
+[exit 0 after 47s on 20 visible cores, cpu=4.0, code 57b86fee7b]

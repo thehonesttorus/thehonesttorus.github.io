@@ -1,0 +1,180 @@
+net 0: truth n = 16000000; chain keys e.g. ['C_off_0', 'C_off_1', 'C_off_10', 'C_off_11', 'C_off_12', 'C_off_13']
+
+layer  1  alpha sd 0.66  eig/mean var: 5.7 5.6 5.5 5.4 5.3 5.3  trace share top 1:0.006 4:0.022 16:0.081 64:0.274 256:0.711  |<u1,mu^>|^2 0.000  top16 0.033  top64 0.177
+  k3   gain fit g +0.0066 explains +0.487; read-weighted g +0.0065 explains +0.584
+  D21  gain fit g +0.0066 explains +0.262; read-weighted g +0.0068 explains +0.314  | read energy in top-K col span: truth 16:0.075 64:0.264 256:0.662; gain residual 16:0.088 64:0.286 256:0.680
+  k4   gain fit g +0.0032 explains +0.976; read-weighted g +0.0032 explains +0.975
+  K22  gain fit g +0.0032 explains +0.966; read-weighted g +0.0032 explains +0.966  | read energy in top-K col span: truth 16:0.025 64:0.077 256:0.289; gain residual 16:0.016 64:0.063 256:0.250
+  K31  gain fit g +0.0034 explains +0.218; read-weighted g +0.0034 explains +0.221  | read energy in top-K col span: truth 16:0.096 64:0.292 256:0.648; gain residual 16:0.073 64:0.247 256:0.641
+  chain D3: read rel err 0.059; gain-shaped share of the error 0.002
+  chain g4: read rel err 0.157; gain-shaped share of the error 0.000
+  chain D21: read rel err 0.081; gain-shaped share 0.000; error energy in top-K col span 16:0.071 64:0.243 256:0.636
+  chain K22: read rel err 0.187; gain-shaped share 0.000; error energy in top-K col span 16:0.016 64:0.063 256:0.251
+  chain K31: read rel err 0.935; gain-shaped share 0.110; error energy in top-K col span 16:0.086 64:0.271 256:0.645
+
+layer  2  alpha sd 0.97  eig/mean var: 8.2 8.0 8.0 7.7 7.5 7.5  trace share top 1:0.008 4:0.031 16:0.114 64:0.357 256:0.792  |<u1,mu^>|^2 0.022  top16 0.237  top64 0.589
+  k3   gain fit g +0.0097 explains +0.717; read-weighted g +0.0097 explains +0.731
+  D21  gain fit g +0.0095 explains +0.503; read-weighted g +0.0094 explains +0.563  | read energy in top-K col span: truth 16:0.175 64:0.423 256:0.692; gain residual 16:0.117 64:0.340 256:0.698
+  k4   gain fit g +0.0056 explains +0.984; read-weighted g +0.0056 explains +0.985
+  K22  gain fit g +0.0056 explains +0.981; read-weighted g +0.0056 explains +0.981  | read energy in top-K col span: truth 16:0.015 64:0.070 256:0.232; gain residual 16:0.016 64:0.062 256:0.249
+  K31  gain fit g +0.0052 explains +0.367; read-weighted g +0.0052 explains +0.369  | read energy in top-K col span: truth 16:0.124 64:0.355 256:0.662; gain residual 16:0.096 64:0.301 256:0.667
+  chain D3: read rel err 0.043; gain-shaped share of the error 0.002
+  chain g4: read rel err 0.123; gain-shaped share of the error 0.008
+  chain D21: read rel err 0.059; gain-shaped share 0.000; error energy in top-K col span 16:0.089 64:0.280 256:0.644
+  chain K22: read rel err 0.142; gain-shaped share 0.002; error energy in top-K col span 16:0.015 64:0.062 256:0.250
+  chain K31: read rel err 0.849; gain-shaped share 0.125; error energy in top-K col span 16:0.102 64:0.315 256:0.663
+
+layer  3  alpha sd 1.19  eig/mean var: 11.2 10.5 10.2 10.0 9.8 9.6  trace share top 1:0.011 4:0.041 16:0.145 64:0.427 256:0.842  |<u1,mu^>|^2 0.189  top16 0.612  top64 0.791
+  k3   gain fit g +0.0112 explains +0.775; read-weighted g +0.0114 explains +0.745
+  D21  gain fit g +0.0113 explains +0.606; read-weighted g +0.0114 explains +0.657  | read energy in top-K col span: truth 16:0.307 64:0.463 256:0.679; gain residual 16:0.137 64:0.378 256:0.704
+  k4   gain fit g +0.0073 explains +0.985; read-weighted g +0.0074 explains +0.985
+  K22  gain fit g +0.0073 explains +0.982; read-weighted g +0.0073 explains +0.983  | read energy in top-K col span: truth 16:0.023 64:0.072 256:0.256; gain residual 16:0.017 64:0.065 256:0.254
+  K31  gain fit g +0.0064 explains +0.437; read-weighted g +0.0064 explains +0.435  | read energy in top-K col span: truth 16:0.162 64:0.401 256:0.665; gain residual 16:0.127 64:0.347 256:0.676
+  chain D3: read rel err 0.042; gain-shaped share of the error 0.003
+  chain g4: read rel err 0.126; gain-shaped share of the error 0.000
+  chain D21: read rel err 0.051; gain-shaped share 0.001; error energy in top-K col span 16:0.101 64:0.302 256:0.646
+  chain K22: read rel err 0.135; gain-shaped share 0.002; error energy in top-K col span 16:0.017 64:0.064 256:0.254
+  chain K31: read rel err 0.790; gain-shaped share 0.094; error energy in top-K col span 16:0.130 64:0.352 256:0.670
+
+layer  4  alpha sd 1.44  eig/mean var: 15.0 13.6 12.8 12.1 11.8 11.7  trace share top 1:0.015 4:0.052 16:0.176 64:0.482 256:0.872  |<u1,mu^>|^2 0.533  top16 0.772  top64 0.886
+  k3   gain fit g +0.0127 explains +0.836; read-weighted g +0.0127 explains +0.750
+  D21  gain fit g +0.0127 explains +0.677; read-weighted g +0.0129 explains +0.717  | read energy in top-K col span: truth 16:0.355 64:0.486 256:0.654; gain residual 16:0.157 64:0.401 256:0.689
+  k4   gain fit g +0.0090 explains +0.985; read-weighted g +0.0089 explains +0.986
+  K22  gain fit g +0.0090 explains +0.982; read-weighted g +0.0089 explains +0.983  | read energy in top-K col span: truth 16:0.017 64:0.083 256:0.283; gain residual 16:0.016 64:0.066 256:0.255
+  K31  gain fit g +0.0077 explains +0.481; read-weighted g +0.0077 explains +0.480  | read energy in top-K col span: truth 16:0.191 64:0.431 256:0.658; gain residual 16:0.150 64:0.373 256:0.668
+  chain D3: read rel err 0.042; gain-shaped share of the error 0.000
+  chain g4: read rel err 0.117; gain-shaped share of the error 0.010
+  chain D21: read rel err 0.047; gain-shaped share 0.001; error energy in top-K col span 16:0.122 64:0.328 256:0.641
+  chain K22: read rel err 0.134; gain-shaped share 0.005; error energy in top-K col span 16:0.015 64:0.065 256:0.254
+  chain K31: read rel err 0.750; gain-shaped share 0.075; error energy in top-K col span 16:0.151 64:0.376 256:0.663
+
+layer  5  alpha sd 1.59  eig/mean var: 20.2 15.7 15.2 14.7 14.0 13.2  trace share top 1:0.020 4:0.064 16:0.204 64:0.532 256:0.894  |<u1,mu^>|^2 0.640  top16 0.809  top64 0.915
+  k3   gain fit g +0.0140 explains +0.838; read-weighted g +0.0141 explains +0.699
+  D21  gain fit g +0.0140 explains +0.699; read-weighted g +0.0143 explains +0.721  | read energy in top-K col span: truth 16:0.349 64:0.480 256:0.651; gain residual 16:0.191 64:0.441 256:0.688
+  k4   gain fit g +0.0104 explains +0.980; read-weighted g +0.0103 explains +0.982
+  K22  gain fit g +0.0105 explains +0.980; read-weighted g +0.0103 explains +0.981  | read energy in top-K col span: truth 16:0.009 64:0.069 256:0.260; gain residual 16:0.015 64:0.064 256:0.252
+  K31  gain fit g +0.0088 explains +0.494; read-weighted g +0.0087 explains +0.488  | read energy in top-K col span: truth 16:0.221 64:0.461 256:0.660; gain residual 16:0.177 64:0.408 256:0.671
+  chain D3: read rel err 0.047; gain-shaped share of the error 0.003
+  chain g4: read rel err 0.132; gain-shaped share of the error 0.012
+  chain D21: read rel err 0.050; gain-shaped share 0.005; error energy in top-K col span 16:0.144 64:0.359 256:0.640
+  chain K22: read rel err 0.140; gain-shaped share 0.001; error energy in top-K col span 16:0.015 64:0.064 256:0.253
+  chain K31: read rel err 0.734; gain-shaped share 0.050; error energy in top-K col span 16:0.177 64:0.407 256:0.666
+
+layer  6  alpha sd 1.74  eig/mean var: 24.2 18.0 16.6 16.2 16.1 15.1  trace share top 1:0.024 4:0.073 16:0.230 64:0.571 256:0.908  |<u1,mu^>|^2 0.758  top16 0.827  top64 0.962
+  k3   gain fit g +0.0156 explains +0.852; read-weighted g +0.0160 explains +0.705
+  D21  gain fit g +0.0156 explains +0.733; read-weighted g +0.0158 explains +0.748  | read energy in top-K col span: truth 16:0.379 64:0.494 256:0.641; gain residual 16:0.208 64:0.462 256:0.695
+  k4   gain fit g +0.0117 explains +0.978; read-weighted g +0.0116 explains +0.980
+  K22  gain fit g +0.0117 explains +0.976; read-weighted g +0.0115 explains +0.977  | read energy in top-K col span: truth 16:0.012 64:0.060 256:0.230; gain residual 16:0.014 64:0.060 256:0.246
+  K31  gain fit g +0.0099 explains +0.490; read-weighted g +0.0094 explains +0.475  | read energy in top-K col span: truth 16:0.242 64:0.474 256:0.660; gain residual 16:0.205 64:0.429 256:0.672
+  chain D3: read rel err 0.045; gain-shaped share of the error 0.011
+  chain g4: read rel err 0.131; gain-shaped share of the error 0.006
+  chain D21: read rel err 0.049; gain-shaped share 0.005; error energy in top-K col span 16:0.173 64:0.378 256:0.642
+  chain K22: read rel err 0.151; gain-shaped share 0.004; error energy in top-K col span 16:0.015 64:0.061 256:0.246
+  chain K31: read rel err 0.735; gain-shaped share 0.030; error energy in top-K col span 16:0.201 64:0.425 256:0.668
+
+layer  7  alpha sd 1.86  eig/mean var: 28.1 21.7 19.5 18.4 17.1 16.8  trace share top 1:0.027 4:0.086 16:0.254 64:0.602 256:0.917  |<u1,mu^>|^2 0.762  top16 0.902  top64 0.967
+  k3   gain fit g +0.0170 explains +0.875; read-weighted g +0.0167 explains +0.678
+  D21  gain fit g +0.0169 explains +0.748; read-weighted g +0.0172 explains +0.769  | read energy in top-K col span: truth 16:0.386 64:0.480 256:0.600; gain residual 16:0.198 64:0.443 256:0.663
+  k4   gain fit g +0.0127 explains +0.971; read-weighted g +0.0126 explains +0.976
+  K22  gain fit g +0.0129 explains +0.971; read-weighted g +0.0126 explains +0.973  | read energy in top-K col span: truth 16:0.013 64:0.061 256:0.234; gain residual 16:0.016 64:0.064 256:0.252
+  K31  gain fit g +0.0107 explains +0.475; read-weighted g +0.0100 explains +0.450  | read energy in top-K col span: truth 16:0.240 64:0.453 256:0.630; gain residual 16:0.209 64:0.417 256:0.640
+  chain D3: read rel err 0.051; gain-shaped share of the error 0.003
+  chain g4: read rel err 0.137; gain-shaped share of the error 0.010
+  chain D21: read rel err 0.049; gain-shaped share 0.008; error energy in top-K col span 16:0.180 64:0.370 256:0.616
+  chain K22: read rel err 0.160; gain-shaped share 0.001; error energy in top-K col span 16:0.015 64:0.063 256:0.249
+  chain K31: read rel err 0.745; gain-shaped share 0.015; error energy in top-K col span 16:0.205 64:0.414 256:0.637
+
+layer  8  alpha sd 2.08  eig/mean var: 34.9 23.3 21.2 19.7 18.1 17.3  trace share top 1:0.034 4:0.097 16:0.275 64:0.627 256:0.924  |<u1,mu^>|^2 0.867  top16 0.924  top64 0.977
+  k3   gain fit g +0.0176 explains +0.890; read-weighted g +0.0177 explains +0.696
+  D21  gain fit g +0.0176 explains +0.771; read-weighted g +0.0182 explains +0.783  | read energy in top-K col span: truth 16:0.424 64:0.505 256:0.634; gain residual 16:0.221 64:0.450 256:0.672
+  k4   gain fit g +0.0146 explains +0.970; read-weighted g +0.0145 explains +0.973
+  K22  gain fit g +0.0147 explains +0.969; read-weighted g +0.0142 explains +0.971  | read energy in top-K col span: truth 16:0.008 64:0.049 256:0.223; gain residual 16:0.015 64:0.061 256:0.248
+  K31  gain fit g +0.0127 explains +0.501; read-weighted g +0.0116 explains +0.459  | read energy in top-K col span: truth 16:0.266 64:0.470 256:0.641; gain residual 16:0.227 64:0.430 256:0.650
+  chain D3: read rel err 0.057; gain-shaped share of the error 0.001
+  chain g4: read rel err 0.150; gain-shaped share of the error 0.000
+  chain D21: read rel err 0.051; gain-shaped share 0.004; error energy in top-K col span 16:0.205 64:0.392 256:0.629
+  chain K22: read rel err 0.166; gain-shaped share 0.001; error energy in top-K col span 16:0.015 64:0.063 256:0.250
+  chain K31: read rel err 0.741; gain-shaped share 0.017; error energy in top-K col span 16:0.224 64:0.427 256:0.647
+
+layer  9  alpha sd 2.14  eig/mean var: 39.5 25.4 22.4 21.5 19.1 18.9  trace share top 1:0.039 4:0.106 16:0.297 64:0.653 256:0.934  |<u1,mu^>|^2 0.891  top16 0.931  top64 0.985
+  k3   gain fit g +0.0190 explains +0.890; read-weighted g +0.0195 explains +0.678
+  D21  gain fit g +0.0191 explains +0.787; read-weighted g +0.0201 explains +0.810  | read energy in top-K col span: truth 16:0.510 64:0.584 256:0.698; gain residual 16:0.250 64:0.487 256:0.693
+  k4   gain fit g +0.0158 explains +0.966; read-weighted g +0.0155 explains +0.970
+  K22  gain fit g +0.0159 explains +0.965; read-weighted g +0.0152 explains +0.967  | read energy in top-K col span: truth 16:0.007 64:0.051 256:0.240; gain residual 16:0.016 64:0.064 256:0.251
+  K31  gain fit g +0.0140 explains +0.503; read-weighted g +0.0125 explains +0.452  | read energy in top-K col span: truth 16:0.315 64:0.513 256:0.670; gain residual 16:0.278 64:0.477 256:0.679
+  chain D3: read rel err 0.057; gain-shaped share of the error 0.014
+  chain g4: read rel err 0.161; gain-shaped share of the error 0.000
+  chain D21: read rel err 0.052; gain-shaped share 0.020; error energy in top-K col span 16:0.255 64:0.443 256:0.665
+  chain K22: read rel err 0.175; gain-shaped share 0.003; error energy in top-K col span 16:0.015 64:0.063 256:0.251
+  chain K31: read rel err 0.744; gain-shaped share 0.015; error energy in top-K col span 16:0.276 64:0.474 256:0.677
+
+layer 10  alpha sd 2.25  eig/mean var: 47.2 27.3 24.6 23.0 21.9 20.9  trace share top 1:0.046 4:0.119 16:0.322 64:0.677 256:0.940  |<u1,mu^>|^2 0.909  top16 0.941  top64 0.987
+  k3   gain fit g +0.0197 explains +0.901; read-weighted g +0.0216 explains +0.691
+  D21  gain fit g +0.0200 explains +0.806; read-weighted g +0.0209 explains +0.812  | read energy in top-K col span: truth 16:0.466 64:0.531 256:0.647; gain residual 16:0.261 64:0.490 256:0.687
+  k4   gain fit g +0.0166 explains +0.962; read-weighted g +0.0161 explains +0.969
+  K22  gain fit g +0.0167 explains +0.960; read-weighted g +0.0160 explains +0.965  | read energy in top-K col span: truth 16:0.017 64:0.064 256:0.237; gain residual 16:0.016 64:0.062 256:0.248
+  K31  gain fit g +0.0150 explains +0.511; read-weighted g +0.0129 explains +0.435  | read energy in top-K col span: truth 16:0.319 64:0.506 256:0.661; gain residual 16:0.286 64:0.473 256:0.669
+  chain D3: read rel err 0.063; gain-shaped share of the error 0.020
+  chain g4: read rel err 0.171; gain-shaped share of the error 0.007
+  chain D21: read rel err 0.053; gain-shaped share 0.012; error energy in top-K col span 16:0.254 64:0.431 256:0.651
+  chain K22: read rel err 0.185; gain-shaped share 0.002; error energy in top-K col span 16:0.015 64:0.062 256:0.247
+  chain K31: read rel err 0.753; gain-shaped share 0.008; error energy in top-K col span 16:0.283 64:0.470 256:0.666
+
+layer 11  alpha sd 2.46  eig/mean var: 58.0 29.7 25.1 23.7 22.6 21.7  trace share top 1:0.057 4:0.133 16:0.342 64:0.694 256:0.943  |<u1,mu^>|^2 0.928  top16 0.952  top64 0.992
+  k3   gain fit g +0.0206 explains +0.912; read-weighted g +0.0225 explains +0.690
+  D21  gain fit g +0.0206 explains +0.828; read-weighted g +0.0223 explains +0.842  | read energy in top-K col span: truth 16:0.470 64:0.528 256:0.634; gain residual 16:0.250 64:0.466 256:0.657
+  k4   gain fit g +0.0176 explains +0.951; read-weighted g +0.0170 explains +0.960
+  K22  gain fit g +0.0178 explains +0.955; read-weighted g +0.0168 explains +0.959  | read energy in top-K col span: truth 16:0.019 64:0.048 256:0.243; gain residual 16:0.016 64:0.063 256:0.254
+  K31  gain fit g +0.0167 explains +0.532; read-weighted g +0.0137 explains +0.424  | read energy in top-K col span: truth 16:0.314 64:0.489 256:0.637; gain residual 16:0.287 64:0.463 256:0.646
+  chain D3: read rel err 0.062; gain-shaped share of the error 0.016
+  chain g4: read rel err 0.188; gain-shaped share of the error 0.000
+  chain D21: read rel err 0.053; gain-shaped share 0.016; error energy in top-K col span 16:0.269 64:0.429 256:0.629
+  chain K22: read rel err 0.197; gain-shaped share 0.002; error energy in top-K col span 16:0.016 64:0.062 256:0.255
+  chain K31: read rel err 0.758; gain-shaped share 0.008; error energy in top-K col span 16:0.284 64:0.460 256:0.644
+
+layer 12  alpha sd 2.72  eig/mean var: 72.5 27.8 27.1 23.5 22.6 22.0  trace share top 1:0.071 4:0.147 16:0.363 64:0.716 256:0.949  |<u1,mu^>|^2 0.944  top16 0.966  top64 0.994
+  k3   gain fit g +0.0214 explains +0.931; read-weighted g +0.0220 explains +0.651
+  D21  gain fit g +0.0212 explains +0.855; read-weighted g +0.0232 explains +0.852  | read energy in top-K col span: truth 16:0.488 64:0.547 256:0.638; gain residual 16:0.262 64:0.497 256:0.678
+  k4   gain fit g +0.0195 explains +0.954; read-weighted g +0.0183 explains +0.969
+  K22  gain fit g +0.0196 explains +0.951; read-weighted g +0.0180 explains +0.957  | read energy in top-K col span: truth 16:0.009 64:0.059 256:0.261; gain residual 16:0.016 64:0.064 256:0.254
+  K31  gain fit g +0.0199 explains +0.597; read-weighted g +0.0148 explains +0.421  | read energy in top-K col span: truth 16:0.338 64:0.510 256:0.649; gain residual 16:0.315 64:0.485 256:0.658
+  chain D3: read rel err 0.068; gain-shaped share of the error 0.005
+  chain g4: read rel err 0.168; gain-shaped share of the error 0.001
+  chain D21: read rel err 0.054; gain-shaped share 0.023; error energy in top-K col span 16:0.295 64:0.456 256:0.642
+  chain K22: read rel err 0.203; gain-shaped share 0.003; error energy in top-K col span 16:0.016 64:0.064 256:0.252
+  chain K31: read rel err 0.761; gain-shaped share 0.006; error energy in top-K col span 16:0.312 64:0.483 256:0.656
+
+layer 13  alpha sd 2.86  eig/mean var: 82.1 30.1 27.9 25.1 23.9 22.0  trace share top 1:0.080 4:0.161 16:0.384 64:0.733 256:0.954  |<u1,mu^>|^2 0.948  top16 0.973  top64 0.997
+  k3   gain fit g +0.0219 explains +0.927; read-weighted g +0.0247 explains +0.693
+  D21  gain fit g +0.0215 explains +0.863; read-weighted g +0.0241 explains +0.859  | read energy in top-K col span: truth 16:0.487 64:0.543 256:0.631; gain residual 16:0.268 64:0.487 256:0.676
+  k4   gain fit g +0.0207 explains +0.941; read-weighted g +0.0187 explains +0.954
+  K22  gain fit g +0.0204 explains +0.946; read-weighted g +0.0183 explains +0.951  | read energy in top-K col span: truth 16:0.014 64:0.084 256:0.282; gain residual 16:0.016 64:0.063 256:0.250
+  K31  gain fit g +0.0218 explains +0.624; read-weighted g +0.0156 explains +0.417  | read energy in top-K col span: truth 16:0.348 64:0.506 256:0.643; gain residual 16:0.318 64:0.483 256:0.654
+  chain D3: read rel err 0.067; gain-shaped share of the error 0.020
+  chain g4: read rel err 0.204; gain-shaped share of the error 0.011
+  chain D21: read rel err 0.056; gain-shaped share 0.021; error energy in top-K col span 16:0.308 64:0.460 256:0.639
+  chain K22: read rel err 0.216; gain-shaped share 0.025; error energy in top-K col span 16:0.016 64:0.066 256:0.248
+  chain K31: read rel err 0.767; gain-shaped share 0.007; error energy in top-K col span 16:0.316 64:0.481 256:0.651
+
+layer 14  alpha sd 2.92  eig/mean var: 88.5 32.6 28.0 26.2 24.7 22.4  trace share top 1:0.086 4:0.171 16:0.398 64:0.749 256:0.960  |<u1,mu^>|^2 0.940  top16 0.981  top64 0.996
+  k3   gain fit g +0.0221 explains +0.934; read-weighted g +0.0241 explains +0.639
+  D21  gain fit g +0.0219 explains +0.861; read-weighted g +0.0250 explains +0.869  | read energy in top-K col span: truth 16:0.490 64:0.555 256:0.649; gain residual 16:0.274 64:0.483 256:0.658
+  k4   gain fit g +0.0211 explains +0.946; read-weighted g +0.0192 explains +0.959
+  K22  gain fit g +0.0210 explains +0.940; read-weighted g +0.0186 explains +0.944  | read energy in top-K col span: truth 16:0.008 64:0.054 256:0.216; gain residual 16:0.015 64:0.063 256:0.247
+  K31  gain fit g +0.0221 explains +0.625; read-weighted g +0.0157 explains +0.398  | read energy in top-K col span: truth 16:0.348 64:0.504 256:0.642; gain residual 16:0.324 64:0.483 256:0.650
+  chain D3: read rel err 0.078; gain-shaped share of the error 0.004
+  chain g4: read rel err 0.194; gain-shaped share of the error 0.000
+  chain D21: read rel err 0.057; gain-shaped share 0.015; error energy in top-K col span 16:0.327 64:0.465 256:0.638
+  chain K22: read rel err 0.230; gain-shaped share 0.010; error energy in top-K col span 16:0.014 64:0.063 256:0.245
+  chain K31: read rel err 0.779; gain-shaped share 0.006; error energy in top-K col span 16:0.323 64:0.482 256:0.649
+
+layer 15  alpha sd 3.14  eig/mean var: 98.4 32.4 29.4 27.9 26.8 23.5  trace share top 1:0.096 4:0.184 16:0.416 64:0.762 256:0.961  |<u1,mu^>|^2 0.957  top16 0.987  top64 0.997
+  k3   gain fit g +0.0222 explains +0.935; read-weighted g +0.0246 explains +0.653
+  D21  gain fit g +0.0218 explains +0.871; read-weighted g +0.0253 explains +0.873  | read energy in top-K col span: truth 16:0.482 64:0.534 256:0.650; gain residual 16:0.286 64:0.485 256:0.662
+  k4   gain fit g +0.0225 explains +0.937; read-weighted g +0.0198 explains +0.954
+  K22  gain fit g +0.0221 explains +0.937; read-weighted g +0.0195 explains +0.940  | read energy in top-K col span: truth 16:0.013 64:0.070 256:0.251; gain residual 16:0.015 64:0.066 256:0.252
+  K31  gain fit g +0.0242 explains +0.654; read-weighted g +0.0163 explains +0.390  | read energy in top-K col span: truth 16:0.348 64:0.503 256:0.645; gain residual 16:0.322 64:0.481 256:0.651
+  chain D3: read rel err 0.074; gain-shaped share of the error 0.029
+  chain g4: read rel err 0.203; gain-shaped share of the error 0.012
+
+[exit 0 after 5s on 20 visible cores, cpu=4.0, code 448f98a317]

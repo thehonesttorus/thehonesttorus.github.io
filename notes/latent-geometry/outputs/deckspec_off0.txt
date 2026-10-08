@@ -1,0 +1,79 @@
+cost: F 4.6867e+11 (0.2131 B), residual wall 1.332 s, C/B 0.2737
+net 0 d0: raw 2.25521e-08  per-layer 6.98e-10 6.98e-10 1.07e-09 1.96e-09 2.84e-09 4.08e-09 5.13e-09 6.25e-09 7.86e-09 1.01e-08 1.19e-08 1.35e-08 1.62e-08 1.91e-08 1.89e-08 2.26e-08
+check: last-layer dump mu vs Wc[15] @ m_14: rel diff 2.21e-07
+net 0: dump keys sample ['C_off_0', 'C_off_1', 'C_off_10', 'C_off_11', 'C_off_12', 'C_off_13', 'C_off_14', 'C_off_2', 'C_off_3', 'C_off_4', 'C_off_5', 'C_off_6']
+layer  0  alpha sd 0.00  t=2.0: off 0.000 on 0.000 t=2.5: off 0.000 on 0.000 t=3.0: off 0.000 on 0.000
+layer  1  alpha sd 0.66  t=2.0: off 0.001 on 0.000 t=2.5: off 0.001 on 0.000 t=3.0: off 0.000 on 0.000
+     read-energy share of dropped rows |a|>=2.0: 1.60e-06 |a|>=2.5: 1.60e-06 |a|>=3.0: 0.00e+00
+     D21 energy at rank 32:0.4737 64:0.5916 128:0.7469 256:0.8998 512:0.9866
+     read-weighted at rank 32:0.5339 64:0.6520 128:0.7988 256:0.9302 512:0.9932
+layer  2  alpha sd 0.97  t=2.0: off 0.020 on 0.023 t=2.5: off 0.005 on 0.006 t=3.0: off 0.001 on 0.001
+     read-energy share of dropped rows |a|>=2.0: 5.95e-04 |a|>=2.5: 1.27e-05 |a|>=3.0: 2.86e-07
+     D21 energy at rank 32:0.6913 64:0.7757 128:0.8740 256:0.9555 512:0.9942
+     read-weighted at rank 32:0.7454 64:0.8253 128:0.9123 256:0.9756 512:0.9983
+layer  3  alpha sd 1.19  t=2.0: off 0.048 on 0.055 t=2.5: off 0.021 on 0.018 t=3.0: off 0.008 on 0.004
+     read-energy share of dropped rows |a|>=2.0: 1.35e-03 |a|>=2.5: 5.48e-05 |a|>=3.0: 1.24e-06
+     D21 energy at rank 32:0.7773 64:0.8472 128:0.9194 256:0.9722 512:0.9962
+     read-weighted at rank 32:0.8230 64:0.8869 128:0.9481 256:0.9871 512:0.9993
+layer  4  alpha sd 1.44  t=2.0: off 0.082 on 0.083 t=2.5: off 0.041 on 0.044 t=3.0: off 0.020 on 0.018
+     read-energy share of dropped rows |a|>=2.0: 1.64e-03 |a|>=2.5: 8.75e-05 |a|>=3.0: 3.48e-06
+     D21 energy at rank 32:0.8305 64:0.8888 128:0.9427 256:0.9796 512:0.9970
+     read-weighted at rank 32:0.8675 64:0.9196 128:0.9653 256:0.9921 512:0.9997
+layer  5  alpha sd 1.59  t=2.0: off 0.111 on 0.096 t=2.5: off 0.062 on 0.056 t=3.0: off 0.036 on 0.022
+     read-energy share of dropped rows |a|>=2.0: 2.05e-03 |a|>=2.5: 1.23e-04 |a|>=3.0: 3.83e-06
+     D21 energy at rank 32:0.8582 64:0.9104 128:0.9543 256:0.9837 512:0.9976
+     read-weighted at rank 32:0.8841 64:0.9325 128:0.9720 256:0.9939 512:0.9998
+layer  6  alpha sd 1.74  t=2.0: off 0.141 on 0.121 t=2.5: off 0.081 on 0.071 t=3.0: off 0.050 on 0.040
+     read-energy share of dropped rows |a|>=2.0: 2.51e-03 |a|>=2.5: 1.52e-04 |a|>=3.0: 4.89e-06
+     D21 energy at rank 32:0.8807 64:0.9265 128:0.9625 256:0.9864 512:0.9979
+     read-weighted at rank 32:0.9040 64:0.9456 128:0.9778 256:0.9954 512:0.9999
+layer  7  alpha sd 1.86  t=2.0: off 0.162 on 0.134 t=2.5: off 0.102 on 0.090 t=3.0: off 0.062 on 0.053
+     read-energy share of dropped rows |a|>=2.0: 2.58e-03 |a|>=2.5: 1.70e-04 |a|>=3.0: 6.52e-06
+     D21 energy at rank 32:0.8956 64:0.9363 128:0.9674 256:0.9881 512:0.9981
+     read-weighted at rank 32:0.9185 64:0.9553 128:0.9827 256:0.9968 512:0.9999
+layer  8  alpha sd 2.08  t=2.0: off 0.180 on 0.174 t=2.5: off 0.118 on 0.110 t=3.0: off 0.081 on 0.068
+     read-energy share of dropped rows |a|>=2.0: 3.69e-03 |a|>=2.5: 2.24e-04 |a|>=3.0: 9.22e-06
+     D21 energy at rank 32:0.9090 64:0.9453 128:0.9720 256:0.9897 512:0.9984
+     read-weighted at rank 32:0.9286 64:0.9618 128:0.9856 256:0.9975 512:1.0000
+layer  9  alpha sd 2.14  t=2.0: off 0.168 on 0.207 t=2.5: off 0.115 on 0.146 t=3.0: off 0.072 on 0.097
+     read-energy share of dropped rows |a|>=2.0: 3.54e-03 |a|>=2.5: 2.83e-04 |a|>=3.0: 9.23e-06
+     D21 energy at rank 32:0.9207 64:0.9527 128:0.9762 256:0.9913 512:0.9985
+     read-weighted at rank 32:0.9409 64:0.9689 128:0.9886 256:0.9981 512:1.0000
+layer 10  alpha sd 2.25  t=2.0: off 0.180 on 0.207 t=2.5: off 0.137 on 0.157 t=3.0: off 0.088 on 0.099
+     read-energy share of dropped rows |a|>=2.0: 3.15e-03 |a|>=2.5: 3.22e-04 |a|>=3.0: 1.09e-05
+     D21 energy at rank 32:0.9313 64:0.9592 128:0.9792 256:0.9923 512:0.9987
+     read-weighted at rank 32:0.9453 64:0.9714 128:0.9897 256:0.9983 512:1.0000
+layer 11  alpha sd 2.46  t=2.0: off 0.229 on 0.214 t=2.5: off 0.171 on 0.156 t=3.0: off 0.125 on 0.109
+     read-energy share of dropped rows |a|>=2.0: 3.90e-03 |a|>=2.5: 3.13e-04 |a|>=3.0: 1.27e-05
+     D21 energy at rank 32:0.9418 64:0.9652 128:0.9821 256:0.9932 512:0.9988
+     read-weighted at rank 32:0.9563 64:0.9777 128:0.9924 256:0.9989 512:1.0000
+layer 12  alpha sd 2.72  t=2.0: off 0.243 on 0.238 t=2.5: off 0.194 on 0.183 t=3.0: off 0.142 on 0.140
+     read-energy share of dropped rows |a|>=2.0: 4.04e-03 |a|>=2.5: 3.40e-04 |a|>=3.0: 1.43e-05
+     D21 energy at rank 32:0.9532 64:0.9721 128:0.9853 256:0.9943 512:0.9989
+     read-weighted at rank 32:0.9629 64:0.9816 128:0.9939 256:0.9992 512:1.0000
+layer 13  alpha sd 2.86  t=2.0: off 0.265 on 0.268 t=2.5: off 0.204 on 0.207 t=3.0: off 0.167 on 0.162
+     read-energy share of dropped rows |a|>=2.0: 5.34e-03 |a|>=2.5: 3.54e-04 |a|>=3.0: 2.49e-05
+     D21 energy at rank 32:0.9583 64:0.9750 128:0.9869 256:0.9948 512:0.9990
+     read-weighted at rank 32:0.9667 64:0.9841 128:0.9951 256:0.9995 512:1.0000
+layer 14  alpha sd 2.92  t=2.0: off 0.263 on 0.269 t=2.5: off 0.210 on 0.203 t=3.0: off 0.151 on 0.165
+     read-energy share of dropped rows |a|>=2.0: 4.99e-03 |a|>=2.5: 3.81e-04 |a|>=3.0: 1.55e-05
+     D21 energy at rank 32:0.9608 64:0.9769 128:0.9879 256:0.9952 512:0.9991
+     read-weighted at rank 32:0.9703 64:0.9861 128:0.9958 256:0.9996 512:1.0000
+layer 15  alpha sd 3.14  t=2.0: off 0.279 on 0.293 t=2.5: off 0.226 on 0.235 t=3.0: off 0.180 on 0.189
+alignment of the read-weighted slice with the gated covariance eigenvectors (captured energy, r = 32/64/128/256)
+layer  1  r32: svd 0.5339 right 0.2679 left 0.0432 both 0.0123  r64: svd 0.6520 right 0.4417 left 0.0778 both 0.0346  r128: svd 0.7988 right 0.6445 left 0.1520 both 0.0988  r256: svd 0.9302 right 0.8448 left 0.2991 both 0.2537
+layer  2  r32: svd 0.7454 right 0.5606 left 0.0471 both 0.0269  r64: svd 0.8253 right 0.6855 left 0.0873 both 0.0594  r128: svd 0.9123 right 0.8283 left 0.1670 both 0.1380  r256: svd 0.9756 right 0.9402 left 0.3185 both 0.2991
+layer  3  r32: svd 0.8230 right 0.6901 left 0.0639 both 0.0460  r64: svd 0.8869 right 0.7911 left 0.1129 both 0.0906  r128: svd 0.9481 right 0.8983 left 0.1911 both 0.1716  r256: svd 0.9871 right 0.9665 left 0.3714 both 0.3591
+layer  4  r32: svd 0.8675 right 0.7465 left 0.0723 both 0.0561  r64: svd 0.9196 right 0.8375 left 0.1315 both 0.1117  r128: svd 0.9653 right 0.9290 left 0.2595 both 0.2430  r256: svd 0.9921 right 0.9790 left 0.4545 both 0.4456
+layer  5  r32: svd 0.8841 right 0.7803 left 0.0630 both 0.0501  r64: svd 0.9325 right 0.8716 left 0.1233 both 0.1081  r128: svd 0.9720 right 0.9430 left 0.2293 both 0.2164  r256: svd 0.9939 right 0.9831 left 0.4480 both 0.4406
+layer  6  r32: svd 0.9040 right 0.8321 left 0.0615 both 0.0509  r64: svd 0.9456 right 0.9016 left 0.1221 both 0.1100  r128: svd 0.9778 right 0.9545 left 0.2427 both 0.2318  r256: svd 0.9954 right 0.9861 left 0.4509 both 0.4445
+layer  7  r32: svd 0.9185 right 0.8696 left 0.0721 both 0.0632  r64: svd 0.9553 right 0.9204 left 0.1260 both 0.1156  r128: svd 0.9827 right 0.9641 left 0.2390 both 0.2300  r256: svd 0.9968 right 0.9896 left 0.4701 both 0.4651
+layer  8  r32: svd 0.9286 right 0.8769 left 0.0556 both 0.0473  r64: svd 0.9618 right 0.9270 left 0.1261 both 0.1160  r128: svd 0.9856 right 0.9688 left 0.2777 both 0.2690  r256: svd 0.9975 right 0.9906 left 0.5323 both 0.5272
+layer  9  r32: svd 0.9409 right 0.8987 left 0.0564 both 0.0492  r64: svd 0.9689 right 0.9432 left 0.1666 both 0.1577  r128: svd 0.9886 right 0.9741 left 0.2807 both 0.2731  r256: svd 0.9981 right 0.9924 left 0.5643 both 0.5600
+layer 10  r32: svd 0.9453 right 0.9102 left 0.0872 both 0.0795  r64: svd 0.9714 right 0.9492 left 0.1623 both 0.1544  r128: svd 0.9897 right 0.9764 left 0.2955 both 0.2885  r256: svd 0.9983 right 0.9931 left 0.5857 both 0.5818
+layer 11  r32: svd 0.9563 right 0.9287 left 0.0795 both 0.0734  r64: svd 0.9777 right 0.9600 left 0.1248 both 0.1182  r128: svd 0.9924 right 0.9816 left 0.3197 both 0.3135  r256: svd 0.9989 right 0.9948 left 0.6575 both 0.6543
+layer 12  r32: svd 0.9629 right 0.9375 left 0.0689 both 0.0633  r64: svd 0.9816 right 0.9670 left 0.1797 both 0.1735  r128: svd 0.9939 right 0.9845 left 0.4016 both 0.3959  r256: svd 0.9992 right 0.9954 left 0.7003 both 0.6972
+layer 13  r32: svd 0.9667 right 0.9444 left 0.1441 both 0.1375  r64: svd 0.9841 right 0.9689 left 0.3066 both 0.2990  r128: svd 0.9951 right 0.9858 left 0.4812 both 0.4752  r256: svd 0.9995 right 0.9959 left 0.7557 both 0.7527
+layer 14  r32: svd 0.9703 right 0.9519 left 0.0647 both 0.0601  r64: svd 0.9861 right 0.9725 left 0.1886 both 0.1832  r128: svd 0.9958 right 0.9882 left 0.3325 both 0.3279  r256: svd 0.9996 right 0.9968 left 0.7133 both 0.7111
+
+[exit 0 after 76s on 24 visible cores, cpu=8.0, code bd8832d1db]
