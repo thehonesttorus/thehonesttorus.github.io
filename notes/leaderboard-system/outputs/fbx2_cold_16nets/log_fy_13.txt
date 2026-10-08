@@ -1,0 +1,4 @@
+cost: F 2.3750e+12 (1.0800 B), residual wall 1.070 s, C/B 1.1287
+net 13 fbxy: raw 1.99931e-08  per-layer 6.79e-10 6.42e-10 1.03e-09 1.58e-09 2.69e-09 3.77e-09 5.47e-09 6.92e-09 8.72e-09 1.03e-08 1.09e-08 1.35e-08 1.70e-08 1.69e-08 1.79e-08 2.00e-08
+
+[exit 0 after 92s on 20 visible cores, cpu=4.0]

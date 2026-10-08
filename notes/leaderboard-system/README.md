@@ -346,3 +346,49 @@ paired against V35 in the same harness, networks 0-15:
 **Strassen leaf minimum 8** (`V26_STRASSEN_MIN=8`, networks 0-15). On V35 it changes nothing: raw and C/B are identical
 to the last digit, and the residual is within noise (-1.2% +- 0.5). V35's own leaf minima (`V35_SB_MN`, `V35_CPRE_MN`,
 `V35_JN_MN`) already took the saving the V33 measurement had found. Not adopted, and nothing is lost.
+
+**P5-P7, measured** (cold harness, networks 0-15, paired against V35 in the same harness; `outputs/fbx2_cold_16nets/`):
+
+| feedback | raw | better on | FLOPs |
+|---|---|---|---|
+| rank 64 | -6.26% +- 0.40 | 16/16 | +26% |
+| rank 256 | -8.34% +- 0.62 | 16/16 | +108% |
+| exact (rank 1024) | -8.59% +- 0.70 | 16/16 | +446% |
+| exact, GC1 at the theorem's weight | -7.85% +- 1.37; against exact: +0.76 +- 1.03 | 8/16 vs exact | +446% |
+| exact, GC1 and GC2 at the theorem's weight | -7.27% +- 1.47; against exact: +1.38 +- 1.07 | 6/16 vs exact | +446% |
+
+- **P5 fails.** The theorem's weight does not help even with the flat part present. The half weight the hub has
+  always carried stays.
+- **P6 holds**, weakly: GC2 adds 0.6 points of loss, within 1 point.
+- **P7 fails in the favourable direction.** Rank 64 already holds 73% of the exact feedback's gain (40-50% was
+  predicted) and rank 256 holds 97%. The gain concentrates faster than the flat energy does: its value is in the
+  upper part of the flat spectrum.
+- **The adjusted verdict.** At the margin the feedback trades raw for cost at about one for one:
+  - rank 16: -2.9% raw for +6.4% C/B;
+  - rank 64: -6.3% raw for +26% FLOPs;
+  - rank 256: -8.3% raw for +108% FLOPs.
+
+  The thin legs are carried by every source, unconfined, and are re-formed densely at every layer: about 8 n^2 r
+  per source-layer.
+- **What a winning version would need.**
+  - The raw/cost ratio of the feedback must beat the frontier on which the tiers sit (elasticity 1, note XXX
+    section 7).
+  - The cheapest variants (rank 64 at ages 1-2, rank 32 at ages 3-4, none once confined) estimate at about -4.5% raw
+    for +6% C/B: still about neutral.
+  - The feedback is the one measured accuracy lever of this round. Its cost structure, not its information, is now
+    the obstacle.
+
+## 8. Adoption tests (free-running, held-out networks 50-99, each system with its own counterterms refitted on 0-49)
+
+| system | raw | C/B | adjusted | against V35 + counterterms |
+|---|---|---|---|---|
+| V35 (no counterterms) | 2.2670e-8 | 0.1803 | 4.0882e-9 | |
+| V35 + counterterms (refit) | 2.1799e-8 | 0.1804 | **3.9317e-9** | (-3.83% against V35; predicted -3.16%) |
+| + geometric-mean (2,2) slice (wk4m3) | 2.1761e-8 | 0.1804 | 3.9255e-9 | -0.14% +- 0.08, better on 31/50 |
+| + derived kappa4 diagonal (k4d3) | 2.1713e-8 | 0.1804 | 3.9169e-9 | -0.39% +- 0.22, better on 31/50 |
+
+- **They match the screen.** Both agree with their renormalized predictions (-0.23 and -0.41).
+- **Neither passes the rule.** Each is about 1.8 standard errors, under the two of section 3, so neither is adopted
+  alone. The pair is tested next.
+- **The first-order refit is pessimistic again.** It predicted -3.16% and measured -3.83%, the third time the
+  second order has been favourable by 0.6-0.7 points.

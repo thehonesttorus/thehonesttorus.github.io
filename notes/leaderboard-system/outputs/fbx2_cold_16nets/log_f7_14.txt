@@ -1,0 +1,4 @@
+cost: F 9.0306e+11 (0.4107 B), residual wall 0.664 s, C/B 0.4408
+net 14 fb256: raw 2.33366e-08  per-layer 6.89e-10 7.08e-10 1.11e-09 1.82e-09 2.43e-09 3.71e-09 5.04e-09 6.27e-09 7.89e-09 8.76e-09 1.00e-08 1.14e-08 1.25e-08 1.40e-08 1.69e-08 2.33e-08
+
+[exit 0 after 59s on 20 visible cores, cpu=4.0]
