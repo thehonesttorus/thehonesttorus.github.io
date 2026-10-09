@@ -1,0 +1,57 @@
+  pK[X_{i_1},...,X_{i_d}] = sum_{rho} (prod_{B in rho} pK[X_{i_B}]) * (sum_{tau\geq rho; sigma ∧ tau <= rho} mu(tau, 1))
+# k_max=3 kind=SIMPLE d_max=4: int_parts [(1,), (2,), (3,), (4,), (1, 1), (2, 1), (2, 2), (3, 1), (1, 1, 1), (2, 1, 1)]
+
+## int_part (1,)  (output slice; p = powers)
+   count  1  coef 1  blocks []  -> wick k=(0,) p=(1,)
+   count  1  coef 0.1667  blocks [(3,)]  -> wick k=(3,) p=(1,)
+   count  1  coef 0.04167  blocks [(4,)]  -> wick k=(4,) p=(1,)
+
+## int_part (2,)  (output slice; p = powers)
+   count  1  coef 1  blocks []  -> wick k=(0,) p=(2,)
+   count  1  coef 0.1667  blocks [(3,)]  -> wick k=(3,) p=(2,)
+   count  1  coef 0.04167  blocks [(4,)]  -> wick k=(4,) p=(2,)
+
+## int_part (1, 1)  (output slice; p = powers)
+   count  1  coef 1  blocks [(1, 1)]  -> wick k=(1, 1) p=(1, 1)
+   count  2  coef 0.5  blocks [(1, 2)]  -> wick k=(1, 2) p=(1, 1)
+   count  1  coef 0.5  blocks [(1, 1), (1, 1)]  -> wick k=(2, 2) p=(1, 1)
+   count  1  coef 0.25  blocks [(2, 2)]  -> wick k=(2, 2) p=(1, 1)
+
+## int_part (3,)  (output slice; p = powers)
+   count  1  coef 1  blocks []  -> wick k=(0,) p=(3,)
+   count  1  coef 0.1667  blocks [(3,)]  -> wick k=(3,) p=(3,)
+   count  1  coef 0.04167  blocks [(4,)]  -> wick k=(4,) p=(3,)
+
+## int_part (2, 1)  (output slice; p = powers)
+   count  1  coef 1  blocks [(1, 1)]  -> wick k=(1, 1) p=(2, 1)
+   count  1  coef 0.5  blocks [(1, 2)]  -> wick k=(1, 2) p=(2, 1)
+   count  1  coef 0.5  blocks [(2, 1)]  -> wick k=(2, 1) p=(2, 1)
+   count  1  coef 0.5  blocks [(1, 1), (1, 1)]  -> wick k=(2, 2) p=(2, 1)
+   count  1  coef 0.25  blocks [(2, 2)]  -> wick k=(2, 2) p=(2, 1)
+
+## int_part (1, 1, 1)  (output slice; p = powers)
+   count  1  coef 1  blocks [(1, 1, 1)]  -> wick k=(1, 1, 1) p=(1, 1, 1)
+   count  3  coef 1  blocks [(0, 1, 1), (1, 0, 1)]  -> wick k=(1, 1, 2) p=(1, 1, 1)
+
+## int_part (4,)  (output slice; p = powers)
+   count  1  coef 1  blocks []  -> wick k=(0,) p=(4,)
+   count  1  coef 0.1667  blocks [(3,)]  -> wick k=(3,) p=(4,)
+   count  1  coef 0.04167  blocks [(4,)]  -> wick k=(4,) p=(4,)
+
+## int_part (2, 2)  (output slice; p = powers)
+   count  1  coef 1  blocks [(1, 1)]  -> wick k=(1, 1) p=(2, 2)
+   count  2  coef 0.5  blocks [(1, 2)]  -> wick k=(1, 2) p=(2, 2)
+   count  1  coef 0.5  blocks [(1, 1), (1, 1)]  -> wick k=(2, 2) p=(2, 2)
+   count  1  coef 0.25  blocks [(2, 2)]  -> wick k=(2, 2) p=(2, 2)
+
+## int_part (3, 1)  (output slice; p = powers)
+   count  1  coef 1  blocks [(1, 1)]  -> wick k=(1, 1) p=(3, 1)
+   count  1  coef 0.5  blocks [(1, 2)]  -> wick k=(1, 2) p=(3, 1)
+   count  1  coef 0.5  blocks [(2, 1)]  -> wick k=(2, 1) p=(3, 1)
+   count  1  coef 0.5  blocks [(1, 1), (1, 1)]  -> wick k=(2, 2) p=(3, 1)
+   count  1  coef 0.25  blocks [(2, 2)]  -> wick k=(2, 2) p=(3, 1)
+
+## int_part (2, 1, 1)  (output slice; p = powers)
+   count  1  coef 1  blocks [(1, 1, 1)]  -> wick k=(1, 1, 1) p=(2, 1, 1)
+   count  2  coef 1  blocks [(0, 1, 1), (1, 0, 1)]  -> wick k=(1, 1, 2) p=(2, 1, 1)
+   count  1  coef 1  blocks [(1, 0, 1), (1, 1, 0)]  -> wick k=(2, 1, 1) p=(2, 1, 1)
