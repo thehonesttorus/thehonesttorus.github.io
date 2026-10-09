@@ -1,0 +1,169 @@
+\label{sec:reading}
+The central obstacle of this note is quantitative. The exact first-order chain reaches $3.5\cdot10^{-8}$ and, with
+the Euler--Stein constant, $6.6$--$7.2\cdot10^{-9}$ on every network tried; what it costs is the memory of the third
+cumulant, $12n^3$ per source-age and layer, $0.5$--$0.7B$ in all, against a floor of $0.1B$. Section~\ref{sec:measure}
+shows that this memory is not compressible in the Frobenius sense (Hadamard obstruction), not sparsifiable in the
+hub index (flat importance), and not regenerable from the current layer (new shape at every layer); only the
+oldest ages collapse onto a shared basis. The eight papers below were read for what they say, between the lines,
+about an obstacle of this kind: a sum of many comparable terms whose readout is diagonal in a hidden index, needed
+to a relative precision of $10^{-2}$, under a budget linear in the width of the state.
+
+\subsection{What the papers say}
+\emph{Hierarchic flows} \cite{LM}. A high-dimensional non-Gaussian probability is estimated and sampled through a
+hierarchy of conditionally Gaussian layers: at each scale the variance is a function of the \emph{modulus} of the
+coarser scale, and the long-range non-Gaussian dependence of the field is carried entirely by interactions that
+are \emph{local in the hierarchy}: a modulus at one scale coupled to the field at a neighbouring scale. The number
+of parameters is polylogarithmic in the dimension because the couplings are between hierarchy levels, not between
+coordinates. The robustness of the modulus ($q=1$ rather than the square) is a point the paper makes at length.
+
+\emph{Many Hamiltonians are sparsifiable} \cite{BBP} and \emph{optimal sparsifiers for Minkowski sums and sums of
+seminorms} \cite{BBCPRZ}. A sum of $m$ terms can be replaced by a reweighted subset of $O(n/\varepsilon^2)$ terms
+that preserves the quadratic form, or the sum of seminorms, uniformly over all inputs in dimension $n$; the proof
+is importance sampling under a non-redundancy condition, or, without logarithmic losses, the Reis--Rothvoss
+weight-perturbation scheme. Two statements matter here. The size of a sparsifier is governed by the
+\emph{dimension of the input}, not by the number of terms, and it carries $\varepsilon^{-2}$. And there are sums
+that cannot be sparsified at all: sums of tensor-product (rank-one) terms of comparable weight, whose quadratic
+form is identity-like, need all their terms (Theorem~1.5 of \cite{BBP}); random terms, by contrast, sparsify.
+
+\emph{Samplizer} \cite{WZ}. Any quantum algorithm making $Q$ queries to the reflection $I-2|\psi\rangle\langle\psi|$
+about an unknown state can be run from $\Theta(Q^2/\delta)$ copies of the state, and this quadratic overhead is
+optimal: the reflection, a rank-one perturbation of the identity, is built from samples by density-matrix
+exponentiation one small step at a time, each step with its fresh copy. The application estimates the angle
+between two states from the spectrum of the \emph{product of two reflections} ($e^{i(\pi\mp2\gamma)}$) by phase
+estimation: $\Theta(1/\varepsilon)$ queries, $\Theta(1/\varepsilon^2)$ samples, both optimal. Coherent access to
+an object and sample access to it are separated by exactly a square.
+
+\emph{Adaptive phase estimation} \cite{LdW}. Without a promise, adaptive (sequential) and non-adaptive (parallel)
+phase estimation need the same number of applications of the unitary; with a promise that the phase lies in a
+small known set, sequential strategies save a factor that is at most $2$. The lower bound for non-adaptive
+strategies is a Farkas certificate: a nonnegative trigonometric polynomial exhibits the infeasibility of any initial
+state. Prior knowledge about the answer buys a constant, and the certificate of what it cannot buy is an explicit
+dual object.
+
+\emph{Efficient quantum Hermite transform} \cite{JISBJ}. The harmonic-oscillator evolution factorises through
+$\mathfrak{sl}_2$ (the number operator and the two ladder operators), which gives an exact fast-forwarding of the
+Gaussian (Ornstein--Uhlenbeck) semigroup: any time is one application, because the semigroup is diagonal in the
+Hermite basis with multiplier $e^{-kt}$ on degree $k$. The same structure gives Hermite sampling and a Gaussian
+Goldreich--Levin algorithm that finds the heavy Hermite coefficients of a function from queries.
+
+\emph{Learning linear threshold functions under the Gaussian} \cite{KNdW}. The Hermite expansion of a ridge
+function is a symmetric tensor power of its direction,
+$h_k(\langle w,x\rangle)=\sum_{|\alpha|=k}\sqrt{k!/\alpha!}\,w^\alpha h_\alpha(x)$: the degree-$k$ Hermite
+tensor of a ridge function is rank one along $w$. A threshold function has Hermite weight $\Theta(K^{-1/2})$ in
+every degree band $[K,2K]$, and its gradient points along $w$, so $O(\log(n/\varepsilon))$ gradient queries
+identify it, against polynomially many samples.
+
+\emph{Counting paths with an exterior algebra} \cite{ext}. A sum over exponentially many paths of products of
+per-vertex factors is estimated by a dynamic program whose state lives in a $2^k$-dimensional algebra (one
+exterior coordinate per subset of $[k]$, one auxiliary row of length $D=k$ each): the identity $g\wedge g=0$
+removes every walk with a repeated vertex exactly, independent Gaussian vectors make every surviving term
+contribute $k!$ in expectation, and independent Gaussian matrices $N(0,1/D)$ attached to (position, vertex)
+pairs give path signatures whose products preserve second moments and whose fourth moment grows only like
+$(1+2/D)^{k}$ (Lemma~6.3 there, from Rakhshan--Rabusseau). The matrices must be \emph{shared} across all partial
+paths through the same vertex for the program to stay small; the moment bound is proved for exactly that reuse.
+Trees are counted by pinning a separator vertex and multiplying the component states. The relative second moment
+of one trial is $O(k^2)$, so $O(k^2/\varepsilon^2)$ trials give relative error $\varepsilon$.
+
+\subsection{Four laws they hold for the obstacle}
+\paragraph{(L1) The hub sum is in the non-sparsifiable class.} Each birth block is $\sum_j a_j\otimes e_j\otimes c_j$,
+one rank-one term per hub neuron $j$ with the hub's own coordinate vector as middle leg (Section~\ref{sec:births}),
+and at He initialisation the terms have comparable weight and are orthogonal in the slice inner product (the
+least-squares reweighting factor of the kept columns is $1.000$). This is the identity-like sum of
+Theorem~1.5 of \cite{BBP}: no reweighted subset reproduces it. The measurement agrees ($q=\tfrac12$: $\times12$;
+$q=\tfrac14$: $\times43$), and the sparsifier size $O(n/\varepsilon^2)$ at the precision the chain needs,
+$\varepsilon\approx10^{-2}$, exceeds the $2n$ terms the block has. In the language of \cite{stage8} the
+transverse measure of the hub foliation is uniform: there is no atom of dominant weight to keep.
+
+\paragraph{(L2) Nothing stochastic reaches the precision.} The memory enters the final mean through slices that must
+be right to about $10^{-2}$ of themselves, and the slices are $O(\rho)\approx3\%$ residuals of $O(1)$ objects.
+Any estimator that uses randomness to avoid the width of the state (probes for a Laplacian, sketches of the hub
+index, the exterior-algebra signatures) pays the sample law $\varepsilon^{-2}$: the samplizer's quadratic gap and
+the $O(k^2/\varepsilon^2)$ trials of \cite{ext} are the same statement, and here it means $10^{4}$--$10^{6}$
+probes against a budget of $2n$ chain evaluations. This is the capacity obstruction of Section~\ref{sec:capacity}
+again, now with its lower bound: coherent (exact) propagation costs the width of the state and no variance; sample
+access costs the square of the precision. For a trilinear readout the obstruction is sharper than for a bilinear
+one: a Gaussian sketch of the hub index has zero expectation on every trilinear form (odd moments vanish), so even
+an unbiased sketch needs third-moment-faithful signs (cube roots of unity) before the variance question arises.
+
+\paragraph{(L3) Reorganising the computation saves a constant at most.} The chain applies $W_l$ to a state of width
+$2n$ per age. The Gaussian weights are a promise about that state (its spectrum, its mean-field part), and
+\cite{LdW} is the clean model of what a promise buys when the operator applications are the cost: a constant
+factor, never the order of growth, with a dual certificate for the rest. The identity-leg accounting and
+Strassen ($24n^3\to12n^3\to10.5n^3$ per source-age) are that constant. The dual certificate here is the
+orthogonality of the hub terms in (L1).
+
+\paragraph{(L4) The crossover law of the hub-diagonal readout.} A source of age $a$ has legs in the range of the
+cocycle $T_{l\leftarrow l-a}$. If that range is held in a basis $Q$ of rank $r$, the transport of a source costs
+$O(n^2r)$ per layer instead of $12n^3$, but the slice $\sum_j (QA)_{ij}(QB)_{ij}(QC)_{kj}$ is a Khatri--Rao
+contraction whose core costs $\Theta(nr^3)$: the hub-diagonal readout is cubic in the rank of the subspace. Hence
+a source is cheaper in its cocycle range only when
+\[
+ r^3<n^2,\qquad r<n^{2/3}\approx101\quad(n=1024),
+\]
+and the rank needed is the one at which the cocycle keeps the slice to $10^{-2}$, which by the Hadamard
+obstruction is the $99\%$-energy rank, not the stable rank. \texttt{scripts/diag\_cocycle.py} gives, at
+layers $8$--$15$, top-$256$ energy fractions $0.80,\,0.92,\,0.97,\,0.99,\,0.997,\,0.998$ at ages
+$1,2,3,4,6,8$: the $99\%$-rank is above $256$ for ages $1$--$3$ and below $100$ from age five or six. The crossover
+law therefore predicts a dense window of four ages and a subspace for the rest, which is exactly the lossless
+configuration found by scanning (window $4$, $k=384$: $3.69\cdot10^{-8}$) and not the cheaper ones (window $2$:
+$\times2.2$). Its cost is $4\times12n^3$ per layer before Strassen against a floor of $12.8n^3$: an exact first-order
+chain cannot be brought below $3$--$4$ times the floor by any representation of its memory, because for the ages
+that carry the memory the dense Hadamard readout is already the cheapest one.
+
+\subsection{Three readings that point forward}
+\paragraph{(P1) Fast-forwarding the Eldan path: the merge constant is a Hermite-degree average.} Eldan's path is an
+Ornstein--Uhlenbeck semigroup in the tilt variable, and \cite{JISBJ} is the reminder that such a semigroup is
+diagonal in Hermite degree: a defect whose kink content sits at degree $d$ decays along the path like
+$(1+\tau)^{-d/2}$ (one kink: the density $(1+\tau)^{-1/2}$ of Section~\ref{sec:capacity}; two kinks: their
+product). Against the weight $\tfrac12(1+\tau)^{-3/2}$ this gives, with the normalisation of
+Corollary~\ref{cor:eldan},
+\[
+ a(d)=\frac{1}{d+1}:\qquad a(1)=\tfrac12\ \text{(Gaussian closure: measured $0.535$, $0.500$)},\quad
+ a(2)=\tfrac13\ \text{(first-order chain: measured $0.255$, $0.257$)},
+\]
+the second reduced by the rotation of the defect direction along the path, as on the small network. The constant
+is therefore a property of the \emph{order} of the chain, not of the network, which is what the cross-over of
+$a_0$ and $a_1$ without loss on both networks shows. A system can fix it offline from the chain's order and never
+fit it.
+
+\paragraph{(P2) The memory is a sum over hub-rooted stars, and one of its three legs collapses.} With
+$S_{l'}\approx T_{l'\leftarrow0}T_{l'\leftarrow0}^{\!\top}$ the star block born at $l'$ and read at $l$ is
+\[
+ \sum_{j}\big(T_{l\leftarrow l'}\Phi S_{l'}\big)_{ij}\,\big(T_{l\leftarrow l'}\big)_{ij}\,\big(T_{l\leftarrow l'}w_2S_{l'}\Phi\big)_{kj}
+ =\sum_j\sum_{m,m'}T_{l\leftarrow l'}(i,j)\,T_{l'\leftarrow0}(j,m)\,T_{l'\leftarrow0}(j,m')\,A^{(l')}_{im}B^{(l')}_{km'},
+\]
+a sum over hub vertices $j$ at every layer $l'$ of two paths from the input to the hub and one path from the hub
+to the output, the tree-counting situation of \cite{ext} with the hub as separator. The first leg accumulates:
+$U_l=\sum_{l'\le l}T_{l\leftarrow l'}D(\Phi_{l'})T_{l'\leftarrow0}$ obeys $U_{l+1}=W_{l+1}D(g_{l+1})U_l+D(\Phi_{l+1})T_{l+1\leftarrow0}$,
+one $n\times n$ matrix for all sources at $n^3$ per layer. What does not collapse is the pairing of the hub leg
+$T_{l\leftarrow l'}(i,j)$ with the third leg at the same $(l',j)$: the Hadamard pairing is diagonal in the hub and
+the hub's age is a label the sum cannot forget. This locates the memory precisely: not in the transported
+content (which accumulates) but in the hub-diagonal pairing of the identity leg with the readout leg of the same
+birth. The coherent part of that pairing is the mean of $T\circ T$ over the weights, a variance profile
+computable at $O(n^2)$, and the rank-one experiments of Section~\ref{sec:measure} measure it to carry $80\%$ of
+the memory; the rest is the realisation-specific fluctuation of a Gaussian matrix product, of the relative size
+the fourth-moment bound of \cite{ext} predicts for products of $a$ matrices of width $n$, a few percent per age.
+
+\paragraph{(P3) One object: memory, tilt response, defect.} Theorem~\ref{thm:gram} writes the Euler--Stein defect as
+$-\langle\nabla^2G,\Gamma(y)\rangle$ with $\Gamma$ built from the first-order tilt responses, and the second-order
+response of the Gaussian chain to the $n$ coordinate tilts has, at every layer, the birth structure
+$\sum_a (\text{cocycle column})\otimes e_a\otimes(\text{row of }X_l)$: an identity leg born at each layer and
+transported by the same cocycle. The third cumulant's memory, the tilt-response tensor and the defect are the
+same cocycle-transported identity-leg object read through the same hub-diagonal pairing. Two consequences. The
+symbolic Euler--Stein correction (the open task of Section~\ref{sec:measure}) costs what the memory costs, so it
+is not an add-on to the exact chain but a second use of the same transported legs, to be built on them. And the
+cheap part of each is the same cheap part: the mean-field pairing at $O(n^2)$.
+
+\subsection{What this says the system is}
+An exact first-order chain cannot reach the floor: (L4) puts it at three to four times $0.1B$ after every
+algebraic saving, and (L1)--(L3) close the other exits. A floor-level estimator with the accuracy of the leaders is
+therefore not an exact chain with a compressed memory; it is a chain with a \emph{short} memory, corrected by
+derived quantities that cost $O(n^2)$ per layer: the mean-field hub pairing for every age beyond the window (P2),
+the radial scalar of Lemma~\ref{lem:scale} (one number, worth a factor $16$), and the Euler--Stein merge with the
+constant fixed by the order of the chain (P1), computed from the same legs as the memory (P3). The one measurement
+that decides whether this reaches $10^{-8}$ at the floor is whether the defect of a \emph{short-memory} chain is
+as explainable by its own coordinate Laplacian as that of the Gaussian closure ($89$--$93\%$) and of the exact chain
+($81$--$84\%$): if it is, a window-one chain at the floor with the mean-field tail and the merge lands near
+$10^{-8}$; if it is not, the memory is the price and the score is bounded below by the crossover law. That
+measurement is $2049$ runs of the window-one chain, which the Modal batch of Section~\ref{sec:measure} does in an
+hour; it is the next thing to run.

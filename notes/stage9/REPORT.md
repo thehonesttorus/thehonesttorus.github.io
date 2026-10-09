@@ -52,10 +52,13 @@ Branch `claude/determined-fermat-9hk45i`. Note: `notes/stage9/ncg_mlp_stage9.pdf
   rank-1/4/16/64 truncation (w=2): 2.2e-7/2.0e-7/1.6e-7/7.8e-8 — the coherent (separable, O(n^2)) part carries most of the
   old memory; an incoherent tail remains at ages 2–5. The old sources' effect is smooth
   in amplitude and brittle in shape: Hadamard readouts defeat Frobenius truncation (note, Sec. 6).
+- Source sparsification (keep the q*n most important hub columns of every birth block, no window): q = 0.5 -> 4.1e-7,
+  0.25 -> 1.5e-6, 0.1 -> 2.6e-6; least-squares rescaling of the kept columns changes nothing. The importance profile
+  is flat (every hub neuron contributes a comparable, orthogonal rank-one term), the non-sparsifiable regime.
 - Billed cost under flopscope (fnp port `whest/kprop3f.py`, float32, MSE identical to float64): (4,128) 0.862 B; (2,128) 0.592 B;
   (1,128) 0.439 B; (0,128) 0.275 B; float64 doubles these. The accurate configuration (4,384) is ~1 B as written, ~0.45 B with the
   identity-leg structure of the birth blocks (3 transported matrices and 4 readout products per source-age instead of 6 and 6) and Strassen.
-- Exact Euler–Stein defect of the ported chain on net 0 (2049 chain runs on Modal, 41 s each on 4 cores): corr 0.902, 81% explained, a = 0.255, MSE 3.53e-8 -> **6.64e-9**. The midpoint a = 1/2 does not apply (3.3e-8): a first-order chain's defect is second order in the births and decays like (1+tau)^-1, giving a = 1/3 in theory. Cross-network check on net 1: PENDING (job lapx4).
+- Exact Euler–Stein defect of the ported chain on net 0 (2049 chain runs on Modal, 41 s each on 4 cores): corr 0.902, 81% explained, a = 0.255, MSE 3.53e-8 -> **6.64e-9**. The midpoint a = 1/2 does not apply (3.3e-8): a first-order chain's defect is second order in the births and decays like (1+tau)^-1, giving a = 1/3 in theory. Cross-network check on net 1 (job lapx4): corr 0.914, 84% explained, a = 0.257, 4.38e-8 -> **7.15e-9**; the constants cross over without loss (a_0 on net 1: 7.152e-9; a_1 on net 0: 6.646e-9). One constant a = 0.256 fixed offline corrects the chain 5-6x on every network tried.
 
 ## 3. Compute
 
@@ -87,7 +90,43 @@ Branch `claude/determined-fermat-9hk45i`. Note: `notes/stage9/ncg_mlp_stage9.pdf
   with one fitted constant whose value the theory predicts from the order of the chain's defect. Making it
   affordable needs the symbolic second-order response (note, Thm 3.2; task left open): that is the system to build.
 
-## 5. Compute and hand-offs
+## 5. The eight papers and the essence of the obstacle (note, Sec. 8)
+
+The user pointed to eight papers (hierarchic flows / Lempereur–Mallat; Hamiltonian sparsification and seminorm
+sparsifiers / Basu–Brakensiek–Putterman et al.; samplizer / Wang–Zhang; adaptive phase estimation / Linden–de Wolf;
+quantum Hermite transform / Jain et al.; LTF learning / Krivcenko–Nguyen–de Wolf; path counting via exterior algebra /
+Panolan et al.). Read for the memory obstacle they give four laws and three leads:
+
+- (L1) The birth blocks are sums of n rank-one hub terms of comparable, orthogonal weight: the non-sparsifiable
+  class of Basu–Brakensiek–Putterman (Thm 1.5), confirmed by the sparsification scan (q=0.5: 12x worse; reweighting factor 1.000).
+- (L2) No stochastic estimator reaches the 1e-2 slice precision: sample access costs eps^-2 (samplizer's quadratic gap,
+  the O(k^2/eps^2) trials of the exterior-algebra estimator) = 1e4-1e6 probes vs 2n chain runs. Trilinear readouts
+  are worse: Gaussian sketches of the hub index have zero mean on trilinear forms.
+- (L3) Reorganising the computation (sequential/adaptive, promise of Gaussian weights) buys a constant factor at most
+  (Linden–de Wolf: <= 2, with a Farkas dual certificate); our constant is the identity-leg/Strassen 24 -> 10.5 n^3.
+- (L4) Crossover law: a source held in its cocycle range of rank r costs O(n^2 r) to transport but Theta(n r^3) to read
+  out (the hub-diagonal readout is a Khatri–Rao core); subspace beats dense only for r < n^(2/3) ~ 101. The 99%-energy
+  rank of the cocycle is > 256 for ages 1-3 and < 100 from age ~5 (diag_cocycle), so the window must be ~4 dense ages:
+  exactly the lossless (4,384) configuration, 4 x 12 n^3 per layer = 3-4x the floor. An exact first-order chain cannot
+  reach 0.1 B by any representation of its memory.
+- (P1) Eldan's path is an OU semigroup, diagonal in Hermite degree (fast-forwarding): a defect of kink order d decays like
+  (1+tau)^(-d/2), giving the merge constant a(d) = 1/(d+1): 1/2 for the Gaussian closure (measured 0.535, 0.500), 1/3 for
+  the first-order chain (measured 0.255, 0.257; reduced by direction rotation). The constant is a property of the chain's
+  order, fixable offline.
+- (P2) The memory is a sum over hub-rooted stars (two input-to-hub paths, one hub-to-output path); the first leg
+  accumulates into one n x n matrix (U_{l+1} = W D U_l + D_Phi T_{l+1<-0}); what cannot collapse is the hub-diagonal
+  pairing of the identity leg with the readout leg of the same birth. Its mean-field part (variance profile of T o T)
+  is O(n^2) and carries ~80% (rank-1 experiments); the rest is the realisation-specific fluctuation of a Gaussian
+  matrix product.
+- (P3) kappa3 memory, the second-order tilt response Gamma(y) and the Euler–Stein defect are one cocycle-transported
+  identity-leg object (Gram theorem): the symbolic correction costs what the memory costs and must share its legs.
+
+Conclusion: a floor-level system is a short-memory chain + O(n^2) derived corrections (mean-field hub pairing for old
+ages, radial scalar, Euler–Stein merge with the derived constant). The deciding measurement: is the defect of a
+window-one chain as explainable by its own coordinate Laplacian (Gaussian: 89-93%, exact chain: 81-84%)? That is
+2049 runs on Modal (next).
+
+## 6. Compute and hand-offs
 
 - Modal: works through the AWS relay only (the sandbox proxy has no gRPC). `python infra/modal_relay.py batch JOB jobs/JOB.tsv --cpu N`;
   results in `s3://claude-whest-9292-97a992/results9/JOB/`, fetched with `python infra/fleet.py get JOB`. If the relay

@@ -46,6 +46,11 @@ defect is second order in the births, so it decays along the path like the squar
 $(1+\tau)^{-1}$, which integrates against the weight to $\tfrac13$, and the measured $0.255$ sits below that by the
 same direction rotation seen on the small network. The cost of this correction is $2n+1$ chain evaluations, which
 is why the symbolic second-order response of Theorem~\ref{thm:gram} is the open engineering problem of this note.
+The constant is a property of the chain, not of the network: on network $1$ the same $2049$ runs give
+correlation $0.914$, $84\%$ explained, $a=0.257$ and $4.38\cdot10^{-8}\to7.15\cdot10^{-9}$, and the two constants
+cross over without loss ($a_0$ on network $1$: $7.152\cdot10^{-9}$; $a_1$ on network $0$: $6.646\cdot10^{-9}$).
+A single constant $a\approx0.256$, fixed offline, corrects the exact first-order chain by a factor $5$--$6$ on
+every network tried.
 
 Two readings. First, the Euler--Stein defect of the \emph{Gaussian} closure, with no cumulant machinery at all,
 reaches the accuracy of our third-cumulant chain: on network $0$ the exact $\delta(0)$ (coordinate Laplacian,
@@ -76,7 +81,8 @@ window $2$, old sources: diagonal $\kap_3$ only & $1.03\cdot10^{-6}$ & \\
 window $2$, old sources scaled by $0.9$ & $5.13\cdot10^{-8}$ & \\
 window $2$, old sources' slices replaced by their rank-$1$ / $4$ / $16$ / $64$ truncation & $2.24\cdot10^{-7}$ / $2.03\cdot10^{-7}$ / $1.56\cdot10^{-7}$ / $7.78\cdot10^{-8}$ & \\
 window $1$, rank $16$ / $64$; window $3$, rank $4$ & $3.05\cdot10^{-7}$ / $1.50\cdot10^{-7}$; $1.48\cdot10^{-7}$ & \\
-window $4$, old sources dropped & $7.45\cdot10^{-7}$ & \\\midrule
+window $4$, old sources dropped & $7.45\cdot10^{-7}$ & \\
+no window: birth blocks sparsified to the $50\%$ / $25\%$ / $10\%$ most important hub columns & $4.12\cdot10^{-7}$ / $1.53\cdot10^{-6}$ / $2.64\cdot10^{-6}$ & \\\midrule
 dense, radial scalar $\times0.9$ / $\times1.1$ / $\times1.25$ & $8.9\cdot10^{-8}$ / $2.7\cdot10^{-7}$ / $4.4\cdot10^{-6}$ & \\
 \bottomrule\end{tabular}
 \end{center}
@@ -92,6 +98,14 @@ $3.5\cdot10^{-8}$ for the full memory), and the remainder converges slowly in ra
 is what the Hadamard structure predicts: for products of gated random matrices the Hadamard squares split into
 a separable mean (rank one per term, computable from the variance profile of the cocycle and its action on a
 few vectors at $O(n^2)$) and incoherent fluctuations, which decay with age but are still large at ages two to five.
+
+The birth blocks are not sparsifiable in the hub index either. Keeping, in every star and residual block, only
+the $qn$ columns of largest importance ($w_{2,j}|a_j|^2|c_j|^2$ for the star, the column norm for the residual
+leg; \texttt{srcfrac} in \texttt{whest/kprop3c.py}) costs a factor $12$ at $q=\tfrac12$ and $43$ at
+$q=\tfrac14$, and a least-squares rescaling of the kept columns changes nothing (the dropped and kept columns
+are orthogonal in the slice inner product, so the rescaling factor is one). The importance profile is flat:
+at He initialisation every hub neuron contributes a comparable, mutually orthogonal rank-one term, which is the
+regime in which subset selection cannot work (Section~\ref{sec:reading}).
 
 Three conclusions. (i) The old sources are essential and their effect is smooth in amplitude but not in shape: a
 $10\%$ scale error on everything older than two layers costs a factor $1.5$, dropping them costs $100$, and a
