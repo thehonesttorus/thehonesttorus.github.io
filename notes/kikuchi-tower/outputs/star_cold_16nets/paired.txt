@@ -1,0 +1,6 @@
+k4s    vs fb: n=16  mean raw 2.2786e-08 vs 2.2168e-08  per-net +2.71% +- 0.76  better on 2/16
+o3y    vs fb: n=16  mean raw 5.9099e-07 vs 2.2168e-08  per-net +2563.07% +- 107.44  better on 0/16
+td3    vs fb: n=16  mean raw 2.7450e-08 vs 2.2168e-08  per-net +22.67% +- 14.24  better on 3/16
+FLOPs k4s  vs fb: n=16  +0.117%
+FLOPs o3y  vs fb: n=16  -0.064%
+FLOPs td3  vs fb: n=16  +0.000%

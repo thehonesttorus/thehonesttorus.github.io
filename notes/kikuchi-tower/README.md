@@ -234,3 +234,58 @@ O(n^2) per source-layer, about 0.3% of the bill (`V55_K4STAR=1`).
 
 If P21 holds, the star goes to the scored regime: all 100 networks, counterterms refitted on 0-49, held-out 50-99,
 adjusted MSE, as in note XXXIX section 11.
+
+## 8. P19', P20', P21, measured (`outputs/star_cold_16nets/`), and what the tower delivered
+
+Same harness and pairing (V35 + fold rerun in the batch, mean raw 2.217e-8):
+
+| switch | raw against the fold system | better on | FLOPs | prediction |
+|---|---|---|---|---|
+| `V55_K4STAR=1` (level-4 star) | +2.71% +- 0.76 | 2/16 | +0.12% | P21, -1% to -6%, >= 11/16, FLOPs +0.2% to +0.6%: **fails** |
+| star diagonal / closure diagonal (rms, layers 8-15, nets 0-1) | 0.07-0.17, rising with depth | | | P21a, >= 0.05: holds |
+| `V54_OLD_D3=0` (corrected) | +2563% +- 107 | 0/16 | -0.06% | P19', >= +50%: holds |
+| `V53_TADPOLE=2` (kappa3 tadpole only) | +22.7% +- 14.2 | 3/16 | 0.00% | P20', no net > +10%: **fails** |
+
+**The level-4 star is real, and adding it alone is adverse.**
+- Its diagonal is a tenth of the closure's at depth, by rms. Its mean is near zero (about -1e-5 against the
+  closure's 2e-3), so it is per-neuron (quenched) structure.
+- Alone it costs 2.7%. The reason is the order it belongs to. At the C^3 order of the Wick expansion, the
+  fourth-cumulant bulk born at a layer has three classes:
+  - the star (c3 Phi^3 C^3), which is free (section 7);
+  - the path P4 (Phi c2 c2 Phi C^3), which also rides the kappa3 legs. Its pair weight d(c2) C d(c2) makes its
+    diagonal diag((A o P) d(c2) C d(c2) (A o P)^T): one n^3 product per source-layer;
+  - the kappa3 x C class (a c(2) vertex joining a transported kappa3 leg and a covariance line, with
+    kappa3 ~ C^2): one n^3 product per source-layer.
+- The star alone is therefore not a truncation of anything, and the measurement says so. Completing the order costs
+  two products per source-layer, half of the young tier. At a g4 oracle value of 15-30% of the MSE (note XXXI),
+  that cannot pay even if it worked.
+
+**The tadpole's instability is the kappa3 tadpole itself.** The kappa3-only run reproduces the full run: +22.7%
+against +22.5%, with blow-ups on three networks (+229%, +59%, +28%) and +0 to +11% elsewhere. So the kappa4 dressing
+(the closure's input) was not the cause.
+
+**The old tier, by readout.** Dropping its diagonal readout costs +2563% and its (2,1) readout +847%. Its 60 units
+(a third of the bill) are the best-paid units in the chain.
+
+**What the tower delivered.**
+1. **The cost classes are confirmed.**
+   - V1 moves with a localized centre ride legs that are already carried, at O(n^2): the fold (note XXXIX, adopted),
+     and the level-4 star (implemented here at 0.12% of the bill).
+   - Moves that join two tokens of one term through a covariance line cost one n^3 product per source-layer for a
+     diagonal readout and n^4 for exact transport: the gate covariance, the path P4, the kappa3 x C class.
+2. **The value lies in quenched content.**
+   - The annealed (trivial + standard irrep) part of a source's (2,1) readout recovers half of what dropping the
+     readout costs; the flat part holds the rest, for young and old sources alike.
+   - Strong minimality's "no static reduction" holds empirically. The transported basis of the old tier is the
+     admissible kind of reduction, and the irrep split is not.
+3. **Beyond the fold, the moves the tower prices as free do not pay.**
+   - The tadpoles (V0) are unstable: the truncated Edgeworth vertex is unreliable at large |alpha|.
+   - The level-4 star belongs to an order whose other members are n^3 moves.
+4. **For the system.**
+   - The adopted fold system stands: adjusted 3.4923e-9 on all 100 networks (in-sample counterterms), 3.5090e-9
+     held-out on 50-99. None of this note's candidates improved raw in the cold harness, so none went to the scored
+     regime.
+   - The tower's statement about the bill: the young tier's four products per source-layer and the old tier's
+     4 n^2 r are the price of exact readouts of quenched content. The next affordable content would have to be a V1
+     move with a localized centre at an order not yet carried. Within kappa3 and kappa4, the C^3 classes above were
+     the last candidates.
