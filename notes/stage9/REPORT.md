@@ -90,6 +90,16 @@ Branch `claude/determined-fermat-9hk45i`. Note: `notes/stage9/ncg_mlp_stage9.pdf
   with one fitted constant whose value the theory predicts from the order of the chain's defect. Making it
   affordable needs the symbolic second-order response (note, Thm 3.2; task left open): that is the system to build.
 
+### 2b. Four-network scan (nets 0-3, 240 runs on the relay; all rows agree to +-20%, net 0 quoted)
+- Window ladder (old sources dropped beyond w ages): w=1: 2.5e-6, 2: 1.7e-6, 3: 1.1e-6, 4: 7.5e-7, 6: 3.3e-7, 8: 1.4e-7, 10: 6.3e-8, full 3.5e-8.
+- Drop one age a from the full chain: a=1: 5.6e-7, 2: 4.0e-7, 3: 2.6e-7, 4: 1.8e-7, 5: 1.3e-7, 6: 1.0e-7, 7: 7.2e-8, 8: 6.3e-8, 9: 4.8e-8, 10: 4.2e-8, 11: 3.8e-8, >=12: 3.6-3.8e-8 (free). Marginal value decays x0.75 per age; eleven ages matter.
+- No cancellation between ages (diag_agegram): at layer 15 the (2,1) slice is 15 contributions of norms 0.19..0.02 of the total, cosines 0.1-0.5, cumulative norm linear.
+- Rank-r truncation of the summed old slices: window 4: r=1/4/16/64 -> 1.1/1.0/0.74/0.47e-7; window 2: 2.2/2.0/1.6/0.78e-7; window 1: 4.3/3.8/3.1/1.5e-7.
+- Spectral birth truncation (star from top-k eigenpairs, residual exact): window 4, k=1/4/16/64: 1.3/1.2/1.0/1.0e-7 (saturates at 16); residual diagonal only: 5.4/5.1/4.0/2.1e-7; residual rank-k too: 5.2/4.5/2.3e-7. The missing factor 3 (w=4) / 6 (w=2) is the hub-diagonal pairing of the bulk, not its spectrum; the old sum is low rank because the cocycle is, not the births.
+- Collective mode (diag_collective, 4 nets): top eigenvector of the pre-activation covariance: 0.9% of the energy at layer 0, 37-48% at layer 15; cos with the mean 0.97-0.98 from layer 12. Transported collective directions of sources born at layer >= 4 stay collective (cos 0.78-0.98); sources born at layers 0-3 have none. Family {T p_l'} at l=15: singular values (1, 0.32, 0.29, 0.23).
+- Feature-learnability (diag_features): the exact chain's per-neuron error is not predictable from 34 local chain features (cross-network ridge makes it worse: 1.0e-6 vs 4.4e-8; in-sample -5%); collective share of its error 0.2-5%. The window-1 chain's error is 53-64% collective.
+- Coherent + cross decomposition of an old source's readout (verified exact to 1e-16 when all parts are kept, `oldmode=cross` in kprop3c): coherent rank-one terms (3 transported vectors), cross terms (five congruence-transported matrices times the collective vector), the exact diagonal-kappa3 memory (T o T) D T^T, and the bulk-bulk hub pairing (star bulk, residual bulk). Scan running (jobs/scanX.tsv).
+
 ## 5. The eight papers and the essence of the obstacle (note, Sec. 8)
 
 The user pointed to eight papers (hierarchic flows / Lempereur–Mallat; Hamiltonian sparsification and seminorm
