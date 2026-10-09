@@ -8,7 +8,9 @@ Branch `claude/determined-fermat-9hk45i`. Note: `notes/stage9/ncg_mlp_stage9.pdf
    expected total drift of the estimator along any complete localization of the input law; the drift is the second
    variation of the estimator against the scheme's driving covariance. The other chat's "heat-flow defect" is the
    Eldan-path corollary; the theorem is scheme-independent and says which errors a scheme sees.
-2. **Capacity of input tilts** (Prop. 2.1). The Euler–Stein defect delta(0) = e(0) - Lap e(0) is a 2% residual of an
+2. **Capacity of input tilts and the midpoint** (Prop. 2.1, Sec. 2.3). The merge coefficient is one half because the
+   defect decays along Eldan's path like the kink density (1+tau)^(-1/2) (measured 0.96/0.73/0.46/0.28 vs 0.89/0.71/0.45/0.24
+   at tau = 0.25/1/4/16): the parameter-free estimator is (e + Lap e)/2. The Euler–Stein defect delta(0) = e(0) - Lap e(0) is a 2% residual of an
    O(1) identity; the error is a tenth of that. Random probes need ~1e9 samples; k-direction tilts have signal-to-noise
    sqrt(k)*1e-2; only the full coordinate sum (2n+1 chain runs) resolves it. Input-side localization is a diagnostic,
    never an estimator component.

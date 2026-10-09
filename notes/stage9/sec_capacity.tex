@@ -75,3 +75,21 @@ trace. The positive half is that the trace can be computed \emph{inside} the cha
 of the closure to a Gaussian shift of the mean, which is the subject of Sections~\ref{sec:births} and
 \ref{sec:central}: there the directions are neurons, the tilt responses are the births at the kinks, and the sum
 over directions is a sum over neurons that the chain already performs.
+
+\subsection{Why the merge coefficient is one half}
+On the official networks the fitted coefficient in $u\approx e(0)-a\,\delta(0)$ is $a=0.535$ (network $0$) and
+$0.500$ (network $1$), and the parameter-free midpoint $(e+\Delta e)/2$ is as good as the fit
+(Section~\ref{sec:measure}). Corollary~\ref{cor:eldan} says $a=\int_0^\infty\tfrac12(1+\tau)^{-3/2}g(\tau)\,d\tau$
+with $g(\tau)=\langle\E_{y\sim N(0,\tau I)}\delta(y),\delta(0)\rangle/|\delta(0)|^2$, so $a=\tfrac12$ exactly when
+$g(\tau)=(1+\tau)^{-1/2}$. That is the decay of the kink density: a mean shift $y\sim N(0,\tau I)$ gives the first
+layer pre-activation means $m_1=W_1y$ with variance $2\tau$ against a variance $2$ of the fluctuations, so
+$\alpha_1\sim N(0,\tau)$ and the birth strength averages to $\E\,\varphi(\alpha)=(2\pi(1+\tau))^{-1/2}$, i.e.\
+$(1+\tau)^{-1/2}$ times its value at the origin; by homogeneity the same holds at every layer, and a chain whose
+defect is first order in the births inherits the factor. The measurement on the small network
+(\texttt{scripts/defect\_profile.py}, $n=256$, $L=4$, Gaussian closure, three samples per $\tau$) gives
+$|\E_y\delta(y)|/|\delta(0)|=0.96,0.73,0.46,0.28$ at $\tau=0.25,1,4,16$ against $(1+\tau)^{-1/2}=0.89,0.71,0.45,0.24$,
+while the projection $g(\tau)=0.91,0.56,0.15,0.02$ decays faster because at this small size the direction of
+$\delta(y)$ rotates away from $\delta(0)$; integrating the measured $g$ against the weight gives $a\approx0.34$,
+the value fitted in Table~\ref{tab:defect-small}. At $n=1024$, $L=16$ the direction is stable, $a$ is one half, and
+the \emph{Euler--Stein midpoint} needs no constant: the chain's error is the deficit of its births, and the births
+decay along the path exactly as the heat kernel's weight requires.
