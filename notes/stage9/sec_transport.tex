@@ -45,3 +45,46 @@ with the gate of the pair $(a,c)$ taken at $\rho_{ac}=0$ plus the chain's $\rho$
 $\E[\theta_a\theta_a\theta_c\,(\cdot)]$ at the true correlation differs at order $\rho_{ac}$, which is small per entry
 but coherent along the collective mode. Section~\ref{sec:dictionary} lists the $\rho$-exact gate as the first
 open item, since the $8$--$10\%$ deficit of the transported slice at depth is precisely of this size.
+
+\subsection{The three parts of a transported source}
+In the organisers' chain (Section~\ref{sec:births}) a source born at layer $l'$ is the pair of blocks
+$\mathrm{star}=(A,3I,C)$, $A=D_\Phi S^{\rm off}$, $C=D_\Phi S^{\rm off}D_{w_2}$, and $\mathrm{res}=(A',I,I)$,
+$A'=D_{R_3}+3R_{21}^{\!\top}$, with $S^{\rm off}$ the off-diagonal pre-activation covariance at $l'$, $\Phi,w_2$ the
+first two gate coefficients, and $(R_3,R_{21})$ what the newborn diagonal and slice need beyond the star. Read at
+layer $l$ through the cocycle $T=T_{l\leftarrow l'}$ the $(2,1)$ slice is
+$(TA\circ T)(TC)^{\!\top}+(TA\circ TC)T^{\!\top}+(T\circ TC)(TA)^{\!\top}+\tfrac23(TA'\circ T)T^{\!\top}+\tfrac13(T\circ T)(TA')^{\!\top}$
+and the diagonal slice is its diagonal. Split the birth covariance into its top eigenpair and the rest,
+$S^{\rm off}=\lambda vv^{\!\top}+S_b$, and the residual's off-diagonal part into its top singular pair and the rest,
+$3R_{21}^{\!\top}=\sigma uw^{\!\top}+R_b$; write $p=\Phi\circ v$, $q=w_2\circ v$, $A_b=D_\Phi S_b$,
+$C_b=D_\Phi S_bD_{w_2}$, and $a=Tp$, $b=T(v\circ q)$, $c=Tu$ for the three transported vectors.
+
+\begin{proposition}[Coherent, cross and bulk parts]\label{prop:parts}
+The readout of the source at layer $l$ is exactly the sum of four parts:
+\begin{align*}
+\text{coherent:}\quad&\lambda^2\big[2\,(a\circ b)\,a^{\!\top}+(a\circ a)\,b^{\!\top}\big],\\
+\text{cross:}\quad&\lambda\big[D_a(M_a+M_b+M_c+M_d)+\big(\diag M_b+\diag M_c\big)a^{\!\top}\big]
+ +\sigma\big[\tfrac23D_cM_e+\tfrac13(\diag M_e)\,c^{\!\top}\big],\\
+\text{diagonal memory:}\quad&(T\circ T)\,D_{R_3}\,T^{\!\top},\\
+\text{bulk:}\quad&(TA_b\circ T)(TC_b)^{\!\top}+(TA_b\circ TC_b)T^{\!\top}+(T\circ TC_b)(TA_b)^{\!\top}
+ +\tfrac23(TR_b\circ T)T^{\!\top}+\tfrac13(T\circ T)(TR_b)^{\!\top},
+\end{align*}
+where $M_x=TX_xT^{\!\top}$ are congruence transports of the five birth matrices
+$X_a=D_vC_b^{\!\top}$, $X_b=A_bD_q$, $X_c=C_bD_v$, $X_d=D_qA_b^{\!\top}$, $X_e=D_w$, and $D_a=\diag(a)$ etc.
+\end{proposition}
+\begin{proof}
+Expand each Hadamard pairing with $TA=\lambda av^{\!\top}+TA_b$, $TC=\lambda aq^{\!\top}+TC_b$,
+$TA'=TD_{R_3}+\sigma cw^{\!\top}+TR_b$; the terms with two collective factors give the coherent part, those with one
+give the cross part (a sum over the hub $r$ of $v_r$ or $q_r$ or $w_r$ against two transported columns, which is a
+congruence), the $D_{R_3}$ term is the diagonal memory and what remains is the bulk. Verified numerically to
+$10^{-16}$ (\texttt{whest/kprop3c.py}, \texttt{oldmode=cross} with all parts kept reproduces the dense chain).
+\end{proof}
+
+The four parts have four different costs. The coherent part needs three vectors per source, transported at $O(n^2)$ per
+layer. The cross part needs five $n\times n$ matrices per source, transported by congruence at $O(n^3)$ each, but each
+enters only through the transported collective vector $a$ (or $c$) of its own source: if $a_{l'}\parallel m_l$ for
+all sources (which Section~\ref{sec:measure} measures to hold to $\cos\ge0.78$ for births at layer $4$ and later),
+the five matrices of all sources collapse into five accumulated congruences
+$\mathcal M_{l+1}=W_{l+1}D(g)\mathcal M_lD(g)W_{l+1}^{\!\top}+(\text{new birth})$, five matrices for the whole memory.
+The diagonal memory $(T\circ T)D_{R_3}T^{\!\top}$ is a Hadamard square of the cocycle: it does not accumulate and
+costs $2n^3$ per source-age. The bulk is the hub-diagonal pairing of two bulk legs; it is what the spectral
+truncations of Section~\ref{sec:measure} drop, and it is the part whose cost is the crossover law.
