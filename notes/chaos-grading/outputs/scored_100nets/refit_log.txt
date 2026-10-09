@@ -1,0 +1,9 @@
+200
+103 directions; base pc/o35_{n}.npy: train 50, held-out 50
+  base: held-out raw 2.26695e-08; refitted (ridge 0) 2.19535e-08 (-3.16% +- 0.37, better on 45)
+  wbf: held-out raw vs base -5.07% +- 0.79 (better on 38); refitted 1.98865e-08; renormalized change vs refitted base -9.42% +- 0.67 (better on 49/50); free amplitude a = 0.948, refitted with a free: -9.41% +- 0.64 [own ridge 0: -9.42%]
+  v56: held-out raw vs base -27.13% +- 0.81 (better on 50); refitted 1.57365e-08; renormalized change vs refitted base -28.32% +- 0.72 (better on 50/50); free amplitude a = 1.007, refitted with a free: -28.32% +- 0.73 [own ridge 0: -28.32%]
+  v56e: held-out raw vs base -27.58% +- 0.82 (better on 50); refitted 1.56537e-08; renormalized change vs refitted base -28.70% +- 0.72 (better on 50/50); free amplitude a = 1.004, refitted with a free: -28.70% +- 0.73 [own ridge 0: -28.70%]
+  joint free amplitudes (ridge 0): v56 -2.304 v56e +3.273 wbf +0.038; held-out vs refitted base -29.12% +- 0.73 (better on 50)
+
+[exit 0 after 83s on ip-172-31-33-96, 16 cores, threads 16]

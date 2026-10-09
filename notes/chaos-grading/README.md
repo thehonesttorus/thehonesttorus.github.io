@@ -447,3 +447,15 @@ free-running scored runs (note XXXIX `pe`).
   Python, and measured 0.17 s for a system this harness put near 0.57 s (note XXIX), so the margin to 0.4 s must be
   checked on the grader's terms before submission.
 - The memory high-water mark falls from 10.30 GB to 9.89 GB.
+
+**Renormalized** (`refit_log.txt`). The counterterms were refitted on networks 0-49 with the stored responses and
+judged on 50-99 against the refitted V35 base, as in note XXXIX:
+
+| system | renormalized change against the refitted base | better on | free amplitude |
+|---|---|---|---|
+| adopted (fold) | -9.42% +- 0.67 | 49/50 | 0.948 |
+| **+ V56** | **-28.32% +- 0.72** | **50/50** | **1.007** |
+| + V56, eps = 0.001 | -28.70% +- 0.72 | 50/50 | 1.004 |
+
+The counterterms do not absorb the chaos correction: its free amplitude is its derived value to within 1%. In the
+renormalized comparison it is a law term, as the fold was.
