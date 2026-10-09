@@ -5,6 +5,7 @@
                                                             s3://BUCKET/results9/JOB/ (watch with infra/fleet.py watch JOB)
   python infra/modal_relay.py mc JOB NET N SEED0 NSEEDS [--gpu L4] [--cov 1,7]
   python infra/modal_relay.py log JOB                       print the relay-side log of a job
+  python infra/modal_relay.py fetch JOB                     copy a finished job's results from the Modal volume to S3
   python infra/modal_relay.py run ARGS...                   run "python infra/modal_app.py ARGS" on the relay (e.g. run ls official)
 """
 import hashlib, io, json, os, sys, tarfile, time
@@ -49,12 +50,16 @@ if __name__ == "__main__":
             cmd = f"python infra/modal_app.py batch {job} jobs/{job}.tsv {opts}"
         else:
             code = bundle(); opts = " ".join(a[2:]); cmd = f"python infra/modal_app.py mc {job} {opts}"
-        script = PRE.replace("CODE", code) + f"""nohup bash -c "{cmd} > /opt/modalrun/{job}.log 2>&1; python infra/modal_app.py get {job} /opt/modalrun/out/{job} >> /opt/modalrun/{job}.log 2>&1; aws s3 cp /opt/modalrun/out/{job} s3://{BUCKET}/results9/{job}/ --recursive --quiet --region {REGION}; aws s3 cp /opt/modalrun/{job}.log s3://{BUCKET}/results9/{job}/relay_log.txt --quiet --region {REGION}" > /dev/null 2>&1 &
+        # the batch client keeps the relay alive (its idle watch looks at /opt/run/.last) and ships results to S3 at the end
+        script = PRE.replace("CODE", code) + f"""nohup bash -c "(while true; do touch /opt/run/.last; sleep 60; done) & KA=\\$!; {cmd} > /opt/modalrun/{job}.log 2>&1; python infra/modal_app.py get {job} /opt/modalrun/out/{job} >> /opt/modalrun/{job}.log 2>&1; aws s3 cp /opt/modalrun/out/{job} s3://{BUCKET}/results9/{job}/ --recursive --quiet --region {REGION}; aws s3 cp /opt/modalrun/{job}.log s3://{BUCKET}/results9/{job}/relay_log.txt --quiet --region {REGION}; kill \\$KA" > /dev/null 2>&1 &
 echo "relay: {job} started (code {code})"
 """
         relay(script, timeout=120)
     elif c == "run":                      # any client subcommand of infra/modal_app.py, synchronously (e.g. run "ls official")
         code = bundle(); relay(PRE.replace("CODE", code) + f"python infra/modal_app.py {' '.join(a[1:])} 2>&1 | tail -60", timeout=900)
+    elif c == "fetch":                    # fetch a job's results from the Modal volume to S3 (e.g. after the relay was interrupted)
+        job = a[1]; code = bundle()
+        relay(PRE.replace("CODE", code) + f"python infra/modal_app.py get {job} /opt/modalrun/out/{job} 2>&1 | tail -2; aws s3 cp /opt/modalrun/out/{job} s3://{BUCKET}/results9/{job}/ --recursive --quiet --region {REGION}; ls /opt/modalrun/out/{job} | wc -l", timeout=900)
     elif c == "log":
         relay(f"tail -40 /opt/modalrun/{a[1]}.log 2>/dev/null || echo 'no log yet'", timeout=60)
     else:

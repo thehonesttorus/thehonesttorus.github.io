@@ -93,3 +93,26 @@ $\E[\delta S_{ab}\delta S_{aa}]$ of the perturbation; every one of them closes a
 cross-covariance, whose exact propagation is $O(n^4)$. This is the same obstruction that forces a cumulant chain
 to carry slices of $\kap_3$ rather than the tensor, met here from the other side: the second variation of a
 chain has the complexity of the chain's own closure error.
+
+\subsection{The organisers' chain in this language}
+The reference implementation of \cite{Wu} (\texttt{alignment-research-center/mlp\_cumulant\_propagation}, which we
+ported to numpy and matched to $10^{-15}$ on a small network, \texttt{whest/kprop3.py}) is the first-order theory
+of this section written as a term table. Its \emph{Wick coefficients} $\E[\partial^k\relu(Z)^p]$ are the index
+shifts of Lemma~\ref{lem:shift}: for $p=1$ they are $\sigma^{1-k}d_k(\alpha)$, and for $p=2,3,4$ the Hermite
+coefficients of $\relu^p$ (\texttt{relu2\_hermite}, \texttt{relu3\_hermite}). Its nonlinear step at $k_{\max}=3$ sums
+$36$ diagrams (\texttt{notes/stage9/terms\_k3\_simple.tex}): for each output slice (powers $p_i$ of the distinct
+indices) a product of cumulant blocks of $z$ against the Wick coefficients $\E[\partial^{k_i}\relu^{p_i}]$ with
+$k_i$ the multiplicity of index $i$ over the blocks, cut off by the power counting $\sum_{\rm blocks}(|v|-1-[v\
+\text{even}])\le k_{\max}-1$. Read through Theorem~\ref{thm:gram}, every term is a second- or third-order tilt
+response: the gate $\Phi_i\Phi_j$ on $C_{ij}$ is the gradient block $\Gamma_{\mu\mu}$, the birth $w_j$ with two
+arms $C_{ij}C_{jk}$ is the star of the cumulant chain and the diagonal of the Hessian block $\Gamma_{MM}$, and the
+coefficient $\tfrac12\Phi_i\,w_j$ of $\kap_3(z_i,z_i,z_j)$ in $\Cov(h_i,h_j)$ is \eqref{eq:cov-transport}. Two
+features of the reference matter for the system. First, in simple mode the slice gates are taken at
+$\rho=0$ and the pair moment is cut at $O(\rho^2)$: the $\rho$-dependence of a gate times a cumulant is a cost-$3$
+diagram, dropped by the power counting; our chain's full Hermite series of the Gaussian part is harmless but
+not what distinguishes the two. Second, the fourth cumulant is kept only as its radial (isotropic) part,
+$\kap_4(h)=c\,\mathrm{Sym}(I\otimes I)$ with one scalar $c=\tfrac{3}{n(n+2)}\big(\sum_{a\ne b}\kap_4(h_a,h_a,h_b,h_b)+
+\sum_a\kap_4(h_a)\big)$ per layer, transported as $c\,\mathrm{Sym}(S\otimes S)$ with $S=WW^\top$: this is the scale
+mixture of Lemma~\ref{lem:scale}, the central variable, and nothing else of $\kap_4$. The reference thus
+confirms the split of Section~\ref{sec:central} from the other side: the one piece of $\kap_4$ worth carrying is
+the collective scale.
