@@ -1,0 +1,48 @@
+base_0	python3 screen56.py 0 base
+b1_0	V58_K31SC=1 python3 screen56.py 0 b1
+b05_0	V58_K31SC=0.5 python3 screen56.py 0 b05
+base_1	python3 screen56.py 1 base
+b1_1	V58_K31SC=1 python3 screen56.py 1 b1
+b05_1	V58_K31SC=0.5 python3 screen56.py 1 b05
+base_2	python3 screen56.py 2 base
+b1_2	V58_K31SC=1 python3 screen56.py 2 b1
+b05_2	V58_K31SC=0.5 python3 screen56.py 2 b05
+base_3	python3 screen56.py 3 base
+b1_3	V58_K31SC=1 python3 screen56.py 3 b1
+b05_3	V58_K31SC=0.5 python3 screen56.py 3 b05
+base_4	python3 screen56.py 4 base
+b1_4	V58_K31SC=1 python3 screen56.py 4 b1
+b05_4	V58_K31SC=0.5 python3 screen56.py 4 b05
+base_5	python3 screen56.py 5 base
+b1_5	V58_K31SC=1 python3 screen56.py 5 b1
+b05_5	V58_K31SC=0.5 python3 screen56.py 5 b05
+base_6	python3 screen56.py 6 base
+b1_6	V58_K31SC=1 python3 screen56.py 6 b1
+b05_6	V58_K31SC=0.5 python3 screen56.py 6 b05
+base_7	python3 screen56.py 7 base
+b1_7	V58_K31SC=1 python3 screen56.py 7 b1
+b05_7	V58_K31SC=0.5 python3 screen56.py 7 b05
+base_8	python3 screen56.py 8 base
+b1_8	V58_K31SC=1 python3 screen56.py 8 b1
+b05_8	V58_K31SC=0.5 python3 screen56.py 8 b05
+base_9	python3 screen56.py 9 base
+b1_9	V58_K31SC=1 python3 screen56.py 9 b1
+b05_9	V58_K31SC=0.5 python3 screen56.py 9 b05
+base_10	python3 screen56.py 10 base
+b1_10	V58_K31SC=1 python3 screen56.py 10 b1
+b05_10	V58_K31SC=0.5 python3 screen56.py 10 b05
+base_11	python3 screen56.py 11 base
+b1_11	V58_K31SC=1 python3 screen56.py 11 b1
+b05_11	V58_K31SC=0.5 python3 screen56.py 11 b05
+base_12	python3 screen56.py 12 base
+b1_12	V58_K31SC=1 python3 screen56.py 12 b1
+b05_12	V58_K31SC=0.5 python3 screen56.py 12 b05
+base_13	python3 screen56.py 13 base
+b1_13	V58_K31SC=1 python3 screen56.py 13 b1
+b05_13	V58_K31SC=0.5 python3 screen56.py 13 b05
+base_14	python3 screen56.py 14 base
+b1_14	V58_K31SC=1 python3 screen56.py 14 b1
+b05_14	V58_K31SC=0.5 python3 screen56.py 14 b05
+base_15	python3 screen56.py 15 base
+b1_15	V58_K31SC=1 python3 screen56.py 15 b1
+b05_15	V58_K31SC=0.5 python3 screen56.py 15 b05

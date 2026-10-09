@@ -440,3 +440,27 @@ The cost is a few n^2 elementwise operations per layer. Production is unchanged 
 
 **Decision.** If beta = 1 meets -1% or better on at least 10/16, run the scored test: 100 networks, adjusted MSE, then
 a held-out refit of the k31 calibration. Otherwise record the result and stop.
+
+**Result** (`outputs/k31sc_cold_16nets/`; base mean raw 1.577e-8; network 0 also ran once locally as a crash check
+before the pre-registration was committed, giving +2.3% at beta = 1, the same as the batch):
+
+| variant | mean paired raw change | median | better on | FLOPs |
+|---|---|---|---|---|
+| `V58_K31SC=1` | +1.28% +- 0.77 (se) | +2.5% | 6/16 | +0.02% |
+| `V58_K31SC=0.5` | -0.76% +- 0.37 | -0.3% | 10/16 | +0.02% |
+
+**The parameter-free closure fails its prediction.** The half-strength version meets its own (-0.5% to -4%,
+>= 9/16), but the gain is small. By the registered rule there is no scored run.
+
+**The reason.** Built from the chain's own D21, the closure correlates with the true (3,1) slice at 0.53-0.56; built
+from the true D21 it correlates at 0.86 (`outputs/k31_sc_net0.txt`). The closure therefore imports the chain's D21
+error into the (3,1) slice.
+
+**What the closure says about the two slices.** In the second-chaos regime the true (3,1) slice is largely made of
+the true (2,1) slice:
+
+    k(a,a,a,b) ~ 2 kappa3(a) k(a,a,b) / v_a - (2/3) kappa3(a)^2 C_ab / v_a^2.
+
+This structural tie is the natural reading of the oracles' super-additivity in section 6a, although the one-step
+error correlation is weak. The two slices are one object: a K31 closure is only as good as the D21 it reads. The
+(3,1) lever is therefore not independent of the D21 wall after all.
