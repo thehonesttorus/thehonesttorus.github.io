@@ -1,0 +1,59 @@
+\label{sec:measure}
+All numbers are for the official network $0$ ($n=1024$, $L=16$, reference means from $10^9$ Monte Carlo inputs)
+unless stated; network $1$ is used as the held-out check where available.
+
+\subsection{The error ladder of the clean chain}
+\begin{center}\small
+\begin{tabular}{lcc}\toprule
+estimator & final-layer MSE & what is added\\\midrule
+Gaussian closure (\texttt{gauss\_chain}) & $4.06\cdot10^{-6}$ & --\\
+$\kap_3$ CP legs, stars only, no hub & $3.76\cdot10^{-6}$ & births $w$, arms $\diag(g)Ce_m$\\
+$+$ hub: $D21\to$ covariance \eqref{eq:cov-transport}, GC arm & $8.37\cdot10^{-7}$ & transported slices\\
+$+$ exact birth slice and diagonal (residual leg $R$), exact gates & $8.52\cdot10^{-7}$ & Theorem~\ref{thm:transport}, first term\\
+$+$ transposed-slice feed, $\kap_4\!\to\!\kap_3$ feed, $(2,2)$ channel, exact diagonal $\kap_3$ & $5.74\cdot10^{-7}$ & Theorem~\ref{thm:transport}, second and third terms\\
+Gaussian closure $+$ Euler--Stein defect, $e-a\delta(0)$, $a=0.535$ & $4.35\cdot10^{-7}$ & Corollary~\ref{cor:eldan}, exact $\delta$ ($2n+1$ chains)\\
+Gaussian closure $+$ midpoint $(e+\Delta e)/2$ (no fitted constant) & $4.50\cdot10^{-7}$ & same\\\midrule
+open-source third-cumulant chain (504aldo), float32, $33$ fitted scalars, $0.25B$ & $2.13\cdot10^{-8}$ & \\
+exact first-order $K=3$ reference of the organisers (no $\kap_4$, no fits) & $4.3\cdot10^{-8}$ & \\
+leaders (raw) & $1.1$--$1.5\cdot10^{-8}$ & \\\bottomrule
+\end{tabular}
+\end{center}
+Two readings. First, the Euler--Stein defect of the \emph{Gaussian} closure, with no cumulant machinery at all,
+reaches the accuracy of our third-cumulant chain: on network $0$ the exact $\delta(0)$ (coordinate Laplacian,
+$2049$ chain evaluations on Modal) has correlation $0.931$ with the error, explains $89\%$ of its mean square,
+and the fitted $a=0.535$ is close to the parameter-free midpoint $a=\tfrac12$. Theorem~\ref{thm:defect} is
+exact; the $11\%$ not explained is the variation of $\delta(y)$ over the Eldan path. Second, the organisers'
+exact first-order $K=3$ reference is $13\times$ better than our chain and carries no fitted constant, so the
+gap is in the first-order transport, not in calibration or in $\kap_4$.
+
+\subsection{Where the chain's error is injected}
+With $e_l=\mathrm{out}_l-u_l$ and the injected part $e_l-\Phi_l\!\cdot\!(W_le_{l-1})$ (the error not explained by
+the linear propagation of the previous layer's error through the gates), \texttt{scripts/injected.py} gives rms
+injected errors of $2.0,1.1,1.6,2.1,2.3,2.5,2.9,2.7,2.8,2.9,2.8,2.7,2.8,2.9,3.0\cdot10^{-4}$ at layers $1$--$15$
+against a total rms error growing from $2.0\cdot10^{-4}$ to $7.6\cdot10^{-4}$: the chain injects a nearly constant
+$3\cdot10^{-4}$ per layer from layer $4$ on, and the injected error has no coherent component along the mean
+direction (share $<10^{-2}$ beyond layer $2$). This is the signature of a \emph{per-neuron}, incoherent deficit
+in the transported slices, consistent with Section~\ref{sec:central}: the transported $D21$ has correlation
+$0.965$ with Monte Carlo, i.e.\ an incoherent relative error of $\sqrt{1-0.965^2}\approx26\%$ on top of the
+$8$--$10\%$ coherent deficit, and by the empirical law of \cite{Wu}'s reimplementation (extra MSE
+$\approx4\cdot10^{-6}\varepsilon^2$ for a relative rms slice error $\varepsilon$) a slice error of $35\%$ accounts for
+the whole $5.7\cdot10^{-7}$.
+
+\subsection{What the open-source chain does that ours does not}
+A reading of the open-source chain's derivation notes against \texttt{k3chain3.py} (delegated, cross-checked on
+the formulas) locates the difference in exactly the first-order transport: (i) its slice update carries every
+elementwise diagram of first order in the cumulants, i.e.\ the $\rho$-dependence of the gates
+($D21_{ac}\,C_{ac}^k\times$Wick coefficients) and the $\kap_3(z_a)$-driven terms, where ours keeps the gates at
+$\rho=0$; each such term is $O(\rho)\approx3\%$ per layer and compounds over fifteen transports; (ii) its fourth
+cumulant is the exact diagonal plus an isotropic off-diagonal $\lambda_lC^{\rm off}$ with one fitted $\lambda_l$ per
+layer, and it \emph{feeds} $\kap_4$ into the fully off-diagonal $\kap_3$ (the largest single term beyond the base
+chain, $2\times$ in MSE), whereas our transported $(2,2)$ slice is measured by them to be harmful off the
+diagonal ($1.47\times$ worse than isotropic); (iii) the feedback coefficients of the GC arm are
+$(\tfrac12,\tfrac12)$ by the first-order Edgeworth count against our $(1,\tfrac12)$; on network $0$ changing
+ours to $\tfrac12$ moves the MSE from $5.74$ to $6.04\cdot10^{-7}$, so this is not the bottleneck. The
+$\rho$-exact gates of (i) are the closed forms of Section~\ref{sec:births}: by Lemma~\ref{lem:shift} the
+coefficient of $D21_{ac}$ in $\kap_3(h_a,h_a,h_c)$ is $G_{ac}-\mu_aw_a\Phi\big((\alpha_c-\rho_{ac}\alpha_a)/\sqrt{1-\rho_{ac}^2}\big)$
+with $G_{ac}=\E[\theta_a\theta_c]$ the gate covariance \eqref{eq:gate}, which reduces to $t_a\Phi_c$ at $\rho=0$,
+and likewise for the transposed slice and the $(2,2)$ feed with conditional means and densities at $z_c=0$.
+Every coefficient of the first-order transport is a Hermite series obtained by index shifts, which is how a
+system built on this note generates its term table (Section~\ref{sec:dictionary}).

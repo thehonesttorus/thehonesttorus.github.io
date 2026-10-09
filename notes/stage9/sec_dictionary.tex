@@ -1,0 +1,45 @@
+\label{sec:dictionary}
+\subsection{Dictionary}
+\begin{center}\small
+\begin{tabular}{p{0.42\textwidth}p{0.52\textwidth}}\toprule
+stage 8 (commutant, modular tilts, leaf space) & stage 9 (\textsc{MLP} mean estimation)\\\midrule
+state $\nu$ on the algebra; affine pairing $\nu(F)$ & input law; the exact answer $u(\nu)=\nu(h_L)$\\
+localization process (positive martingale in the commutant) & Eldan tilt of the input, directional tilt, pinning; on the neuron side, the layer-by-layer closure\\
+driving covariance $C_t$; trickle-down term $KC_tK$ & which errors a scheme sees: the second variation $E''$ against $d\langle\nu\rangle$ (Theorem~\ref{thm:defect})\\
+modular tilt of a Gaussian state & shift of the mean; its action on the chaos expansion is the index shift (Lemma~\ref{lem:shift})\\
+central (trivial) part of the localization & the collective activity mode $s=\E z^2$, a scale mixture (Lemma~\ref{lem:scale}); the transverse measure is its law\\
+Cartan part & the bulk of the covariance, harmless at percent accuracy (Proposition~\ref{prop:sens})\\
+Kikuchi--Toeplitz quantization & the heat semigroup in the input mean (Price's theorem); the exact answer is the Berezin transform of the network function, the chain a Toeplitz symbol that is not heat-harmonic, and the anomaly is the Euler--Stein defect\\
+capacity of a localization & Proposition~\ref{prop:capacity}: input tilts have signal-to-noise $\sqrt k\,|\delta|/\|A\|_F\approx10^{-2}\sqrt k$\\
+births / creation operators & the kink births $w_a=\varphi(\alpha_a)/\sigma_a$, second derivatives of the tilt response (\eqref{eq:birth})\\
+\bottomrule\end{tabular}
+\end{center}
+
+\subsection{What the theory prescribes for a system, and what is open}
+The decisive constraints are the pair floor of Proposition~\ref{prop:floor} (four $n\times n$ objects per layer
+besides the covariance, at the $0.1B$ floor) and the error accounting of Section~\ref{sec:central} (the $(2,1)$
+transport carries the error; the $(2,2)$ channel is worth $10^{-5}$; the $(3,1)$ term has the wrong sign at first
+order). A system built on this note therefore spends its budget on \emph{one} object, the $(2,1)$ slice, transported
+with the $\rho$-exact gate, in float32 with the symmetric engine, and corrects the rest by calibration fitted on the
+public networks, in this order of expected value:
+\begin{enumerate}[nosep]
+\item \textbf{$\rho$-exact slice gate.} Replace the gate $g_a-\mu_aw_a$ of \eqref{eq:slice-transport} by its
+value at the true correlation $\rho_{ac}$ (one more Hermite series in $\rho$, $O(Kn^2)$, no new $n^3$ object). The
+$8$--$10\%$ slice deficit is of the size of the $O(\rho)$ correction along the collective mode.
+\item \textbf{Euler--Stein merge.} $e-a\,\delta(0)$ with $a$ fitted once: a factor $3$ (\texttt{k3v3}) to $15$
+(Gaussian closure) at $n=256$; at $n=1024$ the exact $\delta$ of the Gaussian closure is measured in
+Section~\ref{sec:measure}. Within budget only through the closable part of the second-order response of
+Theorem~\ref{thm:gram}, i.e.\ the covariances $\E[\delta m\delta m^\top]$, $\E[\delta m_a\delta S_{ab}]$,
+$\E[\delta m_a\delta S_{bb}]$, $\E[\delta S_{aa}\delta S_{bb}]$, $\E[\delta S_{ab}\delta S_{aa}]$, which are the
+same five objects a $\kap_3$ chain carries under other names; whether the closable part correlates with the exact
+$\delta$ as well as $\delta$ correlates with the error is the open experiment of Section~\ref{sec:measure}.
+\item \textbf{Per-layer slice scale.} A fitted multiplier $1+\gamma_l$ on the transported slices (the chain's
+\texttt{d3scale} generalised per layer): one number per layer, fitted on the public networks, directly targets the
+measured deficit.
+\item \textbf{Noncommutative version.} The gates $\theta(z_a)$ of one layer generate a commutative algebra; across
+layers the gate algebras do not commute with the weights, and the chain's closure is a product state on the gate
+algebra of layer $l$ conditioned on the surrogate of layer $l-1$. The stage-8 KMS condition for the modular flow of
+the Gaussian state, restricted to the gate algebra, is the heat equation of Section~\ref{sec:births}; its failure
+across layers is the defect. Writing the chain as a state on the free product of the gate algebras, with the
+trickle-down of \cite{AKV} as its Cartan expansion, is the theoretical continuation.
+\end{enumerate}

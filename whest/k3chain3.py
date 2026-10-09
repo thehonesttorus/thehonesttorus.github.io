@@ -60,7 +60,7 @@ class Src:
 
 
 def k3_chain3(W, opts=None, record=None):
-    o = dict(K=8, KS=8, gc=1, res=1, gate_res=1, k4="none", eps=0.01, window=0, hub=1, k4diag=None, k4var=1, k22born=0, k31born=0, pert_off=0.0, pert_var=0.0, d3scale=1.0, k22=1, k22gate="first", k22feed=1, stars=0, k22cov=1, k22mean=1, radial=0, feedT=1, feedK22=1, diagexact=1, m0=None, S0=None)
+    o = dict(K=8, KS=8, gc=1, res=1, gate_res=1, k4="none", eps=0.01, window=0, hub=1, k4diag=None, k4var=1, k22born=0, k31born=0, pert_off=0.0, pert_var=0.0, d3scale=1.0, k22=1, k22gate="first", k22feed=1, stars=0, k22cov=1, k22mean=1, radial=0, feedT=1, feedK22=1, diagexact=1, m0=None, S0=None, gc3=1.0, gc2=0.5)
     if opts: o.update(opts)
     L, n, n_in = W.shape
     m = np.zeros(n_in) if o["m0"] is None else np.asarray(o["m0"], dtype=np.float64).copy()
@@ -200,7 +200,7 @@ def k3_chain3(W, opts=None, record=None):
         # ---- newborn
         A = Phi[:, None] * C
         if o["gc"] and o["hub"]:
-            B = (Phi[:, None] * D21.T) * w3[None, :] + 0.5 * (w2[:, None] * D21) * w2[None, :]
+            B = o["gc3"] * (Phi[:, None] * D21.T) * w3[None, :] + o["gc2"] * (w2[:, None] * D21) * w2[None, :]
         else:
             B = np.zeros((n, n))
         # exact (2,1) slice S21[a, c] = sum_k (1/k!) g_k(a) dz_k(c) C_ac^k,  g_k = F_k(a) - 2 m_a dz_k(a)

@@ -1,0 +1,13 @@
+\texttt{scripts/verify\_stage9.py} checks, in order: (1) Lemma~\ref{lem:shift} to $2\cdot10^{-8}$ for $k\le10$;
+(2) Price's theorem and Stein's lemma for the bivariate \textsc{ReLU} moment,
+$\partial_{m_a}M_{ab}=\E[\theta_a\relu z_b]$, $\partial_{S_{ab}}M_{ab}=\E[\theta_a\theta_b]=\partial_{m_a}\partial_{m_b}M_{ab}$,
+against $4\cdot10^6$ Monte Carlo samples; (3) Theorem~\ref{thm:gram} on a network with $n=6$, $L=3$: the gradients
+of the first-layer moments in closed form against finite differences ($1.6\cdot10^{-7}$ on a scale of $2$), and
+$\delta(0)$ by finite differences in the input mean against $-\langle\nabla^2\mathcal G,\Gamma\rangle$ with the
+Hessian of the downstream chain by finite differences in the $27$ moment coordinates: agreement to
+$7\cdot10^{-7}$ on $|\delta|_{\rm rms}=0.28$; (4) Lemma~\ref{lem:scale} by Gauss--Hermite quadrature in the
+scale, $v=10^{-2}$: the closure error matches $-\tfrac v2\sigma(\alpha^2-1)\varphi$ and the $\kap_4$ readout cancels
+it to the $O(v^2)$ level for $\alpha\in\{-1,0,0.7,1.5\}$.
+\texttt{scripts/defect\_small.py}, \texttt{lap\_exact.py}, \texttt{lapx\_merge.py} produce the numbers of
+Sections~\ref{sec:capacity} and~\ref{sec:measure}; \texttt{diag\_eig\_v3.py}, \texttt{diag\_onestep.py},
+\texttt{injected.py} those of Section~\ref{sec:central}.
