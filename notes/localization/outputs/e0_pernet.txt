@@ -1,0 +1,5 @@
+E0 over 100 networks (adopted system with its common counterterms; final layer)   [workbench/k3work/e0_pernet.py]
+pi_R (share of the error in the 103-response span): mean 0.376, median 0.379, 10-90% [0.323, 0.433]   (chance 0.101)
+neuron-split cross-validated per-network refit: held-out MSE ratio mean 0.975, median 0.983 (chance-vector control 1.004); MSE-weighted ratio 0.974
+per-network optimal amplitudes: |mean over networks| / std over networks, median over the 103 directions: 0.079  (small = per-network spread dominates any common shift)
+pi_U(r) of the final error in the top-r modes of the gated layer-15 covariance (8 networks), r = 16/32/64/128/256: 0.140 0.243 0.410 0.582 0.762   (chance 0.016/0.031/0.062/0.125/0.25)
