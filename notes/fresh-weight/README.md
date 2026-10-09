@@ -410,3 +410,32 @@ mean-reverting, not a product of independent layer gains. So no parameter-free c
 What is still missing is an exact law for the dilation sector: how log G's increments compose through a relu layer
 when the gain is mean-reverting. That is the next theory item. Its value is bounded by a dilation-mode oracle (the true
 eigenvalue imposed along the true mean direction at every layer). Both are to be pre-registered before they are run.
+
+### 7c. Why it collapses onto that mode: the dilation mode is critical
+
+From the same outputs, take the transport factor of the top mode's relative error:
+
+    a_s = (propagated part at layer s) / (total at layer s - 1).
+
+| layer | 9 | 10 | 11 | 12 | 13 | 14 |
+|---|---|---|---|---|---|---|
+| net 0 | 0.80 | 0.90 | 0.92 | 0.97 | 1.02 | 0.84 |
+| net 1 | 0.83 | 0.93 | 1.02 | 1.12 | 0.92 | 1.14 |
+
+**The mode is marginal.** a is about 0.95 on average, so the relative error is carried nearly undamped. The total at
+layer 14 is 8.6 times (network 0) and 16 times (network 1) the mean per-layer injection (-7.0e-4 and -5.2e-4 of
+lam_1). Every other direction contracts: an injection at layer 3 loses about 9x in squared norm by layer 15 (note
+XLII section 2).
+
+This is note XIII (i) made quantitative. He scaling makes the gated transport a unital channel, and the gain is its
+critical zero mode. So the chain's late floor is not where the per-layer injection is largest. It is where injections
+are integrated without damping.
+
+**The design rule this gives.** Allocate accuracy by inverse spectral gap. An injection error into a mode with
+transport factor a costs about 1/(1 - a) layers of accumulation, so the critical mode needs about ten times the
+per-layer accuracy of the rest. It is one direction per layer, so exactness there is cheap in principle:
+- O(n^2) for the projections;
+- O(n^3) per layer for one extra collective leg (section 7b's loop through the mode).
+
+The dilation-sector item of 7b is therefore an exact (conservation-respecting) treatment of one critical mode, not a
+collective block of rank 32.
