@@ -13,7 +13,9 @@
 import sys, os, importlib.util, time, numpy as np, flopscope as flops
 from whestbench import MLP
 net, tag = int(sys.argv[1]), sys.argv[2]
-LAYERS = [int(x) for x in os.environ.get("C2_LAYERS", "3,5,7,9,11,13,15").split(",")]
+LAYERS = [int(x) for x in os.environ.get("C2_LAYERS", "3,5,7,9,11,13,14,15").split(",")]
+CYC_LAYERS = tuple(int(x) for x in os.environ.get("C2_CYC", "7,13").split(",") if x)
+CYC_ROWS = list(range(0, 1024, 128))
 EPS = [float(x) for x in os.environ.get("C2_EPS", "0,1e-4,1e-3,1e-2,3e-2,1e-1").split(",")]
 _prod = {"V29_WARM_JOIN": "1", "V29_WARM_FB": "1", "V17_R_RES": "4", "V26_STRASSEN": "6", "V26_STRASSEN_MIN": "16",
          "V32_JOIN_SMM": "1", "V32_ROT_SMM": "1", "V32_JOIN_POST": "3", "V32_JP_C": "0.1", "V21_R_OLD": "320",
@@ -73,13 +75,17 @@ for l in LAYERS:
     w2b = [np.asarray(x, np.float64) for x in legs[l]["w2b"]][:k]
     eb = [np.asarray(x, np.float64) for x in legs[l]["e"]][:k]
     births = list(range(k))   # slot s was born at y_s (its P leg is W_(s+1) at layer s + 1)
-    var_l = st[("var", l)]; C_l = st[("C_off", l)].copy(); np.fill_diagonal(C_l, var_l)
+    var_l = st[("var", l)]
+    C_l = None
+    if ("C_off", l) in st:
+        C_l = st[("C_off", l)].copy(); np.fill_diagonal(C_l, var_l)
     g4 = st[("g4row", l)]
     tru = {h: mc[h]["k4"][l].astype(np.float64) for h in mc}
     r = {h: tru[h] - g4 for h in tru}
     Y = np.zeros((n, n)); Q = np.zeros((n, n)); Vt = np.zeros((n, n)); Vt1 = np.zeros((n, n))
     Ye = np.zeros((n, n)); Vte = np.zeros((n, n))   # the same with the chain's exact slice coefficient: t' = e / (2 w2)
     p4w_d = np.zeros(n); p4w_o = np.zeros(n); star_f = np.zeros(n); star_a = np.zeros(n)
+    st2 = np.zeros(n); st3 = np.zeros(n); st4 = np.zeros(n); Hstk = []
     arm_err = []
     for s in range(k):
         b = births[s]
@@ -105,12 +111,18 @@ for l in LAYERS:
         c3 = -al * phi(al) / (sd_b * sd_b)
         star_f += 4.0 * ((At ** 3) * P[s]) @ c3
         star_a += 4.0 * ((A[s] ** 3) * P[s]) @ c3
+        Ps, As = P[s], A[s]
+        st2 += 12.0 * ((As * As) * (Ps * Ps)) @ (c3 * t)
+        st3 += 12.0 * (As * (Ps ** 3)) @ (c3 * t * t)
+        st4 += 4.0 * (Ps ** 4) @ (c3 * t ** 3)
+        if l in CYC_LAYERS:
+            Hstk.append((b, Ps[CYC_ROWS] * w2b[s][None, :]))
     p4_ex = 12.0 * np.sum(Vt1 * Vt1, axis=1)
     p4_exc = 12.0 * np.sum(Vt * Vt, axis=1)
     p4_w = 12.0 * (p4w_d + p4w_o)
-    d21c = st[("D21", l)]
+    d21c = st.get(("D21", l))
     d21m = 2.0 * Y + Q; np.fill_diagonal(d21m, 0.0)
-    rel21 = np.linalg.norm(d21m - d21c) / np.linalg.norm(d21c)
+    rel21 = np.linalg.norm(d21m - d21c) / np.linalg.norm(d21c) if d21c is not None else float("nan")
     print(f"layer {l}: k={k}  rms truth {np.sqrt(np.mean(tru['full']**2)):.3e} mean {tru['full'].mean():.3e} | chain g4 rms "
           f"{np.sqrt(np.mean(g4**2)):.3e} mean {g4.mean():.3e} | resid rms {np.sqrt(np.mean(r['full']**2)):.3e} | "
           f"D21 model rel.err {rel21:.3f} | arm rel.err (chain vs first chaos) median {np.median(arm_err):.3f} max {max(arm_err):.3f}", flush=True)
@@ -119,14 +131,34 @@ for l in LAYERS:
     cand = {"p4_exact": p4_ex, "p4_exact_chainarm": p4_exc, "p4_exact_e": 12.0 * np.sum(Vte * Vte, axis=1),
             "p4_within": p4_w, "p4_within_diag": 12.0 * p4w_d,
             "p4_within_off": 12.0 * p4w_o, "star_full": star_f, "star_V55": star_a}
-    try:
+    cand.update({"star_A3P": star_a, "star_A2P2t": st2, "star_AP3t2": st3, "star_P4t3": st4,
+                 "star_t_terms": st2 + st3 + st4})
+    Ye0 = Ye.copy(); np.fill_diagonal(Ye0, 0.0); Y0 = Y.copy(); np.fill_diagonal(Y0, 0.0)
+    cand["p4_dj_e"] = 12.0 * (Ye0 * Ye0) @ (1.0 / var_l)          # diagonal metric: n^2 given the hub product
+    cand["p4_dj"] = 12.0 * (Y0 * Y0) @ (1.0 / var_l)
+    if d21c is not None:
+        cand["p4_dj_D21"] = 3.0 * (d21c * d21c) @ (1.0 / var_l)    # control: the symmetrized slice, not the physical Y
+    if C_l is not None:
         Ze = np.linalg.solve(C_l + 1e-2 * var_l.mean() * np.eye(n), Ye.T)
         cand["p4_schur_e_e0.01"] = 12.0 * np.sum(Ye * Ze.T, axis=1)
-    except np.linalg.LinAlgError:
-        pass
+        if d21c is not None:
+            Zd = np.linalg.solve(C_l + 1e-2 * var_l.mean() * np.eye(n), d21c.T)
+            cand["p4_schur_D21"] = 3.0 * np.sum(d21c * Zd.T, axis=1)
+    if Hstk:
+        # the 4-cycle 3 tr H_i^4 (first-chaos L_b) for a few neurons, against their path term
+        cyc = []
+        for jj, i in enumerate(CYC_ROWS):
+            Hi = np.zeros((n, n))
+            for (b, hrow) in Hstk:
+                Hi += Lc[b].T @ (hrow[jj][:, None] * Lc[b])
+            H2 = Hi @ Hi
+            cyc.append((3.0 * np.sum(H2 * H2), 12.0 * float(Vt1[i] @ Vt1[i]), float(np.trace(Hi)), st[("mu", l)][i]))
+        cyc = np.array(cyc)
+        print(f"    4-cycle (8 neurons): 3trH^4 mean {cyc[:, 0].mean():.3e} vs path 12|HL|^2 mean {cyc[:, 1].mean():.3e}; "
+              f"Euler check tr H_i vs mu_i: {np.corrcoef(cyc[:, 2], cyc[:, 3])[0, 1]:+.3f}, ratio of means {cyc[:, 2].mean() / cyc[:, 3].mean():.3f}", flush=True)
     print(f"    p4_within vs p4_exact: corr {np.corrcoef(p4_w, p4_ex)[0, 1]:+.3f}  ratio of means {p4_w.mean() / p4_ex.mean():.3f}; "
           f"chain-arm vs first-chaos arm: corr {np.corrcoef(p4_exc, p4_ex)[0, 1]:+.3f}", flush=True)
-    for e in EPS:
+    for e in (EPS if C_l is not None else ()):
         M = C_l + e * var_l.mean() * np.eye(n)
         try:
             Z = np.linalg.solve(M, Y.T)
@@ -142,12 +174,21 @@ for l in LAYERS:
     for nm in ("p4_exact", "p4_exact_chainarm", "star_full"):
         c = cand[nm]
         print(f"    {nm:<16s} vs truth: corr(truth, c) {np.corrcoef(tru['full'], c)[0,1]:+.3f}  corr(truth, g4) {np.corrcoef(tru['full'], g4)[0,1]:+.3f}", flush=True)
-    # joint regression of the residual on [p4_exact, star_full] (demeaned), share of its signal removed
-    Xr = np.stack([cand["p4_exact"] - cand["p4_exact"].mean(), cand["star_full"] - cand["star_full"].mean()], 1)
-    beta, *_ = np.linalg.lstsq(Xr, r["full"] - r["full"].mean(), rcond=None)
-    fit = Xr @ beta
     S = np.mean((r["h0"] - r["h0"].mean()) * (r["h1"] - r["h1"].mean()))
-    print(f"    joint [p4_exact, star_full] slopes {beta[0]:+.3f} {beta[1]:+.3f}  signal removed {np.mean(fit * fit) / S:+.3f}  "
-          f"(residual signal rms {np.sqrt(max(S, 0)):.3e}, noise rms {np.sqrt(max(np.var(r['full']) - S, 0)):.3e})", flush=True)
+    for combo in (("p4_exact", "star_full"), ("p4_exact_e", "star_full"), ("p4_schur_e_e0.01", "star_full"),
+                  ("p4_dj_e", "star_full"), ("p4_dj_e", "star_A3P", "star_t_terms"), ("p4_dj_D21", "star_full"),
+                  ("p4_dj_e", "star_A3P", "star_A2P2t", "star_AP3t2", "star_P4t3")):
+        if not all(c in cand for c in combo):
+            continue
+        Xr = np.stack([cand[c] - cand[c].mean() for c in combo], 1)
+        beta, *_ = np.linalg.lstsq(Xr, r["full"] - r["full"].mean(), rcond=None)
+        fit = Xr @ beta
+        # split-half honesty: fit on half 0's residual, score on half 1's
+        b0, *_ = np.linalg.lstsq(Xr, r["h0"] - r["h0"].mean(), rcond=None)
+        r1 = r["h1"] - r["h1"].mean(); f1 = Xr @ b0
+        honest = (2.0 * np.mean(r1 * f1) - np.mean(f1 * f1)) / S if S > 0 else float("nan")   # fit on h0, scored on h1
+        print(f"    joint {list(combo)} slopes {' '.join(f'{x:+.3f}' for x in beta)}  signal removed {np.mean(fit * fit) / S:+.3f}"
+              f"  (fit h0 -> h1: {honest:+.3f})", flush=True)
+    print(f"    (residual signal rms {np.sqrt(max(S, 0)):.3e}, noise rms {np.sqrt(max(np.var(r['full']) - S, 0)):.3e})", flush=True)
 np.savez(os.environ.get("C2_OUT", f"chaos2_off{net}_{tag}.npz"), out=out)
 print("done", flush=True)

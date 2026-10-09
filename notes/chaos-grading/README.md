@@ -146,3 +146,80 @@ non-uniqueness is the flex kernel, and the sources resolve it.
 - Cost: one regularized solve per layer, about 1-2 units each, against a g4 oracle of 15-30% of the MSE.
 - If D3 fails, the second chaos does not hold the chain's kappa4 error, and the third chaos (D5) is the next place to
   look.
+
+## 5. The diagnostic, measured (`outputs/diag_v1_off{0,1}.txt`, `outputs/diag_v2_off{0,1}.txt`)
+
+The setup, as stated in section 4: the fold system with every source dense (raw 2.262e-8 and 2.047e-8 on networks 0
+and 1), and Monte Carlo truth from 1.6e7 inputs. The chain's kappa4-diagonal residual (truth - g4row) is about 30% of
+the truth's rms at depth, and it is almost all signal: the split-half noise is 5e-5 to 2e-4 against a residual signal
+of 7e-4 to 1.6e-3.
+
+| | prediction | measured | |
+|---|---|---|---|
+| D1 | 2Y + Q within 0.3 of the chain's D21; chain arms within 0.2 (median) of the first-chaos arms L_l L_b^T | D21: 0.22 (layer 3) to 0.52 (layer 14). Arms: 0.30 (layer 3) rising to 1.38 (layer 15) | **fails** |
+| D2 | the Schur hub (eps = 1e-2) correlates >= 0.9 with the exact all-pairs class, mean within 15%; unstable at eps = 0 | correlation 0.95, but means 6.6-9x apart. Stable at eps = 0 (same correlation, mean 10% higher) | **fails as stated** |
+| D3 | the exact path class alone removes >= 20% of the residual's signal at layers >= 7, slope in [0.3, 1.5] | 6-41% (network 0), 10-35% (network 1); slopes 0.36-5.6 | **fails** |
+| D4 | within-source / all pairs <= 0.8 at layers >= 9 | 0.89-1.14 in the chain's metric | **fails** |
+| D5 | the full-arm star removes more than the V55 star | alone 0-13% against 0-7%. Jointly it is the essential partner (below) | holds, weakly alone |
+
+**What failed, and why.**
+- The chain's arms are not first-chaos cross-covariances. They are the full ones: the transport moves the whole
+  covariance by the mean gate.
+- The higher-chaos share of the cross-covariance between a birth layer and the current layer grows with their
+  separation, until it exceeds the first-chaos part. The "exact" path class with first-chaos arms is therefore
+  4-8x too small at depth, and its slopes (up to 5.6) say so.
+- The Schur hub uses the chain's own full covariance and arms, a self-consistent metric. It does not suffer from this.
+- It is also well conditioned in practice. The hub product Y lies in the covariance's top (outlier) subspace, where
+  the arms are born, so the solve never sees the near-null directions that section 2 worried about.
+
+**What holds: the two consistent pieces of the grading carry most of the chain's kappa4 error.** The residual was
+regressed on the demeaned candidates; "removed" is the share of the residual's signal variance.
+- "fit h0 -> h1" means fitted on one Monte Carlo half and scored on the other.
+- The slopes are the fitted weights of the two pieces.
+
+| layer | network 0: removed (fit h0 -> h1) | slopes: path, star | network 1: removed (fit h0 -> h1) | slopes: path, star |
+|---|---|---|---|---|
+| 3 | 0.64 (0.62) | 1.07, 0.88 | 0.66 (0.69) | 1.11, 0.86 |
+| 5 | 0.70 (0.72) | 1.13, 0.77 | 0.67 (0.67) | 1.11, 0.74 |
+| 7 | 0.70 (0.70) | 1.12, 0.74 | 0.68 (0.69) | 1.09, 0.68 |
+| 9 | 0.69 (0.69) | 1.12, 0.69 | 0.67 (0.68) | 1.12, 0.66 |
+| 11 | 0.72 (0.73) | 1.15, 0.69 | 0.74 (0.73) | 1.20, 0.68 |
+| 13 | 0.81 (0.83) | 1.16, 0.68 | 0.71 (0.69) | 1.15, 0.66 |
+| 14 | 0.80 (0.80) | 1.16, 0.69 | 0.75 (0.74) | 1.19, 0.71 |
+
+The two pieces are the Schur-hub path class 12 diag(Y (C + eps)^-1 Y^T), with the hub's own exact-e left factor,
+and the third-chaos star with the full arm, 4 sum c3 P At^3. Together they remove 64-81% of the error's signal at
+every layer on both networks.
+
+**The weights are nearly constant.**
+- The path class sits at 1.07-1.20 at every layer of both networks. That is the derived weight plus the 4-cycle: the
+  4-cycle 3 tr H^4, computed for eight neurons, is 24-30% of the path term and correlated with it.
+- The star sits at 0.66-0.88. Its partner in the third chaos, the product term of the kappa3 x C class, is left out.
+- Each piece alone does much less: the path class 15-51%, the star 0-13%. They are complementary halves of the error,
+  as the grading says the second and third chaos are.
+
+**The control confirms the flex kernel.**
+- Replacing the physical hub product Y by the symmetrized slice (3 diag(D21 (C + eps)^-1 D21^T), or its diagonal-metric
+  form) removes 0-6% at layers 5-14, and 0-14% jointly with the star.
+- So the same kappa_3 numbers carry nothing about the kappa_4 diagonal. Only the assignment of each second-chaos piece
+  to the neuron that carries it (the sources' structure, section 3) does.
+
+**Also measured.**
+- **The star.** The star's four arm-power terms (A^3 P, A^2 P^2 t, A P^3 t^2, P^4 t^3) have unstable separate
+  weights, while the full-arm star is stable. The V55 star (A^3 P alone) is an inconsistent truncation, as section 1
+  said.
+- **The Euler identity mu_i = tr H_i** of homogeneity (E[F] = E[Delta F]), with the sources' H, correlates 0.73-0.95
+  with the chain's mean.
+- **The diagonal-metric hub** (12 sum_j Y_ij^2 / var_j, n^2 given Y) alone removes about what the Schur hub removes
+  (16-50%). But it is 30-60x too large, because Y lies in the covariance's top subspace, where C^-1 is far below
+  diag(C)^-1. Jointly with the star it reaches 36-66%, against 64-81% for the Schur metric.
+
+**Value and cost.**
+- The g4 oracle is worth 15-30% of the MSE (note XXXI). Removing about 70% of the oracle's error variance is therefore
+  worth roughly 10-20% of raw MSE, if the effect is near linear.
+- The price:
+  - the hub product Y, which is the D21 hub split so that its first half reads the full arm (no new n^3 work);
+  - one regularized solve per layer (1.33 units at flopscope's pricing, 2n^3/3 + 2n^3 for an n x n right-hand side);
+  - the star's n^2 per source-layer.
+- The trimmed last layer forms no hub, so its kappa4 diagonal needs separate treatment.
+- Section 6 states the chain test.

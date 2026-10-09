@@ -1,0 +1,185 @@
+net 0 c2: chain raw 2.26240e-08  (57s)
+legs at layers [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]  slots {1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8, 9: 9, 10: 10, 11: 11, 12: 12, 13: 13, 14: 14, 15: 15}
+layer 3: k=3  rms truth 1.434e-02 mean 1.410e-02 | chain g4 rms 1.423e-02 mean 1.413e-02 | resid rms 1.765e-03 | D21 model rel.err 0.236 | arm rel.err (chain vs first chaos) median 0.297 max 0.501
+  means: p4_exact 1.086e-02  p4_exact(chain arms) 1.619e-02  p4_within 1.890e-02 (diag part 1.833e-02)  star_full -9.890e-03  star_V55 9.229e-06
+    p4_within vs p4_exact: corr +0.953  ratio of means 1.741; chain-arm vs first-chaos arm: corr +0.992
+    p4_schur_e_e0.01: mean 1.237e-02  corr with p4_exact +0.964  ratio of means 1.139
+    p4_schur_e0: mean 1.446e-02  corr with p4_exact +0.967  ratio of means 1.332
+    p4_schur_e0.0001: mean 1.440e-02  corr with p4_exact +0.967  ratio of means 1.326
+    p4_schur_e0.001: mean 1.425e-02  corr with p4_exact +0.967  ratio of means 1.312
+    p4_schur_e0.01: mean 1.378e-02  corr with p4_exact +0.965  ratio of means 1.269
+    p4_schur_e0.03: mean 1.330e-02  corr with p4_exact +0.964  ratio of means 1.225
+    p4_schur_e0.1: mean 1.241e-02  corr with p4_exact +0.961  ratio of means 1.142
+    p4_exact         rms 2.227e-03  corr +0.435  corr/signal +0.491  slope +0.344  signal removed +0.241
+    p4_exact_chainarm rms 3.159e-03  corr +0.451  corr/signal +0.509  slope +0.252  signal removed +0.259
+    p4_exact_e       rms 2.927e-03  corr +0.469  corr/signal +0.529  slope +0.283  signal removed +0.280
+    p4_within        rms 3.366e-03  corr +0.336  corr/signal +0.379  slope +0.176  signal removed +0.144
+    p4_within_diag   rms 3.198e-03  corr +0.269  corr/signal +0.304  slope +0.148  signal removed +0.092
+    p4_within_off    rms 6.918e-04  corr +0.389  corr/signal +0.439  slope +0.992  signal removed +0.193
+    star_full        rms 2.246e-03  corr -0.199  corr/signal -0.224  slope -0.156  signal removed +0.050
+    star_V55         rms 3.290e-04  corr -0.237  corr/signal -0.268  slope -1.272  signal removed +0.072
+    p4_schur_e_e0.01 rms 2.440e-03  corr +0.490  corr/signal +0.553  slope +0.354  signal removed +0.306
+    p4_schur_e0      rms 2.806e-03  corr +0.464  corr/signal +0.523  slope +0.292  signal removed +0.274
+    p4_schur_e0.0001 rms 2.794e-03  corr +0.464  corr/signal +0.523  slope +0.293  signal removed +0.274
+    p4_schur_e0.001  rms 2.767e-03  corr +0.464  corr/signal +0.524  slope +0.296  signal removed +0.275
+    p4_schur_e0.01   rms 2.681e-03  corr +0.465  corr/signal +0.525  slope +0.306  signal removed +0.276
+    p4_schur_e0.03   rms 2.592e-03  corr +0.466  corr/signal +0.526  slope +0.317  signal removed +0.277
+    p4_schur_e0.1    rms 2.428e-03  corr +0.468  corr/signal +0.528  slope +0.340  signal removed +0.279
+    p4_exact         vs truth: corr(truth, c) +0.835  corr(truth, g4) +0.735
+    p4_exact_chainarm vs truth: corr(truth, c) +0.854  corr(truth, g4) +0.735
+    star_full        vs truth: corr(truth, c) -0.659  corr(truth, g4) +0.735
+    joint [p4_exact, star_full] slopes +1.312 +1.043  signal removed +0.582  (residual signal rms 1.563e-03, noise rms 8.193e-04)
+layer 5: k=5  rms truth 8.995e-03 mean 8.772e-03 | chain g4 rms 8.782e-03 mean 8.683e-03 | resid rms 1.257e-03 | D21 model rel.err 0.353 | arm rel.err (chain vs first chaos) median 0.500 max 0.854
+  means: p4_exact 4.140e-03  p4_exact(chain arms) 8.270e-03  p4_within 1.115e-02 (diag part 1.058e-02)  star_full -7.877e-03  star_V55 -1.440e-05
+    p4_within vs p4_exact: corr +0.952  ratio of means 2.693; chain-arm vs first-chaos arm: corr +0.988
+    p4_schur_e_e0.01: mean 7.331e-03  corr with p4_exact +0.956  ratio of means 1.771
+    p4_schur_e0: mean 8.909e-03  corr with p4_exact +0.962  ratio of means 2.152
+    p4_schur_e0.0001: mean 8.880e-03  corr with p4_exact +0.962  ratio of means 2.145
+    p4_schur_e0.001: mean 8.803e-03  corr with p4_exact +0.962  ratio of means 2.126
+    p4_schur_e0.01: mean 8.561e-03  corr with p4_exact +0.961  ratio of means 2.068
+    p4_schur_e0.03: mean 8.305e-03  corr with p4_exact +0.960  ratio of means 2.006
+    p4_schur_e0.1: mean 7.824e-03  corr with p4_exact +0.957  ratio of means 1.890
+    p4_exact         rms 1.169e-03  corr +0.387  corr/signal +0.403  slope +0.415  signal removed +0.162
+    p4_exact_chainarm rms 2.195e-03  corr +0.434  corr/signal +0.452  slope +0.248  signal removed +0.204
+    p4_exact_e       rms 1.961e-03  corr +0.452  corr/signal +0.471  slope +0.289  signal removed +0.222
+    p4_within        rms 2.625e-03  corr +0.294  corr/signal +0.306  slope +0.141  signal removed +0.094
+    p4_within_diag   rms 2.428e-03  corr +0.230  corr/signal +0.239  slope +0.119  signal removed +0.057
+    p4_within_off    rms 4.686e-04  corr +0.458  corr/signal +0.477  slope +1.226  signal removed +0.228
+    star_full        rms 2.310e-03  corr -0.169  corr/signal -0.176  slope -0.092  signal removed +0.031
+    star_V55         rms 4.174e-04  corr -0.161  corr/signal -0.168  slope -0.484  signal removed +0.028
+    p4_schur_e_e0.01 rms 1.958e-03  corr +0.499  corr/signal +0.519  slope +0.319  signal removed +0.270
+    p4_schur_e0      rms 2.315e-03  corr +0.469  corr/signal +0.489  slope +0.254  signal removed +0.239
+    p4_schur_e0.0001 rms 2.307e-03  corr +0.470  corr/signal +0.489  slope +0.255  signal removed +0.239
+    p4_schur_e0.001  rms 2.287e-03  corr +0.470  corr/signal +0.490  slope +0.258  signal removed +0.240
+    p4_schur_e0.01   rms 2.228e-03  corr +0.472  corr/signal +0.492  slope +0.266  signal removed +0.242
+    p4_schur_e0.03   rms 2.165e-03  corr +0.474  corr/signal +0.493  slope +0.274  signal removed +0.243
+    p4_schur_e0.1    rms 2.048e-03  corr +0.477  corr/signal +0.497  slope +0.292  signal removed +0.247
+    p4_exact         vs truth: corr(truth, c) +0.830  corr(truth, g4) +0.787
+    p4_exact_chainarm vs truth: corr(truth, c) +0.865  corr(truth, g4) +0.787
+    star_full        vs truth: corr(truth, c) -0.691  corr(truth, g4) +0.787
+    joint [p4_exact, star_full] slopes +2.074 +0.894  signal removed +0.509  (residual signal rms 1.204e-03, noise rms 3.514e-04)
+layer 7: k=7  rms truth 6.032e-03 mean 5.847e-03 | chain g4 rms 5.785e-03 mean 5.696e-03 | resid rms 9.875e-04 | D21 model rel.err 0.344 | arm rel.err (chain vs first chaos) median 0.679 max 1.198
+  means: p4_exact 1.972e-03  p4_exact(chain arms) 5.100e-03  p4_within 7.508e-03 (diag part 7.046e-03)  star_full -6.373e-03  star_V55 -8.881e-06
+    p4_within vs p4_exact: corr +0.942  ratio of means 3.808; chain-arm vs first-chaos arm: corr +0.985
+    p4_schur_e_e0.01: mean 5.374e-03  corr with p4_exact +0.957  ratio of means 2.726
+    p4_schur_e0: mean 6.816e-03  corr with p4_exact +0.961  ratio of means 3.457
+    p4_schur_e0.0001: mean 6.735e-03  corr with p4_exact +0.961  ratio of means 3.416
+    p4_schur_e0.001: mean 6.671e-03  corr with p4_exact +0.961  ratio of means 3.383
+    p4_schur_e0.01: mean 6.502e-03  corr with p4_exact +0.960  ratio of means 3.298
+    p4_schur_e0.03: mean 6.321e-03  corr with p4_exact +0.959  ratio of means 3.206
+    p4_schur_e0.1: mean 5.980e-03  corr with p4_exact +0.957  ratio of means 3.033
+    p4_exact         rms 6.595e-04  corr +0.244  corr/signal +0.250  slope +0.361  signal removed +0.062
+    p4_exact_chainarm rms 1.565e-03  corr +0.303  corr/signal +0.310  slope +0.189  signal removed +0.096
+    p4_exact_e       rms 1.352e-03  corr +0.320  corr/signal +0.327  slope +0.231  signal removed +0.107
+    p4_within        rms 2.021e-03  corr +0.121  corr/signal +0.124  slope +0.059  signal removed +0.015
+    p4_within_diag   rms 1.870e-03  corr +0.066  corr/signal +0.068  slope +0.035  signal removed +0.005
+    p4_within_off    rms 3.308e-04  corr +0.367  corr/signal +0.375  slope +1.082  signal removed +0.141
+    star_full        rms 2.219e-03  corr -0.025  corr/signal -0.025  slope -0.011  signal removed +0.001
+    star_V55         rms 4.639e-04  corr +0.037  corr/signal +0.038  slope +0.079  signal removed +0.001
+    p4_schur_e_e0.01 rms 1.647e-03  corr +0.376  corr/signal +0.384  slope +0.223  signal removed +0.148
+    p4_schur_e0      rms 2.022e-03  corr +0.345  corr/signal +0.353  slope +0.167  signal removed +0.125
+    p4_schur_e0.0001 rms 1.998e-03  corr +0.348  corr/signal +0.356  slope +0.170  signal removed +0.127
+    p4_schur_e0.001  rms 1.979e-03  corr +0.349  corr/signal +0.357  slope +0.172  signal removed +0.127
+    p4_schur_e0.01   rms 1.930e-03  corr +0.352  corr/signal +0.359  slope +0.178  signal removed +0.129
+    p4_schur_e0.03   rms 1.880e-03  corr +0.354  corr/signal +0.362  slope +0.184  signal removed +0.131
+    p4_schur_e0.1    rms 1.785e-03  corr +0.360  corr/signal +0.368  slope +0.197  signal removed +0.135
+    p4_exact         vs truth: corr(truth, c) +0.767  corr(truth, g4) +0.758
+    p4_exact_chainarm vs truth: corr(truth, c) +0.812  corr(truth, g4) +0.758
+    star_full        vs truth: corr(truth, c) -0.624  corr(truth, g4) +0.758
+    joint [p4_exact, star_full] slopes +3.025 +0.838  signal removed +0.473  (residual signal rms 9.546e-04, noise rms 2.027e-04)
+layer 9: k=9  rms truth 3.547e-03 mean 3.397e-03 | chain g4 rms 3.287e-03 mean 3.223e-03 | resid rms 6.874e-04 | D21 model rel.err 0.342 | arm rel.err (chain vs first chaos) median 0.863 max 1.559
+  means: p4_exact 7.809e-04  p4_exact(chain arms) 2.502e-03  p4_within 4.128e-03 (diag part 3.883e-03)  star_full -3.810e-03  star_V55 6.189e-07
+    p4_within vs p4_exact: corr +0.922  ratio of means 5.286; chain-arm vs first-chaos arm: corr +0.979
+    p4_schur_e_e0.01: mean 3.039e-03  corr with p4_exact +0.945  ratio of means 3.891
+    p4_schur_e0: mean 3.882e-03  corr with p4_exact +0.950  ratio of means 4.971
+    p4_schur_e0.0001: mean 3.855e-03  corr with p4_exact +0.950  ratio of means 4.936
+    p4_schur_e0.001: mean 3.829e-03  corr with p4_exact +0.950  ratio of means 4.903
+    p4_schur_e0.01: mean 3.740e-03  corr with p4_exact +0.949  ratio of means 4.789
+    p4_schur_e0.03: mean 3.644e-03  corr with p4_exact +0.949  ratio of means 4.666
+    p4_schur_e0.1: mean 3.466e-03  corr with p4_exact +0.947  ratio of means 4.438
+    p4_exact         rms 3.069e-04  corr +0.360  corr/signal +0.364  slope +0.779  signal removed +0.132
+    p4_exact_chainarm rms 8.895e-04  corr +0.412  corr/signal +0.417  slope +0.308  signal removed +0.174
+    p4_exact_e       rms 7.564e-04  corr +0.434  corr/signal +0.439  slope +0.382  signal removed +0.192
+    p4_within        rms 1.229e-03  corr +0.198  corr/signal +0.201  slope +0.107  signal removed +0.040
+    p4_within_diag   rms 1.136e-03  corr +0.151  corr/signal +0.153  slope +0.089  signal removed +0.023
+    p4_within_off    rms 2.056e-04  corr +0.350  corr/signal +0.353  slope +1.131  signal removed +0.125
+    star_full        rms 1.454e-03  corr -0.129  corr/signal -0.131  slope -0.059  signal removed +0.017
+    star_V55         rms 3.056e-04  corr -0.064  corr/signal -0.065  slope -0.140  signal removed +0.004
+    p4_schur_e_e0.01 rms 1.082e-03  corr +0.477  corr/signal +0.483  slope +0.293  signal removed +0.233
+    p4_schur_e0      rms 1.330e-03  corr +0.449  corr/signal +0.454  slope +0.225  signal removed +0.206
+    p4_schur_e0.0001 rms 1.319e-03  corr +0.448  corr/signal +0.453  slope +0.226  signal removed +0.206
+    p4_schur_e0.001  rms 1.310e-03  corr +0.449  corr/signal +0.454  slope +0.228  signal removed +0.206
+    p4_schur_e0.01   rms 1.281e-03  corr +0.450  corr/signal +0.455  slope +0.234  signal removed +0.207
+    p4_schur_e0.03   rms 1.250e-03  corr +0.453  corr/signal +0.458  slope +0.241  signal removed +0.209
+    p4_schur_e0.1    rms 1.195e-03  corr +0.457  corr/signal +0.462  slope +0.254  signal removed +0.213
+    p4_exact         vs truth: corr(truth, c) +0.793  corr(truth, g4) +0.772
+    p4_exact_chainarm vs truth: corr(truth, c) +0.834  corr(truth, g4) +0.772
+    star_full        vs truth: corr(truth, c) -0.655  corr(truth, g4) +0.772
+    joint [p4_exact, star_full] slopes +3.657 +0.656  signal removed +0.431  (residual signal rms 6.578e-04, noise rms 9.857e-05)
+layer 11: k=11  rms truth 3.088e-03 mean 2.896e-03 | chain g4 rms 2.766e-03 mean 2.696e-03 | resid rms 7.553e-04 | D21 model rel.err 0.422 | arm rel.err (chain vs first chaos) median 1.041 max 1.882
+  means: p4_exact 5.391e-04  p4_exact(chain arms) 2.058e-03  p4_within 3.531e-03 (diag part 3.312e-03)  star_full -3.587e-03  star_V55 -1.538e-05
+    p4_within vs p4_exact: corr +0.899  ratio of means 6.549; chain-arm vs first-chaos arm: corr +0.976
+    p4_schur_e_e0.01: mean 2.800e-03  corr with p4_exact +0.939  ratio of means 5.193
+    p4_schur_e0: mean 3.743e-03  corr with p4_exact +0.946  ratio of means 6.942
+    p4_schur_e0.0001: mean 3.672e-03  corr with p4_exact +0.945  ratio of means 6.810
+    p4_schur_e0.001: mean 3.601e-03  corr with p4_exact +0.945  ratio of means 6.679
+    p4_schur_e0.01: mean 3.502e-03  corr with p4_exact +0.945  ratio of means 6.496
+    p4_schur_e0.03: mean 3.412e-03  corr with p4_exact +0.945  ratio of means 6.329
+    p4_schur_e0.1: mean 3.252e-03  corr with p4_exact +0.944  ratio of means 6.031
+    p4_exact         rms 2.459e-04  corr +0.390  corr/signal +0.392  slope +1.155  signal removed +0.154
+    p4_exact_chainarm rms 8.323e-04  corr +0.442  corr/signal +0.444  slope +0.387  signal removed +0.197
+    p4_exact_e       rms 6.979e-04  corr +0.466  corr/signal +0.469  slope +0.487  signal removed +0.220
+    p4_within        rms 1.151e-03  corr +0.182  corr/signal +0.183  slope +0.115  signal removed +0.034
+    p4_within_diag   rms 1.069e-03  corr +0.132  corr/signal +0.133  slope +0.090  signal removed +0.018
+    p4_within_off    rms 1.761e-04  corr +0.389  corr/signal +0.391  slope +1.608  signal removed +0.153
+    star_full        rms 1.505e-03  corr -0.134  corr/signal -0.135  slope -0.065  signal removed +0.018
+    star_V55         rms 3.250e-04  corr -0.017  corr/signal -0.017  slope -0.039  signal removed +0.000
+    p4_schur_e_e0.01 rms 1.122e-03  corr +0.510  corr/signal +0.513  slope +0.331  signal removed +0.263
+    p4_schur_e0      rms 1.433e-03  corr +0.476  corr/signal +0.479  slope +0.242  signal removed +0.230
+    p4_schur_e0.0001 rms 1.402e-03  corr +0.478  corr/signal +0.481  slope +0.248  signal removed +0.231
+    p4_schur_e0.001  rms 1.373e-03  corr +0.479  corr/signal +0.482  slope +0.254  signal removed +0.232
+    p4_schur_e0.01   rms 1.337e-03  corr +0.481  corr/signal +0.484  slope +0.262  signal removed +0.234
+    p4_schur_e0.03   rms 1.305e-03  corr +0.484  corr/signal +0.487  slope +0.270  signal removed +0.237
+    p4_schur_e0.1    rms 1.250e-03  corr +0.489  corr/signal +0.492  slope +0.285  signal removed +0.242
+    p4_exact         vs truth: corr(truth, c) +0.778  corr(truth, g4) +0.755
+    p4_exact_chainarm vs truth: corr(truth, c) +0.819  corr(truth, g4) +0.755
+    star_full        vs truth: corr(truth, c) -0.612  corr(truth, g4) +0.755
+    joint [p4_exact, star_full] slopes +4.727 +0.640  signal removed +0.451  (residual signal rms 7.240e-04, noise rms 7.971e-05)
+layer 13: k=13  rms truth 2.589e-03 mean 2.326e-03 | chain g4 rms 2.139e-03 mean 2.071e-03 | resid rms 8.110e-04 | D21 model rel.err 0.514 | arm rel.err (chain vs first chaos) median 1.215 max 2.226
+  means: p4_exact 3.491e-04  p4_exact(chain arms) 1.547e-03  p4_within 2.674e-03 (diag part 2.503e-03)  star_full -2.909e-03  star_V55 -1.554e-05
+    p4_within vs p4_exact: corr +0.863  ratio of means 7.658; chain-arm vs first-chaos arm: corr +0.979
+    p4_schur_e_e0.01: mean 2.309e-03  corr with p4_exact +0.947  ratio of means 6.613
+    p4_schur_e0: mean 3.209e-03  corr with p4_exact +0.951  ratio of means 9.190
+    p4_schur_e0.0001: mean 3.116e-03  corr with p4_exact +0.951  ratio of means 8.926
+    p4_schur_e0.001: mean 3.022e-03  corr with p4_exact +0.951  ratio of means 8.655
+    p4_schur_e0.01: mean 2.929e-03  corr with p4_exact +0.951  ratio of means 8.391
+    p4_schur_e0.03: mean 2.855e-03  corr with p4_exact +0.951  ratio of means 8.176
+    p4_schur_e0.1: mean 2.724e-03  corr with p4_exact +0.951  ratio of means 7.803
+    p4_exact         rms 2.091e-04  corr +0.635  corr/signal +0.636  slope +2.336  signal removed +0.405
+    p4_exact_chainarm rms 7.846e-04  corr +0.665  corr/signal +0.666  slope +0.652  signal removed +0.444
+    p4_exact_e       rms 6.582e-04  corr +0.687  corr/signal +0.689  slope +0.804  signal removed +0.475
+    p4_within        rms 9.298e-04  corr +0.381  corr/signal +0.382  slope +0.316  signal removed +0.146
+    p4_within_diag   rms 8.453e-04  corr +0.321  corr/signal +0.322  slope +0.292  signal removed +0.103
+    p4_within_off    rms 1.516e-04  corr +0.550  corr/signal +0.551  slope +2.794  signal removed +0.304
+    star_full        rms 1.298e-03  corr -0.357  corr/signal -0.358  slope -0.212  signal removed +0.128
+    star_V55         rms 2.901e-04  corr -0.257  corr/signal -0.257  slope -0.681  signal removed +0.066
+    p4_schur_e_e0.01 rms 1.144e-03  corr +0.709  corr/signal +0.711  slope +0.477  signal removed +0.505
+    p4_schur_e0      rms 1.489e-03  corr +0.677  corr/signal +0.679  slope +0.350  signal removed +0.460
+    p4_schur_e0.0001 rms 1.451e-03  corr +0.682  corr/signal +0.684  slope +0.362  signal removed +0.467
+    p4_schur_e0.001  rms 1.405e-03  corr +0.683  corr/signal +0.685  slope +0.374  signal removed +0.469
+    p4_schur_e0.01   rms 1.364e-03  corr +0.685  corr/signal +0.686  slope +0.386  signal removed +0.471
+    p4_schur_e0.03   rms 1.333e-03  corr +0.686  corr/signal +0.688  slope +0.396  signal removed +0.473
+    p4_schur_e0.1    rms 1.280e-03  corr +0.689  corr/signal +0.691  slope +0.415  signal removed +0.477
+    p4_exact         vs truth: corr(truth, c) +0.847  corr(truth, g4) +0.808
+    p4_exact_chainarm vs truth: corr(truth, c) +0.874  corr(truth, g4) +0.808
+    star_full        vs truth: corr(truth, c) -0.668  corr(truth, g4) +0.808
+    joint [p4_exact, star_full] slopes +5.390 +0.556  signal removed +0.597  (residual signal rms 7.679e-04, noise rms 5.387e-05)
+
+[stderr]
+Traceback (most recent call last):
+  File "/work/k3work/chaos2_diag.py", line 76, in <module>
+    var_l = st[("var", l)]; C_l = st[("C_off", l)].copy(); np.fill_diagonal(C_l, var_l)
+                                  ~~^^^^^^^^^^^^^^
+KeyError: ('C_off', 15)
+
+[exit 1 after 69s on 24 visible cores, cpu=8.0]
