@@ -391,6 +391,13 @@ FB_ADD = _os.environ.get("V49_FB_ADD", "0") == "1"
 # change, so M stays exact up to its compression; 2 (ablation): it does not; 3: only the flat part of D21 is folded (as 1)
 # and its additive part u 1^T + 1 v^T rides the exact rank-2 feedback legs (V49), so it never enters the M block.
 FB_FOLD = int(_os.environ.get("V52_FB_FOLD", "0"))
+# V54 (note XL) diagnostics, 1 = production everywhere. OLD_D21: 0 drops the old tier's (2,1) contribution, 2 keeps only
+# its additive part (S0 + S1 + A1, the trivial + standard S_n irreps of the slice); OLD_D3: 0 drops the old sources'
+# diagonal contribution; YNG_D21: 2 keeps only the additive part of the young hub's (2,1) contribution.
+TADPOLE = _os.environ.get("V53_TADPOLE", "0") == "1"   # V53 (note XL): tadpole-dressed vertex weights for legs and births
+OLD_D21 = int(_os.environ.get("V54_OLD_D21", "1"))
+OLD_D3 = int(_os.environ.get("V54_OLD_D3", "1"))
+YNG_D21 = int(_os.environ.get("V54_YNG_D21", "1"))
 KD = int(_os.environ.get("V39_KD", "0"))
 KD_AMP = float(_os.environ.get("V39_KD_AMP", "1.0"))
 KD_BITS = int(_os.environ.get("V39_KD_BITS", "0"))   # 1 diagonal, 2 (2,2), 4 (3,1); 0 with KD=1 means all
@@ -518,6 +525,20 @@ def _statics(n: int) -> dict:
 def _zero_diag(A):
     fnp.fill_diagonal(A, 0.0)
     return A
+
+
+def _additive_part(X, n):
+    """V54 (note XL): replace an n x n table in place by its additive part off the diagonal, u 1^T + 1 v^T, i.e. its
+    projection on the trivial + standard S_n irreps (S0 + S1 + A1 of the five-component split), from the row and column
+    sums in O(n^2)."""
+    _zero_diag(X)
+    rs = fnp.sum(X, axis=1)
+    cs = fnp.sum(X, axis=0)
+    c0 = fnp.sum(rs) / float(n * (n - 1))
+    al = ((rs + cs) * 0.5 - c0 * float(n - 1)) / float(n - 2)
+    be = (rs - cs) * (0.5 / n)
+    fnp.add((al + be + c0)[:, None], (al - be)[None, :], out=X)
+    return X
 
 
 def _build_wick_consts():
@@ -877,6 +898,10 @@ class Estimator(BaseEstimator):
         self._i21 = WICK_PAIRS.index((2, 1))
         self._i12 = WICK_PAIRS.index((1, 2))
         self._i31 = WICK_PAIRS.index((3, 1))
+        # V53: the higher gate coefficients for the tadpole-dressed vertices
+        self._i41, self._i51 = WICK_PAIRS.index((4, 1)), WICK_PAIRS.index((5, 1))
+        self._i61, self._i71 = WICK_PAIRS.index((6, 1)), WICK_PAIRS.index((7, 1))
+        self._i42, self._i52 = WICK_PAIRS.index((4, 2)), WICK_PAIRS.index((5, 2))
 
     def setup(self, ctx: SetupContext) -> None:
         self._setup_rng = fnp.random.default_rng(ctx.seed)
@@ -1891,10 +1916,24 @@ class Estimator(BaseEstimator):
 
             # ---- wick old blocks + dslice scalings ----
             w1 = W_all[:, self._i11]
+            _w2d, _w3d, _w12d = W_all[:, self._i21], W_all[:, self._i31], W_all[:, self._i12]
+            if TADPOLE and mode == 1 and D3 is not None and g4row is not None:
+                # V53 (note XL): tadpole-dressed vertex weights. A vertex of degree p that carries a leg of the
+                # transported or newborn bulk also absorbs the local cumulants of its own site, E[f^(p)(z)] =
+                # c(p) + kappa3 c(p + 3) / 6 + kappa4 c(p + 4) / 24 + ..., exactly the dressing the pair programs already
+                # give the covariance (the 'd3row', 'g4row' x 'c_off' terms). The legs, the births and the replicated
+                # slices then use the same gate the Wick stage uses; under the scale (gain) mixture the dressed first
+                # vertex is P(z > 0), which the mixture leaves invariant, and the bare Phi(mu / sigma) is not.
+                _d3 = D3 * (1.0 / 6.0)
+                _g4 = g4row * (1.0 / 24.0)
+                w1 = w1 + _d3 * W_all[:, self._i41] + _g4 * W_all[:, self._i51]
+                _w2d = _w2d + _d3 * W_all[:, self._i51] + _g4 * W_all[:, self._i61]
+                _w3d = _w3d + _d3 * W_all[:, self._i61] + _g4 * W_all[:, self._i71]
+                _w12d = _w12d + _d3 * W_all[:, self._i42] + _g4 * W_all[:, self._i52]
             if DUMP_LEGS and li in DUMP_LAYERS and LEGS and LEGS[-1]["layer"] == li:
                 import numpy as _np
                 LEGS[-1]["w1"] = _np.array(_np.asarray(w1), dtype=_np.float32)   # the gate that transports these legs to li + 1
-            w2 = W_all[:, self._i21]
+            w2 = _w2d
             w1t = w1 if (sat_mask is None or SAT_MODE == "r") else w1 * sat_mask
             w1col = (w1t)[:, None]
             w1_prev = w1t  # thin stacks / basis pick up this wick via WD at the next linear
@@ -1954,7 +1993,7 @@ class Estimator(BaseEstimator):
                 #   d_c = Yt_c / (2 w2_c) + Xt_c / 6,  Xt = 1.5 d(w2) D21,  Yt = 0.5 d(w1) D21^T d(w3)  (exact, full rank).
                 # O(n^2) at birth and no new leg: the folded arm rides the young transport, the hub and the confinement
                 # like any arm. The second-order (Gamma x Gamma) terms differ from the thin legs' Xt x Yt.
-                _rt = W_all[:, self._i31] / (w2 + 1e-30)          # c(1,3) / c(1,2) = -alpha / sigma
+                _rt = _w3d / (w2 + 1e-30)          # c(1,3) / c(1,2) = -alpha / sigma
                 fold_d = fnp.multiply((w2 * (0.25 * FB_SX))[:, None], D21f, out=NN("fold_d"))     # Xt / 6
                 _fy = fnp.multiply(w1col * (0.25 * FB_SY), D21f.T, out=NN("fold_y"))
                 fnp.multiply(_fy, (_rt)[None, :], out=_fy)                                         # Yt d(1 / 2 w2)
@@ -1963,7 +2002,7 @@ class Estimator(BaseEstimator):
             if rfb > 0 and mode == 1:
                 # V18 (F69): D21 feedback thin legs. D21 ~ Qf Bf (rank rfb range finder,
                 # one power iteration, sketch = a slice of the layer weight).
-                w3 = W_all[:, self._i31]
+                w3 = _w3d
                 if (FB_ADD or FB_FOLD == 3) and rfb == 2:
                     # V49 (note XXXIX): the exact additive part of D21 (row and column effects: the S0 + S1 + A1
                     # components of the five-component split) in place of the rank-2 range finder,
@@ -2134,7 +2173,7 @@ class Estimator(BaseEstimator):
             # ones2) term of pk21 minus 2*pk1*[(c_off, ones2) term of pk11]); M_b^T
             # part 3*S_sep^T = 3*a_b*diag(e) rides on the A leg for free. Rres is
             # compressed to rank r (randomized range finder, one power iteration).
-            e_b = W_all[:, self._i12] - 2.0 * pk1v * w1
+            e_b = _w12d - 2.0 * pk1v * w1
             S_sep = fnp.multiply((e_b)[:, None], C_off, out=NN("ssep"))
             S_sep = _zero_diag(fnp.multiply(S_sep, (w1)[None, :], out=S_sep))
             Rres = fnp.subtract(S21, S_sep, out=S21)
@@ -2364,7 +2403,12 @@ class Estimator(BaseEstimator):
             fnp.multiply(MP, 2.0 / 3.0, out=T)
             fnp.add(LP, T, out=LP)
         if D3a is not None:
-            D3 = D3a * 3.0 + fnp.einsum("kij,kij->i", MP, P_st)
+            if OLD_D3 == 0 and 0 < ka < k:
+                # V54 diagnostic (note XL): the old sources' diagonal contribution left out
+                D3 = (fnp.einsum("kij,kij->i", LP[ka:], P_st[ka:]) * 3.0
+                      + fnp.einsum("kij,kij->i", MP[ka:], P_st[ka:]))
+            else:
+                D3 = D3a * 3.0 + fnp.einsum("kij,kij->i", MP, P_st)
         else:
             fnp.multiply(P_st, W2B, out=T)
             D3 = (fnp.einsum("kij,kij,kij->i", A_st, A_st, T) * 3.0
@@ -2482,7 +2526,15 @@ class Estimator(BaseEstimator):
             # hub-first order is bit-identical to V26's D21 + hub)
             if ka < k and STRASSEN_HUB > 0:
                 D21 = self._hub2(bufs, apb4, ka, k, n, sat)
-                fnp.add(D21, self._lift(inner, Qc, bufs["t1"], s_sb), out=D21)
+                if YNG_D21 == 2:
+                    _additive_part(D21, n)   # V54 diagnostic: the young hub's flat part left out
+                if OLD_D21 != 0:
+                    _old = self._lift(inner, Qc, bufs["t1"], s_sb)
+                    if OLD_D21 == 2:
+                        # V54 diagnostic (note XL): the old tier enters through the additive (trivial + standard
+                        # S_n irrep) part of its (2,1) slice only; its flat part is left out
+                        _additive_part(_old, n)
+                    fnp.add(D21, _old, out=D21)
             else:
                 D21 = self._lift(inner, Qc, bufs["d21"], s_sb)
                 if ka < k:
