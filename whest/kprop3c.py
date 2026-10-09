@@ -39,7 +39,7 @@ def sym3(S):
 
 def linear_step(st, W):
     mu = W @ st.mu; C = W @ st.C @ W.T
-    young = [(tuple(W @ L for L in legs), age) for legs, age in st.young]
+    young = [(tuple(W @ L for L in e[0]), e[1]) + ((tuple(W @ L for L in e[2]),) if len(e) > 2 and e[2] is not None else ()) for e in st.young]
     Q, S = st.Q, st.S
     cp = st.cp
     if Q is not None:
@@ -95,9 +95,14 @@ def nonlin_step(st, o, rng, record=None):
     m, S_ = st.mu, st.C; n = len(m); var = np.clip(np.diag(S_), 1e-30, None); Soff = _zero_diag(S_)
     w = {(k, p): wick(m, var, k, p) for p in range(1, 5) for k in range(0, 5)}
     K3_21 = np.zeros((n, n)); K3_3 = np.zeros(n); mode = o.get("oldmode", "full"); old21 = np.zeros((n, n)); old3 = np.zeros(n)
-    for legs, age in st.young:
+    for entry in st.young:
+        legs, age = entry[0], entry[1]
+        if mode.startswith("dropage") and age == int(mode[7:]): continue     # diagnostic: marginal value of one age
+        if age >= o["window"] and mode == "spec":           # diagnostic: old sources read through their spectral (birth-truncated) version
+            if len(entry) < 3 or entry[2] is None: continue
+            legs = entry[2]
         s21, s3 = slices_from_legs(legs)
-        if age >= o["window"] and mode != "full":          # diagnostic: what the old sources' slices are worth
+        if age >= o["window"] and mode not in ("full", "spec"):          # diagnostic: what the old sources' slices are worth
             if mode == "none": continue
             if mode == "diag": s21 = 0.0 * s21
             if mode.startswith("scale"): f = float(mode[5:]); s21 = f * s21; s3 = f * s3
@@ -134,7 +139,7 @@ def nonlin_step(st, o, rng, record=None):
     a22, a4 = radial_consts(n); c4 = (a22 * K4h_22.sum() + a4 * K4h_4.sum()) * o.get("c4scale", 1.0)
     Phi = w[(1, 1)]; w2 = w[(2, 1)]
     # gate all tiers, build the star block, then the residual block from the exact slices
-    young = [(tuple(L * Phi[:, None] for L in legs), age + 1) for legs, age in st.young]
+    young = [(tuple(L * Phi[:, None] for L in e[0]), e[1] + 1) + ((tuple(L * Phi[:, None] for L in e[2]),) if len(e) > 2 and e[2] is not None else ()) for e in st.young]
     Q, S, cp = st.Q, st.S, st.cp
     if Q is not None:
         Qg, R = np.linalg.qr(Phi[:, None] * Q); Q = Qg
@@ -161,21 +166,39 @@ def nonlin_step(st, o, rng, record=None):
         imp_res = np.sum(resid[0] ** 2, axis=0)                                       # column norms of the residual leg
         star = keep_cols(star, imp_star); resid = keep_cols(resid, imp_res)
     newborn = tuple(np.concatenate([F, G], axis=1) for F, G in zip(star, resid))
-    young.append((newborn, 0))
+    if mode == "spec":
+        # spectral truncation of the birth: star block from the top-k eigenpairs of Soff (rank k^2 CP), residual block
+        # exact ("full"), diagonal kappa_3 only ("diag"), or diagonal + rank-k R21 ("spec")
+        kk = int(o.get("spec", 1)); lam, V = np.linalg.eigh(Soff); idx = np.argsort(-np.abs(lam))[:kk]; lam, V = lam[idx], V[:, idx]
+        P = np.repeat(np.arange(kk), kk); Qi = np.tile(np.arange(kk), kk)
+        star_c = ((Phi[:, None] * V[:, P]) * lam[P][None, :], 3.0 * w2[:, None] * V[:, P] * V[:, Qi], (Phi[:, None] * V[:, Qi]) * lam[Qi][None, :])
+        sr = o.get("specres", "full")
+        if sr == "full": resid_c = resid
+        elif sr == "diag": resid_c = (R3[:, None] * eye, eye, eye)
+        else:
+            U, sv, Vt = np.linalg.svd(3.0 * R21.T, full_matrices=False); kr = int(o.get("specres_k", kk))
+            resid_c = (np.concatenate([R3[:, None] * eye] + [sv[q] * np.outer(U[:, q], Vt[q]) for q in range(kr)], axis=1),
+                       np.concatenate([eye] * (kr + 1), axis=1), np.concatenate([eye] * (kr + 1), axis=1))
+        newborn_c = tuple(np.concatenate([F, G], axis=1) for F, G in zip(star_c, resid_c))
+        if record is not None: record["spec_capture"] = float(np.sum(lam ** 2) / max(np.sum(Soff ** 2), 1e-300))
+        young.append((newborn, 0, newborn_c))
+    else:
+        young.append((newborn, 0))
     # aging: merge sources of age >= window into the Tucker tier
     keep = []; fixed = None
     if o.get("collective", 0):
         v = mu_h.copy()
         for _ in range(4): v = Ch @ v; v /= np.linalg.norm(v)          # top eigenvector of the post-activation covariance
         fixed = np.stack([mu_h, np.diag(Ch), np.ones(n), v], axis=1)
-    for legs, age in young:
+    for entry in young:
+        legs, age = entry[0], entry[1]
         if age >= o["window"] and o.get("tucker", 1):
             if o.get("tier", "tucker") == "cp":
                 Q, cp = merge_into_cp(Q, cp, legs, o["k"], rng, fixed)
             else:
                 Q, S = merge_into_tucker(Q, S, legs, o["k"], rng, fixed)
         else:
-            keep.append((legs, age))
+            keep.append(entry)
     if record is not None:
         record.update(dict(m=m, var=var, K3_21=K3_21, K3_3=K3_3, mu_h=mu_h, Ch=Ch, K3h_21=K3h_21, K3h_3=K3h_3, c4=c4, young=len(keep)))
     return State(mu_h, Ch, keep, Q, S, c4, np.eye(n), cp)
