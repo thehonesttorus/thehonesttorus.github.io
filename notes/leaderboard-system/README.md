@@ -586,3 +586,37 @@ against the same batch's V35:
 
 Each column costs about 0.46 units (0.26% of the bill: Z transport, MP, PPL, the t1 einsum and the birth range
 finder, from the profile of 11e). So R_RES = 8 must buy more than about 1% raw to pay.
+
+**P13, measured** (same harness and pairing; `outputs/fold_crowd_16nets/`):
+
+| variant | raw against V35 | better on | FLOPs |
+|---|---|---|---|
+| V35 + R_RES 8 | -0.98% +- 0.38 | 12/16 | +0.98% |
+| fold + R_RES 8 | **-8.17% +- 1.09** | 16/16 | -0.27% |
+| V35 + R_RES 16 | -1.44% +- 0.52 | 12/16 | +2.96% |
+| fold + R_RES 16 | -9.24% +- 1.15 | 16/16 | +1.70% |
+
+- **P13 holds.** Four more columns gain 2.4 points on the fold (Delta_F) against 1.0 on V35 (Delta_V), so
+  Delta_F - Delta_V = -1.4.
+- **The cost matches 11d's estimate.** Each column costs 0.25% of FLOPs.
+- **The measured scored-regime effect so far.** The fold on the adopted system at R_RES 4, free-running in the
+  scored regime, no counterterms, 64 networks so far: raw -4.71% +- 0.59, C/B -1.37%, adjusted **-6.02% +- 0.58**
+  (better on 60/64). The full count is in 11f.
+
+**11e. The additive part through its exact legs (`V52_FB_FOLD=3`; stated before its runs).** P9 and P13 locate the
+fold's one cost in the additive part u 1^T + 1 v^T of D21. Through the arm's M-block share it puts a rank-<=4 term into
+the birth residual, which then competes with the residual's own directions. Mode 3 removes it at the source:
+- the additive part rides the exact rank-2 feedback legs of V49 (row and column sums, all orders, no M share);
+- only the flat part D21 - u 1^T - 1 v^T is folded (first order, with the residual correction);
+- the flat part's rows at the dropped (saturated) neurons are zeroed as D21's are.
+
+Cost: the fold's -1.25% plus the rank-2 legs' +1.3%, so about V35's bill.
+- **P14 (cold, networks 0-15, paired against V35).**
+  - Mode 3 at R_RES 4: raw within 1.5 points of fold + R_RES 8 (-8.2%), better on at least 15/16, FLOPs within
+    -0.1% to +0.3% of V35.
+  - Mode 3 + R_RES 8 gains over mode 3 what R_RES 8 gains on V35 (-1.0), within 0.7 points: no crowding left.
+- **P15 (scored, all 100 networks, on the adopted system, no counterterms first).**
+  - The better of fold + R_RES 8 and mode 3, chosen on networks 0-49 free-running adjusted, then refitted on 0-49
+    and judged free-running on 50-99, beats the pre-registered P12 candidate (the fold at R_RES 4, refitted the same
+    way) in held-out adjusted MSE.
+  - Expected margin: 1-2.5%, the cold raw advantage less its cost difference.

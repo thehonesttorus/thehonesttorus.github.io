@@ -388,7 +388,8 @@ FB_SY = float(_os.environ.get("V40_FB_SY", "1.0"))
 FB_ADD = _os.environ.get("V49_FB_ADD", "0") == "1"
 # V52 (note XXXIX section 11): the exact D21 feedback folded into the newborn's arm to first order (O(n^2) at birth,
 # no thin legs); replaces the V18 range-finder feedback when on. 1: the birth M block's residual absorbs the arm's
-# change, so M stays exact up to its compression; 2 (ablation): it does not.
+# change, so M stays exact up to its compression; 2 (ablation): it does not; 3: only the flat part of D21 is folded (as 1)
+# and its additive part u 1^T + 1 v^T rides the exact rank-2 feedback legs (V49), so it never enters the M block.
 FB_FOLD = int(_os.environ.get("V52_FB_FOLD", "0"))
 KD = int(_os.environ.get("V39_KD", "0"))
 KD_AMP = float(_os.environ.get("V39_KD_AMP", "1.0"))
@@ -1024,7 +1025,8 @@ class Estimator(BaseEstimator):
             return fnp.matmul(X, Y, out=out)
         self._s_hub = s_lev
         r = min(int(self.R_RES), n)  # smoke shapes can be narrower than the rank
-        rfb = 0 if (NO_FB or FB_FOLD) else min(int(self.R_FB), n)  # V18 feedback rank (V52: folded into the arm instead)
+        # V18 feedback rank (V52: folded into the arm instead; mode 3 keeps the exact rank-2 additive legs)
+        rfb = 0 if (NO_FB or FB_FOLD in (1, 2)) else (2 if FB_FOLD == 3 else min(int(self.R_FB), n))
         # V21: shared-basis state for old sources (suite-width only: r must be < n)
         r_old = int(self.R_OLD)
         confine = (not NO_CONFINE) and r_old < n
@@ -1926,7 +1928,26 @@ class Estimator(BaseEstimator):
             k_b = 0 if A_st is None else A_st.shape[0]
             a_b = fnp.multiply(w1col, C_off, out=legs["AP0"][k_b, 0])
             fold_d = None
+            _add = None
             if FB_FOLD and mode == 1 and D21 is not None:
+                D21f = D21
+                if FB_FOLD == 3:
+                    # V52 mode 3 (note XXXIX section 11e): D21 = u 1^T + 1 v^T + flat (the five-component split). The
+                    # additive part goes through the exact rank-2 legs below; only the flat part is folded. The arm's
+                    # M-block share is then flat: no low-rank part competes for the residual's top directions (P13).
+                    _rs = fnp.sum(D21, axis=1)
+                    _cs = fnp.sum(D21, axis=0)
+                    _c0 = fnp.sum(_rs) / float(n * (n - 1))
+                    _al = ((_rs + _cs) * 0.5 - _c0 * float(n - 1)) / float(n - 2)
+                    _be = (_rs - _cs) * (0.5 / n)
+                    _add = (_al + _be + _c0, _al - _be)
+                    D21f = fnp.subtract(D21, (_add[0])[:, None], out=NN("fold_f"))
+                    fnp.subtract(D21f, (_add[1])[None, :], out=D21f)
+                    D21f = _zero_diag(D21f)
+                    if sat_mask is not None and SAT_MODE != "t":
+                        # D21's dropped rows are zero, its flat part's are not: keep the arm's dropped rows at zero, as
+                        # the compacted transport (V35_SATC) assumes (the additive legs lose theirs through WD)
+                        fnp.multiply(D21f, sat_mask[:, None], out=D21f)
                 # V52 (note XXXIX section 11): first-order arm folding of the exact D21 feedback. The feedback adds
                 # Sym(a_c x e_c x (3 Yt_c + w2_c Xt_c)) to the star sum_c 3 w2_c Sym(a_c x e_c x a_c) (Sym is linear and
                 # symmetric), which to first order in D21 is the same star with the arm a_c -> a_c + d_c,
@@ -1934,8 +1955,8 @@ class Estimator(BaseEstimator):
                 # O(n^2) at birth and no new leg: the folded arm rides the young transport, the hub and the confinement
                 # like any arm. The second-order (Gamma x Gamma) terms differ from the thin legs' Xt x Yt.
                 _rt = W_all[:, self._i31] / (w2 + 1e-30)          # c(1,3) / c(1,2) = -alpha / sigma
-                fold_d = fnp.multiply((w2 * (0.25 * FB_SX))[:, None], D21, out=NN("fold_d"))      # Xt / 6
-                _fy = fnp.multiply(w1col * (0.25 * FB_SY), D21.T, out=NN("fold_y"))
+                fold_d = fnp.multiply((w2 * (0.25 * FB_SX))[:, None], D21f, out=NN("fold_d"))     # Xt / 6
+                _fy = fnp.multiply(w1col * (0.25 * FB_SY), D21f.T, out=NN("fold_y"))
                 fnp.multiply(_fy, (_rt)[None, :], out=_fy)                                         # Yt d(1 / 2 w2)
                 fnp.add(fold_d, _fy, out=fold_d)
                 fnp.add(a_b, fold_d, out=a_b)
@@ -1943,19 +1964,21 @@ class Estimator(BaseEstimator):
                 # V18 (F69): D21 feedback thin legs. D21 ~ Qf Bf (rank rfb range finder,
                 # one power iteration, sketch = a slice of the layer weight).
                 w3 = W_all[:, self._i31]
-                if FB_ADD and rfb == 2:
+                if (FB_ADD or FB_FOLD == 3) and rfb == 2:
                     # V49 (note XXXIX): the exact additive part of D21 (row and column effects: the S0 + S1 + A1
                     # components of the five-component split) in place of the rank-2 range finder,
                     # D21_add = u 1^T + 1 v^T (off the diagonal), from the row and column sums in O(n^2).
-                    _rs = fnp.sum(D21, axis=1)
-                    _cs = fnp.sum(D21, axis=0)
-                    _c0 = fnp.sum(_rs) / float(n * (n - 1))
-                    _al = ((_rs + _cs) * 0.5 - _c0 * float(n - 1)) / float(n - 2)
-                    _be = (_rs - _cs) * (0.5 / n)
+                    if _add is None:
+                        _rs = fnp.sum(D21, axis=1)
+                        _cs = fnp.sum(D21, axis=0)
+                        _c0 = fnp.sum(_rs) / float(n * (n - 1))
+                        _al = ((_rs + _cs) * 0.5 - _c0 * float(n - 1)) / float(n - 2)
+                        _be = (_rs - _cs) * (0.5 / n)
+                        _add = (_al + _be + _c0, _al - _be)
                     _on = fnp.ones(n, dtype=f32)
-                    _Lf = fnp.stack([_al + _be + _c0, _on], axis=1)          # (n, 2) left factor
+                    _Lf = fnp.stack([_add[0], _on], axis=1)                  # (n, 2) left factor
                     Qf, _ = fnp.linalg.qr(_Lf)
-                    Bf = (Qf.T @ _Lf) @ fnp.stack([_on, _al - _be], axis=0)   # D21_add = Qf @ Bf
+                    Bf = (Qf.T @ _Lf) @ fnp.stack([_on, _add[1]], axis=0)    # D21_add = Qf @ Bf
                 else:
                     Omf = pool.get("omf", (n, rfb))  # V20: contiguous sketch
                     fnp.copyto(Omf, w32[:, :rfb])
@@ -2115,7 +2138,7 @@ class Estimator(BaseEstimator):
             S_sep = fnp.multiply((e_b)[:, None], C_off, out=NN("ssep"))
             S_sep = _zero_diag(fnp.multiply(S_sep, (w1)[None, :], out=S_sep))
             Rres = fnp.subtract(S21, S_sep, out=S21)
-            if fold_d is not None and FB_FOLD == 1:
+            if fold_d is not None and FB_FOLD in (1, 3):
                 # V52: the A leg now carries 3 (a + d) d(e) in the M block's separable part; the residual absorbs the
                 # difference d(e) d^T before its rank-R_RES compression, so M stays exact up to that compression.
                 # The exact (2,1) slice holds two full-rank first-order D21 terms that only this residual carried,
