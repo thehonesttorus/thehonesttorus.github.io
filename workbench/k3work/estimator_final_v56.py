@@ -1044,6 +1044,10 @@ class Estimator(BaseEstimator):
         T1 = NN("t1")   # layer-local (n,n) scratch
 
         mu = fnp.zeros(n, dtype=f32)
+        if getattr(self, "in_mean", None) is not None:
+            # research only (localization experiments): input N(m, I) with m = self.in_mean; N(m, sI) is
+            # sqrt(s) N(m / sqrt(s), I) by homogeneity. Production never sets it.
+            mu = fnp.asarray(self.in_mean, dtype=f32)
         C = flops.as_symmetric(fnp.eye(n, dtype=f32), symmetry=(0, 1))
         A_st = P_st = Z_st = L_st = None
         newborn = None

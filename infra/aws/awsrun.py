@@ -16,18 +16,24 @@ Design:
   moment it finishes, and `watch` prints them as they arrive.
 - Cost: instances stop themselves after IDLE minutes with no task running (a systemd watchdog; stop, not
   terminate, so a restart is quick).
+- Regions: EC2 quotas are per region, so the fleet spans REGIONS (env CLAUDE_AWS_REGIONS=r1,r2,... overrides).
+  The bucket stays in the home region (AWS_DEFAULT_REGION, the bucket's); every instance syncs from and uploads to
+  it with that --region. Another region gets its own claude-whest-sg (no inbound) in its default VPC, created on
+  first launch there (state.json "sg_by_region"); the instance profile is IAM, hence global.
 
-  python3 infra/aws/awsrun.py launch N TYPE [spot]     launch N fleet instances (e.g. 2 c7a.48xlarge)
-  python3 infra/aws/awsrun.py list                     fleet instances, state, cores, readiness
+  python3 infra/aws/awsrun.py launch N TYPE [spot] [--region R]   launch N fleet instances (e.g. 2 c7a.48xlarge)
+  python3 infra/aws/awsrun.py list                     fleet instances in all regions, state, readiness
   python3 infra/aws/awsrun.py start|stop all|NAME
   python3 infra/aws/awsrun.py terminate NAME
   python3 infra/aws/awsrun.py data LOCALFILE... [--k3work]   upload data files (default data/official/)
-  python3 infra/aws/awsrun.py batch JOB FILE [--threads T] [--only NAME,...] [--slots K]
-                                                             tasks "tag<TAB>command" (one per line); returns at once
+  python3 infra/aws/awsrun.py batch JOB FILE [--threads T] [--only NAME,...] [--slots K] [--mem GB]
+                                                             tasks "tag<TAB>command" (one per line); returns at once.
+                                                             Slots = min(cores / T, 0.94 memory / GB), GB default 10
   python3 infra/aws/awsrun.py watch JOB                      stream results as they arrive; summary.txt at the end
   python3 infra/aws/awsrun.py get JOB [PATTERN]              download results/JOB/ to scratchpad/aws/results/JOB
 """
-import base64, fnmatch, hashlib, io, json, os, sys, tarfile, time
+import base64, fnmatch, functools, hashlib, io, json, os, sys, tarfile, time
+from concurrent.futures import ThreadPoolExecutor
 import boto3
 
 TAG = {"Key": "Project", "Value": "claude-whest"}
@@ -39,13 +45,31 @@ SCRATCH = os.environ.get("CLAUDE_AWS_DIR", "/tmp/claude-0/-home-user-thehonestto
                          "2cab30f0-c454-5769-8d9a-8195cd80a5f3/scratchpad/aws")
 ROLE = "claude-ec2-runner"
 IDLE_MIN = 30
+AMI_PARAM = "/aws/service/canonical/ubuntu/server/24.04/stable/current/amd64/hvm/ebs-gp3/ami-id"
 S = boto3.session.Session()
-REGION = S.region_name
-ec2, s3, ssm = S.client("ec2"), S.client("s3"), S.client("ssm")
+REGION = S.region_name  # home region: the bucket and state.json's "sg" live here
+REGIONS = os.environ.get("CLAUDE_AWS_REGIONS", "eu-north-1,eu-west-1,eu-central-1,eu-west-2,"
+                         "us-east-1,us-east-2,us-west-2").split(",")
+_CLIENTS = {}
+
+
+def cl(service, region=REGION):
+    """boto3 client for service in region, cached (create them in the main thread: sessions are not thread-safe)"""
+    if (service, region) not in _CLIENTS:
+        _CLIENTS[service, region] = S.client(service, region_name=region)
+    return _CLIENTS[service, region]
+
+
+s3 = cl("s3")
 
 
 def state():
     return json.load(open(os.path.join(SCRATCH, "state.json")))
+
+
+def save(st):
+    p = os.path.join(SCRATCH, "state.json")
+    json.dump(st, open(p + ".tmp", "w"), indent=1); os.replace(p + ".tmp", p)
 
 
 def boot_script(bucket):
@@ -88,25 +112,61 @@ touch /opt/data/READY
 
 
 def fleet(states=("pending", "running", "stopping", "stopped")):
+    """fleet instances in all REGIONS (queried in parallel); each carries its region as x["Region"]"""
     f = [{"Name": "tag:Project", "Values": [TAG["Value"]]}, {"Name": "tag:Fleet", "Values": [FLEET["Value"]]},
          {"Name": "instance-state-name", "Values": list(states)}]
+    clients = [(r, cl("ec2", r)) for r in REGIONS]
     out = []
-    for r in ec2.describe_instances(Filters=f)["Reservations"]:
-        out += r["Instances"]
-    return sorted(out, key=lambda x: _name(x))
+    with ThreadPoolExecutor(len(clients)) as pool:
+        for reg, rs in pool.map(lambda rc: (rc[0], rc[1].describe_instances(Filters=f)["Reservations"]), clients):
+            for r in rs:
+                out += [dict(x, Region=reg) for x in r["Instances"]]
+    return sorted(out, key=lambda x: (len(_name(x)), _name(x)))  # fleet2 before fleet10
 
 
 def _name(x):
     return next((t["Value"] for t in x.get("Tags", []) if t["Key"] == "Name"), "?")
 
 
-def _vcpus(itype):
-    return ec2.describe_instance_types(InstanceTypes=[itype])["InstanceTypes"][0]["VCpuInfo"]["DefaultVCpus"]
+@functools.lru_cache(maxsize=None)
+def _itype(itype, region=REGION):
+    return cl("ec2", region).describe_instance_types(InstanceTypes=[itype])["InstanceTypes"][0]
 
 
-def launch(n, itype, spot=False):
+def _vcpus(itype, region=REGION):
+    return _itype(itype, region)["VCpuInfo"]["DefaultVCpus"]
+
+
+def _mem_gb(itype, region=REGION):
+    return _itype(itype, region)["MemoryInfo"]["SizeInMiB"] / 1024
+
+
+def _sg(region):
+    """the security group for region: state.json's "sg" at home, else claude-whest-sg in that region's default VPC
+    (no inbound rules; SSM needs only the default all-egress rule), found or created once, kept in "sg_by_region"."""
     st = state()
-    ami = ssm.get_parameter(Name="/aws/service/canonical/ubuntu/server/24.04/stable/current/amd64/hvm/ebs-gp3/ami-id")["Parameter"]["Value"]
+    if region == REGION:
+        return st["sg"]
+    if region not in st.get("sg_by_region", {}):
+        e = cl("ec2", region)
+        vpc = e.describe_vpcs(Filters=[{"Name": "isDefault", "Values": ["true"]}])["Vpcs"][0]["VpcId"]
+        old = e.describe_security_groups(Filters=[{"Name": "group-name", "Values": ["claude-whest-sg"]},
+                                                  {"Name": "vpc-id", "Values": [vpc]},
+                                                  {"Name": "tag:Project", "Values": [TAG["Value"]]}])["SecurityGroups"]
+        sg = old[0]["GroupId"] if old else e.create_security_group(
+            GroupName="claude-whest-sg", Description="claude-whest runner: no inbound", VpcId=vpc,
+            TagSpecifications=[{"ResourceType": "security-group", "Tags": [TAG]}])["GroupId"]
+        st = state(); st.setdefault("sg_by_region", {})[region] = sg; save(st)
+        print(f"security group {sg} in {region} ({vpc})")
+    return st["sg_by_region"][region]
+
+
+def launch(n, itype, spot=False, region=None):
+    region = region or REGION
+    if region not in REGIONS:
+        sys.exit(f"region {region} is not in REGIONS {REGIONS} (set CLAUDE_AWS_REGIONS)")
+    st = state(); sg = _sg(region)
+    ami = cl("ssm", region).get_parameter(Name=AMI_PARAM)["Parameter"]["Value"]
     have = {_name(x) for x in fleet()}
     for _ in range(n):
         i = 1
@@ -114,7 +174,7 @@ def launch(n, itype, spot=False):
             i += 1
         name = f"fleet{i}"; have.add(name)
         kw = dict(ImageId=ami, InstanceType=itype, MinCount=1, MaxCount=1, UserData=boot_script(st["bucket"]),
-                  IamInstanceProfile={"Name": ROLE}, SecurityGroupIds=[st["sg"]],
+                  IamInstanceProfile={"Name": ROLE}, SecurityGroupIds=[sg],
                   InstanceInitiatedShutdownBehavior="stop",
                   BlockDeviceMappings=[{"DeviceName": "/dev/sda1", "Ebs": {"VolumeSize": 64, "VolumeType": "gp3",
                                                                             "Throughput": 500, "Iops": 6000,
@@ -126,50 +186,55 @@ def launch(n, itype, spot=False):
             kw["InstanceMarketOptions"] = {"MarketType": "spot", "SpotOptions": {"SpotInstanceType": "persistent",
                                                                                  "InstanceInterruptionBehavior": "stop"}}
         try:
-            r = ec2.run_instances(**kw)["Instances"][0]
+            r = cl("ec2", region).run_instances(**kw)["Instances"][0]
         except Exception as e:
-            print(f"{name}: launch refused: {str(e)[:400]}"); return
-        print(f"launched {name}: {r['InstanceId']} {itype} {'spot' if spot else 'on-demand'}")
+            print(f"{name}: launch refused in {region}: {str(e)[:400]}"); return
+        print(f"launched {name}: {r['InstanceId']} {itype} {'spot' if spot else 'on-demand'} in {region}")
 
 
-def _ssm(iids, script, timeout=600, wait=True):
-    c = ssm.send_command(InstanceIds=iids, DocumentName="AWS-RunShellScript",
-                         Parameters={"commands": [script], "executionTimeout": [str(timeout)]})["Command"]["CommandId"]
+def _ssm(xs, script, timeout=600, wait=True):
+    """run script on fleet instances xs (one send_command per region); returns {region: command id}, {iid: result}"""
+    cmds = {reg: cl("ssm", reg).send_command(
+                InstanceIds=[x["InstanceId"] for x in xs if x["Region"] == reg], DocumentName="AWS-RunShellScript",
+                Parameters={"commands": [script], "executionTimeout": [str(timeout)]})["Command"]["CommandId"]
+            for reg in sorted({x["Region"] for x in xs})}
     if not wait:
-        return c, {}
+        return cmds, {}
     res = {}
     for _ in range(timeout // 3 + 20):
         time.sleep(3)
-        for iid in iids:
+        for x in xs:
+            iid, c = x["InstanceId"], cl("ssm", x["Region"])
             if iid in res:
                 continue
             try:
-                inv = ssm.get_command_invocation(CommandId=c, InstanceId=iid)
-            except ssm.exceptions.InvocationDoesNotExist:
+                inv = c.get_command_invocation(CommandId=cmds[x["Region"]], InstanceId=iid)
+            except c.exceptions.InvocationDoesNotExist:
                 continue
             if inv["Status"] not in ("Pending", "InProgress", "Delayed"):
                 res[iid] = (inv["Status"], inv.get("StandardOutputContent", ""), inv.get("StandardErrorContent", ""))
-        if len(res) == len(iids):
+        if len(res) == len(xs):
             break
-    return c, res
+    return cmds, res
 
 
 def show():
     xs = fleet()
     online = {}
-    run = [x["InstanceId"] for x in xs if x["State"]["Name"] == "running"]
-    if run:
-        for i in ssm.describe_instance_information(Filters=[{"Key": "InstanceIds", "Values": run}])["InstanceInformationList"]:
+    run = [x for x in xs if x["State"]["Name"] == "running"]
+    for reg in sorted({x["Region"] for x in run}):
+        ids = [x["InstanceId"] for x in run if x["Region"] == reg]
+        for i in cl("ssm", reg).describe_instance_information(
+                Filters=[{"Key": "InstanceIds", "Values": ids}])["InstanceInformationList"]:
             online[i["InstanceId"]] = i.get("PingStatus")
-        _, res = _ssm([i for i in run if online.get(i) == "Online"] or run[:0],
-                      "test -f /opt/data/READY && echo READY || echo booting; pgrep -fc '/opt/run/.*/task.sh' || true",
-                      timeout=60) if any(online.get(i) == "Online" for i in run) else (None, {})
-    else:
-        res = {}
+    up = [x for x in run if online.get(x["InstanceId"]) == "Online"]
+    _, res = _ssm(up, "test -f /opt/data/READY && echo READY || echo booting; pgrep -fc '/opt/run/.*/task.sh' || true",
+                  timeout=60) if up else (None, {})
     for x in xs:
         iid = x["InstanceId"]; r = res.get(iid)
         extra = " ".join(r[1].split()) if r else ""
-        print(f"{_name(x):8s} {iid} {x['InstanceType']:14s} {x['State']['Name']:9s} ssm={online.get(iid, '-'):7s} {extra}")
+        print(f"{_name(x):8s} {x['Region']:14s} {iid} {x['InstanceType']:14s} {x['State']['Name']:9s} "
+              f"ssm={online.get(iid, '-'):7s} {extra}")
 
 
 def power(action, which):
@@ -177,11 +242,16 @@ def power(action, which):
     sel = xs if which == "all" else [x for x in xs if _name(x) == which]
     if not sel:
         sys.exit(f"no fleet instance {which}")
-    ids = [x["InstanceId"] for x in sel]
     if action == "terminate" and which == "all":
         sys.exit("terminate one instance at a time")
-    {"start": ec2.start_instances, "stop": ec2.stop_instances, "terminate": ec2.terminate_instances}[action](InstanceIds=ids)
-    print(f"{action}: " + " ".join(_name(x) for x in sel))
+    for reg in sorted({x["Region"] for x in sel}):  # one call per region; a refusal (e.g. quota) skips only that region
+        e = cl("ec2", reg); xr = [x for x in sel if x["Region"] == reg]
+        try:
+            {"start": e.start_instances, "stop": e.stop_instances, "terminate": e.terminate_instances}[action](
+                InstanceIds=[x["InstanceId"] for x in xr])
+            print(f"{action}: " + " ".join(_name(x) for x in xr) + f" ({reg})")
+        except Exception as ex:
+            print(f"{action} refused in {reg} for {' '.join(_name(x) for x in xr)}: {str(ex)[:400]}")
 
 
 def data(files, sub="official"):
@@ -236,16 +306,20 @@ rm -rf "$W"
 """
 
 
-def batch(job, path, threads=4, only=None, nslots=None):
+def batch(job, path, threads=4, only=None, nslots=None, mem=10.0):
     st = state(); bkt = st["bucket"]
     tasks = [l.rstrip("\n").split("\t", 1) for l in open(path) if l.strip() and not l.startswith("#")]
     run = [x for x in fleet(("running",)) if only is None or _name(x) in only]
     if not run:
         sys.exit("no running fleet instance (awsrun.py start all, or launch)")
     code = bundle()
-    cores = {x["InstanceId"]: _vcpus(x["InstanceType"]) for x in run}
-    # weighted round robin: instance i gets tasks in proportion to its slots (--slots K caps them, e.g. for timing)
-    slots = {i: max(1, c // threads) if nslots is None else nslots for i, c in cores.items()}
+    inst = {x["InstanceId"]: x for x in run}
+    cores = {x["InstanceId"]: _vcpus(x["InstanceType"], x["Region"]) for x in run}
+    gbs = {x["InstanceId"]: _mem_gb(x["InstanceType"], x["Region"]) for x in run}
+    # slots: cores / threads, capped by memory (--mem GB per task, 6% kept for the system); --slots K overrides.
+    # Weighted round robin: instance i gets tasks in proportion to its slots.
+    slots = {i: max(1, min(c // threads, int(0.94 * gbs[i] // mem))) if nslots is None else nslots
+             for i, c in cores.items()}
     order = sorted(slots, key=lambda i: -slots[i]); share = {i: [] for i in order}; load = {i: 0.0 for i in order}
     for t in tasks:
         i = min(order, key=lambda k: (load[k] + 1) / slots[k]); share[i].append(t); load[i] += 1
@@ -273,8 +347,8 @@ touch /opt/run/.last
 nohup bash -c "xargs -P {slots[iid]} -I{{}} $J/task.sh {{}} < $J/tags.txt" > $J/xargs.log 2>&1 &
 echo "{job}: {len(mine)} tasks, {slots[iid]} slots x {threads} threads on $(hostname) ($(nproc) cores)"
 """
-        _ssm([iid], script, timeout=1200, wait=False)
-        print(f"{job}: {len(mine)} tasks -> {iid} ({slots[iid]} slots)")
+        _ssm([inst[iid]], script, timeout=1200, wait=False)
+        print(f"{job}: {len(mine)} tasks -> {_name(inst[iid])} {iid} {inst[iid]['Region']} ({slots[iid]} slots)")
     os.makedirs(os.path.join(SCRATCH, "results", job), exist_ok=True)
     json.dump([t for t, _ in tasks], open(os.path.join(SCRATCH, "results", job, "tags.json"), "w"))
 
@@ -323,13 +397,15 @@ if __name__ == "__main__":
     if not a:
         sys.exit(__doc__)
     c = a[0]
-    if c == "launch": launch(int(a[1]), a[2], spot=("spot" in a[3:]))
+    if c == "launch": launch(int(a[1]), a[2], spot=("spot" in a[3:]),
+                             region=a[a.index("--region") + 1] if "--region" in a else None)
     elif c == "list": show()
     elif c in ("start", "stop", "terminate"): power(c, a[1])
     elif c == "data": data([x for x in a[1:] if not x.startswith("--")], "k3work" if "--k3work" in a else "official")
     elif c == "batch": batch(a[1], a[2], int(a[a.index("--threads") + 1]) if "--threads" in a else 4,
                              a[a.index("--only") + 1].split(",") if "--only" in a else None,
-                             int(a[a.index("--slots") + 1]) if "--slots" in a else None)
+                             int(a[a.index("--slots") + 1]) if "--slots" in a else None,
+                             float(a[a.index("--mem") + 1]) if "--mem" in a else 10.0)
     elif c == "watch": watch(a[1])
     elif c == "get": get(a[1], a[2] if len(a) > 2 else "*")
     else: sys.exit(__doc__)
