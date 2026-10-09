@@ -550,3 +550,39 @@ goes on the adopted system (V35 + pair), with its counterterms refitted on netwo
   sector of D21.
 
 Adoption follows the rule of section 3: held-out, more than two standard errors, cost included.
+
+**11d. P8-P11, measured** (cold harness, networks 0-15, paired against V35 rerun in the same batch;
+`outputs/fold_cold_16nets/`). The V35 rerun reproduces section 7's V35 to 0.04% (cross-hardware BLAS rounding).
+
+| variant | raw | better on | FLOPs | prediction |
+|---|---|---|---|---|
+| fold (`V52_FB_FOLD=1`) | **-5.76% +- 1.20** | 14/16 | **-1.25%** | P8: -5% to -10%, >= 14/16, FLOPs -0.5% to -1.5%: **holds** |
+| fold, GC2 at the theorem weight (`V40_FB_SX=2`) | -2.35% +- 1.69 | 11/16 | -1.25% | P10: 0-2 points better than P8: **fails** (3.4 worse) |
+| fold, no residual correction (`V52_FB_FOLD=2`) | +139.9% +- 8.4 | 0/16 | -1.26% | P9: within 1 point of P8: **fails** |
+| V35, exact residual (`V17_R_RES=1024`) | -3.34% +- 1.18 | 12/16 | +270% | P11: -3% to -8%: holds |
+| fold, exact residual | **-11.51% +- 1.21** | 16/16 | +269% | P11: beats both: holds |
+
+- **The fold carries the feedback at no cost.** At the production rank it holds 67% of the thin-leg exact
+  feedback's -8.59%, and it removes the rank-2 legs' 1.3% of the bill.
+- **At the exact residual it beats the thin-leg exact feedback**: -11.5% against -8.6%. That is the exact
+  first-order star plus the exact (2,1) slice.
+- **The arm's second duty is large and first order (P9).** Without the correction, M carries 3 d d(e) unopposed and
+  the output is 2.4 times worse. P9's reasoning (rank 4 keeps little of a flat term) missed the low-rank part of
+  d(e) d^T. D21's additive part u 1^T + 1 v^T (section 5: the dominant part, captured 0.998 at rank 2) makes
+  d_add rank <= 4, and the correction removes exactly that part through the residual's top directions.
+- **The cost of that.** At R_RES = 4 the correction's low-rank part then competes with the residual's own top four
+  directions. That is the likely reason the fold gains 5.7 points more at the exact residual (fold: -5.8 -> -11.5)
+  than V35 does (-3.3).
+- **GC2 at the theorem weight still loses (P10).** The arm then carries R1 exactly, but the star's overshoot costs
+  more. The half weight stays, as in P5 and P6.
+
+**P13 (crowding; stated before its runs).** If the correction's rank-<=4 additive part crowds the residual's own
+directions, four more residual columns help the fold more than they help V35. Measured as cold, networks 0-15, paired
+against the same batch's V35:
+- V35 + `V17_R_RES=8` gains Delta_V;
+- fold + `V17_R_RES=8` gains Delta_F over the fold;
+- prediction: Delta_F - Delta_V <= -0.5 points;
+- R_RES = 16 is run for both as the trend.
+
+Each column costs about 0.46 units (0.26% of the bill: Z transport, MP, PPL, the t1 einsum and the birth range
+finder, from the profile of 11e). So R_RES = 8 must buy more than about 1% raw to pay.
