@@ -5,7 +5,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from whest.k3chain3 import k3_chain3 as k3_chain2
 D, net = sys.argv[1], int(sys.argv[2]); opts = {}
 for a in sys.argv[3:]:
-    k, v = a.split("="); opts[k] = v if k == "k4" else (float(v) if "." in v else int(v))
+    k, v = a.split("="); opts[k] = v if k in ("k4", "k22gate") else (float(v) if "." in v else int(v))
 W = np.load(f"{D}/W_off{net}.npy"); mc = np.load(f"{D}/mccache_{net}.npz"); S = float(mc["S"])
 rec = {}; out, fl = k3_chain2(W, opts, record=rec); L, n, _ = W.shape
 z1 = mc["s1"] / S

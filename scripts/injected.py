@@ -4,13 +4,13 @@
 import sys, os, numpy as np
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from scipy.special import ndtr
-from whest.k3chain2 import k3_chain2
+from whest.k3chain3 import k3_chain3 as k3_chain2
 D, net = sys.argv[1], int(sys.argv[2])
 W = np.load(f"{D}/W_off{net}.npy").astype(np.float64); mt = np.load(f"{D}/truth_off{net}.npz")["m"].astype(np.float64)
 if sys.argv[3] == "--":
     opts = {}
     for a in sys.argv[4:]:
-        k, v = a.split("="); opts[k] = v if k == "k4" else (float(v) if "." in v else int(v))
+        k, v = a.split("="); opts[k] = v if k in ("k4", "k22gate") else (float(v) if "." in v else int(v))
     rec = {}; out, fl = k3_chain2(W, opts, record=rec); alphas = [rec[l]["alpha"] for l in range(len(rec))]
 else:
     z = np.load(sys.argv[3]); out = z["out"]; alphas = None; opts = sys.argv[3]

@@ -1,0 +1,65 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1.05in]{geometry}
+\usepackage{amsmath,amsthm,amssymb,mathtools,bm}
+\usepackage{booktabs,array,enumitem,microtype}
+\usepackage[colorlinks=true,linkcolor=blue!60!black,citecolor=blue!60!black,urlcolor=blue!60!black]{hyperref}
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]\newtheorem{proposition}[theorem]{Proposition}\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}\newtheorem{definition}[theorem]{Definition}\newtheorem{remark}[theorem]{Remark}\newtheorem{example}[theorem]{Example}
+\newcommand{\R}{\mathbb R}\newcommand{\E}{\mathbb E}\newcommand{\Var}{\operatorname{Var}}\newcommand{\Cov}{\operatorname{Cov}}
+\newcommand{\relu}{\operatorname{relu}}\newcommand{\diag}{\operatorname{diag}}\newcommand{\tr}{\operatorname{tr}}
+\newcommand{\kap}{\kappa}\newcommand{\Sym}{\operatorname{Sym}}\newcommand{\Hpl}{\mathrm{He}}
+\title{\textsc{Localization in the commutant, stage 9:}\\ \large the mean of a random \textsc{ReLU} network as a central localization,\\ with the exact slice transport, the collective-mode sensitivity law\\ and the capacity of input tilts}
+\author{Stage 9 of the quantum-cut / noncommutative-geometry programme}
+\date{9 October 2026}
+\begin{document}\maketitle
+\begin{abstract}
+We apply the stage-8 principle (a localization process is a positive martingale in the commutant, whose central part is
+the transverse measure on the leaf space) to the WhestBench problem: the per-neuron mean $\E\,h_L$ of a bias-free
+He-initialised \textsc{ReLU} multilayer perceptron with standard Gaussian input, $n=1024$, $L=16$. The cumulant chains that
+dominate the leaderboard are read as localizations: the births of non-Gaussianity at the \textsc{ReLU} kinks are the
+linear-tilt responses of the gate algebra, the chain is the trickle-down expansion of that algebra's product state, and
+the one object that no first-order chain carries correctly is the \emph{central} variable---the collective activity
+mode, a scale mixture---which is exactly the leaf-space part of the localization. Main results. (A) Input-side linear
+tilts have localization capacity $O(k/n)$ for the born non-Gaussianity and cost $\ge 2k+1$ chain evaluations: input
+localization is useless, which forces the neuron-side (gate) decomposition. (B) A sensitivity law: the output mean
+responds to a relative error $\varepsilon$ of the collective mode's variance with error $c\,\varepsilon$ per layer,
+$c\approx0.3$, so the collective mode must be accurate to $10^{-3}$ per layer while the bulk may be off by $10^{-1}$;
+on the official networks the chain's covariance is accurate everywhere except in that one direction. (C) The exact
+first-order transport of the $(2,1)$ slices and of the diagonal through \textsc{ReLU}, in closed form, including the
+transposed-slice and the $\kap_4\!\to\!\kap_3$ feeds, and the exact-by-homogeneity transport of the scale mixture. (D)
+On the official networks, the terms prescribed by the central/Cartan split account for the measured error ladder
+$8.5\cdot10^{-7}\to5.7\cdot10^{-7}$ of a clean chain and locate the remaining deficit in the transported third-cumulant
+slices (25\% low at depth). Every identity is checked by the accompanying script.
+\end{abstract}
+\tableofcontents
+\section{The problem and the principle}
+\input{sec_problem}
+\section{Births are linear-tilt responses of the gate algebra}
+\input{sec_births}
+\section{Capacity of input tilts}
+\input{sec_capacity}
+\section{The collective mode is the central variable}
+\input{sec_central}
+\section{Exact first-order transport through \textsc{ReLU}}
+\input{sec_transport}
+\section{What the chain costs: the pair floor}
+\input{sec_cost}
+\section{Measurements on the official networks}
+\input{sec_measure}
+\section{Dictionary and open problems}
+\input{sec_dictionary}
+\appendix
+\section{Verification}
+\input{sec_verify}
+\bibliographystyle{plain}
+\begin{thebibliography}{99}
+\bibitem{stage8} Stage 8 note: Localization in the commutant: modular tilts, Kikuchi--Toeplitz quantization and transverse measures (9 October 2026).
+\bibitem{Wu} W.~Wu, V.~Lecomte, M.~Winer, G.~Robinson, J.~Hilton, P.~Christiano, Estimating the expected output of wide random MLPs more efficiently than sampling, arXiv:2605.05179.
+\bibitem{AKV} N.~Anari, F.~Koehler, T.-D.~Vuong, Trickle-down in localization schemes and applications, arXiv:2407.16104.
+\bibitem{CE} Y.~Chen, R.~Eldan, Localization schemes: a framework for proving mixing bounds for Markov chains, FOCS 2022.
+\bibitem{Hanin} B.~Hanin, Random fully connected neural networks as perturbatively solvable hierarchies, arXiv:2204.01058.
+\bibitem{Connes} A.~Connes, Sur la th\'eorie non commutative de l'int\'egration, LNM 725 (1979).
+\end{thebibliography}
+\end{document}

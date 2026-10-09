@@ -5,7 +5,7 @@ from whest.k3chain3 import k3_chain3 as k3_chain2
 D = sys.argv[1]; nets = [int(a) for a in sys.argv[2:] if "=" not in a]; opts = {}
 for a in sys.argv[2:]:
     if "=" in a:
-        k, v = a.split("="); opts[k] = v if k in ("k4",) else (float(v) if "." in v else int(v))
+        k, v = a.split("="); opts[k] = v if k in ("k4", "k22gate") else (float(v) if "." in v else int(v))
 tag = os.environ.get("TAG", "k3v2")
 for net in nets:
     W = np.load(f"{D}/W_off{net}.npy"); mt = np.load(f"{D}/truth_off{net}.npz")["m"].astype(np.float64)

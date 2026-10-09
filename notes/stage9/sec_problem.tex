@@ -1,0 +1,107 @@
+\subsection{The estimation problem}
+Fix weights $W_1,\dots,W_L\in\R^{n\times n}$, drawn once from $N(0,2/n)$ (He initialisation) and then held fixed. For an
+input $x\in\R^n$ put $h_0=x$, $z_l=W_l h_{l-1}$, $h_l=\relu(z_l)$. The target is the vector of post-activation means
+\[
+u\;=\;\E_{x\sim N(0,I_n)}\,h_L(x)\in\R^n ,
+\]
+scored by the mean squared error over the $n$ neurons, multiplied by $\max(0.1,\,C/B)$ with $C$ the metered floating
+point count and $B=2^{41}$. The map $F=h_L$ is positively homogeneous of degree one and piecewise linear. The reference
+answer is a Monte Carlo average over $10^9$ inputs, whose per-neuron noise ($\sim10^{-5}$) is below every error
+discussed here.
+
+\subsection{Estimators are functions on the state space; exact ones are affine}
+Let $\mathcal S$ be the set of probability laws $\nu$ on $\R^n$ with enough moments. Every deterministic estimator we
+consider is a map $E:\mathcal S_0\to\R^n$ defined on a subfamily $\mathcal S_0\subseteq\mathcal S$ that contains the point
+masses $\delta_x$ and the Gaussians $N(m,\Sigma)$; a cumulant chain is defined on Gaussians by running its recursion
+from the given $(m,\Sigma)$, and on point masses by the forward pass, $E(\delta_x)=F(x)$. The exact answer
+\[
+u(\nu)=\nu(F)=\int F\,d\nu
+\]
+is \emph{affine} on $\mathcal S$. This is the whole content of exactness: in the commutant language of \cite{stage8},
+$u$ is the pairing of the state $\nu$ with the observable $F$, and a localization process of $\nu$ (a positive
+martingale of Radon--Nikodym derivatives in the commutant) turns $u$ into a martingale. A chain is not affine: it is
+exact on point masses and wrong on mixtures, and the gap between the two is what we have to compute.
+
+\begin{definition}[Localization process]
+A localization process of $\nu$ is a sequence or continuous family $(\nu_t)_{t\ge0}$ of random laws with $\nu_0=\nu$,
+adapted to a filtration $(\mathcal F_t)$, such that $\E[\nu_{t+s}(g)\mid\mathcal F_t]=\nu_t(g)$ for every bounded $g$,
+and \emph{complete} if $\nu_t\to\delta_X$ almost surely for a random $X\sim\nu$ \cite{CE,stage8}. Three schemes are used
+below: Eldan's isotropic tilt, $\nu_t=\mathrm{Law}(x\mid y_t)$ with $y_t=tX+B_t$, so that for $\nu=N(0,I)$ one has
+$\nu_t=N(m_t,\,I/(1+t))$ with $m_t$ a martingale of quadratic variation $d\langle m\rangle_t=(1+t)^{-2}I\,dt$; the
+\emph{directional} tilt, the same observation with $y_t=t\,\langle v,X\rangle+B_t$ for a unit vector $v$, which leaves
+$\nu_t=N(m_t,\,I-\tfrac{t}{1+t}vv^{\top})$; and pinning, which reveals the coordinates of $X$ one at a time.
+\end{definition}
+
+\begin{theorem}[Defect--path formula]\label{thm:defect}
+Let $E:\mathcal S_0\to\R^n$ be twice continuously Fr\'echet differentiable along the Gaussian family and exact on point
+masses, and let $(\nu_t)$ be a complete localization process of $\nu\in\mathcal S_0$ whose components stay in
+$\mathcal S_0$ and have bounded quadratic variation. Then
+\begin{equation}\label{eq:defect-path}
+u(\nu)-E(\nu)\;=\;-\,\E\int_0^\infty \tfrac12\,E''(\nu_t)\big[d\langle\nu\rangle_t\big]
+\;=\;-\,\E\int_0^\infty\mathrm{drift}_t\big(E(\nu_t)\big)\,dt .
+\end{equation}
+In words: the error of the estimator at $\nu$ is minus the expected total drift of the estimator along any complete
+localization of $\nu$, and that drift is the second variation of $E$ in the directions the scheme localizes.
+\end{theorem}
+
+\begin{proof}
+$u(\nu_t)$ is a martingale (the law of iterated expectations, or affinity of $u$ plus the martingale property of
+$\nu_t$), so $u(\nu)=\E\,u(\nu_\infty)=\E F(X)$. By It\^o's formula for the semimartingale $\nu_t$ in the parametrisation
+of $\mathcal S_0$, $dE(\nu_t)=E'(\nu_t)[d\nu_t]+\tfrac12E''(\nu_t)[d\langle\nu\rangle_t]$, and the first term has zero
+mean. Hence $\E\,E(\nu_\infty)-E(\nu)=\E\int_0^\infty\tfrac12E''(\nu_t)[d\langle\nu\rangle_t]$. Exactness on point
+masses gives $E(\nu_\infty)=F(X)$ almost surely, so $\E\,E(\nu_\infty)=u(\nu)$. For a discrete scheme the same identity
+holds with the drift replaced by the conditional Jensen gaps $\E[E(\nu_{t+1})\mid\mathcal F_t]-E(\nu_t)$.
+\end{proof}
+
+\begin{corollary}[Eldan's path for a homogeneous network]\label{cor:eldan}
+Write $e(y)=E(N(y,I))$ for a chain $E$ that is exact on point masses and transforms like $F$ under scaling,
+$E(N(m,sI))=\sqrt s\,e(m/\sqrt s)$. Then with $\delta(y)=e(y)-y\cdot\nabla e(y)-\Delta e(y)$,
+\begin{equation}\label{eq:eldan}
+u-e(0)\;=\;-\tfrac12\int_0^\infty(1+\tau)^{-3/2}\,\E_{y\sim N(0,\tau I)}\,\delta(y)\,d\tau ,
+\end{equation}
+and the weight $\tfrac12(1+\tau)^{-3/2}d\tau$ is a probability measure on $[0,\infty)$. At the origin $\delta(0)=e(0)-\Delta
+e(0)$, and the exact answer satisfies $u=\Delta_y u(y)|_{y=0}$ (Euler--Stein).
+\end{corollary}
+
+\begin{proof}
+On Eldan's path $\nu_t=N(m_t,s_tI)$, $s_t=1/(1+t)$, $ds_t=-s_t^2dt$, $d\langle m\rangle_t=s_t^2I\,dt$. With
+$E(m,sI)=\sqrt s\,e(m/\sqrt s)$ one finds $\partial_sE=\tfrac1{2\sqrt s}(e-y\cdot\nabla e)$ and $\tfrac12\Delta_mE=
+\tfrac1{2\sqrt s}\Delta e$ at $y=m/\sqrt s$, so the drift is $-s^2(\partial_sE-\tfrac12\Delta_mE)=-\tfrac12 s^{3/2}\delta(y)$.
+Since $y_t=m_t\sqrt{1+t}\sim N(0,tI)$, Theorem~\ref{thm:defect} gives \eqref{eq:eldan} with $\tau=t$. For the exact
+answer, $u(y)=\E F(y+Z)$ obeys the heat equation $\partial_s u=\tfrac12\Delta_mu$, and for a $1$-homogeneous $F$ Euler's
+relation $x\cdot\nabla F=F$ and Stein's lemma $\E[x\cdot\nabla F(x)]=\E\,\Delta F(x)$ give $u=\Delta_yu|_0$.
+\end{proof}
+
+This corollary is the heat-flow defect of the parallel note (its ``heat defect'' is $D=\partial_\Sigma E-\tfrac12\nabla_m^2E$;
+here $\tfrac12 s^{3/2}\delta$ is the trace of $D\Sigma_t^2$ on the isotropic path). Theorem~\ref{thm:defect} is the
+scheme-independent statement behind it, and the choice of scheme is where the stage-8 picture adds something.
+
+\begin{corollary}[Directional and pinning schemes]\label{cor:directional}
+(i) For the directional tilt along a unit vector $v$, the path is $\nu_t=N(m_t,I-\tfrac{t}{1+t}vv^\top)$ with
+$d\langle m\rangle_t=(1+t)^{-2}vv^\top dt$, the endpoint is $\nu_\infty=N(\langle v,X\rangle v,\,I-vv^\top)$, and
+\[
+\E_{y}\,E\big(N(yv,I-vv^\top)\big)-E(N(0,I))\;=\;-\int_0^\infty(1+t)^{-2}\,\E\Big[\tfrac12\partial_v^2E-\partial_{\Sigma_{vv}}E\Big](\nu_t)\,dt ,
+\]
+the left side being the error of the $v$-localized estimator minus the error of $E$. So the drift along $v$ measures
+the \emph{difference} between the chain and its $v$-localization, and the chain's own error is recovered from
+directional drifts only by summing over an orthonormal basis of directions---which is Eldan's path.
+(ii) For pinning (reveal $X_i$ in order), the Jensen gap at step $i$ is
+$\E_{X_i}E(\nu_{i-1}\mid X_i)-E(\nu_{i-1})$, a one-dimensional Gaussian integral of the chain run on the conditioned
+law; the chain's error is minus the sum of these $n$ gaps.
+\end{corollary}
+
+\begin{remark}[Which errors a scheme sees]\label{rem:visibility}
+The second variation $E''(\nu)[\dot\nu,\dot\nu]$ is a quadratic form on the tangent space of $\mathcal S_0$ at $\nu$.
+A scheme supplies a positive form $d\langle\nu\rangle$ (its driving covariance $C_t$ in the language of
+\cite[Thm.~3.3]{stage8}, which also fixes the trickle-down term $KC_tK$ of that theorem). Eldan's path drives every
+mean direction equally and the covariance only through the scale; the directional tilt drives one direction; pinning
+drives the coordinate directions and their conditional variances. Which scheme probes a given chain cheaply is
+therefore a question about the \emph{spectrum} of the chain's second variation on the input side. Section~\ref{sec:capacity}
+measures it: for the chains of this note the excess second variation $\partial_v^2e-\Delta e/n$ over unit input
+directions $v$ has a flat spectrum (the top direction carries $5\%$ of it at $n=256$, and is not the coherent
+direction $W_1^{\top}\mathbf 1$), and single directional second differences are nearly uncorrelated with the error.
+The chain's error is an isotropic, trace-like object on the input side---the Laplacian of Corollary~\ref{cor:eldan}---and
+the only cheap way to get at it is not a tilt of the input but a second-order expansion \emph{inside} the chain
+(Section~\ref{sec:central}). The collective mode that the chain mishandles lives in the gate algebra of the hidden
+layers, not in the input, which is the content of the capacity bound of Section~\ref{sec:capacity}.
+\end{remark}

@@ -38,6 +38,15 @@ def relu2_hermite(alpha, sigma, K):
     return F
 
 
+def relu3_hermite(alpha, sigma):
+    """Hermite coefficients w.r.t. z ~ N(mu, sigma^2) of relu(z)^3, k = 0..4:
+    F_0 = E relu^3, F_1 = 3 E relu^2, F_2 = 6 E relu, F_3 = 6 Phi, F_4 = 6 phi / sigma."""
+    P = ndtr(alpha); p = phi(alpha)
+    m1 = sigma * (p + alpha * P); m2 = sigma ** 2 * ((1 + alpha ** 2) * P + alpha * p)
+    m3 = sigma ** 3 * ((alpha ** 2 + 2) * p + (3 * alpha + alpha ** 3) * P)
+    return np.stack([m3, 3 * m2, 6 * m1, 6 * P, 6 * p / sigma])
+
+
 def relu_hermite_z(alpha, sigma, K):
     """Hermite coefficients w.r.t. z ~ N(mu, sigma^2) of relu(z): d_k(alpha) sigma^{1-k}."""
     d = hermite_relu(alpha, K)
@@ -51,11 +60,13 @@ class Src:
 
 
 def k3_chain3(W, opts=None, record=None):
-    o = dict(K=8, KS=8, gc=1, res=1, gate_res=1, k4="none", eps=0.01, window=0, hub=1, k4diag=None, k4var=1, k22born=0, k31born=0, pert_off=0.0, pert_var=0.0, d3scale=1.0, k22=1, k22gate="rank1", k22feed=1, stars=1, k22cov=1, k22mean=1, radial=0)
+    o = dict(K=8, KS=8, gc=1, res=1, gate_res=1, k4="none", eps=0.01, window=0, hub=1, k4diag=None, k4var=1, k22born=0, k31born=0, pert_off=0.0, pert_var=0.0, d3scale=1.0, k22=1, k22gate="first", k22feed=1, stars=0, k22cov=1, k22mean=1, radial=0, feedT=1, feedK22=1, diagexact=1, m0=None, S0=None)
     if opts: o.update(opts)
     L, n, n_in = W.shape
-    m = np.zeros(n_in); Kh = np.eye(n_in); srcs = []; out = np.empty((L, n)); flops = 0.0
-    K22z = None; K31z = None; K22zc = np.zeros((n, n))   # (2,2) slice matrix of the current pre-activation
+    m = np.zeros(n_in) if o["m0"] is None else np.asarray(o["m0"], dtype=np.float64).copy()
+    Kh = np.eye(n_in) if o["S0"] is None else np.asarray(o["S0"], dtype=np.float64).copy()
+    srcs = []; out = np.empty((L, n)); flops = 0.0
+    K22z = None; K31z = None; K22zc = np.zeros((n, n)); K22diag_pass = np.zeros(n)   # (2,2) slice matrix of the current pre-activation
     from math import lgamma, log
     Er = np.exp(0.5 * log(2.0) + lgamma((n_in + 1) / 2) - lgamma(n_in / 2)) / np.sqrt(n_in)   # E|x|/sqrt(n)
     for l in range(L):
@@ -66,7 +77,7 @@ def k3_chain3(W, opts=None, record=None):
         var = np.clip(np.diag(C), 1e-30, None); sigma = np.sqrt(var); alpha = mu / sigma
         Phi = ndtr(alpha); ph = phi(alpha)
         if o["radial"] and l == 0:
-            K22zc = -2.0 / (n_in + 2) * np.outer(var, var)
+            K22zc = -2.0 / (n_in + 2) * np.outer(var, var); K22diag_pass = np.zeros(n)
         D3 = np.zeros(n); D21 = np.zeros((n, n)); Y = np.zeros((n, n)); star4 = np.zeros(n)
         for s in srcs:
             PA = s.P * s.A
@@ -89,13 +100,17 @@ def k3_chain3(W, opts=None, record=None):
             K4 = K4 + o["k4diag"][l]
         if o["k22"] and o["k22mean"]:
             K4 = K4 + 3.0 * np.diag(K22zc)
+        K4_22 = (3.0 * np.diag(K22zc) - 2.0 * K22diag_pass) if o["k22"] else np.zeros(n)   # (2,2) class + diagonal class (once)
+        K4_s211 = np.zeros(n); K4_s1111 = np.zeros(n)
+        for s_ in srcs:
+            K4_s211 += 12.0 * ((s_.P * s_.P * s_.A * s_.A) @ s_.t); K4_s1111 += 4.0 * ((s_.P * s_.A ** 3) @ s_.w3)
         if o["stars"]:
-            for s_ in srcs:
-                K4 = K4 + 12.0 * ((s_.P * s_.P * s_.A * s_.A) @ s_.t) + 4.0 * ((s_.P * s_.A ** 3) @ s_.w3)
+            K4 = K4 + o["stars"] * (K4_s211 + K4_s1111)
         m_new = sigma * d[0] - D3 * alpha * ph / (6 * var) + K4 * (alpha ** 2 - 1) * ph / (24 * sigma ** 3)
         out[l] = m_new
         if record is not None:
-            record[l] = dict(mu=mu, var=var, alpha=alpha, D3=D3.copy(), D21=D21.copy(), m=m_new.copy(), C=C)
+            record[l] = dict(mu=mu, var=var, alpha=alpha, D3=D3.copy(), D21=D21.copy(), m=m_new.copy(), C=C,
+                             K4=K4.copy(), K4_22=K4_22, K4_s211=K4_s211, K4_s1111=K4_s1111, K22=K22zc.copy())
         if last:
             break
         w2 = ph / sigma; w3 = -alpha * ph / var; mg = sigma * d[0]
@@ -152,14 +167,32 @@ def k3_chain3(W, opts=None, record=None):
             np.fill_diagonal(K22h, c4)
             Wn = W[l + 1].astype(np.float64); W2 = Wn * Wn
             K22zc = W2 @ K22h @ W2.T; flops += 2 * n ** 3
+            K22diag_pass = (W2 * W2) @ np.diag(K22h)         # sum_p W_ip^4 kappa4(h_p): the diagonal class
         K22z = None; K31z = None
         # ---- exact gates for the transported sources' slices and diagonals (aggregated residual, post-activation space)
+        e_vec0 = 2 * mg * (1 - Phi); t0 = Phi - mg * w2
         c_sl = Phi * (1 - Phi) - mg * w2                       # slice gate minus Phi^2
         G3 = Phi - mg * w2 - 0.5 * mg ** 2 * alpha * ph / var  # diagonal gate
         Rg = np.zeros((n, n))
         if o["gate_res"] and srcs:
             Rg = (c_sl[:, None] * D21 * Phi[None, :])          # entries (a, c): c_a Phi_c D21_z[a, c]
-            np.fill_diagonal(Rg, (G3 - Phi ** 3) * D3 / 3.0)
+            if o["feedT"]:
+                Rg += 0.5 * (e_vec0[:, None] * D21.T * w2[None, :])   # transposed-slice feed: e_a w2_c kappa3(z_a, z_c, z_c)/2
+            if o["feedK22"] and o["k22"]:
+                Rg += 0.5 * (t0[:, None] * K22zc * w2[None, :])        # kappa4 (2,2) -> (2,1) feed: t_a w2_c K22[a, c]/2
+            if o["diagexact"]:
+                # exact diagonal kappa3(h_a) to first order in kappa3, kappa4 of z_a from corrected raw moments
+                K4a = K4
+                F3 = relu3_hermite(alpha, sigma)                    # Hermite coefficients of relu^3 (k = 0..4)
+                F2 = relu2_hermite(alpha, sigma, 4); d1 = relu_hermite_z(alpha, sigma, 4)
+                Eh = d1[0] + d1[3] * D3 / 6 + d1[4] * K4a / 24
+                Eh2 = F2[0] + F2[3] * D3 / 6 + F2[4] * K4a / 24
+                Eh3 = F3[0] + F3[3] * D3 / 6 + F3[4] * K4a / 24
+                k3h = Eh3 - 3 * Eh2 * Eh + 2 * Eh ** 3
+                k3h_born = sigma ** 3 * k3_exact(alpha)             # the Gaussian-born diagonal already in the newborn
+                np.fill_diagonal(Rg, (k3h - k3h_born - Phi ** 3 * D3) / 3.0)
+            else:
+                np.fill_diagonal(Rg, (G3 - Phi ** 3) * D3 / 3.0)
         for s in srcs:
             s.P *= Phi[:, None]; s.A *= Phi[:, None]; s.B *= Phi[:, None]; s.R *= Phi[:, None]
         if o["window"]:
