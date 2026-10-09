@@ -8,9 +8,9 @@
 # delta_hat (a lower bound on what an exact delta gives) and the noise-free prediction 1 - X*.
 import glob, sys, numpy as np
 R, T, H = sys.argv[1], sys.argv[2], sys.argv[3]; nets = [int(x) for x in sys.argv[4:]]
-n = 1024; res = {}
+TAG = __import__("os").environ.get("HD_TAG", ""); n = 1024; res = {}
 for net in nets:
-    fs = sorted(glob.glob(f"{R}/heatdef_{net}_*_h{H}.npz"), key=lambda f: int(f.rsplit("_", 2)[1]))
+    fs = sorted(glob.glob(f"{R}/heatdef{TAG}_{net}_*_h{H}.npz"), key=lambda f: int(f.rsplit("_", 2)[1]))
     if not fs:
         continue
     zs = [np.load(f) for f in fs]

@@ -34,6 +34,6 @@ for r in range(i0, i1):
     m = (run(m=h * v) + run(m=-h * v) - 2 * E0) / (2 * h * h)
     d.append(c - m); cp.append(c); mp.append(m)
     print(f"net {net}: direction {r} done at {time.time() - t0:.0f}s", flush=True)
-np.savez(f"{os.environ.get('OUT', '.')}/heatdef_{net}_{i0}_h{h:g}.npz", d=np.array(d), cov=np.array(cp), mean=np.array(mp),
+np.savez(f"{os.environ.get('OUT', '.')}/heatdef{os.environ.get('HD_TAG', '')}_{net}_{i0}_h{h:g}.npz", d=np.array(d), cov=np.array(cp), mean=np.array(mp),
          E0=E0, idx=np.arange(i0, i1), h=h)
 print(f"net {net}: directions {i0}-{i1 - 1} in {time.time() - t0:.0f}s", flush=True)
