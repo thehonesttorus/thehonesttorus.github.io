@@ -1,0 +1,48 @@
+x0	python scripts/run_kprop3c.py /opt/data/official 0 window=2 tucker=0 oldmode=cross tag=cross_all
+x1	python scripts/run_kprop3c.py /opt/data/official 0 window=2 tucker=0 oldmode=cross xcross=0 tag=cross_nocross
+x2	python scripts/run_kprop3c.py /opt/data/official 0 window=2 tucker=0 oldmode=cross xd3=0 tag=cross_nod3
+x3	python scripts/run_kprop3c.py /opt/data/official 0 window=2 tucker=0 oldmode=cross xcross=0 xd3=0 tag=cross_cohonly
+x4	python scripts/run_kprop3c.py /opt/data/official 0 window=2 tucker=0 oldmode=cross xsb=1 tag=cross_keepsb
+x5	python scripts/run_kprop3c.py /opt/data/official 0 window=2 tucker=0 oldmode=cross xrb=1 tag=cross_keeprb
+x6	python scripts/run_kprop3c.py /opt/data/official 0 window=4 tucker=0 oldmode=cross tag=cross_all
+x7	python scripts/run_kprop3c.py /opt/data/official 0 window=4 tucker=0 oldmode=cross xcross=0 tag=cross_nocross
+x8	python scripts/run_kprop3c.py /opt/data/official 0 window=4 tucker=0 oldmode=cross xd3=0 tag=cross_nod3
+x9	python scripts/run_kprop3c.py /opt/data/official 0 window=4 tucker=0 oldmode=cross xcross=0 xd3=0 tag=cross_cohonly
+x10	python scripts/run_kprop3c.py /opt/data/official 0 window=4 tucker=0 oldmode=cross xsb=1 tag=cross_keepsb
+x11	python scripts/run_kprop3c.py /opt/data/official 0 window=4 tucker=0 oldmode=cross xrb=1 tag=cross_keeprb
+x12	python scripts/run_kprop3c.py /opt/data/official 1 window=2 tucker=0 oldmode=cross tag=cross_all
+x13	python scripts/run_kprop3c.py /opt/data/official 1 window=2 tucker=0 oldmode=cross xcross=0 tag=cross_nocross
+x14	python scripts/run_kprop3c.py /opt/data/official 1 window=2 tucker=0 oldmode=cross xd3=0 tag=cross_nod3
+x15	python scripts/run_kprop3c.py /opt/data/official 1 window=2 tucker=0 oldmode=cross xcross=0 xd3=0 tag=cross_cohonly
+x16	python scripts/run_kprop3c.py /opt/data/official 1 window=2 tucker=0 oldmode=cross xsb=1 tag=cross_keepsb
+x17	python scripts/run_kprop3c.py /opt/data/official 1 window=2 tucker=0 oldmode=cross xrb=1 tag=cross_keeprb
+x18	python scripts/run_kprop3c.py /opt/data/official 1 window=4 tucker=0 oldmode=cross tag=cross_all
+x19	python scripts/run_kprop3c.py /opt/data/official 1 window=4 tucker=0 oldmode=cross xcross=0 tag=cross_nocross
+x20	python scripts/run_kprop3c.py /opt/data/official 1 window=4 tucker=0 oldmode=cross xd3=0 tag=cross_nod3
+x21	python scripts/run_kprop3c.py /opt/data/official 1 window=4 tucker=0 oldmode=cross xcross=0 xd3=0 tag=cross_cohonly
+x22	python scripts/run_kprop3c.py /opt/data/official 1 window=4 tucker=0 oldmode=cross xsb=1 tag=cross_keepsb
+x23	python scripts/run_kprop3c.py /opt/data/official 1 window=4 tucker=0 oldmode=cross xrb=1 tag=cross_keeprb
+x24	python scripts/run_kprop3c.py /opt/data/official 2 window=2 tucker=0 oldmode=cross tag=cross_all
+x25	python scripts/run_kprop3c.py /opt/data/official 2 window=2 tucker=0 oldmode=cross xcross=0 tag=cross_nocross
+x26	python scripts/run_kprop3c.py /opt/data/official 2 window=2 tucker=0 oldmode=cross xd3=0 tag=cross_nod3
+x27	python scripts/run_kprop3c.py /opt/data/official 2 window=2 tucker=0 oldmode=cross xcross=0 xd3=0 tag=cross_cohonly
+x28	python scripts/run_kprop3c.py /opt/data/official 2 window=2 tucker=0 oldmode=cross xsb=1 tag=cross_keepsb
+x29	python scripts/run_kprop3c.py /opt/data/official 2 window=2 tucker=0 oldmode=cross xrb=1 tag=cross_keeprb
+x30	python scripts/run_kprop3c.py /opt/data/official 2 window=4 tucker=0 oldmode=cross tag=cross_all
+x31	python scripts/run_kprop3c.py /opt/data/official 2 window=4 tucker=0 oldmode=cross xcross=0 tag=cross_nocross
+x32	python scripts/run_kprop3c.py /opt/data/official 2 window=4 tucker=0 oldmode=cross xd3=0 tag=cross_nod3
+x33	python scripts/run_kprop3c.py /opt/data/official 2 window=4 tucker=0 oldmode=cross xcross=0 xd3=0 tag=cross_cohonly
+x34	python scripts/run_kprop3c.py /opt/data/official 2 window=4 tucker=0 oldmode=cross xsb=1 tag=cross_keepsb
+x35	python scripts/run_kprop3c.py /opt/data/official 2 window=4 tucker=0 oldmode=cross xrb=1 tag=cross_keeprb
+x36	python scripts/run_kprop3c.py /opt/data/official 3 window=2 tucker=0 oldmode=cross tag=cross_all
+x37	python scripts/run_kprop3c.py /opt/data/official 3 window=2 tucker=0 oldmode=cross xcross=0 tag=cross_nocross
+x38	python scripts/run_kprop3c.py /opt/data/official 3 window=2 tucker=0 oldmode=cross xd3=0 tag=cross_nod3
+x39	python scripts/run_kprop3c.py /opt/data/official 3 window=2 tucker=0 oldmode=cross xcross=0 xd3=0 tag=cross_cohonly
+x40	python scripts/run_kprop3c.py /opt/data/official 3 window=2 tucker=0 oldmode=cross xsb=1 tag=cross_keepsb
+x41	python scripts/run_kprop3c.py /opt/data/official 3 window=2 tucker=0 oldmode=cross xrb=1 tag=cross_keeprb
+x42	python scripts/run_kprop3c.py /opt/data/official 3 window=4 tucker=0 oldmode=cross tag=cross_all
+x43	python scripts/run_kprop3c.py /opt/data/official 3 window=4 tucker=0 oldmode=cross xcross=0 tag=cross_nocross
+x44	python scripts/run_kprop3c.py /opt/data/official 3 window=4 tucker=0 oldmode=cross xd3=0 tag=cross_nod3
+x45	python scripts/run_kprop3c.py /opt/data/official 3 window=4 tucker=0 oldmode=cross xcross=0 xd3=0 tag=cross_cohonly
+x46	python scripts/run_kprop3c.py /opt/data/official 3 window=4 tucker=0 oldmode=cross xsb=1 tag=cross_keepsb
+x47	python scripts/run_kprop3c.py /opt/data/official 3 window=4 tucker=0 oldmode=cross xrb=1 tag=cross_keeprb

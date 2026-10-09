@@ -39,7 +39,7 @@ def sym3(S):
 
 def linear_step(st, W):
     mu = W @ st.mu; C = W @ st.C @ W.T
-    young = [(tuple(W @ L for L in e[0]), e[1]) + ((tuple(W @ L for L in e[2]),) if len(e) > 2 and e[2] is not None else ()) for e in st.young]
+    young = [(tuple(W @ L for L in e[0]), e[1]) + ((tuple(W @ L for L in e[2]),) if len(e) > 2 and e[2] is not None else ()) + tuple(e[3:]) for e in st.young]
     Q, S = st.Q, st.S
     cp = st.cp
     if Q is not None:
@@ -101,6 +101,22 @@ def nonlin_step(st, o, rng, record=None):
         if age >= o["window"] and mode == "spec":           # diagnostic: old sources read through their spectral (birth-truncated) version
             if len(entry) < 3 or entry[2] is None: continue
             legs = entry[2]
+        if age >= o["window"] and mode == "cross":          # coherent + cross terms of the old source (bulk x bulk dropped)
+            if len(entry) < 4 or entry[2] is None: continue
+            T, vecs = entry[2]; c = entry[3]; lam, sig = c["lam"], c["sig"]; a, b, cc = vecs[:, 0], vecs[:, 1], vecs[:, 2]
+            full = np.zeros((n, n))
+            if o.get("xcoh", 1): full += 2 * lam ** 2 * (a * b)[:, None] * a[None, :] + lam ** 2 * (a * a)[:, None] * b[None, :]
+            if o.get("xcross", 1):
+                Ma, Mb, Mc, Md, Me = (T @ X @ T.T for X in (c["Xa"], c["Xb"], c["Xc"], c["Xd"], c["Xe"]))
+                full += lam * (a[:, None] * (Ma + Mc + Mb + Md) + a[None, :] * (np.diag(Mb) + np.diag(Mc))[:, None])
+                full += sig * ((2.0 / 3.0) * cc[:, None] * Me + (1.0 / 3.0) * cc[None, :] * np.diag(Me)[:, None])
+            if o.get("xd3", 1): full += (T * T) @ (c["R3"][:, None] * T.T)
+            if o.get("xsb", 0):
+                TAb, TCb = T @ c["Ab"], T @ c["Cb"]; full += (TAb * T) @ TCb.T + (TAb * TCb) @ T.T + (T * TCb) @ TAb.T
+            if o.get("xrb", 0):
+                TRb = T @ c["Rb"]; full += (2.0 / 3.0) * (TRb * T) @ T.T + (1.0 / 3.0) * (T * T) @ TRb.T
+            K3_3 += np.diag(full).copy(); np.fill_diagonal(full, 0.0); K3_21 += full
+            continue
         s21, s3 = slices_from_legs(legs)
         if age >= o["window"] and mode not in ("full", "spec"):          # diagnostic: what the old sources' slices are worth
             if mode == "none": continue
@@ -139,7 +155,7 @@ def nonlin_step(st, o, rng, record=None):
     a22, a4 = radial_consts(n); c4 = (a22 * K4h_22.sum() + a4 * K4h_4.sum()) * o.get("c4scale", 1.0)
     Phi = w[(1, 1)]; w2 = w[(2, 1)]
     # gate all tiers, build the star block, then the residual block from the exact slices
-    young = [(tuple(L * Phi[:, None] for L in e[0]), e[1] + 1) + ((tuple(L * Phi[:, None] for L in e[2]),) if len(e) > 2 and e[2] is not None else ()) for e in st.young]
+    young = [(tuple(L * Phi[:, None] for L in e[0]), e[1] + 1) + ((tuple(L * Phi[:, None] for L in e[2]),) if len(e) > 2 and e[2] is not None else ()) + tuple(e[3:]) for e in st.young]
     Q, S, cp = st.Q, st.S, st.cp
     if Q is not None:
         Qg, R = np.linalg.qr(Phi[:, None] * Q); Q = Qg
@@ -182,6 +198,13 @@ def nonlin_step(st, o, rng, record=None):
         newborn_c = tuple(np.concatenate([F, G], axis=1) for F, G in zip(star_c, resid_c))
         if record is not None: record["spec_capture"] = float(np.sum(lam ** 2) / max(np.sum(Soff ** 2), 1e-300))
         young.append((newborn, 0, newborn_c))
+    elif mode == "cross":
+        lam_, V_ = np.linalg.eigh(Soff); i0 = np.argmax(np.abs(lam_)); lam1, v = lam_[i0], V_[:, i0]; Sb = Soff - lam1 * np.outer(v, v)
+        p_ = Phi * v; q_ = w2 * v; Ab = Phi[:, None] * Sb; Cb = (Phi[:, None] * Sb) * w2[None, :]
+        U_, sv_, Vt_ = np.linalg.svd(3.0 * R21.T); sig, u_, w_ = sv_[0], U_[:, 0], Vt_[0]
+        consts = dict(lam=lam1, sig=sig, Xa=v[:, None] * Cb.T, Xb=Ab * q_[None, :], Xc=Cb * v[None, :], Xd=q_[:, None] * Ab.T, Xe=np.diag(w_), R3=R3.copy(),
+                      Ab=Ab if o.get("xsb", 0) else None, Cb=Cb if o.get("xsb", 0) else None, Rb=(3.0 * R21.T - sig * np.outer(u_, w_)) if o.get("xrb", 0) else None)
+        young.append((newborn, 0, (np.eye(n), np.stack([p_, v * q_, u_], axis=1)), consts))
     else:
         young.append((newborn, 0))
     # aging: merge sources of age >= window into the Tucker tier
