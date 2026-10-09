@@ -44,7 +44,7 @@ CODE_DIRS = ("k3work", "official", "num12", "ncgprob")
 SCRATCH = os.environ.get("CLAUDE_AWS_DIR", "/tmp/claude-0/-home-user-thehonesttorus-github-io/"
                          "2cab30f0-c454-5769-8d9a-8195cd80a5f3/scratchpad/aws")
 ROLE = "claude-ec2-runner"
-IDLE_MIN = 30
+IDLE_MIN = 90
 AMI_PARAM = "/aws/service/canonical/ubuntu/server/24.04/stable/current/amd64/hvm/ebs-gp3/ami-id"
 S = boto3.session.Session()
 REGION = S.region_name  # home region: the bucket and state.json's "sg" live here
