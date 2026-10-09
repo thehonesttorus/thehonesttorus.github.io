@@ -394,10 +394,19 @@ FB_FOLD = int(_os.environ.get("V52_FB_FOLD", "0"))
 # V54 (note XL) diagnostics, 1 = production everywhere. OLD_D21: 0 drops the old tier's (2,1) contribution, 2 keeps only
 # its additive part (S0 + S1 + A1, the trivial + standard S_n irreps of the slice); OLD_D3: 0 drops the old sources'
 # diagonal contribution; YNG_D21: 2 keeps only the additive part of the young hub's (2,1) contribution.
-TADPOLE = _os.environ.get("V53_TADPOLE", "0") == "1"   # V53 (note XL): tadpole-dressed vertex weights for legs and births
+TADPOLE = _os.environ.get("V53_TADPOLE", "0") in ("1", "2")   # V53 (note XL): tadpole-dressed vertex weights for legs and births
 OLD_D21 = int(_os.environ.get("V54_OLD_D21", "1"))
 OLD_D3 = int(_os.environ.get("V54_OLD_D3", "1"))
 YNG_D21 = int(_os.environ.get("V54_YNG_D21", "1"))
+# V53_TADPOLE=2: the kappa3 tadpole only (no kappa4 dressing of the vertex weights)
+TADPOLE_K4 = _os.environ.get("V53_TADPOLE", "0") == "1"
+# V55 (note XL section 7): the level-4 star. The c(3) vertex with three covariance arms, sum_m c3_m Sym(e_m x a_m x a_m
+# x a_m), is born with the same arms a_m and the same localized centre as the kappa3 star, and its legs take the same
+# first-order gates, so it rides the kappa3 source's A and P legs. Its kappa4 diagonal at every later layer is
+# 4 sum_m c3_m A_im^3 P_im: O(n^2) per source-layer, added to the chain's kappa4 diagonal (which carries no
+# fourth-cumulant bulk at all). LOG=1 prints its size against the closure's diagonal per layer.
+K4STAR = float(_os.environ.get("V55_K4STAR", "0"))
+K4STAR_LOG = _os.environ.get("V55_K4STAR_LOG", "0") == "1"
 KD = int(_os.environ.get("V39_KD", "0"))
 KD_AMP = float(_os.environ.get("V39_KD_AMP", "1.0"))
 KD_BITS = int(_os.environ.get("V39_KD_BITS", "0"))   # 1 diagonal, 2 (2,2), 4 (3,1); 0 with KD=1 means all
@@ -1015,6 +1024,9 @@ class Estimator(BaseEstimator):
         A_st = P_st = Z_st = L_st = None
         newborn = None
         w2b_list = []
+        w3b_list = []   # V55: per source, c(3) = E f'''(z) at birth (the level-4 star's centre weight)
+        self._w3b = w3b_list
+        self._star4 = None
         s_list = []
         e_list = []
         c1_list = []   # per source: lambda_b * w1_b   (X3 = A*c1 + P*c2, column scalings)
@@ -1746,6 +1758,15 @@ class Estimator(BaseEstimator):
                 _b3 = 1.5 * mu * var
                 mix_prev = (float(fnp.sum(g4row * _v2) / fnp.sum(3.0 * _v2 * _v2)),
                             float(fnp.sum(D3 * _b3) / fnp.sum(_b3 * _b3)) if D3 is not None else 0.0)
+            if K4STAR and mode == 1 and g4row is not None and self._star4 is not None:
+                # V55: the level-4 star's diagonal joins the readouts of this layer (after the mixture gains and the
+                # (2,2) block have read the closure's own diagonal, so the closure's state is untouched)
+                if K4STAR_LOG:
+                    _s4, _gr = self._star4, g4row
+                    print(f"[k4star] layer {li}: rms star {float(fnp.sqrt(fnp.mean(_s4 * _s4))):.3e}  rms g4 "
+                          f"{float(fnp.sqrt(fnp.mean(_gr * _gr))):.3e}  mean star {float(fnp.mean(_s4)):.3e}  mean g4 "
+                          f"{float(fnp.mean(_gr)):.3e}", flush=True)
+                g4row = g4row + self._star4 * K4STAR
             if '_g_sm' not in dir() or not K4SM:
                 _g_sm = 0.0
             if li == NI_LAYER and mode == 1:
@@ -1925,7 +1946,7 @@ class Estimator(BaseEstimator):
                 # slices then use the same gate the Wick stage uses; under the scale (gain) mixture the dressed first
                 # vertex is P(z > 0), which the mixture leaves invariant, and the bare Phi(mu / sigma) is not.
                 _d3 = D3 * (1.0 / 6.0)
-                _g4 = g4row * (1.0 / 24.0)
+                _g4 = g4row * (1.0 / 24.0 if TADPOLE_K4 else 0.0)
                 w1 = w1 + _d3 * W_all[:, self._i41] + _g4 * W_all[:, self._i51]
                 _w2d = _w2d + _d3 * W_all[:, self._i51] + _g4 * W_all[:, self._i61]
                 _w3d = _w3d + _d3 * W_all[:, self._i61] + _g4 * W_all[:, self._i71]
@@ -2248,6 +2269,7 @@ class Estimator(BaseEstimator):
                 R1T_st = r1b[:k_b + 1]
                 R2T_st = r2b[:k_b + 1]
             w2b_list.append(w2)
+            w3b_list.append(W_all[:, self._i31])   # V55: bare c(3) at birth
             # V21: hub-column Gram weights of this source's legs (X1 = 3A, Y1 ~ A d(w2),
             # M ~ P d(s) + 3 A d(e)): A-type 9 + w2^2 + 9 e^2, P-type 1 + s^2
             dA_list.append(9.0 + w2 * w2 + 9.0 * e_b * e_b)
@@ -2371,8 +2393,17 @@ class Estimator(BaseEstimator):
         Sb = fnp.stack(s_list, axis=0)[:, None, :]
         Eb = fnp.stack(e_list, axis=0)[:, None, :]
         AP = fnp.multiply(A_st, P_st, out=bufs["ap"][:k])
+        self._star4 = None
+        if K4STAR:
+            # V55: the level-4 star's diagonal, 4 sum_k sum_j c3_kj A_kij^3 P_kij, on the legs as they stand (scratch u
+            # is free here: the feedback block, its only other reader, runs after this and is off under the fold)
+            _U4 = fnp.multiply(AP, A_st, out=bufs["u"][:k])
+            fnp.multiply(_U4, A_st, out=_U4)
+            self._star4 = fnp.einsum("kij,kj->i", _U4, fnp.stack(self._w3b[:k], axis=0)) * 4.0
         PP = fnp.multiply(P_st, P_st, out=bufs["pp"][:k])
         T = bufs["t"][:k]
+        # V54 diagnostic (note XL): with OLD_D3 = 0 the old sources' diagonal readout is left out (slots [_y0:k] only)
+        _y0 = ka if (OLD_D3 == 0 and 0 < ka < k) else 0
         # M*P = PP*s + 3 AP*e + (Z L^T)*P
         # V34 (e): column r+1 of every L leg is identically zero (the transported y rides in Z's column r+1), so the
         # M-leg thin contractions run over the first r+1 columns only
@@ -2397,22 +2428,24 @@ class Estimator(BaseEstimator):
             LP = fnp.multiply(A_st, A_st, out=bufs["lap"][:k, 1])
             fnp.multiply(LP, W2B, out=LP)
             if G:
-                D3a = fnp.einsum("kij,kij->i", LP, P_st)   # V34 (g): D3's first term from A*A*w2 (no P*w2 + 3-operand pass)
+                D3a = (fnp.einsum("kij,kij->i", LP, P_st) if _y0 == 0   # V34 (g): D3's first term from A*A*w2 (no P*w2 + 3-operand pass)
+                       else fnp.einsum("kij,kij->i", LP[_y0:], P_st[_y0:]))
             fnp.multiply(PP, Sb * (1.0 / 3.0), out=T)
             fnp.add(LP, T, out=LP)
             fnp.multiply(MP, 2.0 / 3.0, out=T)
             fnp.add(LP, T, out=LP)
         if D3a is not None:
-            if OLD_D3 == 0 and 0 < ka < k:
-                # V54 diagnostic (note XL): the old sources' diagonal contribution left out
-                D3 = (fnp.einsum("kij,kij->i", LP[ka:], P_st[ka:]) * 3.0
-                      + fnp.einsum("kij,kij->i", MP[ka:], P_st[ka:]))
-            else:
-                D3 = D3a * 3.0 + fnp.einsum("kij,kij->i", MP, P_st)
+            D3 = D3a * 3.0 + (fnp.einsum("kij,kij->i", MP, P_st) if _y0 == 0
+                              else fnp.einsum("kij,kij->i", MP[_y0:], P_st[_y0:]))
         else:
             fnp.multiply(P_st, W2B, out=T)
-            D3 = (fnp.einsum("kij,kij,kij->i", A_st, A_st, T) * 3.0
-                  + fnp.einsum("kij,kij->i", MP, P_st))
+            if _y0 == 0:
+                D3 = (fnp.einsum("kij,kij,kij->i", A_st, A_st, T) * 3.0
+                      + fnp.einsum("kij,kij->i", MP, P_st))
+            else:
+                _Ay = A_st[_y0:]
+                D3 = (fnp.einsum("kij,kij,kij->i", _Ay, _Ay, T[_y0:]) * 3.0
+                      + fnp.einsum("kij,kij->i", MP[_y0:], P_st[_y0:]))
         if rfb > 0 and k > s0:
             # V18 (F69): B1 pair with X1 = 3A + Xt, Y1 = A*w2 + Yt; Xt = F1 R1, Yt = F2 R2
             # (F1/F2 = transported thin Z columns, R1T/R2T static (k, n, rfb)).
@@ -2490,10 +2523,12 @@ class Estimator(BaseEstimator):
                 fnp.multiply(A_st[s0:], C1[:, None, :], out=T[s0:])
                 fnp.add(T[s0:], MP[s0:], out=T[s0:])
                 R = fnp.einsum("kij,kij->ki", T[s0:], P_st[s0:])
-                D3 = D3 + fnp.einsum("ki,ki->i", R, Yk)
+                _r0 = max(0, _y0 - s0)   # V54: the feed's old-slot rows too
+                D3 = D3 + (fnp.einsum("ki,ki->i", R, Yk) if _r0 == 0 else fnp.einsum("ki,ki->i", R[_r0:], Yk[_r0:]))
             else:
                 R = fnp.einsum("kij,kj->ki", AP[s0:], C1) + fnp.einsum("kij,kj->ki", PP[s0:], C2)
-                D3 = D3 + fnp.einsum("ki,ki->i", R, Yk)
+                _r0 = max(0, _y0 - s0)   # V54: the feed's old-slot rows too
+                D3 = D3 + (fnp.einsum("ki,ki->i", R, Yk) if _r0 == 0 else fnp.einsum("ki,ki->i", R[_r0:], Yk[_r0:]))
                 if need_d21:
                     fnp.multiply(P_st[s0:], C2[:, None, :], out=MP[s0:])
                     fnp.multiply(A_st[s0:], C1[:, None, :], out=T[s0:])

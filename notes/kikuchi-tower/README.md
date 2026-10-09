@@ -145,3 +145,92 @@ equals ours minus the old tier while old content is carried.
   factor space, so the factor-space hub goes.
 - If P19 fails as well (old D3 small), the dense forming goes too.
 - That tier is then priced with the profiler and measured in adjusted MSE as in note XXXIX.
+
+## 6. P16-P20, measured (`outputs/irrep_cold_16nets/`)
+
+Cold harness, networks 0-15, every variant paired against V35 + `V52_FB_FOLD=1` rerun in the same batch (mean raw
+2.216e-8, 0.1954 B):
+
+| switch | raw against the fold system | better on | FLOPs | prediction |
+|---|---|---|---|---|
+| `V54_OLD_D21=2` (old tier: additive part only) | +383% +- 18 | 0/16 | +0.01% | P16 (H), 0 to +4%: **fails** |
+| `V54_OLD_D21=0` (no old (2,1) readout) | +847% +- 45 | 0/16 | -0.91% | P17, >= +30%: holds |
+| `V54_YNG_D21=2` (young hub: additive part only) | +2027% +- 81 | 0/16 | +0.01% | P18, >= +20%: holds |
+| `V54_OLD_D3=0` | (invalid run) | | | P19: repeated in section 7 |
+| `V53_TADPOLE=1` | +22.5% +- 14.2 | 3/16 | 0.00% | P20, -0.3% to -2%: **fails** |
+
+**H fails, and by a wide margin.**
+- The additive part of the old readout recovers about half of what dropping the readout costs (+383% against +847%).
+- The flat (higher-irrep) content is where an old source's value lies, as it is for a young one (P18).
+- The projection was unweighted. It also counted the saturated rows that production masks after the readout (their
+  pre-activation slice is not small), so the test is conservative. A gate-weighted projection could recover more, but
+  not the 380 points between H and the measurement.
+- Even in a weighted metric, the factor-space additive readout costs about what the hub it would replace costs:
+  O(n r^2) per term type per source-layer, against the hub's O(n^2 r) per slab, with r = 320. So the system
+  conclusion does not depend on the weighting.
+
+**What this says about the tower.**
+- The S_n-isotypic split is the annealed decomposition. The network's quenched weights break the symmetry, and the
+  value sits in the quenched (flat) part.
+- This matches strong minimality (section 3): no static reduction exists, only dynamical ones. The old tier's
+  transported basis is such a reduction; the irrep split is not.
+- Task #48 (the collective old tier) is withdrawn.
+
+**The tadpole.**
+- Neutral to slightly adverse on 13 networks (-3% to +7%), and unstable on three (+85%, +219%, +35%).
+- The dressed w3 and w12 at large |alpha| are Edgeworth tails (He_4(3) = 30): there the truncated series is not a
+  reliable vertex weight.
+- Section 7 separates the kappa3 tadpole from the kappa4 one, whose input is the closure's diagonal.
+
+**The invalid run.** The `V54_OLD_D3` switch read the young sources' D3 after their left factor LP had been completed.
+That added the P*P*s and 2 M*P terms to the young part, so the +6808% measures a corrupted young D3, not the old one.
+The switch now reads the young part where production does, and the run is repeated in section 7.
+
+## 7. The level-4 star (stated before its runs)
+
+**The term.** The c(3) vertex with three covariance arms creates, at every layer, the fourth-cumulant bulk
+
+    sum_m c3_m Sym(e_m x a_m x a_m x a_m),   a_m = d(Phi) C_off e_m,   c3 = E f'''(z),
+
+the K_{1,3} tree of the Wick expansion. It shares two things with the kappa3 star sum_m c2_m Sym(e_m x a_m x a_m):
+- the same arms;
+- the same localized centre.
+
+Its external lines take the same first-order gate, c(1) = Phi per line, as the kappa3 legs do. So, by Theorem 1
+(i)-(ii) one level up, the level-4 star rides the kappa3 source's A and P legs at no transport cost. Its diagonal at
+every later layer is
+
+    kappa4(z_i)  +=  4 sum_sources sum_m c3_m A_im^3 P_im,
+
+O(n^2) per source-layer, about 0.3% of the bill (`V55_K4STAR=1`).
+
+**Why it is new.**
+- The chain's fourth-cumulant state (note XXXII) declares only the diagonal and the (2,2) slice at the y level.
+- The (1,1,1,1) class, where the star lives at birth, is absent; only the closure's mixture terms stand in for it.
+- The star is quenched: it carries the network's own arms, the kind of content section 6 found valuable.
+
+**What is left out.**
+- The star's (2,2) and (3,1) slices: one hub-like product per source-layer.
+- The path P4: two c(2) vertices joined by a covariance line, a V2 move. Its diagonal is diag(X C X^T) with
+  X = (A o P) d(c2), one n^3 product per source-layer.
+- The kappa3 x C class: likewise one n^3 product per source-layer.
+
+**How it enters.**
+- The star's diagonal joins the kappa4 diagonal after the closure's mixture gains and its (2,2) block have read the
+  closure's own diagonal.
+- From there it reaches the mean, the covariance and the y-level (2,2) slice through the exact tadpole terms of the
+  Wick tables (for example ('g4row', 'c_off', (1,2), (5,2), 1/12) in the (2,2) program).
+- The y-level diagonal's onward transport is O(1/n) (the harmonic projection's c_A = 6/(n+4)), so the star is not
+  counted twice through the closure's state.
+
+**Predictions** (cold harness, networks 0-15, paired against the fold system rerun in the same batch):
+
+| switch | prediction |
+|---|---|
+| `V55_K4STAR=1` | **P21:** raw -1% to -6%, better on at least 11/16; FLOPs +0.2% to +0.6% |
+| `V55_K4STAR_LOG=1` (same runs) | **P21a:** the star's rms diagonal is at least 5% of the closure's at layers 8-15 |
+| `V54_OLD_D3=0` (corrected) | **P19':** raw +50% or more |
+| `V53_TADPOLE=2` (kappa3 tadpole only) | **P20':** no network worse than +10%, mean within +-2% |
+
+If P21 holds, the star goes to the scored regime: all 100 networks, counterterms refitted on 0-49, held-out 50-99,
+adjusted MSE, as in note XXXIX section 11.

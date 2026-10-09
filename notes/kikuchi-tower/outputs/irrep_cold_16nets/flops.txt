@@ -1,0 +1,6 @@
+FLOPs od2  vs fb: n=16  +0.007%
+FLOPs od0  vs fb: n=16  -0.912%
+FLOPs yd2  vs fb: n=16  +0.007%
+FLOPs o3z  vs fb: n=16  +0.010%
+FLOPs tad  vs fb: n=16  +0.000%
+fb mean 4.2969e+11 FLOPs = 0.1954 B

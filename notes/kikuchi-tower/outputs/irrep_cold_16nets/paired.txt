@@ -1,0 +1,5 @@
+od2    vs fb: n=16  mean raw 1.0640e-07 vs 2.2161e-08  per-net +382.89% +- 17.91  better on 0/16
+od0    vs fb: n=16  mean raw 2.0822e-07 vs 2.2161e-08  per-net +847.44% +- 45.07  better on 0/16
+yd2    vs fb: n=16  mean raw 4.6903e-07 vs 2.2161e-08  per-net +2026.79% +- 80.87  better on 0/16
+o3z    vs fb: n=16  mean raw 1.5305e-06 vs 2.2161e-08  per-net +6807.62% +- 344.81  better on 0/16
+tad    vs fb: n=16  mean raw 2.7159e-08 vs 2.2161e-08  per-net +22.47% +- 14.23  better on 3/16
