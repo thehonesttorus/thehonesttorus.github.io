@@ -1,0 +1,161 @@
+\label{sec:memory}
+\subsection{Moment chains are unsharp selections}
+A moment chain does not know $P_x$; it knows the Gaussian state $N(m_l,S_l)$ of each layer and replaces the gate
+projection by its expectation, the diagonal effect $\Phi_l=\diag\,\Phi(\alpha_{l,a})\in\cA$, $0\le\Phi_l\le1$. Its
+transport is $T_{l\leftarrow l'}=W_l\Phi_{l-1}W_{l-1}\cdots\Phi_{l'}W_{l'+1}$, the resolvent of the Dirac chain compressed by an
+effect instead of a projection.
+
+\begin{proposition}[Unsharp selection]\label{prop:unsharp}
+With the path notation of Theorem~\ref{thm:resolvent},
+\[
+\E_x\big[\partial_{h_{l'}}z_l(x)\big]-T_{l\leftarrow l'}=\sum_{\text{paths}}\ \prod W\ \Big(\E\big[\textstyle\prod_k\1[z_{k,a_k}>0]\big]-\prod_k\Phi_{k,a_k}\Big),
+\]
+the sum over paths of the connected gate correlations along the path. The chain is exact for the expected
+transport iff the gates on every path are uncorrelated; its correction terms are correlations between the
+projection and the field that selects it (measurement back-action).
+\end{proposition}
+\begin{proof}
+Take expectations in the path expansion term by term.
+\end{proof}
+
+Only the on-wall transports of \eqref{eq:kink} enter the mean, so what matters is the back-action \emph{conditional on a
+kink}. That is where the third cumulant comes from.
+
+\subsection{Pinning and births: the hub is a kink}
+\begin{lemma}[Pinning]\label{lem:pinning}
+If $z\sim N(m,S)$, then $z$ conditioned on $z_a=0$ is $N\big(m-S e_a\,m_a/S_{aa},\;S-Se_ae_a^{\top}S/S_{aa}\big)$: a
+rank-one update of the state along the covariance column of the pinned neuron. Downstream gate expectations shift
+to first order by $-\varphi(\alpha_b)\,\rho_{ab}\,\alpha_a$, $\rho_{ab}=S_{ab}/\sqrt{S_{aa}S_{bb}}$.
+\end{lemma}
+\begin{proof}
+Gaussian conditioning; $\Phi\big((m_b-S_{ab}m_a/S_{aa})/\sigma_b\big)-\Phi(\alpha_b)=-\varphi(\alpha_b)\rho_{ab}\alpha_a+O(\rho^2)$.
+\end{proof}
+
+\begin{theorem}[Births are contacts]\label{thm:birth}
+Let $z\sim N(m,S)$ with small off-diagonal covariances and $h=\relu(z)$. For distinct $i,j,k$,
+\[
+\kap_3(h_i,h_j,h_k)=\sum_{c\in\{i,j,k\}}\ \Phi(\alpha_a)\,S_{ac}\ \frac{\varphi(\alpha_c)}{\sigma_c}\ S_{cb}\,\Phi(\alpha_b)\Big|_{\{a,b\}=\{i,j,k\}\setminus\{c\}}+O(S_{\rm off}^3),
+\]
+the sum over which of the three neurons is the \emph{hub}. The hub contributes through $\E[\relu''(z_c)]=\varphi(\alpha_c)/\sigma_c=
+f_c(0)$, its kink density, and the two arms are the covariances to the hub weighted by the gates. In CP form,
+$\kap_3=\Sym\sum_c\,(\Phi\circ S_{\cdot c})\otimes 3e_c\otimes(f_c(0)\,S_{c\cdot}\circ\Phi)$ to second order in $S_{\rm off}$, which is the
+star block of the organisers' chain $(\Phi\circ S^{\rm off},\,3I,\,(w_2\circ S^{\rm off}\circ\Phi)^{\top})$, $w_2=f(0)$; its
+residual block makes the birth exact beyond second order.
+\end{theorem}
+\begin{proof}
+Joint cumulants of functions of a Gaussian vector expand over connected graphs on the index set with edges weighted by
+off-diagonal covariances and vertex factors $\E f^{(\deg)}(z_v)$ (Price's theorem, or Wick's theorem applied to the
+Hermite expansions). On three vertices the connected graphs with two edges are the three paths, centred at the hub,
+with vertex factors $\E\relu'(z_a)=\Phi(\alpha_a)$, $\E\relu''(z_c)=\varphi(\alpha_c)/\sigma_c$, $\E\relu'(z_b)=\Phi(\alpha_b)$; the
+triangle is $O(S_{\rm off}^3)$. Writing the hub as the middle leg $e_c$ gives the CP form, and $\Sym$ distributes the three
+positions (factor $3$).
+\end{proof}
+
+So the identity leg that makes the third-cumulant memory expensive is not an accident of a factorisation: it is the
+label of the kink at which the cumulant was born. Every birth block is $n$ rank-one atoms, one per neuron $c$ of
+the birth layer, with intensity $f_c(0)$ and arms $S_{\cdot c}$; transported, the atom of hub $c$ born at $l'$ and read at
+$l$ is $u_c z_c^{\top}$ with $u_c=(T A e_c)\circ(T e_c)$ and $z_c=TCe_c$, $T=T_{l\leftarrow l'}$. Lemma~\ref{lem:pinning}
+says what the atom is: the first-order response of the downstream state to pinning neuron $c$ at its kink.
+Measured on network $0$ (stage-9 workflow): the atom energies are proportional to $f_c(0)^2$ (log-log correlation
+$0.97$--$0.998$ at ages $1,3,6$), and the atoms are mutually orthogonal to $10^{-3}$
+($\|\sum_cP^{(c)}\|^2/\sum_c\|P^{(c)}\|^2=0.998$--$1.004$).
+
+\subsection{Kinks as points: codegree and the frame bound}
+The second appearance of the two levels: the kinks of a layer are a marked point process on the neuron index
+(marks: density $f_c(0)$, arms $S_{\cdot c}$), and the memory is the sum of their atoms. Two kinks overlap through the
+neurons their arms share, $\langle S_{\cdot c}\circ\Phi,S_{\cdot c'}\circ\Phi\rangle=(S\Phi^2S)_{cc'}$: a codegree in the
+covariance graph. At He initialisation the off-diagonal covariances are $O(n^{-1/2})$, so codegrees are $O(n^{-1/2})$ of
+the degrees, and the Gram matrix of the atoms, a Hadamard product of two such codegree matrices, has off-diagonal
+entries $O(n^{-1})$ of the diagonal. This is exactly the small-codegree regime of \cite[\S3.3--3.4]{survey}. There it
+is what makes the nibble work (the conditional variance of a surviving degree is at most $p\sum_yc_y^2$); here the
+same orthogonality makes the memory incompressible.
+
+\begin{theorem}[Frame bound]\label{thm:frame}
+Let $P=UZ^{\top}=\sum_{c=1}^Nu_cz_c^{\top}$ with $U,Z\in\R^{n\times N}$, and let $\hat P=UMZ^{\top}$ with $\operatorname{rank}M\le k$ be
+any compression in the hub index (keeping $k$ hubs, reweighting, or mixing hubs through any $k$-dimensional subspace).
+Then
+\[
+\|P-\hat P\|_F^2\ \ge\ \lambda_{\min}(U^{\top}U)\,\|(I-M)Z^{\top}\|_F^2\ \ge\ \lambda_{\min}(U^{\top}U)\,\lambda_{\min}(Z^{\top}Z)\,(N-k).
+\]
+\end{theorem}
+\begin{proof}
+$\|U(I-M)Z^{\top}\|_F^2=\tr\big(Z(I-M)^{\top}G_u(I-M)Z^{\top}\big)\ge\lambda_{\min}(G_u)\|(I-M)Z^{\top}\|_F^2$ with $G_u=U^{\top}U$, and
+$\|(I-M)Z^{\top}\|_F^2=\tr\big((I-M)G_z(I-M)^{\top}\big)\ge\lambda_{\min}(G_z)\|I-M\|_F^2\ge\lambda_{\min}(G_z)(N-k)$ by
+Eckart--Young.
+\end{proof}
+
+\begin{corollary}[The memory is as compressible as its transport leg, no more]
+If the Hadamard leg is well conditioned, $U^{\top}U\approx cI$ (orthogonal hub atoms of comparable size), every
+hub-index compression loses at least $c$ times the energy of the transport leg $Z=TC$ outside the kept subspace. The
+cheapest compression is therefore the low-rank truncation of $TC$, and its error is that truncation's error. On network $0$
+the Hadamard bulk is near-isotropic while $TC$ keeps $91/96/99\%$ of the slice energy at rank $64/128/256$ (stage-9
+workflow), against the $1-10^{-4}$ of energy that a $10^{-2}$ relative slice accuracy requires; this is the measured
+failure of every tier in stage 9, now with its reason.
+\end{corollary}
+
+\subsection{Complementarity of the neuron algebra and the layer state}\label{sec:complement}
+The gate algebras are commutative and the modular theory of their states is trivial. The genuinely noncommutative
+pair is the neuron algebra $A=\diag(\R^n)\subset M_n$, where the nonlinearity acts (gates, Hadamard products,
+functional calculus), and the layer state $\rho_l=M_l/\Tr M_l$ on $M_n$, $M_l=\E[z_lz_l^{\top}]$, faithful and
+non-tracial, whose modular group $\sigma_s(Y)=\rho_l^{is}Y\rho_l^{-is}$ is the frame in which the transport acts.
+
+\begin{proposition}[Takesaki for the neuron algebra]\label{prop:takesaki}
+The only conditional expectation of $M_n$ onto $A$ is the pinching $\Delta(Y)=\diag(Y)$, and it preserves $\rho$ iff
+$\rho$ is diagonal; equivalently (Takesaki \cite{Tak}) $A$ is $\sigma^\rho$-invariant iff $\rho\in A$. The independent-neuron
+(mean-field) coarse-graining is state-preserving only for uncorrelated layers.
+\end{proposition}
+\begin{proof}
+For a conditional expectation $E$ onto $A$ and $i\neq j$, bimodularity gives $E(e_{ij})=e_{ii}E(e_{ij})e_{jj}=0$ since
+$E(e_{ij})$ is diagonal; so $E=\Delta$. $\Tr(\rho\,\Delta Y)=\Tr(\Delta(\rho)Y)$, which equals $\Tr(\rho Y)$ for all $Y$ iff
+$\rho=\Delta(\rho)$.
+\end{proof}
+
+\begin{theorem}[Complementarity]\label{thm:complement}
+Let $B$ be the masa of the eigenprojections of $\rho_l$ (simple spectrum), $U$ its eigenbasis, and
+$C_{ai}=|U_{ai}|^2-\tfrac1n$. With $\tau=\tfrac1n\Tr$, $E_A=\Delta$ and $E_B$ the pinching in the eigenbasis,
+$\|E_BE_A-J\|_{L^2(\tau)\to L^2(\tau)}=\|C\|$, $J(Y)=\tau(Y)1$. Every $\rho_l$-preserving conditional expectation $E_\cN$
+onto a subalgebra $\cN\subseteq B$ (any spectral coarse-graining of the layer state) factors through $E_B$, and for
+every $Y\in A$ with $\tau(Y)=0$,
+\[
+\|E_B\,Y\|_2\le\|C\|\,\|Y\|_2 .
+\]
+If the eigenvectors are Haar-distributed on the orthogonal group, $\|C\|\approx2\sqrt{2/n}$.
+\end{theorem}
+\begin{proof}
+The first identity is the alternating-expectation theorem for two partitions of unity into minimal projections
+(verified in the stage-9 workflow; it follows from writing $E_A=VV^*$, $E_B=WW^*$ with isometries onto the partitions
+with $V^*W=C+\tfrac1n\mathbf 1\mathbf 1^{\top}$, so that $E_BE_A-J=WC^{\top}V^*$ has norm $\|C\|$). Subalgebras of $B$ are invariant under
+$\sigma^{\rho}$ because $\rho\in B$, so $\rho$-preserving expectations onto them exist; each is the identity on $B$-valued
+data after $E_B$ (for $\cN$ spanned by blocks $Q_k$ of eigenprojections, $E^\rho_\cN(Y)=\sum_k\Tr(\rho Q_kY)/\Tr(\rho Q_k)\,Q_k$ and
+$\Tr(\rho Q_kY)=\Tr(\rho Q_kE_B(Y))$). For $Y\in A$ with $\tau(Y)=0$, $E_BY=(E_BE_A-J)Y$. For Haar orthogonal eigenvectors $n|U_{ai}|^2$ is asymptotically $\chi^2_1$, so $nC$ has
+centred entries of variance $2$ and the norm of an $n\times n$ such matrix is $\approx2\sqrt{2n}$.
+\end{proof}
+
+At He initialisation the neuron algebra and the modular frame of the layer state are nearly mutually unbiased: a
+compression that respects the state (keeps eigen-directions of the covariance) sees a neuron-diagonal observable
+(a gate, a Hadamard product, a slice's hub diagonal) only to $O(n^{-1/2})$ ($2\sqrt{2/n}\approx0.09$ at $n=1024$), and a compression that respects the
+neurons does not preserve the state. This is the Hadamard obstruction of stage 9 in operator-algebraic form, and it
+is why the spectral birth truncations of stage 9 saturate (rank $16$ already keeps the spectral content and still
+loses a factor three): spectral information and readout information live in complementary masas.
+
+\subsection{Parity: the odd sector and broken symmetry}
+\begin{proposition}[Odd sector]\label{prop:odd}
+Fix layers $1,\dots,l-1$. The readout at layer $l$ (before its gates) of any third-cumulant atom born at $l'<l$ is a
+homogeneous cubic polynomial in $W_l$, hence odd under $W_l\mapsto-W_l$, and its conditional mean over the Gaussian law
+of $W_l$ vanishes. Any surrogate that depends on $W_l$ only through even statistics (spectra, $W_l^{\top}W_l$, the NNGP
+recursion, free-probability models) assigns it zero.
+\end{proposition}
+\begin{proof}
+Each of the three legs $TAe_c$, $Te_c$, $TCe_c$ contains $W_l$ exactly once as the last factor, and no gate follows it.
+\end{proof}
+
+In the language of \cite{DG}: the Gaussian weight ensemble has the symmetry $W_l\mapsto-W_l$ for every $l$, the
+ensemble-averaged (free, NNGP) description is the symmetric phase, and each realisation carries an odd component of
+self-averaging size and realisation-specific sign, as the broken-symmetry equilibrium measures of the $(1,0)$
+ensemble do while the mean density of states stays symmetric. The analogy is exact in its consequence (ensemble
+surrogates cannot see the odd sector; the stage-9 workflow measured that its effect on the final mean is still half
+even, through odd readout coefficients, so surrogates capture at most a factor two of a memory worth a factor one
+hundred) and inexact in its mechanism: here the breaking is explicit at relative order $n^{-1/2}$ (a random field),
+not spontaneous at order one. The collective scalars that the chain must track exactly---the radial fourth-cumulant
+scalar, worth a factor $16$, the trace and the collective eigenvalue of the layer covariance---play the r\^ole of the
+multi-trace couplings $(\tr H^2)^2$, $\tr H\,\tr H^3$ of the Barrett--Glaser actions, whose values decide the phase there.

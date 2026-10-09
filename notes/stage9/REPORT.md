@@ -156,3 +156,31 @@ window-one chain as explainable by its own coordinate Laplacian (Gaussian: 89-93
 - Organisers' reference code: cloned read-only at `/home/user/alignment-research-center/mlp_cumulant_propagation`
   (public); torch 2.14 CPU installed locally for the verification only. Nothing from it is in the repo except the
   term table listing.
+
+## 7. Stage 10: the selected Dirac operator (theory, `notes/stage10/ncg_mlp_stage10.pdf`, 20 pp)
+
+The He-ReLU network with Gaussian input is placed inside random spectral geometry (Dirac ensembles), Sahasrabudhe's
+two-level lift and Klartag's contact structure. Proved (with an identity-check script, `scripts/verify_stage10.py`):
+- The weights are one random chiral Dirac chain D on the layered neuron set (quadratic Barrett–Glaser action; He =
+  unit gain of the gated transfer). The input selects a projection P_x (its gate pattern); the network is the
+  compressed resolvent z_L = [(1 - D_down P_x)^-1]_{L0} x. The activation tiling is the partition by the selected Dirac
+  operator P_x D P_x; crossing a wall is a rank-one contact update.
+- Two levels: walls of each layer are an isotropic random hyperplane process; codegrees on both sides are arc-cosine
+  kernels; Crofton counts wall crossings (n x angular length / pi); at He, lengths are preserved and chords contract like
+  3 pi / l (the selected geometry folds).
+- Kink current (exact up to dead tiles, i.e. inputs where a whole layer is off, probability ~2^-n):
+  u = sum over walls of f_{l,a}(0) E[|grad z|^2 (dh_L/dh_l) e_a | z_{l,a} = 0] = half the transported local time at the kinks
+  of a Brownian path. Densities are easy (Gaussian right to 1e-3); the on-wall conditional transports are the hard part.
+- The third-cumulant memory is a record of contacts: hub = kink, identity leg = pinned coordinate (Price). Frame bound:
+  the memory is exactly as compressible as its transport leg TC. The neuron algebra and the modular frame of the layer
+  state are complementary (||C|| ~ 2 sqrt(2/n)): spectral tiers are blind to hub diagonals. The memory readout is odd in
+  the last weight matrix (symmetric-phase surrogates see none of it).
+- Euler–Stein correction = average of the defect over Gaussian balls of uniform radius (OU time ~ Exp(1)); a defect of
+  Hermite contact order d gives a = 1/(d+2) (d = 0: 1/2, Gaussian closure and window-1 chain; d = 2: 1/4, exact chain;
+  measured 0.50-0.535, 0.482, 0.255-0.257). d is the order of the concentration-function coefficient at the kink that the
+  estimator gets wrong.
+- Mehler factors are imaginary modular times of the Gibbs state of the Hermite number operator; the ReLU heat trace is
+  critical at linear order and its kink term beta^(3/2) fixes the folding exponent (beta_l ~ 9 pi^2 / (2 l^2)).
+- Bootstrap: the mean is the unique value of a positivity + Stein moment problem; its first loop equation is the kink
+  current; cumulant chains are its truncations without positivity (single-neuron level-one island = Scarf's interval).
+The workflow agents' raw findings (readers of the three earlier papers, five lenses) are in `notes/stage10/workflow_findings/`.

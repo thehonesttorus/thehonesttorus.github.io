@@ -1,0 +1,90 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1.05in]{geometry}
+\usepackage{amsmath,amsthm,amssymb,mathtools,bm}
+\usepackage{booktabs,array,enumitem}\usepackage[expansion=false]{microtype}
+\usepackage{xcolor}
+\usepackage[colorlinks=true,linkcolor=blue!60!black,citecolor=blue!60!black,urlcolor=blue!60!black]{hyperref}
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]\newtheorem{proposition}[theorem]{Proposition}\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}\newtheorem{conjecture}[theorem]{Conjecture}
+\theoremstyle{definition}\newtheorem{definition}[theorem]{Definition}\newtheorem{remark}[theorem]{Remark}
+\newtheorem{example}[theorem]{Example}
+\newcommand{\R}{\mathbb R}\newcommand{\E}{\mathbb E}\newcommand{\Var}{\operatorname{Var}}\newcommand{\Cov}{\operatorname{Cov}}
+\newcommand{\relu}{\operatorname{relu}}\newcommand{\diag}{\operatorname{diag}}\newcommand{\tr}{\operatorname{tr}}
+\newcommand{\Tr}{\operatorname{Tr}}\newcommand{\kap}{\kappa}\newcommand{\Sym}{\operatorname{Sym}}
+\newcommand{\He}{\mathrm{He}}\newcommand{\1}{\mathbf 1}\newcommand{\cA}{\mathcal A}\newcommand{\cB}{\mathcal B}
+\newcommand{\cT}{\mathcal T}\newcommand{\cH}{\mathcal H}\newcommand{\cN}{\mathcal N}
+\newcommand{\st}[1]{\textsc{#1}}
+\title{\textsc{Localization in the commutant, stage 10:}\\ \large the selected Dirac operator.\\
+Tilings, kink currents, contact memory and the He-initialised \textsc{ReLU} network\\ as a critical random spectral geometry}
+\author{}
+\date{9 October 2026}
+\begin{document}
+\maketitle
+\begin{abstract}
+We place the bias-free He-initialised \textsc{ReLU} multilayer perceptron with standard Gaussian input inside the
+framework of random finite spectral triples (Dirac ensembles), Sahasrabudhe's two-level picture of probabilistic
+combinatorics at small scales, and Klartag's evolving ellipsoid. The placement has one central object, the
+\emph{selected Dirac operator}: the weights form a random chiral Dirac chain on the layered neuron set, the input
+selects a projection of the commutative neuron algebra (its gate pattern), and the network is the resolvent of the
+Dirac chain compressed by that projection. The partition of input space by the selected projection is the
+activation tiling; its walls are an isotropic random hyperplane process at every layer (level one), and its overlap
+kernels are the geometry in which the next layer's walls live (level two, the lift). Proved results:
+(i) a Crofton formula for the tiling and the folding law at He criticality (lengths preserved, chords contract like
+$3\pi/l$); (ii) the \emph{kink-current formula}: the exact mean of the network is a sum over walls of the Gaussian
+surface density of the wall times the downstream transport, equivalently half the expected local time of the
+pre-activations along a Brownian path; (iii) the third-cumulant memory of every moment chain is a record of
+contacts: its hub index is the index of a kink and its identity leg the pinned coordinate (Price's theorem), and
+a frame bound shows that its compressibility is that of its non-Hadamard leg; (iv) the neuron algebra and the
+modular frame of the layer state are complementary, which is the Hadamard obstruction in operator-algebraic form;
+(v) the Euler--Stein correction of stage 9 is an average over Gaussian balls of uniformly distributed radius in the
+tiling, its constant is $1/(d+2)$ for a defect of Hermite contact order $d$, which is the order of the
+concentration-function coefficient at the kink that the estimator gets wrong; (vi) neuron-pair correlations are
+Mehler factors, i.e.\ imaginary modular times of the Gibbs state of the Hermite number operator, and the depth flow
+of the pair temperature is marginal at linear order with a $\beta^{3/2}$ term produced by the kink, which fixes the
+exponent of the folding law; (vii) the mean is the unique solution of a positivity-plus-Stein moment problem whose
+first loop equation is the kink-current formula, and the cumulant chains are its truncations without positivity.
+Every statement is labelled as proved, known (with a reference), or conjectural; the identities are checked by an
+accompanying script.
+\end{abstract}
+\tableofcontents
+\section{The placement in one page}
+\input{s0_placement}
+\section{Two levels: random walls and their lift}
+\input{s1_levels}
+\section{The network as a random spectral triple}
+\input{s2_triple}
+\section{The mean is a kink current}
+\input{s3_current}
+\section{Estimators are unsharp selections; their memory is a record of contacts}
+\input{s4_memory}
+\section{The clock of the selection: Mehler factors, modular time and the Euler--Stein constant}
+\input{s5_clock}
+\section{Bootstrap: the mean as the unique solution of a positivity problem}
+\input{s6_bootstrap}
+\section{What the placement explains, what it predicts, and what is open}
+\input{s7_outlook}
+\section*{Verification}
+\input{s8_verify}
+\begin{thebibliography}{99}\small
+\bibitem{stage9} Stage 9 note: \emph{the mean of a random ReLU network as a central localization} (this repository, \texttt{notes/stage9}).
+\bibitem{stage8} Stage 8 note: \emph{Localization in the commutant: modular tilts, Kikuchi--Toeplitz quantization and transverse measures}.
+\bibitem{survey} J.~Sahasrabudhe, Probabilistic combinatorics at exponentially small scales, arXiv:2512.15077.
+\bibitem{klartag} B.~Klartag, Lattice packing of spheres in high dimensions using a stochastically evolving ellipsoid, arXiv:2504.05042.
+\bibitem{DG} M.~D'Arcangelo, S.~Gnutzmann, Symmetry breaking and phase transitions in random non-commutative geometries and related random-matrix ensembles, arXiv:2601.14141.
+\bibitem{KP} M.~Khalkhali, N.~Pagliaroli, Bootstrapping noncommutative geometry with Dirac ensembles, arXiv:2512.08694.
+\bibitem{BDG} J.~W.~Barrett, P.~Druce, L.~Glaser, Spectral estimators for finite non-commutative geometries, arXiv:1902.03590.
+\bibitem{BG} J.~W.~Barrett, L.~Glaser, Monte Carlo simulations of random non-commutative geometries, J.~Phys.~A 49 (2016) 245001.
+\bibitem{WLZ} R.~Wang, L.~C.~Lau, H.~Zhou, Derandomizing matrix concentration inequalities from free probability, arXiv:2601.08111.
+\bibitem{SST} A.~Sah, J.~Sahasrabudhe, M.~Sawhney, On the Spielman--Teng conjecture, arXiv:2405.20308.
+\bibitem{CS} Y.~Cho, L.~K.~Saul, Kernel methods for deep learning, NeurIPS 2009.
+\bibitem{PLRSG} B.~Poole, S.~Lahiri, M.~Raghu, J.~Sohl-Dickstein, S.~Ganguli, Exponential expressivity in deep neural networks through transient chaos, NeurIPS 2016.
+\bibitem{HDR} S.~Hayou, A.~Doucet, J.~Rousseau, On the impact of the activation function on deep neural networks training, ICML 2019.
+\bibitem{HR} B.~Hanin, D.~Rolnick, Complexity of linear regions in deep networks, ICML 2019.
+\bibitem{Scarf} H.~Scarf, A min-max solution of an inventory problem, in \emph{Studies in the Mathematical Theory of Inventory and Production}, Stanford 1958.
+\bibitem{Las} J.-B.~Lasserre, Global optimization with polynomials and the problem of moments, SIAM J.~Optim.~11 (2001) 796--817.
+\bibitem{Tak} M.~Takesaki, Conditional expectations in von Neumann algebras, J.~Funct.~Anal.~9 (1972) 306--321.
+\bibitem{Rief} M.~A.~Rieffel, Metrics on state spaces, Doc.~Math.~4 (1999) 559--600.
+\bibitem{Connes} A.~Connes, \emph{Noncommutative Geometry}, Academic Press 1994.
+\end{thebibliography}
+\end{document}

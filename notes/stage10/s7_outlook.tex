@@ -1,0 +1,64 @@
+\label{sec:outlook}
+\subsection{What the placement explains}
+\begin{enumerate}[leftmargin=*]
+\item \textbf{Why the mean is hard and the densities are easy.} The mean is a sum over walls of a density at the kink
+times a conditional transport on the wall (Theorem~\ref{thm:kink}). Densities are concentration-function
+coefficients and the Gaussian surrogate gets them right; the conditional transports are rare-event-relative objects
+(conditioning on a measure-zero wall), and every chain's error lives there.
+\item \textbf{Why the third-cumulant memory has an identity leg.} It is the label of the kink at which the cumulant was
+born (Theorem~\ref{thm:birth}); the memory is the record of all pinnings, transported.
+\item \textbf{Why it cannot be compressed.} Kinks have small codegree at He initialisation, so their atoms are orthogonal;
+the frame bound (Theorem~\ref{thm:frame}) makes the memory exactly as compressible as its transport leg, and the
+complementarity of the neuron algebra with the modular frame of the layer state (Theorem~\ref{thm:complement}) makes
+state-respecting (spectral) compressions blind to the hub diagonal up to $2\sqrt{2/n}$. The same small codegree that
+makes Sahasrabudhe's nibble concentrate makes our compression fail.
+\item \textbf{Why ensemble surrogates fail.} The memory's readout is odd in the last weight matrix
+(Proposition~\ref{prop:odd}); free and NNGP descriptions are the symmetric phase.
+\item \textbf{Where the Euler--Stein constants come from.} The correction averages the defect over Gaussian balls of
+uniform radius (Theorem~\ref{thm:uniform}); a defect of Hermite contact order $d$ decays like $r^{d+1}$, so
+$a=1/(d+2)$, and $d$ is the order of the concentration coefficient the estimator gets wrong
+(Theorem~\ref{thm:order}, Proposition~\ref{prop:conc}); the three measured constants fit $d=0,0,2$.
+\item \textbf{Why depth behaves algebraically.} Lengths are preserved and chords contract like $3\pi/l$
+(Theorem~\ref{thm:folding}) because the activation's heat trace is critical at linear order and has a
+$\beta^{3/2}$ kink term (Proposition~\ref{prop:heattrace}).
+\end{enumerate}
+
+\subsection{What it predicts (falsifiable, theoretical)}
+\begin{enumerate}[leftmargin=*]
+\item The defect of the exact first-order chain along Eldan's path decays like $r^3=(1+\tau)^{-3/2}$ (order $d=2$),
+not like $(1+\tau)^{-1}$; a chain that also corrects the curvature coefficient $f''(0)$ at the kinks has a defect of order
+$d\ge4$ and merge constant at most $1/6$.
+\item On the official networks, the number of walls crossed by a great-circle arc grows linearly in depth (about
+$n\theta_0/\pi$ per layer) while the number of gates that differ between its endpoints grows like $3n\log L$.
+\item The best hub-index compression of any old source has the error of the low-rank truncation of its transport leg
+$T_{l\leftarrow l'}C$ (Theorem~\ref{thm:frame} with a near-isotropic Hadamard leg); a tier cannot do better than that number,
+which can be computed without running any chain.
+\item The complementarity constant of the layer state at depth is $\approx2\sqrt{2/n}$ up to the collective mode, so every
+state-preserving coarse-graining of a layer onto spectral data retains at most a fraction $\approx8/n$ of the centred
+energy of any neuron-diagonal observable (a gate pattern, a hub diagonal).
+\end{enumerate}
+
+\subsection{Open problems}
+\begin{enumerate}[leftmargin=*]
+\item \textbf{Contact order at depth.} Prove Conjecture~\ref{conj:order}: show that the defect of a chain whose first
+neglected term is of Hermite order $d$ at every wall has the profile $r^{d+1}$ along the localization, despite the
+nonlinear dependence of the downstream pre-activation means on the localization centre.
+\item \textbf{A contact-resolved estimator.} The kink-current formula asks for the on-wall transports
+$\E[\partial_{h_l}h_L\,e_a\mid z_{l,a}=0]$ for all walls. To first order these are pinning responses
+(Lemma~\ref{lem:pinning}); their sum over walls is one directional derivative of the downstream chain per output,
+which forward mode computes with an identity leg (the memory) and reverse mode with one adjoint per output. Either way
+the cost is that of the memory. Is there an order-two quantity (a pinning response of pinning responses) whose sum
+over walls collapses, as the radial fourth-cumulant scalar does for the fourth cumulant?
+\item \textbf{The induced Dirac ensemble.} Compute the spectral dimension and spectral variance \cite{BDG} of the
+selected Dirac operators $P_xDP_x$ and of the transports $T_{l\leftarrow l'}$ by free multiplicative convolution, and
+compare with the measured stable ranks $164,92,65,47,29,23$ of the cocycle at ages $1,2,3,4,6,8$; decide whether the
+emergence of the collective eigenvalue of the layer covariance (from $0.9\%$ to $37$--$48\%$ of the energy) is a
+Baik--Ben Arous--P\'ech\'e transition in depth, the analogue of the one-cut to two-cut transition of \cite{DG}.
+\item \textbf{Bootstrap with kink generators.} Is the island of the moment problem at low degree narrow at large $n$
+because of a factorisation analogous to large-$N$ factorisation \cite{KP}? If so, positivity would certify chains
+cheaply.
+\item \textbf{Klartag in reverse.} Klartag's ellipsoid stops when about $d^2/2$ contacts hold its $d(d+1)/2$ shape
+parameters. The marginal value of a source age decays by a factor $0.75$ per age and about eleven ages matter,
+roughly $4n$ effective contacts held in memory. Is there a counting argument that fixes this number from the dimension
+of the third-cumulant readouts that the mean actually uses?
+\end{enumerate}

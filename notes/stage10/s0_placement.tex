@@ -1,0 +1,56 @@
+\label{sec:placement}
+Fix $W_1,\dots,W_L\in\R^{n\times n}$ with i.i.d.\ $N(0,2/n)$ entries, put $h_0=x\sim\gamma=N(0,I_n)$, $z_l=W_lh_{l-1}$,
+$h_l=\relu(z_l)$; the target is $u=\E h_L$. The placement consists of four identifications, each of which is a
+statement proved below.
+
+\paragraph{1. The space and the metric.} The layered neuron set $X=\{0,\dots,L\}\times[n]$ carries the commutative
+algebra $\cA=C(X)$ and the Hilbert space $\ell^2(X)$. The weights are one self-adjoint operator
+$D=\sum_l\big(W_l\otimes|l\rangle\langle l{-}1|+W_l^{\top}\otimes|l{-}1\rangle\langle l|\big)$, odd for the grading
+$(-1)^l$: a random \emph{chiral Dirac chain}. He initialisation is the Gaussian (quadratic-action) Dirac ensemble
+$e^{-\frac n8\Tr D^2}dD$ at the coupling where the gated transfer has unit mean-square gain (Proposition~\ref{prop:critical}).
+
+\paragraph{2. The selection.} An input $x$ selects a projection $P_x\in\cA$ (its gate pattern), and the network is
+the compressed resolvent $z_L(x)=\big[(1-D_{\downarrow}P_x)^{-1}\big]_{L0}\,x$ (Theorem~\ref{thm:resolvent}). The
+\emph{selected Dirac operator} is $P_xDP_x$, the Dirac operator of the active subnetwork. Input space is tiled by
+the value of the selected Dirac operator (the activation tiling), the Gaussian input induces a probability law on
+compressions (a Dirac ensemble \emph{induced by the input}), and moving the input across a wall toggles one site,
+a rank-one contact update of the selected geometry (Proposition~\ref{prop:contact}). Localization of the input
+(stage 9) is the dynamical selection: a Gaussian ball of shrinking radius at a moving centre, whose terminal
+selected Dirac operator is that of a Gaussian point.
+
+\paragraph{3. The two levels.} At every layer the walls $\{z_{l,a}=0\}$ are the hyperplanes of $n$ i.i.d.\
+isotropic normals in the previous feature space (level one: a random point process on a sphere). Their overlaps
+---codegrees of caps, intersections of half-spaces---are arc-cosine kernels on both the input side and the neuron
+side (Lemma~\ref{lem:duality}), and that level-two geometry is the ambient geometry of the next layer's walls (the
+lift). Integral geometry (Crofton) counts the walls a curve crosses (Theorem~\ref{thm:crofton}); at He criticality
+lengths are preserved and chords contract like $3\pi/l$ (Theorem~\ref{thm:folding}): the selected geometry folds.
+The same two-level structure reappears one level up: kinks are points with marks (kink density, covariance arms),
+and the third-cumulant memory is a sum of rank-one atoms over these points whose overlaps are codegrees in the
+covariance graph (Section~\ref{sec:memory}).
+
+\paragraph{4. The observable and its estimators.} The mean is a boundary functional of the tiling: the
+\emph{kink current} $u=\sum_{l,a}\E\big[\delta(z_{l,a})\,|\nabla z_{l,a}|^2\,\partial_{h_l}h_L\,e_a\big]$
+(Theorem~\ref{thm:kink}), the first Schwinger--Dyson equation of the network's Gaussian field theory
+(Section~\ref{sec:bootstrap}). A moment chain is an \emph{unsharp} selection (gate projections replaced by their
+expectations), its third cumulant is a record of contacts (hub $=$ kink, identity leg $=$ pinned coordinate,
+Theorem~\ref{thm:birth}), and its errors are read by a clock: Gaussian balls of uniform radius in the tiling,
+equivalently an exponentially distributed Ornstein--Uhlenbeck time, which turns Hermite contact order $d$ into the
+Euler--Stein constant $1/(d+2)$ (Theorems~\ref{thm:uniform}, \ref{thm:order}).
+
+\begin{center}\small
+\begin{tabular}{>{\raggedright\arraybackslash}p{3.5cm}>{\raggedright\arraybackslash}p{3.5cm}>{\raggedright\arraybackslash}p{3.6cm}>{\raggedright\arraybackslash}p{4.0cm}}\toprule
+Sahasrabudhe \cite{survey} & Klartag \cite{klartag} & Dirac ensembles \cite{BG,KP,DG,BDG} & He-\textsc{ReLU} network\\\midrule
+Poisson points in a box & lattice points & random Dirac $D$ & weight rows: random walls per layer\\
+conflict graph, codegree & contacts $\langle y,Ay\rangle=1$ & spectral triple $(\cA,\cH,D)$ & tiling; codegree $=$ arc-cosine kernel\\
+lift (forget embedding) & ellipsoid $A_t$ (metric) & metric from $D$ (Connes) & selected Dirac $P_xDP_x$; pullback metric\\
+nibble: $\Var\le p\sum c_y^2$ & rank-one contact updates & action $\Tr D^2,\Tr D^4$ & He $=$ quadratic action, critical gain\\
+small codegree $\Rightarrow$ independence & volume growth & 1-cut/2-cut, symmetry breaking & folding law; odd memory sector\\
+small-ball $\rho_h$ at scale $h$ & stopping when held & spectral dimension, variance & concentration coefficients at the kink\\
+\bottomrule\end{tabular}
+\end{center}
+Two cautions recorded by the stage-9 workflow and kept here. The gate algebras are commutative subalgebras of
+$L^\infty(\R^n,\gamma)$, so the modular theory of their states is trivial; the noncommutative geometry of the
+problem lives in the pair (neuron algebra, Dirac/transport) and in the pair (neuron algebra, layer state on $M_n$),
+Sections~\ref{sec:triple} and~\ref{sec:complement}. And Klartag's process is the dual of a localization: there the
+metric is the martingale and the centre is fixed, here the centre is the martingale and the metric (precision)
+deterministic; the correspondence is between the contact structures, not the processes.

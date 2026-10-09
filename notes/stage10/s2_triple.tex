@@ -1,0 +1,112 @@
+\label{sec:triple}
+\subsection{The chiral Dirac chain}
+\begin{definition}[Network spectral triple]\label{def:triple}
+Let $X=\{0,\dots,L\}\times[n]$, $\cA=C(X)\cong\bigoplus_{l=0}^L\mathbb C^n$ acting diagonally on $\cH=\ell^2(X)$, and
+\[
+D=D_\downarrow+D_\downarrow^{\top},\qquad D_\downarrow=\sum_{l=1}^LW_l\otimes|l\rangle\langle l-1|,
+\]
+with grading $\Gamma=\bigoplus_l(-1)^l$ and real structure $\mathcal J=$ complex conjugation. Then $D\Gamma=-\Gamma D$,
+$\mathcal JD=D\mathcal J$, $\mathcal J\Gamma=\Gamma\mathcal J$, $\mathcal J^2=1$, and the order-zero and first-order
+conditions hold trivially because $\cA$ is commutative: $(\cA,\cH,D,\Gamma,\mathcal J)$ is a real even finite spectral
+triple of KO-dimension $0$. Its commutators $[D,f]$, $f\in\cA$, have entries $W_l(a,b)\,(f_{l-1,b}-f_{l,a})$: $D$ is
+the weighted adjacency of the layered graph, and the Connes distance of the triple is the metric on neurons in
+which strong weights are short edges.
+\end{definition}
+
+\begin{proposition}[He initialisation as a critical Gaussian Dirac ensemble]\label{prop:critical}
+If the entries of every $W_l$ are i.i.d.\ $N(0,\sigma_w^2/n)$, the law of $D$ on the space of chiral chain operators is
+$Z^{-1}\exp\!\big(-\tfrac{n}{4\sigma_w^2}\Tr D^2\big)\,dD$, the quadratic Barrett--Glaser action \cite{BG,KP} restricted to
+this kinematic space. For a fixed vector $z$ and a gate projection $P$ selecting the positive coordinates of $z$,
+$\E|W\,Pz|^2=\sigma_w^2|Pz|^2$ and $\E|Pz|^2=\tfrac12|z|^2$ for symmetric $z$; the gated transfer has unit
+mean-square gain exactly at $\sigma_w^2=2$, and $\E\log(|z_{l+1}|^2/|z_l|^2)=\log(\sigma_w^2/2)+O(1/n)$. He
+initialisation is the critical coupling of the selected (gated) chain.
+\end{proposition}
+\begin{proof}
+$\Tr D^2=2\sum_l\Tr W_l^{\top}W_l$ and the Gaussian density of the entries is $\prod\exp(-\tfrac{n}{2\sigma_w^2}W_{ij}^2)$.
+For fixed $y=Pz$, $Wy$ has i.i.d.\ $N(0,\sigma_w^2|y|^2/n)$ coordinates. The logarithmic statement is the law of
+$\log\chi^2_n/n$, whose mean is $-O(1/n)$.
+\end{proof}
+
+\subsection{The network is a compressed resolvent}
+\begin{theorem}[Gated resolvent]\label{thm:resolvent}
+For an input $x$ let $P_x\in\cA$ be the projection that is the identity on layer $0$ and the gate projection
+$\1_{(0,\infty)}(z_l(x))$ on layer $l\ge1$, and $\psi=\bigoplus_lz_l$ the field of pre-activations ($z_0=x$). Then $\psi$ is
+the unique solution of the self-consistent equation
+\[
+\psi=x\oplus0+D_\downarrow P_\psi\,\psi,\qquad\text{i.e.}\qquad \psi=(1-D_\downarrow P_\psi)^{-1}(x\oplus0),
+\]
+where $P_\psi=\1_{(0,\infty)}(\psi)$ is a spectral projection of the field in the commutative algebra. Since
+$D_\downarrow P$ is nilpotent, $(1-D_\downarrow P)^{-1}=\sum_{k=0}^{L}(D_\downarrow P)^k$, and
+\begin{gather*}
+z_L(x)=\big[(1-D_\downarrow P_x)^{-1}\big]_{L0}\,x=W_LP_{L-1}W_{L-1}\cdots P_1W_1\,x,\\
+\big[z_L(x)\big]_k=\sum_{a_0\to a_1\to\cdots\to a_L=k}\ \prod_{l=1}^LW_l(a_l,a_{l-1})\prod_{l=1}^{L-1}\1[z_{l,a_l}(x)>0]\;x_{a_0}.
+\end{gather*}
+\end{theorem}
+\begin{proof}
+The equation is block lower triangular: its layer-$l$ component reads $\psi_l=W_lP_{l-1}\psi_{l-1}$ with
+$P_{l-1}\psi_{l-1}=\relu(\psi_{l-1})$, which is the forward pass; uniqueness follows by induction on $l$. The Neumann
+series terminates because $(D_\downarrow P)^{L+1}=0$, and the $(L,0)$ block of $(D_\downarrow P)^L$ is the displayed
+product, whose entries are the path sums.
+\end{proof}
+
+The network therefore computes with one fixed random operator $D$ and one input-dependent projection $P_x$ of the
+commutative algebra. Everything nonlinear is in the selection $x\mapsto P_x$; given $P_x$ the network is the
+resolvent of a compressed Dirac operator. The path expansion is the sum over walks of the counting problems of
+stage 9's reading (exterior-algebra path counts): the gates are input-dependent vertex weights.
+
+\subsection{The selected Dirac operator and the induced ensemble}
+\begin{definition}[Selection]\label{def:selection}
+The \emph{selected Dirac operator} of $x$ is $D_x=P_xDP_x$, the Dirac operator of the active subnetwork, and the
+\emph{selected metric} is the pullback $g_x=J(x)^{\top}J(x)$ of the output metric, $J(x)=\partial h_L/\partial x$.
+The activation tiling is the partition of $\R^n$ by the value of $P_x$; the input law induces on the finite set of
+compressions $\{P_gDP_g\}$ the probability $\gamma(\text{tile }g)$. We call this law the Dirac ensemble \emph{induced
+by the input}: a random finite geometry drawn from the $2^{n(L-1)}$ compressions of one random Dirac operator.
+\end{definition}
+
+\begin{proposition}[Walls are rank-one contacts]\label{prop:contact}
+Let $x$ cross the wall $F_{l,a}$ transversally from $z_{l,a}<0$ to $z_{l,a}>0$, all other gates fixed. Then $P_x$
+changes by the minimal projection $e_{(l,a)}$, the selected Dirac operator changes by
+$e_{(l,a)}DP+PDe_{(l,a)}+e_{(l,a)}De_{(l,a)}$ (a perturbation of rank at most two supported on the edges at the toggled
+site), the Jacobian changes by the rank-one operator
+\[
+\Delta J=\big(\partial_{h_l}h_L\big)e_a\,\nabla z_{l,a}^{\top},
+\]
+and the selected metric changes by $\Delta g=\nabla z_{l,a}\,v^{\top}J+J^{\top}v\,\nabla z_{l,a}^{\top}+|v|^2\nabla z_{l,a}
+\nabla z_{l,a}^{\top}$ with $v=(\partial_{h_l}h_L)e_a$, a rank-two update whose new direction is the normal of the wall.
+\end{proposition}
+\begin{proof}
+Only the gate of $(l,a)$ changes, so $J=\partial_{h_l}h_L\,P_l\,\partial_xz_l$ changes by $\partial_{h_l}h_L\,e_ae_a^{\top}
+\partial_xz_l$, and $e_a^{\top}\partial_xz_l=\nabla z_{l,a}^{\top}$; downstream gates are continuous across a generic
+wall. The other two statements are direct expansions.
+\end{proof}
+
+This is the precise sense in which the tiling plays the r\^ole of Klartag's lattice. In \cite{klartag} the ellipsoid
+matrix $A_t$ moves until a lattice point $y$ reaches its boundary, and the contact imposes the rank-one constraint
+$\Tr(A\,yy^{\top})=1$. Here the selected geometry is constant inside a tile and receives a rank-one (Jacobian) or
+rank-two (metric) update at every wall a path crosses; along any path $x_t$ the selected operators $D_{x_t}$ form a
+Hamiltonian on a dynamically evolving graph whose edges switch at wall crossings. The localization processes of stage
+9 are exactly such paths with a Gaussian ball attached: on Eldan's path the ball $N(m_t,(1+t)^{-1}I)$ shrinks around a
+martingale centre $m_t$ until it lies in one tile, and the terminal selected operator is $D_X$, $X\sim\gamma$. The
+process is dual to Klartag's (there the metric is the martingale and the centre fixed); what transfers is the contact
+structure, and Section~\ref{sec:clock} shows that the estimator errors are read off exactly from it.
+
+\subsection{Distance on states}\label{sec:distance}
+\begin{proposition}[Connes--Kantorovich distance of the selected geometry]\label{prop:distance}
+Let
+\[d_J(x,y)=\inf_c\int_0^1|J(c(t))\,\dot c(t)|\,dt\]
+over piecewise $C^1$ curves $c$ from $x$ to $y$ (the length of the image curve; a pseudometric because $J$ may have a
+kernel), and for probability laws $\nu,\nu'$ with first moments let
+\[
+d_D(\nu,\nu')=\sup\{|\nu(f)-\nu'(f)|:\ f\ \text{$1$-Lipschitz for }d_J\}.
+\]
+Then $d_D=W_1^{d_J}$ (Kantorovich--Rubinstein), every output coordinate is $1$-Lipschitz for $d_J$, and hence
+$|u(\nu)_k-u(\nu')_k|\le W_1^{d_J}(\nu,\nu')$ for the exact means of any two input laws. For a smooth nondegenerate
+metric $d_D$ is Connes' spectral distance with the Dirac operator of $g$ \cite{Connes,Rief}; here it is its
+length-space extension to the piecewise-flat selected metric. In the infinite-width limit $d_J$ restricted to the
+input sphere is the round metric at every depth (Theorem~\ref{thm:folding}), while the chord metric of the features
+collapses: the distance on states is preserved by the selection and the distance between features is not.
+\end{proposition}
+\begin{proof}
+Kantorovich--Rubinstein duality on the (pseudo)metric space $(\R^n,d_J)$; $|h_{L,k}(x)-h_{L,k}(y)|\le|h_L(x)-h_L(y)|\le
+\int|J\dot c|$ for every curve. The last statement is Theorem~\ref{thm:folding}.
+\end{proof}

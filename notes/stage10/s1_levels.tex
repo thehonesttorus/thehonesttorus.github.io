@@ -1,0 +1,124 @@
+\label{sec:levels}
+\subsection{Level one: the walls of a layer are an isotropic point process}
+Condition on layers $1,\dots,l-1$. The feature map $x\mapsto h_{l-1}(x)\in\R^n$ is then fixed, and the rows
+$w_{l,a}$ of $W_l$ are $n$ independent $N(0,\tfrac2nI)$ vectors; their directions $\hat w_{l,a}$ are $n$ i.i.d.\
+uniform points on $S^{n-1}$, a binomial process that is Poisson to first order. Each point carries a \emph{wall} in
+input space, $F_{l,a}=\{x:\langle w_{l,a},h_{l-1}(x)\rangle=0\}$, and each input $x$ carries a \emph{cap}, the open
+hemisphere $C_l(x)=\{u\in S^{n-1}:\langle u,h_{l-1}(x)\rangle>0\}$; neuron $a$ is active at $x$ iff
+$\hat w_{l,a}\in C_l(x)$. This is the incidence structure of \cite[\S3.3]{survey} (points in a box, balls around
+them, intersections) with the r\^oles of the two families symmetric.
+
+\begin{lemma}[Sign duality and the two codegrees]\label{lem:duality}
+Write $\theta(u,v)$ for the angle between two vectors and $J(\theta)=\sin\theta+(\pi-\theta)\cos\theta$.
+\begin{enumerate}[label=(\roman*),nosep]
+\item (input side) For inputs $x,y$ with $\theta=\theta(h_{l-1}(x),h_{l-1}(y))$, conditionally on layers $<l$ the
+codegree $N_l(x,y)=\#\{a:\text{$a$ active at $x$ and at $y$}\}$ is $\mathrm{Bin}(n,\tfrac{\pi-\theta}{2\pi})$, and the
+number of neurons whose gate differs at $x$ and $y$ is $\mathrm{Bin}(n,\tfrac\theta\pi)$. The weighted codegree
+$K_l(x,y)=\langle h_l(x),h_l(y)\rangle$ has conditional mean $\tfrac1\pi|h_{l-1}(x)||h_{l-1}(y)|\,J(\theta)$ and
+conditional variance $O(1/n)$ relative to its mean squared.
+\item (neuron side) At layer $1$, for two rows with angle $\theta_{ab}$, $\gamma(\text{$a$ and $b$ active})=
+\tfrac{\pi-\theta_{ab}}{2\pi}$ and $\E_x[h_{1,a}h_{1,b}]=\tfrac1{2\pi}|w_a||w_b|\,J(\theta_{ab})$.
+\item (Poisson covariance) If the number of points is Poissonised to $\mathrm{Poi}(n)$, the counts of points in two
+caps have $\Cov(N(C_l(x)),N(C_l(y)))=n\,\mu(C_l(x)\cap C_l(y))=n\tfrac{\pi-\theta}{2\pi}$: the overlap of two caps is the
+covariance of their counts, and the codegree is the pairing $\tau(p_xp_y)$ of the two cap projections in
+$L^\infty(S^{n-1},\mu)$.
+\end{enumerate}
+\end{lemma}
+\begin{proof}
+For a uniform direction $u$ and two vectors at angle $\theta$, $\mathbb P(\langle u,v_1\rangle>0,\langle u,v_2\rangle>0)
+=\tfrac{\pi-\theta}{2\pi}$ (the lune between two hemispheres) and $\mathbb P(\text{signs differ})=\tfrac\theta\pi$; the
+rows are independent, which gives the binomial laws. The weighted codegree is a sum of $n$ i.i.d.\ terms
+$\relu(\langle w,h(x)\rangle)\relu(\langle w,h(y)\rangle)$, whose mean is the degree-one arc-cosine kernel
+$\tfrac2n\tfrac{|h(x)||h(y)|}{2\pi}J(\theta)$ \cite{CS}; the variance statement is the law of large numbers for $n$
+i.i.d.\ terms. (ii) is the same computation with $x\sim\gamma$ isotropic and the rows fixed. (iii) is the Poisson
+covariance identity: split the two caps into the three disjoint pieces; counts of disjoint pieces are independent and
+the variance of a Poisson count equals its mean.
+\end{proof}
+
+So the post-activation covariance of a layer (the object every moment chain propagates) is the weighted codegree of
+the neurons' half-spaces, and the feature kernel on inputs is the weighted codegree of the inputs' caps. Neither
+side is privileged: the incidence $(x,a)\mapsto\1[\langle w_a,h(x)\rangle>0]$ is the sign pattern of one bilinear
+form.
+
+\subsection{Crofton: how many walls a curve crosses}
+\begin{theorem}[Crofton formula for the tiling]\label{thm:crofton}
+Let $c:[0,1]\to\R^n$ be a piecewise $C^1$ curve of inputs with $h_{l-1}(c(t))\neq0$, and let
+$\Lambda_{l-1}(c)=\int_0^1\big|\tfrac{d}{dt}\,\widehat{h_{l-1}(c(t))}\big|\,dt$ be the angular length of its image
+in the layer-$(l-1)$ feature sphere. Conditionally on layers $<l$, the expected number of crossings of layer-$l$ walls
+by $c$ is
+\[
+\E\big[\#\{(a,t):z_{l,a}(c(t))=0\}\,\big|\,\text{layers}<l\big]\;=\;\frac{n}{\pi}\,\Lambda_{l-1}(c).
+\]
+\end{theorem}
+\begin{proof}
+For one row, $X_t=\langle w,\widehat{h_{l-1}(c(t))}\rangle\sqrt{n/2}$ is a centred Gaussian process with unit
+variance and $\Cov(X_t,\dot X_t)=0$ (the derivative of a unit vector is orthogonal to it), so the Kac--Rice formula
+gives $\E\#\{t:X_t=0\}=\tfrac1\pi\int_0^1\sqrt{\Var\dot X_t}\,dt=\tfrac1\pi\int_0^1|\tfrac{d}{dt}\widehat{h_{l-1}}|\,dt$.
+The zeros of $X_t$ are the crossings of the wall $F_{l,a}$; sum over the $n$ rows.
+\end{proof}
+
+This is the integral-geometric face of the two-level picture: the expected number of random walls (level one)
+that meet a set is the set's mean width in the geometry of the previous level. For a chord the count of
+\emph{differing gates} is $n\theta/\pi$ (Lemma~\ref{lem:duality}); for the curve it is $n\Lambda/\pi$. The two differ as
+soon as the image curve folds.
+
+\subsection{The lift at He criticality: lengths are preserved, chords contract}
+\begin{proposition}[Unit angular gain]\label{prop:gain}
+Let $v\perp c$ be a tangent vector at a feature vector $c$, $c'=\relu(Wc)$, $\dot c'=D(Wc)\,Wv$ its image,
+$W$ with i.i.d.\ $N(0,\sigma_w^2/n)$ entries. Then $\E|c'|^2=\tfrac{\sigma_w^2}2|c|^2$, $\E|\dot c'|^2=
+\tfrac{\sigma_w^2}2|v|^2$, $\E\langle c',\dot c'\rangle=0$ and $\Var\langle c',\dot c'\rangle=O(|c|^2|v|^2/n)$. Hence the
+expected squared angular speed is multiplied by $1+O(1/n)$ for every $\sigma_w$, and lengths are preserved
+($\sigma_w^2=2$) iff the gated transfer has unit mean-square gain, $\chi_1=\sigma_w^2\,\E[\relu'(z)^2]=1$.
+\end{proposition}
+\begin{proof}
+$\langle w_a,c\rangle$ and $\langle w_a,v\rangle$ are independent Gaussians because $v\perp c$; each neuron is active
+with probability $\tfrac12$ independently of $\langle w_a,v\rangle$. Then $\E|\dot c'|^2=n\cdot\tfrac12\cdot
+\tfrac{\sigma_w^2}n|v|^2$, $\E|c'|^2=n\cdot\E\relu(g)^2$ with $g\sim N(0,\sigma_w^2|c|^2/n)$, and
+$\langle c',\dot c'\rangle=\sum_a\relu(\langle w_a,c\rangle)\langle w_a,v\rangle$ is a sum of $n$ independent centred terms
+of variance $\tfrac{\sigma_w^2|c|^2}{2n}\tfrac{\sigma_w^2|v|^2}{n}$.
+\end{proof}
+
+\begin{theorem}[Folding law; infinite width]\label{thm:folding}
+In the limit $n\to\infty$ with $L$ fixed (the NNGP limit \cite{CS,PLRSG}), the angle $\theta_l$ between the features
+of two inputs obeys the $\sigma_w$-independent recursion $\cos\theta_{l+1}=J(\theta_l)/\pi$, and
+\[
+\theta_{l+1}=\theta_l-\frac{\theta_l^2}{3\pi}+O(\theta_l^3),\qquad
+\theta_l=\frac{3\pi}{\,l+3\pi/\theta_0+O(\log l)}\;.
+\]
+The angular length of every curve is preserved, $\Lambda_l=\Lambda_0$. Consequently, for two inputs at angle
+$\theta_0$, the walls of layer $l$ crossed by the great-circle arc between them number $n\theta_0/\pi$ in
+expectation at every layer (in total $L n\theta_0/\pi$), while the gates that differ between the endpoints number
+$n\theta_{l-1}/\pi\approx3n/l$ (in total $\approx3n\log L$). The selected geometry is an isometric immersion of the
+input sphere into the feature sphere whose chords shrink like $3\pi/l$: it folds.
+\end{theorem}
+\begin{proof}
+The recursion is Lemma~\ref{lem:duality}(i) with the law of large numbers, normalised by the norms (the $\sigma_w$
+factor cancels in the angle because $\relu$ is positively homogeneous). Expanding,
+$\cos\theta'-\cos\theta=(\sin\theta-\theta\cos\theta)/\pi=\theta^3/(3\pi)+O(\theta^5)$, and
+$\cos\theta'=1-\theta'^2/2+O(\theta'^4)$ give $\theta'^2=\theta^2-\tfrac{2\theta^3}{3\pi}+O(\theta^4)$, i.e.\
+$\theta'=\theta-\theta^2/(3\pi)+O(\theta^3)$. Then $1/\theta_{l+1}=1/\theta_l+1/(3\pi)+O(\theta_l)$, and summing the
+$O(\theta_l)=O(1/l)$ errors gives the $O(\log l)$ term. The angle map $f(\theta)=\arccos(J(\theta)/\pi)$ has
+$f'(0)=1$, so the length of a curve, $\lim\sum f(\Delta\theta_i)=\sum\Delta\theta_i$, is preserved; this is the
+infinite-width form of Proposition~\ref{prop:gain}. The crossing counts follow from Theorem~\ref{thm:crofton} and
+Lemma~\ref{lem:duality}(i).
+\end{proof}
+
+\begin{remark}[Two metrics on inputs]
+The \emph{chord} metric $|\hat h_l(x)-\hat h_l(y)|=2\sin(\theta_l/2)$ and the \emph{length} metric (the infimum of
+image lengths of curves joining $x$ and $y$) separate at depth: the first collapses like $3\pi/l$, the second is
+the round metric of the input sphere at every depth. Section~\ref{sec:distance} identifies the second as the
+Connes distance of the selected Dirac operator. Bias-free \textsc{ReLU} networks are thus at the edge of chaos for
+every $\sigma_w$ in the angle variable, and He initialisation is the point at which the length variable is critical too
+\cite{PLRSG,HDR}; the folding exponent is computed spectrally in Proposition~\ref{prop:heattrace}. The linear-in-$L$
+crossing count is the infinite-width form of the region counts of \cite{HR}.
+\end{remark}
+
+\subsection{The lift as a tower of algebras}
+Let $\cB_l\subset L^\infty(\R^n,\gamma)$ be the von Neumann algebra generated by the gate functions
+$\1[z_{k,a}>0]$, $k\le l$. Then $\cB_1\subset\cB_2\subset\cdots\subset\cB_L$; $\cB_l$ is the algebra of functions
+constant on the tiles of the depth-$l$ tiling, its minimal projections are the tiles, and the trace $\gamma$ gives
+each tile its Gaussian measure. The level-two data of layer $l$ (the kernels $K_l$ on inputs, the post-activation
+covariance $C_l$ on neurons) are the ambient metric data of the level-one point process of layer $l+1$. The network
+is a $\cB_L$-valued piecewise-linear section: on the tile with projection $p_g$ it is the linear map $J_g$, so that
+$h_L=\sum_gp_g\,J_gx$. Everything that follows is about how the walls of this tower, and not its tiles, carry the
+mean.

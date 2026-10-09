@@ -1,0 +1,93 @@
+\label{sec:current}
+\subsection{The kink-current formula}
+Write $\partial_{h_l}h_L(x)$ for the Jacobian of the output with respect to the post-activations of layer $l$
+($=I$ for $l=L$, and $D_LW_LD_{L-1}\cdots W_{l+1}$ otherwise, with gates at $x$), and $f_{l,a}$ for the density of
+$z_{l,a}(x)$, $x\sim\gamma$.
+
+Call a tile \emph{dead} if some hidden layer is entirely inactive on it ($h_l\equiv0$ there); on a dead tile the network
+vanishes identically and several walls coincide along its faces. The Gaussian measure of the dead tiles is
+$\mathbb P(\exists\,l<L:\ h_l(x)=0)$, an orthant probability that is exponentially small in $n$ ($1.6\cdot10^{-1}$ at
+$n=6$, $8\cdot10^{-6}$ at $n=16$, $L=3$; of order $2^{-n}$ in general and below $10^{-300}$ at $n=1024$).
+
+\begin{theorem}[Kink current]\label{thm:kink}
+For almost every weight realisation, up to a remainder carried by the faces of the dead tiles,
+\begin{equation}\label{eq:kink}
+\begin{split}
+u=\E\,h_L(x)&=\sum_{l=1}^{L}\sum_{a=1}^{n}\E\Big[\delta\big(z_{l,a}(x)\big)\,\big|\nabla z_{l,a}(x)\big|^2\,
+\partial_{h_l}h_L(x)\,e_a\Big]\\
+&=\sum_{l,a}f_{l,a}(0)\;\E\Big[|\nabla z_{l,a}|^2\,\partial_{h_l}h_L\,e_a\ \Big|\ z_{l,a}=0\Big].
+\end{split}
+\end{equation}
+Each term is the Gaussian surface integral of the wall $F_{l,a}$, weighted by the squared gradient of the
+pre-activation that defines it and by the transport of a unit kick at $(l,a)$ to the output.
+\end{theorem}
+\begin{proof}
+$F=h_L$ is piecewise linear and positively homogeneous, so Euler's relation $F=x\cdot\nabla F$ holds off the walls, and
+$\nabla F=J^{\top}$ is piecewise constant with jumps across the walls. Gaussian integration by parts for the bounded
+variation field $J$ gives $\E F=\E[x\cdot\nabla F]=\E[\operatorname{div}\nabla F]=\E[\Delta F]$, where $\Delta F$ is the
+distributional Laplacian, a measure carried by the walls. Write $J=D_LW_LD_{L-1}\cdots D_1W_1$ and differentiate the
+gates: $\partial_iD_l=\sum_a\delta(z_{l,a})\,\partial_iz_{l,a}\,e_ae_a^{\top}$. By the product rule
+\[
+\textstyle\sum_i(\partial_iJ)_{\cdot i}=\sum_{l,a}\delta(z_{l,a})\,\big(\partial_{h_l}h_L\big)e_a\;\sum_i\partial_iz_{l,a}\,
+\big(e_a^{\top}W_lD_{l-1}\cdots W_1\big)_i=\sum_{l,a}\delta(z_{l,a})\,|\nabla z_{l,a}|^2\,\big(\partial_{h_l}h_L\big)e_a ,
+\]
+because $e_a^{\top}W_lD_{l-1}\cdots W_1=\nabla z_{l,a}^{\top}$. Distinct walls meet in sets of codimension two for almost
+every weight realisation, the downstream gates are continuous across a generic point of $F_{l,a}$, and
+$\{z_{l,a}=0\}$ is a finite union of pieces of hyperplanes (on each live tile $z_{l,a}$ is a nonzero linear form
+almost surely), so the products of distributions are well defined and $\E[\delta(z)G]=f(0)\,\E[G\mid z=0]$ with a continuous
+density $f$. Taking expectations gives \eqref{eq:kink}. The only exception is a face of a dead tile: there a
+downstream pre-activation vanishes identically on one side, several gates jump at once, the product rule must be
+applied to the simultaneous jump, and $z_{l,a}$ has an atom at $0$; these faces carry the remainder, which is bounded by the
+Gaussian surface measure of the dead tiles' boundaries times the size of the transport. (The identity check confirms
+both halves: at $n=16$ the two sides agree to the Monte Carlo noise, $1.5\%$; at $n=6$, where dead tiles carry $16\%$
+of the mass, they differ by $25\%$.)
+\end{proof}
+
+\begin{example}
+For $L=1$: $f_{1,a}(0)=1/(\sqrt{2\pi}|w_a|)$, $|\nabla z_{1,a}|^2=|w_a|^2$, so $u_a=|w_a|/\sqrt{2\pi}$, the mean of
+$\relu(N(0,|w_a|^2))$. For $L=2$ the layer-$1$ terms give $D_2W_2$ applied to the layer-$1$ kink masses on the walls, and
+the layer-$2$ terms give the kink masses of the curved walls $\{w_{2,a}\cdot h_1(x)=0\}$.
+\end{example}
+
+\begin{theorem}[Tanaka form: the mean is transported local time]\label{thm:tanaka}
+Let $B$ be a standard Brownian motion in $\R^n$ started at $0$ and $L^{(l,a)}_t$ the semimartingale local time at $0$ of
+$z_{l,a}(B_t)$. Then $h_L(B_t)$ is a semimartingale with
+\begin{gather*}
+dh_L(B_t)=J(B_t)\,dB_t+\tfrac12\sum_{l,a}\big(\partial_{h_l}h_L\big)(B_t)\,e_a\,dL^{(l,a)}_t,\\
+u=\E h_L(B_1)=\tfrac12\sum_{l,a}\E\int_0^1\big(\partial_{h_l}h_L\big)(B_t)\,e_a\,dL^{(l,a)}_t .
+\end{gather*}
+In particular the \emph{kink mass} $m_{l,a}=\E[\delta(z_{l,a})|\nabla z_{l,a}|^2]$ is half the expected local time that
+$z_{l,a}$ accumulates at its kink along a unit-time Brownian path from the origin.
+\end{theorem}
+\begin{proof}
+$h_L$ is a difference of convex functions on each line, piecewise linear, and the It\^o--Tanaka (Meyer) formula
+applies: $dh_L(B)=\nabla h_L\cdot dB+\tfrac12\Delta h_L(dt)$ with the Laplacian measure computed in the proof of
+Theorem~\ref{thm:kink}; the occupation-time formula converts $\delta(z_{l,a})|\nabla z_{l,a}|^2dt$ into $dL^{(l,a)}$.
+Homogeneity gives $\E[\delta(z(B_t))|\nabla z(B_t)|^2G(B_t)]=t^{-1/2}\E[\delta(z)|\nabla z|^2G]$ for degree-zero $G$, and
+$\tfrac12\int_0^1t^{-1/2}dt=1$, consistent with \eqref{eq:kink}.
+\end{proof}
+
+\begin{corollary}[Mean is created only at kinks]\label{cor:created}
+For every neuron, $\E h_{l,a}=m_{l,a}+\E\big[\1[z_{l,a}>0]\,\Delta z_{l,a}\big]$, where $\Delta z_{l,a}$ is the
+wall measure of the lower layers transported to $z_{l,a}$. A layer adds mean exactly through its kink masses and
+transports the lower layers' kink currents through its gates; a network without kinks has zero mean
+($\E z_l=\E\Delta z_l$ and $\Delta$ of a linear map vanishes).
+\end{corollary}
+\begin{proof}
+Apply the computation of Theorem~\ref{thm:kink} to the single coordinate $h_{l,a}$:
+$\Delta h_{l,a}=\delta(z_{l,a})|\nabla z_{l,a}|^2+\1[z_{l,a}>0]\Delta z_{l,a}$.
+\end{proof}
+
+\subsection{What an estimator has to compute: conditional expectations on walls}
+Formula \eqref{eq:kink} reduces the mean to two kinds of quantities per wall: the density $f_{l,a}(0)$ of the
+pre-activation at its kink, and a conditional expectation \emph{on the wall}, a measure-zero event. The first is the
+$h\to0$ limit of the concentration function $Q_{l,a}(h)=\mathbb P(|z_{l,a}|\le h)=2f_{l,a}(0)h+\tfrac13f''_{l,a}(0)h^3+\dots$
+(the pre-activation law is absolutely continuous with a continuous density, small-ball exponent one, no arithmetic
+structure: the gates are functions of a continuous Gaussian). On the official network $0$ the Gaussian surrogate
+$\varphi(\alpha)/\sigma$ of $f_{l,a}(0)$ is right to $1$--$3\cdot10^{-3}$ at every layer when the mean and variance are
+right (stage-9 workflow, $2.6\cdot10^5$ inputs), so the densities are not where estimators fail. The second kind is
+a conditional expectation relative to an event of probability zero, the extreme case of the rare-event-relative
+conditioning of \cite[\S4]{survey} and \cite{SST}: the error tolerated in $\E[\,\cdot\mid z_{l,a}=0]$ is relative to
+the kink mass, not absolute. For a Gaussian state, conditioning on $z_{l,a}=0$ is a rank-one \emph{pinning}
+(a directional localization along $\nabla z_{l,a}$ taken to its end), and Section~\ref{sec:memory} shows that the
+third cumulant of every moment chain is the record of exactly these pinnings.

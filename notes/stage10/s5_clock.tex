@@ -1,0 +1,127 @@
+\label{sec:clock}
+\subsection{The Euler--Stein correction probes the estimator on balls of uniform radius}
+Stage 9 (Corollary \emph{Eldan's path}) gives, for a chain $E$ exact on point masses and scale covariant, with
+$e(y)=E(N(y,I))$ and $\delta(y)=e(y)-y\cdot\nabla e(y)-\Delta e(y)$,
+$u-e(0)=-\tfrac12\int_0^\infty(1+\tau)^{-3/2}\E_{y\sim N(0,\tau I)}\delta(y)\,d\tau$.
+
+\begin{theorem}[Uniform radius]\label{thm:uniform}
+With $r=(1+\tau)^{-1/2}\in(0,1]$,
+\[
+u-e(0)\;=\;-\int_0^1\E\Big[\delta\big(M_r/r\big)\Big]\,dr,\qquad M_r\sim N\big(0,(1-r^2)I\big).
+\]
+The localized laws on Eldan's path are the Gaussian balls $N(M_r,r^2I)$ of radius $r$ about a Gaussian centre, and under
+the defect weight their radius is \emph{uniformly distributed} on $[0,1]$; equivalently the Ornstein--Uhlenbeck time
+$t=-\log r$ of the localization is a standard exponential variable.
+\end{theorem}
+\begin{proof}
+$d\tau=-2r^{-3}dr$, so $\tfrac12(1+\tau)^{-3/2}d\tau=\tfrac12r^3\cdot2r^{-3}|dr|=dr$. On Eldan's path the localized law at
+time $\tau$ is $N(m,sI)$ with $s=(1+\tau)^{-1}=r^2$ and $y=m/\sqrt s\sim N(0,\tau I)$, i.e.\ $m\sim N(0,r^2\tau I)=N(0,(1-r^2)I)$.
+Finally $\mathbb P(-\log r>t)=\mathbb P(r<e^{-t})=e^{-t}$.
+\end{proof}
+
+This is the precise form of ``an ellipsoid in a tiling'': the correction is the average, over Gaussian balls of
+every radius $r\in(0,1)$ with equal weight, of the estimator's defect on that ball. A ball of radius $r$ meets a wall
+through its centre's neighbourhood with probability proportional to $r$ (Crofton), and the order at which the
+estimator mis-accounts the contact decides how fast its defect vanishes as the ball shrinks.
+
+\subsection{Hermite contact order and the Euler--Stein constant}
+\begin{theorem}[Contact order law]\label{thm:order}
+Suppose the defect has the kink profile of order $d$ at a wall through the origin, $\delta(y)=c\,(\varphi\He_d)(\langle v,y\rangle)$
+with $|v|=1$ (the form of every layer-one wall of a bias-free network). Then
+$\E_{y\sim N(0,\tau I)}\delta(y)=r^{d+1}\delta(0)$, and the merge constant defined by $u-e(0)=-a\,\delta(0)$ is
+\[
+a=\int_0^1r^{d+1}\,dr=\frac1{d+2}=\E\big[e^{-(d+1)t}\big],\quad t\sim\mathrm{Exp}(1).
+\]
+For odd $d$ the defect vanishes at the origin and contributes nothing.
+\end{theorem}
+\begin{proof}
+$\varphi\He_d=(-1)^d\varphi^{(d)}$, so $\E_{s\sim N(0,\tau)}(\varphi\He_d)(s)=(-1)^d(\varphi*\varphi_\tau)^{(d)}(0)=(-1)^d\varphi_{1+\tau}^{(d)}(0)$,
+and $\varphi_{1+\tau}(x)=r\varphi(rx)$ gives $\varphi^{(d)}_{1+\tau}(0)=r^{d+1}\varphi^{(d)}(0)=(-1)^dr^{d+1}(\varphi\He_d)(0)$.
+Integrate against $dr$ (Theorem~\ref{thm:uniform}).
+\end{proof}
+
+\begin{proposition}[Contact order is a concentration coefficient]\label{prop:conc}
+For a pre-activation with Gaussian surrogate $N(m,\sigma^2)$, $\alpha=m/\sigma$, the concentration function at the kink is
+\begin{gather*}
+Q(h)=\mathbb P(|z|\le h)=2f(0)\,h+\tfrac13f''(0)\,h^3+O(h^5),\\
+f(0)=\frac{\varphi(\alpha)}\sigma=\frac{(\varphi\He_0)(\alpha)}{\sigma},\qquad
+f''(0)=\frac{(\varphi\He_2)(\alpha)}{\sigma^3}.
+\end{gather*}
+The coefficient of $h^{d+1}$ is the order-$d$ Hermite kink content. An estimator whose leading defect is an error in
+that coefficient has, by Theorem~\ref{thm:order}, merge constant $1/(d+2)$: the Euler--Stein constant reads off which
+Taylor coefficient of the concentration functions at the kinks the estimator gets wrong.
+\end{proposition}
+\begin{proof}
+$Q(h)=\int_{-h}^hf=2f(0)h+\tfrac13f''(0)h^3+O(h^5)$, and $\partial_z^k\big[\varphi((z-m)/\sigma)/\sigma\big]_{z=0}=
+(-1)^k\sigma^{-k-1}\varphi^{(k)}(-\alpha)$, with $\varphi^{(k)}=(-1)^k\He_k\varphi$ and parity.
+\end{proof}
+
+\begin{conjecture}[Contact order at depth]\label{conj:order}
+For the chains of stage 9 the defect at depth is dominated by one contact order, and $a=1/(d+2)$ with: $d=0$ for the
+Gaussian closure and for chains with truncated third-cumulant memory (their errors are variance errors acting through
+$f(0)$), $d=2$ for the exact first-order third-cumulant chain (its errors are second-order, the curvature $f''(0)$).
+\end{conjecture}
+\begin{center}\small
+\begin{tabular}{lccc}\toprule
+chain (official networks, $2049$ exact chain runs each) & measured $a$ & predicted & order $d$\\\midrule
+Gaussian closure, network $0$ / $1$ & $0.535$ / $0.500$ & $1/2$ & $0$\\
+window-one third-cumulant chain (memory dropped beyond one age) & $0.482$ & $1/2$ & $0$\\
+exact first-order third-cumulant chain, network $0$ / $1$ & $0.255$ / $0.257$ & $1/4$ & $2$\\\bottomrule
+\end{tabular}
+\end{center}
+The layer-wise profile of the absolute kink density along the localization was measured at all sixteen layers of
+network $0$ to decay as $(1+\tau)^{-1/2}=r$ (stage-9 workflow), which is the $d=0$ profile; no profile of the exact
+chain's defect has been measured, so the $d=2$ attribution rests on the constant. The earlier explanation of
+$0.255$ as ``two births, $1/3$, reduced by rotation'' is superseded: the order law gives $1/4$ with no correction.
+
+\subsection{Mehler factors are imaginary modular times}
+\begin{proposition}[Mehler--KMS]\label{prop:mehler}
+Let $N$ be the Hermite number operator on $L^2(\R,\gamma)$ ($N\He_k=k\He_k$), $\omega_\beta(Y)=\Tr(\rho_\beta Y)$ with
+$\rho_\beta=(1-e^{-\beta})e^{-\beta N}$ the Gibbs state of $N$, faithful and non-tracial. For a standard Gaussian pair
+$(X,Y)$ with correlation $\rho=e^{-\beta}\in(0,1)$ and real $f,g\in L^2(\gamma)$,
+\[
+\E\,f(X)g(Y)=\langle f,e^{-\beta N}g\rangle=\frac1{1-\rho}\,\omega_\beta\big(|g\rangle\langle f|\big).
+\]
+The modular group of $\omega_\beta$ is $\sigma_s(Y)=e^{-i\beta sN}Ye^{i\beta sN}$, the Mehler rotation (fractional Fourier
+transform of Gaussian space); the Ornstein--Uhlenbeck semigroup $e^{-tN}$ is its continuation to imaginary time. The
+correlation of two Gaussian variables is thus the Boltzmann factor of one Hermite quantum at inverse temperature
+$\beta=-\log\rho$, and every pair correlation of the network, every Euler--Stein weight and every Wick coefficient of
+the chains is a matrix element of $e^{-\beta N}$ at some $\beta$.
+\end{proposition}
+\begin{proof}
+Mehler's formula: $\E f(X)g(Y)=\sum_k\rho^k\langle f,H_k\rangle\langle g,H_k\rangle$ with $H_k=\He_k/\sqrt{k!}$; and
+$\Tr(\rho_\beta|g\rangle\langle f|)=(1-e^{-\beta})\langle f,e^{-\beta N}g\rangle$. The modular group of a Gibbs state $\rho_\beta$ is
+$\mathrm{Ad}\,\rho_\beta^{is}$.
+\end{proof}
+
+\begin{proposition}[The ReLU heat trace and the folding exponent]\label{prop:heattrace}
+Let $K(\beta)=\E[\relu(X)\relu(Y)]$ at correlation $e^{-\beta}$, a weighted heat trace of the Hermite spectrum of
+$\relu$: $K(\beta)=\sum_kc_k^2e^{-\beta k}/k!$ with $c_0=\tfrac1{\sqrt{2\pi}}$, $c_1=\tfrac12$, $c_{2j+2}=(-1)^j(2j-1)!!/\sqrt{2\pi}$,
+$c_{\rm odd\ge3}=0$. The weights decay like $k^{-5/2}$ (the kink), and
+\[
+K(\beta)=\tfrac12\Big(1-\beta+\tfrac{2\sqrt2}{3\pi}\beta^{3/2}+O(\beta^2)\Big),\qquad
+\beta_{l+1}=\beta_l-\tfrac{2\sqrt2}{3\pi}\beta_l^{3/2}+O(\beta_l^2)
+\]
+for the pair temperature $\beta_l=-\log\cos\theta_l$ of two inputs. The linear coefficient is exactly the critical one
+(the depth flow is marginal at linear order because $\relu$ is homogeneous: $K'(0)/K(0)=-\E\relu'^2/\E\relu^2=-1$), and the
+kink's $\beta^{3/2}$ term drives $\beta_l\simeq9\pi^2/(2l^2)$, i.e.\ $\theta_l\simeq3\pi/l$. Depth heats the neuron pairs
+quadratically, $T_l=1/\beta_l\simeq2l^2/(9\pi^2)$.
+\end{proposition}
+\begin{proof}
+$\E[\relu(Z)\He_k(Z)]=\E[\relu^{(k)}(Z)]=\E[\delta^{(k-2)}(Z)]=\He_{k-2}(0)\varphi(0)$ for $k\ge2$, and
+$\He_{2j}(0)=(-1)^j(2j-1)!!$; Stirling gives $c_{2j+2}^2/(2j+2)!\sim(8\pi^{3/2})^{-1}j^{-5/2}$. In closed form
+$K=\tfrac1{2\pi}(\sin\theta+(\pi-\theta)\cos\theta)$ with $\cos\theta=e^{-\beta}$, whose non-analytic part
+$\tfrac1{2\pi}(\sin\theta-\theta\cos\theta)=\tfrac{\theta^3}{6\pi}+O(\theta^5)$ with $\theta=\sqrt{2\beta}(1+O(\beta))$ is
+$\tfrac{\sqrt2}{3\pi}\beta^{3/2}$. The recursion is $e^{-\beta_{l+1}}=K(\beta_l)/K(0)$, and $\beta^{-1/2}$ grows by
+$\tfrac{\sqrt2}{3\pi}$ per layer.
+\end{proof}
+
+\begin{remark}[One clock]
+Three flows are one structure. Depth raises the pair temperature, $\beta_l\to0$ like $l^{-2}$, with exponent fixed by the
+Weyl-type tail $k^{-5/2}$ of the activation's Hermite spectrum (a smooth activation has an analytic heat trace and flows
+exponentially unless tuned). Localization lowers it: the ball radius is the Boltzmann factor $r=e^{-t}$ of the
+Ornstein--Uhlenbeck time, and the Euler--Stein constant $1/(d+2)=\E e^{-(d+1)t}$ is the mean Boltzmann factor of $d+1$
+quanta at an exponential time. The quantum Hermite transform of stage 9's reading is the real-time version of the same
+group. In this sense the Gaussian input's modular flow, the network's depth flow and the estimator's error clock are
+the imaginary-time, discrete-time and averaged-time faces of the single semigroup $e^{-tN}$.
+\end{remark}

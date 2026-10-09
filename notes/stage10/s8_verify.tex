@@ -1,0 +1,19 @@
+\label{sec:verify}
+\texttt{scripts/verify\_stage10.py} compares the two sides of each identity numerically; it runs no estimator and
+no network of the competition. Output in \texttt{notes/stage10/verify\_stage10.txt}.
+\begin{center}\small
+\begin{tabular}{>{\raggedright\arraybackslash}p{4.4cm}>{\raggedright\arraybackslash}p{6.0cm}>{\raggedright\arraybackslash}p{4.4cm}}\toprule
+statement & check & result\\\midrule
+Theorem~\ref{thm:kink} (kink current) & $\E h_L$ against the wall sum with a $\pm0.05$ window, $3\cdot10^6$ inputs, $L=3$ & $n=16$: agreement to noise ($1.5\%$); $n=6$: $25\%$ off, dead tiles carry $16\%$ \\
+Theorem~\ref{thm:crofton} (Crofton) & crossings of $2\cdot10^4$ random walls by a random curve in $\R^{50}$ & $31.28$ against $\Lambda/\pi=31.39$\\
+Theorem~\ref{thm:folding}, Proposition~\ref{prop:heattrace} & iterate the angle map & $\theta_l l/3\pi=0.90,0.985,0.992$ at $l=10^2,10^3,2\cdot10^3$ (log corrections)\\
+Proposition~\ref{prop:gain} (unit gain) & tangent and norm gains at $\sigma_w^2=2$, $n=400$ & $1.009$, $1.002$\\
+Proposition~\ref{prop:mehler} (Mehler, Hermite coefficients of $\relu$) & closed form against the Hermite series & equal to $10^{-8}$\\
+Theorem~\ref{thm:order} (contact order) & stage-9 $\tau$-integral for $d=0,2,4$ & $0.497,0.246,0.164$ against $\tfrac12,\tfrac14,\tfrac16$ (truncated tail)\\
+Theorem~\ref{thm:birth} (births are contacts) & $\kap_3/\varepsilon^2$ by Sobol quasi-Monte Carlo, $2^{23}$ points & ratio to the hub formula $1.064,1.030,1.015,1.009$ at $\varepsilon=0.16,\dots,0.02$\\
+Theorem~\ref{thm:complement} (complementarity) & $\|E_BE_A-J\|$ against $\|C\|$ for $S=WW^{\top}$ & equal; $0.333$ / $0.173$ against $2\sqrt{2/n}=0.354$ / $0.177$ ($n=64,256$)\\
+Theorem~\ref{thm:frame} (frame bound) & $2000$ random rank-$10$ compressions & bound holds\\\bottomrule
+\end{tabular}
+\end{center}
+The asymptotic $3\pi/l$ is reached slowly ($O(\log l/l)$ corrections), so at the depth $L=16$ of the competition the exact
+recursion, not its asymptotic form, is the statement to use.
