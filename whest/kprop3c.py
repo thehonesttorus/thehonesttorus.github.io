@@ -94,14 +94,20 @@ def merge_into_cp(Q, cp, legs, k, rng, fixed=None):
 def nonlin_step(st, o, rng, record=None):
     m, S_ = st.mu, st.C; n = len(m); var = np.clip(np.diag(S_), 1e-30, None); Soff = _zero_diag(S_)
     w = {(k, p): wick(m, var, k, p) for p in range(1, 5) for k in range(0, 5)}
-    K3_21 = np.zeros((n, n)); K3_3 = np.zeros(n); mode = o.get("oldmode", "full")
+    K3_21 = np.zeros((n, n)); K3_3 = np.zeros(n); mode = o.get("oldmode", "full"); old21 = np.zeros((n, n)); old3 = np.zeros(n)
     for legs, age in st.young:
         s21, s3 = slices_from_legs(legs)
         if age >= o["window"] and mode != "full":          # diagnostic: what the old sources' slices are worth
             if mode == "none": continue
             if mode == "diag": s21 = 0.0 * s21
             if mode.startswith("scale"): f = float(mode[5:]); s21 = f * s21; s3 = f * s3
+            if mode.startswith("lowrank"): old21 += s21; old3 += s3; continue
         K3_21 += s21; K3_3 += s3
+    if mode.startswith("lowrank") and np.any(old21):
+        r = int(mode[7:].split("d")[0]); U, sv, Vt = np.linalg.svd(old21, full_matrices=False)
+        approx = (U[:, :r] * sv[:r]) @ Vt[:r]
+        if record is not None: record["lowrank_capture"] = float(np.sum(sv[:r] ** 2) / np.sum(sv ** 2))
+        np.fill_diagonal(approx, 0.0); K3_21 += approx; K3_3 += old3
     if st.Q is not None and st.S is not None:
         s21, s3 = tucker_slices(st.Q, st.S); K3_21 += s21; K3_3 += s3
     if st.Q is not None and st.cp:
