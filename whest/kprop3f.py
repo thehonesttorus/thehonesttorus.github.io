@@ -12,7 +12,8 @@ class Backend:
         if name == "fnp":
             import flopscope as fs, flopscope.numpy as fnp
             self.xp = fnp; self.fs = fs
-            self.cdf = lambda x: fs.stats.norm.cdf(x); self.pdf = lambda x: fs.stats.norm.pdf(x)
+            # stats kernels return float64 whatever the input; cast back so float32 does not leak into the n^3 products
+            self.cdf = lambda x: fs.stats.norm.cdf(x).astype(self.dt); self.pdf = lambda x: fs.stats.norm.pdf(x).astype(self.dt)
         else:
             from scipy.special import ndtr
             self.xp = np; self.fs = None
@@ -34,6 +35,7 @@ class Backend:
 def wick_all(be, m, var):
     """Wick coefficients E[d^k relu^p], k = 0..4, p = 1..4, on the backend (n-vectors; cost negligible)."""
     xp = be.xp; sig = xp.sqrt(var); alpha = m / sig; P = be.cdf(alpha); p_ = be.pdf(alpha)
+    assert P.dtype == be.dt, (P.dtype, be.dt)
     T = [P, p_, P - alpha * p_, (alpha ** 2 + 2) * p_, 3 * P - (alpha ** 3 + 3 * alpha) * p_]   # E[X^j 1[X>-alpha]]
     He = [1.0, alpha, alpha ** 2 - 1, alpha ** 3 - 3 * alpha]
     w = {}

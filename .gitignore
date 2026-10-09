@@ -1,2 +1,7 @@
 __pycache__/
 *.pyc
+*.aux
+*.log
+*.out
+*.toc
+notes/stage9/latex.log
