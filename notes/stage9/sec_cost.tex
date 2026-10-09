@@ -96,6 +96,12 @@ their whole contribution is small: at age $\ge4$ the sources are worth a factor 
 on them costs $\sim10\%$, which is the regime in which the open-source chain's shared basis ($k=384$, window $4$)
 loses its reported $3.5\%$. The arithmetic of the pair floor then says that an exact-first-order chain cannot be
 brought near $0.1B$ by compressing its memory: the young window alone, four ages at $16$--$24\,n^3$ each, exceeds
-the whole budget. What a competitive chain at $0.1B$ must do instead is keep \emph{fewer} ages and recover the
+the whole budget. The birth blocks have identity legs, so each source-age needs only three transported matrices ($T$, $TX_1$, $TR$,
+with $X_3=X_1\diag(w)$ a column scaling of $X_1$) and three readout products once the two terms with $T^\top$ on the
+right are summed first: $12\,n^3$ per source-age instead of $24$, $8.3$ with three Strassen levels. The
+exact first-order chain then costs $12\sum_{l}l\,n^3\approx0.7B$ ($0.5B$ with Strassen) in float32, and a window of
+$w$ ages $12w\,n^3$ per layer plus whatever represents the rest; a $k$-dimensional CP tier costs about $11n^3$ per old
+source-layer at $k=384$, no less than the dense form, because the projection helps the transport and not the
+Hadamard readouts. What a competitive chain at $0.1B$ must do instead is keep \emph{fewer} ages and recover the
 systematic part of what is lost by calibration on the public networks; Section~\ref{sec:measure} measures how
 much of the loss is systematic (a scale of the old sources' slices) and how much is shape.

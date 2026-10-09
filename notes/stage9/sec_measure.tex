@@ -45,6 +45,8 @@ All runs on network $0$ with the ported chain (\texttt{whest/kprop3c.py}); dense
 configuration & final MSE & billed $C/B$ (float32, \texttt{flopscope}) \\\midrule
 dense (rank $2ln$) & $3.53\cdot10^{-8}$ & $\approx1.2$ (count $3.4\cdot10^{12}$) \\
 window $4$, CP tier $k=384$ & $3.69\cdot10^{-8}$ & $\approx1.0$ \\
+window $4$, CP tier $k=256$ & $5.21\cdot10^{-8}$ & -- \\
+window $2$, CP tier $k=384$ & $7.90\cdot10^{-8}$ & -- \\
 window $4$, Tucker $k=128$ & $2.00\cdot10^{-7}$ & $0.862$ \\
 window $2$, Tucker $k=256$ & $3.21\cdot10^{-7}$ & -- \\
 window $2$, Tucker $k=128$ & $9.34\cdot10^{-7}$ & $0.592$ \\
@@ -62,7 +64,7 @@ Three conclusions. (i) The old sources are essential and their effect is smooth 
 $10\%$ scale error on everything older than two layers costs a factor $1.5$, dropping them costs $100$, and a
 Frobenius truncation that keeps $70$--$87\%$ of their energy ($k=128$) costs $26$, exactly the Hadamard
 obstruction of Section~\ref{sec:cost}. (ii) A window of four dense ages with a $k=384$ shared basis for the rest is
-lossless to $5\%$, reproducing the open-source chain's regime, and costs about $1B$ in float32 without the
+lossless to $5\%$ (two ages: a factor $2.2$; four ages with $k=256$: $1.5$), reproducing the open-source chain's regime, and costs about $1B$ in float32 without the
 identity-leg and Strassen savings ($\approx0.45B$ with them); the floor is $0.1B$. (iii) The radial scalar is
 exactly right as projected and the chain is sharply sensitive to it ($\pm10\%$: $2.5\times$ and $8\times$), so the
 central variable is not where calibration helps; float32 reproduces float64 to all digits shown.
