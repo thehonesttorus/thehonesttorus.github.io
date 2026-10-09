@@ -223,3 +223,44 @@ every layer on both networks.
   - the star's n^2 per source-layer.
 - The trimmed last layer forms no hub, so its kappa4 diagonal needs separate treatment.
 - Section 6 states the chain test.
+
+## 6. The chain test (stated before its runs)
+
+**`V56_P4` in `workbench/k3work/est_v29.py`.**
+- **The hub.** The young D21 hub runs as its two contractions in two families on half the slots each. The full arm
+  At = A + P d(t), with t = w1 var recorded at birth, is formed in place in the A slots and restored after:
+
+      sum_s LA_s At_s^T  +  sum_s (LP_s - LA_s o t_s) P_s^T  =  D21 hub (unchanged up to rounding).
+
+  The first family is 2 Y. Each family runs in the buffers the fused one owns, at the same products.
+- **The path class.** 12 diag(Y (C + 0.01 mean(var))^-1 Y^T), one solve per layer (1.33 units).
+- **The star.** 4 sum c3 P At^3 over the dense slots (n^2 per source-layer).
+- **How they enter.** Both are added to the closure's kappa4 diagonal with their active-neuron means removed (weights
+  A, B), after the closure's own (2,2) slice and mixture gains have read it, as V55 did.
+- **Modes.**
+  - Mode 1: the correction enters everything.
+  - Mode 2: the closure's transported memory (K4v -> g_prev, k4q) is kept free of it, through its leading image
+    w1^4 d. The path class is recomputed in full from the sources at every layer, so its carried part must not also
+    ride the transported diagonal.
+- **Coverage.** Only dense (young) sources are covered, so the screen runs with every source dense (`V21_NO_CONFINE=1`)
+  for all variants and for the base.
+
+**Predictions.** Cold harness, networks 0-15. The base is the fold system with `V21_NO_CONFINE=1`, rerun in the same
+batch, and every variant is paired against it.
+
+| tag | switches | prediction |
+|---|---|---|
+| m2fit | `V56_P4=2 V56_A=1.15 V56_B=0.7` (the diagnostic's weights) | **P22:** raw -8% to -20%, better on >= 13/16 |
+| m2der | `V56_P4=2 V56_A=1 V56_B=1` (derived weights) | P23: worse than m2fit by 0-6 points |
+| m1fit | `V56_P4=1 V56_A=1.15 V56_B=0.7` | P24: worse than m2fit by >= 2 points (the carried path content counted twice) |
+| m2path | `V56_P4=2 V56_A=1.15 V56_B=0` (path class only) | P25: raw -3% to -12% |
+| m2star | `V56_P4=2 V56_A=0 V56_B=0.7` (star only) | P26: within +-3% (the star alone carries 0-13% of the error signal) |
+
+FLOPs: + one solve per layer, about 18-19 units over 14 layers. The hub split adds no products.
+
+**Decision.**
+- If P22 holds, the production version follows:
+  - the old tier's half of Y (the factor-space family split the same way, plus one extra r-lift) and its star (from
+    the formed legs);
+  - a cheaper solve (Galerkin in the covariance's top subspace, where Y lies, section 5).
+- Then the scored regime with refitted counterterms, in adjusted MSE (note XXXIX protocol).

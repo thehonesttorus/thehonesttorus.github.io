@@ -407,6 +407,20 @@ TADPOLE_K4 = _os.environ.get("V53_TADPOLE", "0") == "1"
 # fourth-cumulant bulk at all). LOG=1 prints its size against the closure's diagonal per layer.
 K4STAR = float(_os.environ.get("V55_K4STAR", "0"))
 K4STAR_LOG = _os.environ.get("V55_K4STAR_LOG", "0") == "1"
+# V56 (note XLI, the chaos grading): the kappa4 diagonal's two consistent chaos pieces, added to the closure's diagonal
+# with their per-layer (active-neuron) means taken out, so only their quenched per-neuron content enters:
+#   path class (second chaos squared), A_P4 * 12 diag(Y (C + eps mean(var))^-1 Y^T), Y = (1/2) sum_s LA_s At_s^T, read
+#   from the young D21 hub split into its two halves (sum LA At^T + sum (LP - LA o t) P^T, the same products; the hub's
+#   right factor A becomes the full arm At = A + P d(t), t = w1 var at birth), plus one regularized solve per layer;
+#   third-chaos star with the full arm, A_ST * 4 sum_s sum_m c3_m P_im At_im^3 (n^2 per source-layer).
+# 1 = the correction enters everything the Wick stage reads, 2 = as 1 but the closure's transported memory (K4v ->
+# g_prev, k4q) is kept free of it (the path class is the total at every layer: carried content must not count twice).
+# Young (dense) sources only: with the old tier on, its sources miss both pieces (run with V21_NO_CONFINE=1 for all).
+P4 = int(_os.environ.get("V56_P4", "0"))
+P4_A = float(_os.environ.get("V56_A", "1.0"))
+P4_B = float(_os.environ.get("V56_B", "1.0"))
+P4_EPS = float(_os.environ.get("V56_EPS", "0.01"))
+P4_LOG = _os.environ.get("V56_LOG", "0") == "1"
 KD = int(_os.environ.get("V39_KD", "0"))
 KD_AMP = float(_os.environ.get("V39_KD_AMP", "1.0"))
 KD_BITS = int(_os.environ.get("V39_KD_BITS", "0"))   # 1 diagonal, 2 (2,2), 4 (3,1); 0 with KD=1 means all
@@ -1027,6 +1041,11 @@ class Estimator(BaseEstimator):
         w3b_list = []   # V55: per source, c(3) = E f'''(z) at birth (the level-4 star's centre weight)
         self._w3b = w3b_list
         self._star4 = None
+        t_list = []     # V56: per source, t = w1 var at birth (the full arm At = A + P d(t))
+        self._t56 = t_list
+        self._y56 = None      # V56: the hub's path-class product Y of this layer (young sources)
+        self._star56 = None   # V56: the full-arm third-chaos star of this layer
+        d56_prev = None       # V56 mode 2: last layer's correction, kept out of the closure's memory
         s_list = []
         e_list = []
         c1_list = []   # per source: lambda_b * w1_b   (X3 = A*c1 + P*c2, column scalings)
@@ -1518,7 +1537,9 @@ class Estimator(BaseEstimator):
             elif mode == 1:
                 if bufs is None:
                     bufs = {nm: pool.get(nm, (L - 1, n, n))
-                            for nm in ("ap", "pp", "t", "mp", "xt", "yt", "u")}
+                            for nm in ("ap", "pp", "t", "mp", "xt", "yt", "u") + (("v56",) if P4 else ())}
+                    if P4:
+                        bufs["hub_y"] = pool.get("hub_y", (n, n))   # V56: the hub's full-arm half, sum LA At^T
                     bufs["lap"], bufs["lap4"] = pool.get_pair("lap", (L - 1, 2, n, n))   # V26: [LA | LP]
                     bufs["hub"] = pool.get("hub", (n, n))             # V26: hub result
                     bufs["ppl"] = pool.get("ppl", (L - 1, n, r + 2))  # V27: PP L stack
@@ -1767,6 +1788,34 @@ class Estimator(BaseEstimator):
                           f"{float(fnp.sqrt(fnp.mean(_gr * _gr))):.3e}  mean star {float(fnp.mean(_s4)):.3e}  mean g4 "
                           f"{float(fnp.mean(_gr)):.3e}", flush=True)
                 g4row = g4row + self._star4 * K4STAR
+            d56_prev = None
+            if P4 and mode == 1 and g4row is not None and (self._y56 is not None or self._star56 is not None):
+                # V56 (note XLI): the chaos pieces of the kappa4 diagonal, per-layer active means taken out
+                _act = sat_mask if sat_mask is not None else ones_n
+                _na = fnp.maximum(fnp.sum(_act), 1.0)
+                _d56 = fnp.zeros(n, dtype=f32)
+                _p4l = _s56l = None
+                if self._y56 is not None and C_off is not None and P4_A != 0.0:
+                    # Schur hub: |H_i L_i|^2 = [Y C^-1 Y^T]_ii, regularized (Y lies in the covariance's top subspace)
+                    _M56 = fnp.add(C_off, fnp.diag(var + P4_EPS * fnp.mean(var)), out=NN("v56m"))
+                    _Z56 = fnp.linalg.solve(_M56, self._y56.T)
+                    _p4l = fnp.sum(fnp.multiply(self._y56, _Z56.T), axis=1) * 12.0
+                    _p4c = fnp.multiply(_p4l - fnp.sum(_p4l * _act) / _na, _act)
+                    _d56 = _d56 + _p4c * P4_A
+                if self._star56 is not None and P4_B != 0.0:
+                    _s56l = self._star56
+                    _s56c = fnp.multiply(_s56l - fnp.sum(_s56l * _act) / _na, _act)
+                    _d56 = _d56 + _s56c * P4_B
+                if P4_LOG:
+                    _rm = lambda x: float(fnp.sqrt(fnp.mean(x * x))) if x is not None else float("nan")
+                    print(f"[v56] layer {li}: rms g4 {_rm(g4row):.3e}  path {_rm(_p4l):.3e} (mean "
+                          f"{float(fnp.mean(_p4l)) if _p4l is not None else float('nan'):.3e})  star {_rm(_s56l):.3e}  "
+                          f"correction {_rm(_d56):.3e}", flush=True)
+                g4row = g4row + _d56
+                if P4 == 2:
+                    d56_prev = _d56
+            self._y56 = None
+            self._star56 = None
             if '_g_sm' not in dir() or not K4SM:
                 _g_sm = 0.0
             if li == NI_LAYER and mode == 1:
@@ -2270,6 +2319,8 @@ class Estimator(BaseEstimator):
                 R2T_st = r2b[:k_b + 1]
             w2b_list.append(w2)
             w3b_list.append(W_all[:, self._i31])   # V55: bare c(3) at birth
+            if P4:
+                t_list.append(fnp.multiply(w1t, var))   # V56: Cov(y_m, z_m) = w1 var, the arm's diagonal
             # V21: hub-column Gram weights of this source's legs (X1 = 3A, Y1 ~ A d(w2),
             # M ~ P d(s) + 3 A d(e)): A-type 9 + w2^2 + 9 e^2, P-type 1 + s^2
             dA_list.append(9.0 + w2 * w2 + 9.0 * e_b * e_b)
@@ -2280,6 +2331,11 @@ class Estimator(BaseEstimator):
             if regen:
                 # post-ReLU kappa4 diagonal core (r=1 matrix-core harmonic projection)
                 k22row = K22 @ ones_n
+                if P4 == 2 and d56_prev is not None:
+                    # V56 mode 2: the closure's memory is kept free of this layer's chaos correction (its leading
+                    # image in the post-activation kappa4 diagonal, w1^4 d): the path class is recomputed in full at
+                    # every layer from the sources, so its carried part must not also ride the transported diagonal
+                    K4v = K4v - (w1 * w1) * (w1 * w1) * d56_prev
                 g_prev = ((K4v + k22row) * float(st["cA"])
                           + (fnp.sum(K4v) + fnp.sum(k22row)) * float(st["cI"]))
                 var_prev = K2v
@@ -2350,6 +2406,40 @@ class Estimator(BaseEstimator):
         a family with m = na), then put back in neuron order with the dropped rows zero."""
         out = bufs["hub"]
         lev = min(STRASSEN_HUB, self._s_hub)
+        if P4 and "hub_y" in bufs and k > k0 and len(self._t56) >= k:
+            # V56 (note XLI): the same two contractions as two families, sum LA At^T and sum (LP - LA o t) P^T, with the
+            # full arm At = A + P d(t) formed in place in the A slots and restored after (D21 unchanged up to rounding);
+            # the first family is 2 Y, the path class's hub product. Each family runs on half the slots, in the buffers
+            # the fused family owns.
+            T56 = fnp.stack(self._t56[k0:k], axis=0)[:, None, None, :]
+            Aw, Pw = apb4[2 * k0:2 * k:2], apb4[2 * k0 + 1:2 * k:2]
+            LAw, LPw = bufs["lap4"][2 * k0:2 * k:2], bufs["lap4"][2 * k0 + 1:2 * k:2]
+            tmp = bufs["v56"][k0:k][:, None]
+            fnp.multiply(Pw, T56, out=tmp)
+            fnp.add(Aw, tmp, out=Aw)
+            fnp.multiply(LAw, T56, out=tmp)
+            fnp.subtract(LPw, tmp, out=LPw)
+            hy = bufs["hub_y"]
+            if sat is None:
+                self._smm.hub(LAw, Aw, hy[None], self._smm.level(n, n, n, lev))
+                self._smm.hub(LPw, Pw, out[None], self._smm.level(n, n, n, lev))
+            else:
+                perm, na, ridx = sat
+                X = self._pool.get("lapc", tuple(bufs["lap4"].shape))[2 * k0:2 * k, :, :na, :]
+                fnp.take(bufs["lap4"][2 * k0:2 * k], perm[:na], axis=2, out=X)
+                hc = self._pool.get("hubc", (n, n))
+                hc2 = self._pool.get("hubc2", (n, n))
+                self._smm.hub(X[0::2], Aw, hc[None, :na, :], self._smm.level(na, n, n, lev, SAT_MN), SAT_MN, (n, n, n))
+                self._smm.hub(X[1::2], Pw, hc2[None, :na, :], self._smm.level(na, n, n, lev, SAT_MN), SAT_MN, (n, n, n))
+                fnp.copyto(hc[na:], fnp.float32(0.0))
+                fnp.copyto(hc2[na:], fnp.float32(0.0))
+                fnp.take(hc, ridx, axis=0, out=hy)
+                fnp.take(hc2, ridx, axis=0, out=out)
+            fnp.multiply(Pw, T56, out=tmp)
+            fnp.subtract(Aw, tmp, out=Aw)
+            fnp.add(out, hy, out=out)
+            self._y56 = fnp.multiply(hy, 0.5, out=hy)
+            return out
         if sat is None:
             self._smm.hub(bufs["lap4"][2 * k0:2 * k], apb4[2 * k0:2 * k], out[None], self._smm.level(n, n, n, lev))
             return out
@@ -2402,6 +2492,17 @@ class Estimator(BaseEstimator):
             self._star4 = fnp.einsum("kij,kj->i", _U4, fnp.stack(self._w3b[:k], axis=0)) * 4.0
         PP = fnp.multiply(P_st, P_st, out=bufs["pp"][:k])
         T = bufs["t"][:k]
+        if P4 and "v56" in bufs and len(self._t56) >= k and ka < k:
+            # V56: the third-chaos star with the full arm, 4 sum_s sum_m c3_m P_im At_im^3, At = A + P d(t), over the
+            # dense (young) slots [ka:k] (T is free scratch until the M leg is formed below)
+            _T56 = fnp.stack(self._t56[ka:k], axis=0)[:, None, :]
+            _At = fnp.multiply(P_st[ka:], _T56, out=bufs["v56"][ka:k])
+            fnp.add(_At, A_st[ka:], out=_At)
+            _T3 = T[ka:]
+            fnp.multiply(_At, _At, out=_T3)
+            fnp.multiply(_T3, _At, out=_T3)
+            fnp.multiply(_T3, P_st[ka:], out=_T3)
+            self._star56 = fnp.einsum("kij,kj->i", _T3, fnp.stack(self._w3b[ka:k], axis=0)) * 4.0
         # V54 diagnostic (note XL): with OLD_D3 = 0 the old sources' diagonal readout is left out (slots [_y0:k] only)
         _y0 = ka if (OLD_D3 == 0 and 0 < ka < k) else 0
         # M*P = PP*s + 3 AP*e + (Z L^T)*P
