@@ -288,3 +288,58 @@ the two halves. Script: `code/fw_test.py`.
 - **Both closed.** The next step is the Frobenius budget map: transport factor times ||A_l||_F^2 contribution against
   FLOPs, by layer and component. It is used to re-allocate the bill, and that re-allocation is pre-registered
   separately.
+
+## 6. Results (networks 0 and 1; `outputs/fw_test_net{0,1}.txt`)
+
+**T1: the fresh-weight theorem holds.** R_s = Var_a(E_aa) / mean E_ab^2 (noise-free):
+
+| layer | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| net 0 | 1.06 | 3.00 | 1.06 | 2.29 | 1.99 | 2.09 | 2.05 | 2.13 | 1.90 | 2.25 | 2.06 | 2.01 | 2.04 |
+| net 1 | 4.69 | 2.62 | 1.84 | 2.10 | 1.92 | 1.90 | 2.19 | 2.02 | 1.90 | 2.12 | 1.90 | 2.08 | 1.94 |
+
+- R falls in [1.7, 2.3] at 10 of 13 layers on network 0 and 11 of 13 on network 1, so it passes as registered.
+- From layer 5 on R = 2.03 +- 0.11, against the theorem's 2.
+- The failures are layers 2-4, where the error is tiny (rms dv/v 5e-5 to 2.4e-4) and non-transport terms dominate.
+- The common shift sigma^2 tr A is negative at every layer from 3 on: -0.29 to -0.66 of the per-neuron rms. The chain
+  underestimates variances uniformly by about half of its scatter.
+
+So from layer 5 on, the production chain's per-neuron variance error is the theorem's object: fresh-weight noise set
+by ||A||_F, plus a common shift.
+
+**T2: route R is neither built nor closed.** Share of the omega-weighted D21 error explained by the three
+dilation-fibre forms, cross-fitted:
+
+| layer | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 |
+|---|---|---|---|---|---|---|---|---|---|
+| net 0 | 0.24 | 0.27 | 0.36 | 0.34 | 0.33 | 0.38 | 0.39 | 0.29 | 0.29 |
+| net 1 | 0.29 | 0.29 | 0.36 | 0.26 | 0.32 | 0.33 | 0.34 | 0.24 | 0.29 |
+
+- Almost all of it is F1 = (v_a + mu_a^2) mu_b alone (0.20-0.34), the coupling of neuron b to the layer's energy that
+  note XLIII 4d saw as "column means". F2 explains nothing and F3 adds about 0.1.
+- The prediction (0.18, 0.10-0.30) is exceeded. The build threshold (0.50) is not reached, and the closing threshold
+  (< 0.30) is not met at most layers. Recorded; no build.
+
+**T3: the error is collective, so route C is triggered.** c_k is the collective share of the off-diagonal covariance
+error; the random baselines are 0.016 / 0.061 / 0.234.
+
+| layer | net 0 error c_8 / c_32 / c_128 | net 1 error | true non-Gaussian part c_8 / c_32 / c_128 (net 0; net 1) | ||g|| / ||E|| |
+|---|---|---|---|---|
+| 12 | 0.64 / 0.83 / 0.97 | 0.68 / 0.85 / 0.97 | 0.87 / 0.94 / 0.98; 0.86 / 0.93 / 0.98 | 7.9; 6.9 |
+| 13 | 0.70 / 0.86 / 0.98 | 0.66 / 0.85 / 0.98 | 0.88 / 0.94 / 0.99; 0.86 / 0.93 / 0.98 | 6.7; 6.5 |
+| 14 | 0.69 / 0.87 / 0.98 | 0.72 / 0.88 / 0.98 | 0.88 / 0.95 / 0.99; 0.88 / 0.94 / 0.99 | 6.3; 6.3 |
+
+- c_32 = 0.83-0.88 on both networks, far above the prediction (0.35, 0.20-0.50) and above the 0.60 build threshold.
+- The true non-Gaussian part of the covariance is even more collective: 0.93-0.95 in 32 modes and 0.86-0.88 in 8.
+- The chain removes all but about 1/7 of it in Frobenius norm.
+
+**What it means.** Together with T1:
+- 85% of the energy of the next layer's per-neuron variance error is sum_(jk) M_jk (w_a . u_j)(w_a . u_k), where u_j
+  are the top-32 eigenvectors of the true pre-activation covariance and M is a 32 x 32 symmetric block;
+- only the k x k block M is unknown;
+- the bulk carries 12-17%.
+
+This is the opposite of note XLII E0's reading that the final error is "the incoherent bulk". E0 measured the final
+mean error. In the metric that drives the injection, the Frobenius norm, the error is collective. So the late floor is
+a low-dimensional object, which the fresh-weight theorem makes exactly readable: what has to be computed better is the
+covariance restricted to about 32 modes.

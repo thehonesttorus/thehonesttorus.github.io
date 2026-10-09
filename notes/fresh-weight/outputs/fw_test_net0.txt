@@ -1,0 +1,29 @@
+=== network 0
+T1: layer, R = Var_a(E_aa)/mean E_ab^2 (noise-free), rms relative variance error, common shift / rms
+   2  R  1.063   rms dv/v 5.26e-05   shift/rms -0.237
+   3  R  3.002   rms dv/v 2.44e-04   shift/rms -1.026
+   4  R  1.060   rms dv/v 2.31e-04   shift/rms -1.075
+   5  R  2.285   rms dv/v 3.68e-04   shift/rms -0.512
+   6  R  1.988   rms dv/v 4.74e-04   shift/rms -0.547
+   7  R  2.085   rms dv/v 6.23e-04   shift/rms -0.660
+   8  R  2.053   rms dv/v 7.31e-04   shift/rms -0.465
+   9  R  2.125   rms dv/v 8.54e-04   shift/rms -0.389
+  10  R  1.900   rms dv/v 1.02e-03   shift/rms -0.567
+  11  R  2.251   rms dv/v 1.19e-03   shift/rms -0.340
+  12  R  2.063   rms dv/v 1.43e-03   shift/rms -0.421
+  13  R  2.009   rms dv/v 1.73e-03   shift/rms -0.506
+  14  R  2.044   rms dv/v 1.84e-03   shift/rms -0.488
+T2: layer, explained share (F1+F2+F3, cross-fitted), single-form shares F1 / F2 / F3, noise-free corr(dD, chain D21)
+   6  share +0.240   single +0.210 / +0.000 / +0.087   corr(error, chain D21) +0.487
+   7  share +0.271   single +0.228 / +0.000 / +0.089   corr(error, chain D21) +0.510
+   8  share +0.359   single +0.301 / +0.001 / +0.128   corr(error, chain D21) +0.607
+   9  share +0.343   single +0.287 / +0.001 / +0.120   corr(error, chain D21) +0.573
+  10  share +0.333   single +0.286 / +0.001 / +0.130   corr(error, chain D21) +0.564
+  11  share +0.383   single +0.319 / +0.002 / +0.130   corr(error, chain D21) +0.600
+  12  share +0.391   single +0.336 / +0.004 / +0.154   corr(error, chain D21) +0.610
+  13  share +0.294   single +0.244 / +0.001 / +0.101   corr(error, chain D21) +0.506
+  14  share +0.289   single +0.247 / +0.001 / +0.113   corr(error, chain D21) +0.491
+T3: layer, c_k of the chain's off-diagonal covariance error for k = 8 / 32 / 128 (random: 0.016 / 0.061 / 0.234); the same for the true non-Gaussian part g
+  12  error c_k 0.644 / 0.831 / 0.969    true non-Gaussian part c_k 0.867 / 0.939 / 0.984    ||g||/||E|| 7.94
+  13  error c_k 0.696 / 0.862 / 0.977    true non-Gaussian part c_k 0.875 / 0.941 / 0.985    ||g||/||E|| 6.71
+  14  error c_k 0.689 / 0.867 / 0.979    true non-Gaussian part c_k 0.884 / 0.948 / 0.986    ||g||/||E|| 6.30
