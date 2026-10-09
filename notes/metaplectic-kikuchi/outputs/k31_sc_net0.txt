@@ -1,0 +1,25 @@
+layer 5->6 (true K31 term nf 2.21e-04):
+   chain closure: entry amp 1.45 corr 0.701; var-metric amp 1.36, energy removed at unit amplitude +0.53
+   2nd-chaos (true inputs): entry amp 1.10 corr 0.429; var-metric amp 0.96, energy removed at unit amplitude +0.09
+   2nd-chaos (chain inputs): entry amp 1.09 corr 0.352; var-metric amp 1.02, energy removed at unit amplitude +0.09
+   chain + 2nd-chaos/2: entry amp 1.36 corr 0.734; var-metric amp 1.30, energy removed at unit amplitude +0.58
+layer 8->9 (true K31 term nf 3.38e-04):
+   chain closure: entry amp 1.49 corr 0.703; var-metric amp 1.35, energy removed at unit amplitude +0.49
+   2nd-chaos (true inputs): entry amp 1.04 corr 0.598; var-metric amp 1.07, energy removed at unit amplitude +0.16
+   2nd-chaos (chain inputs): entry amp 1.02 corr 0.476; var-metric amp 1.15, energy removed at unit amplitude +0.17
+   chain + 2nd-chaos/2: entry amp 1.29 corr 0.756; var-metric amp 1.27, energy removed at unit amplitude +0.56
+layer 11->12 (true K31 term nf 4.02e-04):
+   chain closure: entry amp 1.67 corr 0.714; var-metric amp 1.17, energy removed at unit amplitude +0.42
+   2nd-chaos (true inputs): entry amp 1.03 corr 0.762; var-metric amp 1.00, energy removed at unit amplitude +0.27
+   2nd-chaos (chain inputs): entry amp 0.97 corr 0.562; var-metric amp 1.06, energy removed at unit amplitude +0.27
+   chain + 2nd-chaos/2: entry amp 1.30 corr 0.782; var-metric amp 1.11, energy removed at unit amplitude +0.54
+layer 13->14 (true K31 term nf 4.62e-04):
+   chain closure: entry amp 2.18 corr 0.757; var-metric amp 1.42, energy removed at unit amplitude +0.45
+   2nd-chaos (true inputs): entry amp 1.04 corr 0.858; var-metric amp 1.12, energy removed at unit amplitude +0.36
+   2nd-chaos (chain inputs): entry amp 0.91 corr 0.560; var-metric amp 1.18, energy removed at unit amplitude +0.35
+   chain + 2nd-chaos/2: entry amp 1.45 corr 0.794; var-metric amp 1.28, energy removed at unit amplitude +0.61
+layer 14->15 (true K31 term nf 5.08e-04):
+   chain closure: entry amp 2.20 corr 0.757; var-metric amp 1.40, energy removed at unit amplitude +0.41
+   2nd-chaos (true inputs): entry amp 1.02 corr 0.862; var-metric amp 1.02, energy removed at unit amplitude +0.33
+   2nd-chaos (chain inputs): entry amp 0.87 corr 0.535; var-metric amp 1.09, energy removed at unit amplitude +0.33
+   chain + 2nd-chaos/2: entry amp 1.44 corr 0.781; var-metric amp 1.24, energy removed at unit amplitude +0.56

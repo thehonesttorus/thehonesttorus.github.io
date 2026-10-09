@@ -1,0 +1,12 @@
+layer 4: K31-term error nf 9.54e-05 | amp share +0.10 coef +0.45 | exch share +0.09 coef +1.64 | amp+exch share +0.16 coef +0.38,+1.35 | amp+exch+svC share +0.16 coef +0.51,+1.35,-0.00
+layer 5: K31-term error nf 1.21e-04 | amp share +0.07 coef +0.31 | exch share +0.08 coef +1.35 | amp+exch share +0.11 coef +0.24,+1.11 | amp+exch+svC share +0.12 coef -0.68,+1.13,+0.01
+layer 6: K31-term error nf 1.51e-04 | amp share +0.09 coef +0.36 | exch share +0.11 coef +1.43 | amp+exch share +0.16 coef +0.29,+1.20 | amp+exch+svC share +0.17 coef -1.29,+1.16,+0.01
+layer 7: K31-term error nf 1.83e-04 | amp share +0.04 coef +0.23 | exch share +0.14 coef +1.65 | amp+exch share +0.15 coef +0.13,+1.54 | amp+exch+svC share +0.15 coef +0.16,+1.54,-0.00
+layer 8: K31-term error nf 2.15e-04 | amp share +0.04 coef +0.27 | exch share +0.16 coef +1.64 | amp+exch share +0.17 coef +0.14,+1.53 | amp+exch+svC share +0.17 coef -0.09,+1.52,+0.00
+layer 9: K31-term error nf 2.41e-04 | amp share +0.07 coef +0.35 | exch share +0.18 coef +1.64 | amp+exch share +0.20 coef +0.21,+1.47 | amp+exch+svC share +0.20 coef +0.08,+1.47,+0.00
+layer 10: K31-term error nf 2.67e-04 | amp share +0.03 coef +0.21 | exch share +0.18 coef +1.53 | amp+exch share +0.18 coef +0.04,+1.49 | amp+exch+svC share +0.18 coef -0.07,+1.49,+0.00
+layer 11: K31-term error nf 2.95e-04 | amp share +0.06 coef +0.38 | exch share +0.22 coef +1.58 | amp+exch share +0.24 coef +0.21,+1.46 | amp+exch+svC share +0.24 coef -0.36,+1.45,+0.01
+layer 12: K31-term error nf 3.07e-04 | amp share +0.01 coef +0.17 | exch share +0.25 coef +1.49 | amp+exch share +0.25 coef -0.04,+1.52 | amp+exch+svC share +0.25 coef +0.46,+1.54,-0.01
+layer 13: K31-term error nf 3.38e-04 | amp share +0.08 coef +0.46 | exch share +0.24 coef +1.53 | amp+exch share +0.26 coef +0.21,+1.40 | amp+exch+svC share +0.26 coef -0.40,+1.38,+0.01
+layer 14: K31-term error nf 3.41e-04 | amp share +0.08 coef +0.42 | exch share +0.35 coef +1.66 | amp+exch share +0.36 coef +0.10,+1.59 | amp+exch+svC share +0.36 coef -0.37,+1.57,+0.01
+layer 15: K31-term error nf 3.89e-04 | amp share +0.06 coef +0.40 | exch share +0.30 coef +1.53 | amp+exch share +0.30 coef +0.09,+1.47 | amp+exch+svC share +0.30 coef -0.43,+1.45,+0.01

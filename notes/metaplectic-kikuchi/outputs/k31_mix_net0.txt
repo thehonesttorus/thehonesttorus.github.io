@@ -1,0 +1,12 @@
+layer 4: best (chain, 2nd-chaos) = (1.39, 0.68) removes +0.56 | fixed (1,0) +0.48 (1,0.5) +0.51 (1,1) +0.52 (1.3,0.7) +0.56
+layer 5: best (chain, 2nd-chaos) = (1.25, 0.56) removes +0.58 | fixed (1,0) +0.53 (1,0.5) +0.56 (1,1) +0.55 (1.3,0.7) +0.58
+layer 6: best (chain, 2nd-chaos) = (1.31, 0.61) removes +0.61 | fixed (1,0) +0.53 (1,0.5) +0.58 (1,1) +0.57 (1.3,0.7) +0.61
+layer 7: best (chain, 2nd-chaos) = (1.15, 0.78) removes +0.58 | fixed (1,0) +0.50 (1,0.5) +0.56 (1,1) +0.57 (1.3,0.7) +0.57
+layer 8: best (chain, 2nd-chaos) = (1.17, 0.77) removes +0.56 | fixed (1,0) +0.47 (1,0.5) +0.54 (1,1) +0.55 (1.3,0.7) +0.56
+layer 9: best (chain, 2nd-chaos) = (1.24, 0.74) removes +0.59 | fixed (1,0) +0.49 (1,0.5) +0.56 (1,1) +0.57 (1.3,0.7) +0.59
+layer 10: best (chain, 2nd-chaos) = (1.07, 0.76) removes +0.56 | fixed (1,0) +0.46 (1,0.5) +0.54 (1,1) +0.55 (1.3,0.7) +0.54
+layer 11: best (chain, 2nd-chaos) = (1.25, 0.74) removes +0.57 | fixed (1,0) +0.43 (1,0.5) +0.54 (1,1) +0.55 (1.3,0.7) +0.57
+layer 12: best (chain, 2nd-chaos) = (0.99, 0.78) removes +0.56 | fixed (1,0) +0.42 (1,0.5) +0.54 (1,1) +0.55 (1.3,0.7) +0.54
+layer 13: best (chain, 2nd-chaos) = (1.25, 0.71) removes +0.57 | fixed (1,0) +0.42 (1,0.5) +0.54 (1,1) +0.54 (1.3,0.7) +0.57
+layer 14: best (chain, 2nd-chaos) = (1.15, 0.81) removes +0.65 | fixed (1,0) +0.45 (1,0.5) +0.61 (1,1) +0.64 (1.3,0.7) +0.64
+layer 15: best (chain, 2nd-chaos) = (1.12, 0.75) removes +0.59 | fixed (1,0) +0.41 (1,0.5) +0.56 (1,1) +0.58 (1.3,0.7) +0.58

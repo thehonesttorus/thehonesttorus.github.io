@@ -1,8 +1,9 @@
 # variance-metric value of cheap n^2 completions of the chain's D21 and (3,1) slices (fit per layer, cross halves)
 import sys, numpy as np
-net=int(sys.argv[1])
+NET_ARG=int(sys.argv[1])
 sys.argv=[sys.argv[0]]+[".",".","0","1"]
 exec(open("var_ladder.py").read().split("cd = np.load")[0])
+net=NET_ARG  # NET_FIX: var_ladder's header overwrites net
 T={h:np.load(f"../data/mc2/mc2_off{net}_{h}.npz") for h in ("full","h0","h1")}
 c2=np.load(f"chaindump2_{net}.npz"); W=np.load(f"../data/loc/W_off{net}.npy").astype(np.float64)
 def tt(mu,C,X,p,q,div):

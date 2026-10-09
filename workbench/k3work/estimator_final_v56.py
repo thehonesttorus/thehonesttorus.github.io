@@ -462,6 +462,7 @@ ABL_WK4M = _os.environ.get("V33_ABL_WK4M", "0") == "1"   # audit: zero the regen
 # implementation restricts the row dimension of the transports and D21 contractions to the active neurons.
 SAT = float(_os.environ.get("V33_SAT", "-2.5"))
 F64 = _os.environ.get("V60_F64", "0") == "1"   # research only: run the chain in float64
+K31SC = float(_os.environ.get("V58_K31SC", "0"))   # research only: second-chaos (3,1) closure (note XLIII 6c)
 SAT_MODE = _os.environ.get("V33_SAT_MODE", "both")   # both | t (transport rows only) | r (D21 rows only)
 # V35 (note XXIX): the drop made real. SAT_ROUND > 0: the active set is the top-na neurons by alpha with na = the count
 # above SAT rounded UP to a multiple of SAT_ROUND (Strassen-compatible sides), so the dropped set is a subset of the
@@ -1900,6 +1901,12 @@ class Estimator(BaseEstimator):
                         wk431 = wk431 * (1.0 + _cd)
                     elif _cx == "coff" and C_off is not None:
                         C_off = C_off * (1.0 + _cd)
+            if K31SC and mode == 1 and wk431 is not None and D21 is not None and D3 is not None and C_off is not None:
+                # V58 (note XLIII sections 3e, 6c): single-factor second-chaos closure of the (3,1) slice,
+                # K31[c, a] += K31SC (2 k3_c D21[c, a] / v_c - (2/3) k3_c^2 C[c, a] / v_c^2), read as wk431[a, c] = K31[c, a]
+                _r = D3 / var
+                _sc = 2.0 * (_r[:, None] * D21) - (2.0 / 3.0) * ((_r * _r)[:, None] * C_off)
+                wk431 = wk431 + K31SC * _sc.T
             # ---- wick matrix ----
             sigma = fnp.sqrt(var)
             alpha = mu / sigma

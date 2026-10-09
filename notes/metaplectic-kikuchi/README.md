@@ -172,12 +172,30 @@ every cumulant is a walk sum of the same matrices:
 - open walks L^T H ... H L;
 - closed walks tr(H^k), the closed walks of note XLII's frame N3.
 
-So k4 is determined by k3 and the latent geometry. Its local form for the (3,1) slice is
+So k4 is determined by k3 and the latent geometry.
 
-    k(a,a,a,b) ~ beta k3(a) k(a,a,b) / v_a.
+**The single-factor closure (derived).** Take h_a = L_a.xi + (1/2) xi^T H_a xi with small H and xi ~ N(0, I). At
+leading order:
+- kappa3(a) = 3 L_a^T H_a L_a;
+- k(a,a,b) = 2 L_a^T H_a L_b + L_a^T H_b L_a;
+- k(a,a,a,b) = 6 L_a^T H_a H_b L_a + 6 L_a^T H_a^2 L_b (counting the twelve open walks on {a,a,a,b}).
 
-Entrywise this form correlates with the true (3,1) slice at 0.46 (layer 5) rising to 0.87 (layers 13-14). The chain's
-scale-mixture closure 3 tau v_a C_ab correlates at 0.70-0.79 (`outputs/k31_probe_net0.txt`).
+When neuron a's quadratic part is aligned with its own linear direction (H_a L_a = h_a L_a), eliminating h_a and the
+H_b term gives the parameter-free closure
+
+    k(a,a,a,b) = 2 kappa3(a) k(a,a,b) / v_a - (2/3) kappa3(a)^2 C_ab / v_a^2.
+
+**How it fits the truth** (`code/k31_sc.py`, `code/k31_mix.py`):
+- **From true inputs it has the right absolute scale with nothing fitted.** The entrywise amplitude is 1.02-1.10, the
+  correlation with the true (3,1) slice rises from 0.43 (layer 5) to 0.86 (layers 13-14), and the variance-metric
+  amplitude is 1.0-1.1.
+- **It is complementary to the chain's scale-mixture (gain) closure.** That closure, 3 tau v_a C_ab, correlates at
+  0.70-0.76.
+- **The combination removes more than either.** In the variance metric, the chain's closure alone removes 32-53% of
+  the true (3,1) term's energy. Adding the second-chaos closure, computed entirely from the chain's own kappa3, D21,
+  v and C, at unit coefficient removes 46-64%. The best per-layer mixes sit near (1.1, 0.75) on both networks.
+- **A weaker local form has a stable coefficient.** Its exchange part, kappa3(a) k(a,a,b) / v_a alone, explains 9-35%
+  of the chain's (3,1) error with a coefficient of about 1.5 at every layer (`outputs/k31_fix_net0.txt`).
 
 ## 4. Measurements
 
@@ -196,6 +214,25 @@ Noise-extrapolated a = 2 MSE(full) - mean(MSE(h0), MSE(h1)), against base 1.478e
 | COFF | 12-15 | +4.5% | -28% (noisy) |
 | G4 (kappa4 diagonal) | 12-15 | +16% | +34% |
 | WK4M + K31 | 12-15 | +17% | +15% |
+
+The all-layer rows of section 6a, run after the pre-registration (`outputs/oracle_all_layers.txt`):
+
+| oracle, every layer | wiring | net 0 | net 1 |
+|---|---|---|---|
+| D21 | default | -26% | -13.5% |
+| D21 | consistent (V41_ORC_CONSIST=1) | -20% | -5% |
+| K31 | (unaffected by the wiring) | -22% | -14% |
+| D21 + K31 | default | -54% | -44% |
+| D21 + K31 | consistent | -50% | -33% |
+| D21 at 12-15 | consistent | -1% | -10% |
+
+About the wiring:
+- The default oracle also feeds the oracle D21 into the birth step's gated subtraction, so newborn sources absorb the
+  difference between the oracle and the chain's own value.
+- The consistent wiring keeps that subtraction on the chain's own values. This is the experiment as registered: the
+  legs keep carrying their own content.
+- The halves sit 10-20% above the full-sample values in the D21 runs, so the noise extrapolation carries most of
+  those numbers.
 
 The late error lives in the second-order statistics of the late layers, above all the per-neuron variances.
 
@@ -312,6 +349,15 @@ sees.
   - kappa(a,a,a,b), 15-25%, carried at half amplitude.
 - The exact law needs nothing beyond fourth-order Edgeworth.
 
+**One-step shares do not predict single-slice oracle values (section 6a).**
+- Fixing kappa(a,a,b) alone at every layer is worth -5% to -26%. Fixing kappa(a,a,a,b) alone is worth -14% to -22%.
+- Together they are worth -33% to -54%, the size of the whole variance ceiling.
+- The two slices' one-step errors are only mildly anti-correlated in the variance metric: -0.07 to -0.20
+  (`outputs/dk_corr_nets01.txt`). The super-additivity therefore comes from the full chain: counterterms fitted around
+  the chain's own slices, propagation, and the Monte Carlo noise of all-layer substitution.
+- For the system, the oracle values are the operative facts. The (3,1) slice is the cheaper lever: it is carried at
+  half amplitude, and the second-chaos closure of section 3e recovers part of it at n^2 cost.
+
 **Why the heat defect could not see it.** This is consistent with note XLII's Theorem A5 (first-order localization is
 blind to the trace-state, closed-walk content). The injection is a quadratic form in the next layer's rows,
 w^T (Delta_chain - Delta_true) w, built from two-site slices of the third and fourth cumulants. The identification is a
@@ -347,6 +393,15 @@ as in 4a. The oracle replaces the chain's readout slices at every layer; its leg
   the gate-covariance route is closed.
 - If D21-all is at least -30%, run experiment G (6b).
 
+**Result** (table in 4a; `outputs/oracle_all_layers.txt`).
+- D21 alone: -20% / -5% consistent (-26% / -13.5% with the default wiring). The prediction (-30% to -45%) fails on
+  both networks and both wirings.
+- K31 alone: -22% / -14%. The prediction (-3% to -12%) fails on the high side.
+- D21 + K31: -50% / -33% consistent (-54% / -44% default). The prediction (-35% to -55%) holds on network 0 and on the
+  default wiring, and is 2 points short on network 1 consistent.
+- Decision: D21 alone stays at or below -20% in the registered (consistent) wiring, so the gate-covariance route is
+  closed for now and experiment G is not run. The lever moves to the (3,1) slice (6c).
+
 ### 6b. Experiment G: the gate-covariance budget (run only if 6a passes)
 
 **Setup.** Monte Carlo on networks 0-1 at source layers 9 and 13. The fields are y = W diag(Phi)(h - mu),
@@ -364,3 +419,24 @@ variance metric two layers on.
   and a scored run.
 - G1 holds but G2 fails: the wall stands. Record it; the next question is importance-sampling the bulk.
 - G1 fails: the D21 error comes from transport of older content, and the next measurement is by source age.
+
+### 6c. The second-chaos (3,1) closure in the production chain (cold screen)
+
+**The change.** `V58_K31SC=beta` adds, at every layer where the chain has a (3,1) slice,
+
+    wk431[a, c] += beta (2 kappa3(c) D21[c, a] / v_c - (2/3) kappa3(c)^2 C[c, a] / v_c^2).
+
+It uses the chain's own D3, D21, var and C_off after the V47 calibration (wk431[a, c] = kappa(z_a, z_c, z_c, z_c)).
+The cost is a few n^2 elementwise operations per layer. Production is unchanged when the switch is off.
+
+**Harness.** Networks 0-15, each variant paired against production rerun in the same batch.
+
+**Predictions:**
+- `V58_K31SC=1` (parameter-free): raw -1% to -6% (mean paired change), better on at least 10/16, FLOPs +0.1% or less.
+  The basis: the oracle says a perfect (3,1) slice is worth -14% to -22%, and in the variance metric the closure
+  removes a further 20-30% of the slice's remaining error energy. The k31 counterterms were fitted around the chain's
+  own slice, which can eat part of the gain.
+- `V58_K31SC=0.5`: -0.5% to -4%, better on at least 9/16.
+
+**Decision.** If beta = 1 meets -1% or better on at least 10/16, run the scored test: 100 networks, adjusted MSE, then
+a held-out refit of the k31 calibration. Otherwise record the result and stop.
