@@ -264,3 +264,25 @@ FLOPs: + one solve per layer, about 18-19 units over 14 layers. The hub split ad
     the formed legs);
   - a cheaper solve (Galerkin in the covariance's top subspace, where Y lies, section 5).
 - Then the scored regime with refitted counterterms, in adjusted MSE (note XXXIX protocol).
+
+**Amendment after a smoke test on network 0, before the screen** (`V56_LMIN`, `V56_LAST`; the pre-registered
+variants run as specified).
+- m2fit as specified gives +3.5% raw on network 0 (2.342e-8 against 2.262e-8).
+- Per layer, though, its MSE falls sharply from layer 3 to layer 14: -18% at layer 3, -27% at layer 11, -14% at
+  layer 14.
+- The loss comes from two ends:
+  - **Layers 1-2.** They get worse (+36%, +15%). The diagnostic never examined them, and at layer 1 the closure's
+    lambda term was fitted to the bulk born at layer 0, the same content.
+  - **The trimmed last layer.** It forms no hub, so only the star acts there. The diagnostic's star alone has a
+    negative slope at layer 15 (it is the path class's partner, not a correction by itself). The last step then adds
+    7.2e-9 against the base's 3.8e-9.
+- Cost on network 0: +6.9% FLOPs (+18.4 units, the 14 solves).
+
+| tag | switches (all with V21_NO_CONFINE=1) | prediction |
+|---|---|---|
+| a1 | m2fit + `V56_LMIN=3 V56_LAST=0` (layers 3-14) | A1: raw -6% to -15%, better on >= 13/16 |
+| a2 | m2fit + `V56_LMIN=3 V56_LAST=2` (layers 3-15, the last layer's hub family and covariance formed for it) | A2: better than a1 by 2-6 points |
+| a3 | m2der + `V56_LMIN=3 V56_LAST=2` | A3: within +-4 points of a2 |
+| a4 | m2path + `V56_LMIN=3 V56_LAST=2` | A4: raw -2% to -10% |
+
+P22 as specified is expected to fail.

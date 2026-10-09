@@ -421,6 +421,11 @@ P4_A = float(_os.environ.get("V56_A", "1.0"))
 P4_B = float(_os.environ.get("V56_B", "1.0"))
 P4_EPS = float(_os.environ.get("V56_EPS", "0.01"))
 P4_LOG = _os.environ.get("V56_LOG", "0") == "1"
+# V56 amendment (after the network-0 smoke test, before the screen): first layer the correction acts on (1 = all, as
+# pre-registered), and the trimmed last layer: 0 = no correction, 1 = the star only (pre-registered; the hub is not
+# formed there), 2 = the full correction (the hub's full-arm family and the covariance sandwich formed there too).
+P4_LMIN = int(_os.environ.get("V56_LMIN", "1"))
+P4_LAST = int(_os.environ.get("V56_LAST", "1"))
 KD = int(_os.environ.get("V39_KD", "0"))
 KD_AMP = float(_os.environ.get("V39_KD_AMP", "1.0"))
 KD_BITS = int(_os.environ.get("V39_KD_BITS", "0"))   # 1 diagonal, 2 (2,2), 4 (3,1); 0 with KD=1 means all
@@ -1046,6 +1051,7 @@ class Estimator(BaseEstimator):
         self._y56 = None      # V56: the hub's path-class product Y of this layer (young sources)
         self._star56 = None   # V56: the full-arm third-chaos star of this layer
         d56_prev = None       # V56 mode 2: last layer's correction, kept out of the closure's memory
+        C56_last = None       # V56_LAST = 2: the trimmed layer's covariance (path class only)
         s_list = []
         e_list = []
         c1_list = []   # per source: lambda_b * w1_b   (X3 = A*c1 + P*c2, column scalings)
@@ -1449,6 +1455,9 @@ class Estimator(BaseEstimator):
                 if trim:
                     # var = diag(W C W^T) = rowsum((W C) * W)
                     var = fnp.maximum(fnp.sum(fnp.multiply(WC, W, out=T1), axis=1), 1e-10)
+                    if P4 and P4_LAST == 2:
+                        # V56: the last layer's covariance for the path class's solve only (the Wick stage stays trimmed)
+                        C56_last = _zero_diag(self._sym_product(WC, w32, n, NN("cpre"), min(CPRE_LEV, s_lev)))
                 else:
                     C_pre = self._sym_product(WC, w32, n, NN("cpre"), min(CPRE_LEV, s_lev))
                 if bmask_prev is not None and BIRTH_MODE == "legs":   # V36: the newborn's P = W carries only its active birth columns
@@ -1789,15 +1798,17 @@ class Estimator(BaseEstimator):
                           f"{float(fnp.mean(_gr)):.3e}", flush=True)
                 g4row = g4row + self._star4 * K4STAR
             d56_prev = None
-            if P4 and mode == 1 and g4row is not None and (self._y56 is not None or self._star56 is not None):
+            if (P4 and mode == 1 and g4row is not None and (self._y56 is not None or self._star56 is not None)
+                    and li >= P4_LMIN and not (trim and P4_LAST == 0)):
                 # V56 (note XLI): the chaos pieces of the kappa4 diagonal, per-layer active means taken out
+                _C56 = C_off if C_off is not None else C56_last
                 _act = sat_mask if sat_mask is not None else ones_n
                 _na = fnp.maximum(fnp.sum(_act), 1.0)
                 _d56 = fnp.zeros(n, dtype=f32)
                 _p4l = _s56l = None
-                if self._y56 is not None and C_off is not None and P4_A != 0.0:
+                if self._y56 is not None and _C56 is not None and P4_A != 0.0:
                     # Schur hub: |H_i L_i|^2 = [Y C^-1 Y^T]_ii, regularized (Y lies in the covariance's top subspace)
-                    _M56 = fnp.add(C_off, fnp.diag(var + P4_EPS * fnp.mean(var)), out=NN("v56m"))
+                    _M56 = fnp.add(_C56, fnp.diag(var + P4_EPS * fnp.mean(var)), out=NN("v56m"))
                     _Z56 = fnp.linalg.solve(_M56, self._y56.T)
                     _p4l = fnp.sum(fnp.multiply(self._y56, _Z56.T), axis=1) * 12.0
                     _p4c = fnp.multiply(_p4l - fnp.sum(_p4l * _act) / _na, _act)
@@ -2638,6 +2649,23 @@ class Estimator(BaseEstimator):
                 fnp.multiply(T[s0:], (Yk * (2.0 / 3.0))[:, :, None], out=T[s0:])
                 fnp.add(LP[s0:], T[s0:], out=LP[s0:])
         if not need_d21:
+            if P4 and P4_LAST == 2 and "hub_y" in bufs and ka < k and len(self._t56) >= k:
+                # V56_LAST = 2: the hub's full-arm family at the trimmed layer, sum LA At^T over the dense slots
+                # (LA = 2 AP w2 + PP e as in the full layers; At formed in place in the A slots and restored)
+                LA = fnp.multiply(AP, W2B * 2.0, out=bufs["lap"][:k, 0])
+                fnp.multiply(PP, Eb, out=T)
+                fnp.add(LA, T, out=LA)
+                T56 = fnp.stack(self._t56[ka:k], axis=0)[:, None, None, :]
+                Aw, LAw = apb4[2 * ka:2 * k:2], bufs["lap4"][2 * ka:2 * k:2]
+                Pw = apb4[2 * ka + 1:2 * k:2]
+                tmp = bufs["v56"][ka:k][:, None]
+                fnp.multiply(Pw, T56, out=tmp)
+                fnp.add(Aw, tmp, out=Aw)
+                hy = bufs["hub_y"]
+                self._smm.hub(LAw, Aw, hy[None], self._smm.level(n, n, n, min(STRASSEN_HUB, self._s_hub)))
+                fnp.multiply(Pw, T56, out=tmp)
+                fnp.subtract(Aw, tmp, out=Aw)
+                self._y56 = fnp.multiply(hy, 0.5, out=hy)
             return D3, None
         if ka > 0:
             # V21: old sources through the shared basis: [sum LA FAo^T + LP FPo^T] Qc^T
