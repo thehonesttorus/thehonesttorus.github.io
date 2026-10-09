@@ -461,6 +461,7 @@ ABL_WK4M = _os.environ.get("V33_ABL_WK4M", "0") == "1"   # audit: zero the regen
 # their rows of D21 are zeroed at the read and their rows of every leg are not transported (w1 -> w1 * mask). A real
 # implementation restricts the row dimension of the transports and D21 contractions to the active neurons.
 SAT = float(_os.environ.get("V33_SAT", "-2.5"))
+F64 = _os.environ.get("V60_F64", "0") == "1"   # research only: run the chain in float64
 SAT_MODE = _os.environ.get("V33_SAT_MODE", "both")   # both | t (transport rows only) | r (D21 rows only)
 # V35 (note XXIX): the drop made real. SAT_ROUND > 0: the active set is the top-na neurons by alpha with na = the count
 # above SAT rounded UP to a multiple of SAT_ROUND (Strassen-compatible sides), so the dropped set is a subset of the
@@ -1005,7 +1006,7 @@ class Estimator(BaseEstimator):
     def _predict_core(self, mlp: MLP, budget: int) -> fnp.ndarray:
         _ = budget
         n = mlp.width
-        f32 = fnp.float32
+        f32 = fnp.float64 if F64 else fnp.float32   # V60_F64: research-only float64 run (localization experiments)
         st = _statics(n)
         metric2 = 2.0 ** 2
         L = len(mlp.weights)
@@ -1155,7 +1156,7 @@ class Estimator(BaseEstimator):
             last = li == L - 1
             trim = last and not FULL_LAST  # V19: mean-only final layer
             skip_src = trim and NO_SRC_LAST
-            w32 = w if w.dtype == fnp.float32 else w.astype(f32)
+            w32 = w if w.dtype == f32 else w.astype(f32)
             W = w32.T
             # ---- linear ----
             mu = W @ mu
@@ -1173,6 +1174,11 @@ class Estimator(BaseEstimator):
                     var = fnp.maximum(fnp.sum(w32 * w32, axis=0), 1e-10)
                 else:
                     C_pre = fnp.einsum("ia,ib->ab", w32, w32)
+                    if getattr(self, "in_cov", None) is not None:
+                        # research only: input covariance I + c v v^T, so C_pre = W^T W + c (W^T v)(W^T v)^T
+                        _c, _v = self.in_cov
+                        _wv = w32.T @ fnp.asarray(_v, dtype=f32)
+                        C_pre = flops.as_symmetric(fnp.add(C_pre, float(_c) * fnp.outer(_wv, _wv)), symmetry=(0, 1))
             elif skip_src:
                 # probe path only (V19_NO_SRC_LAST): no family at this layer
                 if trim:
