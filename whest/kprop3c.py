@@ -36,16 +36,21 @@ def linear_step(st, W):
     return State(mu, C, young, Q, S, st.c4, W @ st.M @ W.T)
 
 
-def merge_into_tucker(Q, S, legs, k, rng):
+def merge_into_tucker(Q, S, legs, k, rng, fixed=None):
     """Add the factored block Sym(sum_r A B C) to the Tucker tier, refitting the basis to the top-k directions of
-    [Q diag(nu), A, B, C] with nu the core's mode norms (randomized range finder, one power iteration)."""
+    [Q diag(nu), A, B, C] with nu the core's mode norms (randomized range finder, one power iteration). `fixed`
+    (n x f) directions are always kept in the basis (the collective directions), the rest fills up to k."""
     A, B, Cc = legs; n = A.shape[0]
     if Q is None:
         G = np.concatenate([A, B, Cc], axis=1)
     else:
         nu = np.sqrt(np.einsum("pqs,pqs->p", S, S)); G = np.concatenate([Q * nu[None, :], A, B, Cc], axis=1)
     Om = rng.standard_normal((G.shape[1], k + 8)); Y = G @ Om; Y = G @ (G.T @ Y)
-    Qn = np.linalg.qr(Y)[0][:, :k]
+    if fixed is not None and fixed.shape[1] > 0:
+        F = np.linalg.qr(fixed)[0]; Y = Y - F @ (F.T @ Y)
+        Qn = np.concatenate([F, np.linalg.qr(Y)[0][:, :k - F.shape[1]]], axis=1)
+    else:
+        Qn = np.linalg.qr(Y)[0][:, :k]
     Sn = np.zeros((k, k, k))
     if Q is not None:
         P = Qn.T @ Q; Sn += np.einsum("pqs,ap,bq,cs->abc", S, P, P, P, optimize=True)
@@ -99,10 +104,14 @@ def nonlin_step(st, o, rng, record=None):
     newborn = tuple(np.concatenate([F, G], axis=1) for F, G in zip(star, (R3[:, None] * eye + 3.0 * R21.T, eye, eye)))
     young.append((newborn, 0))
     # aging: merge sources of age >= window into the Tucker tier
-    keep = []
+    keep = []; fixed = None
+    if o.get("collective", 0):
+        v = mu_h.copy()
+        for _ in range(4): v = Ch @ v; v /= np.linalg.norm(v)          # top eigenvector of the post-activation covariance
+        fixed = np.stack([mu_h, np.diag(Ch), np.ones(n), v], axis=1)
     for legs, age in young:
         if age >= o["window"]:
-            Q, S = merge_into_tucker(Q, S, legs, o["k"], rng)
+            Q, S = merge_into_tucker(Q, S, legs, o["k"], rng, fixed)
         else:
             keep.append((legs, age))
     if record is not None:
