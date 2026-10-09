@@ -13,11 +13,22 @@ $+$ exact birth slice and diagonal (residual leg $R$), exact gates & $8.52\cdot1
 $+$ transposed-slice feed, $\kap_4\!\to\!\kap_3$ feed, $(2,2)$ channel, exact diagonal $\kap_3$ & $5.74\cdot10^{-7}$ & Theorem~\ref{thm:transport}, second and third terms\\
 Gaussian closure $+$ Euler--Stein defect, $e-a\delta(0)$, $a=0.535$ & $4.35\cdot10^{-7}$ & Corollary~\ref{cor:eldan}, exact $\delta$ ($2n+1$ chains)\\
 Gaussian closure $+$ midpoint $(e+\Delta e)/2$ (no fitted constant) & $4.50\cdot10^{-7}$ & same\\\midrule
+organisers' chain, $k_{\max}=3$ simple, numpy port (\texttt{kprop3}), radial $\kap_4$ off & $5.63\cdot10^{-7}$ & exact first-order $\kap_3$ transport, 36 diagrams\\
+same, radial $\kap_4$ on (one scalar per layer) & $3.53\cdot10^{-8}$ & the central variable (Lemma~\ref{lem:scale})\\\midrule
 open-source third-cumulant chain (504aldo), float32, $33$ fitted scalars, $0.25B$ & $2.13\cdot10^{-8}$ & \\
 exact first-order $K=3$ reference of the organisers (no $\kap_4$, no fits) & $4.3\cdot10^{-8}$ & \\
 leaders (raw) & $1.1$--$1.5\cdot10^{-8}$ & \\\bottomrule
 \end{tabular}
 \end{center}
+The decisive line is the pair in the middle: the organisers' exact first-order chain, ported to numpy and matched
+to the torch reference bit for bit, reaches $5.6\cdot10^{-7}$ on network $0$ when its fourth cumulant is dropped,
+the accuracy of our own chain, and $3.5\cdot10^{-8}$ when the single radial scalar
+$c=\tfrac{3}{n(n+2)}(\sum_{a\ne b}\kap_4(h_a,h_a,h_b,h_b)+\sum_a\kap_4(h_a))$ per layer is kept. One number per layer,
+the collective scale of Lemma~\ref{lem:scale}, is worth a factor $16$ in MSE; our chain's transported $(2,2)$ slice,
+which carries $n^2$ numbers and is harmful off the diagonal, was worth nothing. The reference's own naive count is
+$3.4\cdot10^{12}$ FLOPs ($1.5B$ in float32), $93\%$ of it in the transport and readout of the factored $\kap_3$ whose rank
+grows by $2n$ per layer; the cost problem is the memory of the third cumulant, not the fourth.
+
 Two readings. First, the Euler--Stein defect of the \emph{Gaussian} closure, with no cumulant machinery at all,
 reaches the accuracy of our third-cumulant chain: on network $0$ the exact $\delta(0)$ (coordinate Laplacian,
 $2049$ chain evaluations on Modal) has correlation $0.931$ with the error, explains $89\%$ of its mean square,

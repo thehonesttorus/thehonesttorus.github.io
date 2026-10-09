@@ -130,9 +130,10 @@ def nonlin_step(st, record=None):
     return K3State(mu_h, Ch, tuple(legs), c4, np.eye(n))
 
 
-def kprop3_chain(W, record=None, radial=True):
+def kprop3_chain(W, record=None, radial=True, m0=None, S0=None):
     L, n, n_in = W.shape
-    st = K3State(np.zeros(n_in), np.eye(n_in), None, 0.0, np.eye(n_in)); out = np.empty((L, n))
+    m0 = np.zeros(n_in) if m0 is None else np.asarray(m0, dtype=np.float64); S0 = np.eye(n_in) if S0 is None else np.asarray(S0, dtype=np.float64)
+    st = K3State(m0.copy(), S0.copy(), None, 0.0, np.eye(n_in)); out = np.empty((L, n))
     for l in range(L):
         z = linear_step(st, W[l].astype(np.float64)); rec = {} if record is not None else None
         st = nonlin_step(z, rec)

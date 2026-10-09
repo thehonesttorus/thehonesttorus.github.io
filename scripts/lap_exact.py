@@ -6,6 +6,7 @@ import sys, os, time, numpy as np
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from whest.k3chain3 import k3_chain3
 from whest.relu_gauss import relu_moments
+from whest.kprop3 import kprop3_chain
 kw = dict(net=0, kind="gauss", coords="0-31", h=0.02, K=8); opts = {}
 for a in sys.argv[1:]:
     k, v = a.split("=")
@@ -24,6 +25,7 @@ def gauss_chain_m(y):
 
 def chain(y):
     if kind == "gauss": return gauss_chain_m(y)
+    if kind == "kprop3": return kprop3_chain(W, radial=bool(opts.get("radial", 1)), m0=y)[-1]
     out, _ = k3_chain3(W, dict(opts, m0=y)); return out[-1]
 
 t0 = time.time(); e0 = chain(np.zeros(n)); print(f"net {net} {kind}: e(0) MSE {np.mean((e0-truth)**2):.4e} ({time.time()-t0:.0f}s/run)", flush=True)
