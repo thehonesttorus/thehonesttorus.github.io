@@ -73,9 +73,10 @@ Branch `claude/determined-fermat-9hk45i`. Note: `notes/stage9/ncg_mlp_stage9.pdf
   not work because the readouts are Hadamard products (note, Sec. 6).
 - Therefore a 0.1 B entry at the leaders' 1.1-1.5e-8 is not a compressed first-order chain. The measured smoothness
   of the old sources' effect in amplitude (10% scale -> 1.5x) and the open-source chain's memoryless regeneration of
-  kappa4 point to the same idea for kappa3: keep one or two dense ages, regenerate the rest from the current state
-  with per-layer scalars fitted on the public networks against the dense chain's slices (see the shape diagnostic,
-  `scripts/diag_oldshape.py`).
+  kappa4 suggested the same for kappa3, but the shape diagnostic (`scripts/diag_oldshape.py`) rules out the naive
+  version: the old sources' slices correlate only 0.3-0.5 with the young ones (residual 0.9 of their norm) and grow
+  to 3x their size at depth. The memory of kappa3 is a genuinely new shape at every layer; whatever the leaders do
+  at 0.1 B, it is neither a compressed nor a regenerated first-order memory.
 - The Euler-Stein merge is the one estimator-agnostic correction the theory provides; it is a factor 9 for the
   Gaussian closure at full scale and its value for the first-order chain is measured by the Modal job `lapx2`
   (PENDING). Making it affordable needs the symbolic second-order response (note, Thm 3.2; task left open).
