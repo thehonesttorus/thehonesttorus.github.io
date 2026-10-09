@@ -46,6 +46,13 @@ defect is second order in the births, so it decays along the path like the squar
 $(1+\tau)^{-1}$, which integrates against the weight to $\tfrac13$, and the measured $0.255$ sits below that by the
 same direction rotation seen on the small network. The cost of this correction is $2n+1$ chain evaluations, which
 is why the symbolic second-order response of Theorem~\ref{thm:gram} is the open engineering problem of this note.
+For the \emph{window-one} chain (all sources older than one layer dropped, $2.50\cdot10^{-6}$) the same $2049$ runs give
+correlation $0.889$, $81\%$ explained, $a=0.482$ and $4.82\cdot10^{-7}$ (midpoint $a=\tfrac12$: $4.84\cdot10^{-7}$): the
+constant returns to one half because the dropped memory is a first-order deficiency ($d=1$), which is the third
+confirmation of $a(d)=1/(d+1)$ (Gaussian closure $0.535/0.500$, exact chain $0.255/0.257$, window-one $0.482$). The
+correction of a short-memory chain is worth a factor five, not the factor fifty the memory is worth: the effect
+of the dropped memory is only $81\%$ a defect in the sense of Theorem~\ref{thm:defect}, and the corrected
+short-memory chain ($4.8\cdot10^{-7}$) stays an order of magnitude above the exact chain.
 The constant is a property of the chain, not of the network: on network $1$ the same $2049$ runs give
 correlation $0.914$, $84\%$ explained, $a=0.257$ and $4.38\cdot10^{-8}\to7.15\cdot10^{-9}$, and the two constants
 cross over without loss ($a_0$ on network $1$: $7.152\cdot10^{-9}$; $a_1$ on network $0$: $6.646\cdot10^{-9}$).

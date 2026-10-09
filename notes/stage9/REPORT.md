@@ -52,6 +52,7 @@ Branch `claude/determined-fermat-9hk45i`. Note: `notes/stage9/ncg_mlp_stage9.pdf
   rank-1/4/16/64 truncation (w=2): 2.2e-7/2.0e-7/1.6e-7/7.8e-8 — the coherent (separable, O(n^2)) part carries most of the
   old memory; an incoherent tail remains at ages 2–5. The old sources' effect is smooth
   in amplitude and brittle in shape: Hadamard readouts defeat Frobenius truncation (note, Sec. 6).
+- Euler-Stein of the window-1 chain (2049 runs, relay job lapx5c; the first runs lapx5/6 measured the randomized Tucker tier by a configuration slip and were discarded): raw 2.50e-6, corr 0.889, 81% explained, a = 0.482 (midpoint 1/2: 4.84e-7) -> **4.82e-7**. a returns to 1/2 for a first-order deficiency: third confirmation of a(d) = 1/(d+1). The correction of a short-memory chain is a factor 5, not the factor 50 of the memory itself: the dropped memory's effect is only 81% a defect.
 - Source sparsification (keep the q*n most important hub columns of every birth block, no window): q = 0.5 -> 4.1e-7,
   0.25 -> 1.5e-6, 0.1 -> 2.6e-6; least-squares rescaling of the kept columns changes nothing. The importance profile
   is flat (every hub neuron contributes a comparable, orthogonal rank-one term), the non-sparsifiable regime.
