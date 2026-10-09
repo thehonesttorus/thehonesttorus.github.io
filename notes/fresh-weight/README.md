@@ -1,0 +1,290 @@
+# XLIV. One interpolation under three papers, and the fresh-weight theorem
+
+Status: in progress (9 October 2026). Sections 1-4 are the theory. Section 5 is the pre-registration of the decisive
+test; it was committed before the test's data.
+
+## 1. The request
+
+The user sent three papers and a set of ideas from another chat:
+- the Sahasrabudhe survey on probabilistic combinatorics at exponentially small scales (arXiv 2512.15077);
+- Sah-Sahasrabudhe-Sawhney on the Spielman-Teng conjecture (2405.20308);
+- Wang-Lau-Zhou on derandomizing matrix concentration through free probability (2601.08111);
+- the other chat's ideas: a KMS half-tilt theorem, sech factors read as Chernoff affinities, Littlewood-Offord theory as
+  the spectral theory of the modular Hamiltonian, and Klartag's identity read as Ito's formula for the log-det barrier.
+
+The brief is theory first, with the Phase 2 adjusted MSE as the only judge, and no patching of the moment chain.
+The user named the bridges to develop:
+- codegree, the intersection of balls, read as the overlap of projections;
+- approximate conditional expectations;
+- Klartag's growing ellipsoid, and random lattices being locally Poisson;
+- local random-walk analysis;
+- time-evolving structure, the modular group of a faithful non-tracial state, and Hamiltonians on evolving graphs;
+- the Littlewood-Offord concentration function as the object for activations.
+
+The user also warned that means may drop out of some other object, and that the kappa3/kappa4 frame may be the wrong
+one.
+
+## 2. What each source does (read in full here; claims checked where marked)
+
+### 2a. The survey (2512.15077)
+
+- **The nibble, controlled by codegrees.** Sphere packing and spherical codes get a log d gain as follows:
+  - sample a Poisson process in a box and join points whose balls meet;
+  - forget the geometry and keep only the degree Delta and the codegree Delta_2;
+  - find an independent set by a random greedy "nibble".
+
+  In high dimension two balls meet in a fraction e^(-|x-y|^2/2) of their volume, so Delta_2 << Delta. The nibble's
+  martingale increments are bounded by codegrees,
+  sum_y |I ∩ N(y)|^2 <= sum_(y,z in N(x)) |N(y) ∩ N(z)|,
+  so the process follows its mean-field trajectory, as on a tree.
+- **Klartag's ellipsoid.** Klartag runs a random walk A_t on the space of ellipsoids {x : <x, A_t x> <= 1}:
+  - a lattice point that hits the boundary sticks and imposes the linear constraint <y, A_t y> = 1;
+  - the walk stops after about d^2/2 contacts;
+  - a random lattice looks locally like a Poisson process of intensity 1, so the final volume is about d^2.
+- **The concentration function.** rho_eps(v) = max_b P(|<X, v> - b| < eps). The survey covers:
+  - Halasz's Fourier bound;
+  - the inverse theorems (a large rho forces arithmetic structure in v);
+  - the least common denominator (LCD);
+  - Tikhomirov's typical Littlewood-Offord theorem: for random v, E_v rho_eps(v) = Theta(eps);
+  - approximate negative correlation of small-ball events;
+  - the rank-splitting proof for random symmetric matrices.
+
+### 2b. Spielman-Teng (2405.20308)
+
+The theorem is P(sigma_n(M) <= eps n^(-1/2)) = (1 + o(1)) eps + e^(-Omega(n)). It is proved in four moves:
+1. **Secular reduction.** A rank-one update, Lemma 3.2, turns the global event into a one-dimensional small-ball event
+   |<v, X>| <= eps chi(X). Here v spans ker M*, and chi^2(X) = sum <v_i, X>^2 / sigma_i^2 is a correction from the
+   other singular directions.
+2. **Truncation.** chi is replaced by its sqrt(log n) most critical terms.
+3. **Gaussian replacement at scale o(eps).** X is replaced by a Gaussian vector even though eps can be exponentially
+   small. This is Fourier analysis on a smooth bump function:
+   - low frequencies are handled by Lindeberg's third-moment bound, using that all relevant vectors are delocalized;
+   - high frequencies are killed by the LCD of v.
+4. **Rescaling.** For Gaussian Z the density of W_0 = <v, Z> is flat at 0, so P(|W_0| <= eps f) = (eps/eps_0)
+   P(|W_0| <= eps_0 f). This moves the problem up to a scale eps_0 = n^(-c), where Tao-Vu universality applies.
+
+The lesson for us: a quantity that depends only on a density at a threshold is universal down to tiny scales, provided
+the relevant directions are delocalized and arithmetically unstructured.
+
+### 2c. Free-probability derandomization (2601.08111)
+
+- **The free model.** The moments of X_free = sum_i A_i (x) s_i (free semicirculars) are computable by a non-crossing
+  recursion. The corresponding classical moments are not.
+- **The interpolation.** For any x, put A_t(x) = A_0 (x) 1 + A(x) (x) 1 + sqrt(1 - t) Xbar_free and a potential
+  Phi(t, x), for example a trace moment of A_t(x). A Brownian path x_t ~ N(0, t I) runs from 0 to g.
+  - By Ito's formula, E Phi(1, x_1) - Phi(0, 0) = int E[d Phi].
+  - The drift is the classical second-order increment in x minus the free increment, which comes from splitting
+    sqrt(1 - t) Xbar_free into free pieces. The two differ only by crossing terms, bounded by the matrix alignment
+    sigma^(1/2) nu^(1/2) ("intrinsic freeness").
+- **Derandomization.** The step only uses second-order statistics of dx_t, so pairwise-independent increments suffice.
+  A deterministic walk then keeps Phi from increasing. This is the method of conditional expectations, with the free
+  model in the role of the conditional expectation. Linear constraints are handled by Lovett-Meka sticky walks.
+
+### 2d. The other chat's ideas (checked here)
+
+- **KMS half-tilt: correct, and exact.** Take a faithful state with vector xi, a self-adjoint x, and mu_x, the spectral
+  measure of log Delta in x xi.
+  - S x xi = x xi gives Delta^(1/2) x xi = J x xi.
+  - J log Delta J = -log Delta then gives e^s mu_x(ds) = mu_x(-ds).
+  - So e^(s/2) mu_x is symmetric, it is the spectral measure in Delta^(1/4) x xi, and its mass is
+    <x xi, Delta^(1/2) x xi>.
+
+  For a product state on (x) M_2 with the global flip X = (x) sigma^x, the matrix units |b-bar><b| carry eigenvalue
+  sum_i +-nu_i, with nu_i = log(p_i / (1 - p_i)), and half-tilted weight prod_i sqrt(p_i (1 - p_i)). That weight is the
+  same for every b. So the normalized measure is the Rademacher law of sum eps_i nu_i, with mass
+  prod 2 sqrt(p_i (1 - p_i)) = prod sech(nu_i / 2). (Re-derived by hand above.)
+- **Klartag's Lemma 3.3 as Ito for -log det.** For a martingale dA,
+  d(-log det A) = -tr(A^-1 dA) + (1/2) tr((A^-1 dA)^2),
+  so the volume grows by the Ito term alone. That term is the trace of the free-face projection in the metric
+  tr(A^-1 X A^-1 Y). (This agrees with the survey's description.)
+- **Out of scope here.** The Coxeter-Lehmer items (the Hecke-Kazhdan formula, the Lehmer gap of rigidity windows, the
+  growth-rate inequality) are mathematics with no route to the estimator. They are not pursued in this note.
+
+## 3. The common skeleton, and what it says about the network
+
+### 3a. Proposition 1: the free interpolation is our localization
+
+Let e(m, tau) be any estimator run on the input law N(m, tau I) and exact on point masses, e(x, 0) = F(x) (the
+production chain is one; note XLII section 3). Put Phi(t, x) = e(x, (1 - t) I) and let x_t be Brownian motion from 0.
+Given x_t the input has law N(x_t, (1 - t) I), so Phi(t, x_t) is an approximate conditional expectation of F(g). Ito's
+formula gives
+
+    E F(g) - e(0, I) = int_0^1 E[(d_t + (1/2) Lap_x) Phi(t, x_t)] dt = - int_0^1 E[D(x_t, 1 - t)] dt,
+    D = d_tau e - (1/2) Lap_m e,
+
+which is note XLII's identity. In Wang-Lau-Zhou the free model plays e's part, and the drift they bound is this heat
+defect. So the heat-defect programme is the free method of conditional expectations, with the chain as the free model.
+
+The dictionary:
+- **Non-crossing diagrams** are the chain's tree diagrams: births with open legs, transported by mean gates.
+- **Crossings** are its loops: the closed walks of note XLII's Theorem A5 and the gate-covariance loops of note XLIII.
+- **Intrinsic freeness** is the power counting that suppresses loops in the bulk, where correlations are O(n^(-1/2)).
+  The collective modes break that counting (note XLIII 4c: the residual is about 10x the naive bulk order).
+
+Pairwise independence (the drift needs only second-order statistics of the increment) is the statement that D depends
+only on e's Hessian.
+
+### 3b. Proposition 2: the means are a gated transport of threshold sources (exact)
+
+For every unit, E relu(h) = E[h 1(h > 0)] = E h P(h > 0) + Cov(h, 1(h > 0)). Write:
+- Gamma_l = diag P(h_l > 0), the true gate probabilities;
+- s_l = Cov(h_l, 1(h_l > 0)), unit by unit.
+
+Then
+
+    m_l = Gamma_l W_l m_(l-1) + s_l,   m_L = sum_(k=1..L) Gamma_L W_L ... Gamma_(k+1) W_(k+1) s_k   (m_0 = 0).
+
+For h a functional of the Gaussian input, the Nourdin-Peccati identity gives s = p_h(0) tau_h(0): the density at the
+threshold (the concentration function at scale zero) times the Stein kernel there. In note XLII's notation this is
+also E[x_L] = E[Lap x_L], the kink sum. So the means are the solution of a linear gated transport equation driven by
+threshold-local sources. A chain's errors enter as
+
+    delta m_L = sum_k T_(L<-k) (delta s_k + delta Gamma_k W_k m_(k-1)) + second order.
+
+For a Gaussian unit, d E relu / d v = phi(alpha) / (2 s) = p(0) / 2. So a variance error delta v becomes a mean error
+(1/2) (threshold density) delta v. The concentration function at the threshold is the lever arm of every second-order
+error.
+
+### 3c. Theorem 3: the fresh-weight theorem
+
+**Statement.** Let A be any symmetric matrix that depends only on W_1, ..., W_l: for instance a chain's error in the
+post-activation covariance of layer l, or any correction a chain omits there. Let W = W_(l+1) have iid N(0, sigma^2)
+entries (He: sigma^2 = 2/n; measured on network 0: n var = 2.005, excess kurtosis -0.003). Put E = W A W^T. Then,
+exactly:
+- (i) the diagonal entries E_aa = w_a^T A w_a are independent across units given A, with
+  E E_aa = sigma^2 tr A and Var E_aa = 2 sigma^4 ||A||_F^2;
+- (ii) off the diagonal, E E_ab = 0, E E_ab^2 = sigma^4 ||A||_F^2, and E E_ab E_ac = 0 for b != c;
+- (iii) consequently Var_a(E_aa) / mean_(a != b)(E_ab^2) = 2, whatever the rank or spectrum of A.
+
+*Proof.* These are the Gaussian quadratic-form identities Var(w^T A w) = 2 sigma^4 tr A^2 and
+E(w^T A w')^2 = sigma^2 E w^T A^2 w = sigma^4 tr A^2 for independent rows. Independence of A from W_(l+1) holds because
+A is built from the first l layers.
+
+**Reading 1: the variance injection is fresh-weight noise.** Any estimator that forms the next pre-activation
+covariance by the exact linear map makes per-neuron variance errors delta v_(l+1,a) = w_a^T A_l w_a. These are:
+- a common shift sigma^2 tr A_l;
+- plus independent per-neuron noise of rms sigma^2 sqrt(2) ||A_l||_F.
+
+Only the Frobenius norm of the previous layer's error matters; its shape does not.
+
+**Reading 2: the nibble.** E_aa is a "degree" and E_ab a "codegree" of the error operator A. Their second moments are
+tr A^2 = sum_cd A_cd^2, the weight of closed 2-walks, exactly as the nibble's martingale increments are bounded by
+codegrees. This is the precise form of the user's codegree / overlap-of-projections bridge: the injected noise at a
+layer is controlled by the overlap of the error operator with itself.
+
+**Reading 3: typical Littlewood-Offord and Spielman-Teng.** E_aa - sigma^2 tr A is a decoupled quadratic
+Littlewood-Offord sum with random, unstructured coefficients, so it is close to Gaussian once ||A||_op << ||A||_F.
+Its mean sigma^2 tr A is the universal part: it is fixed by the coincident-site (two-site) data of A, as Gaussian
+replacement fixes the small-ball law. Its fluctuation is the part tied to the specific direction w_a.
+
+**Reading 4: freeness.** W_(l+1) is free from the past, so the predictable part of W A W^T is its trace (note XIII
+(ii)). Theorem 3 measures the unpredictable part exactly.
+
+### 3d. Corollaries
+
+1. **No two-site lunch.** Let Omega_l be a class a chain omits at layer l, for example the all-distinct gate
+   covariance of note XLIII 3d. Its effect on the next layer's variances is sigma^2 tr Omega_l, which is coincident-site
+   data, plus a fresh-weight chaos of rms sigma^2 sqrt(2) ||Omega_l||_F. That chaos has zero mean given the past. It is
+   not determined by any rotation-invariant statistic of Omega_l, because Gaussian W_(l+1) is rotation invariant. So
+   no closure built from carried slices can recover it: it has to be computed as Omega_l contracted with the actual
+   rows. This is why note XLIII 4e's six two-site completions explain only 14-29% of the D21 error.
+2. **The accounting.** Injections made through different fresh weights are uncorrelated. This is the measured fact of
+   note XLII section 2 ("injections at different layers are uncorrelated"), and here it is a theorem.
+
+   The final squared error is therefore a sum over layers. Each term is a transport factor times
+   2 sigma^4 ||A_l||_F^2 (1/2 p(0))^2, plus the mean-shift and mean-error terms of Proposition 2. The design target of
+   any second-moment method is this Frobenius budget, layer by layer, not slice-wise accuracy.
+3. **Why truth-free detectors go blind late.** A detector built from the chain's own state, such as the heat defect,
+   sees Omega_l only through what the chain computes. The injected noise is a chaos of Omega_l against fresh rows,
+   which the chain never forms. This fits note XLII's X* = 0.11 at the final layer. It is an explanation, not a
+   theorem: a detector that re-runs the chain on perturbed inputs could in principle encode more.
+
+### 3e. Where the other chat's modular ideas land
+
+- **The one-parameter group.** The natural one-parameter group of this problem is the dilation group: it commutes
+  with relu and preserves the quasi-free family (note XIII (iii)). Its "modular Hamiltonian" is the log-gain. The
+  radial disintegration is the KMS-like decomposition along it, and note XIII E4 measured that it removes the
+  coherent, direction-averaged non-Gaussianity of generic directions.
+- **The half-tilt theorem.** It applies to the gate pattern under a product law. There the half-tilted spectral
+  measure of the global gate flip is the Rademacher law of sum_c eps_c nu_c, with nu_c the gate log-odds.
+- **Where it stops.** Proposition 2 shows that the means need the gate probabilities and the threshold sources, not
+  flip affinities. So the sech / Chernoff structure has no foothold in the mean problem. This is recorded as a
+  negative scope statement.
+
+## 4. What it says about the system
+
+By Theorem 3 the late floor is fresh-weight noise from whatever the chain omits. Its size is set by Frobenius norms.
+Removing it requires computing the omitted class against the actual rows, at a cost proportional to the class's rank.
+That leaves exactly two structural routes that could beat the moment chain's elasticity-1 frontier (note XLII F3,
+Theorem 9). There is also a fallback.
+
+**Route R: dilation fibres (radial KMS).** Suppose the late law is a gain mixture of quasi-free fibres, h = sqrt(G) y
+with y ~ N(mu~, S~) independent of G. Then every two-site slice is rank-structured in (mu, C) with three gain moments
+g_k = E G^(k/2). For the third cumulant, writing v~_a = S~_aa:
+
+    k(a,a,b) = (g3 - g1 g2) [(v~_a + mu~_a^2) mu~_b + 2 S~_ab mu~_a] - 2 g1 (g2 - g1^2) mu~_a^2 mu~_b.
+
+This shape matches both features of the D21 error found in note XLIII 4d:
+- a C_ab x (function of a) part, like the regression form it correlated with at +0.57;
+- a column part (v_a + mu_a^2) mu_b, which is a coupling of neuron b to the layer's energy (20% of the error lives in
+  column means).
+
+None of the three forms was among the six completions tried in note XLIII 4e. If they carry the error, the fix costs
+O(n^2) plus three scalars per layer, and the three-site transport they stand in for is the dilation mode in disguise.
+
+**Route C: an exact collective block.** Suppose the post-activation covariance error A_l is concentrated in the top-k
+collective modes. Then the fresh-weight noise is sum_j dlambda_j (w_a . u_j)^2 plus cross terms. A k-dimensional
+latent computed exactly would remove it:
+- particles in the latent cost O(P n k) a layer;
+- the bulk stays Gaussian at the cost of the covariance transport, which is 3% of the bill;
+- unlike F3's leaves, the n^3 work is shared.
+
+**The fallback: allocate cost by the Frobenius budget.** If neither route holds, the late floor is bulk fresh-weight
+noise from three-site structure, and it costs one leg transport per unit of rank. The remaining lever on the adjusted
+score is then to spend FLOPs where the transport factor times the Frobenius contribution per FLOP is largest. Layers
+0-8 inject only 13% of the final squared error (note XLII section 2).
+
+## 5. Pre-registration (committed before the data)
+
+**Data** (cached, networks 0 and 1):
+- the production chain's pre-activation state per layer (`chaindump2_{0,1}.npz`: var, C_off, D21, D3);
+- Monte Carlo truth at 1.6e7 inputs in two independent halves (`mc2_off{0,1}_{full,h0,h1}.npz`: mu, var, cov, D21).
+
+Every second moment of an error is estimated noise-free, as the product of the chain-minus-truth differences against
+the two halves. Script: `code/fw_test.py`.
+
+**T1: the fresh-weight theorem on the chain's own error.**
+- *Quantity.* E_s = C_chain(s) - C_true(s) (pre-activation covariance, layer s) and
+  R_s = Var_a(E_aa) / mean_(a != b)(E_ab^2), at layers 2-14. E_s = W_s A_(s-1) W_s^T with A built from earlier layers,
+  so the theorem predicts R = 2 exactly. It can fail only if the chain's pre-activation stage adds non-transport
+  terms, such as the per-unit calibrations or look-ahead counterterms.
+- *Prediction.* R in [1.7, 2.3] at >= 10 of the 13 layers on both networks; central 1.95.
+
+**T2: route R.**
+- *Quantity.* Noise-free regression of the D21 error dD = D21_true - D21_chain (off the diagonal, layers 6-14) on
+  F1 = (v_a + mu_a^2) mu_b, F2 = C_ab mu_a and F3 = mu_a^2 mu_b, built from the true state.
+  - The metric is weighted by omega_ab = p_a(0) P(h_b > 0), the leading Mehler weight with which D21 enters the
+    post-activation covariance.
+  - The report is the share of the weighted noise-free energy explained, with all three fitted per layer in sample.
+- *Prediction.* 0.18 (0.10-0.30) at layers 9-14. The births' fresh-weight structure should dominate, so the dilation
+  shape should not.
+
+**T3: route C.**
+- *Quantity.* Let P_k project on the top-k eigenvectors of C_true(s). The collective share of the error is
+  c_k = 1 - ||P_k^perp E_s P_k^perp||_F^2 / ||E_s||_F^2 (off-diagonal, noise-free), for k = 8, 32, 128 at layers
+  12-14. A random subspace gives 1 - (1 - k/n)^2: 0.016, 0.061 and 0.234.
+- *Prediction.* c_32 = 0.35 (0.20-0.50). For context the same share is also reported for the true non-Gaussian part
+  of the covariance, C_true(s) - W_s KG(true state at s - 1) W_s^T. No prediction is registered for it.
+
+**Decision rule.**
+- **T1.** If it holds, the Frobenius budget is adopted as the error accounting, and section 3d's corollaries hold for
+  the production chain. If it fails, record the layers and look for non-transport terms in the pre-activation stage
+  before using the corollaries.
+- **Route R.** A T2 share >= 0.50 at layers 9-14 on both networks means building the dilation-fibred readout of the
+  (2,1) slice: three gain moments per layer, O(n^2). It is then cold-screened on 16 networks against production. A
+  share < 0.30 closes route R.
+- **Route C.** c_32 >= 0.60 at layers 12-14 on both networks means building the collective latent block, then a cold
+  screen. A value < 0.40 closes route C.
+- **Both closed.** The next step is the Frobenius budget map: transport factor times ||A_l||_F^2 contribution against
+  FLOPs, by layer and component. It is used to re-allocate the bill, and that re-allocation is pre-registered
+  separately.
