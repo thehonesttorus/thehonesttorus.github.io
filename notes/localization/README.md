@@ -95,3 +95,54 @@ stable within 20%: derive the defect's per-layer local form for the last 3-4 lay
 build a runtime delta only if its analytic form captures >= 70% of this measured delta at <= +70% of the bill; then a
 cold 16-network screen and a scored run. X* < 0.3: no runtime component; the identity stands as the explanation of
 the chain's error. In between: record the by-layer profile and stop.
+
+## 5. Result of the heat-defect experiment (networks 0-3, K = 128 directions each, float64, tier 2 off)
+
+256 tasks (networks 0-1 on the AWS fleet, 2-3 on Modal; `outputs/heatdef_main_4nets.txt`, `code/heatdef_ana.py`).
+The chain variant's own final-layer MSE: 1.49 / 1.59 / 1.81 / 1.68e-8.
+
+| layer | MSE | X* (noise-free share explained by delta) | slope a (err = e - truth on delta) | rho | signal share of var(delta_hat) |
+|---|---|---|---|---|---|
+| 3 | 1.46e-9 | 0.652 | +0.162 | 8.9 | 0.59 |
+| 5 | 2.74e-9 | 0.697 | +0.160 | 8.5 | 0.61 |
+| 7 | 4.59e-9 | 0.583 | +0.139 | 7.7 | 0.66 |
+| 9 | 6.53e-9 | 0.321 | +0.081 | 6.1 | 0.79 |
+| 11 | 8.85e-9 | 0.206 | +0.050 | 4.8 | 0.88 |
+| 13 | 1.25e-8 | 0.125 | +0.030 | 3.7 | 0.93 |
+| 15 | 1.64e-8 | **0.112** (per network 0.06-0.23) | +0.029 | 3.4 | 0.94 |
+
+Held out (slope fitted on networks 0-1, applied with the measured, noisy delta_hat): final-layer MSE -18.3%
+(network 2) and -4.1% (network 3).
+
+**Against the pre-registration.** X* = 0.11 at the final layer, below the registered interval [0.25, 0.70]; the slope
+(+0.029, i.e. p ~ 17 against the registered 2-3.5) and the by-layer prediction (not lower at 12-15 than at 6-11)
+fail; rho (3.4) is inside 3-6. **Decision (registered rule): X* < 0.3 - no runtime defect component.**
+
+**What it means.** At small width and at the early-middle layers of the production chain (3-7) the base-point heat
+defect explains 58-70% of the per-neuron error with a stable slope (p ~ 3), exactly as frames F1/F5 found. The error
+injected at the late layers, two thirds of the final MSE, is invisible to it, although delta_hat is measured cleanly
+there (signal share 0.94). Frame N3's Theorem A5 gives the reason: no first-order localization (isotropic,
+anisotropic, collective or operator-valued) sees the closed walks tr H^k, the trace-state moments of the second chaos;
+they first enter at second order. The late error is a trace-state phenomenon.
+
+## 6. The NCG round (frames N1-N5, refereed; `frames/N*.md`)
+
+- **N1 (exact RG / Hopf).** Localization is the Polchinski flow; a closure's local defect is the commutator of its
+  layer map with the RG flow; omitted closed walks from a carried kappa_k table are seen with scaling dimension ~k.
+  Referee: correct, but every theorem holds for commuting H; the Hopf/BPHZ layer is a Taylor expansion. Its practical
+  claim (per-network counterterms worth ~60% of the MSE) is **closed by E0**: amplitudes fitted per network on half the
+  neurons and judged on the other half remove 2.5% (`outputs/e0_pernet.txt`). E0 also shows the final error is
+  concentrated in collective modes: the top 64 / 128 modes of the gated layer-15 covariance hold 41% / 58% of it
+  (chance 6% / 12.5%).
+- **N2 (matrix-valued late defect).** Refuted (Conjecture 13 false; non-commutative content is the trace tr(DC)).
+- **N3 (defect ladder).** Rung r sees walks of length <= 2r; Theorem A5 (proved, checked to 1e-12): first-order
+  localization of any kind is blind to closed walks. The computational idea: the chain's second chaos is a Toeplitz
+  operator H_i = Lambda D_i Lambda^T on the birth set (stage-8 Theorem D form), closed walks are its trace moments,
+  and an operator-valued semicircular surrogate (non-crossing overlap pairings) tracks them at R^2 0.98-0.997 for
+  n M^2 instead of n^4. Referee's correction for the collective late layers: a spiked deterministic equivalent, the
+  top-k collective part exact plus the free bulk, t3 ~ tr((A D_i A^T)^3) + [semi_3(G) - semi_3(A^T A)] (slope
+  0.99, R^2 1.000 on a spiked model; ~2.6 units per layer at k = 32). Its value is capped by the late kappa_3/kappa_4
+  diagonal oracle, measured next.
+- **N4 (Gamma-calculus).** The carried-pair formula gives truth-free detector weights per error class; its forecast
+  that closed walks are visible (X* 0.5-0.75) is contradicted by section 5.
+- **N5 (modular/KMS).** Exact but commutative/type I; no runtime component.
