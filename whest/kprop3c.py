@@ -145,7 +145,22 @@ def nonlin_step(st, o, rng, record=None):
     own21 = (Phi ** 2)[:, None] * K3_21 * Phi[None, :]; own3 = Phi ** 3 * K3_3
     s21, s3 = slices_from_legs(star); own21 = own21 + s21; own3 += s3
     R21 = K3h_21 - own21; R3 = K3h_3 - own3; eye = np.eye(n)
-    newborn = tuple(np.concatenate([F, G], axis=1) for F, G in zip(star, (R3[:, None] * eye + 3.0 * R21.T, eye, eye)))
+    resid = (R3[:, None] * eye + 3.0 * R21.T, eye, eye)
+    q = o.get("srcfrac", 1.0)
+    if q < 1.0:
+        # source sparsification: keep the most important birth columns (hub neurons) of each block; optionally
+        # rescale the kept columns so that the block's (2,1) slice is matched in the least-squares sense
+        k = max(1, int(round(q * n)))
+        def keep_cols(block, imp):
+            idx = np.argsort(imp)[::-1][:k]; A, B, C = block; sub = (A[:, idx], B[:, idx], C[:, idx])
+            if o.get("srcreweight", 0):
+                full = slices_from_legs(block)[0]; part = slices_from_legs(sub)[0]
+                f = np.sum(full * part) / max(np.sum(part * part), 1e-300); sub = (f * sub[0], sub[1], sub[2])
+            return sub
+        imp_star = w2 * np.sum(star[0] ** 2, axis=0) * np.sum(star[2] ** 2, axis=0)   # hub j: w2_j |a_j|^2 |c_j|^2
+        imp_res = np.sum(resid[0] ** 2, axis=0)                                       # column norms of the residual leg
+        star = keep_cols(star, imp_star); resid = keep_cols(resid, imp_res)
+    newborn = tuple(np.concatenate([F, G], axis=1) for F, G in zip(star, resid))
     young.append((newborn, 0))
     # aging: merge sources of age >= window into the Tucker tier
     keep = []; fixed = None
@@ -167,7 +182,7 @@ def nonlin_step(st, o, rng, record=None):
 
 
 def kprop3c_chain(W, opts=None, record=None, m0=None, S0=None):
-    o = dict(window=2, k=128, c4scale=1.0, seed=0, tucker=1, oldmode="full", tier="tucker"); o.update(opts or {})
+    o = dict(window=2, k=128, c4scale=1.0, seed=0, tucker=1, oldmode="full", tier="tucker", srcfrac=1.0, srcreweight=0); o.update(opts or {})
     L, n, n_in = W.shape; rng = np.random.default_rng(o["seed"])
     m0 = np.zeros(n_in) if m0 is None else np.asarray(m0, dtype=np.float64); S0 = np.eye(n_in) if S0 is None else np.asarray(S0, dtype=np.float64)
     st = State(m0.copy(), S0.copy(), [], None, None, 0.0, np.eye(n_in)); out = np.empty((L, n))
