@@ -1,0 +1,11 @@
+p0_0	python scripts/lap_exact.py net=0 kind=kprop3 coords=0-7 h=0.02
+p0_18	python scripts/lap_exact.py net=0 kind=kprop3 coords=144-151 h=0.02
+p0_39	python scripts/lap_exact.py net=0 kind=kprop3 coords=312-319 h=0.02
+p0_69	python scripts/lap_exact.py net=0 kind=kprop3 coords=552-559 h=0.02
+p0_98	python scripts/lap_exact.py net=0 kind=kprop3 coords=784-791 h=0.02
+p0_101	python scripts/lap_exact.py net=0 kind=kprop3 coords=808-815 h=0.02
+p0_112	python scripts/lap_exact.py net=0 kind=kprop3 coords=896-903 h=0.02
+p0_116	python scripts/lap_exact.py net=0 kind=kprop3 coords=928-935 h=0.02
+p0_118	python scripts/lap_exact.py net=0 kind=kprop3 coords=944-951 h=0.02
+p0_120	python scripts/lap_exact.py net=0 kind=kprop3 coords=960-967 h=0.02
+p0_122	python scripts/lap_exact.py net=0 kind=kprop3 coords=976-983 h=0.02
