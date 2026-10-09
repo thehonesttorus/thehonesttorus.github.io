@@ -397,3 +397,18 @@ variants use `V56_P4=2 V56_A=1 V56_B=1` with the full solve.
 
 If P27 holds, the winner goes to the scored regime: all 100 networks, counterterms refitted on 0-49, held-out 50-99,
 adjusted MSE (note XXXIX protocol).
+
+**The scored regime (stated before its runs).** This is the adopted system: V35 + pair (`V33_WK4M=3 V31_K4D=3`) +
+fold, in the scored harness (`run_v29w.py`: warm-up predict, then the measured one). It runs on all 100 networks,
+free-running without counterterms, plus `V56_P4=2 V56_A=1 V56_B=1 V56_LMIN=3 V56_LAST=2`. Each variant is paired
+against the adopted system's own free-running scored outputs (note XXXIX `pe`); ten of those are rerun in the batch to
+check that the code with V56 off is bit-identical.
+
+| tag | | prediction |
+|---|---|---|
+| v56 | eps = 0.01 | **P31:** raw -15% to -25%, C/B +11% to +14%, adjusted -5% to -14%, better on >= 95/100 |
+| v56e | eps = 0.001 | P32: raw within +-2 points of v56 |
+
+The protocol then follows note XXXIX: counterterms refitted on networks 0-49 with the stored responses, then judged
+free-running on 50-99 against the adopted system with its own counterterms (3.5090e-9).
+- **P33:** the held-out adjusted MSE is at least 5% below 3.5090e-9.
