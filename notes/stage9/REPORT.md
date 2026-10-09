@@ -40,6 +40,7 @@ Branch `claude/determined-fermat-9hk45i`. Note: `notes/stage9/ncg_mlp_stage9.pdf
 | Gaussian closure + parameter-free midpoint (e + Lap e)/2 | 4.50e-7 (net 1: 4.72e-6 -> 3.45e-7, a = 0.500) | same |
 | organisers' K=3 simple chain, numpy port (`whest/kprop3.py`), radial kappa4 off | 5.63e-7 | |
 | same, radial kappa4 on (one scalar per layer) | **3.53e-8** | 3.4e12 raw FLOPs = 1.5 B f32 (dense legs, rank 2n per layer) |
+| organisers' chain + exact Euler-Stein defect, e - a delta (a = 0.255; corr 0.90, 81% explained) | **6.64e-9** | +2049 chain runs (diagnostic; symbolic version is the open task) |
 | open-source chain (504aldo) | 2.13e-8 | 0.25 B |
 | leaders (raw) | 1.1–1.5e-8 | 0.10–0.14 B |
 
@@ -52,7 +53,7 @@ Branch `claude/determined-fermat-9hk45i`. Note: `notes/stage9/ncg_mlp_stage9.pdf
 - Billed cost under flopscope (fnp port `whest/kprop3f.py`, float32, MSE identical to float64): (4,128) 0.862 B; (2,128) 0.592 B;
   (1,128) 0.439 B; (0,128) 0.275 B; float64 doubles these. The accurate configuration (4,384) is ~1 B as written, ~0.45 B with the
   identity-leg structure of the birth blocks (3 transported matrices and 4 readout products per source-age instead of 6 and 6) and Strassen.
-- Exact Euler–Stein defect of the ported chain on net 0 (2049 chain runs on Modal): PENDING (job lapx2).
+- Exact Euler–Stein defect of the ported chain on net 0 (2049 chain runs on Modal, 41 s each on 4 cores): corr 0.902, 81% explained, a = 0.255, MSE 3.53e-8 -> **6.64e-9**. The midpoint a = 1/2 does not apply (3.3e-8): a first-order chain's defect is second order in the births and decays like (1+tau)^-1, giving a = 1/3 in theory. Cross-network check on net 1: PENDING (job lapx4).
 
 ## 3. Compute
 
@@ -79,9 +80,10 @@ Branch `claude/determined-fermat-9hk45i`. Note: `notes/stage9/ncg_mlp_stage9.pdf
   version: the old sources' slices correlate only 0.3-0.5 with the young ones (residual 0.9 of their norm) and grow
   to 3x their size at depth. The memory of kappa3 is a genuinely new shape at every layer; whatever the leaders do
   at 0.1 B, it is neither a compressed nor a regenerated first-order memory.
-- The Euler-Stein merge is the one estimator-agnostic correction the theory provides; it is a factor 9 for the
-  Gaussian closure at full scale and its value for the first-order chain is measured by the Modal job `lapx2`
-  (PENDING). Making it affordable needs the symbolic second-order response (note, Thm 3.2; task left open).
+- The Euler-Stein merge is the one estimator-agnostic correction the theory provides: a factor 9-14 for the
+  Gaussian closure and a factor 5.3 for the exact first-order chain (6.6e-9, twice better than the leaders' raw MSE),
+  with one fitted constant whose value the theory predicts from the order of the chain's defect. Making it
+  affordable needs the symbolic second-order response (note, Thm 3.2; task left open): that is the system to build.
 
 ## 5. Compute and hand-offs
 

@@ -12,6 +12,7 @@ $+$ hub: $D21\to$ covariance \eqref{eq:cov-transport}, GC arm & $8.37\cdot10^{-7
 $+$ exact birth slice and diagonal (residual leg $R$), exact gates & $8.52\cdot10^{-7}$ & Theorem~\ref{thm:transport}, first term\\
 $+$ transposed-slice feed, $\kap_4\!\to\!\kap_3$ feed, $(2,2)$ channel, exact diagonal $\kap_3$ & $5.74\cdot10^{-7}$ & Theorem~\ref{thm:transport}, second and third terms\\
 Gaussian closure $+$ Euler--Stein defect, $e-a\delta(0)$, $a=0.535$ & $4.35\cdot10^{-7}$ & Corollary~\ref{cor:eldan}, exact $\delta$ ($2n+1$ chains)\\
+organisers' chain (\texttt{kprop3}) $+$ Euler--Stein defect, $e-a\delta(0)$, $a=0.255$ & $\mathbf{6.64\cdot10^{-9}}$ & same: corr $0.90$, $81\%$ explained\\
 Gaussian closure $+$ midpoint $(e+\Delta e)/2$ (no fitted constant) & $4.50\cdot10^{-7}$ & same\\\midrule
 organisers' chain, $k_{\max}=3$ simple, numpy port (\texttt{kprop3}), radial $\kap_4$ off & $5.63\cdot10^{-7}$ & exact first-order $\kap_3$ transport, 36 diagrams\\
 same, radial $\kap_4$ on (one scalar per layer) & $3.53\cdot10^{-8}$ & the central variable (Lemma~\ref{lem:scale})\\\midrule
@@ -35,6 +36,16 @@ $a_1$ on network $0$: $4.51\cdot10^{-7}$), and the parameter-free midpoint $(e+\
 $3.45\cdot10^{-7}$: the weight of Corollary~\ref{cor:eldan} integrates to one half on these networks, so the
 \emph{Euler--Stein midpoint} is an estimator with no fitted constant that is nine to fourteen times better than the
 chain it corrects.
+
+For the exact first-order chain the same measurement ($2049$ runs of \texttt{kprop3} on Modal, $41$ s each on four
+cores) gives $|\delta(0)|_{\rm rms}=6.6\cdot10^{-4}$ against an error of $1.9\cdot10^{-4}$, correlation $0.902$, $81\%$ of
+the mean square explained, $a=0.255$, and a corrected MSE of $6.64\cdot10^{-9}$: a factor $5.3$ below the chain and
+a factor two below the leaders' raw accuracy, from a correction that is estimator-agnostic and derived, not fitted,
+except for the one constant $a$. The midpoint $a=\tfrac12$ does not apply to this chain ($3.3\cdot10^{-8}$): its
+defect is second order in the births, so it decays along the path like the square of the kink density,
+$(1+\tau)^{-1}$, which integrates against the weight to $\tfrac13$, and the measured $0.255$ sits below that by the
+same direction rotation seen on the small network. The cost of this correction is $2n+1$ chain evaluations, which
+is why the symbolic second-order response of Theorem~\ref{thm:gram} is the open engineering problem of this note.
 
 Two readings. First, the Euler--Stein defect of the \emph{Gaussian} closure, with no cumulant machinery at all,
 reaches the accuracy of our third-cumulant chain: on network $0$ the exact $\delta(0)$ (coordinate Laplacian,
