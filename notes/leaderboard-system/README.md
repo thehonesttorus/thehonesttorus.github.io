@@ -26,6 +26,14 @@ in the scored regime (a warm-up predict on another network, then the measured pr
 - **The exact D21 feedback is the round's one large accuracy lever.** It gives -8.6% raw, three times the
   prediction. Rank 64 already holds 73% of that. Its price sits on the same frontier as the tiers: about one percent
   of raw per percent of cost (section 7).
+- **Its cost was the implementation's, and the cost audit removes it (section 11).**
+  - **The fold.** To first order the exact feedback is a displacement of the newborn's arm, a -> a + Yt/(2 w2) + Xt/6.
+    It costs n^2 per birth and needs no new leg.
+  - **The constraint.** Because the arm also carries the birth M block's separable part, the M residual must
+    absorb the change. Without that correction the fold is +140%.
+  - **The new leaderboard system** (V35 + pair + fold + counterterms, section 11h): adjusted 3.4923e-9 on all 100
+    networks, against 3.8815e-9 for section 9's. The protocol's held-out comparison is -9.97% +- 0.58, better on
+    50/50, at 1.4% less cost.
 
 ## 1. Phase A: predictions (stated before the runs)
 
@@ -412,7 +420,7 @@ to the last digit, and the residual is within noise (-1.2% +- 0.5). V35's own le
   counterterms, and V35 + pair + counterterms.
 
 
-## 9. The leaderboard system
+## 9. The leaderboard system (superseded by section 11h)
 
 **Adopted** (each part under the rule of section 3, measured free-running on held-out networks). V35, plus:
 - the geometric-mean (2,2) slice, `V33_WK4M=3`: wk4m = sqrt(g4_i g4_j)/3, the gain mode's var_i var_j term;
@@ -420,8 +428,9 @@ to the last digit, and the residual is within noise (-1.2% +- 0.5). V35's own le
   read from the chain's own kappa4 diagonal, in place of the lam s_off^2 stand-in;
 - the 103 output-metric counterterms, refitted on all 100 networks for this configuration.
 
-The file is `code/estimator_final.py`, baked from `est_v29.py` with `code/bake.py` and
-`code/estimator_final_config.txt`. It runs with no environment, and a baked file reproduces its environment-driven
+The file is `code/estimator_final_pair.py` (it was `estimator_final.py` until section 11h replaced it), baked from
+`est_v29.py` with `code/bake.py` and `code/estimator_final_pair_config.txt`. It runs with no environment, and a baked
+file reproduces its environment-driven
 run to the last digit (network 50: raw 1.6962e-8, C/B 0.1819, on two different machines).
 
 | scored regime, all 100 networks (`outputs/pd_rows.json`) | raw | C/B | adjusted | against V35 |
@@ -620,3 +629,129 @@ Cost: the fold's -1.25% plus the rank-2 legs' +1.3%, so about V35's bill.
     and judged free-running on 50-99, beats the pre-registered P12 candidate (the fold at R_RES 4, refitted the same
     way) in held-out adjusted MSE.
   - Expected margin: 1-2.5%, the cold raw advantage less its cost difference.
+
+**P14, measured** (cold, networks 0-15, paired against V35 in the same batch; `outputs/fold_hybrid_16nets/`):
+
+| variant | raw against V35 | better on | FLOPs |
+|---|---|---|---|
+| mode 3 (`V52_FB_FOLD=3`) | **-11.36% +- 0.71** | 16/16 | -0.01% |
+| mode 3 + R_RES 8 | -11.73% +- 0.83 | 16/16 | +0.97% |
+
+- **P14's raw range fails favourably.**
+  - Against fold + R_RES 8: -3.38 +- 0.59 points (15/16), more than twice the predicted 1.5.
+  - Against the fold at R_RES 4: -5.84 +- 0.61 (16/16).
+  - Mode 3 at rank 4 equals the fold at the exact residual (-11.5%), at V35's bill instead of x3.7.
+- **No crowding is left.** Four more columns give -0.43 +- 0.23 against V35's -0.98: within the predicted 0.7.
+- **The cost prediction holds.**
+- **Reading: rank 8 is not enough.** The additive correction (rank <= 4 in exact arithmetic) is not captured
+  cleanly by a one-pass range finder at rank 8 competing with the residual's own spectrum. Carrying it on its own
+  exact legs is what closes the gap.
+
+**11f. Measured in adjusted MSE** (scored regime, networks 0-99, on the adopted system V35 + pair; `outputs/pe_rows.json`,
+`outputs/pf2_rows.json`).
+
+Free-running, no counterterms, paired against the same code's V35 + pair (adjusted 4.1302e-9):
+
+| system | raw | C/B | adjusted | per net | better on |
+|---|---|---|---|---|---|
+| + fold, R_RES 4 (mode 1) | -4.87% | -1.37% | 3.8752e-9 | -5.96 +- 0.47 | 92/100 |
+| + fold, R_RES 8 | -7.42% | -0.30% | 3.8125e-9 | -7.53 +- 0.44 | 95/100 |
+| + mode 3 | **-10.62%** | -0.03% | **3.6910e-9** | **-10.53 +- 0.26** | **100/100** |
+
+**Renormalized** (counterterms refitted on networks 0-49 with the stored responses, judged on 50-99;
+`outputs/refit_fold1_heldout.txt`, `outputs/refit_fold3_heldout.txt`). The renormalized change against refitted V35:
+- adopted pair: -0.88%;
+- mode 1: -9.42% +- 0.67 (49/50), free amplitude 0.95;
+- fold at R_RES 8: -10.06% +- 0.64, amplitude 1.00;
+- mode 3: -10.91% +- 0.41 (50/50), amplitude 1.36.
+
+The counterterms do not absorb the fold: its amplitude stays at its derived value, or above it.
+
+**The decisive test** (free-running, held-out networks 50-99, each system with its own counterterms fitted on 0-49;
+`outputs/hold_rows.json`):
+
+| system | raw | C/B | adjusted | against the adopted system |
+|---|---|---|---|---|
+| adopted: V35 + pair + counterterms (rerun on this code) | 2.1609e-8 | 0.1804 | 3.8977e-9 | (section 9: 3.8984e-9) |
+| **+ fold, mode 1** | **1.9726e-8** | **0.1779** | **3.5090e-9** | **-9.97% +- 0.58, better on 50/50** |
+| + mode 3 | 1.9484e-8 | 0.1804 | 3.5138e-9 | -9.85% +- 0.35, better on 50/50 |
+
+- **P12 holds, beyond its range.** Held-out adjusted is -10.0% against the adopted system (predicted -3% to -8%), and
+  the counterterms cannot mimic the fold. That is twenty standard errors: adopted.
+- **P15 fails.** Mode 3 against mode 1, both renormalized: raw -1.09 +- 0.41, but C/B +1.38%, so adjusted
+  +0.27 +- 0.42. A tie.
+  - Mode 3's free-running lead (4.4 points) is mostly inside the counterterm span. The crowding damage sits in the
+    low-rank, coherent part of the (2,1) slice, which per-layer amplitudes can repair.
+  - The rank-2 legs mode 3 needs cost 1.38%, which the counterterms cannot repair.
+  - Mode 1 is adopted: simpler, cheaper, and no thin legs.
+
+**11g. The cost audit, measured.** Profile of the measured predict (predict #3, `code/prof_chain.py`, networks 0 and
+1, `outputs/fold_profile/`), in units of 2n^3:
+
+| component | adopted (section 9) | + fold |
+|---|---|---|
+| young D21 hub and its thin terms (`_dslices`) | 71.7 | 69.8 |
+| young transport (the W [A, P] family) | 53.5 | 53.5 |
+| joins (range finders, rotations, Grams) | 23.4 | 23.4 |
+| old-tier formings (both tiers) | 20.5 | 20.5 |
+| C_pre = W C W^T | 6.6 | 6.6 |
+| Wick stage | 1.3 | 1.3 |
+| residual legs Z (transport) | 0.7 | 0.7 |
+| feedback legs Zf (transport) | 0.36 | 0 |
+| kappa4 quenched rank | 0.9 | 0.9 |
+| everything else | 1.6 | 1.3 |
+| **total** | **180.6** | **178.0** |
+
+By operation: matmul 82%, and the block adds, subtracts and copies of the Strassen recursion 12.7%. Every
+elementwise multiply in the chain totals 1.9 units, the QRs 1.8, the saturation gather 0.3.
+- **The rank-2 feedback cost 2.4 units (1.3%) for -0.7% of raw** (section 7's fbadd row). The fold that replaces it
+  costs about 0.05 units.
+- **The two redundancies of 11a cost 1e-4 B and are removed.** The identity check on networks 50-51 reproduces raw to
+  the last digit and moves C/B by -0.0001.
+- **The Strassen bookkeeping is at its floor under these rules.**
+  - The upper levels use classical Strassen: 18 block adds and 4 copies per level.
+  - Winograd would need 15 adds but 6 copies for the batched layout, saving one write in 22, about 1 unit.
+  - The leaf (16) is the smallest at which a further level pays (block side > 7.5); V35's per-family minima
+    already took that.
+- **What is left is the tiers' n^3 structure.** The young tier (transport + hub) is 69% of the bill, about 2 units per
+  young source-layer. Only a change of tiers moves it, and its price is on the frontier (elasticity about 1). The fold
+  is the first lever of this round that moves the frontier itself.
+
+**11h. The leaderboard system (supersedes section 9).** V35, plus the pair (`V33_WK4M=3`, `V31_K4D=3`), plus the fold
+(`V52_FB_FOLD=1`), plus its 103 counterterms refitted on all 100 networks. The file is `code/estimator_final.py`, baked
+from `est_v29.py` with `code/estimator_final_config.txt`. Section 9's file is kept as `code/estimator_final_pair.py`.
+
+| scored regime, all 100 networks | raw | C/B | adjusted | against section 9's final |
+|---|---|---|---|---|
+| section 9 final (V35 + pair + counterterms) | 2.1526e-8 | 0.1803 | 3.8815e-9 | |
+| **V35 + pair + fold + counterterms (adopted)** | **1.9643e-8** | **0.1778** | **3.4923e-9** | **-10.03% (per net -9.91 +- 0.39, 100/100)** |
+| V35 + pair + mode 3 + counterterms (alternative) | 1.9364e-8 | 0.1802 | 3.4901e-9 | -10.08%; against the adopted: +0.08 +- 0.26 |
+
+- **The figures are in-sample for the counterterms.** The protocol's held-out estimate is 11f's 3.5090e-9 against
+  3.8977e-9 (-9.97%).
+- **Residual and memory.** The measured call's local residual is 0.570 s mean and 0.625 s max, below section 9's 0.61
+  and 0.68, because the thin legs are gone. VmHWM is 10.33 GB, unchanged.
+- **Against V35 alone** (note XXIX, 4.1273e-9) the system is -15.4% in adjusted MSE.
+
+**11i. What the theory unlocked, and what it says next.**
+1. **The exact feedback was never a carrier problem.** Section 10 asked for a carrier that holds the feedback's
+   flat spectrum at well under n^2 r per source-layer.
+   - The answer is n^2 per birth and nothing after: at first order the feedback is a displacement of the arm, and
+     the arm is already carried.
+   - Section 7's estimate of one more dense leg per young source (+57% of the bill) is withdrawn.
+2. **The arm's double duty is first order and decides everything.**
+   - The arm carries the star and the separable part of the M block. Without the residual correction the fold is
+     +140%; with it, -5.8% cold and -6% scored.
+   - The correction's additive part competes with the rank-4 residual's directions (P13).
+   - Removing that competition (mode 3) or renormalizing (the counterterms) closes the rest. The two routes are
+     worth the same once cost is counted.
+3. **Two full-rank first-order terms of the exact (2,1) slice live only in the birth residual**: R1 = e w2 D21^T / 2
+   and R2 = (Phi(1-Phi) - mu w2) Phi D21.
+   - The exact residual is worth -3.3% on V35 (P11) and costs +270%.
+   - The fold carries part of R1 and R2 for free through the arm. Mode 3 at rank 4 equals the fold at the exact
+     residual, which says the remaining residual content is worth little once the arm carries its share.
+4. **Next.**
+   - The free amplitude 1.36 of mode 3 says the output wants more of the hybrid's direction than first order gives.
+     The candidate source is the Gamma x Gamma terms, where the fold and the thin legs differ.
+   - Making mode 3 pay needs its rank-2 additive legs confined with their sources at AGE_OLD. Today they are carried
+     unconfined to the last layer: 1.38% of the bill, against the 1.1% raw it keeps after renormalization.

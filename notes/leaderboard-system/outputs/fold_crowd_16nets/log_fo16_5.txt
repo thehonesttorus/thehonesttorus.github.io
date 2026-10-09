@@ -1,0 +1,4 @@
+cost: F 4.4238e+11 (0.2012 B), residual wall 1.041 s, C/B 0.2485
+net 5 fo16: raw 1.91927e-08  per-layer 7.57e-10 6.47e-10 9.51e-10 1.57e-09 2.28e-09 3.59e-09 4.22e-09 5.64e-09 6.76e-09 8.84e-09 9.41e-09 1.08e-08 1.19e-08 1.50e-08 1.68e-08 1.92e-08
+
+[exit 0 after 76s on 20 visible cores, cpu=4.0]

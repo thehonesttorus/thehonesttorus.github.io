@@ -1,0 +1,3 @@
+net 51 finalcheck: raw 2.1720e-08  C/B 0.1807  adjusted 3.9243e-09  wall 149.2s  residual 0.985s  first-call C/B 0.1988 residual 1.192s  
+
+[exit 0 after 239s on 20 visible cores, cpu=4.0]

@@ -1,0 +1,4 @@
+cost: F 4.4280e+11 (0.2014 B), residual wall 0.971 s, C/B 0.2455
+net 4 fh8: raw 1.98561e-08  per-layer 6.56e-10 7.01e-10 9.37e-10 1.63e-09 2.41e-09 3.58e-09 4.85e-09 5.83e-09 6.91e-09 8.89e-09 9.69e-09 1.15e-08 1.34e-08 1.53e-08 1.83e-08 1.99e-08
+
+[exit 0 after 67s on 20 visible cores, cpu=4.0]

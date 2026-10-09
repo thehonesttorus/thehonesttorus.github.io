@@ -1,0 +1,144 @@
+net 0: raw 2.0821e-08  total 3.8773e+11 FLOPs = 0.1763 B = 180.6 units (2n^3)
+
+== by call site in _predict_core (units, % of total)
+   71.74  39.7%  L1497: D3, D21 = self._dslices(A_rd, P_rd, Z_st, L_st, w2b_list, s_list, e_list,
+   52.50  29.1%  L1366: _family(W, w32, 2 * ka, 2 * k + extra, k if extra else None, comp_prev)
+   13.51   7.5%  L1351: smm.mm(Qc[None, None], fap4[2 * fa_off:2 * (fa_off + m1)],
+    6.13   3.4%  L1395: C_pre = self._sym_product(WC, w32, n, NN("cpre"), min(CPRE_LEV, s_lev))
+    5.90   3.3%  L1356: smm.mm(QU[None, None], fap24[:2 * kb], legs4["AP1"][:2 * kb],
+    3.28   1.8%  L1188: smm.hub(nat4[2 * j:2 * j + 2], jb4, Yq[None], smm.level(n, n, r_old, s_sb, JN_MN), JN_MN)
+    3.27   1.8%  L1184: smm.mm(Om.T[None, None], nat4[2 * j:2 * j + 2], jb4,
+    3.27   1.8%  L1261: smm.mm((Qn if QnF is None else QnF).T[None, None], nat4[2 * j:2 * j + 2], fap4_new[2 * m1:2 * m1 + 2],
+    3.06   1.7%  L1272: smm.mm(Tq[None, None], fap4[2 * fa_off:2 * (fa_off + m1)], fap4_new[:2 * m1],
+    1.66   0.9%  L1231: fnp.multiply(_sq, _mmj(W, Qn, Yq), out=Yq)
+    1.66   0.9%  L1233: QnF = _mmj(W.T, fnp.multiply(_sq, _Qt, out=Yq1), pool.get("zt", (n, r_old)))
+    1.57   0.9%  L1232: _Qt, _ = fnp.linalg.qr(Yq)
+    1.05   0.6%  L1844: PK2 = [fnp.einsum("tij,ti,tj->ij", ABstack[t0:t1], WL2[t0:t1], WR2[t0:t1]) if t1 > t0
+    1.02   0.6%  L1386: _family(W, w32, 0, 2, 0, comp_prev)
+    1.02   0.6%  L1201: fnp.matmul(Qp, Sfull @ _g, out=Yq2)
+    0.88   0.5%  L1288: Sj = fnp.einsum("an,bn->ab", _xa, _xa) + fnp.einsum("an,bn->ab", _xp, _xp)
+    0.78   0.4%  L1269: Tq = Qn.T @ Qp if QnF is None else QnF.T @ Qp   # (r, r) rotation of the old factors
+    0.61   0.3%  L1368: Z_st = fnp.matmul(WDb, Z_st, out=pool.get(("z", z_side), (L - 1, n, r + 2))[:k])
+    0.50   0.3%  L1102: C_pre = fnp.einsum("ia,ib->ab", w32, w32)
+    0.49   0.3%  L1307: S_s = fnp.einsum("an,bn->ab", _xa, _xa) + fnp.einsum("an,bn->ab", _xp, _xp)
+    0.49   0.3%  L1276: Sg = Tq @ (Sg @ Tq.T)
+    0.47   0.3%  L1322: smm.mm(T2[None, None], fap24[:2 * kb], fap24_new[:2 * kb], smm.level(r2, r2, n, s_sb, SB_MN), SB_MN)
+    0.41   0.2%  L1355: QU = fnp.matmul(Qc, U, out=pool.get("qu", (n, r2)))
+    0.39   0.2%  L1200: _g = fnp.einsum("ia,ib->ab", Qp, Qp) if ("b" in OPT and Om is Qp) else Qp.T @ Om
+    0.37   0.2%  L1346: Qc = _mmj(WD, Qc, pool.get(("qc", qc_side), (n, r_old)))
+    0.36   0.2%  L1313: Un, _ = fnp.linalg.qr(G2 @ Om2)
+    0.36   0.2%  L1373: fnp.matmul(WDb, Zf_st[1:], out=zfo[1:k])
+    0.35   0.2%  L1559: _Y = k22q @ (k22q @ _Qk)
+    0.29   0.2%  L1317: fnp.matmul(Un.T, FA1, out=fap2_new[kb, 0])
+    0.29   0.2%  L1318: fnp.matmul(Un.T, FP1, out=fap2_new[kb, 1])
+    0.26   0.1%  L1839: fnp.multiply(b2[a_], b2[b_], out=abbuf[t_])
+    0.18   0.1%  L1561: _lb, _Ub = fnp.linalg.eigh(_Qk.T @ (k22q @ _Qk))
+    0.18   0.1%  L1557: _Y = k22q @ w32[:, :_p]
+    0.18   0.1%  L1563: _WV = WW @ _V
+    0.15   0.1%  L1329: S2 = Un.T @ (G2 @ Un)
+    0.13   0.1%  L2231: fnp.take(legs4["AP0"][2 * ka_n:2 * kk + 1], sat_perm[:sat_na], axis=2,
+    0.12   0.1%  L1199: Sfull = Sg if kb == 0 else Sg + U @ (S2 @ U.T)
+    0.12   0.1%  L1310: G2 = S_s if kb == 0 else S_s + U @ (S2 @ U.T)
+    0.09   0.0%  L1406: fnp.matmul(W, Rr, out=zb[k])
+    0.07   0.0%  L1280: U = Tq @ U                      # V24: the sub-basis rides along
+    0.06   0.0%  L2150: Y = fnp.matmul(Rres, Om, out=pool.get("y", (n, r)))
+    0.06   0.0%  L2152: Y2 = fnp.matmul(Rres.T, Q, out=pool.get("y2", (n, r)))
+    0.06   0.0%  L2153: Y = fnp.matmul(Rres, Y2, out=Y)
+    0.06   0.0%  L2155: Bm = fnp.matmul(Q.T, Rres, out=pool.get("bm", (r, n)))   # Rres ~= Q @ Bm
+    0.05   0.0%  L1966: Yf = D21 @ (D21.T @ Qf)
+
+== by innermost line (units, count, first op)
+   58.20  32.2% n=   546 prod:L808 swapaxes ((2, 16807, 16, 16),) | fnp.matmul(L_, fnp.swapaxes(R_, -1, -2), out=T)
+   11.38   6.3% n=   107 _leaf_mm:L746 matmul ((1, 16807, 16, 16), (2, 16807, 16, 16)) | fnp.matmul(Lb, Rb, out=C22)                                   # M6 -> C22
+   11.38   6.3% n=   107 _leaf_mm:L748 matmul ((1, 16807, 16, 16), (2, 16807, 16, 16)) | fnp.matmul(Lb, Y11, out=C21)                                  # M2 -> C21
+   11.38   6.3% n=   107 _leaf_mm:L751 matmul ((1, 16807, 16, 16), (2, 16807, 16, 16)) | fnp.matmul(X22, Rb, out=C11)                                  # M4 -> C11
+   11.38   6.3% n=   107 _leaf_mm:L754 matmul ((1, 16807, 16, 16), (2, 16807, 16, 16)) | fnp.matmul(Lb, Rb, out=Mb)                                    # M1
+   11.38   6.3% n=   107 _leaf_mm:L757 matmul ((1, 16807, 16, 16), (2, 16807, 16, 16)) | fnp.matmul(X11, Rb, out=C12)                                  # M3 -> C12
+   11.38   6.3% n=   107 _leaf_mm:L760 matmul ((1, 16807, 16, 16), (2, 16807, 16, 16)) | fnp.matmul(Lb, Y22, out=Mb)                                   # M5
+   11.38   6.3% n=   107 _leaf_mm:L763 matmul ((1, 16807, 16, 16), (2, 16807, 16, 16)) | fnp.matmul(Lb, Rb, out=Mb)                                    # M7
+    1.57   0.9% n=     9 _predict_core:L1232 linalg.qr ((1024, 320),) | _Qt, _ = fnp.linalg.qr(Yq)
+    1.47   0.8% n=  1220 _combos:L683 add ((2, 1, 512, 512), (2, 1, 512, 512)) | fnp.add(X11, X22, out=buf[:, 0]); fnp.copyto(buf[:, 1], X11)
+    1.47   0.8% n=  1220 _combos:L684 subtract ((2, 1, 512, 512), (2, 1, 512, 512)) | fnp.subtract(X12, X22, out=buf[:, 2]); fnp.subtract(X21, X11, out=buf[:, 3])
+    1.47   0.8% n=  1220 _combos:L685 copyto () | fnp.copyto(buf[:, 4], X22);       fnp.add(X11, X12, out=buf[:, 5])
+    1.32   0.7% n=   273 prod:L809 sum ((2, 16807, 16, 16),) | fnp.sum(T, axis=0, out=dst)
+    1.12   0.6% n=    10 _family:L1078 matmul ((1024, 64), (64, 1024)) | fnp.matmul(Wr.T, legs["AP0"][cslot, 1][na_p:], out=T1)
+    1.11   0.6% n=  1220 _assemble:L695 add ((2, 2401, 32, 32), (2, 2401, 32, 32)) | fnp.add(M[:, 0], M[:, 3], out=C11); fnp.subtract(C11, M[:, 4], out=C11)
+    1.11   0.6% n=  1220 _assemble:L699 subtract ((2, 2401, 32, 32), (2, 2401, 32, 32)) | fnp.subtract(M[:, 0], M[:, 1], out=C22); fnp.add(C22, M[:, 2], out=C22)
+    1.05   0.6% n=    45 _predict_core:L1844 einsum ((2, 1024, 1024), (2, 1024), (2, 1024)) | PK2 = [fnp.einsum("tij,ti,tj->ij", ABstack[t0:t1], WL2[t0:t1], WR2[t0:t1]) if t1 > t0
+    1.02   0.6% n=    16 _predict_core:L1201 matmul ((320, 320), (320, 320)) | fnp.matmul(Qp, Sfull @ _g, out=Yq2)
+    1.02   0.6% n=  1220 _combos:L678 add ((1, 1, 512, 512), (1, 1, 512, 512)) | fnp.add(X11, X22, out=buf[:, 0]); fnp.add(X21, X22, out=buf[:, 1])
+    1.02   0.6% n=  1220 _combos:L679 copyto () | fnp.copyto(buf[:, 2], X11);       fnp.copyto(buf[:, 3], X22)
+    1.02   0.6% n=  1220 _combos:L680 add ((1, 1, 512, 512), (1, 1, 512, 512)) | fnp.add(X11, X12, out=buf[:, 4]); fnp.subtract(X21, X11, out=buf[:, 5])
+    0.88   0.5% n=    27 _predict_core:L1288 einsum ((320, 1024), (320, 1024)) | Sj = fnp.einsum("an,bn->ab", _xa, _xa) + fnp.einsum("an,bn->ab", _xp, _xp)
+    0.84   0.5% n=   214 _leaf_mm:L755 add ((2, 16807, 16, 16), (2, 16807, 16, 16)) | fnp.add(C11, Mb, out=C11); fnp.add(C22, Mb, out=C22)
+    0.84   0.5% n=   214 _leaf_mm:L761 subtract ((2, 16807, 16, 16), (2, 16807, 16, 16)) | fnp.subtract(C11, Mb, out=C11); fnp.add(C12, Mb, out=C12)
+    0.78   0.4% n=     8 _predict_core:L1269 matmul ((320, 1024), (1024, 320)) | Tq = Qn.T @ Qp if QnF is None else QnF.T @ Qp   # (r, r) rotation of the old factors
+    0.74   0.4% n=   610 _combos:L686 add ((2, 1, 512, 512), (2, 1, 512, 512)) | fnp.add(X21, X22, out=buf[:, 6])
+    0.61   0.3% n=    14 _predict_core:L1368 matmul ((1, 1024, 1024), (1, 1024, 6)) | Z_st = fnp.matmul(WDb, Z_st, out=pool.get(("z", z_side), (L - 1, n, r + 2))[:k])
+    0.55   0.3% n=   610 _assemble:L696 add ((2, 2401, 32, 32), (2, 2401, 32, 32)) | fnp.add(C11, M[:, 6], out=C11)
+    0.55   0.3% n=   610 _assemble:L697 add ((2, 2401, 32, 32), (2, 2401, 32, 32)) | fnp.add(M[:, 2], M[:, 4], out=C12)
+    0.55   0.3% n=   610 _assemble:L698 add ((2, 2401, 32, 32), (2, 2401, 32, 32)) | fnp.add(M[:, 1], M[:, 3], out=C21)
+    0.55   0.3% n=   610 _assemble:L700 add ((2, 2401, 32, 32), (2, 2401, 32, 32)) | fnp.add(C22, M[:, 5], out=C22)
+    0.55   0.3% n=    78 _leaf_hub:L811 subtract ((2, 16807, 16, 16), (2, 16807, 16, 16)) | fnp.subtract(X21, X11, out=Lb); fnp.add(Y11, Y12, out=Rb); prod(Lb, Rb, C22)   # M6 -> C22
+    0.55   0.3% n=    78 _leaf_hub:L816 add ((2, 16807, 16, 16), (2, 16807, 16, 16)) | fnp.add(X11, X22, out=Lb); fnp.add(Y11, Y22, out=Rb); prod(Lb, Rb, Mb)       # M1
+    0.55   0.3% n=    78 _leaf_hub:L822 subtract ((2, 16807, 16, 16), (2, 16807, 16, 16)) | fnp.subtract(X12, X22, out=Lb); fnp.add(Y21, Y22, out=Rb); prod(Lb, Rb, Mb)  # M7
+    0.53   0.3% n=    30 _dslices:L2318 swapaxes ((1, 1024, 5),) | MP = fnp.matmul(Z_st[:, :, :qL], fnp.swapaxes(L_st[:, :, :qL], -1, -2), out=bufs["mp"][:k])   # V27: BLAS path
+    0.51   0.3% n=    14 _dslices:L2485 matmul ((1, 1024, 1024), (1, 1024, 5)) | PPL = fnp.matmul(PP, L_st[:, :, :qL], out=self._pool.get("ppl1", (bufs["ppl"].shape[0], n, qL))[:k])
+    0.51   0.3% n=   610 _combos:L681 subtract ((1, 1, 512, 512), (1, 1, 512, 512)) | fnp.subtract(X12, X22, out=buf[:, 6])
+    0.51   0.3% n=    14 _dslices:L2486 einsum ((1, 1024, 5), (1, 1024, 5)) | t1 = fnp.einsum("kiq,kcq->ic", PPL, Z_st[:, :, :qL])
+    0.50   0.3% n=     1 _predict_core:L1102 einsum ((1024, 1024), (1024, 1024)) | C_pre = fnp.einsum("ia,ib->ab", w32, w32)
+    0.49   0.3% n=    15 _predict_core:L1307 einsum ((320, 1024), (320, 1024)) | S_s = fnp.einsum("an,bn->ab", _xa, _xa) + fnp.einsum("an,bn->ab", _xp, _xp)
+    0.49   0.3% n=    16 _predict_core:L1276 matmul ((320, 320), (320, 320)) | Sg = Tq @ (Sg @ Tq.T)
+    0.47   0.3% n=   214 _leaf_mm:L745 subtract ((1, 16807, 16, 16), (1, 16807, 16, 16)) | fnp.subtract(X21, X11, out=Lb); fnp.add(Y11, Y12, out=Rb)
+    0.47   0.3% n=   214 _leaf_mm:L753 add ((1, 16807, 16, 16), (1, 16807, 16, 16)) | fnp.add(X11, X22, out=Lb); fnp.add(Y11, Y22, out=Rb)
+    0.47   0.3% n=   214 _leaf_mm:L762 subtract ((1, 16807, 16, 16), (1, 16807, 16, 16)) | fnp.subtract(X12, X22, out=Lb); fnp.add(Y21, Y22, out=Rb)
+    0.42   0.2% n=   107 _leaf_mm:L749 subtract ((2, 16807, 16, 16), (2, 16807, 16, 16)) | fnp.subtract(C22, C21, out=C22)                               # C22 -= M2
+    0.42   0.2% n=   107 _leaf_mm:L752 add ((2, 16807, 16, 16), (2, 16807, 16, 16)) | fnp.add(C21, C11, out=C21)                                    # C21 += M4
+    0.42   0.2% n=   107 _leaf_mm:L758 add ((2, 16807, 16, 16), (2, 16807, 16, 16)) | fnp.add(C22, C12, out=C22)                                    # C22 += M3
+    0.42   0.2% n=   107 _leaf_mm:L764 add ((2, 16807, 16, 16), (2, 16807, 16, 16)) | fnp.add(C11, Mb, out=C11)
+    0.41   0.2% n=     7 _predict_core:L1355 matmul ((1024, 320), (320, 192)) | QU = fnp.matmul(Qc, U, out=pool.get("qu", (n, r2)))
+    0.39   0.2% n=     8 _predict_core:L1200 einsum ((1024, 320), (1024, 320)) | _g = fnp.einsum("ia,ib->ab", Qp, Qp) if ("b" in OPT and Om is Qp) else Qp.T @ Om
+    0.36   0.2% n=    20 _predict_core:L1313 matmul ((320, 320), (320, 192)) | Un, _ = fnp.linalg.qr(G2 @ Om2)
+    0.36   0.2% n=   107 _leaf_mm:L750 subtract ((2, 16807, 16, 16), (2, 16807, 16, 16)) | fnp.subtract(Y21, Y11, out=Rb)
+    0.36   0.2% n=   107 _leaf_mm:L756 subtract ((2, 16807, 16, 16), (2, 16807, 16, 16)) | fnp.subtract(Y12, Y22, out=Rb)
+    0.36   0.2% n=    13 _predict_core:L1373 matmul ((1, 1024, 1024), (1, 1024, 4)) | fnp.matmul(WDb, Zf_st[1:], out=zfo[1:k])
+    0.35   0.2% n=    30 _predict_core:L1559 matmul ((1024, 1024), (1024, 12)) | _Y = k22q @ (k22q @ _Qk)
+    0.35   0.2% n=     6 _dslices:L2456 matmul ((1024, 192), (192, 320)) | lift = fnp.matmul(inner2[0], U2.T, out=self._pool.get("lift", (n, U2.shape[0])))
+    0.31   0.2% n=    39 _leaf_hub:L812 add ((2, 16807, 16, 16), (2, 16807, 16, 16)) | fnp.add(X21, X22, out=Lb); prod(Lb, Y11, C21)                                # M2 -> C21
+    0.31   0.2% n=    39 _leaf_hub:L820 add ((2, 16807, 16, 16), (2, 16807, 16, 16)) | fnp.add(X11, X12, out=Lb); prod(Lb, Y22, Mb)                                 # M5
+    0.29   0.2% n=     5 _predict_core:L1317 matmul ((192, 320), (320, 1024)) | fnp.matmul(Un.T, FA1, out=fap2_new[kb, 0])
+    0.29   0.2% n=     5 _predict_core:L1318 matmul ((192, 320), (320, 1024)) | fnp.matmul(Un.T, FP1, out=fap2_new[kb, 1])
+
+== by op and dtype
+  147.90  81.9%  matmul [float32]
+   13.70   7.6%  add [float32]
+    6.56   3.6%  subtract [float32]
+    4.28   2.4%  einsum [float32]
+    2.64   1.5%  copyto [float32]
+    1.91   1.1%  multiply [float32]
+    1.76   1.0%  linalg.qr [float32]
+    1.40   0.8%  sum [float32]
+    0.33   0.2%  take [float32]
+    0.05   0.0%  as_symmetric [float32]
+    0.00   0.0%  divide [float32]
+    0.00   0.0%  stats.norm.cdf [float64]
+    0.00   0.0%  stack [float32]
+    0.00   0.0%  argsort [int64]
+    0.00   0.0%  stats.norm.pdf [float64]
+    0.00   0.0%  argsort [float32]
+    0.00   0.0%  copy [float32]
+    0.00   0.0%  linalg.eigh [float32]
+    0.00   0.0%  power [float32]
+    0.00   0.0%  fill_diagonal [float32]
+    0.00   0.0%  sqrt [float32]
+    0.00   0.0%  astype [float64]
+    0.00   0.0%  true_divide [float32]
+    0.00   0.0%  concatenate [float32]
+    0.00   0.0%  maximum [float32]
+    0.00   0.0%  sum [int64]
+    0.00   0.0%  mean [float32]
+    0.00   0.0%  less [int64]
+    0.00   0.0%  greater [float32]
+    0.00   0.0%  asarray [float64]
+
+[exit 0 after 299s on 20 visible cores, cpu=4.0]

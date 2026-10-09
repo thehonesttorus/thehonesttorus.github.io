@@ -1,0 +1,4 @@
+cost: F 1.6129e+12 (0.7334 B), residual wall 0.982 s, C/B 0.7781
+net 15 rrx: raw 2.18523e-08  per-layer 7.71e-10 6.58e-10 1.02e-09 1.61e-09 2.40e-09 3.65e-09 4.74e-09 6.36e-09 7.22e-09 8.66e-09 1.12e-08 1.35e-08 1.61e-08 1.71e-08 1.90e-08 2.19e-08
+
+[exit 0 after 84s on 20 visible cores, cpu=4.0]

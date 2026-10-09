@@ -347,7 +347,7 @@ LAM = [c * float(_os.environ.get("V17_LAM_SCALE", "0.95")) for c in LAM]
 # Wick stage by 1 + d (default: none). Linear responses of the output to these directions measure how much of the
 # chain's error any per-layer amplitude correction of its carried statistics can remove.
 CAL = {}
-for _ce in [x for x in _os.environ.get("V47_CAL", "var:0:4.88451e-06;coff:0:-0.0011671;var:1:3.456e-05;coff:1:-0.000256512;D3:1:0.00660997;g4:1:0.0850202;D21:1:-0.00337185;k22:1:0.0146746;k31:1:0.2185;var:2:-1.07482e-06;coff:2:-0.000324912;D3:2:0.0156062;g4:2:0.0225767;D21:2:-0.00310945;k22:2:0.00388306;k31:2:-0.0336933;var:3:-0.000172487;coff:3:-0.000462164;D3:3:-0.0104038;g4:3:-0.0375271;D21:3:-0.0156197;k22:3:-0.0528564;k31:3:0.0710306;var:4:1.45084e-05;coff:4:0.000234341;D3:4:-0.0152021;g4:4:-0.00635331;D21:4:-0.0176536;k22:4:-0.00756294;k31:4:0.179064;var:5:4.92285e-06;coff:5:0.000237673;D3:5:-0.00439037;g4:5:0.0124653;D21:5:-0.0145507;k22:5:-0.0187692;k31:5:0.0905466;var:6:-6.91252e-05;coff:6:-0.000296115;D3:6:-0.0028469;g4:6:0.00179959;D21:6:-0.0186871;k22:6:-0.0310276;k31:6:0.0228993;var:7:-1.25945e-05;coff:7:0.000447745;D3:7:-0.0073715;g4:7:0.00411145;D21:7:-0.0146421;k22:7:-0.0122967;k31:7:-0.0793739;var:8:5.7369e-05;coff:8:0.000248175;D3:8:0.00385182;g4:8:0.0332139;D21:8:-0.0218564;k22:8:-0.0419636;k31:8:-0.109139;var:9:-6.55341e-05;coff:9:0.000605283;D3:9:-0.00486416;g4:9:0.0736235;D21:9:-0.0196094;k22:9:-0.0210991;k31:9:-0.0253771;var:10:-0.000158727;coff:10:-0.000524574;D3:10:-0.0052446;g4:10:0.0289516;D21:10:-0.0208063;k22:10:-0.0452275;k31:10:-0.265188;var:11:0.000140708;coff:11:0.000966718;D3:11:-0.000916912;g4:11:0.101178;D21:11:-0.0261958;k22:11:-0.00765686;k31:11:-0.155483;var:12:-2.96722e-05;coff:12:-0.000229812;D3:12:-0.00223188;g4:12:0.0697752;D21:12:-0.0265147;k22:12:-0.0169987;k31:12:-0.343816;var:13:-0.000164709;coff:13:-7.71534e-05;D3:13:-0.011563;g4:13:0.0412509;D21:13:-0.019333;k22:13:0.00972787;k31:13:-0.345403;var:14:-6.39439e-05;coff:14:9.17168e-05;D3:14:-0.012714;g4:14:0.00577576;D21:14:-0.0216628;k22:14:0.0259648;k31:14:-0.469223;var:15:-6.76336e-05;D3:15:-0.0141159;g4:15:-0.0337128").split(";") if x]:
+for _ce in [x for x in _os.environ.get("V47_CAL", "var:0:-6.33948e-06;coff:0:-0.000906442;var:1:3.6738e-05;coff:1:-0.000326474;D3:1:0.00382118;g4:1:0.0846253;D21:1:0.000225233;k22:1:0.0246844;k31:1:0.245599;var:2:1.33403e-05;coff:2:-0.000462325;D3:2:0.0137858;g4:2:0.0239459;D21:2:-0.00487169;k22:2:0.0196552;k31:2:-0.0565437;var:3:-0.000131999;coff:3:-0.000370117;D3:3:-0.00861925;g4:3:-0.0319218;D21:3:-0.0160712;k22:3:-0.0426458;k31:3:0.0647108;var:4:3.78576e-05;coff:4:0.000169071;D3:4:-0.0116653;g4:4:0.00614953;D21:4:-0.015379;k22:4:0.0245944;k31:4:0.196547;var:5:-1.6299e-05;coff:5:0.000207896;D3:5:-0.00597171;g4:5:-0.0117794;D21:5:-0.0146114;k22:5:0.00295599;k31:5:0.0862052;var:6:-4.43977e-05;coff:6:-0.000274167;D3:6:-0.00284604;g4:6:-0.023481;D21:6:-0.0194737;k22:6:-0.00594702;k31:6:0.051505;var:7:-7.27754e-05;coff:7:0.000208358;D3:7:-0.0153066;g4:7:-0.0393879;D21:7:-0.0159068;k22:7:0.0147528;k31:7:-0.0691023;var:8:4.58948e-05;coff:8:0.000411494;D3:8:-0.00356471;g4:8:-0.0202963;D21:8:-0.0251675;k22:8:-0.0317033;k31:8:-0.103897;var:9:4.06096e-06;coff:9:0.000705668;D3:9:-0.00808998;g4:9:0.0383858;D21:9:-0.0260469;k22:9:-0.0065632;k31:9:0.00534349;var:10:-0.000177138;coff:10:-0.000522804;D3:10:-0.0110024;g4:10:-0.0164081;D21:10:-0.0285042;k22:10:-0.0254241;k31:10:-0.259419;var:11:0.000152318;coff:11:0.0010481;D3:11:-0.00620556;g4:11:0.0482816;D21:11:-0.0329333;k22:11:0.000123654;k31:11:-0.168513;var:12:-5.684e-05;coff:12:-0.000248295;D3:12:-0.0105857;g4:12:0.00948635;D21:12:-0.0346792;k22:12:-0.014702;k31:12:-0.363618;var:13:-0.000140147;coff:13:6.50887e-05;D3:13:-0.0184438;g4:13:-0.0107005;D21:13:-0.0299224;k22:13:0.00771378;k31:13:-0.354359;var:14:-6.48797e-05;coff:14:0.000154008;D3:14:-0.0203278;g4:14:-0.0396732;D21:14:-0.0340553;k22:14:-0.00662971;k31:14:-0.491322;var:15:-1.45251e-05;D3:15:-0.0180243;g4:15:-0.0394894").split(";") if x]:
     _cx, _cl, _cd = _ce.split(":")
     CAL.setdefault(int(_cl), {})[_cx] = float(_cd)
 if _os.environ.get("V46_LAM_MUL", ""):
@@ -386,11 +386,6 @@ FB_SY = float(_os.environ.get("V40_FB_SY", "1.0"))
 # V49 (note XXXIX): the D21 feedback compressed to its exact additive part (rank 2, from row and column sums) instead of
 # the top-2 range finder; the estimator form of the attached capture-audit proposal at the chain's compression point.
 FB_ADD = _os.environ.get("V49_FB_ADD", "0") == "1"
-# V52 (note XXXIX section 11): the exact D21 feedback folded into the newborn's arm to first order (O(n^2) at birth,
-# no thin legs); replaces the V18 range-finder feedback when on. 1: the birth M block's residual absorbs the arm's
-# change, so M stays exact up to its compression; 2 (ablation): it does not; 3: only the flat part of D21 is folded (as 1)
-# and its additive part u 1^T + 1 v^T rides the exact rank-2 feedback legs (V49), so it never enters the M block.
-FB_FOLD = int(_os.environ.get("V52_FB_FOLD", "1"))
 KD = int(_os.environ.get("V39_KD", "0"))
 KD_AMP = float(_os.environ.get("V39_KD_AMP", "1.0"))
 KD_BITS = int(_os.environ.get("V39_KD_BITS", "0"))   # 1 diagonal, 2 (2,2), 4 (3,1); 0 with KD=1 means all
@@ -1025,8 +1020,7 @@ class Estimator(BaseEstimator):
             return fnp.matmul(X, Y, out=out)
         self._s_hub = s_lev
         r = min(int(self.R_RES), n)  # smoke shapes can be narrower than the rank
-        # V18 feedback rank (V52: folded into the arm instead; mode 3 keeps the exact rank-2 additive legs)
-        rfb = 0 if (NO_FB or FB_FOLD in (1, 2)) else (2 if FB_FOLD == 3 else min(int(self.R_FB), n))
+        rfb = 0 if NO_FB else min(int(self.R_FB), n)  # V18 feedback rank
         # V21: shared-basis state for old sources (suite-width only: r must be < n)
         r_old = int(self.R_OLD)
         confine = (not NO_CONFINE) and r_old < n
@@ -1596,12 +1590,10 @@ class Estimator(BaseEstimator):
                         # as K4Q = 3) plus the scale mixture's dropped classes (note XXI section 5) at the source layer's
                         # mixture gain g (3: from its kappa_4 diagonal, 4: from its kappa_3 diagonal), in place of the
                         # fitted lambda s_off^2 term:  6 g s_diag^2 s_off^2 + 3 g s_off^4
-                        # (with the adaptive rule on, t_v and t_g already hold var - WW var_prev and WW g_prev: K4Q = 3
-                        # here, so t_g is not t_q)
-                        _so2 = t_v if BETA != 0.0 else var - WW @ var_prev
+                        _so2 = var - WW @ var_prev
                         _sd2 = var - _so2
                         _gm = mix_prev[0 if K4D == 3 else 1] * K4D_AMP
-                        g4row = ((t_g if BETA != 0.0 else WW @ g_prev) + k4corr) * METRIC_C + _gm * (6.0 * _sd2 * _so2 + 3.0 * _so2 * _so2)
+                        g4row = (WW @ g_prev + k4corr) * METRIC_C + _gm * (6.0 * _sd2 * _so2 + 3.0 * _so2 * _so2)
                     if KD and K4Q == 3 and k22q is not None and ky_prev is not None and not trim and D21 is not None:
                         _Cy, _my, _vy, _k3y, _Dy = ky_prev
                         _kdG = float(KD_G[min(li - 1, len(KD_G) - 1)]) * KD_AMP
@@ -1636,10 +1628,9 @@ class Estimator(BaseEstimator):
                     if WK4M and wk4m is not None and not trim:
                         _gp = fnp.maximum(g4row, 0.0) / (3.0 * var * var)
                         _sg = fnp.sqrt(_gp)
-                        if WK4M != 3:   # the C_off^2 class (WK4M = 3 keeps the var_i var_j class only)
-                            _c2 = fnp.multiply(C_off, C_off, out=NN("wk4c2"))
-                            fnp.multiply(_c2, (_sg * 2.0)[:, None], out=_c2)
-                            fnp.multiply(_c2, _sg[None, :], out=_c2)
+                        _c2 = fnp.multiply(C_off, C_off, out=NN("wk4c2"))
+                        fnp.multiply(_c2, (_sg * 2.0)[:, None], out=_c2)
+                        fnp.multiply(_c2, _sg[None, :], out=_c2)
                         if WK4M == 1 or WK4M == 3:
                             _v = _sg * var
                             fnp.multiply(_v[:, None], _v[None, :], out=wk4m)
@@ -1927,58 +1918,23 @@ class Estimator(BaseEstimator):
             # sources present at this layer); the next layer's family transports it
             k_b = 0 if A_st is None else A_st.shape[0]
             a_b = fnp.multiply(w1col, C_off, out=legs["AP0"][k_b, 0])
-            fold_d = None
-            _add = None
-            if FB_FOLD and mode == 1 and D21 is not None:
-                D21f = D21
-                if FB_FOLD == 3:
-                    # V52 mode 3 (note XXXIX section 11e): D21 = u 1^T + 1 v^T + flat (the five-component split). The
-                    # additive part goes through the exact rank-2 legs below; only the flat part is folded. The arm's
-                    # M-block share is then flat: no low-rank part competes for the residual's top directions (P13).
+            if rfb > 0 and mode == 1:
+                # V18 (F69): D21 feedback thin legs. D21 ~ Qf Bf (rank rfb range finder,
+                # one power iteration, sketch = a slice of the layer weight).
+                w3 = W_all[:, self._i31]
+                if FB_ADD and rfb == 2:
+                    # V49 (note XXXIX): the exact additive part of D21 (row and column effects: the S0 + S1 + A1
+                    # components of the five-component split) in place of the rank-2 range finder,
+                    # D21_add = u 1^T + 1 v^T (off the diagonal), from the row and column sums in O(n^2).
                     _rs = fnp.sum(D21, axis=1)
                     _cs = fnp.sum(D21, axis=0)
                     _c0 = fnp.sum(_rs) / float(n * (n - 1))
                     _al = ((_rs + _cs) * 0.5 - _c0 * float(n - 1)) / float(n - 2)
                     _be = (_rs - _cs) * (0.5 / n)
-                    _add = (_al + _be + _c0, _al - _be)
-                    D21f = fnp.subtract(D21, (_add[0])[:, None], out=NN("fold_f"))
-                    fnp.subtract(D21f, (_add[1])[None, :], out=D21f)
-                    D21f = _zero_diag(D21f)
-                    if sat_mask is not None and SAT_MODE != "t":
-                        # D21's dropped rows are zero, its flat part's are not: keep the arm's dropped rows at zero, as
-                        # the compacted transport (V35_SATC) assumes (the additive legs lose theirs through WD)
-                        fnp.multiply(D21f, sat_mask[:, None], out=D21f)
-                # V52 (note XXXIX section 11): first-order arm folding of the exact D21 feedback. The feedback adds
-                # Sym(a_c x e_c x (3 Yt_c + w2_c Xt_c)) to the star sum_c 3 w2_c Sym(a_c x e_c x a_c) (Sym is linear and
-                # symmetric), which to first order in D21 is the same star with the arm a_c -> a_c + d_c,
-                #   d_c = Yt_c / (2 w2_c) + Xt_c / 6,  Xt = 1.5 d(w2) D21,  Yt = 0.5 d(w1) D21^T d(w3)  (exact, full rank).
-                # O(n^2) at birth and no new leg: the folded arm rides the young transport, the hub and the confinement
-                # like any arm. The second-order (Gamma x Gamma) terms differ from the thin legs' Xt x Yt.
-                _rt = W_all[:, self._i31] / (w2 + 1e-30)          # c(1,3) / c(1,2) = -alpha / sigma
-                fold_d = fnp.multiply((w2 * (0.25 * FB_SX))[:, None], D21f, out=NN("fold_d"))     # Xt / 6
-                _fy = fnp.multiply(w1col * (0.25 * FB_SY), D21f.T, out=NN("fold_y"))
-                fnp.multiply(_fy, (_rt)[None, :], out=_fy)                                         # Yt d(1 / 2 w2)
-                fnp.add(fold_d, _fy, out=fold_d)
-                fnp.add(a_b, fold_d, out=a_b)
-            if rfb > 0 and mode == 1:
-                # V18 (F69): D21 feedback thin legs. D21 ~ Qf Bf (rank rfb range finder,
-                # one power iteration, sketch = a slice of the layer weight).
-                w3 = W_all[:, self._i31]
-                if (FB_ADD or FB_FOLD == 3) and rfb == 2:
-                    # V49 (note XXXIX): the exact additive part of D21 (row and column effects: the S0 + S1 + A1
-                    # components of the five-component split) in place of the rank-2 range finder,
-                    # D21_add = u 1^T + 1 v^T (off the diagonal), from the row and column sums in O(n^2).
-                    if _add is None:
-                        _rs = fnp.sum(D21, axis=1)
-                        _cs = fnp.sum(D21, axis=0)
-                        _c0 = fnp.sum(_rs) / float(n * (n - 1))
-                        _al = ((_rs + _cs) * 0.5 - _c0 * float(n - 1)) / float(n - 2)
-                        _be = (_rs - _cs) * (0.5 / n)
-                        _add = (_al + _be + _c0, _al - _be)
                     _on = fnp.ones(n, dtype=f32)
-                    _Lf = fnp.stack([_add[0], _on], axis=1)                  # (n, 2) left factor
+                    _Lf = fnp.stack([_al + _be + _c0, _on], axis=1)          # (n, 2) left factor
                     Qf, _ = fnp.linalg.qr(_Lf)
-                    Bf = (Qf.T @ _Lf) @ fnp.stack([_on, _add[1]], axis=0)    # D21_add = Qf @ Bf
+                    Bf = (Qf.T @ _Lf) @ fnp.stack([_on, _al - _be], axis=0)   # D21_add = Qf @ Bf
                 else:
                     Omf = pool.get("omf", (n, rfb))  # V20: contiguous sketch
                     fnp.copyto(Omf, w32[:, :rfb])
@@ -2138,15 +2094,6 @@ class Estimator(BaseEstimator):
             S_sep = fnp.multiply((e_b)[:, None], C_off, out=NN("ssep"))
             S_sep = _zero_diag(fnp.multiply(S_sep, (w1)[None, :], out=S_sep))
             Rres = fnp.subtract(S21, S_sep, out=S21)
-            if fold_d is not None and FB_FOLD in (1, 3):
-                # V52: the A leg now carries 3 (a + d) d(e) in the M block's separable part; the residual absorbs the
-                # difference d(e) d^T before its rank-R_RES compression, so M stays exact up to that compression.
-                # The exact (2,1) slice holds two full-rank first-order D21 terms that only this residual carried,
-                #   R1[c,i] = e_c w2_i D21[i,c] / 2,   R2[c,i] = (Phi_c (1 - Phi_c) - mu_c w2_c) Phi_i D21[c,i];
-                # d(e) d^T has their two shapes, so the subtraction shrinks the residual: R1 by FB_SX / 2 (exactly
-                # carried at the theorem weight FB_SX = 2), R2 by (FB_SY / 4) e_c w3_c / w2_c.
-                _fy = fnp.multiply((e_b)[:, None], fold_d.T, out=NN("fold_y"))
-                fnp.subtract(Rres, _fy, out=Rres)
             if ESEP:
                 # V45: the post-activation trace core's (2,1) slice holds diag(v) C^y, full rank (ray-compiler note,
                 # section 3k(4)). Its row-scaled part rides on the A leg like S_sep, for free: fit u_i by least

@@ -1,0 +1,4 @@
+cost: F 4.3497e+11 (0.1978 B), residual wall 0.893 s, C/B 0.2384
+net 3 c35b: raw 2.58333e-08  per-layer 6.38e-10 6.04e-10 9.56e-10 1.75e-09 2.56e-09 3.82e-09 5.07e-09 6.40e-09 7.69e-09 8.98e-09 1.04e-08 1.25e-08 1.57e-08 1.91e-08 2.30e-08 2.58e-08
+
+[exit 0 after 61s on 20 visible cores, cpu=4.0]
