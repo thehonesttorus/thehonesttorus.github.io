@@ -1,0 +1,16 @@
+wbfchk vs wbf, n=10
+   raw      2.2884e-08 vs 2.2884e-08  (+0.00%, per net +0.00 +- 0.00, better 0/10)
+   C/B      1.7767e-01 vs 1.7767e-01  (+0.00%, per net +0.00 +- 0.00, better 0/10)
+   adjusted 4.0653e-09 vs 4.0653e-09  (+0.00%, per net +0.00 +- 0.00, better 0/10)
+   residual mean 0.575 s (base 0.619 s), max 0.610 s; VmHWM max 10.28 GB (base 10.27)
+   raw identical to the adopted system's scored run on 10/10 networks
+v56 vs wbf, n=100
+   raw      1.6686e-08 vs 2.1800e-08  (-23.46%, per net -23.17 +- 0.47, better 100/100)
+   C/B      2.0279e-01 vs 1.7777e-01  (+14.08%, per net +14.08 +- 0.01, better 0/100)
+   adjusted 3.3841e-09 vs 3.8752e-09  (-12.67%, per net -12.34 +- 0.53, better 97/100)
+   residual mean 0.781 s (base 0.634 s), max 0.899 s; VmHWM max 9.89 GB (base 10.30)
+v56e vs wbf, n=100
+   raw      1.6579e-08 vs 2.1800e-08  (-23.95%, per net -23.65 +- 0.47, better 100/100)
+   C/B      2.0279e-01 vs 1.7777e-01  (+14.08%, per net +14.08 +- 0.01, better 0/100)
+   adjusted 3.3625e-09 vs 3.8752e-09  (-13.23%, per net -12.90 +- 0.53, better 97/100)
+   residual mean 0.790 s (base 0.634 s), max 0.848 s; VmHWM max 9.89 GB (base 10.30)

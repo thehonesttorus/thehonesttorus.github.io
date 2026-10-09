@@ -412,3 +412,38 @@ check that the code with V56 off is bit-identical.
 The protocol then follows note XXXIX: counterterms refitted on networks 0-49 with the stored responses, then judged
 free-running on 50-99 against the adopted system with its own counterterms (3.5090e-9).
 - **P33:** the held-out adjusted MSE is at least 5% below 3.5090e-9.
+
+## 10. The scored regime, measured (`outputs/scored_100nets/`)
+
+The adopted system (V35 + pair + fold) plus `V56_P4=2 V56_A=1 V56_B=1 V56_LMIN=3 V56_LAST=2`, run in the scored
+harness on all 100 networks, free-running without counterterms. It is paired against the adopted system's own
+free-running scored runs (note XXXIX `pe`).
+- The ten reruns of the adopted system in this batch reproduce those runs bit for bit on 10/10 networks: with V56
+  off, the code is the adopted system.
+- Sixteen runs were killed by the out-of-memory killer (48 slots of about 10 GB on one 384 GB instance) and rerun at
+  20 slots.
+
+| | raw | C/B | adjusted | per net (adjusted) | better on (raw / adjusted) |
+|---|---|---|---|---|---|
+| adopted, free-running | 2.1800e-8 | 0.17777 | 3.8752e-9 | | |
+| **+ V56, eps = 0.01** | **1.6686e-8 (-23.46%)** | 0.20279 (+14.08%) | **3.3841e-9 (-12.67%)** | -12.34 +- 0.53 | 100/100 / 97/100 |
+| + V56, eps = 0.001 | 1.6579e-8 (-23.95%) | 0.20279 (+14.08%) | 3.3625e-9 (-13.23%) | -12.90 +- 0.53 | 100/100 / 97/100 |
+
+- **P31.** Raw, adjusted and the "better on" count hold. C/B is +14.08% against the predicted +11% to +14%,
+  marginally outside.
+- **P32 holds** (0.5 points).
+- **The free-running V56 system is already below the adopted system with its counterterms**: 3.38e-9 against
+  3.4923e-9 in-sample and 3.5090e-9 held-out.
+
+**The cost** (profile of network 0, `profile_*_net0.txt`): +25.8 units of 2n^3.
+- The 13 solves are 17.3 units (exactly flopscope's 2n^3/3 + 2n^3 each).
+- The last layer's families, its covariance sandwich and the old tier's lifts are 7.2 units.
+- The elementwise work is 1.4 units.
+- The solves are two thirds of the price. The Galerkin shortcut failed (section 8), so the solve is the next thing
+  to make cheaper.
+
+**Residual time and memory.**
+- The measured call's local residual rises from 0.634 s to 0.781 s mean (max 0.899 s). The grader counts only the
+  Python, and measured 0.17 s for a system this harness put near 0.57 s (note XXIX), so the margin to 0.4 s must be
+  checked on the grader's terms before submission.
+- The memory high-water mark falls from 10.30 GB to 9.89 GB.
