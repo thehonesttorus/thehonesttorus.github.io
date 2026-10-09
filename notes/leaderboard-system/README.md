@@ -466,3 +466,87 @@ run to the last digit (network 50: raw 1.6962e-8, C/B 0.1819, on two different m
    renormalization, after it, and even with the flat part present (P5). The coherent half-weight the hub carries is
    the one the output tolerates. Any further law term has to come with the kappa4-side term that cancels it at the
    same order.
+
+## 11. The cost audit, and the feedback folded into the arm (stated before the runs)
+
+The question of this section: was any development of this round implemented naively against flopscope's cost rules,
+and what does the theory allow at no cost? The rules that matter here:
+- matmul (m,k)(k,n) bills 2mkn - mn;
+- every written element bills at least 1, and views are free;
+- float16 bills like float32;
+- transcendentals carry weight 16, and gathers and where weight 4.
+
+At V35's operating point one source-layer of young transport or young hub is about 2n^3. One n^2 elementwise op is
+1/2048 of that.
+
+**11a. The four developments, line by line.**
+- **The pair (`V33_WK4M=3`, `V31_K4D=3`).** O(n^2) per layer, with two redundancies, now removed bit-identically:
+  - the WK4M block formed the C_off^2 class (three n^2 ops) and then discarded it at WK4M = 3;
+  - the K4D = 3 diagonal recomputed WW var_prev and WW g_prev (two n^2 matvecs), which the adaptive rule's t_v and
+    t_g already hold.
+
+  Together that is about 7 n^2 per layer, roughly 1e-4 B per predict.
+- **The counterterms (`V47_CAL`).** Per-layer scalar rescales of the Wick stage's reads: vectors, plus at most four
+  n x n arrays per layer. About 4 n^2 per layer; negligible.
+- **fbadd (`V49_FB_ADD`).** Row and column sums, O(n^2). Negligible, and adverse anyway (section 7).
+- **The exact feedback (`V18_R_FB=1024`).** Naive in kind, not in constant. The rank-r thin legs [F1 | F2] are:
+  - transported for every source at every layer, unconfined;
+  - re-formed densely (Xt = F1 R1^T, Yt = F2 R2^T) for the Hadamard reads of the hub;
+  - contracted again through the thin right factors.
+
+  That is about 8 n^2 r per source-layer, x5.5 the bill at r = n. Section 7 concluded that an efficient exact form
+  needs one more dense leg per young source. That is wrong at first order, as 11b shows.
+
+**11b. The fold.** The newborn's hub is B1 = Sym(X1 x P x Y1) with P = I, X1 = 3a + Xt and Y1 = a d(w2) + Yt, where
+Xt = 1.5 d(w2) D21 and Yt = 0.5 d(w1) D21^T d(w3). Per centre c it is
+3 w2_c Sym(a_c x e_c x a_c) + Sym(a_c x e_c x (3 Yt_c + w2_c Xt_c)) + Sym(Xt_c x e_c x Yt_c). To first order in D21
+this is the star with the arm a_c moved to a_c + d_c, where
+
+    d_c = Yt_c / (2 w2_c) + Xt_c / 6     (exact D21, full rank, O(n^2) at birth).
+
+The folded arm rides in the A leg, so the transport, the hub, the joins and both old tiers carry it as they carry any
+arm. No new leg and no thin columns are needed, and the rank-2 range finder and its thin legs go.
+`V52_FB_FOLD=1` implements it.
+
+**The A leg's second duty.** The A leg also carries the separable part of the birth M block, 3 A d(e) (S_sep = d(e) a^T
+is the leading (2,1) Wick term). Folding the arm therefore also moves M by 3 d d(e), at first order. The exact (2,1)
+slice read off the Wick table (the ('d21T', (1,2), (2,1), 1/2) and ('d21', (2,2), (1,1), 1/2) rows of pk21, with
+pk11's centring) holds two full-rank first-order D21 terms. Until now only the rank-4 residual carried them:
+
+    R1[c,i] = e_c w2_i D21[i,c] / 2,      R2[c,i] = (Phi_c (1 - Phi_c) - mu_c w2_c) Phi_i D21[c,i].
+
+The old sources' gate transport w1^2 D21 w1 lacks both; R2 is about a third of it at alpha = 0. The arm's M-block share
+e_c d_c has exactly these two shapes. Subtracting it from the residual before compression (mode 1) keeps M exact up to
+the compression, and it shrinks the residual:
+- R1 is left at (1/2 - FB_SX/4) of itself, so the arm carries it exactly at the theorem weight FB_SX = 2;
+- R2's coefficient becomes g_c - (FB_SY/4) e_c w3_c / w2_c, which is smaller for |alpha| > 0 (for example
+  -0.128 -> -0.042 at alpha = 1 and 0.114 -> 0.079 at alpha = -1, at FB_SY = 1), and unchanged at alpha = 0.
+
+So the fold gives the star the exact first-order feedback and gives M part of its exact (2,1) slice, both for free.
+What differs from the thin-leg exact feedback:
+- **Second order.** The star's Gamma x Gamma terms are (1/2) Xt Yt + (3/(4 w2)) Yt Yt + (w2/12) Xt Xt, against Xt Yt.
+- **The K4 -> K3 feed.** Its X3 = A c1 picks up d c1. That is a feed x D21 cross term, about 1e-3 of R2, and M absorbs
+  it at birth.
+
+Cost: seven n^2 ops per birth.
+
+**11c. Predictions** (cold harness, networks 0-15, paired against V35 in the same harness, as in section 7):
+- **P8 (the fold, `V52_FB_FOLD=1`, weights 1 and 1).** Raw -5% to -10%, better on at least 14 of 16 networks.
+  FLOPs -0.5% to -1.5% against V35: the rank-2 legs and their range finder go.
+- **P9 (ablation, `V52_FB_FOLD=2`: no residual correction).** Within 1 point of P8. Rank 4 keeps little of a flat
+  term either way, so the arm's M-block share does its work with or without the correction.
+- **P10 (`V40_FB_SX=2` under the fold).** Better than P8 by 0 to 2 points. The arm then carries R1 exactly in M, and
+  that outweighs the star's GC2 overshoot, which cost 0.6 points in the thin-leg exact run (P6).
+- **P11 (diagnostics at the exact residual, `V17_R_RES=1024`; not candidates).**
+  - V35 at the exact residual: -3% to -8%. R_RES 64 gave -2.2% (note XXXVI section 3l), and the gain grows with rank
+    as a flat term's does.
+  - The fold at the exact residual beats both the fold and V35 at the exact residual.
+
+**Then, in adjusted MSE** (scored regime, all 100 networks; the protocol of sections 3 and 8). The better of P8 and P10
+goes on the adopted system (V35 + pair), with its counterterms refitted on networks 0-49 and judged free-running on
+50-99.
+- **P12.** Held-out adjusted 3% to 8% below the adopted system's 3.8984e-9.
+- **The counterterms cannot mimic it.** They are per-layer amplitudes, and the fold's information is the flat
+  sector of D21.
+
+Adoption follows the rule of section 3: held-out, more than two standard errors, cost included.

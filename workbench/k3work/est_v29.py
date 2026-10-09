@@ -386,6 +386,10 @@ FB_SY = float(_os.environ.get("V40_FB_SY", "1.0"))
 # V49 (note XXXIX): the D21 feedback compressed to its exact additive part (rank 2, from row and column sums) instead of
 # the top-2 range finder; the estimator form of the attached capture-audit proposal at the chain's compression point.
 FB_ADD = _os.environ.get("V49_FB_ADD", "0") == "1"
+# V52 (note XXXIX section 11): the exact D21 feedback folded into the newborn's arm to first order (O(n^2) at birth,
+# no thin legs); replaces the V18 range-finder feedback when on. 1: the birth M block's residual absorbs the arm's
+# change, so M stays exact up to its compression; 2 (ablation): it does not.
+FB_FOLD = int(_os.environ.get("V52_FB_FOLD", "0"))
 KD = int(_os.environ.get("V39_KD", "0"))
 KD_AMP = float(_os.environ.get("V39_KD_AMP", "1.0"))
 KD_BITS = int(_os.environ.get("V39_KD_BITS", "0"))   # 1 diagonal, 2 (2,2), 4 (3,1); 0 with KD=1 means all
@@ -1020,7 +1024,7 @@ class Estimator(BaseEstimator):
             return fnp.matmul(X, Y, out=out)
         self._s_hub = s_lev
         r = min(int(self.R_RES), n)  # smoke shapes can be narrower than the rank
-        rfb = 0 if NO_FB else min(int(self.R_FB), n)  # V18 feedback rank
+        rfb = 0 if (NO_FB or FB_FOLD) else min(int(self.R_FB), n)  # V18 feedback rank (V52: folded into the arm instead)
         # V21: shared-basis state for old sources (suite-width only: r must be < n)
         r_old = int(self.R_OLD)
         confine = (not NO_CONFINE) and r_old < n
@@ -1590,10 +1594,12 @@ class Estimator(BaseEstimator):
                         # as K4Q = 3) plus the scale mixture's dropped classes (note XXI section 5) at the source layer's
                         # mixture gain g (3: from its kappa_4 diagonal, 4: from its kappa_3 diagonal), in place of the
                         # fitted lambda s_off^2 term:  6 g s_diag^2 s_off^2 + 3 g s_off^4
-                        _so2 = var - WW @ var_prev
+                        # (with the adaptive rule on, t_v and t_g already hold var - WW var_prev and WW g_prev: K4Q = 3
+                        # here, so t_g is not t_q)
+                        _so2 = t_v if BETA != 0.0 else var - WW @ var_prev
                         _sd2 = var - _so2
                         _gm = mix_prev[0 if K4D == 3 else 1] * K4D_AMP
-                        g4row = (WW @ g_prev + k4corr) * METRIC_C + _gm * (6.0 * _sd2 * _so2 + 3.0 * _so2 * _so2)
+                        g4row = ((t_g if BETA != 0.0 else WW @ g_prev) + k4corr) * METRIC_C + _gm * (6.0 * _sd2 * _so2 + 3.0 * _so2 * _so2)
                     if KD and K4Q == 3 and k22q is not None and ky_prev is not None and not trim and D21 is not None:
                         _Cy, _my, _vy, _k3y, _Dy = ky_prev
                         _kdG = float(KD_G[min(li - 1, len(KD_G) - 1)]) * KD_AMP
@@ -1628,9 +1634,10 @@ class Estimator(BaseEstimator):
                     if WK4M and wk4m is not None and not trim:
                         _gp = fnp.maximum(g4row, 0.0) / (3.0 * var * var)
                         _sg = fnp.sqrt(_gp)
-                        _c2 = fnp.multiply(C_off, C_off, out=NN("wk4c2"))
-                        fnp.multiply(_c2, (_sg * 2.0)[:, None], out=_c2)
-                        fnp.multiply(_c2, _sg[None, :], out=_c2)
+                        if WK4M != 3:   # the C_off^2 class (WK4M = 3 keeps the var_i var_j class only)
+                            _c2 = fnp.multiply(C_off, C_off, out=NN("wk4c2"))
+                            fnp.multiply(_c2, (_sg * 2.0)[:, None], out=_c2)
+                            fnp.multiply(_c2, _sg[None, :], out=_c2)
                         if WK4M == 1 or WK4M == 3:
                             _v = _sg * var
                             fnp.multiply(_v[:, None], _v[None, :], out=wk4m)
@@ -1918,6 +1925,20 @@ class Estimator(BaseEstimator):
             # sources present at this layer); the next layer's family transports it
             k_b = 0 if A_st is None else A_st.shape[0]
             a_b = fnp.multiply(w1col, C_off, out=legs["AP0"][k_b, 0])
+            fold_d = None
+            if FB_FOLD and mode == 1 and D21 is not None:
+                # V52 (note XXXIX section 11): first-order arm folding of the exact D21 feedback. The feedback adds
+                # Sym(a_c x e_c x (3 Yt_c + w2_c Xt_c)) to the star sum_c 3 w2_c Sym(a_c x e_c x a_c) (Sym is linear and
+                # symmetric), which to first order in D21 is the same star with the arm a_c -> a_c + d_c,
+                #   d_c = Yt_c / (2 w2_c) + Xt_c / 6,  Xt = 1.5 d(w2) D21,  Yt = 0.5 d(w1) D21^T d(w3)  (exact, full rank).
+                # O(n^2) at birth and no new leg: the folded arm rides the young transport, the hub and the confinement
+                # like any arm. The second-order (Gamma x Gamma) terms differ from the thin legs' Xt x Yt.
+                _rt = W_all[:, self._i31] / (w2 + 1e-30)          # c(1,3) / c(1,2) = -alpha / sigma
+                fold_d = fnp.multiply((w2 * (0.25 * FB_SX))[:, None], D21, out=NN("fold_d"))      # Xt / 6
+                _fy = fnp.multiply(w1col * (0.25 * FB_SY), D21.T, out=NN("fold_y"))
+                fnp.multiply(_fy, (_rt)[None, :], out=_fy)                                         # Yt d(1 / 2 w2)
+                fnp.add(fold_d, _fy, out=fold_d)
+                fnp.add(a_b, fold_d, out=a_b)
             if rfb > 0 and mode == 1:
                 # V18 (F69): D21 feedback thin legs. D21 ~ Qf Bf (rank rfb range finder,
                 # one power iteration, sketch = a slice of the layer weight).
@@ -2094,6 +2115,15 @@ class Estimator(BaseEstimator):
             S_sep = fnp.multiply((e_b)[:, None], C_off, out=NN("ssep"))
             S_sep = _zero_diag(fnp.multiply(S_sep, (w1)[None, :], out=S_sep))
             Rres = fnp.subtract(S21, S_sep, out=S21)
+            if fold_d is not None and FB_FOLD == 1:
+                # V52: the A leg now carries 3 (a + d) d(e) in the M block's separable part; the residual absorbs the
+                # difference d(e) d^T before its rank-R_RES compression, so M stays exact up to that compression.
+                # The exact (2,1) slice holds two full-rank first-order D21 terms that only this residual carried,
+                #   R1[c,i] = e_c w2_i D21[i,c] / 2,   R2[c,i] = (Phi_c (1 - Phi_c) - mu_c w2_c) Phi_i D21[c,i];
+                # d(e) d^T has their two shapes, so the subtraction shrinks the residual: R1 by FB_SX / 2 (exactly
+                # carried at the theorem weight FB_SX = 2), R2 by (FB_SY / 4) e_c w3_c / w2_c.
+                _fy = fnp.multiply((e_b)[:, None], fold_d.T, out=NN("fold_y"))
+                fnp.subtract(Rres, _fy, out=Rres)
             if ESEP:
                 # V45: the post-activation trace core's (2,1) slice holds diag(v) C^y, full rank (ray-compiler note,
                 # section 3k(4)). Its row-scaled part rides on the A leg like S_sep, for free: fit u_i by least
