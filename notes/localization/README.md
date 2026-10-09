@@ -73,6 +73,16 @@ and becomes h-dependent from layer 13 on (a non-smooth path switching on at dept
 run uses the largest h at which the per-layer defect agrees across h within 20% at every layer; if no h passes at the
 last layers, the experiment is reported for the smooth layers only.
 
+**Smoothness pilot: result and amendment (committed before the main run's data).** On network 0 at n = 1024 (float64,
+saturation drop off; `outputs/hdpilot/`): layers 1-8 are smooth (the defect agrees across h = 0.5 / 0.25 / 0.125
+with correlation 1.000; h = 0.5 differs from h = 0.25 by 2-3%, the stencil bias). From layer 9 on, a ~1e-7 kink
+dominates the second differences (correlation 0.44-0.62 across h), with or without counterterms. It starts exactly
+when the oldest sources pass age 8: switching the nested tier-2 compression off (`V24_AGE_OLD2=0`) makes every layer
+smooth (correlation 1.000, 2% stencil difference through layer 15) and leaves the chain's own error unchanged
+(final-layer MSE 1.488e-8 vs 1.504e-8 on this network); removing confinement altogether also smooths it. Amendment:
+the main run uses `V60_F64=1 V33_SAT=nan V24_AGE_OLD2=0` and h = 0.5, networks 0-3, K = 128 directions each; the
+merge is evaluated on this variant's own error.
+
 **Predictions (registered before the data).**
 - X* (noise-free share of the per-neuron error explained by delta at the final layer): F1's prediction 0.6-0.85;
   its referee's prior 0.45 (0.3-0.6). Registered: 0.45, interval [0.25, 0.70].

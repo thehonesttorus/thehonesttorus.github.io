@@ -1,0 +1,4 @@
+net 0: direction 1 done at 839s
+net 0: directions 1-1 in 839s
+
+[exit 0 after 841s on ip-172-31-4-108, 4 cores, threads 4]
