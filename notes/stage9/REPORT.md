@@ -63,4 +63,35 @@ Branch `claude/determined-fermat-9hk45i`. Note: `notes/stage9/ncg_mlp_stage9.pdf
 
 ## 4. What this says about a competitive system
 
-PENDING (written after the remaining measurements).
+- The accuracy of the exact first-order chain (3.5e-8) comes from two things: the exact first-order term table (36
+  diagrams, all index shifts) and the one radial kappa4 scalar per layer (the central variable). Our own chain had the
+  first in a different form and lacked the second, which alone was worth 16x. Everything else of kappa4 is noise.
+- The cost of that chain is the memory of kappa3: 12 n^3 per source-age with the identity-leg structure (24 as the
+  reference writes it), 0.5-0.7 B over the network in float32. The floor is 12.8 n^3 per layer in total. A window
+  of four ages with a 384-dimensional shared basis is lossless (3.7e-8) and still costs about 0.5 B; two ages with
+  that basis give 7.9e-8; anything cheaper loses an order of magnitude. Frobenius compression of young sources does
+  not work because the readouts are Hadamard products (note, Sec. 6).
+- Therefore a 0.1 B entry at the leaders' 1.1-1.5e-8 is not a compressed first-order chain. The measured smoothness
+  of the old sources' effect in amplitude (10% scale -> 1.5x) and the open-source chain's memoryless regeneration of
+  kappa4 point to the same idea for kappa3: keep one or two dense ages, regenerate the rest from the current state
+  with per-layer scalars fitted on the public networks against the dense chain's slices (see the shape diagnostic,
+  `scripts/diag_oldshape.py`).
+- The Euler-Stein merge is the one estimator-agnostic correction the theory provides; it is a factor 9 for the
+  Gaussian closure at full scale and its value for the first-order chain is measured by the Modal job `lapx2`
+  (PENDING). Making it affordable needs the symbolic second-order response (note, Thm 3.2; task left open).
+
+## 5. Compute and hand-offs
+
+- Modal: works through the AWS relay only (the sandbox proxy has no gRPC). `python infra/modal_relay.py batch JOB jobs/JOB.tsv --cpu N`;
+  results in `s3://claude-whest-9292-97a992/results9/JOB/`, fetched with `python infra/fleet.py get JOB`. If the relay
+  stopped itself, `python infra/fleet.py start w9-1` and `python infra/modal_relay.py fetch JOB` recovers results from
+  the Modal volume. Concurrency reached 90 containers.
+- AWS: spot and on-demand quotas are exhausted/limited (vCPU 200); only the relay runs. Quota increases must be
+  requested in the console or the IAM user given `servicequotas:*` (see `notes/compute/SETUP.md`).
+- Google Cloud: not set up; the browser-agent prompt is in `notes/compute/GCP_PROMPT.md`; hand the key back as the
+  environment secret `GOOGLE_APPLICATION_CREDENTIALS_JSON`.
+- Elicit: three reports were run earlier (`notes/stage9/elicit/` if present, else the scratchpad summaries fed the
+  literature in the note).
+- Organisers' reference code: cloned read-only at `/home/user/alignment-research-center/mlp_cumulant_propagation`
+  (public); torch 2.14 CPU installed locally for the verification only. Nothing from it is in the repo except the
+  term table listing.
