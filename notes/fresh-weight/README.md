@@ -343,3 +343,70 @@ This is the opposite of note XLII E0's reading that the final error is "the inco
 mean error. In the metric that drives the injection, the Frobenius norm, the error is collective. So the late floor is
 a low-dimensional object, which the fresh-weight theorem makes exactly readable: what has to be computed better is the
 covariance restricted to about 32 modes.
+
+## 7. What the collective error is (exploratory, not pre-registered)
+
+### 7a. One mode and one number (`code/fw_explore.py`, `outputs/fw_explore_net{0,1}.txt`)
+
+In the eigenbasis of the true pre-activation covariance at layers 8-14:
+
+| quantity | network 0 | network 1 |
+|---|---|---|
+| c_1: share of the off-diagonal error energy in the top mode alone | 0.33 (layer 8) -> 0.58 (layer 13) | 0.35 -> 0.59 |
+| c_8 | 0.45 -> 0.70 | 0.51 -> 0.72 |
+| eigenvalue (diagonal) share of the top-8 error block | 0.76-0.94 | 0.78-0.94 |
+| top-mode relative eigenvalue error dlam_1 / lam_1 | -4.4e-3 to -6.7e-3 | -4.8e-3 to -8.3e-3 |
+| other top-8 modes, dlam_j / lam_j | +-2e-3, mixed signs | the same |
+| lam_1 / mean eigenvalue | 35 -> 88 | 35 -> 84 |
+| propagated share of the error energy (Gaussian closure of the chain's state vs the true state) | 0.56 -> 0.80 | 0.61 -> 0.82 |
+
+The off-diagonal block excludes the variance diagonal, so dlam_1 here is the off-diagonal contribution.
+
+- **The largest structured component of the late second-moment error is one number per layer.** It is a 0.5-0.8%
+  underestimate of the top eigenvalue of the pre-activation covariance, negative at every layer on both networks and
+  growing with depth.
+- **The top mode is a large spike** (35-88 times the mean eigenvalue).
+- **It is mostly inherited**: the propagated share rises to 0.8 by layer 14, so it accumulates.
+- **What it explains.** By Theorem 3, a rank-one error dlam u u^T in the post-activation covariance enters the next
+  layer's variances as dlam (w_a . u)^2. That has a common part (part of the negative shift in T1) and a part tied to
+  the known per-neuron feature (w_a . u)^2.
+
+### 7b. The collective error is the dilation mode (`code/fw_explore2.py`, `code/tau_check.py`)
+
+**The top mode is the mean direction.** |u_1 . mu_hat| = 0.93-0.98 at layers 8-14 on both networks. The one-parameter
+group behind it is the dilation group of section 3e: the top mode is the gain, the mode its "modular Hamiltonian"
+log G moves.
+
+**Its error budget**, relative to lam_1 (layers 8-14, both networks):
+- total -0.45% to -0.83%;
+- inherited (through the Gaussian closure of the chain's own earlier state) -0.37% to -0.79%;
+- injected per layer -0.02% to -0.14%.
+
+**The injection by first-order Edgeworth class** (the chain's slices at its own state minus the true slices, projected
+on r = W_s^T u_1):
+- D21 is negative at every layer: -0.06% to -0.17%;
+- K31 is positive at every layer and partly compensates: +0.03% to +0.06%;
+- K22, kappa3 and kappa4 are below 0.01%;
+- the class sum reproduces the measured injection to within a factor of about 2.
+
+The (2,1) slice's projection on the dilation mode is T2's F1 column shape (the coupling to the layer's energy).
+Route R's partial signal and route C's collective signal are therefore one object: the chain's D21 under-feeds the
+dilation mode's variance.
+
+**Size against the multiplicative heuristic.** The relative variance of the mode, tau = lam_1 / (u . mu)^2, is
+stationary from layer 6 on (0.0087-0.0100 on network 0, 0.0077-0.0094 on network 1). A gain that composes
+multiplicatively through independent layers, but is carried additively, would leave a relative deficit of about
+tau/2. The measured deficit is 0.7-1.4 times tau/2 on network 0 and 0.8-2.1 times on network 1 (layers 6-14). The ratio
+grows with depth. The heuristic gets the order and the sign. It is not a law: with stationary tau the gain is
+mean-reverting, not a product of independent layer gains. So no parameter-free correction follows from it yet.
+
+**Where this leaves the design.**
+- The fresh-weight theorem reduces the late floor to Frobenius noise of the covariance error.
+- That error is collective, and its largest single piece is one number per layer, the dilation mode's eigenvalue,
+  biased by -0.5% to -0.8%.
+- Its effect on the next layer is that number times the known per-neuron feature (w_a . u)^2; on the means it is that
+  again times p_a(0) / 2 (Proposition 2).
+
+What is still missing is an exact law for the dilation sector: how log G's increments compose through a relu layer
+when the gain is mean-reverting. That is the next theory item. Its value is bounded by a dilation-mode oracle (the true
+eigenvalue imposed along the true mean direction at every layer). Both are to be pre-registered before they are run.
