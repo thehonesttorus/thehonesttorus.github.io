@@ -1,0 +1,74 @@
+\label{sec:central}
+The stage-8 principle splits a localization into its trivial (central) and Cartan parts. For the \textsc{MLP} the
+central variable is the collective activity of a layer: the direction $s=\E[z^2]$ in pre-activation space, which is
+also the top eigenvector of the covariance once depth has built it up. This section proves two small exact
+statements about it and reports what the chain does to it.
+
+\subsection{A scale mixture is repaired exactly at first order by the $(2,2)$ channel}
+\begin{lemma}[Scale mixture]\label{lem:scale}
+Let $z\mid\varepsilon\sim N(m,(1+\varepsilon)^2S)$ with $\E\varepsilon=0$, $\E\varepsilon^2=v$ small. Then the
+cumulants of $z$ are those of $N(m,(1+v)S)$ at second order and $\kap_4(z_a,z_b,z_c,z_d)=4v\,(S_{ab}S_{cd}+
+S_{ac}S_{bd}+S_{ad}S_{bc})+O(v^2)$, a pure $(2,2)$-type tensor. The Gaussian closure applied to the true
+covariance $(1+v)S$ gives $\E\relu z_a$ with error $-\tfrac v2\sigma_a(\alpha_a^2-1)\varphi(\alpha_a)+O(v^2)$, and
+the $\kap_4$ term of the mean readout \eqref{eq:mean-readout} with $\kap_4(z_a)=12v\sigma_a^4$ is
+$+\tfrac v2\sigma_a(\alpha_a^2-1)\varphi(\alpha_a)$: the two cancel.
+\end{lemma}
+\begin{proof}
+$\E[(1+\varepsilon)^4]=1+6v+O(v^2)$ and $\E[(1+\varepsilon)^2]^2=1+2v+v^2$ give the fourth cumulant. Put
+$f(\varepsilon)=(1+\varepsilon)\sigma d_0(\alpha/(1+\varepsilon))$; the true mean is $\E f(\varepsilon)=f(0)+\tfrac v2f''(0)$
+and the closure's is $f(\varepsilon^*)$ with $(1+\varepsilon^*)^2=1+v$, i.e.\ $f(0)+\tfrac v2f'(0)$. From
+Lemma~\ref{lem:shift}, $f'(0)=\sigma[d_0-\alpha d_1]=\sigma\varphi$ and $f''(0)=\sigma\alpha^2\varphi$.
+\end{proof}
+So the $(2,2)$ channel of the chain (\texttt{k22}: $\kap_4(h_a,h_a,h_b,h_b)$ born exactly from the Hermite series of
+$\Cov((h_a-\mu_a)^2,(h_b-\mu_b)^2)$, transported by $(W\!\circ\!W)\,K\,(W\!\circ\!W)^\top$ with the gate $tt^\top$ and
+the diagonal class removed once) is the first-order correction for a fluctuating collective scale. Its gain
+projection $4v=s^\top K_{22}s/(s^\top s)^2$ measures $v$ directly.
+
+\subsection{The sensitivity law}
+\begin{proposition}[Sensitivity]\label{prop:sens}
+A relative error $\varepsilon_a$ in the pre-activation variance of neuron $a$ changes its post-activation mean by
+$\tfrac12\varepsilon_a\sigma_a\varphi(\alpha_a)$, and an error $\delta\lambda$ in the top eigenvalue of the
+covariance of layer $l$ (eigenvector $u$) changes the pre-activation variance of every neuron $b$ of layer $l+1$
+by $\delta\lambda\,(w_b\!\cdot\!u)^2\approx2\,\delta\lambda/n$. On the official networks ($\sigma\approx2.8$,
+$\varphi(\alpha)\approx0.3$, $\mathrm{var}\approx8$, $\lambda_1\approx12$ at depth) a uniform relative variance
+error of $10^{-3}$ moves every mean by $4\cdot10^{-4}$, seven times the rms error of the chain, while a $2\%$ error of
+the top eigenvalue moves the next layer's variances by $5\cdot10^{-5}$ relative and the means by $2\cdot10^{-5}$ per
+layer.
+\end{proposition}
+\begin{proof}
+$\partial_{\sigma^2}[\sigma d_0(m/\sigma)]=\tfrac1{2\sigma}(d_0-\alpha d_1)=\varphi/(2\sigma)$, multiplied by
+$\varepsilon\sigma^2$; and $w_b^\top(\delta\lambda\,uu^\top)w_b$ with $w_b\!\cdot\!u\sim N(0,2/n)$ for He rows.
+\end{proof}
+The bulk of the covariance may therefore be wrong by percents without consequence (it enters the next layer's
+variances through $\sum_cS_{bc}^2$-type sums that average out), while the diagonal must be right to $10^{-4}$ and
+the collective mode to $10^{-3}$: that is what makes the central variable the one that matters.
+
+\subsection{Measurements on the official network 0}
+From the Monte Carlo cache ($2^{20}$ inputs; \texttt{scripts/diag\_eig\_v3.py}, \texttt{diag\_onestep.py}):
+\begin{itemize}[nosep]
+\item The collective mode emerges with depth: the top four eigenvalues of the pre-activation covariance are
+$8.08,7.89,7.77,7.71$ at layer $0$ and $16.3,5.36,4.88,4.62$ at layer $15$.
+\item The chain's trace is exact to $10^{-3}$ at every layer and its diagonal to $10^{-4}$; the bulk (the
+complement of the top four modes, off-diagonal part) is off by $2$--$4\%$; the top eigenvalue is correct to
+$2\cdot10^{-3}$ through layer $5$ and then $1.0,1.2,1.5,1.8,1.9,1.8,1.7,1.8,1.5,1.6\%$ \emph{low} at layers
+$6$--$15$, with the variance along $s$ equally low. By Proposition~\ref{prop:sens} this is a $2\cdot10^{-5}$ per
+layer effect on the means, a tenth of the measured error: the top mode is the \emph{symptom} of the deficit, not
+its carrier.
+\item One-step closure from Monte Carlo inputs at layers $11,13,14$: the Gaussian closure loses $3.2,1.5,1.1\%$ of the
+top mode in one layer; adding the Monte Carlo $(2,1)$ slices (the $\kap_3$ covariance correction
+\eqref{eq:cov-transport}) leaves $-0.13,-0.09,-0.09\%$; adding the $(2,2)$ slices changes that by less than
+$3\cdot10^{-4}$; adding the $(3,1)$ slices makes it worse ($-0.19,-0.15,-0.16\%$). The $\kap_3$ slice is the whole
+one-step story of the collective mode, and the sign of the $(3,1)$ term says its first-order transport is not the
+right object to add.
+\item The chain's own transported slices at those layers have correlation $0.965$ with Monte Carlo and slope
+$0.92,0.90,0.91$; its $(2,2)$ slices have correlation $0.22$--$0.25$ and slope $0.53$--$0.68$, and its gain
+projection $4v$ is $3.6,1.9,1.5\cdot10^{-5}$ against $6.6,4.6,4.0\cdot10^{-5}$: the scale-mixture variance is $v\approx
+10^{-5}$, so by Lemma~\ref{lem:scale} the $(2,2)$ channel is worth $\sim10^{-5}$ per neuron and layer, which is
+why the chain's $(2,2)$ errors are harmless.
+\end{itemize}
+The error accounting that follows is then simple. A $10\%$ deficit of the transported slice leaves $10\%$ of the
+$1$--$3\%$ one-step loss of the collective mode in place, $0.1$--$0.3\%$ per layer, which accumulates to the
+$1.5$--$1.9\%$ measured; the same deficit leaves $10\%$ of the $\kap_3$ corrections to the diagonal and the means in
+place at every layer, and the per-layer injected mean errors of $3\cdot10^{-4}$ (Section~\ref{sec:measure}) are of
+that size: $10\%$ of $\kap_3(z_a)\alpha\varphi/(6\sigma^2)$ at $\kap_3\approx3$, which is $3\cdot10^{-4}$. The chain's
+error is the deficit of its $(2,1)$ transport, in the diagonal readout and in the collective mode alike.

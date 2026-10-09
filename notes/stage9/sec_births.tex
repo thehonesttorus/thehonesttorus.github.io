@@ -1,0 +1,95 @@
+\label{sec:births}
+We now compute the second variation of a chain explicitly. The result is that the objects a cumulant chain
+transports (births at the kinks, gated arms, $(2,1)$ slices) are the first and second derivatives of the Gaussian
+moment map under a shift of the mean, and that the Euler--Stein defect of Section~\ref{sec:capacity} is the
+curvature of the downstream chain contracted with the Gram matrix of those derivatives.
+
+\subsection{The chaos index shifts under a tilt}
+For $u\sim N(0,1)$ and $a\in\R$ let $r_a(u)=\relu(u+a)$ with Hermite coefficients $d_k(a)=\E[r_a(u)\Hpl_k(u)]$:
+\[
+d_0=\varphi(a)+a\Phi(a),\qquad d_1=\Phi(a),\qquad d_k=\varphi(a)\,\Hpl_{k-2}(-a)\ (k\ge2),
+\]
+so that for standardised $(u,v)$ with correlation $\rho$, $\E[r_a(u)r_b(v)]=\sum_{k\ge0}\rho^kd_k(a)d_k(b)/k!$.
+\begin{lemma}[Index shift]\label{lem:shift}
+$d_k'(a)=d_{k+1}(a)$ for every $k\ge0$.
+\end{lemma}
+\begin{proof}
+$d_0'=-a\varphi+\Phi+a\varphi=\Phi=d_1$ and $d_1'=\varphi=d_2$. For $k\ge2$, with $x=-a$,
+$\frac{d}{da}[\varphi(a)\Hpl_{k-2}(x)]=\varphi\,[x\Hpl_{k-2}(x)-(k-2)\Hpl_{k-3}(x)]=\varphi\,\Hpl_{k-1}(x)=d_{k+1}(a)$
+by $\Hpl_m'=m\Hpl_{m-1}$ and the three-term recursion $\Hpl_{m+1}(x)=x\Hpl_m(x)-m\Hpl_{m-1}(x)$.
+\end{proof}
+(Checked numerically to $2\cdot10^{-8}$ for $k\le10$ in \texttt{verify\_stage9.py}.) The lemma is Stein's identity
+$\E[f'(u)\Hpl_k(u)]=\E[f(u)\Hpl_{k+1}(u)]$ for $f=r_a$; what matters here is that the tilt $a\mapsto a+t$ of the
+Gaussian acts on the chaos expansion of the \textsc{ReLU} by raising the index.
+
+Let now $z\sim N(m,S)$ be the pre-activation of one layer, $\sigma_a=\sqrt{S_{aa}}$, $\alpha_a=m_a/\sigma_a$,
+$\rho_{ab}=S_{ab}/\sigma_a\sigma_b$, and
+\[
+\mu_a=\sigma_ad_0(\alpha_a),\qquad M_{ab}=\E[\relu z_a\relu z_b]=\sigma_a\sigma_b\sum_k\rho_{ab}^k\,d_k(\alpha_a)d_k(\alpha_b)/k!
+\]
+the post-activation mean and raw second moment. Lemma~\ref{lem:shift} gives every derivative of the closure:
+\begin{align}
+\partial_{m_a}\mu_a&=\Phi(\alpha_a)=:g_a, & \partial_{m_a}^2\mu_a&=\varphi(\alpha_a)/\sigma_a=:w_a,\label{eq:birth}\\
+\partial_{m_a}M_{ab}&=\sigma_b\sum_k\rho^kd_{k+1}(\alpha_a)d_k(\alpha_b)/k!=\E[\theta(z_a)\relu z_b]=:T_{ab},\label{eq:slice}\\
+\partial_{S_{ab}}M_{ab}&=\sum_k\rho^kd_{k+1}(\alpha_a)d_{k+1}(\alpha_b)/k!=\E[\theta(z_a)\theta(z_b)]=\partial_{m_a}\partial_{m_b}M_{ab}=:G_{ab},\label{eq:gate}\\
+\partial_{m_a}^2M_{ab}&=\tfrac{\sigma_b}{\sigma_a}\sum_k\rho^kd_{k+2}(\alpha_a)d_k(\alpha_b)/k!=w_a\mu_b+\tfrac{\sigma_b}{\sigma_a}\sum_{k\ge1}\rho^kd_{k+2}(\alpha_a)d_k(\alpha_b)/k!.\label{eq:birth2}
+\end{align}
+Here $\theta$ is the Heaviside gate. The identities with expectations are Price's theorem
+$\partial_{S_{ab}}\E[f(z_a)h(z_b)]=\E[f'(z_a)h'(z_b)]$ and Stein's lemma; the closure is exact for one layer
+because it satisfies the heat equation $\partial_{S_{ab}}=\partial_{m_a}\partial_{m_b}$ in its own parameters.
+The dictionary with the cumulant chain of \cite{Wu} and of Section~\ref{sec:transport} is now literal:
+$w_a=\varphi(\alpha_a)/\sigma_a$ is the \emph{birth} strength at the kink of neuron $a$, the second derivative of
+the mean under a tilt; $g_a=\Phi(\alpha_a)$ gates the arms; $T_{ab}$ is the exact $(2,1)$ slice function
+$\E[\theta(z_a)\relu z_b]$ through which a tilt at $a$ moves the covariance row of $a$; $G_{ab}$ is the gate
+covariance $\E[\theta_a\theta_b]$ that transports a covariance perturbation. Births are the curvature of the
+tilt response; arms and slices are its gradient.
+
+\subsection{The defect is downstream curvature against the tilt Gram}
+Write the chain as $e(y)=\mathcal G(\theta(y))$, where $\theta(y)=(\mu(y),M(y))$ are the exact first-layer
+post-activation moments for the input law $N(y,I)$ (exact because $z_1=W_1x$ is Gaussian) and $\mathcal G$ is the
+chain from layer $2$ on, a function of the Gaussian surrogate $N(\mu,M-\mu\mu^\top)$ of $h_1$.
+\begin{theorem}[Defect $=$ curvature $\times$ Gram]\label{thm:gram}
+Let $\mathcal G$ be homogeneous, $\mathcal G(\lambda\mu,\lambda^2M)=\lambda\,\mathcal G(\mu,M)$, and twice
+differentiable. Then for every $y$,
+\begin{equation}\label{eq:gram}
+\delta(y)\;=\;e-y\cdot\nabla e-\Delta e\;=\;-\sum_{A,B}\partial_A\partial_B\mathcal G\big(\theta(y)\big)\,\Gamma_{AB}(y),
+\qquad \Gamma_{AB}(y)=\big\langle\nabla_y\theta_A(y),\nabla_y\theta_B(y)\big\rangle ,
+\end{equation}
+the sum running over the moment indices $A,B\in\{\mu_a\}\cup\{M_{ab}\}$. With $S=W_1W_1^\top$ and the rows $w_a$ of
+$W_1$, at $y=0$ the Gram matrix is
+\[
+\Gamma_{\mu_a\mu_b}=g_ag_bS_{ab},\qquad
+\Gamma_{\mu_aM_{bc}}=g_a\big(T_{bc}S_{ab}+T_{cb}S_{ac}\big),\qquad
+\Gamma_{M_{ab}M_{cd}}=T_{ab}T_{cd}S_{ac}+T_{ab}T_{dc}S_{ad}+T_{ba}T_{cd}S_{bc}+T_{ba}T_{dc}S_{bd}.
+\]
+Consequently $u-e(0)=\int_0^\infty\!w(\tau)\,\E_{y\sim N(0,\tau I)}\langle\nabla^2\mathcal G(\theta(y)),\Gamma(y)\rangle\,d\tau$
+with $w(\tau)=\tfrac12(1+\tau)^{-3/2}$.
+\end{theorem}
+\begin{proof}
+Each $\theta_A(y)=\E\,g_A(y+Z)$, $Z\sim N(0,I)$, with $g_A$ positively homogeneous of degree $p_A\in\{1,2\}$,
+satisfies the heat equation $\partial_s\theta_A=\tfrac12\Delta\theta_A$ along $N(y,sI)$ and the scaling
+$\theta_A(y,s)=s^{p_A/2}\theta_A(y/\sqrt s,1)$, whence $p_A\theta_A-y\cdot\nabla\theta_A-\Delta\theta_A=0$. By the
+chain rule $\nabla e=\sum_A\partial_A\mathcal G\,\nabla\theta_A$ and $\Delta e=\sum_A\partial_A\mathcal G\,\Delta\theta_A
++\sum_{A,B}\partial_A\partial_B\mathcal G\,\Gamma_{AB}$, so
+$\delta=\mathcal G-\sum_Ap_A\theta_A\partial_A\mathcal G-\sum_{AB}\partial_A\partial_B\mathcal G\,\Gamma_{AB}$, and
+Euler's relation for the weighted homogeneity of $\mathcal G$ kills the first two terms. The Gram entries follow
+from \eqref{eq:birth}--\eqref{eq:slice}: $\nabla_y\mu_a=g_aw_a$ and $\nabla_yM_{ab}=T_{ab}w_a+T_{ba}w_b$. The last
+statement is Corollary~\ref{cor:eldan}.
+\end{proof}
+
+Three remarks. (1) The theorem is exact and holds for every homogeneous chain (Gaussian closure or any cumulant
+chain run from the Gaussian surrogate of $h_1$); nothing about the chain's internals enters except its curvature
+in the first-layer moments. (2) The Gram matrix has the \emph{CP-leg} form of the cumulant chain: a gated
+covariance $g\circ S\circ g$ (the arms), slice products $T\circ S$ (the $(2,1)$ legs), and the four-term
+$(M,M)$ block in which the pair $(a,b)$ is linked to $(c,d)$ through a single covariance entry. The same
+construction at a hidden layer $l$ (tilt the hidden mean $m_l$ with the chain's $C_l$ in place of $I$) gives the
+error of the chain started from the surrogate at layer $l$, $\mathrm{Err}_l$, and the differences
+$\mathrm{Err}_{l-1}-\mathrm{Err}_l$ are the injected errors of Section~\ref{sec:measure}. (3) The contraction
+$\langle\nabla^2\mathcal G,\Gamma\rangle$ can be evaluated inside the chain by propagating the second-order
+response of the closure to a Gaussian shift of the mean, i.e.\ the covariances $\E[\delta m\,\delta m^\top]$,
+$\E[\delta m_a\,\delta S_{ab}]$, $\E[\delta m_a\,\delta S_{bb}]$, $\E[\delta S_{aa}\delta S_{bb}]$,
+$\E[\delta S_{ab}\delta S_{aa}]$ of the perturbation; every one of them closes at $O(n^3)$ per layer through
+\eqref{eq:birth}--\eqref{eq:birth2} except $\E[\delta S_{ab}^2]$, the variance of the transported
+cross-covariance, whose exact propagation is $O(n^4)$. This is the same obstruction that forces a cumulant chain
+to carry slices of $\kap_3$ rather than the tensor, met here from the other side: the second variation of a
+chain has the complexity of the chain's own closure error.

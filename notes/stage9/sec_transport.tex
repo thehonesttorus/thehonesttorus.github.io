@@ -1,0 +1,47 @@
+\label{sec:transport}
+The chain of this note (\texttt{whest/k3chain3.py}) transports the third cumulant in the CP-leg form of
+\cite{Wu}: each kink neuron $m$ of layer $l$ is a source with centre leg $P=W\!\cdot e_m$, arm $A=W\!\cdot a_m$,
+$a_m=\diag(g)\,Ce_m$, strength $w_m=\varphi(\alpha_m)/\sigma_m$, and the two further legs $B$ (the Gram--Charlier
+arm fed by the incoming $(2,1)$ slices) and $R$ (the residual that makes the slice and the diagonal exact at
+birth). The readouts in pre-activation space are the diagonal $\kap_3(z_a)=D3_a$ and the slices
+$D21_{ab}=\kap_3(z_a,z_a,z_b)$. What is new relative to \cite{Wu} is the \emph{transport} of a slice through a
+\textsc{ReLU} layer to first order in the cumulants, in closed form, which we state and then measure.
+
+\begin{theorem}[First-order transport of the $(2,1)$ slice]\label{thm:transport}
+Let $z\sim$ a law with Gaussian part $N(m,S)$ and small third and fourth cumulants, $h=\relu(z)$, and write
+$g=\Phi(\alpha)$, $w=\varphi(\alpha)/\sigma$, $\mu_a=\sigma_ad_0(\alpha_a)$, $t_a=g_a-\mu_aw_a$,
+$\epsilon_a=2\mu_a(1-g_a)$, $c_a=g_a(1-g_a)-\mu_aw_a$. To first order in the cumulants of $z$ and to the orders in
+$\rho$ kept by the chain,
+\begin{align}
+\kap_3(h_a,h_a,h_c)&=\Big[g_a^2+c_a\Big]\,g_c\,\kap_3(z_a,z_a,z_c)
++\tfrac12\,\epsilon_a\,w_c\,\kap_3(z_a,z_c,z_c)+\tfrac12\,t_a\,w_c\,\kap_4(z_a,z_a,z_c,z_c)+\text{(born)},\label{eq:slice-transport}\\
+\Cov(h_a,h_b)&=\Cov^{\rm Gauss}(h_a,h_b)+\tfrac12\big(w_ag_b\,\kap_3(z_a,z_a,z_b)+g_aw_b\,\kap_3(z_a,z_b,z_b)\big)
++\tfrac14w_aw_b\,\kap_4(z_a,z_a,z_b,z_b),\label{eq:cov-transport}\\
+\E[h_a]&=\sigma_ad_0(\alpha_a)-\tfrac{\alpha_a\varphi(\alpha_a)}{6\sigma_a^2}\kap_3(z_a)+\tfrac{(\alpha_a^2-1)\varphi(\alpha_a)}{24\sigma_a^3}\kap_4(z_a),\label{eq:mean-readout}
+\end{align}
+where ``born'' is the exact $\kap_3$ of $\relu$ of the Gaussian part (all Hermite orders of the slice,
+\texttt{relu2\_hermite}, and the exact diagonal \texttt{k3\_exact}), and the gate of the transported slice,
+$g_a^2+c_a=g_a-\mu_aw_a$, is the exact coefficient $\E[\theta_a\,\partial_a(\relu z_a-\mu_a)^2]/2$ rather than
+the Gaussian $g_a^2$.
+\end{theorem}
+\begin{proof}[Proof sketch]
+Expand the law of $z$ as a Gram--Charlier perturbation of its Gaussian part, $\nu=\nu_G(1+\tfrac16\kap_3\!:\!\Hpl_3
++\tfrac1{24}\kap_4\!:\!\Hpl_4)$, and compute $\E[(h_a-\mu_a)^2(h_c-\mu_c)]$ by integrating the Hermite
+polynomials against the \textsc{ReLU} moments: Stein's lemma turns each $\Hpl_3$ against a product of
+\textsc{ReLU}s into third derivatives, which are sums of gate products $\theta_a\theta_a\theta_c$ (the first term),
+of $\theta_a\delta_c\relu_c$-type terms, i.e.\ a birth $w_c$ at $c$ against the transposed slice (the second term),
+and the $\Hpl_4$ term gives the $(2,2)$ feed with the single birth $w_c$ (third term). The coefficients
+$t_a,\epsilon_a,c_a$ are the exact one-dimensional integrals $\E[\theta_a(\relu z_a-\mu_a)\cdot]$ listed in the code.
+The covariance and mean formulas are the same computation one order lower.
+\end{proof}
+
+The three transported terms are what the chain calls the gated slice (\texttt{gate\_res}), the transposed-slice
+feed (\texttt{feedT}) and the $\kap_4\!\to\!\kap_3$ feed (\texttt{feedK22}). Their effect on the official
+network $0$ is the ladder of Section~\ref{sec:measure}: the transported slices rise from $75\%$ to $90$--$92\%$ of
+their Monte Carlo values at depth and the final MSE falls from $8.5\cdot10^{-7}$ to $5.7\cdot10^{-7}$.
+
+\paragraph{What remains open in the transport.} The first term of \eqref{eq:slice-transport} transports the slice
+with the gate of the pair $(a,c)$ taken at $\rho_{ac}=0$ plus the chain's $\rho$-expansion; the exact gate
+$\E[\theta_a\theta_a\theta_c\,(\cdot)]$ at the true correlation differs at order $\rho_{ac}$, which is small per entry
+but coherent along the collective mode. Section~\ref{sec:dictionary} lists the $\rho$-exact gate as the first
+open item, since the $8$--$10\%$ deficit of the transported slice at depth is precisely of this size.

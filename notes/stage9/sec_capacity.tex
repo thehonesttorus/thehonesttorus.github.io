@@ -1,0 +1,77 @@
+\label{sec:capacity}
+The stage-8 programme asks first which localization sees the error. Here we settle it for the input side, with
+two measurements on a small network ($n=256$, $L=4$, Monte Carlo truth from $10^7$ samples, noise $2\cdot10^{-4}$)
+and one on the official network $0$ ($n=1024$, $L=16$).
+
+\subsection{The Laplacian is the error; its directional parts are not}
+Table~\ref{tab:defect-small} gives, for the Gaussian closure and for the chain of this note (\texttt{k3v3}), the
+per-neuron correlation between the error $e(0)-u$ and the Euler--Stein defect $\delta(0)=e(0)-\Delta e(0)$ of
+Corollary~\ref{cor:eldan}, the least-squares coefficient $a$ in $e(0)-u\approx a\,\delta(0)$, and the mean squared
+error after the correction $e(0)-a\delta(0)$. The Laplacian was computed exactly by $2n+1$ chain evaluations.
+\begin{table}[h]\centering\small
+\begin{tabular}{lcccccc}\toprule
+chain & MSE & $|\delta|_{\rm rms}$ & corr$(e-u,\delta)$ & $a$ & fraction explained & MSE after $e-a\delta$\\\midrule
+Gaussian closure & $1.16\cdot10^{-5}$ & $9.7\cdot10^{-3}$ & $0.967$ & $0.339$ & $0.936$ & $7.5\cdot10^{-7}$\\
+\texttt{k3v3}    & $1.09\cdot10^{-6}$ & $6.1\cdot10^{-3}$ & $0.835$ & $0.143$ & $0.690$ & $3.4\cdot10^{-7}$\\
+\bottomrule\end{tabular}
+\caption{Euler--Stein defect against the true error, $n=256$, $L=4$ (\texttt{scripts/defect\_small.py}).}
+\label{tab:defect-small}
+\end{table}
+Two facts. First, $a<1$: Corollary~\ref{cor:eldan} integrates $\delta(y)$ against $y\sim N(0,\tau I)$ with the
+weight $\tfrac12(1+\tau)^{-3/2}$, and $\delta(y)$ decays as $|y|$ grows (a shifted input makes the network more
+nearly deterministic relative to its fluctuations), so $\delta(0)$ overstates the integral; $a$ is the ratio of
+the weighted mean of $\delta$ to its value at the origin, a property of the architecture class rather than of the
+network, and is fitted once. Second, the \texttt{k3v3} chain, which carries the third cumulants, has a smaller
+$a$ and a smaller explained fraction: its defect is of higher order and less self-similar in $y$.
+
+The directional second differences tell the opposite story. For a unit vector $v$ let $\partial_v^2e$ be the
+second difference of $e$ along $v$ at $0$ and $x_v=\partial_v^2e-\Delta e/n$ its excess over the isotropic share.
+On the same network the singular values of the matrix $(x_{e_i})_{i\le n}$ decay slowly (top share $5\%$, top four
+$17\%$), the leading direction is orthogonal to the coherent direction $W_1^{\top}\mathbf 1$ ($|\langle u_1,
+v_{\rm coh}\rangle|<10^{-3}$), and the correlation between $x_v$ and the error is $0.18$, $0.12$, $0.08$
+(coherent, random, leading) for the Gaussian closure and $0.26$, $-0.05$, $-0.15$ for \texttt{k3v3}. No input
+direction carries the error.
+
+\subsection{The defect is a small residual of an $O(1)$ identity}
+At $n=1024$, $L=16$ (official network $0$) the random-probe estimate of the Laplacian,
+$\Delta e\approx\frac1S\sum_s\partial_{\xi_s}^2e$ with $\xi_s\sim N(0,I)$ (Hutchinson), fails outright: with
+$S=16$ probes per block the fitted coefficient is $a\approx0.01$ and the correlation with the error changes sign
+from block to block ($+0.43,-0.09,-0.44,+0.14$). The reason is quantitative. Euler--Stein says $\Delta u=u$ for
+the exact answer, and the chain nearly obeys it: $\Delta e(0)=e(0)-\delta(0)$ with $|\delta|\approx10^{-2}$ against
+$|e|\approx0.4$. The quantity we need, $\delta$, is a $2\%$ residual of an $O(1)$ identity, and the error is a
+tenth of that residual, so the Laplacian must be computed to a relative precision of $10^{-4}$. For a unit
+direction $v$ one measures $|\partial_v^2e|_{\rm rms}\approx4\cdot10^{-3}$ at $n=256$; since
+$\E_v(\partial_v^2e)^2-(\tr H/n)^2=2\|H\|_F^2/n^2$ for $v$ uniform on the sphere, the Hessian $H=\nabla^2e$ of one
+output neuron has $\|H\|_F\approx n|\partial_v^2e|/\sqrt2\approx0.8$, comparable with $\tr H\approx0.4$. The
+variance of one Hutchinson probe is $2\|H\|_F^2$, so the relative noise of an $S$-probe estimate of $\tr H$ is
+$\sqrt{2/S}\,\|H\|_F/\tr H\approx2.8/\sqrt S$, and the required $10^{-4}$ needs $S\approx10^9$ probes. Only the
+exact coordinate sum, $2n+1$ chain evaluations, resolves $\delta$.
+
+\begin{proposition}[Capacity of input tilts]\label{prop:capacity}
+Let $E$ be a chain exact on point masses and homogeneous as in Corollary~\ref{cor:eldan}, and let $H$ be the
+Hessian of $e$ at $0$ for one output neuron. (i) The error is the trace part: $u-e(0)=-\int w(\tau)\E_y\delta(y)\,d\tau$
+with $\delta(0)=e(0)-\tr H$. (ii) A localization that drives $k$ orthonormal directions $v_1,\dots,v_k$ (directional
+tilts, or pinning of $k$ coordinates) has drift $-\sum_{s\le k}(\tfrac12\partial_{v_s}^2E-\partial_{\Sigma_{v_sv_s}}E)$.
+Over a random choice of the $k$ directions its expectation is $(k/n)$ times the isotropic drift, whose
+error-carrying part is $(k/n)\,\delta$, while its fluctuation over the choice is of order $\sqrt{k}\,\|A\|_F/n$
+with $A=\tfrac12H-\partial_\Sigma E$. The signal-to-noise ratio of a $k$-direction scheme is therefore
+$\sqrt k\,|\delta|/\|A\|_F$.
+(iii) With $|\delta|/\|A\|_F\approx10^{-2}$ as measured, a $k$-direction scheme resolves the error only for
+$k\gtrsim10^4\gg n$, and the cheapest exact scheme on the input side is the coordinate sum, $2n+1$ chain
+evaluations, i.e.\ $2n+1$ pair chains at $n=1024$, far outside any budget. Input localization is useless for
+estimation; it is a diagnostic.
+\end{proposition}
+
+\begin{proof}
+(i) is Corollary~\ref{cor:eldan}. (ii): the directional drift of Corollary~\ref{cor:directional} is a quadratic
+form in $v$ with matrix $\tfrac12H-\partial_\Sigma E$, whose average over the Haar measure on $k$-frames is $k/n$ of
+its trace, and whose variance over the frame is $\sum_s\Var(v_s^{\top}Av_s)\approx 2k\|A\|_F^2/n^2$ for $A$ the
+matrix of the form. (iii) follows by comparing the two.
+\end{proof}
+
+This is the negative half of the stage-8 dictionary: the input is the \emph{commutative} side, its tilts are the
+modular tilts of the Gaussian, and the chain's defect is invisible to any finite family of them because it is a
+trace. The positive half is that the trace can be computed \emph{inside} the chain, as the second-order response
+of the closure to a Gaussian shift of the mean, which is the subject of Sections~\ref{sec:births} and
+\ref{sec:central}: there the directions are neurons, the tilt responses are the births at the kinks, and the sum
+over directions is a sum over neurons that the chain already performs.

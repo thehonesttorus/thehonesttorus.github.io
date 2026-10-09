@@ -1,0 +1,45 @@
+\label{sec:cost}
+The score multiplies the error by $\max(0.1,\,C/B)$ with $C$ the metered count of the grader's own numpy wrapper
+(\texttt{flopscope} 0.12.1) and $B=2^{41}$. We read the wrapper's rules off its source and measured the bills of
+the chain's building blocks at $n=1024$ (\texttt{notes/compute/FLOPSCOPE.md}); the facts that decide a design are
+these.
+
+\paragraph{Rules.} Every call bills $\lfloor\text{textbook count}\times\text{dtype rate}\times\text{weight}\rfloor$.
+The count is the textbook one, not what BLAS does: a matmul $(m,k)(k,n)$ is $2mkn-mn$ whatever algorithm the
+library uses, so a Strassen level written out of seven smaller \texttt{matmul} calls \emph{is} billed at $7/8$.
+The dtype rate is $1$ for float32 and $2$ for float64. The weight is $0$ for views, transposes, \texttt{zeros};
+$1$ for arithmetic, reductions, contractions, copies, \texttt{sqrt}, \texttt{stats.norm.cdf/pdf} (whose counts are
+$48$ and $27$ per element, computed in float64), \texttt{polyval} ($2d$ per element) and all of \texttt{linalg};
+$4$ for \texttt{where}, gathers and sorts; $16$ for \texttt{exp}, \texttt{log} and every random sampler. A
+contraction whose output the engine can prove symmetric is billed on the unique entries: the sandwich
+$WCW^\top$ written as one \texttt{einsum('ij,jk,lk->il', W, C\_sym, W)} with the same array $W$ in both outer
+slots and $C$ tagged \texttt{as\_symmetric} bills $3n^3$ in float32 ($6n^3$ in float64) against $4n^3$ ($8n^3$) for
+two matmuls; the saving is lost if the two products are separate calls. \texttt{eigh} is $9n^3$, \texttt{cholesky}
+$n^3/3$, \texttt{inv} $2n^3$, \texttt{solve} $\tfrac23n^3+2n^2r$.
+
+\paragraph{Budget.} The floor $0.1B=2.2\cdot10^{11}$ equals $205\,n^3$ over the $16$ layers, i.e.
+$12.8\,n^3$ per layer: six float32 $(n,n,n)$ matmuls, or four float32 symmetric sandwiches, or three float64
+matmuls. Nothing is gained below the floor, so a chain should spend exactly it. The Gaussian pair chain,
+one sandwich per layer, costs $0.024B$ in float32 (one quarter of the floor) and $0.047B$ in float64.
+Elementwise work on $n\times n$ arrays is negligible unless repeated dozens of times per layer: the Hermite series
+of the pair moment to order $K$ is $K$ Hadamard products, $2Kn^2$, i.e.\ $0.002\,n^3$ per term.
+
+\begin{proposition}[Pair floor]\label{prop:floor}
+Any estimator that forms the pre-activation covariance of every layer from that of the previous one pays at least
+one sandwich per layer: $3n^3$ in float32 with the symmetric engine, $L\cdot3n^3=0.024B$ at $n=1024$, $L=16$.
+Every further $n\times n$ object transported through $W$ (a $\kap_3$ slice, a $(2,2)$ slice, a gate-correlation
+matrix) costs another $2n^3$ to $3n^3$ per layer, i.e.\ $0.016B$ to $0.024B$ over the network. Under the floor a
+chain may therefore carry the pair plus about four such objects per layer; the leaders' bills ($0.105B$,
+$0.144B$) correspond to five to seven float32 sandwich-equivalents per layer, and the open-source third-cumulant
+chain at $0.25B$ to a float64 implementation of the same count.
+\end{proposition}
+
+\paragraph{Naive counts mislead.} The count our chain returns (FMA $=2$, no dtype rate, no symmetry) overstates
+the float32 symmetric bill by $2.7\times$ and understates a float64 plain-matmul bill by $2\times$. The
+\emph{pair floor} and the \emph{per-object price} above are the only two numbers a design needs; every proposal in
+Section~\ref{sec:dictionary} is costed in units of ``$n\times n$ objects transported per layer''.
+
+\paragraph{Precision.} float32 arithmetic (relative $10^{-7}$ per operation) propagates the covariance through
+sixteen layers of $1024$-term sums to a relative $10^{-6}$, far below the $10^{-4}$ rms of a $10^{-8}$-MSE
+estimator; but the quantities that are small differences of $O(1)$ numbers (the Euler--Stein defect
+$e-\Delta e$, differences of nearly equal slices) must be formed in float64 or arranged to avoid cancellation.
