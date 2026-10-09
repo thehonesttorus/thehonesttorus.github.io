@@ -8,8 +8,19 @@ from .kprop3 import wick, _zero_diag, radial_consts, slices_from_legs, linear_st
 
 
 class State:
-    def __init__(self, mu, C, young, Q, S, c4, M):
+    def __init__(self, mu, C, young, Q, S, c4, M, cp=None):
         self.mu, self.C, self.young, self.Q, self.S, self.c4, self.M = mu, C, young, Q, S, c4, M   # young: list of (legs, age)
+        self.cp = cp if cp is not None else []     # CP tier: list of (a, b, c), each (k, r), legs = Q a etc.
+
+
+def cp_slices(Q, cp):
+    """(2,1) and (3,) slices of sum over CP-tier sources Sym(sum_r (Qa)_r (Qb)_r (Qc)_r)."""
+    n = Q.shape[0]; S21 = np.zeros((n, n)); S3 = np.zeros(n)
+    for a, b, c in cp:
+        A, B, Cc = Q @ a, Q @ b, Q @ c
+        X = ((A * B) @ c.T + (A * Cc) @ b.T + (B * Cc) @ a.T) / 3.0     # n x k
+        T21 = X @ Q.T; S3 += np.diag(T21); S21 += T21
+    np.fill_diagonal(S21, 0.0); return S21, S3
 
 
 def tucker_slices(Q, S):
@@ -30,10 +41,12 @@ def linear_step(st, W):
     mu = W @ st.mu; C = W @ st.C @ W.T
     young = [(tuple(W @ L for L in legs), age) for legs, age in st.young]
     Q, S = st.Q, st.S
+    cp = st.cp
     if Q is not None:
         Y = W @ Q; Q, R = np.linalg.qr(Y)
-        S = np.einsum("pqs,ap,bq,cs->abc", S, R, R, R, optimize=True)
-    return State(mu, C, young, Q, S, st.c4, W @ st.M @ W.T)
+        if S is not None: S = np.einsum("pqs,ap,bq,cs->abc", S, R, R, R, optimize=True)
+        cp = [(R @ a, R @ b, R @ c) for a, b, c in cp]
+    return State(mu, C, young, Q, S, st.c4, W @ st.M @ W.T, cp)
 
 
 def merge_into_tucker(Q, S, legs, k, rng, fixed=None):
@@ -59,6 +72,25 @@ def merge_into_tucker(Q, S, legs, k, rng, fixed=None):
     return Qn, sym3(Sn)
 
 
+def merge_into_cp(Q, cp, legs, k, rng, fixed=None):
+    A, B, Cc = legs; n = A.shape[0]
+    if Q is None:
+        G = np.concatenate([A, B, Cc], axis=1)
+    else:
+        nu = np.sqrt(sum(np.sum(a * a, axis=1) + np.sum(b * b, axis=1) + np.sum(c * c, axis=1) for a, b, c in cp)) if cp else np.ones(Q.shape[1])
+        G = np.concatenate([Q * nu[None, :], A, B, Cc], axis=1)
+    Om = rng.standard_normal((G.shape[1], k + 8)); Y = G @ Om; Y = G @ (G.T @ Y)
+    if fixed is not None and fixed.shape[1] > 0:
+        F = np.linalg.qr(fixed)[0]; Y = Y - F @ (F.T @ Y)
+        Qn = np.concatenate([F, np.linalg.qr(Y)[0][:, :k - F.shape[1]]], axis=1)
+    else:
+        Qn = np.linalg.qr(Y)[0][:, :k]
+    P = Qn.T @ Q if Q is not None else None
+    cpn = [(P @ a, P @ b, P @ c) for a, b, c in cp] if Q is not None else []
+    cpn.append((Qn.T @ A, Qn.T @ B, Qn.T @ Cc))
+    return Qn, cpn
+
+
 def nonlin_step(st, o, rng, record=None):
     m, S_ = st.mu, st.C; n = len(m); var = np.clip(np.diag(S_), 1e-30, None); Soff = _zero_diag(S_)
     w = {(k, p): wick(m, var, k, p) for p in range(1, 5) for k in range(0, 5)}
@@ -70,8 +102,10 @@ def nonlin_step(st, o, rng, record=None):
             if mode == "diag": s21 = 0.0 * s21
             if mode.startswith("scale"): f = float(mode[5:]); s21 = f * s21; s3 = f * s3
         K3_21 += s21; K3_3 += s3
-    if st.Q is not None:
+    if st.Q is not None and st.S is not None:
         s21, s3 = tucker_slices(st.Q, st.S); K3_21 += s21; K3_3 += s3
+    if st.Q is not None and st.cp:
+        s21, s3 = cp_slices(st.Q, st.cp); K3_21 += s21; K3_3 += s3
     if st.c4 != 0.0:
         Md = np.diag(st.M); K4_22 = st.c4 * (np.outer(Md, Md) + 2 * st.M * st.M) / 3.0; np.fill_diagonal(K4_22, 0.0); K4_4 = st.c4 * Md ** 2
     else:
@@ -95,9 +129,11 @@ def nonlin_step(st, o, rng, record=None):
     Phi = w[(1, 1)]; w2 = w[(2, 1)]
     # gate all tiers, build the star block, then the residual block from the exact slices
     young = [(tuple(L * Phi[:, None] for L in legs), age + 1) for legs, age in st.young]
-    Q, S = st.Q, st.S
+    Q, S, cp = st.Q, st.S, st.cp
     if Q is not None:
-        Qg, R = np.linalg.qr(Phi[:, None] * Q); Q = Qg; S = np.einsum("pqs,ap,bq,cs->abc", S, R, R, R, optimize=True)
+        Qg, R = np.linalg.qr(Phi[:, None] * Q); Q = Qg
+        if S is not None: S = np.einsum("pqs,ap,bq,cs->abc", S, R, R, R, optimize=True)
+        cp = [(R @ a, R @ b, R @ c) for a, b, c in cp]
     star = (Phi[:, None] * Soff, 3.0 * np.eye(n), (w2[:, None] * Soff * Phi[None, :]).T)
     # slices of the gated transported sources = gates applied to the slices already read (Phi_i^2 Phi_j, Phi_i^3)
     own21 = (Phi ** 2)[:, None] * K3_21 * Phi[None, :]; own3 = Phi ** 3 * K3_3
@@ -113,16 +149,19 @@ def nonlin_step(st, o, rng, record=None):
         fixed = np.stack([mu_h, np.diag(Ch), np.ones(n), v], axis=1)
     for legs, age in young:
         if age >= o["window"] and o.get("tucker", 1):
-            Q, S = merge_into_tucker(Q, S, legs, o["k"], rng, fixed)
+            if o.get("tier", "tucker") == "cp":
+                Q, cp = merge_into_cp(Q, cp, legs, o["k"], rng, fixed)
+            else:
+                Q, S = merge_into_tucker(Q, S, legs, o["k"], rng, fixed)
         else:
             keep.append((legs, age))
     if record is not None:
         record.update(dict(m=m, var=var, K3_21=K3_21, K3_3=K3_3, mu_h=mu_h, Ch=Ch, K3h_21=K3h_21, K3h_3=K3h_3, c4=c4, young=len(keep)))
-    return State(mu_h, Ch, keep, Q, S, c4, np.eye(n))
+    return State(mu_h, Ch, keep, Q, S, c4, np.eye(n), cp)
 
 
 def kprop3c_chain(W, opts=None, record=None, m0=None, S0=None):
-    o = dict(window=2, k=128, c4scale=1.0, seed=0, tucker=1, oldmode="full"); o.update(opts or {})
+    o = dict(window=2, k=128, c4scale=1.0, seed=0, tucker=1, oldmode="full", tier="tucker"); o.update(opts or {})
     L, n, n_in = W.shape; rng = np.random.default_rng(o["seed"])
     m0 = np.zeros(n_in) if m0 is None else np.asarray(m0, dtype=np.float64); S0 = np.eye(n_in) if S0 is None else np.asarray(S0, dtype=np.float64)
     st = State(m0.copy(), S0.copy(), [], None, None, 0.0, np.eye(n_in)); out = np.empty((L, n))

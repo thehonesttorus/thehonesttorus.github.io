@@ -43,3 +43,59 @@ Section~\ref{sec:dictionary} is costed in units of ``$n\times n$ objects transpo
 sixteen layers of $1024$-term sums to a relative $10^{-6}$, far below the $10^{-4}$ rms of a $10^{-8}$-MSE
 estimator; but the quantities that are small differences of $O(1)$ numbers (the Euler--Stein defect
 $e-\Delta e$, differences of nearly equal slices) must be formed in float64 or arranged to avoid cancellation.
+
+\subsection{The memory of the third cumulant and the transport cocycle}
+The organisers' chain keeps the all-distinct part of $\kap_3$ in factored form $\mathrm{Sym}\sum_rA_{ir}B_{jr}C_{kr}$ and adds
+$2n$ columns to each leg at every layer (the star block of the births and the residual block that makes the
+$(2,1)$ and $(3)$ slices exact), so the rank at layer $l$ is $2ln$ and the transport and readout cost $18\,l\,n^3$ per
+layer, $1.2B$ in float32 over the network: $93\%$ of the reference's own count. The theory says where to cut. A
+block born at layer $l'$ is, at layer $l$, the image of its birth legs under the gated transport cocycle
+\[
+T_{l\leftarrow l'}=W_l\,\diag(g_{l-1})\,W_{l-1}\,\diag(g_{l-2})\cdots W_{l'+1}\diag(g_{l'}),
+\]
+a product of $l-l'$ independent gated random matrices. Such products contract onto their leading Oseledets
+directions, and the leading directions are the collective mode of Section~\ref{sec:central}: in the stage-8 language
+the old sources live on the leaf space, and the shared basis of their transport is the transverse measure's
+support. On network $0$ (\texttt{scripts/diag\_cocycle.py}) the effective rank $\|T\|_F^2/s_1^2$ of $T_{l\leftarrow l-a}$
+is $164,92,65,47,29,23$ at ages $a=1,2,3,4,6,8$ (independent of $l$ to a few percent), and a random block
+transported for $a$ ages has $51,70,81,87,94,96\%$ of its energy in the top $128$ left singular directions and
+$77,92,95,98.5,99.7,99.8\%$ in the top $256$. Sources of age $\ge2$ can therefore be merged into a \emph{Tucker tier}
+$\mathrm{Sym}((Q\otimes Q\otimes Q)S)$ with one orthonormal basis $Q\in\R^{n\times k}$ shared by the three legs and a
+symmetric core $S\in\R^{k\times k\times k}$ (\texttt{whest/kprop3c.py}): the basis is transported as $W\diag(g)Q$ and
+re-orthonormalised, the core rotated by the $k\times k$ factor, and an aged block is folded in by refitting the basis
+to the dominant directions of $[Q\,\diag(\nu),A,B,C]$ and projecting. Its cost per layer is $2nk^3+4n^2k$ for the two
+slice readouts and $2nk^3$ for a merge, i.e.\ $19\,n^3$ at $k=128$ with no young tier, against $18l\,n^3$ dense;
+at $k=256$ the cubic core ($2nk^3=32n^3$ per readout) is already too expensive, which is the statement that a
+generic order-three tensor on a $k$-dimensional leaf space has $k^3/6$ degrees of freedom and cannot be read for
+less. The young tier (ages $<w$) costs $16\,n^3$ per source-age. Table~\ref{tab:tier-cost} gives the resulting bills
+under the grader's rules; the measured accuracy of each configuration is in Section~\ref{sec:measure}.
+\begin{table}[h]\centering\small
+\begin{tabular}{lcc|lcc}\toprule
+$(w,k)$ & $n^3$/layer & $C/B$ (float32) & $(w,k)$ & $n^3$/layer & $C/B$ (float32)\\\midrule
+$(0,128)$ & $19$ & $0.148$ & $(2,128)$ & $51$ & $0.398$ ($0.32$ with Strassen)\\
+$(1,128)$ & $35$ & $0.273$ ($0.23$) & $(3,128)$ & $67$ & $0.523$ ($0.41$)\\
+$(0,256)$ & $92$ & $0.716$ & dense reference & $18l$ & $1.195$\\
+\bottomrule\end{tabular}
+\caption{Billed cost of the two-tier chain (pair chain, metric, young tier, Tucker tier, merge, elementwise terms).}
+\label{tab:tier-cost}
+\end{table}
+
+\subsection{Why the memory resists Frobenius compression}
+The measured accuracy of the two-tier chain (Section~\ref{sec:measure}) is far worse than the energy fractions
+of the cocycle suggest, and the reason is structural. The slices are read through \emph{Hadamard} products of the
+legs, $(A\circ B)C^\top$: for a residual block transported for $a$ ages the $(2,1)$ slice is
+$\tfrac13[\,2((TR)\circ T)T^\top+(T\circ T)(TR)^\top]$ with $T=T_{l\leftarrow l-a}$. Projecting a leg on the top-$k$
+subspace of $T$ controls $\|T-QQ^\top T\|_F$, but the Hadamard square $(QQ^\top T)\circ(QQ^\top T)$ is not the
+projection of $T\circ T$: the square of a rank-$k$ matrix has rank up to $k(k+1)/2$ and lives in a different
+subspace. A leg truncation that loses a fraction $\epsilon^2$ of the energy therefore loses a fraction $\sim2\epsilon$
+of the slice, and by the sensitivity law of Proposition~\ref{prop:sens} the slices of the sources that matter must
+be right to $10^{-3}$: the leg energy must be captured to $10^{-6}$, which the cocycle spectrum ($s_{256}/s_1=0.5,
+0.3,0.18,0.17$ at ages $1$--$4$) is nowhere near. Compression of the kind that works for a \emph{linear} transport
+(keep the dominant directions of $T$) does not work for a cubic readout, except for sources old enough that
+their whole contribution is small: at age $\ge4$ the sources are worth a factor $6$ in MSE, so a $5\%$ slice error
+on them costs $\sim10\%$, which is the regime in which the open-source chain's shared basis ($k=384$, window $4$)
+loses its reported $3.5\%$. The arithmetic of the pair floor then says that an exact-first-order chain cannot be
+brought near $0.1B$ by compressing its memory: the young window alone, four ages at $16$--$24\,n^3$ each, exceeds
+the whole budget. What a competitive chain at $0.1B$ must do instead is keep \emph{fewer} ages and recover the
+systematic part of what is lost by calibration on the public networks; Section~\ref{sec:measure} measures how
+much of the loss is systematic (a scale of the old sources' slices) and how much is shape.
