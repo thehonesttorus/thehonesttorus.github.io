@@ -90,8 +90,7 @@ Branch `claude/determined-fermat-9hk45i`. Note: `notes/stage9/ncg_mlp_stage9.pdf
   requested in the console or the IAM user given `servicequotas:*` (see `notes/compute/SETUP.md`).
 - Google Cloud: not set up; the browser-agent prompt is in `notes/compute/GCP_PROMPT.md`; hand the key back as the
   environment secret `GOOGLE_APPLICATION_CREDENTIALS_JSON`.
-- Elicit: three reports were run earlier (`notes/stage9/elicit/` if present, else the scratchpad summaries fed the
-  literature in the note).
+- Elicit: the three literature reports (localization schemes and estimators; Gaussian-conditioning MLP theory; the leaders' methods) are in `notes/stage9/elicit/`.
 - Organisers' reference code: cloned read-only at `/home/user/alignment-research-center/mlp_cumulant_propagation`
   (public); torch 2.14 CPU installed locally for the verification only. Nothing from it is in the repo except the
   term table listing.
