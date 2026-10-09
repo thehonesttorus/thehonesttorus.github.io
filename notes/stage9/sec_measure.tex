@@ -130,6 +130,19 @@ network makes the other worse, $1.0\cdot10^{-6}$ against $4.4\cdot10^{-8}$ raw; 
 collective share is $0.2$--$5\%$; the error of the window-one chain is $53$--$64\%$ collective. Dropping the memory
 shifts the mean collectively; the exact chain's residual is incoherent and local features do not see it.
 
+\paragraph{The four parts, measured (four networks).} Reading the old sources (age $\ge w$) through the parts of
+Proposition~\ref{prop:parts}, dense window $w$, network $0$ [range over networks $0$--$3$]: coherent part only,
+$w=2$: $1.6$ [$1.6$--$2.1$]$\cdot10^{-6}$, $w=4$: $7.3$ [$7.1$--$9.3$]$\cdot10^{-7}$, no better than dropping the old
+sources ($1.65\cdot10^{-6}$, $7.5\cdot10^{-7}$); coherent $+$ cross: $1.6$ / $7.3\cdot10^{-7}$, nothing; coherent $+$ diagonal
+memory: $1.2\cdot10^{-6}$ / $5.4\cdot10^{-7}$; all three: $1.2\cdot10^{-6}$ / $5.3\cdot10^{-7}$; all three $+$ the star's
+bulk: $7.3$ / $3.2\cdot10^{-7}$; all three $+$ the residual's bulk: $3.1$ / $1.3\cdot10^{-7}$; everything (dense):
+$3.5\cdot10^{-8}$. The memory is the bulk: the hub-diagonal pairing of the incoherent parts of the birth
+covariance and of the residual, which no collective quantity sees. The coherent and cross parts, the only ones
+that accumulate across sources at $O(n^2)$ or $O(n^3)$ for the whole memory, carry less than a third of a
+decade. This is the measured content of law (L1) of Section~\ref{sec:reading}: the transverse measure of the
+hub foliation is uniform, and the memory is its full support. Any representation of the old sources that keeps
+them to the chain's precision must keep the bulk pairing, whose cost is the crossover law.
+
 The birth blocks are not sparsifiable in the hub index either. Keeping, in every star and residual block, only
 the $qn$ columns of largest importance ($w_{2,j}|a_j|^2|c_j|^2$ for the star, the column norm for the residual
 leg; \texttt{srcfrac} in \texttt{whest/kprop3c.py}) costs a factor $12$ at $q=\tfrac12$ and $43$ at

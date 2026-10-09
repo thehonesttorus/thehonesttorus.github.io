@@ -98,7 +98,12 @@ Branch `claude/determined-fermat-9hk45i`. Note: `notes/stage9/ncg_mlp_stage9.pdf
 - Spectral birth truncation (star from top-k eigenpairs, residual exact): window 4, k=1/4/16/64: 1.3/1.2/1.0/1.0e-7 (saturates at 16); residual diagonal only: 5.4/5.1/4.0/2.1e-7; residual rank-k too: 5.2/4.5/2.3e-7. The missing factor 3 (w=4) / 6 (w=2) is the hub-diagonal pairing of the bulk, not its spectrum; the old sum is low rank because the cocycle is, not the births.
 - Collective mode (diag_collective, 4 nets): top eigenvector of the pre-activation covariance: 0.9% of the energy at layer 0, 37-48% at layer 15; cos with the mean 0.97-0.98 from layer 12. Transported collective directions of sources born at layer >= 4 stay collective (cos 0.78-0.98); sources born at layers 0-3 have none. Family {T p_l'} at l=15: singular values (1, 0.32, 0.29, 0.23).
 - Feature-learnability (diag_features): the exact chain's per-neuron error is not predictable from 34 local chain features (cross-network ridge makes it worse: 1.0e-6 vs 4.4e-8; in-sample -5%); collective share of its error 0.2-5%. The window-1 chain's error is 53-64% collective.
-- Coherent + cross decomposition of an old source's readout (verified exact to 1e-16 when all parts are kept, `oldmode=cross` in kprop3c): coherent rank-one terms (3 transported vectors), cross terms (five congruence-transported matrices times the collective vector), the exact diagonal-kappa3 memory (T o T) D T^T, and the bulk-bulk hub pairing (star bulk, residual bulk). Scan running (jobs/scanX.tsv).
+- Coherent + cross decomposition of an old source's readout (note, Prop. 5.2; verified exact to 1e-16 when all parts are kept, `oldmode=cross`):
+  old sources (age >= w) read through: coherent only: w=2 1.6e-6 / w=4 7.3e-7 (= dropping them: 1.65e-6 / 7.5e-7);
+  coherent + cross: 1.6e-6 / 7.3e-7; coherent + diagonal memory: 1.2e-6 / 5.4e-7; all three: 1.2e-6 / 5.3e-7;
+  + star bulk: 7.3e-7 / 3.2e-7; + residual bulk: 3.1e-7 / 1.3e-7; dense: 3.5e-8. Same on nets 1-3 (+-25%).
+  **The memory is the bulk hub pairing** (incoherent parts of the birth covariance and residual); the collective/mean-field parts,
+  the only ones that accumulate cheaply, are worth less than a third of a decade. The mean-field tier (task 14) is refuted.
 
 ## 5. The eight papers and the essence of the obstacle (note, Sec. 8)
 
