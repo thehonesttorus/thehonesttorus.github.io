@@ -1,0 +1,4 @@
+c0	python scripts/diag_collective.py /opt/data/official 0
+c1	python scripts/diag_collective.py /opt/data/official 1
+c2	python scripts/diag_collective.py /opt/data/official 2
+c3	python scripts/diag_collective.py /opt/data/official 3

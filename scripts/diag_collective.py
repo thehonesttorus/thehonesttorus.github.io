@@ -18,7 +18,8 @@ np.set_printoptions(precision=3, suppress=True, linewidth=220)
 print("layer: top-1/4/16/64 energy fraction of Soff; lam_1/lam_2; cos(v, m)")
 for l in range(L):
     Soff = _zero_diag(S[l]); e, V = np.linalg.eigh(Soff); idx = np.argsort(-np.abs(e)); e, V = e[idx], V[:, idx]
-    v[l], lam[l] = V[:, 0] * np.sign(V[:, 0] @ rec[l]["m"]), e[0]; p[l] = Phi[l] * v[l]; q[l] = wick(rec[l]["m"], rec[l]["var"], 2, 1) * v[l]
+    sg = np.sign(V[:, 0] @ rec[l]["m"]) if np.linalg.norm(rec[l]["m"]) > 1e-12 else np.sign(V[:, 0].sum()); sg = sg if sg != 0 else 1.0
+    v[l], lam[l] = V[:, 0] * sg, e[0]; p[l] = Phi[l] * v[l]; q[l] = wick(rec[l]["m"], rec[l]["var"], 2, 1) * v[l]
     cap = [np.sum(e[:k] ** 2) / np.sum(e ** 2) for k in (1, 4, 16, 64)]
     m = rec[l]["m"]; print(f"  {l:2d}: {cap[0]:.3f} {cap[1]:.3f} {cap[2]:.3f} {cap[3]:.3f} | {e[0]/abs(e[1]):.2f} | {m @ v[l] / np.linalg.norm(m):+.4f}")
 def transport(x, lp, l):
