@@ -459,3 +459,67 @@ judged on 50-99 against the refitted V35 base, as in note XXXIX:
 
 The counterterms do not absorb the chaos correction: its free amplitude is its derived value to within 1%. In the
 renormalized comparison it is a law term, as the fold was.
+
+**The decisive test** (`outputs/heldout_50-99/`): free-running on the held-out networks 50-99, each system with its own
+counterterms fitted on 0-49. The adopted system's row is note XXXIX's held-out figure, reproduced bit for bit by this
+code with V56 off (section 10).
+
+| system | raw | C/B | adjusted | against the adopted system |
+|---|---|---|---|---|
+| adopted: V35 + pair + fold + counterterms | 1.9726e-8 | 0.1779 | 3.5090e-9 | |
+| + V56, eps = 0.01 | 1.5681e-8 (-20.50%, 50/50) | 0.2030 (+14.08%) | 3.1824e-9 | -9.31% (per net -8.85 +- 0.80, better on 45/50) |
+| **+ V56, eps = 0.001** | **1.5601e-8 (-20.91%, 50/50)** | **0.2030** | **3.1661e-9** | **-9.77% (per net -9.29 +- 0.81, better on 46/50)** |
+
+- **P33 holds.** -9.8% against at least -5%, about eleven standard errors, cost included. By note XXXIX's rule it is
+  adopted.
+- eps = 0.001 is taken. It was better at every stage on all networks: free-running -0.56 points adjusted, renormalized
+  -0.38, held-out -0.46. Both values were pre-registered, so the choice is a selection between them, noted as such.
+- **The cold production screen (P27-P30, Modal) was stopped by its time limit after two networks per variant**, when
+  Modal's capacity fell to two containers: p3 -19.4%, p3L0 -15.0%, p3m2 -19.1%, p3e -20.7% raw on networks 0-1. The
+  scored regime above answers P27's question on all 100 networks with the pair included. P28-P30 stay unmeasured
+  beyond n = 2.
+
+## 11. The leaderboard system (supersedes note XXXIX section 11h)
+
+The adopted system plus V56 at eps = 0.001, with its 103 counterterms refitted on all 100 networks. The file is
+`../leaderboard-system/code/estimator_final_v56.py`, baked from `est_v29.py` with
+`../leaderboard-system/code/estimator_final_v56_config.txt`; it runs with no environment at all.
+
+| scored regime, all 100 networks (`outputs/final_100nets/rows.txt`) | raw | C/B | adjusted | against note XXXIX's final |
+|---|---|---|---|---|
+| note XXXIX section 11h (V35 + pair + fold + counterterms) | 1.9643e-8 | 0.1778 | 3.4923e-9 | |
+| **+ V56 (the chaos-graded kappa4 diagonal) + counterterms** | **1.5465e-8** | **0.2028** | **3.1368e-9** | **-10.18%** |
+
+- **The figures are in-sample for the counterterms, as 11h's were.** The protocol's held-out estimate is 3.1661e-9
+  against 3.5090e-9 (-9.77%, section 10).
+- **Residual and memory.**
+  - The measured call's local residual is 0.740 s mean and 0.800 s max, against 0.57 and 0.63 s for 11h's system.
+  - The grader counts only our own Python between ops, and measured 0.17 s for a system this harness put near 0.5 s
+    (note XXIX). The increase is the split hub's extra small-op dispatch.
+  - The margin to the 0.4 s gate should be confirmed on the grader before relying on it.
+  - The memory high-water mark is 9.92 GB, below 11h's 10.33 GB.
+- **Against V35 alone** (note XXIX, 4.1273e-9) the system is -24.0% in adjusted MSE.
+
+**What the chaos grading delivered, and what it says next.**
+1. **The inherited component was the bookkeeping.**
+   - Organizing cumulants by index class (diagonal, slices, bulk) mixes Wiener chaos orders. Its truncations are not
+     projections, which is why the level-4 star alone was adverse (note XL).
+   - Organized by chaos order, the kappa4 diagonal's quenched error splits into two consistent pieces: the
+     second-chaos path class and the third-chaos star with the full arm.
+   - Each piece alone is strongly adverse. Together, at the derived weights (1, 1), they take a fifth of the raw MSE
+     off every network, and the counterterms leave their amplitude at 1.007.
+2. **The flex kernel was real and the sources resolve it.**
+   - The pair state does not fix the omitted classes (note XXXVIII).
+   - The symmetrized D21 carries nothing about the kappa4 diagonal; the sources' assignment of second-chaos pieces
+     to neurons carries most of it.
+   - The information was always in the chain. No closure read it.
+3. **The Schur hub turned an n^3-per-source-layer class into one solve per layer.**
+   - It works because it is the dressed (skeleton) form of the path diagram: full propagators on every line.
+   - The solve is intrinsic: the quadratic form is dominated by Y's small components in the covariance's bottom
+     directions, so no top-subspace shortcut exists.
+4. **Next.**
+   - The solves are now two thirds of V56's 25.8 units.
+   - The (2,2) slice has a cheap path part, 4 [Y M^-1 Y^T]_ij, one product from the same solve. Its star partner
+     costs two products per source-layer, and the diagonal showed the parts are useless alone.
+   - The kappa3 readouts' remaining defect is closed walks (the joint-gate triangle, n^4). The chaos grading prices it
+     but does not unlock it.

@@ -1,0 +1,11 @@
+   raw      1.5681e-08 vs 1.9726e-08 (-20.50%, per net -20.09 +- 0.71, better 50/50)
+   C/B      2.0295e-01 vs 1.7789e-01 (+14.08%, per net +14.08 +- 0.01, better 0/50)
+   adjusted 3.1824e-09 vs 3.5090e-09 (-9.31%, per net -8.85 +- 0.80, better 45/50)
+   residual mean 0.740 s
+hv56e vs adopted+counterterms (held-out 50-99), n=50
+   raw      1.5601e-08 vs 1.9726e-08 (-20.91%, per net -20.48 +- 0.71, better 50/50)
+   C/B      2.0295e-01 vs 1.7789e-01 (+14.08%, per net +14.08 +- 0.01, better 0/50)
+   adjusted 3.1661e-09 vs 3.5090e-09 (-9.77%, per net -9.29 +- 0.81, better 46/50)
+   residual mean 0.740 s
+
+[exited with code 0]

@@ -717,7 +717,7 @@ elementwise multiply in the chain totals 1.9 units, the QRs 1.8, the saturation 
   young source-layer. Only a change of tiers moves it, and its price is on the frontier (elasticity about 1). The fold
   is the first lever of this round that moves the frontier itself.
 
-**11h. The leaderboard system (supersedes section 9).** V35, plus the pair (`V33_WK4M=3`, `V31_K4D=3`), plus the fold
+**11h. The leaderboard system (supersedes section 9; superseded by note XLI section 11, `../chaos-grading`).** V35, plus the pair (`V33_WK4M=3`, `V31_K4D=3`), plus the fold
 (`V52_FB_FOLD=1`), plus its 103 counterterms refitted on all 100 networks. The file is `code/estimator_final.py`, baked
 from `est_v29.py` with `code/estimator_final_config.txt`. Section 9's file is kept as `code/estimator_final_pair.py`.
 
