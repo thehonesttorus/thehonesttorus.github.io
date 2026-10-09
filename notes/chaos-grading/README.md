@@ -286,3 +286,114 @@ variants run as specified).
 | a4 | m2path + `V56_LMIN=3 V56_LAST=2` | A4: raw -2% to -10% |
 
 P22 as specified is expected to fail.
+
+## 7. Why the dressed hub is the right object, and what each paper contributed
+
+**The path class is a regression, and the hub dresses its lines.** Write C_i = (L_i . x) q_i for the cross term
+between a neuron's first and second chaos.
+- Its first-chaos projection is 2 v_i . x, so the chaos-2 path class is 12 |v_i|^2 = 3 Var(J_1 C_i).
+- Its covariance with the field is Cov(C_i, z_j) = 2 Y_ij. The hub therefore computes three times the variance of
+  C_i's linear projection on the whole field z_l, through the full covariance:
+
+      P4_i = 12 [Y C^-1 Y^T]_ii = 3 Var( proj_(span z_l) C_i ).
+
+- The "exact" version uses the first chaos only: bare propagators on the internal line (the birth Gram L_b L_b'^T)
+  and on the external lines (the arms L_l L_b^T).
+- The hub uses the full covariance and the chain's full arms. This is the skeleton expansion of the same diagram,
+  every line a full propagator, with the self-energy insertions resummed.
+- At depth the higher-chaos share of the cross-covariances exceeds the first-chaos share (section 5, D1). The bare
+  diagram is then 4-8x too small and the dressed one carries the error at weight about 1.15.
+- What is left over is accounted for by the two omitted pieces:
+  - the 4-cycle (24-30% of the path term in the bare version, correlated with it) lifts the path weight from 1;
+  - the third chaos's product term (the kappa3 x C class) lowers the star's weight from 1 to about 0.7.
+
+**The papers, essence by essence.**
+- **Free fermions and the token graphs (APS, BBKL, AGM).** The second chaos is the quadratic sector. Its observables
+  are walk sums on one operator, so the cost classes of note XL become walk shapes:
+  - open walks (paths) through the current layer's hub are cheap;
+  - closed walks (cycles: the joint-gate triangle tr H^3, the 4-cycle) keep their K4 contraction graph and stay at
+    n^4.
+- **The dense bipartite Quantum Max-Cut algorithm (JKW).** Fluctuations around the mean field form a quadratic
+  (Bogoliubov) sector driven by the flat part of the interaction; the additive part acts trivially. Here the mean field
+  is the first chaos, the quadratic sector the second chaos.
+  - The measured value sits exactly in the flat, quenched assignment of second-chaos pieces to neurons: the
+    symmetrized-D21 control carries nothing.
+  - This is note XL's finding that value lies in quenched content, now located inside one diagram.
+- **Optimal spectrum estimation (bucketing and moment matching).** The kappa4 diagonal is the second local moment
+  L^T H^2 L of the operator whose first moment L^T H L the chain reads as D3. The hub estimates it from carried rows,
+  without the operator.
+- **The one-dimensional Gibbs states (positive splits).** The Schur complement is the canonical positive split:
+  Cov(z_b) = (the part the current layer explains) + (a positive remainder). The hub keeps the explained part; the
+  regularization discards the remainder.
+- **Shallow-light Steiner trees.** The hub is a Steiner point that connects the S^2 source pairs through one shared
+  object. Its depth, the conditioning, turned out shallow, because Y lies in the covariance's outlier subspace.
+- **Subspace designs, f-connectedness, strong minimality.** The identity needs every birth to be visible from the
+  current layer, with no small separator; the measured stability at eps = 0 says the network supplies that.
+- **Hamiltonian learning at any temperature.** The hub is an identification of a hidden quantity, |H_i L_i|^2, from
+  local data (a D21-type row and the covariance) by an exact regression identity: learning from marginals. The flat
+  approximations explain the earlier tadpole failure (truncated Edgeworth vertices are not flat outside the band); that
+  lesson was not used here.
+- **Hamiltonian and cut sparsification.** The useful form was the restricted one: preserve one functional family (the
+  path class of the diagonal) instead of the operator, through one hub instead of S^2 terms.
+- **The multiway-cut rounding mixtures.** The essence that transfers is the one notes XXXIX and XL had measured:
+  mixtures of law terms help, mixtures of conventions do not. The two chaos pieces are law terms, and their fitted
+  weights are near derived values (1 plus the 4-cycle share; 1 minus the product share), not free.
+- **Multiplicity codes.** The chaos kernels are expected derivatives (Stein): a multiplicity representation of each
+  neuron at the Gaussian point. Homogeneity relates its 0th and 2nd "symbols": mu_i = tr H_i (E F = E Delta F), measured
+  at correlation 0.73-0.95 with the sources' H.
+- **The sigma-inverse mean curvature flow.** It supplied only the pattern of a sharp inequality with a rigid case:
+  Var(z_i^2) >= D21_i^T C^-1 D21_i, with equality at the chaos-2 model. The sharp form that worked is the
+  source-resolved one, not the D21 bound.
+
+## 8. The cold screen, measured (`outputs/screen56_cold_16nets/`)
+
+Networks 0-15, every variant paired against the fold system with every source dense (`V21_NO_CONFINE=1`), rerun in
+the same batch (mean raw 2.118e-8, 0.2585 B).
+
+| tag | switches | raw against the base | better on | FLOPs | prediction |
+|---|---|---|---|---|---|
+| m2fit | P4=2, weights (1.15, 0.7), all layers, star alone at the last | +6.46% +- 3.28 | 5/16 | +7.0% | P22, -8% to -20%: **fails** |
+| m2der | P4=2, weights (1, 1), same | +20.58% +- 3.47 | 1/16 | | P23: **fails** |
+| m1fit | P4=1, weights (1.15, 0.7) | +6.54% +- 3.28 | 5/16 | | P24, worse than m2fit by >= 2: **fails** (equal: the memory channel is negligible) |
+| m2path | the path class alone at 1.15 | +95.0% +- 8.2 | 0/16 | | P25, -3% to -12%: **fails** |
+| m2star | the star alone at 0.7 | +79.4% +- 3.9 | 0/16 | | P26, within +-3%: **fails** |
+| a1 | weights (1.15, 0.7), layers 3-14 | -11.28% +- 2.27 | 14/16 | +6.0% | A1, -6% to -15%: holds |
+| a2 | weights (1.15, 0.7), layers 3-15 (last layer full) | -12.15% +- 2.41 | 14/16 | +10.1% | A2, better than a1 by 2-6: **fails** (0.9) |
+| **a3** | **weights (1, 1), layers 3-15 (last layer full)** | **-20.87% +- 1.12** | **16/16** | **+10.1%** | A3, within +-4 of a2: **fails** (8.7 points better) |
+| a4 | the path class alone, layers 3-15 | +130.8% +- 10.2 | 0/16 | | A4: **fails** |
+
+Per-layer MSE of a3 against the base: -16% at layer 3, -23% to -26% at layers 4-8, and -21% to -22% from layer 9 to
+the output.
+
+**What the screen says.**
+- **The two chaos pieces are one correction.** Each alone is strongly adverse (+79% to +131%). Together, at the derived
+  weights (1, 1), they remove a fifth of the MSE on every network. This is the grading's claim made in the chain: the
+  second-chaos path class and the third-chaos star are complementary halves of the kappa4 diagonal's quenched error, and
+  neither is a truncation of anything by itself.
+- **The derived weights beat the one-step fit by 8.7 points.** The one-step regression's (1.15, 0.7) is attenuated
+  by the candidates' own errors. Free running prefers the weights the theory gives.
+- **Layers 1-2 must be left out, and the last layer must have both pieces.** With the star alone there it costs more
+  than it saves.
+- **The closure's memory channel is negligible** (m1fit = m2fit). The post-activation kappa4 diagonal is dominated by
+  the Gaussian nonlinearity's own fourth cumulant.
+
+**The production version** (`V56_OLD=1`: the old tier's factor families split the same way plus one r-lift, and the
+star over every slot, since the old tier's legs are formed dense). On network 0 against the production fold system:
+- full solve: 1.789e-8 against 2.320e-8, **-22.9% raw**, FLOPs +12.8% (0.2215 B against 0.1964 B), adjusted about -13%;
+- the Galerkin solve in Y's top row space (`V56_GAL=64`): +5.8%. Y is not concentrated in 64 dimensions, so the
+  full solve stays.
+
+## 9. The production screen (stated before its runs)
+
+Networks 0-15, paired against the production fold system (B35 + `V52_FB_FOLD=1`) rerun in the same batch. All
+variants use `V56_P4=2 V56_A=1 V56_B=1` with the full solve.
+
+| tag | further switches | prediction |
+|---|---|---|
+| p3 | `V56_LMIN=3 V56_LAST=2` | **P27:** raw -15% to -25%, better on >= 15/16; FLOPs +12% to +14%; adjusted -7% to -14% |
+| p3L0 | `V56_LMIN=3 V56_LAST=0` | P28: raw worse than p3 by 2-8 points; FLOPs +8% to +10% |
+| p3m2 | `V56_LMIN=2 V56_LAST=2` | P29: within +-3 points of p3 |
+| p3e | `V56_LMIN=3 V56_LAST=2 V56_EPS=0.001` | P30: within +-2 points of p3 |
+
+If P27 holds, the winner goes to the scored regime: all 100 networks, counterterms refitted on 0-49, held-out 50-99,
+adjusted MSE (note XXXIX protocol).

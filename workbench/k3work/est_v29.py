@@ -425,6 +425,11 @@ P4_LOG = _os.environ.get("V56_LOG", "0") == "1"
 # pre-registered), and the trimmed last layer: 0 = no correction, 1 = the star only (pre-registered; the hub is not
 # formed there), 2 = the full correction (the hub's full-arm family and the covariance sandwich formed there too).
 P4_LMIN = int(_os.environ.get("V56_LMIN", "1"))
+# V56 production: the old tier's half of Y (its factor-space families split like the young hub, one extra r-lift) and its
+# star (the formed dense legs); V56_GAL = r > 0 solves in Y's top row space (rank r range finder, one power pass) instead
+# of the full n x n solve: Y lies in the covariance's outlier subspace, so the Galerkin form is nearly exact.
+P4_OLD = _os.environ.get("V56_OLD", "1") == "1"
+P4_GAL = int(_os.environ.get("V56_GAL", "0"))
 P4_LAST = int(_os.environ.get("V56_LAST", "1"))
 KD = int(_os.environ.get("V39_KD", "0"))
 KD_AMP = float(_os.environ.get("V39_KD_AMP", "1.0"))
@@ -1809,8 +1814,18 @@ class Estimator(BaseEstimator):
                 if self._y56 is not None and _C56 is not None and P4_A != 0.0:
                     # Schur hub: |H_i L_i|^2 = [Y C^-1 Y^T]_ii, regularized (Y lies in the covariance's top subspace)
                     _M56 = fnp.add(_C56, fnp.diag(var + P4_EPS * fnp.mean(var)), out=NN("v56m"))
-                    _Z56 = fnp.linalg.solve(_M56, self._y56.T)
-                    _p4l = fnp.sum(fnp.multiply(self._y56, _Z56.T), axis=1) * 12.0
+                    if P4_GAL > 0:
+                        # Galerkin: Q = top row space of Y (rank-r range finder sketched by a weight slice, one power
+                        # pass), |H L|^2 ~ (Y Q) (Q^T M Q)^-1 (Y Q)^T
+                        _yt = self._y56.T
+                        _q56, _ = fnp.linalg.qr(_yt @ w32[:, :P4_GAL])
+                        _q56, _ = fnp.linalg.qr(_yt @ (self._y56 @ _q56))
+                        _yq = self._y56 @ _q56
+                        _g56 = _q56.T @ (_M56 @ _q56)
+                        _p4l = fnp.sum(fnp.multiply(_yq, fnp.linalg.solve(_g56, _yq.T).T), axis=1) * 12.0
+                    else:
+                        _Z56 = fnp.linalg.solve(_M56, self._y56.T)
+                        _p4l = fnp.sum(fnp.multiply(self._y56, _Z56.T), axis=1) * 12.0
                     _p4c = fnp.multiply(_p4l - fnp.sum(_p4l * _act) / _na, _act)
                     _d56 = _d56 + _p4c * P4_A
                 if self._star56 is not None and P4_B != 0.0:
@@ -2472,6 +2487,52 @@ class Estimator(BaseEstimator):
             return out
         return fnp.matmul(inner, Qc.T, out=out)
 
+    def _v56_split(self, bufs, sb, j0, j1, inner, lev, tag):
+        """V56: an old tier's factor family sum_j LA_j FA_j^T + LP_j FP_j^T (slots j0..j1, right factors in factor space)
+        as its two halves, sum LA FAt^T and sum (LP - LA o t) FP^T, with FAt = FA + FP d(t) formed in place and restored.
+        Writes the D21 family into `inner` (1, n, r) and returns the full-arm half (n, r)."""
+        m = j1 - j0
+        T56 = fnp.stack(self._t56[j0:j1], axis=0)[:, None, None, :]
+        FAw, FPw = sb[0::2], sb[1::2]
+        LAw, LPw = bufs["lap4"][2 * j0:2 * j1:2], bufs["lap4"][2 * j0 + 1:2 * j1:2]
+        tmpF = self._pool.get(("v56f", tag), tuple(sb.shape))[:m]
+        tmpL = bufs["v56"][j0:j1][:, None]
+        fnp.multiply(FPw, T56, out=tmpF)
+        fnp.add(FAw, tmpF, out=FAw)
+        fnp.multiply(LAw, T56, out=tmpL)
+        fnp.subtract(LPw, tmpL, out=LPw)
+        iy = self._pool.get(("inner_y", tag), tuple(inner.shape))
+        self._smm.hub(LAw, FAw, iy, lev, SB_MN)
+        self._smm.hub(LPw, FPw, inner, lev, SB_MN)
+        fnp.multiply(FPw, T56, out=tmpF)
+        fnp.subtract(FAw, tmpF, out=FAw)
+        fnp.add(inner, iy, out=inner)
+        return iy[0]
+
+    def _v56_family(self, bufs, sb, j0, j1, lev, tag):
+        """V56, trimmed last layer: the full-arm half sum LA FAt^T of an old tier only."""
+        m = j1 - j0
+        T56 = fnp.stack(self._t56[j0:j1], axis=0)[:, None, None, :]
+        FAw, FPw = sb[0::2], sb[1::2]
+        LAw = bufs["lap4"][2 * j0:2 * j1:2]
+        tmpF = self._pool.get(("v56f", tag), tuple(sb.shape))[:m]
+        fnp.multiply(FPw, T56, out=tmpF)
+        fnp.add(FAw, tmpF, out=FAw)
+        iy = self._pool.get(("inner_y", tag), (1, LAw.shape[2], sb.shape[2]))
+        self._smm.hub(LAw, FAw, iy, lev, SB_MN)
+        fnp.multiply(FPw, T56, out=tmpF)
+        fnp.subtract(FAw, tmpF, out=FAw)
+        return iy[0]
+
+    def _v56_add_old(self, bufs, y_in, Qc, s_sb, n):
+        """V56: Y += (1/2) y_in Qc^T (the old tier's half of the path-class product, one r-lift)."""
+        yo = self._lift(y_in, Qc, self._pool.get("v56_yo", (n, n)), s_sb)
+        if self._y56 is None:
+            self._y56 = fnp.multiply(yo, 0.5, out=bufs["hub_y"])
+        else:
+            fnp.multiply(yo, 0.5, out=yo)
+            fnp.add(self._y56, yo, out=self._y56)
+
     def _dslices(self, A_st, P_st, Z_st, L_st, w2b_list, s_list, e_list,
                  c1_list, c2_list, y_list, n, bufs, rres, rfb, Zf_st, R1T_st, R2T_st,
                  need_d21=True, ka=0, FAo=None, FPo=None, Qc=None,
@@ -2503,17 +2564,18 @@ class Estimator(BaseEstimator):
             self._star4 = fnp.einsum("kij,kj->i", _U4, fnp.stack(self._w3b[:k], axis=0)) * 4.0
         PP = fnp.multiply(P_st, P_st, out=bufs["pp"][:k])
         T = bufs["t"][:k]
-        if P4 and "v56" in bufs and len(self._t56) >= k and ka < k:
+        _s56 = 0 if (P4_OLD or ka == 0) else ka
+        if P4 and "v56" in bufs and len(self._t56) >= k and _s56 < k:
             # V56: the third-chaos star with the full arm, 4 sum_s sum_m c3_m P_im At_im^3, At = A + P d(t), over the
-            # dense (young) slots [ka:k] (T is free scratch until the M leg is formed below)
-            _T56 = fnp.stack(self._t56[ka:k], axis=0)[:, None, :]
-            _At = fnp.multiply(P_st[ka:], _T56, out=bufs["v56"][ka:k])
-            fnp.add(_At, A_st[ka:], out=_At)
-            _T3 = T[ka:]
+            # slots [_s56:k] (with the old tier on, its legs are the formed dense legs; T is free scratch until the M leg)
+            _T56 = fnp.stack(self._t56[_s56:k], axis=0)[:, None, :]
+            _At = fnp.multiply(P_st[_s56:], _T56, out=bufs["v56"][_s56:k])
+            fnp.add(_At, A_st[_s56:], out=_At)
+            _T3 = T[_s56:]
             fnp.multiply(_At, _At, out=_T3)
             fnp.multiply(_T3, _At, out=_T3)
-            fnp.multiply(_T3, P_st[ka:], out=_T3)
-            self._star56 = fnp.einsum("kij,kj->i", _T3, fnp.stack(self._w3b[ka:k], axis=0)) * 4.0
+            fnp.multiply(_T3, P_st[_s56:], out=_T3)
+            self._star56 = fnp.einsum("kij,kj->i", _T3, fnp.stack(self._w3b[_s56:k], axis=0)) * 4.0
         # V54 diagnostic (note XL): with OLD_D3 = 0 the old sources' diagonal readout is left out (slots [_y0:k] only)
         _y0 = ka if (OLD_D3 == 0 and 0 < ka < k) else 0
         # M*P = PP*s + 3 AP*e + (Z L^T)*P
@@ -2666,6 +2728,19 @@ class Estimator(BaseEstimator):
                 fnp.multiply(Pw, T56, out=tmp)
                 fnp.subtract(Aw, tmp, out=Aw)
                 self._y56 = fnp.multiply(hy, 0.5, out=hy)
+                if P4_OLD and ka > 0:
+                    y_in = None
+                    smm = self._smm
+                    if ka > kb:
+                        r1 = sb1.shape[2]
+                        y_in = self._v56_family(bufs, sb1, kb, ka, smm.level(n, n, r1, s_sb, SB_MN), "1")
+                    if kb > 0:
+                        r2_ = sb2.shape[2]
+                        y2 = self._v56_family(bufs, sb2, 0, kb, smm.level(n, n, r2_, s_sb, SB_MN), "2")
+                        y2 = fnp.matmul(y2, U2.T, out=self._pool.get("lift_y", (n, U2.shape[0])))
+                        y_in = y2 if y_in is None else fnp.add(y_in, y2, out=y_in)
+                    if y_in is not None:
+                        self._v56_add_old(bufs, y_in, Qc, s_sb, n)
             return D3, None
         if ka > 0:
             # V21: old sources through the shared basis: [sum LA FAo^T + LP FPo^T] Qc^T
@@ -2675,15 +2750,25 @@ class Estimator(BaseEstimator):
             # level 0 = the dense batched-matmul leaf + k-sum (same billing as the einsum)
             inner = None
             smm = self._smm
+            y_in = None   # V56: the old tier's full-arm family, sum LA FAt^T (factor space, tier-1 coordinates)
+            v56o = P4 and P4_OLD and "hub_y" in bufs and len(self._t56) >= ka
             if ka > kb:
                 r1 = sb1.shape[2]
                 inner = self._pool.get("inner", (1, n, r1))
-                smm.hub(bufs["lap4"][2 * kb:2 * ka], sb1, inner, smm.level(n, n, r1, s_sb, SB_MN), SB_MN)
+                if v56o:
+                    y_in = self._v56_split(bufs, sb1, kb, ka, inner, smm.level(n, n, r1, s_sb, SB_MN), "1")
+                else:
+                    smm.hub(bufs["lap4"][2 * kb:2 * ka], sb1, inner, smm.level(n, n, r1, s_sb, SB_MN), SB_MN)
                 inner = inner[0]
             if kb > 0:
                 r2_ = sb2.shape[2]
                 inner2 = self._pool.get("inner2", (1, n, r2_))
-                smm.hub(bufs["lap4"][:2 * kb], sb2, inner2, smm.level(n, n, r2_, s_sb, SB_MN), SB_MN)
+                if v56o:
+                    y2 = self._v56_split(bufs, sb2, 0, kb, inner2, smm.level(n, n, r2_, s_sb, SB_MN), "2")
+                    y2 = fnp.matmul(y2, U2.T, out=self._pool.get("lift_y", (n, U2.shape[0])))
+                    y_in = y2 if y_in is None else fnp.add(y_in, y2, out=y_in)
+                else:
+                    smm.hub(bufs["lap4"][:2 * kb], sb2, inner2, smm.level(n, n, r2_, s_sb, SB_MN), SB_MN)
                 lift = fnp.matmul(inner2[0], U2.T, out=self._pool.get("lift", (n, U2.shape[0])))
                 inner = lift if inner is None else fnp.add(inner, lift, out=inner)
             # V27: D21 accumulates in one pooled buffer (a + b == b + a exactly, so the
@@ -2708,6 +2793,8 @@ class Estimator(BaseEstimator):
                 fnp.matmul(R.T, Yk, out=bufs["t1"])
                 fnp.multiply(bufs["t1"], 1.0 / 3.0, out=bufs["t1"])
                 fnp.add(D21, bufs["t1"], out=D21)
+            if y_in is not None:
+                self._v56_add_old(bufs, y_in, Qc, s_sb, n)
         else:
             if STRASSEN_HUB > 0:
                 D21 = self._hub2(bufs, apb4, 0, k, n, sat)
