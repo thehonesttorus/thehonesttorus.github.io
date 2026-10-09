@@ -32,3 +32,10 @@
 ## Elicit (live)
 - API key works against `https://elicit.com/api/v2` (reports, paper search, research-agent sessions). The monthly
   usage was at 61% before this session; three reports were run (see `notes/stage9/elicit/`).
+
+## Rule for experiments (added after the slow-scan episode)
+Never run scans sequentially in the sandbox (4 cores, ~1 min per chain run). Every configuration is one line of a
+job file and goes out as a task: `python3 infra/fleet.py batch JOB jobs/JOB.tsv --threads 4 --slots 48` on the
+192-core relay `w9-1` (results in ~1.5x one run's wall time for 48 tasks), or `python3 infra/modal_relay.py batch`
+when more than ~200 concurrent runs are needed. Modal's concurrency at cpu=4 was observed to be only a few tasks at
+a time on 2026-10-09 (lapx5: 3 of 128 tasks in an hour); the relay is the fast path for anything under ~500 runs.

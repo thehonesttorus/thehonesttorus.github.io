@@ -1,0 +1,240 @@
+m0	python scripts/run_kprop3c.py /opt/data/official 0 window=2 tucker=0 oldmode=spec spec=1 specres=full
+m1	python scripts/run_kprop3c.py /opt/data/official 0 window=2 tucker=0 oldmode=spec spec=1 specres=diag
+m2	python scripts/run_kprop3c.py /opt/data/official 0 window=2 tucker=0 oldmode=spec spec=1 specres=spec
+m3	python scripts/run_kprop3c.py /opt/data/official 0 window=2 tucker=0 oldmode=spec spec=4 specres=full
+m4	python scripts/run_kprop3c.py /opt/data/official 0 window=2 tucker=0 oldmode=spec spec=4 specres=diag
+m5	python scripts/run_kprop3c.py /opt/data/official 0 window=2 tucker=0 oldmode=spec spec=4 specres=spec
+m6	python scripts/run_kprop3c.py /opt/data/official 0 window=2 tucker=0 oldmode=spec spec=16 specres=full
+m7	python scripts/run_kprop3c.py /opt/data/official 0 window=2 tucker=0 oldmode=spec spec=16 specres=diag
+m8	python scripts/run_kprop3c.py /opt/data/official 0 window=2 tucker=0 oldmode=spec spec=16 specres=spec
+m9	python scripts/run_kprop3c.py /opt/data/official 0 window=2 tucker=0 oldmode=spec spec=64 specres=full
+m10	python scripts/run_kprop3c.py /opt/data/official 0 window=2 tucker=0 oldmode=spec spec=64 specres=diag
+m11	python scripts/run_kprop3c.py /opt/data/official 0 window=2 tucker=0 oldmode=spec spec=64 specres=spec
+m12	python scripts/run_kprop3c.py /opt/data/official 0 window=4 tucker=0 oldmode=spec spec=1 specres=full
+m13	python scripts/run_kprop3c.py /opt/data/official 0 window=4 tucker=0 oldmode=spec spec=1 specres=diag
+m14	python scripts/run_kprop3c.py /opt/data/official 0 window=4 tucker=0 oldmode=spec spec=1 specres=spec
+m15	python scripts/run_kprop3c.py /opt/data/official 0 window=4 tucker=0 oldmode=spec spec=4 specres=full
+m16	python scripts/run_kprop3c.py /opt/data/official 0 window=4 tucker=0 oldmode=spec spec=4 specres=diag
+m17	python scripts/run_kprop3c.py /opt/data/official 0 window=4 tucker=0 oldmode=spec spec=4 specres=spec
+m18	python scripts/run_kprop3c.py /opt/data/official 0 window=4 tucker=0 oldmode=spec spec=16 specres=full
+m19	python scripts/run_kprop3c.py /opt/data/official 0 window=4 tucker=0 oldmode=spec spec=16 specres=diag
+m20	python scripts/run_kprop3c.py /opt/data/official 0 window=4 tucker=0 oldmode=spec spec=16 specres=spec
+m21	python scripts/run_kprop3c.py /opt/data/official 0 window=4 tucker=0 oldmode=spec spec=64 specres=full
+m22	python scripts/run_kprop3c.py /opt/data/official 0 window=4 tucker=0 oldmode=spec spec=64 specres=diag
+m23	python scripts/run_kprop3c.py /opt/data/official 0 window=4 tucker=0 oldmode=spec spec=64 specres=spec
+m24	python scripts/run_kprop3c.py /opt/data/official 0 window=99 oldmode=dropage1
+m25	python scripts/run_kprop3c.py /opt/data/official 0 window=99 oldmode=dropage2
+m26	python scripts/run_kprop3c.py /opt/data/official 0 window=99 oldmode=dropage3
+m27	python scripts/run_kprop3c.py /opt/data/official 0 window=99 oldmode=dropage4
+m28	python scripts/run_kprop3c.py /opt/data/official 0 window=99 oldmode=dropage5
+m29	python scripts/run_kprop3c.py /opt/data/official 0 window=99 oldmode=dropage6
+m30	python scripts/run_kprop3c.py /opt/data/official 0 window=99 oldmode=dropage7
+m31	python scripts/run_kprop3c.py /opt/data/official 0 window=99 oldmode=dropage8
+m32	python scripts/run_kprop3c.py /opt/data/official 0 window=99 oldmode=dropage9
+m33	python scripts/run_kprop3c.py /opt/data/official 0 window=99 oldmode=dropage10
+m34	python scripts/run_kprop3c.py /opt/data/official 0 window=99 oldmode=dropage11
+m35	python scripts/run_kprop3c.py /opt/data/official 0 window=99 oldmode=dropage12
+m36	python scripts/run_kprop3c.py /opt/data/official 0 window=99 oldmode=dropage13
+m37	python scripts/run_kprop3c.py /opt/data/official 0 window=99 oldmode=dropage14
+m38	python scripts/run_kprop3c.py /opt/data/official 0 window=1 tucker=0 oldmode=none
+m39	python scripts/run_kprop3c.py /opt/data/official 0 window=2 tucker=0 oldmode=none
+m40	python scripts/run_kprop3c.py /opt/data/official 0 window=3 tucker=0 oldmode=none
+m41	python scripts/run_kprop3c.py /opt/data/official 0 window=4 tucker=0 oldmode=none
+m42	python scripts/run_kprop3c.py /opt/data/official 0 window=6 tucker=0 oldmode=none
+m43	python scripts/run_kprop3c.py /opt/data/official 0 window=8 tucker=0 oldmode=none
+m44	python scripts/run_kprop3c.py /opt/data/official 0 window=10 tucker=0 oldmode=none
+m45	python scripts/run_kprop3c.py /opt/data/official 0 window=1 tucker=0 oldmode=lowrank1
+m46	python scripts/run_kprop3c.py /opt/data/official 0 window=1 tucker=0 oldmode=lowrank4
+m47	python scripts/run_kprop3c.py /opt/data/official 0 window=1 tucker=0 oldmode=lowrank16
+m48	python scripts/run_kprop3c.py /opt/data/official 0 window=1 tucker=0 oldmode=lowrank64
+m49	python scripts/run_kprop3c.py /opt/data/official 0 window=2 tucker=0 oldmode=lowrank1
+m50	python scripts/run_kprop3c.py /opt/data/official 0 window=2 tucker=0 oldmode=lowrank4
+m51	python scripts/run_kprop3c.py /opt/data/official 0 window=2 tucker=0 oldmode=lowrank16
+m52	python scripts/run_kprop3c.py /opt/data/official 0 window=2 tucker=0 oldmode=lowrank64
+m53	python scripts/run_kprop3c.py /opt/data/official 0 window=4 tucker=0 oldmode=lowrank1
+m54	python scripts/run_kprop3c.py /opt/data/official 0 window=4 tucker=0 oldmode=lowrank4
+m55	python scripts/run_kprop3c.py /opt/data/official 0 window=4 tucker=0 oldmode=lowrank16
+m56	python scripts/run_kprop3c.py /opt/data/official 0 window=4 tucker=0 oldmode=lowrank64
+m57	python scripts/run_kprop3c.py /opt/data/official 0 window=99
+m58	python scripts/diag_agegram.py /opt/data/official 0
+m59	python scripts/diag_collective.py /opt/data/official 0
+m60	python scripts/run_kprop3c.py /opt/data/official 1 window=2 tucker=0 oldmode=spec spec=1 specres=full
+m61	python scripts/run_kprop3c.py /opt/data/official 1 window=2 tucker=0 oldmode=spec spec=1 specres=diag
+m62	python scripts/run_kprop3c.py /opt/data/official 1 window=2 tucker=0 oldmode=spec spec=1 specres=spec
+m63	python scripts/run_kprop3c.py /opt/data/official 1 window=2 tucker=0 oldmode=spec spec=4 specres=full
+m64	python scripts/run_kprop3c.py /opt/data/official 1 window=2 tucker=0 oldmode=spec spec=4 specres=diag
+m65	python scripts/run_kprop3c.py /opt/data/official 1 window=2 tucker=0 oldmode=spec spec=4 specres=spec
+m66	python scripts/run_kprop3c.py /opt/data/official 1 window=2 tucker=0 oldmode=spec spec=16 specres=full
+m67	python scripts/run_kprop3c.py /opt/data/official 1 window=2 tucker=0 oldmode=spec spec=16 specres=diag
+m68	python scripts/run_kprop3c.py /opt/data/official 1 window=2 tucker=0 oldmode=spec spec=16 specres=spec
+m69	python scripts/run_kprop3c.py /opt/data/official 1 window=2 tucker=0 oldmode=spec spec=64 specres=full
+m70	python scripts/run_kprop3c.py /opt/data/official 1 window=2 tucker=0 oldmode=spec spec=64 specres=diag
+m71	python scripts/run_kprop3c.py /opt/data/official 1 window=2 tucker=0 oldmode=spec spec=64 specres=spec
+m72	python scripts/run_kprop3c.py /opt/data/official 1 window=4 tucker=0 oldmode=spec spec=1 specres=full
+m73	python scripts/run_kprop3c.py /opt/data/official 1 window=4 tucker=0 oldmode=spec spec=1 specres=diag
+m74	python scripts/run_kprop3c.py /opt/data/official 1 window=4 tucker=0 oldmode=spec spec=1 specres=spec
+m75	python scripts/run_kprop3c.py /opt/data/official 1 window=4 tucker=0 oldmode=spec spec=4 specres=full
+m76	python scripts/run_kprop3c.py /opt/data/official 1 window=4 tucker=0 oldmode=spec spec=4 specres=diag
+m77	python scripts/run_kprop3c.py /opt/data/official 1 window=4 tucker=0 oldmode=spec spec=4 specres=spec
+m78	python scripts/run_kprop3c.py /opt/data/official 1 window=4 tucker=0 oldmode=spec spec=16 specres=full
+m79	python scripts/run_kprop3c.py /opt/data/official 1 window=4 tucker=0 oldmode=spec spec=16 specres=diag
+m80	python scripts/run_kprop3c.py /opt/data/official 1 window=4 tucker=0 oldmode=spec spec=16 specres=spec
+m81	python scripts/run_kprop3c.py /opt/data/official 1 window=4 tucker=0 oldmode=spec spec=64 specres=full
+m82	python scripts/run_kprop3c.py /opt/data/official 1 window=4 tucker=0 oldmode=spec spec=64 specres=diag
+m83	python scripts/run_kprop3c.py /opt/data/official 1 window=4 tucker=0 oldmode=spec spec=64 specres=spec
+m84	python scripts/run_kprop3c.py /opt/data/official 1 window=99 oldmode=dropage1
+m85	python scripts/run_kprop3c.py /opt/data/official 1 window=99 oldmode=dropage2
+m86	python scripts/run_kprop3c.py /opt/data/official 1 window=99 oldmode=dropage3
+m87	python scripts/run_kprop3c.py /opt/data/official 1 window=99 oldmode=dropage4
+m88	python scripts/run_kprop3c.py /opt/data/official 1 window=99 oldmode=dropage5
+m89	python scripts/run_kprop3c.py /opt/data/official 1 window=99 oldmode=dropage6
+m90	python scripts/run_kprop3c.py /opt/data/official 1 window=99 oldmode=dropage7
+m91	python scripts/run_kprop3c.py /opt/data/official 1 window=99 oldmode=dropage8
+m92	python scripts/run_kprop3c.py /opt/data/official 1 window=99 oldmode=dropage9
+m93	python scripts/run_kprop3c.py /opt/data/official 1 window=99 oldmode=dropage10
+m94	python scripts/run_kprop3c.py /opt/data/official 1 window=99 oldmode=dropage11
+m95	python scripts/run_kprop3c.py /opt/data/official 1 window=99 oldmode=dropage12
+m96	python scripts/run_kprop3c.py /opt/data/official 1 window=99 oldmode=dropage13
+m97	python scripts/run_kprop3c.py /opt/data/official 1 window=99 oldmode=dropage14
+m98	python scripts/run_kprop3c.py /opt/data/official 1 window=1 tucker=0 oldmode=none
+m99	python scripts/run_kprop3c.py /opt/data/official 1 window=2 tucker=0 oldmode=none
+m100	python scripts/run_kprop3c.py /opt/data/official 1 window=3 tucker=0 oldmode=none
+m101	python scripts/run_kprop3c.py /opt/data/official 1 window=4 tucker=0 oldmode=none
+m102	python scripts/run_kprop3c.py /opt/data/official 1 window=6 tucker=0 oldmode=none
+m103	python scripts/run_kprop3c.py /opt/data/official 1 window=8 tucker=0 oldmode=none
+m104	python scripts/run_kprop3c.py /opt/data/official 1 window=10 tucker=0 oldmode=none
+m105	python scripts/run_kprop3c.py /opt/data/official 1 window=1 tucker=0 oldmode=lowrank1
+m106	python scripts/run_kprop3c.py /opt/data/official 1 window=1 tucker=0 oldmode=lowrank4
+m107	python scripts/run_kprop3c.py /opt/data/official 1 window=1 tucker=0 oldmode=lowrank16
+m108	python scripts/run_kprop3c.py /opt/data/official 1 window=1 tucker=0 oldmode=lowrank64
+m109	python scripts/run_kprop3c.py /opt/data/official 1 window=2 tucker=0 oldmode=lowrank1
+m110	python scripts/run_kprop3c.py /opt/data/official 1 window=2 tucker=0 oldmode=lowrank4
+m111	python scripts/run_kprop3c.py /opt/data/official 1 window=2 tucker=0 oldmode=lowrank16
+m112	python scripts/run_kprop3c.py /opt/data/official 1 window=2 tucker=0 oldmode=lowrank64
+m113	python scripts/run_kprop3c.py /opt/data/official 1 window=4 tucker=0 oldmode=lowrank1
+m114	python scripts/run_kprop3c.py /opt/data/official 1 window=4 tucker=0 oldmode=lowrank4
+m115	python scripts/run_kprop3c.py /opt/data/official 1 window=4 tucker=0 oldmode=lowrank16
+m116	python scripts/run_kprop3c.py /opt/data/official 1 window=4 tucker=0 oldmode=lowrank64
+m117	python scripts/run_kprop3c.py /opt/data/official 1 window=99
+m118	python scripts/diag_agegram.py /opt/data/official 1
+m119	python scripts/diag_collective.py /opt/data/official 1
+m120	python scripts/run_kprop3c.py /opt/data/official 2 window=2 tucker=0 oldmode=spec spec=1 specres=full
+m121	python scripts/run_kprop3c.py /opt/data/official 2 window=2 tucker=0 oldmode=spec spec=1 specres=diag
+m122	python scripts/run_kprop3c.py /opt/data/official 2 window=2 tucker=0 oldmode=spec spec=1 specres=spec
+m123	python scripts/run_kprop3c.py /opt/data/official 2 window=2 tucker=0 oldmode=spec spec=4 specres=full
+m124	python scripts/run_kprop3c.py /opt/data/official 2 window=2 tucker=0 oldmode=spec spec=4 specres=diag
+m125	python scripts/run_kprop3c.py /opt/data/official 2 window=2 tucker=0 oldmode=spec spec=4 specres=spec
+m126	python scripts/run_kprop3c.py /opt/data/official 2 window=2 tucker=0 oldmode=spec spec=16 specres=full
+m127	python scripts/run_kprop3c.py /opt/data/official 2 window=2 tucker=0 oldmode=spec spec=16 specres=diag
+m128	python scripts/run_kprop3c.py /opt/data/official 2 window=2 tucker=0 oldmode=spec spec=16 specres=spec
+m129	python scripts/run_kprop3c.py /opt/data/official 2 window=2 tucker=0 oldmode=spec spec=64 specres=full
+m130	python scripts/run_kprop3c.py /opt/data/official 2 window=2 tucker=0 oldmode=spec spec=64 specres=diag
+m131	python scripts/run_kprop3c.py /opt/data/official 2 window=2 tucker=0 oldmode=spec spec=64 specres=spec
+m132	python scripts/run_kprop3c.py /opt/data/official 2 window=4 tucker=0 oldmode=spec spec=1 specres=full
+m133	python scripts/run_kprop3c.py /opt/data/official 2 window=4 tucker=0 oldmode=spec spec=1 specres=diag
+m134	python scripts/run_kprop3c.py /opt/data/official 2 window=4 tucker=0 oldmode=spec spec=1 specres=spec
+m135	python scripts/run_kprop3c.py /opt/data/official 2 window=4 tucker=0 oldmode=spec spec=4 specres=full
+m136	python scripts/run_kprop3c.py /opt/data/official 2 window=4 tucker=0 oldmode=spec spec=4 specres=diag
+m137	python scripts/run_kprop3c.py /opt/data/official 2 window=4 tucker=0 oldmode=spec spec=4 specres=spec
+m138	python scripts/run_kprop3c.py /opt/data/official 2 window=4 tucker=0 oldmode=spec spec=16 specres=full
+m139	python scripts/run_kprop3c.py /opt/data/official 2 window=4 tucker=0 oldmode=spec spec=16 specres=diag
+m140	python scripts/run_kprop3c.py /opt/data/official 2 window=4 tucker=0 oldmode=spec spec=16 specres=spec
+m141	python scripts/run_kprop3c.py /opt/data/official 2 window=4 tucker=0 oldmode=spec spec=64 specres=full
+m142	python scripts/run_kprop3c.py /opt/data/official 2 window=4 tucker=0 oldmode=spec spec=64 specres=diag
+m143	python scripts/run_kprop3c.py /opt/data/official 2 window=4 tucker=0 oldmode=spec spec=64 specres=spec
+m144	python scripts/run_kprop3c.py /opt/data/official 2 window=99 oldmode=dropage1
+m145	python scripts/run_kprop3c.py /opt/data/official 2 window=99 oldmode=dropage2
+m146	python scripts/run_kprop3c.py /opt/data/official 2 window=99 oldmode=dropage3
+m147	python scripts/run_kprop3c.py /opt/data/official 2 window=99 oldmode=dropage4
+m148	python scripts/run_kprop3c.py /opt/data/official 2 window=99 oldmode=dropage5
+m149	python scripts/run_kprop3c.py /opt/data/official 2 window=99 oldmode=dropage6
+m150	python scripts/run_kprop3c.py /opt/data/official 2 window=99 oldmode=dropage7
+m151	python scripts/run_kprop3c.py /opt/data/official 2 window=99 oldmode=dropage8
+m152	python scripts/run_kprop3c.py /opt/data/official 2 window=99 oldmode=dropage9
+m153	python scripts/run_kprop3c.py /opt/data/official 2 window=99 oldmode=dropage10
+m154	python scripts/run_kprop3c.py /opt/data/official 2 window=99 oldmode=dropage11
+m155	python scripts/run_kprop3c.py /opt/data/official 2 window=99 oldmode=dropage12
+m156	python scripts/run_kprop3c.py /opt/data/official 2 window=99 oldmode=dropage13
+m157	python scripts/run_kprop3c.py /opt/data/official 2 window=99 oldmode=dropage14
+m158	python scripts/run_kprop3c.py /opt/data/official 2 window=1 tucker=0 oldmode=none
+m159	python scripts/run_kprop3c.py /opt/data/official 2 window=2 tucker=0 oldmode=none
+m160	python scripts/run_kprop3c.py /opt/data/official 2 window=3 tucker=0 oldmode=none
+m161	python scripts/run_kprop3c.py /opt/data/official 2 window=4 tucker=0 oldmode=none
+m162	python scripts/run_kprop3c.py /opt/data/official 2 window=6 tucker=0 oldmode=none
+m163	python scripts/run_kprop3c.py /opt/data/official 2 window=8 tucker=0 oldmode=none
+m164	python scripts/run_kprop3c.py /opt/data/official 2 window=10 tucker=0 oldmode=none
+m165	python scripts/run_kprop3c.py /opt/data/official 2 window=1 tucker=0 oldmode=lowrank1
+m166	python scripts/run_kprop3c.py /opt/data/official 2 window=1 tucker=0 oldmode=lowrank4
+m167	python scripts/run_kprop3c.py /opt/data/official 2 window=1 tucker=0 oldmode=lowrank16
+m168	python scripts/run_kprop3c.py /opt/data/official 2 window=1 tucker=0 oldmode=lowrank64
+m169	python scripts/run_kprop3c.py /opt/data/official 2 window=2 tucker=0 oldmode=lowrank1
+m170	python scripts/run_kprop3c.py /opt/data/official 2 window=2 tucker=0 oldmode=lowrank4
+m171	python scripts/run_kprop3c.py /opt/data/official 2 window=2 tucker=0 oldmode=lowrank16
+m172	python scripts/run_kprop3c.py /opt/data/official 2 window=2 tucker=0 oldmode=lowrank64
+m173	python scripts/run_kprop3c.py /opt/data/official 2 window=4 tucker=0 oldmode=lowrank1
+m174	python scripts/run_kprop3c.py /opt/data/official 2 window=4 tucker=0 oldmode=lowrank4
+m175	python scripts/run_kprop3c.py /opt/data/official 2 window=4 tucker=0 oldmode=lowrank16
+m176	python scripts/run_kprop3c.py /opt/data/official 2 window=4 tucker=0 oldmode=lowrank64
+m177	python scripts/run_kprop3c.py /opt/data/official 2 window=99
+m178	python scripts/diag_agegram.py /opt/data/official 2
+m179	python scripts/diag_collective.py /opt/data/official 2
+m180	python scripts/run_kprop3c.py /opt/data/official 3 window=2 tucker=0 oldmode=spec spec=1 specres=full
+m181	python scripts/run_kprop3c.py /opt/data/official 3 window=2 tucker=0 oldmode=spec spec=1 specres=diag
+m182	python scripts/run_kprop3c.py /opt/data/official 3 window=2 tucker=0 oldmode=spec spec=1 specres=spec
+m183	python scripts/run_kprop3c.py /opt/data/official 3 window=2 tucker=0 oldmode=spec spec=4 specres=full
+m184	python scripts/run_kprop3c.py /opt/data/official 3 window=2 tucker=0 oldmode=spec spec=4 specres=diag
+m185	python scripts/run_kprop3c.py /opt/data/official 3 window=2 tucker=0 oldmode=spec spec=4 specres=spec
+m186	python scripts/run_kprop3c.py /opt/data/official 3 window=2 tucker=0 oldmode=spec spec=16 specres=full
+m187	python scripts/run_kprop3c.py /opt/data/official 3 window=2 tucker=0 oldmode=spec spec=16 specres=diag
+m188	python scripts/run_kprop3c.py /opt/data/official 3 window=2 tucker=0 oldmode=spec spec=16 specres=spec
+m189	python scripts/run_kprop3c.py /opt/data/official 3 window=2 tucker=0 oldmode=spec spec=64 specres=full
+m190	python scripts/run_kprop3c.py /opt/data/official 3 window=2 tucker=0 oldmode=spec spec=64 specres=diag
+m191	python scripts/run_kprop3c.py /opt/data/official 3 window=2 tucker=0 oldmode=spec spec=64 specres=spec
+m192	python scripts/run_kprop3c.py /opt/data/official 3 window=4 tucker=0 oldmode=spec spec=1 specres=full
+m193	python scripts/run_kprop3c.py /opt/data/official 3 window=4 tucker=0 oldmode=spec spec=1 specres=diag
+m194	python scripts/run_kprop3c.py /opt/data/official 3 window=4 tucker=0 oldmode=spec spec=1 specres=spec
+m195	python scripts/run_kprop3c.py /opt/data/official 3 window=4 tucker=0 oldmode=spec spec=4 specres=full
+m196	python scripts/run_kprop3c.py /opt/data/official 3 window=4 tucker=0 oldmode=spec spec=4 specres=diag
+m197	python scripts/run_kprop3c.py /opt/data/official 3 window=4 tucker=0 oldmode=spec spec=4 specres=spec
+m198	python scripts/run_kprop3c.py /opt/data/official 3 window=4 tucker=0 oldmode=spec spec=16 specres=full
+m199	python scripts/run_kprop3c.py /opt/data/official 3 window=4 tucker=0 oldmode=spec spec=16 specres=diag
+m200	python scripts/run_kprop3c.py /opt/data/official 3 window=4 tucker=0 oldmode=spec spec=16 specres=spec
+m201	python scripts/run_kprop3c.py /opt/data/official 3 window=4 tucker=0 oldmode=spec spec=64 specres=full
+m202	python scripts/run_kprop3c.py /opt/data/official 3 window=4 tucker=0 oldmode=spec spec=64 specres=diag
+m203	python scripts/run_kprop3c.py /opt/data/official 3 window=4 tucker=0 oldmode=spec spec=64 specres=spec
+m204	python scripts/run_kprop3c.py /opt/data/official 3 window=99 oldmode=dropage1
+m205	python scripts/run_kprop3c.py /opt/data/official 3 window=99 oldmode=dropage2
+m206	python scripts/run_kprop3c.py /opt/data/official 3 window=99 oldmode=dropage3
+m207	python scripts/run_kprop3c.py /opt/data/official 3 window=99 oldmode=dropage4
+m208	python scripts/run_kprop3c.py /opt/data/official 3 window=99 oldmode=dropage5
+m209	python scripts/run_kprop3c.py /opt/data/official 3 window=99 oldmode=dropage6
+m210	python scripts/run_kprop3c.py /opt/data/official 3 window=99 oldmode=dropage7
+m211	python scripts/run_kprop3c.py /opt/data/official 3 window=99 oldmode=dropage8
+m212	python scripts/run_kprop3c.py /opt/data/official 3 window=99 oldmode=dropage9
+m213	python scripts/run_kprop3c.py /opt/data/official 3 window=99 oldmode=dropage10
+m214	python scripts/run_kprop3c.py /opt/data/official 3 window=99 oldmode=dropage11
+m215	python scripts/run_kprop3c.py /opt/data/official 3 window=99 oldmode=dropage12
+m216	python scripts/run_kprop3c.py /opt/data/official 3 window=99 oldmode=dropage13
+m217	python scripts/run_kprop3c.py /opt/data/official 3 window=99 oldmode=dropage14
+m218	python scripts/run_kprop3c.py /opt/data/official 3 window=1 tucker=0 oldmode=none
+m219	python scripts/run_kprop3c.py /opt/data/official 3 window=2 tucker=0 oldmode=none
+m220	python scripts/run_kprop3c.py /opt/data/official 3 window=3 tucker=0 oldmode=none
+m221	python scripts/run_kprop3c.py /opt/data/official 3 window=4 tucker=0 oldmode=none
+m222	python scripts/run_kprop3c.py /opt/data/official 3 window=6 tucker=0 oldmode=none
+m223	python scripts/run_kprop3c.py /opt/data/official 3 window=8 tucker=0 oldmode=none
+m224	python scripts/run_kprop3c.py /opt/data/official 3 window=10 tucker=0 oldmode=none
+m225	python scripts/run_kprop3c.py /opt/data/official 3 window=1 tucker=0 oldmode=lowrank1
+m226	python scripts/run_kprop3c.py /opt/data/official 3 window=1 tucker=0 oldmode=lowrank4
+m227	python scripts/run_kprop3c.py /opt/data/official 3 window=1 tucker=0 oldmode=lowrank16
+m228	python scripts/run_kprop3c.py /opt/data/official 3 window=1 tucker=0 oldmode=lowrank64
+m229	python scripts/run_kprop3c.py /opt/data/official 3 window=2 tucker=0 oldmode=lowrank1
+m230	python scripts/run_kprop3c.py /opt/data/official 3 window=2 tucker=0 oldmode=lowrank4
+m231	python scripts/run_kprop3c.py /opt/data/official 3 window=2 tucker=0 oldmode=lowrank16
+m232	python scripts/run_kprop3c.py /opt/data/official 3 window=2 tucker=0 oldmode=lowrank64
+m233	python scripts/run_kprop3c.py /opt/data/official 3 window=4 tucker=0 oldmode=lowrank1
+m234	python scripts/run_kprop3c.py /opt/data/official 3 window=4 tucker=0 oldmode=lowrank4
+m235	python scripts/run_kprop3c.py /opt/data/official 3 window=4 tucker=0 oldmode=lowrank16
+m236	python scripts/run_kprop3c.py /opt/data/official 3 window=4 tucker=0 oldmode=lowrank64
+m237	python scripts/run_kprop3c.py /opt/data/official 3 window=99
+m238	python scripts/diag_agegram.py /opt/data/official 3
+m239	python scripts/diag_collective.py /opt/data/official 3
