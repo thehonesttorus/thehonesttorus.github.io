@@ -42,10 +42,14 @@ Branch `claude/determined-fermat-9hk45i`. Note: `notes/stage9/ncg_mlp_stage9.pdf
 | leaders (raw) | 1.1–1.5e-8 | 0.10–0.14 B |
 
 - The port matches the torch reference to 1e-15 (per-layer means, covariances, (2,1) and (3) slices, radial core).
-- Radial kappa4 scale: c*0.9 gives 8.9e-8 (very sensitive; 1.1 and 1.25 pending). PENDING
-- Two-tier compression (young window w, basis k): (2,128) 9.3e-7; (1,128) 2.0e-6; (4,128) 2.0e-7; (2,128)+collective
-  directions 8.4e-7; no old sources at all (w=2) 3.7e-6. PENDING: (2,256), (4,384 CP), (2,384 CP), (4,256 CP), oldmode diag/scale.
-- Billed cost under flopscope (fnp port `whest/kprop3f.py`): (2,128) float64 1.58 B before removing the double readout. PENDING: float32 numbers.
+- Radial kappa4 scale: c*0.9 -> 8.9e-8, c*1.1 -> 2.7e-7, c*1.25 -> 4.4e-6 (c*1.0 = 3.5e-8 is the sharp optimum: no calibration gain there, and the chain is 2.5–8x sensitive to +-10%).
+- Two-tier compression (young window w, shared basis k): (4,384 CP) **3.69e-8** (lossless to 5%); (4,128) 2.0e-7; (2,256) 3.2e-7;
+  (2,128) 9.3e-7; (2,128)+collective directions 8.4e-7; (1,128) 2.0e-6; (0,128) 3.7e-6. Diagnostics (old sources kept dense):
+  dropped (w=2) 3.7e-6; diagonal only 1.0e-6; scaled by 0.9: 5.1e-8; dropped (w=4) 7.4e-7. The old sources' effect is smooth
+  in amplitude and brittle in shape: Hadamard readouts defeat Frobenius truncation (note, Sec. 6).
+- Billed cost under flopscope (fnp port `whest/kprop3f.py`, float32, MSE identical to float64): (4,128) 0.862 B; (2,128) 0.592 B;
+  (1,128) 0.439 B; (0,128) 0.275 B; float64 doubles these. The accurate configuration (4,384) is ~1 B as written, ~0.45 B with the
+  identity-leg structure of the birth blocks (3 transported matrices and 4 readout products per source-age instead of 6 and 6) and Strassen.
 - Exact Euler–Stein defect of the ported chain on net 0 (2049 chain runs on Modal): PENDING (job lapx2).
 
 ## 3. Compute
