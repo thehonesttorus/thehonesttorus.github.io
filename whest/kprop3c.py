@@ -62,9 +62,14 @@ def merge_into_tucker(Q, S, legs, k, rng, fixed=None):
 def nonlin_step(st, o, rng, record=None):
     m, S_ = st.mu, st.C; n = len(m); var = np.clip(np.diag(S_), 1e-30, None); Soff = _zero_diag(S_)
     w = {(k, p): wick(m, var, k, p) for p in range(1, 5) for k in range(0, 5)}
-    K3_21 = np.zeros((n, n)); K3_3 = np.zeros(n)
+    K3_21 = np.zeros((n, n)); K3_3 = np.zeros(n); mode = o.get("oldmode", "full")
     for legs, age in st.young:
-        s21, s3 = slices_from_legs(legs); K3_21 += s21; K3_3 += s3
+        s21, s3 = slices_from_legs(legs)
+        if age >= o["window"] and mode != "full":          # diagnostic: what the old sources' slices are worth
+            if mode == "none": continue
+            if mode == "diag": s21 = 0.0 * s21
+            if mode.startswith("scale"): f = float(mode[5:]); s21 = f * s21; s3 = f * s3
+        K3_21 += s21; K3_3 += s3
     if st.Q is not None:
         s21, s3 = tucker_slices(st.Q, st.S); K3_21 += s21; K3_3 += s3
     if st.c4 != 0.0:
@@ -94,12 +99,9 @@ def nonlin_step(st, o, rng, record=None):
     if Q is not None:
         Qg, R = np.linalg.qr(Phi[:, None] * Q); Q = Qg; S = np.einsum("pqs,ap,bq,cs->abc", S, R, R, R, optimize=True)
     star = (Phi[:, None] * Soff, 3.0 * np.eye(n), (w2[:, None] * Soff * Phi[None, :]).T)
-    own21 = np.zeros((n, n)); own3 = np.zeros(n)
-    for legs, age in young:
-        s21, s3 = slices_from_legs(legs); own21 += s21; own3 += s3
-    if Q is not None:
-        s21, s3 = tucker_slices(Q, S); own21 += s21; own3 += s3
-    s21, s3 = slices_from_legs(star); own21 += s21; own3 += s3
+    # slices of the gated transported sources = gates applied to the slices already read (Phi_i^2 Phi_j, Phi_i^3)
+    own21 = (Phi ** 2)[:, None] * K3_21 * Phi[None, :]; own3 = Phi ** 3 * K3_3
+    s21, s3 = slices_from_legs(star); own21 = own21 + s21; own3 += s3
     R21 = K3h_21 - own21; R3 = K3h_3 - own3; eye = np.eye(n)
     newborn = tuple(np.concatenate([F, G], axis=1) for F, G in zip(star, (R3[:, None] * eye + 3.0 * R21.T, eye, eye)))
     young.append((newborn, 0))
@@ -110,7 +112,7 @@ def nonlin_step(st, o, rng, record=None):
         for _ in range(4): v = Ch @ v; v /= np.linalg.norm(v)          # top eigenvector of the post-activation covariance
         fixed = np.stack([mu_h, np.diag(Ch), np.ones(n), v], axis=1)
     for legs, age in young:
-        if age >= o["window"]:
+        if age >= o["window"] and o.get("tucker", 1):
             Q, S = merge_into_tucker(Q, S, legs, o["k"], rng, fixed)
         else:
             keep.append((legs, age))
@@ -120,7 +122,7 @@ def nonlin_step(st, o, rng, record=None):
 
 
 def kprop3c_chain(W, opts=None, record=None, m0=None, S0=None):
-    o = dict(window=2, k=128, c4scale=1.0, seed=0); o.update(opts or {})
+    o = dict(window=2, k=128, c4scale=1.0, seed=0, tucker=1, oldmode="full"); o.update(opts or {})
     L, n, n_in = W.shape; rng = np.random.default_rng(o["seed"])
     m0 = np.zeros(n_in) if m0 is None else np.asarray(m0, dtype=np.float64); S0 = np.eye(n_in) if S0 is None else np.asarray(S0, dtype=np.float64)
     st = State(m0.copy(), S0.copy(), [], None, None, 0.0, np.eye(n_in)); out = np.empty((L, n))

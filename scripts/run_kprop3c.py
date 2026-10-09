@@ -7,6 +7,7 @@ for a in sys.argv[2:]:
     if "=" in a:
         k, v = a.split("=")
         if k == "tag": tag = v
+        elif k == "oldmode": opts[k] = v
         else: opts[k] = float(v) if "." in v else int(v)
 for net in nets:
     W = np.load(f"{D}/W_off{net}.npy"); mt = np.load(f"{D}/truth_off{net}.npz")["m"].astype(np.float64)

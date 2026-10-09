@@ -133,11 +133,7 @@ def kprop3f_chain(W, opts=None, backend="numpy", dtype="float64", record=None):
         if Q is not None:
             Q, R = xp.linalg.qr(Phi[:, None] * Q); S = rotate_core(be, S, R)
         star = (Phi[:, None] * Soff, 3.0 * eye, (w2[:, None] * Soff * Phi[None, :]).T)
-        own21 = be.arr(np.zeros((n, n))); own3 = be.arr(np.zeros(n))
-        for legs, age in young:
-            s21, s3 = slices_from_legs(be, legs); own21 = own21 + s21; own3 = own3 + s3
-        if Q is not None:
-            s21, s3 = tucker_slices(be, Q, S); own21 = own21 + s21; own3 = own3 + s3
+        own21 = (Phi ** 2)[:, None] * K3_21 * Phi[None, :]; own3 = Phi ** 3 * K3_3     # gated slices of the transported sources
         s21, s3 = slices_from_legs(be, star); own21 = own21 + s21; own3 = own3 + s3
         R21 = K3h_21 - own21; R3 = K3h_3 - own3
         newborn = tuple(xp.concatenate([F, G], axis=1) for F, G in zip(star, (xp.diag(R3) + 3.0 * R21.T, eye, eye)))
