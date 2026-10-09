@@ -1,0 +1,55 @@
+ layer 5->6 entrywise K31 vs svC: amp 0.009 corr 0.703
+ layer 5->6 entrywise K31 vs coll1: amp 0.112 corr 0.199
+ layer 5->6 entrywise K31 vs coll4: amp 0.075 corr 0.300
+ layer 5->6 entrywise K31 vs coll16: amp 0.033 corr 0.460
+ layer 5->6 entrywise K31 vs k3D21/v: amp 2.247 corr 0.460
+   var-metric: true T31 on svC: amp +0.009, explained share 0.582
+   var-metric: true T31 on coll1: amp +0.164, explained share 0.015
+   var-metric: true T31 on coll4: amp +0.081, explained share 0.059
+   var-metric: true T31 on coll16: amp +0.035, explained share 0.213
+   var-metric: true T31 on k3D21/v: amp +2.087, explained share 0.116
+   var-metric: true T31 on chain's own K31 (at true state): amp +1.362, explained share 0.574; nf rms true 2.21e-04
+ layer 8->9 entrywise K31 vs svC: amp 0.013 corr 0.708
+ layer 8->9 entrywise K31 vs coll1: amp 0.134 corr 0.357
+ layer 8->9 entrywise K31 vs coll4: amp 0.077 corr 0.419
+ layer 8->9 entrywise K31 vs coll16: amp 0.037 corr 0.548
+ layer 8->9 entrywise K31 vs k3D21/v: amp 2.007 corr 0.626
+   var-metric: true T31 on svC: amp +0.012, explained share 0.523
+   var-metric: true T31 on coll1: amp +0.358, explained share 0.043
+   var-metric: true T31 on coll4: amp +0.085, explained share 0.103
+   var-metric: true T31 on coll16: amp +0.037, explained share 0.257
+   var-metric: true T31 on k3D21/v: amp +2.255, explained share 0.193
+   var-metric: true T31 on chain's own K31 (at true state): amp +1.347, explained share 0.525; nf rms true 3.38e-04
+ layer 11->12 entrywise K31 vs svC: amp 0.017 corr 0.729
+ layer 11->12 entrywise K31 vs coll1: amp 0.104 corr 0.506
+ layer 11->12 entrywise K31 vs coll4: amp 0.079 corr 0.569
+ layer 11->12 entrywise K31 vs coll16: amp 0.041 corr 0.643
+ layer 11->12 entrywise K31 vs k3D21/v: amp 1.853 corr 0.779
+   var-metric: true T31 on svC: amp +0.013, explained share 0.422
+   var-metric: true T31 on coll1: amp +0.365, explained share 0.062
+   var-metric: true T31 on coll4: amp +0.081, explained share 0.097
+   var-metric: true T31 on coll16: amp +0.032, explained share 0.225
+   var-metric: true T31 on k3D21/v: amp +2.029, explained share 0.300
+   var-metric: true T31 on chain's own K31 (at true state): amp +1.166, explained share 0.425; nf rms true 4.02e-04
+ layer 13->14 entrywise K31 vs svC: amp 0.022 corr 0.790
+ layer 13->14 entrywise K31 vs coll1: amp 0.093 corr 0.622
+ layer 13->14 entrywise K31 vs coll4: amp 0.076 corr 0.677
+ layer 13->14 entrywise K31 vs coll16: amp 0.047 corr 0.746
+ layer 13->14 entrywise K31 vs k3D21/v: amp 1.761 corr 0.868
+   var-metric: true T31 on svC: amp +0.016, explained share 0.504
+   var-metric: true T31 on coll1: amp +0.602, explained share 0.117
+   var-metric: true T31 on coll4: amp +0.101, explained share 0.145
+   var-metric: true T31 on coll16: amp +0.040, explained share 0.318
+   var-metric: true T31 on k3D21/v: amp +2.249, explained share 0.396
+   var-metric: true T31 on chain's own K31 (at true state): amp +1.417, explained share 0.497; nf rms true 4.62e-04
+ layer 14->15 entrywise K31 vs svC: amp 0.022 corr 0.790
+ layer 14->15 entrywise K31 vs coll1: amp 0.085 corr 0.625
+ layer 14->15 entrywise K31 vs coll4: amp 0.071 corr 0.674
+ layer 14->15 entrywise K31 vs coll16: amp 0.046 corr 0.747
+ layer 14->15 entrywise K31 vs k3D21/v: amp 1.712 corr 0.869
+   var-metric: true T31 on svC: amp +0.016, explained share 0.456
+   var-metric: true T31 on coll1: amp +0.411, explained share 0.103
+   var-metric: true T31 on coll4: amp +0.086, explained share 0.126
+   var-metric: true T31 on coll16: amp +0.039, explained share 0.309
+   var-metric: true T31 on k3D21/v: amp +2.036, explained share 0.355
+   var-metric: true T31 on chain's own K31 (at true state): amp +1.397, explained share 0.449; nf rms true 5.08e-04

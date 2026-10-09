@@ -1,0 +1,35 @@
+layer 5: |D21 true| 5.388e-03 |chain| 5.054e-03 entry corr(true,chain) 0.9608; diff nf rms 1.491e-03 (MC noise rms 1.388e-04)
+   diff energy in row means 0.000, column means 0.083
+   entry corr(diff, true) (noise-free) +0.357
+   entry corr(diff, k3C/v) (noise-free) +0.300
+   entry corr(diff, C) (noise-free) -0.148
+   entry corr(diff, Ct) (noise-free) +0.014
+   var-metric D21-term error nf rms 2.51e-04, mean +7.46e-06
+layer 8: |D21 true| 3.854e-03 |chain| 3.551e-03 entry corr(true,chain) 0.9553; diff nf rms 1.145e-03 (MC noise rms 6.155e-05)
+   diff energy in row means 0.000, column means 0.110
+   entry corr(diff, true) (noise-free) +0.404
+   entry corr(diff, k3C/v) (noise-free) +0.400
+   entry corr(diff, C) (noise-free) -0.202
+   entry corr(diff, Ct) (noise-free) +0.008
+   var-metric D21-term error nf rms 4.33e-04, mean +1.03e-05
+layer 11: |D21 true| 3.678e-03 |chain| 3.249e-03 entry corr(true,chain) 0.9152; diff nf rms 1.486e-03 (MC noise rms 4.114e-05)
+   diff energy in row means 0.000, column means 0.159
+   entry corr(diff, true) (noise-free) +0.474
+   entry corr(diff, k3C/v) (noise-free) +0.477
+   entry corr(diff, C) (noise-free) -0.320
+   entry corr(diff, Ct) (noise-free) -0.022
+   var-metric D21-term error nf rms 6.12e-04, mean +2.07e-05
+layer 13: |D21 true| 3.595e-03 |chain| 3.020e-03 entry corr(true,chain) 0.8672; diff nf rms 1.792e-03 (MC noise rms 3.169e-05)
+   diff energy in row means 0.001, column means 0.202
+   entry corr(diff, true) (noise-free) +0.544
+   entry corr(diff, k3C/v) (noise-free) +0.541
+   entry corr(diff, C) (noise-free) -0.419
+   entry corr(diff, Ct) (noise-free) -0.027
+   var-metric D21-term error nf rms 6.25e-04, mean -1.41e-06
+layer 14: |D21 true| 3.565e-03 |chain| 2.989e-03 entry corr(true,chain) 0.8666; diff nf rms 1.782e-03 (MC noise rms 2.990e-05)
+   diff energy in row means 0.000, column means 0.204
+   entry corr(diff, true) (noise-free) +0.547
+   entry corr(diff, k3C/v) (noise-free) +0.565
+   entry corr(diff, C) (noise-free) -0.431
+   entry corr(diff, Ct) (noise-free) -0.012
+   var-metric D21-term error nf rms 7.03e-04, mean -1.36e-05

@@ -1,0 +1,43 @@
+=== network 1: diag W_t (term) W_t^T / var_true_t; chain = own slices at own state; true = MC (nf = noise-free)
+ layer 6: chain check: rms(x - sum of own terms) 5.25e-05 (rms x 5.86e-03)
+   D21: chain 5.5e-03 true 5.6e-03 diff nf 2.7e-04 share +0.71
+   k3: chain 1.7e-03 true 1.7e-03 diff nf 5.2e-05 share +0.04
+   K22: chain 5.1e-04 true 5.5e-04 diff nf 8.9e-05 share +0.08
+   K31: chain 1.1e-04 true 2.1e-04 diff nf 1.5e-04 share +0.16
+   k4: chain 1.1e-04 true 1.1e-04 diff nf 8.8e-06 share -0.00
+   injection nf 3.09e-04; left after all term differences nf 5.52e-05
+ layer 9: chain check: rms(x - sum of own terms) 6.89e-05 (rms x 7.08e-03)
+   D21: chain 6.8e-03 true 7.0e-03 diff nf 4.2e-04 share +0.76
+   k3: chain 2.4e-03 true 2.4e-03 diff nf 4.2e-05 share -0.01
+   K22: chain 4.7e-04 true 5.3e-04 diff nf 1.1e-04 share +0.06
+   K31: chain 1.8e-04 true 3.2e-04 diff nf 2.3e-04 share +0.22
+   k4: chain 2.5e-04 true 2.6e-04 diff nf 2.0e-05 share +0.00
+   injection nf 4.59e-04; left after all term differences nf 6.65e-05
+ layer 12: chain check: rms(x - sum of own terms) 1.12e-04 (rms x 8.58e-03)
+   D21: chain 8.4e-03 true 8.7e-03 diff nf 5.3e-04 share +0.74
+   k3: chain 2.2e-03 true 2.2e-03 diff nf 3.9e-05 share +0.01
+   K22: chain 4.0e-04 true 4.5e-04 diff nf 1.1e-04 share +0.04
+   K31: chain 2.2e-04 true 4.2e-04 diff nf 3.1e-04 share +0.23
+   k4: chain 3.5e-04 true 3.7e-04 diff nf 3.0e-05 share -0.01
+   injection nf 6.00e-04; left after all term differences nf 1.06e-04
+ layer 13: chain check: rms(x - sum of own terms) 1.52e-04 (rms x 8.95e-03)
+   D21: chain 8.8e-03 true 9.1e-03 diff nf 6.3e-04 share +0.78
+   k3: chain 2.2e-03 true 2.3e-03 diff nf 4.5e-05 share +0.00
+   K22: chain 3.9e-04 true 4.4e-04 diff nf 1.2e-04 share +0.03
+   K31: chain 2.0e-04 true 4.2e-04 diff nf 3.4e-04 share +0.20
+   k4: chain 3.1e-04 true 3.4e-04 diff nf 3.7e-05 share -0.01
+   injection nf 6.54e-04; left after all term differences nf 1.45e-04
+ layer 14: chain check: rms(x - sum of own terms) 1.19e-04 (rms x 1.03e-02)
+   D21: chain 1.0e-02 true 1.0e-02 diff nf 6.5e-04 share +0.77
+   k3: chain 2.0e-03 true 2.0e-03 diff nf 7.4e-05 share +0.01
+   K22: chain 4.4e-04 true 5.0e-04 diff nf 1.3e-04 share +0.04
+   K31: chain 2.1e-04 true 4.4e-04 diff nf 3.6e-04 share +0.20
+   k4: chain 3.0e-04 true 3.3e-04 diff nf 3.8e-05 share -0.00
+   injection nf 7.01e-04; left after all term differences nf 1.06e-04
+ layer 15: chain check: rms(x - sum of own terms) 1.38e-04 (rms x 1.02e-02)
+   D21: chain 1.0e-02 true 1.1e-02 diff nf 7.2e-04 share +0.76
+   k3: chain 1.9e-03 true 2.0e-03 diff nf 1.1e-04 share +0.02
+   K22: chain 4.2e-04 true 4.7e-04 diff nf 1.3e-04 share +0.03
+   K31: chain 2.4e-04 true 5.0e-04 diff nf 4.0e-04 share +0.21
+   k4: chain 2.7e-04 true 3.0e-04 diff nf 3.4e-05 share -0.01
+   injection nf 7.73e-04; left after all term differences nf 1.23e-04

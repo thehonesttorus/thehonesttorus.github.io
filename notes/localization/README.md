@@ -146,3 +146,16 @@ they first enter at second order. The late error is a trace-state phenomenon.
 - **N4 (Gamma-calculus).** The carried-pair formula gives truth-free detector weights per error class; its forecast
   that closed walks are visible (X* 0.5-0.75) is contradicted by section 5.
 - **N5 (modular/KMS).** Exact but commutative/type I; no runtime component.
+
+## 7. Second-moment oracles and the variance error (continued in note XLIII)
+
+The late kappa3/kappa4 diagonal oracle that gated N3's spiked closed-walk readout is small or harmful (D3 -2.5% / -13%,
+G4 +16% / +34% on networks 0 / 1), so that readout is not built. The second-order oracles at layers 12-15 are not small:
+the per-neuron pre-activation variances remove 32% / 37% of the final MSE, and variances with the off-diagonal covariance,
+D3 and D21 together remove 52% / 56% (noise-extrapolated, production counterterms on). The mechanism of the variance
+error, in particular why this heat-defect measurement could not see it, is worked out in `../metaplectic-kikuchi/`
+(note XLIII sections 4-5). Measured there:
+- the error is accumulated injection, 80% inherited at the last layers;
+- each layer's injection is the chain's error in two two-site cumulant slices, kappa(a,a,b) at 70-80% and
+  kappa(a,a,a,b) at 15-25%;
+- the exact law is fourth-order Edgeworth to 1e-4.

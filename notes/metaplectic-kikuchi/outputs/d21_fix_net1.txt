@@ -1,0 +1,72 @@
+layer 4: D21+K31 term error nf 1.55e-04
+   D21c                                     share +0.152  coef +0.016
+   D21c+reg                                 share +0.180  coef +0.017 -0.072
+   D21c+reg+C                               share +0.181  coef +0.017 -0.071 -0.000
+   K31c+k3D21/v                             share +0.025  coef +0.381 -0.395
+   D21c+reg+C+K31c+k3D21/v+svC              share +0.230  coef +0.021 -0.020 -0.000 +2.677 +1.897 -0.010
+layer 5: D21+K31 term error nf 2.27e-04
+   D21c                                     share +0.189  coef +0.021
+   D21c+reg                                 share +0.204  coef +0.022 -0.063
+   D21c+reg+C                               share +0.205  coef +0.022 -0.061 -0.000
+   K31c+k3D21/v                             share +0.017  coef +0.279 -0.759
+   D21c+reg+C+K31c+k3D21/v+svC              share +0.241  coef +0.026 +0.014 +0.000 -0.917 +1.598 +0.007
+layer 6: D21+K31 term error nf 2.72e-04
+   D21c                                     share +0.124  coef +0.019
+   D21c+reg                                 share +0.143  coef +0.021 -0.070
+   D21c+reg+C                               share +0.147  coef +0.021 -0.063 -0.001
+   K31c+k3D21/v                             share +0.030  coef +0.361 -0.855
+   D21c+reg+C+K31c+k3D21/v+svC              share +0.177  coef +0.024 +0.019 -0.000 -0.848 +0.951 +0.008
+layer 7: D21+K31 term error nf 3.32e-04
+   D21c                                     share +0.102  coef +0.018
+   D21c+reg                                 share +0.116  coef +0.019 -0.061
+   D21c+reg+C                               share +0.116  coef +0.019 -0.061 +0.000
+   K31c+k3D21/v                             share +0.021  coef +0.311 -0.590
+   D21c+reg+C+K31c+k3D21/v+svC              share +0.142  coef +0.023 +0.005 +0.000 +0.401 +1.061 -0.000
+layer 8: D21+K31 term error nf 4.06e-04
+   D21c                                     share +0.114  coef +0.019
+   D21c+reg                                 share +0.139  coef +0.020 -0.087
+   D21c+reg+C                               share +0.139  coef +0.020 -0.087 +0.000
+   K31c+k3D21/v                             share +0.020  coef +0.330 +0.203
+   D21c+reg+C+K31c+k3D21/v+svC              share +0.188  coef +0.026 -0.021 +0.000 -0.279 +1.688 +0.005
+layer 9: D21+K31 term error nf 4.78e-04
+   D21c                                     share +0.228  coef +0.033
+   D21c+reg                                 share +0.251  coef +0.035 -0.096
+   D21c+reg+C                               share +0.252  coef +0.035 -0.092 -0.000
+   K31c+k3D21/v                             share +0.022  coef +0.368 -0.731
+   D21c+reg+C+K31c+k3D21/v+svC              share +0.285  coef +0.040 -0.018 -0.000 -0.229 +1.250 +0.005
+layer 10: D21+K31 term error nf 4.95e-04
+   D21c                                     share +0.161  coef +0.027
+   D21c+reg                                 share +0.181  coef +0.028 -0.084
+   D21c+reg+C                               share +0.181  coef +0.028 -0.086 +0.000
+   K31c+k3D21/v                             share +0.006  coef +0.180 -0.311
+   D21c+reg+C+K31c+k3D21/v+svC              share +0.206  coef +0.033 -0.053 +0.000 -0.493 +1.177 +0.006
+layer 11: D21+K31 term error nf 5.84e-04
+   D21c                                     share +0.168  coef +0.029
+   D21c+reg                                 share +0.207  coef +0.032 -0.120
+   D21c+reg+C                               share +0.207  coef +0.032 -0.118 -0.000
+   K31c+k3D21/v                             share +0.024  coef +0.475 -0.439
+   D21c+reg+C+K31c+k3D21/v+svC              share +0.246  coef +0.038 -0.032 +0.000 -1.232 +1.223 +0.015
+layer 12: D21+K31 term error nf 6.29e-04
+   D21c                                     share +0.178  coef +0.029
+   D21c+reg                                 share +0.188  coef +0.031 -0.062
+   D21c+reg+C                               share +0.190  coef +0.031 -0.057 -0.001
+   K31c+k3D21/v                             share +0.004  coef +0.040 -0.394
+   D21c+reg+C+K31c+k3D21/v+svC              share +0.219  coef +0.038 -0.033 -0.001 +0.434 +1.264 -0.005
+layer 13: D21+K31 term error nf 6.74e-04
+   D21c                                     share +0.227  coef +0.035
+   D21c+reg                                 share +0.244  coef +0.037 -0.087
+   D21c+reg+C                               share +0.245  coef +0.037 -0.084 -0.001
+   K31c+k3D21/v                             share +0.007  coef +0.188 -0.506
+   D21c+reg+C+K31c+k3D21/v+svC              share +0.289  coef +0.043 -0.015 -0.000 -2.796 +1.057 +0.032
+layer 14: D21+K31 term error nf 6.49e-04
+   D21c                                     share +0.101  coef +0.022
+   D21c+reg                                 share +0.130  coef +0.025 -0.104
+   D21c+reg+C                               share +0.130  coef +0.025 -0.102 -0.001
+   K31c+k3D21/v                             share +0.008  coef +0.195 +0.209
+   D21c+reg+C+K31c+k3D21/v+svC              share +0.173  coef +0.032 -0.048 -0.000 -0.631 +1.266 +0.008
+layer 15: D21+K31 term error nf 7.66e-04
+   D21c                                     share +0.115  coef +0.025
+   D21c+reg                                 share +0.156  coef +0.029 -0.133
+   D21c+reg+C                               share +0.156  coef +0.029 -0.132 -0.000
+   K31c+k3D21/v                             share +0.014  coef +0.313 +0.224
+   D21c+reg+C+K31c+k3D21/v+svC              share +0.218  coef +0.038 -0.045 -0.000 -1.326 +1.491 +0.018

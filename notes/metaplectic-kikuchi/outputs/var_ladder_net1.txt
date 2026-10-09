@@ -1,0 +1,71 @@
+=== network 1: per-neuron quantities / true variance at the target layer; 'nf' = noise-free rms (halves)
+ layer 4:
+   g (true defect)   mean +1.65e-03  nf 4.33e-03
+   E3 (order 3)      mean +1.56e-03  nf 4.17e-03
+   E4 (order 4)      mean +9.24e-05  nf 4.95e-04
+   g - E3            mean +9.24e-05  nf 4.91e-04
+   g - E3 - E4       mean +5.48e-08  nf 2.00e-05
+   x (chain)         mean +1.64e-03  rms 4.26e-03
+   x - g (injected)  mean -1.25e-05  nf 1.63e-04
+   x - E3 - E4       mean -1.24e-05  nf 1.67e-04
+   share of (x - g) explained by -(g - E3 - E4): -0.04;  by (x - E3 - E4): +0.98
+ layer 6:
+   g (true defect)   mean +1.61e-03  nf 5.98e-03
+   E3 (order 3)      mean +1.59e-03  nf 5.84e-03
+   E4 (order 4)      mean +2.41e-05  nf 5.58e-04
+   g - E3            mean +2.18e-05  nf 5.52e-04
+   g - E3 - E4       mean -2.33e-06  nf 3.74e-05
+   x (chain)         mean +1.54e-03  rms 5.86e-03
+   x - g (injected)  mean -7.39e-05  nf 3.09e-04
+   x - E3 - E4       mean -7.62e-05  nf 3.12e-04
+   share of (x - g) explained by -(g - E3 - E4): -0.01;  by (x - E3 - E4): +0.99
+ layer 9:
+   g (true defect)   mean +1.96e-03  nf 7.28e-03
+   E3 (order 3)      mean +2.18e-03  nf 7.32e-03
+   E4 (order 4)      mean -2.22e-04  nf 6.33e-04
+   g - E3            mean -2.23e-04  nf 6.23e-04
+   g - E3 - E4       mean -1.23e-06  nf 5.21e-05
+   x (chain)         mean +1.99e-03  rms 7.08e-03
+   x - g (injected)  mean +2.80e-05  nf 4.59e-04
+   x - E3 - E4       mean +2.68e-05  nf 4.67e-04
+   share of (x - g) explained by -(g - E3 - E4): +0.01;  by (x - E3 - E4): +0.99
+ layer 12:
+   g (true defect)   mean +1.68e-03  nf 8.81e-03
+   E3 (order 3)      mean +1.97e-03  nf 8.86e-03
+   E4 (order 4)      mean -2.84e-04  nf 6.34e-04
+   g - E3            mean -2.84e-04  nf 6.25e-04
+   g - E3 - E4       mean +4.07e-07  nf 7.21e-05
+   x (chain)         mean +1.60e-03  rms 8.58e-03
+   x - g (injected)  mean -8.70e-05  nf 6.00e-04
+   x - E3 - E4       mean -8.66e-05  nf 6.08e-04
+   share of (x - g) explained by -(g - E3 - E4): +0.00;  by (x - E3 - E4): +0.99
+ layer 13:
+   g (true defect)   mean +1.27e-03  nf 9.18e-03
+   E3 (order 3)      mean +1.53e-03  nf 9.23e-03
+   E4 (order 4)      mean -2.64e-04  nf 6.18e-04
+   g - E3            mean -2.61e-04  nf 6.08e-04
+   g - E3 - E4       mean +2.52e-06  nf 8.63e-05
+   x (chain)         mean +1.20e-03  rms 8.95e-03
+   x - g (injected)  mean -6.77e-05  nf 6.54e-04
+   x - E3 - E4       mean -6.52e-05  nf 6.69e-04
+   share of (x - g) explained by -(g - E3 - E4): +0.01;  by (x - E3 - E4): +0.98
+ layer 14:
+   g (true defect)   mean +1.77e-03  nf 1.05e-02
+   E3 (order 3)      mean +2.01e-03  nf 1.06e-02
+   E4 (order 4)      mean -2.41e-04  nf 6.77e-04
+   g - E3            mean -2.46e-04  nf 6.66e-04
+   g - E3 - E4       mean -4.52e-06  nf 9.30e-05
+   x (chain)         mean +1.67e-03  rms 1.03e-02
+   x - g (injected)  mean -9.52e-05  nf 7.01e-04
+   x - E3 - E4       mean -9.98e-05  nf 7.15e-04
+   share of (x - g) explained by -(g - E3 - E4): +0.01;  by (x - E3 - E4): +0.98
+ layer 15:
+   g (true defect)   mean +1.13e-03  nf 1.05e-02
+   E3 (order 3)      mean +1.32e-03  nf 1.06e-02
+   E4 (order 4)      mean -1.92e-04  nf 6.66e-04
+   g - E3            mean -1.92e-04  nf 6.45e-04
+   g - E3 - E4       mean -9.60e-07  nf 1.11e-04
+   x (chain)         mean +9.87e-04  rms 1.02e-02
+   x - g (injected)  mean -1.38e-04  nf 7.73e-04
+   x - E3 - E4       mean -1.39e-04  nf 7.93e-04
+   share of (x - g) explained by -(g - E3 - E4): +0.01;  by (x - E3 - E4): +0.98
