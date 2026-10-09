@@ -18,21 +18,23 @@
 \begin{abstract}
 We apply the stage-8 principle (a localization process is a positive martingale in the commutant, whose central part is
 the transverse measure on the leaf space) to the WhestBench problem: the per-neuron mean $\E\,h_L$ of a bias-free
-He-initialised \textsc{ReLU} multilayer perceptron with standard Gaussian input, $n=1024$, $L=16$. The cumulant chains that
-dominate the leaderboard are read as localizations: the births of non-Gaussianity at the \textsc{ReLU} kinks are the
-linear-tilt responses of the gate algebra, the chain is the trickle-down expansion of that algebra's product state, and
-the one object that no first-order chain carries correctly is the \emph{central} variable---the collective activity
-mode, a scale mixture---which is exactly the leaf-space part of the localization. Main results. (A) Input-side linear
-tilts have localization capacity $O(k/n)$ for the born non-Gaussianity and cost $\ge 2k+1$ chain evaluations: input
-localization is useless, which forces the neuron-side (gate) decomposition. (B) A sensitivity law: the output mean
-responds to a relative error $\varepsilon$ of the collective mode's variance with error $c\,\varepsilon$ per layer,
-$c\approx0.3$, so the collective mode must be accurate to $10^{-3}$ per layer while the bulk may be off by $10^{-1}$;
-on the official networks the chain's covariance is accurate everywhere except in that one direction. (C) The exact
-first-order transport of the $(2,1)$ slices and of the diagonal through \textsc{ReLU}, in closed form, including the
-transposed-slice and the $\kap_4\!\to\!\kap_3$ feeds, and the exact-by-homogeneity transport of the scale mixture. (D)
-On the official networks, the terms prescribed by the central/Cartan split account for the measured error ladder
-$8.5\cdot10^{-7}\to5.7\cdot10^{-7}$ of a clean chain and locate the remaining deficit in the transported third-cumulant
-slices (25\% low at depth). Every identity is checked by the accompanying script.
+He-initialised \textsc{ReLU} multilayer perceptron with standard Gaussian input, $n=1024$, $L=16$. Results. (A) A
+defect--path theorem: the error of any estimator exact on point masses is minus its expected drift along any complete
+localization of the input, i.e.\ its second variation against the scheme's driving covariance; on Eldan's path this
+is the Euler--Stein defect $\delta=e-\Delta e$, and for the Gaussian closure at full scale the exact $\delta$ explains
+$89\%$ of the error ($4.1\cdot10^{-6}\to4.4\cdot10^{-7}$), with the parameter-free midpoint $(e+\Delta e)/2$ nearly as
+good. (B) Input tilts have no capacity: $\delta$ is a $2\%$ residual of an $O(1)$ identity, random probes need $10^9$
+samples, and only the $2n+1$ coordinate sum resolves it. (C) The index-shift lemma $d_k'=d_{k+1}$ and the Gram
+theorem $\delta=-\langle\nabla^2\mathcal G,\Gamma\rangle$: births, arms, slices and gate covariances are the derivatives
+of the Gaussian moment map, and the organisers' 36-diagram first-order chain is this calculus. We port that chain to
+numpy, match it to $10^{-15}$, and find its accuracy ($3.5\cdot10^{-8}$) rests on two things: the first-order term table
+and one radial $\kap_4$ scalar per layer, the scale mixture of the collective mode (a factor $16$); our own chain had
+the first and lacked the second. (D) Its cost is the memory of $\kap_3$: $12\,n^3$ per source-age, $0.5$--$0.7B$ in
+float32 under the grader's measured rules, against a floor of $0.1B$; the gated transport cocycle has slowly decaying
+rank but the slices are Hadamard products of the legs, so Frobenius compression of young sources fails (a factor $26$
+at $k=128$) while a four-age window with a $384$-dimensional shared basis is lossless and still costs $0.5B$; the old
+content is a new shape at every layer (correlation $0.3$--$0.5$ with the young content), so it cannot be regenerated
+either. Every identity is checked by the accompanying scripts.
 \end{abstract}
 \tableofcontents
 \section{The problem and the principle}
