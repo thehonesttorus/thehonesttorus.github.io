@@ -29,6 +29,13 @@ which carries $n^2$ numbers and is harmful off the diagonal, was worth nothing. 
 $3.4\cdot10^{12}$ FLOPs ($1.5B$ in float32), $93\%$ of it in the transport and readout of the factored $\kap_3$ whose rank
 grows by $2n$ per layer; the cost problem is the memory of the third cumulant, not the fourth.
 
+On network $1$ the same measurement gives correlation $0.951$, $a=0.500$, $93\%$ explained and
+$4.72\cdot10^{-6}\to3.45\cdot10^{-7}$; the fitted coefficients cross over ($a_0$ on network $1$: $3.68\cdot10^{-7}$;
+$a_1$ on network $0$: $4.51\cdot10^{-7}$), and the parameter-free midpoint $(e+\Delta e)/2$ gives $4.50$ and
+$3.45\cdot10^{-7}$: the weight of Corollary~\ref{cor:eldan} integrates to one half on these networks, so the
+\emph{Euler--Stein midpoint} is an estimator with no fitted constant that is nine to fourteen times better than the
+chain it corrects.
+
 Two readings. First, the Euler--Stein defect of the \emph{Gaussian} closure, with no cumulant machinery at all,
 reaches the accuracy of our third-cumulant chain: on network $0$ the exact $\delta(0)$ (coordinate Laplacian,
 $2049$ chain evaluations on Modal) has correlation $0.931$ with the error, explains $89\%$ of its mean square,

@@ -58,6 +58,7 @@ touch /opt/run/.last
 while true; do
   sleep 60
   if pgrep -f "/opt/run/.*/task.sh" >/dev/null; then touch /opt/run/.last; fi
+  pgrep -f "modal_app.py batch" > /dev/null && touch /opt/run/.last
   if [ $(( $(date +%s) - $(stat -c %Y /opt/run/.last) )) -gt {IDLE_MIN * 60} ]; then shutdown -h now; fi
 done
 EOW

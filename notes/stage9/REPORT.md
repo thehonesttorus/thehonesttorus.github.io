@@ -35,7 +35,7 @@ Branch `claude/determined-fermat-9hk45i`. Note: `notes/stage9/ncg_mlp_stage9.pdf
 | Gaussian closure | 4.06e-6 | 0.024 B (f32, symmetric einsum) |
 | own kappa3 chain (k3v3) | 5.74e-7 | ~0.5 B |
 | Gaussian closure + exact Euler–Stein defect, e - a delta (a = 0.535) | 4.35e-7 | +2049 chains (diagnostic) |
-| Gaussian closure + parameter-free midpoint (e + Lap e)/2 | 4.50e-7 | same |
+| Gaussian closure + parameter-free midpoint (e + Lap e)/2 | 4.50e-7 (net 1: 4.72e-6 -> 3.45e-7, a = 0.500) | same |
 | organisers' K=3 simple chain, numpy port (`whest/kprop3.py`), radial kappa4 off | 5.63e-7 | |
 | same, radial kappa4 on (one scalar per layer) | **3.53e-8** | 3.4e12 raw FLOPs = 1.5 B f32 (dense legs, rank 2n per layer) |
 | open-source chain (504aldo) | 2.13e-8 | 0.25 B |
