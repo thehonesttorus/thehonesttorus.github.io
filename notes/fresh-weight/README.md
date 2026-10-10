@@ -819,3 +819,14 @@ sources carry but, with 80% of the chain's slice-error energy outside it in D21 
 | the chain's pieces are inconsistent along the dilation and an O(n^2) package removes the leak | fails: chain/truth charges (active set, layer 14) Rayleigh 99%, k3 95%, D21 96%, K22 85%, k4 87%, K31 50%; moving any of them toward the truth raises the MSE by 2-56% |
 | the collective sector is the lever | top-K covariance oracle: K = 8 -4%, 32 -12 to -16%, 128 -16 to -32%; eigenvalues alone +9% |
 | the cancellation theorem | exact and our own note XXXVI null tuple (t (Sigma + mu mu^T), 6 t mu Sigma, 12 t Sigma Sigma); it explains why the fitted counterterms look as they do and why partial amplitude corrections fail, not how to beat them |
+
+### 9m. Result of the rank-robustness test (9h), rerun with the corrected hook
+
+Network 0, baseline 1.4771e-8 at 0.2216 B. P0 (full rank, pin from the recorded baseline): 1.4779e-8 (+0.05%), the no-op it was
+registered to be (the first P0 of 9h, 1.754e-8, was the masking error of 9i). P1, reduced ranks (R_OLD 160, R_OLD2 96): raw 3.2805e-8
+(+122%) at 0.1882 B (-15% FLOPs), the cliff of note XXIV (it is also unaffected by the hook). **P2, reduced ranks with the pin
+re-supplying every slice's full-rank gain amplitude at each readout: 3.1852e-8 at 0.1883 B.** It removes (3.2805 - 3.1852) /
+(3.2805 - 1.4771) = **5.3%** of P1's degradation (registered: at least 25% at 35% confidence; decision rule: below 15% closes).
+**Closed.** In adjusted MSE P2 is 6.0e-9 against the baseline's 3.3e-9. What truncating the old tiers loses is not in the
+dilation direction: supplying that direction exactly buys almost nothing, so the package does not act as a control variate for
+the sources, whatever its share (80-94%) of their slices' energy.
