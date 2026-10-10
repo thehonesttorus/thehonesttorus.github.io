@@ -114,7 +114,15 @@ where R_l is the degree ≥ 2 error: the radially normalised moments of the prev
 
 The sum closes on network 0: 8.1 + 3.8 + 1.6 + 0.7 + ... ≈ 1.45e-8 against 1.48e-8.
 
-**Consequences.**
+**Correction (same day; the consequences that were stated here first were wrong).** The degree ≥ 2 remainder is not new error.
+The mean is large, so δE[h h^T/|h|] contains m ⊗ δm, and inherited mean error re-enters there modulated by each row's
+gate. The stage-15 first jet Φ(r_i) w_i . δm_(l-1) explains 72-79% of MSE_l at layers 13-15 (coefficient 1.00 +- 0.04).
+Its gate-modulated part (Φ - 1/2) w_i . δm explains 53-62% of the remainder. So inherited error transports
+near-critically, as stage 15 measured, and only its fresh-row average halves. The claims "the last three layers hold
+about 90%" and "early mean accuracy is worth 2^-age" are withdrawn. The two exact identities (the MMD theorem and the
+degree-1 coefficient 1/2) stand.
+
+**Original consequences (withdrawn as stated, kept for the record).**
 - Inherited mean error halves at every layer. It is not near-critical: stage 15's 0.65-0.94 mixed degrees.
 - The final mean needs, from the last few layers' laws, their degree ≥ 2 features as fresh-row contacts:
   - E[h h^T/|h|] in Frobenius norm;
@@ -143,3 +151,30 @@ fourth cumulants:
 And the fresh-row κ4 readout of every output is, at leading order, its trace part 3σ^4 [Var|h|^2 - 2‖C‖_F^2]. That is the
 radial (gain) charge, a scalar per layer that stages 12-14 compute exactly. The chain instead regenerates it with
 fitted λ.
+
+## 6. What the final mean needs, from the theory alone
+
+1. **The fold decomposition.** relu = (1/2)(id + |.|), the hyperoctahedral split, gives the exact identity
+       m^15 = Σ_l 2^-(16-l) W_15 ... W_(l+1) φ_l,    φ_l = E|z^l|.
+   The final mean is a linear image, under ungated weight products, of per-neuron fold means. Each fold mean depends
+   only on a one-dimensional marginal of z^l_a.
+2. **Pair structure is information, not a habit.** Each marginal variance is a fresh-row contact of the previous
+   post-activation covariance, read with error variance 2σ^4 ‖δK‖_F^2. This fixes *what information* is needed. It does
+   not fix the representation: a dense matrix at every layer is one carrier among several.
+3. **The response ellipsoid of the final target.** The final error is Σ_l A(15<-l) β_l, with A = D_15 W_15 ... D_(l+1) W_(l+1).
+   By the small-control criterion of the absorption study (its Prop. 12.1), a birth component in a poorly transmitted
+   direction costs nothing. Network 0, gates from the truth:
+
+| birth layer l | gain ‖A‖_F^2/n | energy in the top 16 / 64 / 256 directions | effective rank |
+|---|---|---|---|
+| 14 | 0.90 | 0.09 / 0.30 / 0.79 | 344 |
+| 12 | 0.71 | 0.20 / 0.57 / 0.97 | 149 |
+| 10 | 0.51 | 0.30 / 0.73 / 0.99 | 95 |
+| 8 | 0.38 | 0.38 / 0.81 / 1.00 | 71 |
+| 5 | 0.17 | 0.49 / 0.90 / 1.00 | 47 |
+| 0 | 0.03 | 0.61 / 0.96 / 1.00 | 26 |
+
+What the final means can see of layer l is an r_l-dimensional subspace: the top right-singular directions of
+A(15<-l). Its dimension collapses with age, from 344 at layer 14 to 71 at layer 8 and 26 at layer 0, while the gain
+also falls. A state at layer 8 that is exact in about 100 directions and arbitrary elsewhere gives the same final
+means as an exact one, up to the first-jet linearisation.
