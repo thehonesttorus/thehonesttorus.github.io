@@ -1,0 +1,69 @@
+\label{sec:leaves}
+\subsection{A wall is a continuum of lattice points}
+A \emph{probe} is a Gaussian localization state, written as an ellipsoid $E(m,A)=\{x:\ A(x-m)\cdot(x-m)<1\}$. Here $A$ is the precision at the
+chosen Mahalanobis radius. The probe is \emph{resolved} for a wall $H=\{w\cdot x=b\}$ if $E\cap H=\emptyset$, and in \emph{contact} if $H$ is
+tangent to $\partial E$.
+\begin{proposition}[the leaf as a sliding lattice point; proved]\label{prop:sliding}
+\begin{enumerate}[leftmargin=*]
+\item $E\cap H=\emptyset$ if and only if $\langle(x-m)\otimes(x-m),A\rangle\ge1$ for every $x\in H$. The wall therefore imposes Klartag's
+lattice-point constraint once for each of its points. The binding point is the tangency point
+$x_*=m+A^{-1}w\,\frac{b-w\cdot m}{w^\top A^{-1}w}$, and the inequality collapses to $w^\top A^{-1}w\le(w\cdot m-b)^2=:c$.
+\item At a contact, with fixed centre, the infinitesimal constraint is $\langle(x_*-m)\otimes(x_*-m),\,dA\rangle=0$. This is Klartag's contact
+constraint, with the lattice point replaced by the wall's tangency point, which slides as $A$ moves.
+\item The resolved set $\Ryshkov(m)=\{A:\ w_a^\top A^{-1}w_a\le c_a\ \forall a\}$ is convex (matrix-fractional). It is the intersection of the
+Ryshkov polyhedra of all points of all leaves: a \emph{curved Ryshkov body}.
+\end{enumerate}
+\end{proposition}
+\begin{proof}
+The $A$-distance from $m$ to $H$ is $|w\cdot m-b|/\sqrt{w^\top A^{-1}w}$, attained at $x_*$. Differentiating, $d(w^\top A^{-1}w)=-\langle A^{-1}ww^\top A^{-1},dA\rangle$, and
+$A^{-1}w\propto x_*-m$. Finally, $w^\top A^{-1}w$ is convex in $A\succ0$.
+\end{proof}
+This is the precise sense in which leaves play the lattice. A lattice point is a leaf of dimension $0$. A wall is a leaf of dimension
+$n-1$ that acts through one moving point, its point of tangency. Klartag's polyhedron, cut by finitely many fixed points near the
+origin, becomes a convex body cut by a family of sliding points.
+
+\subsection{With the centre free: a cone in the space of states}
+In terms of the covariance $\Sigma$ at Mahalanobis radius $\rho$, a probe $(m,\Sigma)$ is resolved for $H$ iff
+$\langle w\otimes w,\ mm^\top-\rho^2\Sigma\rangle-2b\,w\cdot m+b^2\ge0$. For the bias-free first layer this is
+\[
+\big\langle w_a\otimes w_a,\ M\big\rangle\ \ge0\quad\forall a,\qquad M=mm^\top-\rho^2\Sigma .
+\]
+This is a polyhedral cone in the variable $M$, and the rank-one matrices $w_a\otimes w_a$, the rows of $W_1$, play the lattice vectors. At
+depth $l$ the walls are piecewise linear. Inside a cell, $w_a$ is replaced by the gated Jacobian row $\nabla z_{l,a}$ (and $b$ by $0$, by
+homogeneity). The resolved set is therefore a \emph{bundle} of such cones over the cells: the lattice varies along the leaf space of the
+tile groupoid.
+
+\subsection{The layer map is Klartag's normalizing transformation}
+Klartag ends by applying $T$ with $T(E)=$ ball, which turns the lattice into a packing. Our network applies the dual move at every
+layer:
+\begin{itemize}[leftmargin=*]
+\item $z=W_1x$ sends the walls to the coordinate hyperplanes, the cells to the $2^n$ orthants, and the input ball to the ellipsoid
+$N(0,W_1W_1^\top)$;
+\item in $z_l$-coordinates the layer-$l$ walls are again coordinate hyperplanes, and the state is the closure's $N(\mu_l,C_l)$.
+\end{itemize}
+So the chain lives in the frame where the ``lattice'' is fixed and standard (the coordinate arrangement, whose face lattice is the
+Boolean lattice of gate patterns) and the ellipsoid moves. The fields $r_a=\mu_a/\sqrt{C_{aa}}$ are the Mahalanobis distances to the walls,
+and contacts are the neurons with $|r_a|=\rho$.
+
+\subsection{The dilation can never be frozen}
+\begin{proposition}[proved]\label{prop:dilfree}
+For bias-free walls, the dilation $(\delta m,\delta\Sigma)=(m,2\Sigma)$ preserves every resolution inequality and every tangency, because each
+constraint is homogeneous of degree $2$ in $(m,\Sigma^{1/2})$. It therefore lies in the free subspace $F$ of every contact configuration.
+More generally, every affine vector field that preserves the contact walls acts inside $F$. With biases ($b\ne0$) the dilation is not
+free.
+\end{proposition}
+\emph{Check:} along the dilation, $dg_a-2g_a=0$ exactly for homogeneous walls, and is $O(1)$ for affine walls.
+\begin{corollary}[the lattice-side reason for the critical gain]
+With homogeneous walls, Klartag's process never terminates: the probe keeps diffusing along the log-scale, whatever contacts it has
+collected. No local (contact) information pins the scale. The chain must therefore carry it as a conserved charge, which is stage 13's
+dilation package.
+\end{corollary}
+\begin{conjecture}[falsifiable]
+In networks with biases, the gain mode's error-transport factor is strictly below $1$, with a gap that grows with the bias scale.
+Biases are lattice points that break the dilation.
+\end{conjecture}
+
+\subsection{Depth sheds contacts}
+Klartag's ellipsoid accumulates contacts. The network's state sheds them. As depth grows, the fields spread as $N(0,t_l)$ (stage 12),
+so the walls leave the resolution ellipsoid. The number still inside radius $\rho$ is $n\operatorname{erf}(\rho/\sqrt{2t_l})\approx n\rho\sqrt{2/\pi t_l}$, the
+wall-density law. Cooling is Klartag's process run backwards.

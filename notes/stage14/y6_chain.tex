@@ -1,0 +1,47 @@
+\label{sec:chain}
+\subsection{What the dictionary says about the chain}
+\begin{enumerate}[leftmargin=*]
+\item \textbf{The dilation must be carried, because it cannot be pinned.}
+\begin{itemize}
+\item In a bias-free network the dilation is a free direction of every contact configuration (Proposition~\ref{prop:dilfree}) and the
+modular flow of the non-commutative strata (Theorem~\ref{thm:modular}).
+\item So no closure built from local (contact) data fixes it, and errors along it are not damped. That is note XLIV's critical mode,
+now seen from three sides.
+\item The remedy is stage 13's: carry the charge (the radial partition function's second cumulant) and write the variance, $\kappa_3$ and
+$\kappa_4$ along the dilation as one package.
+\item \emph{Prediction:} networks with biases show a damped gain mode.
+\end{itemize}
+\item \textbf{Resolution is set by $r^2/4$, so effort should follow the wall density.} By Corollary~\ref{cor:resell}, a neuron at field $r$ needs chaos
+order about $r^2/4$ before its kink is seen at all, and contributes at most $\varphi(r)/r^3$.
+\begin{itemize}
+\item The chain's truncation error at order $K$ concentrates on neurons with $r^2\lesssim4K$, weighted by $\varphi(r)K^{-3/2}$.
+\item \emph{Prediction (testable on note XLI's dumps):} the per-neuron benefit of v56's chaos correction is supported on $|r|\lesssim2\sqrt3$,
+with a $\varphi(r)$-weighted profile.
+\item \emph{Prediction:} the next chaos order removes about $35\%$ of the remaining chaos-truncation energy.
+\end{itemize}
+\item \textbf{Positivity is a sticky constraint.} The chain's state is a functional on the truncated operator system $\mathcal E_K$. If it
+leaves the positive cone, the pseudo-law has negative mass somewhere near a wall.
+\begin{itemize}
+\item Klartag's rule is to project each layer's update onto the face it touches and continue there.
+\item This is truth-free and costs $O(n^2)$ per layer for the marginal (one-neuron) moment matrices.
+\item A first diagnostic: count how often v56's per-neuron moment matrices (orders $\le4$) fail to be positive semidefinite.
+\end{itemize}
+\item \textbf{The cell-adapted Gaussian.} The maximal resolved probe at an input is the natural local Gaussian of its cell, and its frame
+code records the cell's local wall geometry. It is a candidate local model for future hybrid estimators. Sampling is roughly
+$1000\times$ too expensive at this budget (stage 13), so this is no algorithm yet.
+\end{enumerate}
+
+\subsection{Open problems}
+\begin{enumerate}[leftmargin=*]
+\item \textbf{Klartag's estimate for walls.} Prove that, for Gaussian rows, the sticky localization reaches a resolved probe of
+log-volume $\ge c\,\cdot$(free dimensions) before contacts saturate. Klartag's $n^2$-versus-$n$ gain would be the ratio between the
+best Gaussian probe and the best ball inside a typical cell.
+\item \textbf{Twisted gap labels.} Compute the dilation-twisted (KMS) pairing of the bent strata, the non-commutative part of the
+gap-labelling group, and decide whether it equals a correction term of the mean.
+\item \textbf{Left and right.} Make precise whether the Tomita conjugation $JL(G)J=R(G)$ at bent strata exchanges stage 11's forward and
+backward harmonic states.
+\item \textbf{The radial partition function.} Find a recursion for $Z_l(\beta)$ through a layer. The dilation package of stage 13 uses
+only its second cumulant.
+\item \textbf{Codes across inputs.} The tight frames of Proposition~\ref{prop:john} vary with the input. Is their distribution over the
+sphere a function of the internal clock alone, as stage 12's field law is?
+\end{enumerate}

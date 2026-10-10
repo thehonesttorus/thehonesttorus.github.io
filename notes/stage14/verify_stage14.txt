@@ -1,0 +1,32 @@
+== 1. Perfect and eutactic: A2 against Z^2
+  A2: 6 minimal vectors; rank of {x x^T} = 3 (perfect iff 3); sum x x^T = [3. 0. 0. 3.] (eutactic iff prop. to I)
+  Z2: 4 minimal vectors; rank of {x x^T} = 2 (perfect iff 3); sum x x^T = [2. 0. 0. 2.] (eutactic iff prop. to I)
+== 2. The kink chaos law
+  r=0.0: sum_k E_k = 9.084504e-02 ; Var relu - Phi^2 = 9.084506e-02 ; mean chaos order 2.74 (r^2 = 0.0), median 2
+  r=1.0: sum_k E_k = 4.322682e-02 ; Var relu - Phi^2 = 4.322683e-02 ; mean chaos order 3.08 (r^2 = 1.0), median 2
+  r=3.0: sum_k E_k = 2.014666e-04 ; Var relu - Phi^2 = 2.014668e-04 ; mean chaos order 6.64 (r^2 = 9.0), median 5
+  r=5.0: sum_k E_k = 1.934315e-08 ; Var relu - Phi^2 = 1.934321e-08 ; mean chaos order 14.65 (r^2 = 25.0), median 10
+  r=8.0: sum_k E_k = 1.807487e-17 ; Var relu - Phi^2 = 1.332268e-15 ; mean chaos order 33.79 (r^2 = 64.0), median 21
+  r=0 tail beyond K: K=100 4.214e-05, K=1000 1.337e-06, K=10000 4.185e-08 ; slope -1.498, -1.505 (K^-3/2 -> -1.5)
+  r=4: share below the turning point k = r^2/4: 0.073 ; share in chaos <= r^2/8: 0.0029 ; tail exponent beyond 4 r^2: -1.520
+  r=8: share below the turning point k = r^2/4: 0.056 ; share in chaos <= r^2/8: 0.0000 ; tail exponent beyond 4 r^2: -1.524
+  r=12: share below the turning point k = r^2/4: 0.049 ; share in chaos <= r^2/8: 0.0000 ; tail exponent beyond 4 r^2: -1.532
+  r=3: share of the kink energy in chaos <= K for K = r^2/2, r^2, 2r^2: 0.455, 0.911, 0.969
+  r=5: share of the kink energy in chaos <= K for K = r^2/2, r^2, 2r^2: 0.751, 0.931, 0.976
+  r=8: share of the kink energy in chaos <= K for K = r^2/2, r^2, 2r^2: 0.803, 0.936, 0.979
+== 3. Maximal resolved probe = Loewner ellipsoid of the dual wall points; tight frame
+  active walls 4 of 9 ; max_a x_a^T A x_a = 1.000150 (resolved iff <= 1)
+  || sum_a lam_a u_a u_a^T - I || = 1.27e-14 ; sum lam = 4.0000 (n = 4)
+  Mahalanobis distance of each wall from the probe centre (contacts = rho = 1): [0.9999 1.     1.     1.     1.0313 1.1063]
+== 4. Homogeneous walls keep the dilation free
+  homogeneous walls: d g_a along the dilation minus 2 g_a = [0. 0. 0. 0. 0. 0.]
+  affine      walls: d g_a along the dilation minus 2 g_a = [-3.372926  0.435647  0.140477 -0.051294 -4.074185 -0.166503]
+== 5. Conic Steiner formula in a layer-1 cell C = W^-1 R^n_+
+  face-dimension law v_k: [2.000e-03 5.900e-02 2.254e-01 3.403e-01 2.428e-01 1.013e-01 2.450e-02
+ 4.400e-03 2.000e-04 0.000e+00 0.000e+00]  statistical dimension sum k v_k = 3.1881 (orthogonal W: 5.0)
+  E|P g|^2   = 3.1793 (se 0.0197) ; sum k v_k        = 3.1881
+  E|P g|^4   = 17.886 (se 0.243) ; sum v_k k(k+2)   = 17.929
+  E|P g|^2|P° g|^2 = 20.116 (se 0.156) ; sum v_k k(n-k) = 20.328
+== 6. Sticky (Klartag) evolution with walls as obstacles: Ito accounting of log det A (A = probe precision)
+  E log det A_T = 18.7004 (se 0.0498) ; log det A_0 - (1/2) E int delta = 18.6834 (se 0.0102) ; log det A_0 = 19.1144
+  contacts at T: mean 1.91, max 6 ; dim Sym_3 = 6 (the process freezes when the contact y y^T span it)

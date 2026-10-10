@@ -1,0 +1,40 @@
+\label{sec:klartag}
+\subsection{Lattice-free ellipsoids are flat tori with a spectral gap}
+Let $L\subset\R^n$ be a lattice, $A$ positive definite, and $E_A=\{x:\ Ax\cdot x<1\}$. Consider the flat torus $T_A=\R^n/L^*$ with the
+metric whose inverse is $A$ ($\langle u,v\rangle=u^\top A^{-1}v$). Its Laplace eigenfunctions are the characters
+$e_\xi(x)=e^{2\pi i\langle\xi,x\rangle}$, $\xi\in L$, with eigenvalues $4\pi^2A\xi\cdot\xi$, and its volume is $\mathrm{covol}(L)^{-1}\det A^{-1/2}$.
+\begin{proposition}[known; restated]\label{prop:torus}
+The following hold.
+\begin{itemize}[leftmargin=*]
+\item $E_A\cap L=\{0\}$ if and only if $\lambda_1(T_A)\ge4\pi^2$, and $\mathrm{vol}(E_A)=\kappa_n\,\mathrm{covol}(L)\,\mathrm{vol}(T_A)$. So Klartag's theorem
+says that some flat torus has spectral gap $4\pi^2$ and volume $\gtrsim n^2/(\kappa_n\,\mathrm{covol}L)$: the packing problem is the
+spectral-gap problem for flat tori.
+\item The \emph{contacts} $\partial E_A\cap L$ are exactly the frequencies of the eigenfunctions at the gap. The first spectral projection
+$P=\1_{[0,4\pi^2]}(\Delta_A)$ spans the constants and those characters. Connes--van Suijlekom's truncated operator system
+$PC(T_A)P$ is spanned by the characters $e_{\xi-\eta}$ with $\xi,\eta$ contacts: the \emph{difference set} of the contact code.
+\end{itemize}
+\end{proposition}
+
+\subsection{The process as a frozen-gap metric evolution}
+Klartag's $dA_t=\pi_t(dW_t)$ is a Dyson Brownian motion of the metric, projected so that $d\langle A\xi,\xi\rangle=\langle\xi\otimes\xi,dA\rangle=0$
+for every contact. In spectral words, the metric diffuses while every eigenvalue that reaches the gap stays frozen there.
+\begin{itemize}[leftmargin=*]
+\item \textbf{Volume.} By It\^o, $d\log\det A_t=\langle A_t^{-1},\pi_tdW_t\rangle-\frac12\sum_{i,j}|\pi_t(u_i\otimes_su_j)|^2/(\lambda_i\lambda_j)\,dt$. The torus volume
+therefore grows in expectation at a rate set by the number of \emph{unfrozen} metric directions,
+$\dim F_t=\frac{n(n+1)}2-\mathrm{rank}\{\xi\otimes\xi\}$.
+\item \textbf{Termination.} The process stops when $F_t=\{0\}$, i.e.\ when the contact outer products span $\mathrm{Sym}_n$. This is
+Voronoi's \emph{perfect} form. In spectral terms, the first spectral truncation determines the metric: \emph{rigidity at finite
+resolution}.
+\item \textbf{Optimality.} At a local maximum of volume, the KKT conditions give $A^{-1}=\sum\lambda_\xi\,\xi\otimes\xi$ with $\lambda_\xi>0$. This is
+Voronoi's \emph{eutaxy}, which in John position reads $\sum\lambda_\xi u_\xi\otimes u_\xi=\mathrm{Id}$: a tight frame. Voronoi's theorem
+says the locally densest lattices are exactly the perfect and eutactic ones.
+\item \textbf{Compactness.} By Mahler's criterion, tori with gap at least $4\pi^2$ and bounded volume form a compact set. The process
+lives in the compact thick part of the space of lattices, and the contacts are its boundary.
+\end{itemize}
+\emph{Check.} $A_2$ has $6$ minimal vectors whose outer products have rank $3=\dim\mathrm{Sym}_2$ (perfect), with $\sum x\otimes x=3\,\mathrm{Id}$
+(eutactic). $\Z^2$ has $4$ minimal vectors of rank $2$, so it is not perfect.
+
+\paragraph{Why this matters for us.} Stated spectrally, Klartag's mechanism has four parts: a metric (Dirac) evolution; a resolution
+threshold (the gap); objects at the threshold that freeze (contacts); and a volume accounting by unfrozen directions. Our setting has
+all four. The metric is the localization probe's covariance, the threshold is the chaos truncation (Section~\ref{sec:resolution}), and
+the objects at the threshold are walls (Section~\ref{sec:leaves}).

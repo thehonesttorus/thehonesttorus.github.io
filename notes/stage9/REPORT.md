@@ -331,3 +331,34 @@ Read in full: Klartag-Lehec (slicing, arXiv:2412.15044), Bizeul-Klartag-Lehec (K
   the other side). No algorithm by itself.
 - Slicing/heat flow: D(mu||gamma) = (1/2) int (n/(1+t) - E Tr A_t) dt (checked 0.5%) as a memory budget; the localized
   covariance diffuses with kappa3 as diffusion coefficient (quenched content).
+
+## 13. Stage 14: lattices, leaves and ellipsoids (`notes/stage14/ncg_mlp_stage14.pdf`, 14 pp)
+
+Theory with quick checks (`scripts/verify_stage14.py` -> `notes/stage14/verify_stage14.txt`, all pass).
+- Klartag's process is spectral: an L-free ellipsoid = a flat torus R^n/L* with spectral gap >= 4pi^2; contacts = gap
+  eigenfunctions (first spectral truncation; its operator system is spanned by the contact difference set); the process is a
+  frozen-gap Dyson motion of the metric; it stops at a Voronoi-perfect metric (the truncation determines the metric); local
+  optima are eutactic = John. Mahler compactness = the thick part. (A2 perfect + eutactic, Z^2 not: checked.)
+- Leaves are sliding lattice points (proved): a wall {w.x = b} imposes Klartag's constraint <(x-m)(x)(x-m), A> >= 1 at every
+  one of its points; the tangency point binds, giving w^T A^-1 w <= (w.m - b)^2 (a convex matrix-fractional "curved Ryshkov
+  body"); at contact the constraint is <y(x)y, dA> = 0 with y the tangency direction. With the centre free and bias-free walls:
+  the cone <w(x)w, mm^T - rho^2 Sigma> >= 0, rows = lattice vectors; deeper: a bundle over cells (gated Jacobian rows).
+  The layer map z = Wx is Klartag's T (cells -> orthants, ball -> state ellipsoid): the chain's frame.
+- The dilation is free for every contact configuration of bias-free walls (proved; dg - 2g = 0 checked), never frozen ->
+  the lattice-side reason for the critical gain; biases break it (prediction: biased nets have a damped gain mode).
+- Kink chaos law (proved, checked): E_k(r) = He_{k-2}(r)^2 phi(r)^2/k!; ~5-7% below the turning point r^2/4, none below
+  r^2/8; beyond ~ phi(r)/(pi k^2 sqrt(4k - r^2)); tail phi(r) K^-3/2/(3 pi) (1.339e-6 vs 1.337e-6). So chaos truncation at K =
+  the resolution ellipsoid of Mahalanobis radius 2 sqrt(K); next order removes 1-(K/(K+1))^1.5 (35% at 3->4) of the
+  neglected chaos energy; at K=3 radius 3.46 (matches stage 12's "marginal memory vanishes for |r| >= 3").
+- Leaf space: Gaussian transverse measures on every stratum; mean = codim-1 pairing with the kink cocycle; tile groupoid
+  gap labels sum_C Z gamma(C) (cell masses). NC strata (bent crossings): isotropy aff(1) = the upper tier's location-scale
+  algebra (E <-> scale); Aff_+(1) is non-unimodular (Delta = 1/sigma), so the Plancherel weight's modular flow is the dilation
+  (Takesaki/Haagerup): the critical gain is the modular Hamiltonian of the NC strata. Radial partition function
+  Z_l(beta) = int |h_l(x^)|^beta dsigma (its second cumulant = the dilation charge).
+- Sticky localization with walls as obstacles: Ito accounting checked (18.700 +- 0.050 vs 18.683); contacts accumulate to
+  perfect (6 in Sym_3). Maximal resolved probe = polar of the Loewner ellipsoid of dual wall points; precision
+  A = sum lambda_a x_a x_a^T (polar eutaxy) -> whitened contact normals form a tight frame (1e-14): the local code.
+  Conic Steiner formula holds in a layer-1 cell (statistical dimension 3.19 vs n/2 = 5). Siegel analogue = stage 12 field law;
+  theta series n(1+st)^-1/2.
+- For the chain: carry the dilation (cannot be pinned); effort follows the wall density (resolution r^2/4); positivity on the
+  truncated operator system as a truth-free sticky constraint (diagnostic: PSD failures of per-neuron moment matrices).

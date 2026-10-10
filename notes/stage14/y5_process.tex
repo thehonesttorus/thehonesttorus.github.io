@@ -1,0 +1,70 @@
+\label{sec:process}
+\subsection{The sticky localization}
+\begin{definition}
+Fix a centre $m$ and walls $\{w_a\cdot x=b_a\}$. Start from a resolved probe precision $A_0=a_0\mathrm{Id}$. Run Klartag's evolution on the precision,
+\[
+dA_t=\sigma\,\pi_t(dW_t),\qquad \pi_t=\text{projection onto }\{B:\ \langle y_a\otimes y_a,B\rangle=0\ \text{for every contact }a\},
+\]
+where $y_a=A^{-1}w_a$ is the direction to wall $a$'s tangency point (Proposition~\ref{prop:sliding}). A wall becomes a contact when it first
+touches the probe, and stays one. The process freezes when the $y_a\otimes y_a$ span $\mathrm{Sym}_n$.
+\end{definition}
+By It\^o, $\E\log\det A_T=\log\det A_0-\frac{\sigma^2}2\E\int_0^T\delta_tdt$, with $\delta_t=\sum_{i,j}|\pi_t(u_i\otimes_su_j)|^2/(\lambda_i\lambda_j)$. Since $\log\det$ is
+concave, the expected probe volume grows at a rate set by the free directions.
+\emph{Check} ($n=3$, $14$ affine walls, $200$ paths, $T=2$):
+\begin{itemize}[leftmargin=*]
+\item $\E\log\det A_T=18.700\pm0.050$, against the It\^o prediction $18.683\pm0.010$, from $\log\det A_0=19.114$;
+\item contacts accumulate to $1.9$ on average and up to $6=\dim\mathrm{Sym}_3$, i.e.\ perfect.
+\end{itemize}
+With homogeneous walls and the centre free, Proposition~\ref{prop:dilfree} keeps the dilation free forever. The probe then never
+freezes, and its log-scale performs the free walk that is the critical mode.
+
+\subsection{The maximal resolved probe and its code}
+\begin{proposition}[Klartag's terminal state meets John; proved, and checked]\label{prop:john}
+The locally maximal resolved probe about $m$ is the polar of the L\"owner ellipsoid of the dual wall points $\pm w_a/|w_a\cdot m-b_a|$. It touches
+the contact walls at Mahalanobis distance $1$, and its precision satisfies the eutaxy (John) condition
+\[
+A=\sum_a\lambda_a\,x_a\otimes x_a,\qquad \lambda_a\ge0,\qquad \sum\lambda_a=n,\qquad x_a=\frac{w_a}{|w_a\cdot m-b_a|}.
+\]
+This is the polar form of Voronoi's eutaxy: for lattice points the inverse of the ellipsoid matrix is the frame sum, while for walls the
+precision is. In the whitened frame $u_a=A^{-1/2}x_a$, $\sum_a\lambda_au_a\otimes u_a=\mathrm{Id}$: the contact normals form a weighted tight frame, a
+spherical $2$-design.
+\end{proposition}
+\emph{Check} ($n=4$, $9$ walls): Khachiyan's algorithm gives $4$ active walls, all at Mahalanobis distance $1.0000$, with
+$\|\sum\lambda_au_a\otimes u_a-\mathrm{Id}\|=1.3\times10^{-14}$ and $\sum\lambda_a=4.0000$.
+
+This is the transformation that turns a local process into a code. Klartag's $T$ maps his terminal ellipsoid to the ball and his
+lattice to a packing. Our whitening $A^{1/2}$ (the map $x\mapsto A^{1/2}(x-m)$) maps the maximal resolved probe at an input to the unit ball, and the walls around that
+input to a tight frame of contact normals. The local geometry of linearity around an input, expressed in its own natural metric, is a
+spherical design: the neighbourhood of every input carries a small frame code.
+
+\subsection{Cells as cones: the conic Steiner formula and the global gate-count law}
+\textsc{ReLU} is the metric projection onto the orthant, $\relu(z)=\Pi_{\R^n_+}(z)$. Moreau's decomposition $z=\Pi_K z+\Pi_{K^\circ}z$, i.e.\
+$\relu(z)-\relu(-z)=z$, is the cone--polar duality, our analogue of lattice--dual lattice. For any closed convex cone $K$ and
+$g\sim N(0,\mathrm{Id})$, the conic Steiner formula (McCoy--Tropp) says
+\[
+\E\,f\big(|\Pi_Kg|^2,|\Pi_{K^\circ}g|^2\big)=\sum_kv_k(K)\,\E f(\chi^2_k,\chi^2_{n-k}),
+\]
+where $v_k$ is the law of the dimension of the face that $\Pi_Kg$ lands in (the conic intrinsic volumes).
+\begin{itemize}[leftmargin=*]
+\item For the orthant, $v_k$ is binomial: the face is the gate pattern. For orthogonal weights the first layer is exactly this, so
+$v_k$ is the global gate-count law.
+\item \emph{Check}, in a layer-1 cell $C=W^{-1}\R^n_+$ with Gaussian $W$ ($n=10$, $2\times10^4$ samples, exact projections by NNLS):
+\begin{itemize}
+\item $\E|\Pi g|^2=3.179\pm0.020$ against $\sum kv_k=3.188$;
+\item $\E|\Pi g|^4=17.89\pm0.24$ against $17.93$;
+\item $\E|\Pi g|^2|\Pi^\circ g|^2=20.12\pm0.16$ against $20.33$.
+\end{itemize}
+\item The cell's statistical dimension is $3.19$, against $n/2=5$ for orthogonal weights. Gaussian weights make the cell thinner than an
+orthant.
+\end{itemize}
+
+\subsection{Siegel's principle for the network's rows}
+Klartag's analysis rests on Siegel's mean value theorem: a random lattice is, on average, Lebesgue measure. Our analogue is stage
+12's self-localization. Through Gaussian rows independent of the state, the fields $r_a$ of a probe are, across rows, $N(0,t)$-distributed.
+The ``theta series'' of the wall code relative to the probe therefore has the Siegel mean
+\[
+\Theta(s)=\sum_a e^{-sr_a^2/2},\qquad \E\,\Theta(s)=n\,(1+st)^{-1/2}.
+\]
+Its value at $s=1$ is $\sqrt{2\pi}$ times the wall density, $n/\sqrt{1+t}$, which is stage 12's wall-density law. Rogers' second-moment
+formula has an analogue as well. Given the state, the rows are independent (Poisson-like), and the correlations come only through the
+shared state. The leading one is the collective (dilation) mode, the Mattis component of stage 12, which is once more the charge.

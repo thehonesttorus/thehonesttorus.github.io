@@ -1,0 +1,80 @@
+\label{sec:groupoid}
+\subsection{Strata, leaves and transverse measures}
+Stage 11 set up the wall foliation of input space at depth $l$. Its leaves are the open faces of the activation tiling: cells
+(codimension $0$), walls ($1$), and crossings ($\ge2$). Its groupoid algebra has a finite composition series over the strata, with
+subquotients $C^*(\text{isotropy})\otimes\mathcal K$:
+\begin{itemize}[leftmargin=*]
+\item $C_0(\R^j)$ at normal crossings, where the isotropy is abelian;
+\item $C^*(\Aff_+(1))$ at bent crossings, where a deep wall meets a wall that feeds it.
+\end{itemize}
+The Gaussian $\gamma$ induces a transverse measure on every stratum by disintegration. On a stratum $S$ of codimension $j$ it is the
+Gaussian surface density on $S$, with the normal space $\R^j$ as local transversal.
+\begin{proposition}[the mean is leaf-space integration; stage 11, restated]\label{prop:leafint}
+\[
+\E f=(2\pi)^{-1/2}\sum_{\mathrm{codim}\,F=1}\kappa_F\,\alpha_F ,
+\]
+the codimension-one transverse measure paired with the kink cocycle $\kappa_F$.
+The cumulant corrections of order $k$ pair the codimension-$j$ transverse measures, $j\le k-1$, with higher kink cocycles. Only bent
+chains carry mixed terms (stage 12: Kikuchi level $=$ codimension). The mean, and every correction to the closure, is an integral over
+the leaf space.
+\end{proposition}
+
+\subsection{The tile groupoid and the network's gap labels}
+Let $R_l$ be the relation ``same cell at depth $l$''. It is proper, and $C^*(R_l)\cong\bigoplus_C\mathcal K(L^2(C))$, so $K_0(C^*(R_l))\cong\Z^{(\text{cells})}$.
+\begin{proposition}[proved, with the trace normalized by $\gamma$]\label{prop:gap}
+The trace induced by the Gaussian transverse measure gives each cell $C$ the weight $\gamma(C)$. Its range on $K_0$ is the
+\emph{gap-labelling group}
+\[
+\mathrm{Gap}_l=\tau_*K_0(C^*(R_l))=\sum_C\Z\,\gamma(C)\ \subset\R .
+\]
+For every self-adjoint element $H$ of $C^*(R_l)$ (a cell-covariant observable, for instance any function of the gate code), the
+integrated density of states $\tau(\1_{(-\infty,E]}(H))$ at a spectral gap lies in $\mathrm{Gap}_l$. Refinement with depth gives
+$\mathrm{Gap}_l\subset\mathrm{Gap}_{l+1}$.
+\end{proposition}
+This is the commutative half of the leaf space. Its K-theoretic ``lattice'' is the module of cell masses, the global code of gate
+patterns weighted by the Gaussian. Bellissard's gap labelling for quasicrystals has the same shape, with patch frequencies in place
+of cell masses.
+
+\subsection{The non-commutative strata and their modular dilation}
+\begin{theorem}[structural; proved at the Lie-algebra level]\label{thm:affiso}
+Stage 11 found the isotropy algebra at a bent crossing, $\aff(1)=\langle E,\vartheta\rangle$ with $[E,\vartheta]=\vartheta$, where $E$ is the Euler (dilation) field
+and $\vartheta$ the bending shear. It is isomorphic to the Lie algebra of the location--scale group $\Aff_+(1)=\{x\mapsto\sigma x+\mu\}$, which acts
+simply transitively on univariate Gaussians. That group is stage 12's hyperbolic upper tier. The isomorphism sends $E$ to the
+scale generator $D$ and $\vartheta$ to the translation $P$ ($[D,P]=P$).
+\end{theorem}
+\begin{theorem}[the modular flow is the dilation; known ingredients, applied]\label{thm:modular}
+$\Aff_+(1)$ is not unimodular. Its left Haar measure is $d\sigma\,d\mu/\sigma^2$, its right Haar measure $d\sigma\,d\mu/\sigma$, and its modular
+function $\Delta(\sigma,\mu)=\sigma^{-1}$. The Plancherel weight $\varphi$ on the group von Neumann algebra $L(\Aff_+(1))$ is faithful, normal and
+semifinite, but not a trace. Its modular group is (Takesaki, Haagerup)
+\[
+\sigma^\varphi_s\big(\lambda_{(\sigma,\mu)}\big)=\Delta(\sigma,\mu)^{is}\,\lambda_{(\sigma,\mu)}=\sigma^{-is}\,\lambda_{(\sigma,\mu)} .
+\]
+The modular Hamiltonian $\log\Delta=-\log\sigma$ is the logarithm of the dilation.
+\end{theorem}
+\begin{corollary}[the critical gain is modular]
+On the non-commutative strata, the natural transverse weight is not a trace, and its modular flow is the dilation. The mode that
+stage 13 found critical (transport factor $1$, a conserved charge) is the modular Hamiltonian of the network's non-commutative
+strata. Three statements are one: the scale is conserved (homogeneity), never frozen by contacts (Proposition~\ref{prop:dilfree}), and
+generates the modular flow where the foliation is non-commutative.
+\end{corollary}
+\begin{remark}[what follows, and what does not]
+\begin{itemize}[leftmargin=*]
+\item By Connes' Thom isomorphism, the group $C^*$-algebra of $\Aff_+(1)$ has $K_0=\Z$ and $K_1=0$. Gap labels on the bent strata cannot
+come from a trace. They need the dilation-twisted (KMS) weight, that is, the twisted cyclic cohomology of Connes and Moscovici.
+\item Tomita--Takesaki gives $JL(G)J=R(G)$, so the commutant of the left group algebra is the right one. Stage 11 had forward activations
+and backward sensitivities as left- and right-harmonic states. Reading them as the left and right sides of the bent-stratum algebra is
+an analogy we have not made precise.
+\end{itemize}
+\end{remark}
+
+\subsection{An analogy with the space of lattices}
+Klartag's process lives, in its dual form, on the space of unimodular lattices $X_n=SL_n(\Z)\backslash SL_n(\R)$, in its Mahler-compact thick
+part. The Bost--Connes and Connes--Marcolli systems make a non-commutative space of lattices with the \emph{scaling} as time evolution.
+Its KMS states encode the arithmetic, with partition function $\zeta(\beta)$. For the network, the same dilation is the modular flow of the
+non-commutative strata. This suggests one well-defined object, the \emph{radial partition function}
+\[
+Z_l(\beta)=\frac{\E|h_l(x)|^\beta}{\E|x|^\beta}=\int_{S^{n-1}}|h_l(\hat x)|^\beta\,d\sigma(\hat x),
+\]
+the Mellin transform of the gain. Its logarithm generates the gain's cumulants: $\frac{d^2}{d\beta^2}\log Z|_{0}=\Var\log|h_l(\hat x)|$, the dilation
+charge, about $V_l/4$ minus the input radius's share. It is the exact object a dilation-consistent closure must transport (stage 13).
+The arithmetic content of Bost--Connes has no counterpart here, and we do not claim one.

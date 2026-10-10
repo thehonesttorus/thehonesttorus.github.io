@@ -1,0 +1,63 @@
+\label{sec:resolution}
+\subsection{The kink chaos law}
+For a neuron whose pre-activation is $z=\mu+s\xi$ (field $r=\mu/s$), expand $\relu(z)/s$ in the Wiener chaos of $\xi$. The first chaos
+carries $\Phi(r)^2$. The rest is the kink.
+\begin{theorem}[the kink chaos law; proved, and checked]\label{thm:kink}
+The $k$-th chaos energy of $\relu(r+\xi)$ is, for $k\ge2$,
+\[
+E_k(r)=\frac{\He_{k-2}(r)^2\,\varphi(r)^2}{k!},\qquad \sum_{k\ge2}E_k(r)=\Var\relu(r+\xi)-\Phi(r)^2 .
+\]
+By the Plancherel--Rotach asymptotics:
+\begin{itemize}[leftmargin=*]
+\item $E_k(r)$ is exponentially small for $k<r^2/4$, where $r$ lies outside the oscillatory region $|r|<2\sqrt{k}$ of $\He_{k-2}$;
+\item beyond the turning point, averaging over the oscillation, $E_k(r)\approx\dfrac{\varphi(r)}{\pi k^2\sqrt{4k-r^2}}$;
+\item hence the tail beyond order $K$ is $\sum_{k>K}E_k(r)\approx\dfrac{\varphi(r)}{3\pi}K^{-3/2}$ for $K\gg r^2/4$.
+\end{itemize}
+\end{theorem}
+\begin{proof}
+Stein: $\E[\relu(r+\xi)\He_k(\xi)]=\E[\relu^{(k)}(r+\xi)]=\E[\delta^{(k-2)}(r+\xi)]=\pm\He_{k-2}(r)\varphi(r)$. The energy is the square over $k!$. The asymptotics are
+those of the normalized Hermite functions $\psi_j(x)=\He_j(x)e^{-x^2/4}/((2\pi)^{1/4}\sqrt{j!})$. Since $E_k=\psi_{k-2}(r)^2\varphi(r)/(k(k-1))$, and
+$\psi_j^2$ is exponentially small outside $|x|<2\sqrt j$ with oscillation-averaged value $1/(\pi\sqrt{4j-x^2})$ inside (WKB; the oscillator
+$-\partial_x^2+x^2/4$ at energy $j+\frac12$), the asymptotics follow.
+\end{proof}
+Checked:
+\begin{itemize}[leftmargin=*]
+\item The sum rule holds to $10^{-7}$ relative.
+\item The share of the kink energy below the turning point $k=r^2/4$ is $0.073$, $0.056$, $0.049$ at $r=4,8,12$; below $r^2/8$ it is
+$0.003$, $0$, $0$.
+\item The cumulative tail exponent beyond $4r^2$ is $-1.52$.
+\item At $r=0$ the tail is $4.214\times10^{-5}$, $1.337\times10^{-6}$, $4.185\times10^{-8}$ at $K=10^2,10^3,10^4$ (slopes $-1.50$, $-1.51$). The predicted
+$\varphi(0)K^{-3/2}/3\pi$ gives $1.339\times10^{-6}$ at $K=10^3$.
+\end{itemize}
+
+\subsection{Truncation at order $K$ is the ellipsoid of radius $2\sqrt K$}
+The Ornstein--Uhlenbeck operator of the probe is the number operator: the $k$-th chaos is its eigenspace with eigenvalue $k$. It is
+the Dirac-type operator whose spectral truncation at level $K$ is what a chain truncated at chaos order $K$ keeps.
+Theorem~\ref{thm:kink} is its Weyl correspondence for kinks.
+\begin{corollary}[resolution ellipsoid; proved]\label{cor:resell}
+Truncating at chaos order $K$ is, up to exponentially small errors, the probe ellipsoid of Mahalanobis radius $2\sqrt K$.
+\begin{itemize}[leftmargin=*]
+\item A wall outside it ($r^2>4K$) leaves essentially nothing in the retained chaos. Its whole nonlinear content is at most $\varphi(r)/r^3$.
+\item A wall inside it is captured up to an algebraic tail $\propto\varphi(r)K^{-3/2}$.
+\end{itemize}
+The chaos truncation is Klartag's resolution threshold. The walls inside the $2\sqrt K$-ellipsoid are the ``lattice points in the
+ellipsoid'', and those near its boundary are the contacts.
+\end{corollary}
+\begin{corollary}[a truncation-error law; derived, heuristic in its use]
+With stage 12's field law ($r\sim N(0,t_l)$ across neurons), the chaos energy neglected at order $K$ in layer $l$ is
+\[
+\sum_a\sum_{k>K}E_k(r_a)\ \approx\ \frac{n\,K^{-3/2}}{3\pi}\,\E\varphi(r)=\frac{n\,K^{-3/2}}{3\pi}\cdot\frac{\sin(\theta_l/2)}{\sqrt\pi}.
+\]
+Raising the truncation from $K$ to $K+1$ removes the fraction $1-(K/(K+1))^{3/2}$ of it: $46\%$ ($2\to3$), $35\%$ ($3\to4$),
+$28\%$ ($4\to5$). For comparison, v56's chaos grading (roughly a step from second to third chaos in the $\kappa_4$ diagonal) took $21\%$ off the raw MSE. These are the same
+order, but the MSE has other sources.
+\end{corollary}
+At $K=3$ the resolution radius is $2\sqrt3=3.46$. The fraction of neurons inside it is $\operatorname{erf}(\sqrt{2K/t_l})$: $0.92$ at $l=8$ ($t\approx4$) and
+$0.68$ at $l=16$ ($t\approx12$). This matches stage 12's measurement that the marginal memory vanishes for $|r|\ge3$.
+
+\subsection{The chain's state lives on a truncated operator system}
+Truncating at order $K$ replaces the commutative algebra of the probe by the operator system $\mathcal E_K=P_K\,L^\infty(\gamma_{m,\Sigma})\,P_K$
+(Connes--van Suijlekom). The chain's carried statistics are a functional on $\mathcal E_K$. For that functional to come from a probability
+law it must be positive, a truncated moment condition. Positivity defines a convex body whose boundary points are functionals with a
+kernel. These are the analogue of Klartag's contacts: directions in which the chain's pseudo-law has no room left. Section~\ref{sec:chain}
+uses this as a truth-free sticky constraint.
