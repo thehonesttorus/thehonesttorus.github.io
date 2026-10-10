@@ -670,3 +670,67 @@ Decision rule: block K = 32 at or below -20% on network 0 (then confirm on netwo
 next step is a cheaper way to compute that block (a K-dimensional exact latent for the top modes). Between -20% and -5%: the
 bulk matters as much; record the ladder. Above -5%: the collective covariance error is not the lever either, and the output
 error is in per-neuron structure that no low-dimensional treatment reaches.
+
+### 9f. Results of the top-K covariance oracle (`outputs/topk_net{0,1}.txt`)
+
+Raw MSE, counterterms on, baselines 1.4771e-8 (network 0) and 1.5733e-8 (network 1):
+
+| oracle | network 0 | network 1 |
+|---|---|---|
+| block K = 1 | 1.518e-8 (+2.8%) | |
+| block K = 8 | 1.413e-8 (-4.3%) | |
+| block K = 32 | 1.235e-8 (-16.4%) | 1.382e-8 (-12.2%) |
+| block K = 128 | 1.007e-8 (-31.8%) | 1.316e-8 (-16.3%) |
+| eigenvalues only, K = 32 | 1.604e-8 (+8.6%) | |
+
+**Against the registration**: all block values fall inside the registered intervals (K = 1: -3% [-8, +3]; K = 8: -12% [-25, -3];
+K = 32: -25% [-50, -8]; K = 128: -40% [-65, -15]; eigenvalues only: -10% [-25, +3], observed +8.6%, outside), at the weak end.
+**Decision band** (K = 32 between -20% and -5%): the bulk matters as much; the collective sector is not the lever. The value
+grows gradually with K (1: +3%, 8: -4%, 32: -12 to -16%, 128: -16 to -32%) instead of concentrating in a few modes, and
+correcting the eigenvalues alone makes things worse (+8.6%): the same partial-correction failure as the gain oracle. For
+reference the full variance oracle at every layer is -56% / -48% (note XLIII 4a). The collective-latent route (a K-dimensional
+exact treatment of the top modes, my Route C) is closed as a main lever: a perfect oracle for the top 32 modes is worth 12-16%
+and a real implementation would be worth less and cost more.
+
+### 9g. How much of the truth's third and fourth cumulant is the mixture package? (`code/gain_share.py`, `outputs/gain_share_net{0,1}.txt`)
+
+cos^2 between each slice and its package form, truth | chain (percent), network 0, layer 3 -> 14 (network 1 within 1-3 points):
+
+| slice | truth, layer 3 -> 14 | chain, layer 14 | share of the chain's slice-error energy that is package-shaped, layer 14 |
+|---|---|---|---|
+| k3 diagonal | 78 -> 93 | 93 | 50% |
+| D21 | 61 -> 86 | 59 | 32% |
+| K22 | 98 -> 94 | 100 | 32% |
+| K31 | 44 -> 63 | 96 | 35% |
+| k4 diagonal | 99 -> 95 | 96 | 48% |
+
+- **At deep layers 86-94% of the energy of the true k3, D21, K22 and k4 slices is the dilation package** (K31: 44-63%; the chain's
+  own K31 is 96-99% package-shaped by construction, so the non-package half of the truth's (3,1) slice, the "history", is not
+  represented at all). The non-package remainder is 6-14% of the energy of those slices.
+- The chain's slice errors are 32-50% package-shaped in energy, yet correcting that component is harmful (section 9d): the
+  Frobenius metric is the wrong weighting. The output reads these slices through coherent combinations that the counterterms have
+  balanced.
+
+**What this suggests, and what is untested.** If a design supplied the package exactly at O(n^2) and carried only the remainder
+in the sources, the carried content would be about a third of the current amplitude (sqrt of 6-14%). With the same relative
+accuracy the absolute error from the sources' transport would fall about 3x in amplitude, or equivalently the sources could be
+carried at lower rank or precision for the same absolute error. This is a control-variate argument and it is not tested: the
+oracle of section 9d tested the wrong thing for it (truth amplitudes against counterterms fitted for the old state). The test that
+matches the claim is next.
+
+### 9h. Pre-registration: does supplying the package analytically make the chain robust to lower rank? (committed before the runs)
+
+The package amplitudes are pinned to the chain's own full-rank effective charges (`code/pin_targets.py`, network 0), so at full
+rank the pin is a no-op, and applied to a chain run at reduced ranks it re-supplies, at each layer's readout and without
+persistence, the package content that the compression loses. Runs on network 0 (raw MSE, cold FLOPs from flopscope):
+- P0: full rank (R_OLD 320, R_OLD2 192) with the pin: a no-op, must reproduce 1.4771e-8 within 0.5%;
+- P1: reduced ranks (R_OLD 160, R_OLD2 96), no pin;
+- P2: reduced ranks with the pin.
+
+Predictions: P0 within +-0.5%. P1: raw +15% to +60%, FLOPs -6% to -15% (the 128 cliff of note XXIV makes 96 risky; if P1 is above
++150%, repeat at (192, 128)). P2: removes at least a quarter of P1's degradation (P2 - baseline <= 0.75 (P1 - baseline)); 35%
+confidence.
+
+Decision rule: P2 removes at least 40% of P1's degradation and P2's adjusted MSE (raw x C/B) beats the baseline's: the package acts
+as a control variate for the sources; next build a truth-free version (charges from the chain's own k3 charge and a universal
+ratio profile) and run a cold 16-network screen. Removes 15-40%: record; the lever is real but small. Below 15%: close.

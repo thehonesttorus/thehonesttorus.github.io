@@ -1,0 +1,4 @@
+net 1 base: raw 1.57325e-08 | F 4.84938e+11 (0.22052 B) residual wall 0.858 s
+net 1 K32block: raw 1.38204e-08 | F 4.84967e+11 (0.22054 B) residual wall 2.700 s
+net 1 K128block: raw 1.31637e-08 | F 4.84967e+11 (0.22054 B) residual wall 2.735 s
+done

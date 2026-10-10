@@ -1,0 +1,6 @@
+net 0 K32block: raw 1.23535e-08 | F 4.87265e+11 (0.22158 B) residual wall 3.155 s
+net 0 K8block: raw 1.41322e-08 | F 4.87265e+11 (0.22158 B) residual wall 2.661 s
+net 0 K1block: raw 1.51819e-08 | F 4.87265e+11 (0.22158 B) residual wall 2.875 s
+net 0 K128block: raw 1.00720e-08 | F 4.87265e+11 (0.22158 B) residual wall 2.834 s
+net 0 K32eig: raw 1.60446e-08 | F 4.87265e+11 (0.22158 B) residual wall 2.586 s
+done

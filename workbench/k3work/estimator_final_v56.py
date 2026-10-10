@@ -476,6 +476,14 @@ GPK_FILE, GPK_SL, GPK_LAYERS, GPK_PERSIST, GPK_MODE = (
     (lambda a: (a[0], a[1], frozenset(int(x) for x in a[2].split(",") if x), a[3] == "1", a[4] if len(a) > 4 else "oracle")
      )(_GPK.split(":")) if _GPK else ("", "", frozenset(), False, "oracle"))
 _GPK_T = {}
+# V63 (research only; note XLIV section 9e): replace the chain's pre-activation covariance by the truth's inside the subspace of
+# the true top-K eigenvectors. V63_TOPK = "K:FILE:LAYERS:MODE": FILE = mc2 npz (key "cov"), MODE = block (everything that touches
+# the subspace: D P + P D - P D P) | eig (the true top-K eigenvalues along the true eigenvectors only).
+_TK = _os.environ.get("V63_TOPK", "")
+TOPK, TOPK_FILE, TOPK_LAYERS, TOPK_MODE = (
+    (lambda a: (int(a[0]), a[1], frozenset(int(x) for x in a[2].split(",") if x), a[3] if len(a) > 3 else "block"))(_TK.split(":"))
+    if _TK else (0, "", frozenset(), "block"))
+_TOPK_D = {}
 SAT_MODE = _os.environ.get("V33_SAT_MODE", "both")   # both | t (transport rows only) | r (D21 rows only)
 # V35 (note XXIX): the drop made real. SAT_ROUND > 0: the active set is the top-na neurons by alpha with na = the count
 # above SAT rounded UP to a multiple of SAT_ROUND (Strassen-compatible sides), so the dropped set is a subset of the
@@ -1527,6 +1535,24 @@ class Estimator(BaseEstimator):
                 if "COFF" in ORACLE and C_off is not None:
                     _own("C_off", li, C_off)
                     C_off = _zero_diag(fnp.asarray(_ORACLE_DATA["cov"][li], dtype=f32))   # V37 audit: off-diagonal covariance
+            if TOPK and (not TOPK_LAYERS or li in TOPK_LAYERS) and C_off is not None:
+                import numpy as _np
+                if not _TOPK_D:
+                    _TOPK_D["cov"] = _np.load(TOPK_FILE)["cov"]
+                _CT = _np.asarray(_TOPK_D["cov"][li], dtype=_np.float64); _CT = 0.5 * (_CT + _CT.T)
+                _Cc = _np.asarray(C_off, dtype=_np.float64); _Cc = 0.5 * (_Cc + _Cc.T)
+                _np.fill_diagonal(_Cc, _np.asarray(var, dtype=_np.float64))
+                _lw, _VV = _np.linalg.eigh(_CT)
+                _U = _VV[:, ::-1][:, :TOPK]
+                if TOPK_MODE == "eig":
+                    _dl = _lw[::-1][:TOPK] - _np.einsum("ij,ij->j", _U, _Cc @ _U)
+                    _Cn = _Cc + (_U * _dl) @ _U.T
+                else:
+                    _A = _U @ (_U.T @ (_CT - _Cc))
+                    _Cn = _Cc + _A + _A.T - _U @ ((_U.T @ _A) @ _U) @ _U.T
+                var = fnp.asarray(_np.maximum(_np.diag(_Cn), 1e-10), dtype=f32)
+                _np.fill_diagonal(_Cn, 0.0)
+                C_off = fnp.asarray(_Cn, dtype=f32)
             mode = 0 if A_st is None else 1
             D3_keep = D21_keep = None   # V41: own D3/D21 kept for the consistent oracle subtraction
             sat_mask = None
