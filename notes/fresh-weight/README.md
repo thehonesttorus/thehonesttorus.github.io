@@ -478,3 +478,66 @@ Each claim was checked by hand.
   fluctuation at each kink). Whether it predicts the chain's error is untested.
 - **The frozen-contact Klartag drift (III ii) is the rung-2 defect** of note XLII's ladder, with the first-layer terms
   removed. It is consistent with Theorem A5, and it has no cheap evaluation.
+
+## 9. Stage 13 (other chat's note, 21 pages) tested on our data
+
+The user attached the stage-13 note (`Localization in the commutant, stage 13`) and asked for real engagement with its
+novel claims. I read all 21 pages. The note makes four claims that can be tested on data we hold:
+
+1. **Eldan's cumulant drift is the Schur hub** (Prop. 4.1-4.3, Conjecture 4.5): the hub is the between-tier fourth
+   cumulant, 3 Var(proj_field(z^2)). Verified by hand here for the diagonal (Cov(z^2, x) = 2HL, so 3 Var(proj) = 12|HL|^2,
+   which is note XLI's path class). The (2,2) and (3,1) pairings need the three-site third cumulant contracted once
+   against C^(-1) D_i, which is one hub-sized contraction per source-layer: about +40% of the bill. Not pursued as a build.
+2. **The dilation charge is conserved and the chain's pieces are mutually inconsistent along it** (Prop. 5.1, Thm 5.4,
+   Cor. 5.5). Checked by hand: for z = (1 + delta)(mu + y), Var delta = eps, the first-order cumulants are
+   - C: eps (Ct + mu mu^T);
+   - kappa3(a,b,c): 2 eps (mu_a Ct_bc + mu_b Ct_ac + mu_c Ct_ab);
+   - kappa4(a,a,a,a) = 12 eps Ct_aa^2; (2,2): eps (4 Ct_aa Ct_bb + 8 Ct_ab^2); (3,1): 12 eps Ct_aa Ct_ab.
+
+   The post-ReLU mean E relu(z) = E(1+delta) E relu(g) does not depend on eps at all. A Gaussian closure sees a spurious
+   O(eps) through the variance, and the Edgeworth terms cancel it exactly when they carry the mixture's own skewness
+   6 eps r and kurtosis 12 eps (the note's cancellation theorem; I re-derived it, and the pieces sum to (eps/2)(1 + r^2) -
+   eps r^2 + (eps/2)(r^2 - 1) = 0). It also reproduces the production chain's fitted scale-mixture kappa4 (K4SM:
+   k4 = 3 g var^2, K22 = g var var^T, K31 = 3 g d(var) C_off with g = 4 eps), so our fitted "pair" is the kappa4 piece
+   of this package with a free gain.
+3. **The gain saturates, it does not mean-revert** (Prop. 5.2, Remark 5.3). This contradicts the reading I wrote in
+   section 7b ("mean-reverting"). It is falsifiable (P1 below), and I will correct 7b if it holds.
+4. **Truth-free exact identities** (ladder rungs 0 and 1, memory budget): not tested here.
+
+**Why claim 2 matters for us.** Earlier rounds saw three facts that look unrelated:
+- replacing the chain's kappa4 diagonal by the Monte Carlo value at layers 12-15 makes the last step worse
+  (+16% / +34%, note XLIII section 4a; 4.18e-9 -> 7.29e-9 in `frontier-tests`);
+- the output-fitted counterterms push D21 down by 1-2% where the slice-level truth wants it 2-4% up (note XLIII 4e);
+- a gain-conditioned chain double-counts the radial zero mode (`arrow-mixture`).
+
+All three are what a first-order cancellation among (variance, kappa3, kappa4) along one direction would produce: fix
+one piece and the compensation breaks. The tests below measure that directly.
+
+### 9a. Pre-registration (committed before the data)
+
+**Script `code/dil_ledger.py`, networks 0-1, layers 3-14.** Part (A) fits each slice's dilation charge eps_S (the
+least-squares coefficient on the package form), for the truth and for the chain's own slices. Part (B) takes the
+one-step first-order Edgeworth sensitivities at the true state, dm = phi/(2S) dvar - R phi/(6 S^2) dk3 + (R^2 - 1)
+phi/(24 S^3) dk4 + Phi dmu, and evaluates them with the chain's error in each slice (noise-free through the two
+independent halves).
+
+Predictions:
+- **A1 (truth).** eps_k3 is 0.003-0.008 at layers 8-14 (the note's 0.71 V/4); eps_k4 / eps_k3 is 0.7-1.0 (the note's
+  kurtosis-to-skewness slope ratio 1.6-1.8, halved); D21, K22 and K31 give charges within a factor of 2 of eps_k3.
+- **A2 (chain).** The chain's Rayleigh charge is within 1.5% of the truth's. Its eps_k3 is within 10%. Its eps_k4 is more
+  than 20% off (the memoryless regeneration).
+- **B1 (compensation).** At 8 or more of the 12 layers on both networks, corr(var-term, k4-term) < -0.3 and
+  rms(sum of the three terms) < 0.8 x their quadrature sum.
+- **B2.** The three terms individually have rms within a factor of 3 of the actual one-step mean error (the leak is
+  not negligible).
+
+Decision rule: if B1 fails (ratio >= 0.9 and correlations within +-0.15), the compensation story is closed and the
+consistency route stops. If B1 holds, the next step is an oracle that imposes the package on the chain's own state, with
+and without the counterterms.
+
+**P1 (the note's falsifiable prediction), script `code/lognorm.py`, network 0, N = 40000 Gaussian inputs, float32.** With
+Delta_l = log(|h_l|^2 / |h_(l-1)|^2) across inputs:
+- the correlation of successive increments lies within +-0.15 at all layers from 4 on, and the AR(1) slope of Delta_(l+1)
+  on log|h_l|^2 lies within +-0.1 (mean reversion would make it clearly negative);
+- Var Delta_l is 0.8-1.6 times the leading law 4 theta_(l-1)^2 / n at layers 6-15 (theta from the arc-cosine recursion);
+- V_l / 4 (V_l = Var_x log|h_l|^2) is 0.0065-0.0090 at layers 8, 12, 15.
