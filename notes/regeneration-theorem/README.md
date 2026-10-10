@@ -191,3 +191,30 @@ Its connected expansion splits by loop number.
 So the leading regeneration is the tree level plus the two-cycle of the TAP free energy of one layer. The cumulants of
 the readouts are the theta-derivatives along s W_i + t W_j. Expanding the saddle to third order in theta gives the
 structure sums as a few matrix products per layer. The production form needs no enumeration.
+
+## 6. A second prediction, written before the results: the memory of the four-site class
+
+Section 3 left the transported (2,1,1) and (1,1,1,1) classes of kappa4(z^l) undetermined. Power counting sizes them.
+
+**Size.**
+- The previous layer's leading trees create distinct-site entries kappa4(z^l)_abcd of the same size as its (3,1)
+  entries: E X^2 ~ sigma^8 n^4 c^6 J^8.
+- Transport by T = W Phi on all four legs multiplies the energy by (sigma^2 n mean Phi^2)^4 ~ 0.9^4 ~ 0.66 per layer of
+  age. This uses sigma^2 n mean Phi^2 = 0.9, which is note XLVII's one-step gain.
+- The transported four-site class therefore enters K31' at the same order as the newborn structures, discounted by
+  0.66 per age. Births from different layers are nearly orthogonal (stage 15, Theorem 3.2).
+
+**Consequence.** Summed over ages, the memory carries about 0.66 / (1 - 0.66) ~ 1.9 times the newborn energy. A
+one-step regeneration from the carried slices alone would then reach only about 1 / 2.9 ~ 35% of the (3,1) slice.
+
+**Prediction P4.** Leading-only (3,1) R^2 lies in 0.2-0.5, and the loop tail of §4a adds less than 0.1. If so, P1 fails
+for a reason the theory states: the regeneration must be fed the four-site memory. In the chaos state that memory is
+not a new tensor:
+- the (1,1,1,1) and (2,1,1) classes of kappa4(z^l) are, at leading order, pairs of second-chaos sources contracted
+  through the birth Gram (the path or hub class);
+- and third-chaos sources (the stars), each a vector pair per neuron per layer, the same storage as the kappa3 sources.
+
+So the design object is the chaos-state formula for the fourth-order slices, read from the carried sources. The
+one-step slice map is not.
+
+If the (3,1) R^2 is instead at or above 0.8, the memory is small, and the one-step regeneration of §3 is the design.
