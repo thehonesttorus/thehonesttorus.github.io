@@ -47,7 +47,11 @@ first loop equation is the kink-current formula, and the cumulant chains are its
 (viii) in the simplest framing (input slots as vertices, layers as quadratic forms, tokens as Hermite quanta) the
 mean of every neuron is twice the trace of its quadratic form, layer two's form is the graph of two-step walks through
 the hidden layer, cumulants are walk sums on the hidden codegree graph, the Gaussian closure is the two-token walk with
-exact contacts, and the third-cumulant memory is first-order exchange whose hub coefficients are themselves walks.
+exact contacts, and the third-cumulant memory is first-order exchange whose hub coefficients are themselves walks;
+(ix) the quantum-cut (Kikuchi) sparsifiers of Basu--Brakensiek--Kothari--Putterman are Schur--Weyl duality in action, the network
+carries the bosonic counterpart (Howe duality, with the radial foliation) and the hard-core one (gates), the memory has no redundancy
+(every hub a bridge), and a higher tier with random dynamics acts on the gates through wall currents: the gate covariance is the
+integrated Gram of wall currents, localization freezes deep gates first, and the two tiers form a non-commuting square.
 Every statement is labelled as proved, known (with a reference), or conjectural; the identities are checked by
 accompanying scripts.
 \end{abstract}
@@ -68,6 +72,8 @@ accompanying scripts.
 \input{s6_bootstrap}
 \section{The token picture: vertices, quadratic forms, two-token walks}
 \input{s9_tokens}
+\section{Kikuchi sparsification, two dualities, and a two-tier dynamics}
+\input{s10_kikuchi}
 \section{What the placement explains, what it predicts, and what is open}
 \input{s7_outlook}
 \section*{Verification}
@@ -89,6 +95,7 @@ accompanying scripts.
 \bibitem{HR} B.~Hanin, D.~Rolnick, Complexity of linear regions in deep networks, ICML 2019.
 \bibitem{Scarf} H.~Scarf, A min-max solution of an inventory problem, in \emph{Studies in the Mathematical Theory of Inventory and Production}, Stanford 1958.
 \bibitem{NP} D.~Nualart, G.~Peccati, Central limit theorems for sequences of multiple stochastic integrals, Ann.~Probab.~33 (2005) 177--193; I.~Nourdin, G.~Peccati, \emph{Normal Approximations with Malliavin Calculus}, Cambridge 2012.
+\bibitem{BBKP} A.~Basu, J.~Brakensiek, P.~K.~Kothari, A.~Putterman, Quantum cut sparsifiers, arXiv:2606.09728.
 \bibitem{Las} J.-B.~Lasserre, Global optimization with polynomials and the problem of moments, SIAM J.~Optim.~11 (2001) 796--817.
 \bibitem{Tak} M.~Takesaki, Conditional expectations in von Neumann algebras, J.~Funct.~Anal.~9 (1972) 306--321.
 \bibitem{Rief} M.~A.~Rieffel, Metrics on state spaces, Doc.~Math.~4 (1999) 559--600.

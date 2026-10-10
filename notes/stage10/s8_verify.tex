@@ -1,6 +1,11 @@
 \label{sec:verify}
-\texttt{scripts/verify\_stage10.py}, \texttt{scripts/verify\_tokens.py} and \texttt{scripts/verify\_tokens\_contacts.py} compare the two sides of each identity numerically; it runs no estimator and
-no network of the competition. Output in \texttt{notes/stage10/verify\_stage10.txt}.
+Four scripts in \texttt{scripts/} compare the two sides of each identity numerically:
+\begin{itemize}[nosep]
+\item \texttt{verify\_stage10.py} (output in \texttt{notes/stage10/verify\_stage10.txt});
+\item \texttt{verify\_tokens.py} and \texttt{verify\_tokens\_contacts.py} (Section~\ref{sec:tokens});
+\item \texttt{verify\_kikuchi.py} (Section~\ref{sec:kikuchi}).
+\end{itemize}
+They run no estimator and no network of the competition.
 \begin{center}\small
 \begin{tabular}{>{\raggedright\arraybackslash}p{4.4cm}>{\raggedright\arraybackslash}p{6.0cm}>{\raggedright\arraybackslash}p{4.4cm}}\toprule
 statement & check & result\\\midrule
@@ -15,7 +20,10 @@ Theorem~\ref{thm:complement} (complementarity) & $\|E_BE_A-J\|$ against $\|C\|$ 
 Theorem~\ref{thm:frame} (frame bound) & $2000$ random rank-$10$ compressions & bound holds\\
 Proposition~\ref{prop:contactterm} (contact term) & two layers, width $256$, $2^{20}$ inputs & walkers $1.9\cdot10^{-1}$, closure $1.7\cdot10^{-3}$; contact sum explains the gap (corr $0.999$, slope $0.99$)\\
 Theorem~\ref{thm:walks} (walk sums, contacts) & $\kap_3$ split into self, contact and distinct parts, widths $24$, $96$ & distinct part $0.059$, $0.0115$ against leading diagrams $0.064$, $0.0133$\\
-Proposition~\ref{prop:tokens} (token number) & $\E|\nabla z|^2/\Var z$ on a width-$256$ He network & matches $1/(1-\cos\theta)$ to layer $13$; $10.6$ against $13.0$ at layer $16$\\\bottomrule
+Proposition~\ref{prop:tokens} (token number) & $\E|\nabla z|^2/\Var z$ on a width-$256$ He network & matches $1/(1-\cos\theta)$ to layer $13$; $10.6$ against $13.0$ at layer $16$\\
+Proposition~\ref{prop:schurweyl} (Schur--Weyl) & $\binom n2$ minus the content sum against $k(n+1-k)$ & equal for $n=8,12$, all $k$\\
+Theorem~\ref{thm:consume} (covariance consumption) & layer one, Eldan's path, four mean/correlation pairs including $\rho=1$ & equal to six digits\\
+Theorem~\ref{thm:depthtrickle} (deep gates first) & disagreement of conditionally independent copies, width $512$ & table in Section~\ref{sec:kikuchi}; within noise to layer $12$\\\bottomrule
 \end{tabular}
 \end{center}
 The asymptotic $3\pi/l$ is reached slowly ($O(\log l/l)$ corrections), so at the depth $L=16$ of the competition the exact

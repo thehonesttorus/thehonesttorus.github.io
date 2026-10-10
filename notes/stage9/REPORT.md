@@ -207,3 +207,26 @@ contractions = groupoid convolution.
 - Sparsification: two-token objects and hub sums with hub coefficients known at birth accumulate (n^3 per layer; layer-2 stars
   cost one product W2 G). From layer 3 the hub coefficient is itself a walk (three transported tokens meet at the hub): that is
   the memory, and no operation on the input (which contracts input vertices, not hidden hubs) removes it.
+
+## 9. Quantum-cut (Kikuchi) sparsifiers and a two-tier dynamics (stage 10, Section 10)
+
+The paper (Basu–Brakensiek–Kothari–Putterman, arXiv:2606.09728) sparsifies L_G = sum_e w_e (I - swap_e), the Kikuchi Laplacian at
+all levels at once. Manoeuvres: up/down operators and harmonic levels E_k; leverage of an edge decays with the level and beats the
+dimension n^{k+2} in matrix Chernoff; inequalities proved once in the group algebra C[S_n] (Alon–Kozma via the octopus inequality)
+descend to every level through the lift g(sigma) = f({sigma(1..k)}); expander decomposition, Chen's resistance lift, edge moving.
+Bridges (tree edges) keep full importance at every level (their Remark 8.5).
+- Essence: Schur–Weyl duality. (C^2)^{(x)n} = sum_k V_{n/2-k} (x) S^{(n-k,k)}; levels are su(2) weight spaces, L_G acts as the
+  image of one group-algebra element in each two-row irrep, so one sampler serves all levels; k(n+1-k) = C(n,2) - content sum.
+- The network has the bosonic counterpart: Howe duality (O(n), sl_2) on Gaussian space; E^- = (1/2) sum a_i a_i lowers token
+  pairs, and the Euler–Fock ladder is E^- descent; the mean is the O(n)-invariant sector (radial foliation: leafwise sl_2,
+  transverse O(n)). And the hard-core counterpart: gate patterns are points of 2^[n], g^2 = g is exclusion, the contact term is
+  the hard-core correction, hidden relabelling S_n is an exact symmetry broken by the realization.
+- Memory redundancy rho_eff = |sum P^(c)|^2 / sum |P^(c)|^2 = 1.00: hub sampling has relative error (1-q)/q at any width; every
+  hub is a bridge. The paper's mechanism (importance decaying with level) has no counterpart in the readout.
+- Higher tier with random dynamics: localization = stochastic flow on first-layer weights (contracting weights, Brownian bias).
+  Gate probabilities are martingales driven by wall currents J = E_ball[delta(z) grad z]; the gate covariance (contact and exchange,
+  within and across layers) equals the integrated Gram of wall currents (checked to 6 digits at layer 1 = Price's formula).
+  Localization freezes deep gates first: disagreement of conditionally independent copies at layer l = theta_{l-1}(t)/pi
+  (checked at width 512 to layer 12).
+- The two tiers (depth tower of tile algebras; localization filtration) form a non-commuting square; the angle operator is the noise
+  stability of the depth-l tiling, whose 2-point marginals are time-correlated Kikuchi weights running from Phi Phi^T (t=0) to K (t=inf).

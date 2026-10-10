@@ -1,0 +1,165 @@
+\label{sec:kikuchi}
+\subsection{What the quantum-cut sparsification paper does}
+Basu, Brakensiek, Kothari and Putterman \cite{BBKP} sparsify the quantum-cut Hamiltonian
+\[L_G=\textstyle\sum_ew_e(I-A_e)\quad\text{on }\mathbb C^{2^{[n]}},\]
+where $A_e$ swaps the two qubits of the edge $e$, i.e.\ acts on subsets by the
+transposition $(e)$. $L_G$ is the Laplacian of the Kikuchi (token) graph $K_G$ at every level $k$ at once: $S\sim T$ iff $|S|=|T|$ and
+$S\oplus T\in E(G)$, the symmetric exclusion process of $k$ hard-core tokens on $G$. Their theorem: $\tilde O(n/\varepsilon^2)$ reweighted edges
+preserve $L_G$ within $1\pm\varepsilon$ on every state, so one sampled graph is a spectral sparsifier of every level simultaneously.
+Classical reductions are hopeless (the singlet projector has rank one, and CSPs with one satisfying assignment need $n^2$ terms);
+the entangled structure is what makes it possible. The argument has four manoeuvres.
+\begin{enumerate}[leftmargin=*]
+\item \textbf{Up and down.} $U$ adds a token anywhere, $D$ removes one, $D=U^*$ and $[D,U]=(n-2k)I$ on level $k$. Harmonic functions are
+$H_k=\ker D$ on level $k$, and $E_k=\bigoplus_{\ell=k}^{n-k}U^{(\ell)}H_k$. Each $A_e$ commutes with $U$, so every $L_G$ preserves every $E_k$, and
+$L_{K_n}=k(n+1-k)$ on $E_k$.
+\item \textbf{Leverage decays with the level.} On $E_k$ an edge has $L_e\preceq2$ while $L_G\succeq\lambda\frac{2m}{n^2}k(n+1-k)$, so the
+matrix-Chernoff parameter grows like $k\log n/\varepsilon^2$ and beats $\log\dim E_k\lesssim k\log n$. The importance of an edge
+trickles down as the level rises, and a union bound over levels closes.
+\item \textbf{Up to the group, down to every level.} With $\nabla_G=\sum_ew_e(\mathrm{id}-(e))\in\mathbb C[S_n]$ and the lift $g(\sigma)=f(\{\sigma(1),\dots,\sigma(k)\})$,
+$\langle f,L_ef\rangle=\langle g,\nabla_eg\rangle$: an operator inequality proved once in the group algebra holds at all levels. Alon--Kozma
+give $\nabla_G\succeq\lambda\nabla_{K_n}$ for expanders, through the octopus inequality of Caputo--Liggett--Richthammer (a star at $u$
+dominates the complete graph on its leaves weighted by $w_{uv}w_{uv'}/\sum w$).
+\item \textbf{From expanders to everything.} Expander decomposition, Chen's lift of effective resistance to all levels,
+$R_G(u,v)L_G\succeq L_{uv}$, and an edge-moving lemma across weight scales. The paper's Remark 8.5 isolates the obstruction: a bridge of
+a tree keeps its full importance at every level, so the decay is an average over edges, not a per-edge fact.
+\end{enumerate}
+
+\begin{proposition}[The essence is Schur--Weyl duality]\label{prop:schurweyl}
+$\mathbb C^{2^{[n]}}=(\mathbb C^2)^{\otimes n}=\bigoplus_{k\le n/2}V_{n/2-k}\otimes S^{(n-k,k)}$, where $U,D$ and $[D,U]$ generate $\mathfrak{su}(2)$ (levels are its weight
+spaces), $S_n$ permutes the tensor factors, $V_j$ is the spin-$j$ representation and $S^{(n-k,k)}$ the two-row Specht module. Then
+$E_k=V_{n/2-k}\otimes S^{(n-k,k)}$ and $L_G|_{E_k}=I\otimes\rho_{(n-k,k)}(\nabla_G)$. In particular every level inside $E_k$ carries the same operator, which is
+why one sampling scheme serves all levels, and $L_{K_n}|_{E_k}=\binom n2-c(n-k,k)=k(n+1-k)$ with $c$ the content sum of the diagram.
+\end{proposition}
+\begin{proof}
+$H_k=\ker D_k$ is the top constituent $S^{(n-k,k)}$ of the permutation module on $k$-subsets; $U$ commutes with $S_n$, so $U^{(\ell)}H_k\cong S^{(n-k,k)}$ for
+$k\le\ell\le n-k$, and these $n-2k+1$ copies form one $\mathfrak{su}(2)$ string. $L_e=I-\rho(e)$ acts only through $S_n$. The sum of all transpositions acts on
+$S^\lambda$ by the content sum; for $\lambda=(n-k,k)$ it is $\binom{n-k}2+\binom k2-k$, and $\binom n2$ minus it equals $k(n+1-k)$.
+\end{proof}
+
+\subsection{The network has the same two-duality structure, once bosonic and once hard-core}
+\begin{proposition}[Howe duality of the Gaussian tokens and the radial foliation]\label{prop:howe}
+On $L^2(\R^n,\gamma)$ let $E^-=\tfrac12\sum_ia_ia_i$, $E^+=\tfrac12\sum_ia_i^\dagger a_i^\dagger$, $H=N+\tfrac n2$. Then $[E^-,E^+]=H$, $[H,E^\pm]=\pm2E^\pm$, and the
+triple commutes with $\Gamma(O)$, $O\in O(n)$: the pair $(O(n),\mathfrak{sl}_2(\R))$ is a Howe dual pair and
+$L^2(\gamma)=\bigoplus_j\mathcal H_j\otimes M_j$, with $\mathcal H_j$ the degree-$j$ spherical harmonics (traceless token kernels, $\ker E^-$) and $M_j$
+the lowest-weight $\mathfrak{sl}_2$-module of radial functions. The homogeneity operator is $x\cdot\nabla=N+2E^-$, so the Euler--Fock ladder
+(Theorem~\ref{thm:ladder}) is $E^-$-descent: $E^-$ removes a pair of tokens from one vertex, where the paper's $D$ removes one hard-core
+token. For a one-homogeneous $F=r\,\phi(\theta)$ the mean is the $O(n)$-invariant component, $u=\E|x|\cdot\int_{S^{n-1}}\phi\,d\sigma$: in the radial
+foliation of $\R^n\setminus0$ the leafwise structure is $\mathfrak{sl}_2$, the transverse structure is $O(n)$, and the mean is the transverse
+measure of the leafwise slope.
+\end{proposition}
+\begin{proof}
+$[a_i^2,a_i^{\dagger2}]=4a_i^\dagger a_i+2$ gives $[E^-,E^+]=N+\tfrac n2$; $N$ changes by $\pm2$ under $E^\pm$; $O(n)$-invariance of $\sum a_i^2$ and $\sum a_i^{\dagger2}$
+is the invariance of $\Delta$ and $|x|^2$. The decomposition is the classical theory of spherical harmonics. $x\cdot\nabla=\sum(a_i+a_i^\dagger)a_i$. The mean
+formula is the polar decomposition of $\gamma$ ($|x|$ independent of $\theta$).
+\end{proof}
+
+\begin{proposition}[Gates are hard-core tokens; a layer alternates the two dualities]\label{prop:hardcore}
+The gate pattern of a layer is a point $S\in2^{[n]}$, a basis vector of $(\mathbb C^2)^{\otimes n}$, and $g_a^2=g_a$ is the exclusion constraint. In the
+gate-pair kernel this is exactly the contact term: $\E[g_ag_a]=\Phi_a$, where independent (bosonic) copies would give $\Phi_a^2$, so
+$\diag(\Phi-\Phi^2)$ is the hard-core correction. The hidden relabelling group $S_n$ (permute the rows of $W_l$ and the columns of $W_{l+1}$) is an
+exact symmetry of the network, of the He law and of every chain, and acts on gate patterns as in the paper; one realisation breaks it,
+which is the odd sector of Proposition~\ref{prop:odd}. Each layer maps bosonic Gaussian tokens to hard-core gates (the selection) and
+back to bosonic linear combinations (the next weights).
+\end{proposition}
+
+\subsection{What transfers: the memory has no redundancy}
+\begin{proposition}[Every hub is a bridge]\label{prop:redundancy}
+Let $P=\sum_cP^{(c)}$ be the readout of a source as a sum of hub atoms, and let $P_q$ keep each atom independently with probability $q$ and
+weight $1/q$. Then
+\[
+\E\|P_q-P\|_F^2=\frac{1-q}q\sum_c\|P^{(c)}\|_F^2=\frac{1-q}{q}\,\frac{\|P\|_F^2}{\rho_{\rm eff}},\qquad\rho_{\rm eff}=\frac{\|\sum_cP^{(c)}\|_F^2}{\sum_c\|P^{(c)}\|_F^2}.
+\]
+On network $0$, $\rho_{\rm eff}=0.998$--$1.004$ at ages $1,3,6$ (stage-9 workflow, lens 4), so the relative error of hub sampling is $(1-q)/q$
+whatever $n$. In the paper's terms every hub atom is a bridge (their Remark 8.5): its importance does not decay, because the readout
+sees one level only and the atoms are orthogonal there.
+\end{proposition}
+\begin{proof}
+The atoms are kept independently, so $\E\|P_q-P\|^2=\sum_c\Var(\xi_c/q)\|P^{(c)}\|^2$ with $\xi_c\sim\mathrm{Bernoulli}(q)$.
+\end{proof}
+The level decomposition that does exist on the Gaussian side (Proposition~\ref{prop:howe}) concentrates the mean in the single sector
+$j=0$, the opposite of the spreading that sparsification needs. The manoeuvre that does transfer is the third: prove in the group,
+descend to every level. For the network the group is the hidden relabelling $S_n$, under which the ensemble-averaged chain is symmetric;
+whatever is proved there holds for all $k$-hub joint cumulants at once, and the realisation-specific (odd) part is what lies outside.
+
+\subsection{A higher tier with random dynamics}
+\begin{proposition}[Localization is a stochastic flow on the first-layer weights]\label{prop:flow}
+An input $x\sim N(m,\Sigma)$ is the standard input through the effective first layer $W_1\Sigma^{1/2}$ with bias $W_1m$. Along an adapted
+localization with control $C_t$, $d\Sigma_t=-\Sigma_tC_t\Sigma_t\,dt$ and $dm_t=\Sigma_tC_t^{1/2}dB_t$: the effective weights contract deterministically and the
+bias is a matrix-weighted Brownian martingale. Klartag's process is the dual flow (the metric is random, the centre fixed).
+\end{proposition}
+
+\begin{theorem}[Gate martingales, wall currents and covariance consumption]\label{thm:consume}
+For every layer $l$ and neuron $a$, $p_t(l,a)=\mathbb P_{\nu_t}(z_{l,a}>0)$ is a martingale with
+\[
+dp_t(l,a)=\big\langle J_t(l,a),\,\Sigma_tC_t^{1/2}dB_t\big\rangle,\qquad J_t(l,a)=\E_{\nu_t}\big[\delta(z_{l,a})\,\nabla z_{l,a}\big],
+\]
+the \emph{wall current}: the Gaussian surface integral of the wall's normal under the current ball. The conditional gate covariance
+$R_t=\E_{\nu_t}[gg^{\top}]-p_tp_t^{\top}$, over all layers jointly, satisfies
+\[
+\E R_t=R_0-\E\int_0^t\Gamma_s\,ds,\qquad \Gamma_s=J_s^{\top}\Sigma_sC_s\Sigma_sJ_s\succeq0,\qquad R_\infty=0 ,
+\]
+so $\Cov(\text{gates})=\E\int_0^\infty\Gamma_s\,ds$: the contact entries $\Phi-\Phi^2$ and the exchange entries of the Kikuchi weights, within and
+across layers, are integrated Grams of wall currents. The currents trickle up the layers,
+$J(l,a)=\sum_bW_l(a,b)\,\E_\nu[\delta(z_{l,a})\,g_{l-1,b}\nabla z_{l-1,b}]$.
+\end{theorem}
+\begin{proof}
+$\pi(m,\Sigma)=\E g(m+\Sigma^{1/2}Z)$ solves $\partial_\Sigma\pi=\tfrac12\nabla_m^2\pi$, so the It\^o drift $\langle\partial_\Sigma\pi,d\Sigma\rangle+\tfrac12\langle\nabla_m^2\pi,d\langle m\rangle\rangle$
+vanishes, and $\nabla_m\pi=\E[\delta(z)\nabla z]$ in the sense of distributions. $\E[gg^{\top}\mid\mathcal F_t]$ is a martingale and
+$d(pp^{\top})=dp\,p^{\top}+p\,dp^{\top}+d\langle p,p^{\top}\rangle$ with $d\langle p,p^{\top}\rangle=\Gamma\,dt$. Completeness of the localization and $g^2=g$ give
+$R_\infty=0$. The recursion is the chain rule for $\nabla z_{l,a}$.
+\end{proof}
+At layer one along Eldan's path the identity is Price's (Plackett's) formula integrated along the correlation time $s=t/(1+t)$:
+$\Cov(g_a,g_b)=\int_0^1\rho_{ab}\,\varphi_2(\alpha_a,\alpha_b;\rho_{ab}s)\,ds$, checked to six digits for centred and non-centred pairs and for $\rho=1$
+(the contact term). This is the dynamical counterpart of Klartag's contacts. Walls whose current is non-negligible under the current
+ball are in contact. The ball's gate covariance is consumed by them at the rate of their current Gram, and a wall that leaves contact
+for good freezes its gate. An adaptive control $C_t$ (Lovett--Meka, Klartag) steers which walls are consumed when. By the defect-path
+theorem the total error of any estimator is path-independent, but its distribution along the path is not.
+
+\begin{theorem}[Localization resolves deep gates first]\label{thm:depthtrickle}
+Two copies $X,X'$ that are conditionally independent given $\mathcal F_t$ have input correlation $t/(1+t)$. In the infinite-width limit the
+expected fraction of layer-$l$ gates on which they disagree is $\theta_{l-1}(t)/\pi$, where $\theta_0=\arccos\frac t{1+t}$ and
+$\cos\theta_{k+1}=J(\theta_k)/\pi$. Equivalently the neuron-averaged unresolved gate variance is $\E\Var(g_{l,a}\mid\mathcal F_t)=\theta_{l-1}(t)/(2\pi)$. It
+decreases with depth, so localization freezes the deep gates before the shallow ones, strongly early ($\theta_0$ large) and weakly late
+($\theta_l\approx\theta_0-l\theta_0^2/3\pi$).
+\end{theorem}
+\begin{proof}
+$\mathbb P(g(X)\ne g(X'))=2\E[p_t(1-p_t)]$ for conditionally independent Bernoulli$(p_t)$ copies. Over the neuron ensemble the pair
+$(z_{l,a}(X),z_{l,a}(X'))$ is centred Gaussian with correlation $\cos\theta_{l-1}$ (the dual-kernel recursion of Theorem~\ref{thm:folding}), and two
+centred Gaussians of correlation $\cos\theta$ have different signs with probability $\theta/\pi$.
+\end{proof}
+\begin{center}\small
+\begin{tabular}{lcccccc}\toprule
+measured / predicted & layer 1 & 2 & 4 & 8 & 12 & 16\\\midrule
+$t=1$ ($\rho=0.5$) & $.333/.333$ & $.287/.292$ & $.223/.236$ & $.174/.173$ & $.130/.138$ & $.136/.115$\\
+$t=9$ ($\rho=0.9$) & $.140/.144$ & $.135/.136$ & $.116/.124$ & $.106/.105$ & $.082/.092$ & $.098/.081$\\
+$t=99$ ($\rho=0.99$) & $.044/.045$ & $.042/.044$ & $.041/.043$ & $.040/.041$ & $.033/.039$ & $.043/.037$\\\bottomrule
+\end{tabular}
+\end{center}
+(Fraction of disagreeing gates; He network of width $512$, $64$ pairs; the last layer drifts at finite width, as in
+Proposition~\ref{prop:tokens}.)
+
+\subsection{The two tiers form a non-commuting square}
+On $L^2$ of the input and the observation noise there are two filtrations. The depth tower $\mathfrak B_1\subset\dots\subset\mathfrak B_L$ consists of the tile
+algebras, generated by the gates of layers $\le l$ (the lower tier, the Kikuchi vertex sets). The localization filtration $\mathfrak F_t=\sigma(y_s,s\le t)$
+is the upper tier. Each family is commutative and nested.
+\begin{proposition}[Non-commuting square and the angle operator]\label{prop:square}
+For $0<t<\infty$ and $l\ge1$ the pair $(\mathfrak B_l,\mathfrak F_t)$ is not a commuting square: $E_{\mathfrak F_t}$ maps a gate indicator to a smooth function strictly
+between $0$ and $1$, which is not $\mathfrak B_l$-measurable, so $E_{\mathfrak B_l}E_{\mathfrak F_t}\ne E_{\mathfrak F_t}E_{\mathfrak B_l}$ and the von Neumann algebra generated by the two filtrations
+is noncommutative. The angle operator $\Theta_{l,t}=E_{\mathfrak B_l}E_{\mathfrak F_t}E_{\mathfrak B_l}$ is the noise-stability Markov operator of the depth-$l$ tiling at
+correlation $t/(1+t)$; its two-point marginals are the time-correlated Kikuchi weights
+$K_{l,t}(a,b)=\mathbb P(g_{l,a}(X)=1,\,g_{l,b}(X')=1)$, which run from $\Phi_a\Phi_b$ at $t=0$ (independent walkers) to $K_l$ at $t=\infty$ (contacts and exchange on).
+At layer one $K_{1,t}$ is the tetrachoric series with $\rho_{ab}$ replaced by $\rho_{ab}\,t/(1+t)$, the diagonal included ($\rho_{aa}=1$), so the contact
+term is the resummed series at $t=\infty$. The gate process along a localization is non-Markov exactly because the square does not commute.
+\end{proposition}
+\begin{proof}
+$\E[\1\{z>0\}\mid y_t]=\Phi(\cdot)$ of the conditional mean and variance, smooth and in $(0,1)$. For $f,g\in L^2(\mathfrak B_l)$,
+$\langle f,\Theta g\rangle=\E[\E(f\mid\mathfrak F_t)\E(g\mid\mathfrak F_t)]=\E f(X)g(X')$ with $X,X'$ conditionally independent given $\mathfrak F_t$, whose correlation is
+$\Var\E(X\mid y_t)=t/(1+t)$. The tetrachoric expansion of $\Phi_2$ gives the layer-one formula.
+\end{proof}
+Taken together: the lower-tier Kikuchi weights, conditioned on a Gaussian input law $N(m,\Sigma)$, form a field over the upper tier
+that solves the heat equation, and localization paths are its Brownian characteristics. A moment chain defines a field that is
+not heat-flat. Its residual is the Euler--Stein defect, and the defect-path theorem says that the error is the residual integrated
+along the characteristics. This fibred picture ties both tiers together. Its leaf spaces are Hausdorff (the sphere for the radial
+foliation, the space of balls for localization), so the noncommutativity of the framework lies in the non-commuting square of
+Proposition~\ref{prop:square}, not in a pathological leaf space. Whether the depth tower at infinite depth, with tail equivalence of gate
+sequences, yields a genuinely noncommutative tail algebra is open.
