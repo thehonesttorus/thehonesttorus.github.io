@@ -1,0 +1,7 @@
+net 0 orc[10,11,12,13,14]full: raw 1.35724e-08 | F 4.87246e+11 (0.22157 B) residual wall 2.044 s
+net 0 orc[10,11,12,13,14]h0: raw 1.40282e-08 | F 4.87246e+11 (0.22157 B) residual wall 2.286 s
+net 0 orc[10,11,12,13,14]h1: raw 1.38858e-08 | F 4.87246e+11 (0.22157 B) residual wall 2.242 s
+net 0 orc[]full: raw 1.11927e-08 | F 4.87261e+11 (0.22158 B) residual wall 1.170 s
+net 0 orc[]h0: raw 1.18218e-08 | F 4.87261e+11 (0.22158 B) residual wall 1.166 s
+net 0 orc[]h1: raw 1.49455e-08 | F 4.87261e+11 (0.22158 B) residual wall 1.200 s
+done

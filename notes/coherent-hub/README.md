@@ -129,6 +129,51 @@ prediction 2 about 45%.
 - If prediction 2 fails: the coherent doubly-occupied class is not the missing (3,1) content, and the note records
   what the residual is instead.
 
+### 3a. Result (network 0; `outputs/hub_test_net0.txt`)
+
+The decision rule needed prediction 2 on both networks, and it fails on network 0, so network 1 was not run.
+
+| slice | truth fit: coefficient on the hub, R2 package -> package + hub | share of the chain's error explained by the hub (readout metric) |
+|---|---|---|
+| k3 diagonal | 0.73-1.36 at every layer; 85->86% (s=8), 91.3->91.5% (s=14) | 57-75%, at coefficient 0.25-0.4 |
+| D21 | 0.82-1.37 at every layer; 70.5->71.6% (s=8), 81.7->82.1% (s=14) | 12-23%, at coefficient 0.1-0.36 |
+| K31 | unstable: +0.6 (s=8), 0.0 (s=10), -1.3 (s=14); adds 0.2-0.4 points | 0.5-2% |
+| K22 | +1.0 (s=4, 8), then -0.7 to -1.8 deep | 1-27%, coefficient changes sign |
+| k4 diagonal | +1.0 (s=4, 8), then -1.0 to -1.4 deep | 3-77%, coefficient -0.9 to -4 deep |
+
+**What holds.**
+- The diagram law is quantitatively right where the hub is the leading new content. The truth's third-cumulant slices
+  contain the doubly-occupied hub at coefficient about 1, layer after layer, on the official network.
+- The chain carries most of it: its D21 error has only 12-23% along the hub.
+- The large "shares" for the k3 diagonal (57-75% at coefficient 0.3) are an amplitude statement, not new content. At
+  the diagonal, HD3 is nearly collinear with the package (adding it raises R2 by 0.2-1.2 points), so it reads off the
+  chain's 5% deficit in dilation amplitude. Note XLIV 9j already showed that moving that amplitude toward the truth
+  raises the MSE.
+
+**What fails.**
+- Predictions 1-3 and 5. The coherent fourth-cumulant hub is not the truth's missing (3,1) content: it adds under half
+  a point beyond the package.
+- The deep negative coefficients on K22 and k4 come from the hub's collective part. It points along the dilation
+  direction, where the chain's error is the tuned-out amplitude.
+
+**Then what is the (3,1) content?** Two candidates were checked.
+- The transported single-site class, sum_a W_ia^3 W_ja kappa4(h_a) (`code/diag_class_test.py`,
+  `outputs/diag_class_net0.txt`). It is of the same entrywise order as the bulk of C', and fails too: alone it explains
+  0-1% of the truth, and beyond the package under 1 point.
+- The second-chaos product of note XLIII (2 k3_i D21_ij / v_i - (2/3) k3_i^2 C_ij / v_i^2). It removes 46-64% of the
+  true (3,1) term in the readout metric, so it is where the content is. That closure was screened as V58_K31SC: -0.8%
+  at half amplitude and +1.3% at unit amplitude. The counterterms had been fitted around the old slice.
+
+**The lesson for the design.**
+- Entrywise, every off-diagonal slice is dominated by unpaired (incoherent) terms, individually n^(-1/2) smaller but
+  summing to the size of the slice.
+- Pairing happens in the readout: the next layer reads a slice through diag W T(X) W^T, which squares the row. Only
+  paired content reaches the output.
+- So the right accuracy target for a slice is its readout projection, n numbers per layer, not its n^2 entries.
+- This is stage 15's Heisenberg reading, now with a reason. It is also the Klartag contact picture: each next-layer
+  variance is a linear contact on the slice, and the n^2 - n directions invisible to all contacts at that layer matter
+  only through later layers.
+
 ## 4. Pre-registration of the build gate: all slices true at once, late layers only (committed before the runs)
 
 F1 (note XXXIII) measured the all-slice, all-layer oracle on an older system. The build decision needs the same on
@@ -147,3 +192,23 @@ the production estimator, and its split by depth.
 - If (A) is at least -40%, the target of the next system is a consistent recomputation of the late slices. It is
   priced against the 2x that the adjusted score allows (C/B from 0.2 to at most 0.4 for a 2x raw gain, break even).
 - If (A) is under -25% while (B) is large, the slices must be right at every depth, and the cost question is global.
+
+### 4a. Result (`outputs/allslice_oracle_net0.txt`)
+
+| oracle (all five slices true, consistent wiring) | full | h0 | h1 | noise-extrapolated | change |
+|---|---|---|---|---|---|
+| (A) layers 10-14 | 1.357e-8 | 1.403e-8 | 1.389e-8 | 1.319e-8 | -11% |
+| (B) every layer | 1.119e-8 | 1.182e-8 | 1.495e-8 | 0.900e-8 | -39% (halves disagree: noisy) |
+
+**Both expectations fail.** On the production estimator, making every readout slice true at every layer is worth about
+40%, not the 91-98% that F1 measured on the system of note XXXIII. Late layers alone are worth 11%. The production
+system has absorbed most of what F1 measured: the V32 joins, the V47 counterterms, the hubs of V56, the adaptive
+lambda. What remains is not in the five readout slices of any one depth.
+
+**Gate outcome.** (A) is under -25%, and the large-(B) branch does not apply, since (B) is -39%. A consistent
+recomputation of the slices is therefore worth at most about 40% of raw. At equal adjusted score it may cost at most
+1.65x the present FLOPs. This closes "late-layer slice recomputation" as the next system. With slices true, the
+remaining 60% must sit in:
+- the mean, variance and covariance programs themselves (the oracle keeps the chain's own);
+- the carried legs (the consistent wiring keeps their own content);
+- the noise floor of the reference.
