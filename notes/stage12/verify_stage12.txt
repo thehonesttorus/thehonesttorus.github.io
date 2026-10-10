@@ -1,0 +1,74 @@
+== 1. Self-localization of a He network (n=1024, L=16)
+   l  rho meas/pred   t_l meas/pred    gate var meas/pred   Var log|h|^2 meas/pred
+   1  0.3183 / 0.3183     0.47 /   0.47   0.2500 / 0.2500   0.0069 / 0.0068
+   2  0.4857 / 0.4937     0.94 /   0.98   0.1994 / 0.1984   0.0107 / 0.0107
+   4  0.6545 / 0.6810     1.89 /   2.13   0.1517 / 0.1466   0.0172 / 0.0164
+   8  0.8196 / 0.8344     4.54 /   5.04   0.1009 / 0.1000   0.0249 / 0.0233
+  12  0.8933 / 0.8971     8.38 /   8.72   0.0765 / 0.0769   0.0292 / 0.0274
+  16  0.9221 / 0.9295    11.84 /  13.18   0.0614 / 0.0629   0.0321 / 0.0300
+   l  Var(r) meas | t_{l-1} meas | compressed pred | t_{l-1} inf.width   P(|r|<1) meas/pred   coll. share meas / t V/4   Frobenius share
+   4     1.38 |   1.43 |   1.41 |   1.53     0.615 / 0.581       0.008 / 0.005          0.034
+   8     3.79 |   3.74 |   3.57 |   4.24     0.362 / 0.373       0.026 / 0.022          0.122
+  12     7.07 |   7.51 |   6.83 |   7.73     0.286 / 0.281       0.058 / 0.053          0.316
+  16    10.14 |  10.93 |   9.52 |  11.99     0.226 / 0.227       0.093 / 0.086          0.469
+   backward clock |E delta_l|^2 / E|delta_l|^2 (readout c ~ N(0,I)) against prod_{k>l}(1-theta_{k-1}/pi)
+  l= 0  0.0108 / 0.0133
+  l= 2  0.0354 / 0.0442
+  l= 4  0.0800 / 0.0941
+  l= 8  0.2489 / 0.2663
+  l=12  0.5571 / 0.5589
+  l=15  0.8798 / 0.8743
+  l=16  1.0000 / 1.0000
+   marginal memory D_a = (E relu(z_a) - s_a m1(r_a))/s_a against Gram-Charlier -g1 He1 phi/6 + g2 He2 phi/24 + g1^2 He4 phi/72
+  l= 8: mean |g1| = 0.0430, mean |g2| = 0.0408; corr(D, GC) = 0.983
+     collective-mode law: gamma1 = 0.0252 r +0.0001 (R2 0.864), model 1.5 V_{l-1} = 0.0350 (ratio 0.72); gamma2 = 0.0002 r^2 +0.0401 (R2 0.005), model 3 V_{l-1} = 0.0699 (ratio 0.57)
+     field compression with the measured efficiency eta=0.72: 3.64 (measured Var r 3.79)
+     |r| in [0, 1):  371 neurons  rms D 0.00104  rms GC 0.00102  rms(D-GC) 0.00017  MC floor 0.00140
+     |r| in [1, 2):  332 neurons  rms D 0.00114  rms GC 0.00114  rms(D-GC) 0.00010  MC floor 0.00148
+     |r| in [2, 3):  195 neurons  rms D 0.00043  rms GC 0.00043  rms(D-GC) 0.00004  MC floor 0.00153
+     |r| in [3,99):  126 neurons  rms D 0.00004  rms GC 0.00004  rms(D-GC) 0.00001  MC floor 0.00157
+  l=12: mean |g1| = 0.0700, mean |g2| = 0.0554; corr(D, GC) = 0.993
+     collective-mode law: gamma1 = 0.0302 r +0.0000 (R2 0.896), model 1.5 V_{l-1} = 0.0421 (ratio 0.72); gamma2 = 0.0004 r^2 +0.0527 (R2 0.044), model 3 V_{l-1} = 0.0842 (ratio 0.63)
+     field compression with the measured efficiency eta=0.72: 7.11 (measured Var r 7.07)
+     |r| in [0, 1):  293 neurons  rms D 0.00139  rms GC 0.00138  rms(D-GC) 0.00016  MC floor 0.00137
+     |r| in [1, 2):  234 neurons  rms D 0.00145  rms GC 0.00146  rms(D-GC) 0.00009  MC floor 0.00151
+     |r| in [2, 3):  231 neurons  rms D 0.00053  rms GC 0.00053  rms(D-GC) 0.00004  MC floor 0.00150
+     |r| in [3,99):  266 neurons  rms D 0.00004  rms GC 0.00004  rms(D-GC) 0.00001  MC floor 0.00156
+  l=16: mean |g1| = 0.0945, mean |g2| = 0.0657; corr(D, GC) = 0.996
+     collective-mode law: gamma1 = 0.0336 r -0.0001 (R2 0.908), model 1.5 V_{l-1} = 0.0474 (ratio 0.71); gamma2 = 0.0006 r^2 +0.0594 (R2 0.114), model 3 V_{l-1} = 0.0949 (ratio 0.63)
+     field compression with the measured efficiency eta=0.71: 10.09 (measured Var r 10.14)
+     |r| in [0, 1):  231 neurons  rms D 0.00161  rms GC 0.00160  rms(D-GC) 0.00016  MC floor 0.00138
+     |r| in [1, 2):  200 neurons  rms D 0.00189  rms GC 0.00190  rms(D-GC) 0.00010  MC floor 0.00161
+     |r| in [2, 3):  192 neurons  rms D 0.00054  rms GC 0.00054  rms(D-GC) 0.00005  MC floor 0.00160
+     |r| in [3,99):  401 neurons  rms D 0.00004  rms GC 0.00003  rms(D-GC) 0.00001  MC floor 0.00158
+== 2. Field-law lemma and the clock recursion
+  t=  0.5: E Phi(r)Phi(-r) = 0.19591328, arccos(t/(1+t))/2pi = 0.19591328 ; t' closure = 1.011384, angle map = 1.011384
+  t=  2.0: E Phi(r)Phi(-r) = 0.13386024, arccos(t/(1+t))/2pi = 0.13386024 ; t' closure = 2.642198, angle map = 2.642198
+  t= 13.0: E Phi(r)Phi(-r) = 0.06051886, arccos(t/(1+t))/2pi = 0.06051886 ; t' closure = 14.225606, angle map = 14.225606
+  single-neuron SNR map at r=0: 0.6833
+== 3. Fisher-Rao distance to the kink geodesic
+  r= 0.500: min distance 0.490129 ; sqrt2 asinh(|r|/sqrt2) = 0.490129
+  r= 4.286: min distance 2.585231 ; sqrt2 asinh(|r|/sqrt2) = 2.585231
+  r=-6.667: min distance 3.188710 ; sqrt2 asinh(|r|/sqrt2) = 3.188710
+== 4. Stratified third derivative of a two-layer suffix (softplus, exact chain rule)
+  beta=   5: Hermite IBP 0.1242 (se 0.0028) | deep-wall -0.0159 + crossings -0.1514 + hub 0.2896 = 0.1224 ; difference 0.0018 (se 0.0028)
+  beta=  20: Hermite IBP 0.1677 (se 0.0028) | deep-wall 0.2421 + crossings -0.5730 + hub 0.5007 = 0.1698 ; difference -0.0022 (se 0.0039)
+== 5. Birth law of third cumulants
+  c3 = 0.326458 = (pi+2)/(2pi)^1.5 = 0.326458 ; int kappa3^2 dr = 0.27002
+  t=  1: E kappa3^2 = 0.08015 ; asymptote 0.10772
+  t=  4: E kappa3^2 = 0.04933 ; asymptote 0.05386
+  t= 13: E kappa3^2 = 0.02904 ; asymptote 0.02988
+  t= 50: E kappa3^2 = 0.01512 ; asymptote 0.01523
+== 6. Wall-density law, Hermite cancellation, saturation, Ising couplings, backward power law
+  int Phi(r)Phi(-r) dr = 0.5641895835 ; 1/sqrt(pi) = 0.5641895835
+  t=  1.0: E phi = 0.28209479, sin(theta/2)/sqrt(pi) = 0.28209479 ; gate var 0.166667 vs I1 sin(theta/2)/sqrt(pi) = 0.159155 ; E He2 phi = -1.410e-01 vs -(1+t)^-1.5/sqrt(2pi) = -1.410e-01
+  t= 13.0: E phi = 0.10662181, sin(theta/2)/sqrt(pi) = 0.10662181 ; gate var 0.060519 vs I1 sin(theta/2)/sqrt(pi) = 0.060155 ; E He2 phi = -7.616e-03 vs -(1+t)^-1.5/sqrt(2pi) = -7.616e-03
+  t=100.0: E phi = 0.03969624, sin(theta/2)/sqrt(pi) = 0.03969624 ; gate var 0.022415 vs I1 sin(theta/2)/sqrt(pi) = 0.022396 ; E He2 phi = -3.930e-04 vs -(1+t)^-1.5/sqrt(2pi) = -3.930e-04
+  (3/2 - J2/2pi)/theta^2 at theta=0.1, 0.01: 0.99671, 0.999967
+  n*V_l (across inputs): l=16 30.76, l=100 41.42, l=1e5 44.60 ; Hanin-Nica over (W,x) at l=16: 82
+  crossover t V/4 = 1: tau* = 3pi sqrt(2n/Vinf) = 1.996 sqrt(n)
+  Ising coupling r=(0.3,-0.8), c=0.02: log odds ratio 0.05614 ; c phi phi/(p q p q) 0.05605
+  Ising coupling r=(1.5,0.4), c=0.01: log odds ratio 0.03382 ; c phi phi/(p q p q) 0.03388
+  Ising coupling r=(-1.0,2.0), c=0.03: log odds ratio 0.13388 ; c phi phi/(p q p q) 0.13206
+  backward product l=100..1000: 0.00131 ; (Phi0(theta_l0)/Phi0(theta_l1))^3 = 0.00122
+  backward product l=1000..10000: 0.00104 ; (Phi0(theta_l0)/Phi0(theta_l1))^3 = 0.00102

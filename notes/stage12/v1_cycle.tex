@@ -1,0 +1,71 @@
+\label{sec:cycle}
+\paragraph{Notation.} As in stage 11: $W_l\in\R^{n\times n}$ with i.i.d.\ $N(0,2/n)$ entries, $h_0=x\sim\gamma=N(0,I_n)$, $z_l=W_lh_{l-1}$,
+$h_l=\relu(z_l)$, gates $g_l=\1\{z_l>0\}$, $D_l=\diag(g_l)$. For a fixed network, $m_l=\E h_l$, $\Sigma_l=\Cov h_l$, $\mu_l=\E z_l=W_lm_{l-1}$
+and $C_l=\Cov z_l=W_l\Sigma_{l-1}W_l^{\top}$; expectations are over $x$ unless stated. Neuron $a$ of layer $l$ has \emph{scale}
+$s_a=C_{l,aa}^{1/2}$, \emph{field} $r_a=\mu_{l,a}/s_a$ and gate probability $p_a=\Pr(g_{l,a}=1)$, with $q_a=1-p_a$. The folding angles
+are $\theta_0=\pi/2$ and $\theta_l=F(\theta_{l-1})$, where $\cos F(\theta)=(\sin\theta+(\pi-\theta)\cos\theta)/\pi$ (the arc-cosine kernel).
+$\Fa$ is the Fatou coordinate of stage 11 ($\Fa\circ F=\Fa+1$, $\Fa(\theta)=3\pi/\theta+\frac32\log\theta+O(\theta)$, $\Fa(\pi/2)=7.7548$).
+The standard normal density and distribution function are $\varphi$ and $\Phi$. Single-neuron moments of $\relu(r+\xi)$, $\xi\sim N(0,1)$:
+\[
+m_1(r)=\varphi(r)+r\Phi(r),\qquad m_2(r)=(1+r^2)\Phi(r)+r\varphi(r),\qquad s_1(r)^2=m_2(r)-m_1(r)^2 .
+\]
+
+\subsection{The abstract two-tier system}
+\begin{definition}[two-tier system]\label{def:twotier}
+A \emph{two-tier system} consists of the following.
+\begin{itemize}[leftmargin=*]
+\item An \emph{upper tier}: a manifold $\mathcal U$ of quasi-free (Gaussian) states.
+\item A \emph{lower tier}: a finite lattice gas $\{0,1\}^n$ fibred over $\mathcal U$.
+\item A \emph{down map} $\mathcal D:\mathcal U\to\mathcal P(\{0,1\}^n)$, sending a state to the conditional law of the gas.
+\item An \emph{up map} $\mathcal R$, sending the joint law of gas and field to the next upper-tier state.
+\end{itemize}
+The \emph{closure} is the composite $\mathcal R\circ\mathcal D$ in which the gas is integrated against the quasi-free state. The
+\emph{memory} is the difference between the true next state and the closure.
+\end{definition}
+In stages 9 and 10 the lower tier was the network and the upper tier was Eldan's localization path of the input. The tiers were
+coupled from outside, through conditioning on $\cF_t$. The point of this note is that one layer of the network is already a
+two-tier system of this kind.
+
+\subsection{The cycle of one layer}
+\begin{itemize}[leftmargin=*]
+\item \textbf{Upper tier at layer $l$:} the quasi-free projection $(\mu_l,C_l)$ of the law of $z_l$. By positive homogeneity only rays
+matter, and each neuron contributes a point $(\mu_{l,a},s_a)$ of the upper half plane. The upper tier is a cloud of $n$ points in a
+hyperbolic plane (Section~\ref{sec:hyper}).
+\item \textbf{Lower tier at layer $l$:} the gates $g_l\in\{0,1\}^n$. Under the quasi-free law their joint law is the dichotomized Gaussian
+$g_a=\1\{r_a+\xi_a>0\}$, with $\xi\sim N(0,c)$ and $c_{ab}=C_{l,ab}/(s_as_b)$ (Section~\ref{sec:gates}).
+\item \textbf{Up map:} $h_l=D_lz_l$, the field gated by the gas. Then $(m_l,\Sigma_l)$ is pushed forward,
+$(\mu_{l+1},C_{l+1})=(W_{l+1}m_l,W_{l+1}\Sigma_lW_{l+1}^{\top})$.
+\item \textbf{Closure:} compute $(m_l,\Sigma_l)$ from $(\mu_l,C_l)$ as if $z_l$ were Gaussian. Then
+$m_{l,a}=s_am_1(r_a)$, $\Sigma_{l,aa}=s_a^2s_1(r_a)^2$, and $\Sigma_{l,ab}$ is the bivariate rectified covariance. This is the
+second-order moment chain of stages 9 and 10.
+\item \textbf{Memory:} the non-quasi-free part of the law of $z_l$. Its size is measured by the negentropy
+$D(\mathrm{law}(z_l)\,\|\,N(\mu_l,C_l))$, and its effect on means is given by the cumulants of order $\ge3$
+(Section~\ref{sec:coupling}).
+\end{itemize}
+
+\subsection{The exact split}
+\begin{proposition}[Euler split; proved]\label{prop:split}
+Let $f=c^{\top}h_L$, or any output that is positively homogeneous of degree one in $z_l$; every deeper output is. Put
+$J_l=\partial f/\partial z_l$, a piecewise constant row vector. Then $f=\langle J_l,z_l\rangle$ pointwise, and
+\[
+\E f=\underbrace{\langle\E J_l,\mu_l\rangle}_{\text{upper tier}}+\underbrace{\textstyle\sum_a\Cov(J_{l,a},z_{l,a})}_{\text{lower tier}}.
+\]
+If $z_l$ is Gaussian, Stein's identity turns the lower-tier term into $\langle C_l,\E\nabla^2_{z_l}f\rangle$. The Hessian of the piecewise
+linear $f$ is a measure on the walls of layers $\ge l$, so the lower-tier term is then a border functional. At the last layer the
+split is, neuron by neuron,
+\[
+\E h_{L,a}=p_a\mu_a+\Cov(g_a,z_a),\qquad\text{and under the closure}\quad s_am_1(r_a)=\underbrace{s_ar_a\Phi(r_a)}_{\text{upper}}+\underbrace{s_a\varphi(r_a)}_{\text{lower}}.
+\]
+At $l=0$, where $z_0:=x$ and $\mu_0=0$, the upper term vanishes: $\E f=\E\langle x,\nabla f\rangle=\E\Delta f$. The whole mean is then a
+lower-tier border functional, which is stage 11's border formula.
+\end{proposition}
+\begin{proof}
+Euler's identity for degree-one homogeneous piecewise linear maps gives $f=\langle J_l,z_l\rangle$. Take expectations and write
+$\E[J_az_a]=\E J_a\,\mu_a+\Cov(J_a,z_a)$. For Gaussian $z$, Stein gives $\Cov(J_a,z_a)=\sum_bC_{ab}\E\partial_bJ_a$, and
+$\partial_bJ_a=\partial_a\partial_bf$. The last-layer form uses $J_{L,a}=c_ag_a$ and $\Cov(\1\{z>0\},z)=s^2p_z(0)=s\varphi(r)$ for
+$z\sim N(rs,s^2)$.
+\end{proof}
+The same split holds with the post-activations and the Putnam--Trevi\~no pairing of stage 11. Since $f=\langle h_l,\delta_l\rangle$ with
+$\delta_l=\partial f/\partial h_l$, we have $\E f=\langle m_l,\E\delta_l\rangle+\sum_i\Cov(h_{l,i},\delta_{l,i})$. The upper-tier term pairs
+the two harmonic states' means, and the lower-tier term their fluctuations. Section~\ref{sec:modular} shows that the forward state
+localizes with depth, while the backward state delocalizes towards the input.

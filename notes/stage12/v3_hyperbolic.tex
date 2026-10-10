@@ -1,0 +1,96 @@
+\label{sec:hyper}
+\subsection{The Fisher--Rao plane and the kink geodesic}
+The Fisher--Rao metric on the univariate normal family $N(\mu,\sigma^2)$ is $ds^2=(d\mu^2+2\,d\sigma^2)/\sigma^2$. In the coordinates
+$(\mu/\sqrt2,\sigma)$ it is twice the Poincar\'e metric, so the family is a hyperbolic plane of curvature $-\frac12$ (Skovgaard). We call
+the vertical line $K=\{\mu=0\}$, the centred balls, the \emph{kink geodesic}: these are the laws that sit exactly on a \textsc{ReLU}
+wall.
+\begin{proposition}[proved]\label{prop:hyper}
+\begin{enumerate}[leftmargin=*]
+\item The dilations $(\mu,\sigma)\mapsto(\lambda\mu,\lambda\sigma)$ are the hyperbolic translations along $K$. Their orbits are the
+equidistant curves $\{r=\mu/\sigma=\mathrm{const}\}$.
+\item The distance of $N(\mu,\sigma^2)$ to $K$ is $d=\sqrt2\operatorname{asinh}(|r|/\sqrt2)$. So the field is a signed hyperbolic distance,
+$r=\pm\sqrt2\sinh(d/\sqrt2)$.
+\item The single-neuron rectification $\varrho:(\mu,\sigma)\mapsto(\E\relu,\operatorname{sd}\relu)=\sigma\,(m_1(r),s_1(r))$ commutes with the
+translations along $K$. It is a skew product over the leaf space of equidistants: the base map is $R(r)=m_1(r)/s_1(r)$, and the
+translation cocycle is $\log s_1(r)$, i.e.\ the log-scale moves along $K$ by $\log s_1(r)$.
+\item $R(0)=0.6833$, $R(r)=r+o(1)$ as $r\to+\infty$, and $R(r)\sim\sqrt{\varphi(r)/2|r|}\to0^+$ as $r\to-\infty$. Hence $R(\R)\subset(0,\infty)$:
+after rectification every neuron lies on the positive side of $K$.
+\end{enumerate}
+\end{proposition}
+\begin{proof}
+(1) and (2): translate to the Poincar\'e half-plane, where the distance from $(u,\sigma)$ to the imaginary axis is $\operatorname{asinh}(|u|/\sigma)$.
+(3): $\relu$ is positively homogeneous. (4): use the Mills-ratio asymptotics $m_1\sim\varphi/r^2$ and $m_2\sim2\varphi/|r|^3$ as $r\to-\infty$.
+\end{proof}
+Item (4) is the geometric reason the clock runs forward: rectification moves the whole line of fields to one side of the kink
+geodesic. The next layer's mixing then spreads the cloud again, but with a positive bias in the mean direction. The aggregate effect
+is the ratio of averages $t'=\E m_1^2/\E s_1^2$, not the average of $R^2$.
+
+\subsection{The upper tier as a cloud in the hyperbolic plane}
+At layer $l$ the upper tier is the cloud $\{(\mu_{l,a},s_a)\}_{a\le n}$. By Theorem~\ref{thm:selfloc} its signed distances to $K$ satisfy
+$\sqrt2\sinh(d_a/\sqrt2)\sim N(0,t_{l-1})$, so a typical neuron is at distance $d\approx\sqrt2\log\sqrt{2t}\approx\sqrt2\log l+O(1)$. The cloud
+escapes from the kink geodesic logarithmically in depth. Only its second moment in the $r$-chart, the clock, enters the infinite-width
+dynamics, and the dilation coordinate along $K$ drops out by homogeneity.
+\begin{proposition}[criticality and diffusion along $K$; drift proved, diffusion as in Hanin--Nica]\label{prop:diffusion}
+The He variance $2/n$ is the unique scale for which $\E|h_l|^2$ is constant in $l$: the barycentric log-scale has zero drift along
+$K$. At finite width, the input-dependent log-norm performs a random walk along $K$. For a fixed network its across-input increments
+have variance
+\[
+\Var_x\Big(\log\frac{|h_l|^2}{|h_{l-1}|^2}\Big)=\frac4n\Big(\frac32-\frac{J_2(\theta_{l-1})}{2\pi}\Big),\qquad J_2(\theta)=3\sin\theta\cos\theta+(\pi-\theta)(1+2\cos^2\theta),
+\]
+with $V_0=2/n$. Since $\frac32-\frac{J_2(\theta)}{2\pi}=\theta^2+O(\theta^4)$, the increments are summable in the parabolic regime and
+\[
+nV_{16}=30.76,\qquad nV_\infty=44.60,
+\]
+against $2+5l=82$ at $l=16$ for the joint (weights and input) variance of Hanin--Nica. The input-dependent part of the norm is made in
+the first layers: deep layers act on all inputs alike, because two inputs at angle $\theta$ disagree on only a fraction $\theta/\pi$ of
+the gates.
+\end{proposition}
+\begin{proof}[Derivation]
+Per layer the norm ratio is
+\[
+|h_l|^2/|h_{l-1}|^2\approx\tfrac2n\textstyle\sum_a\relu(\zeta_a)^2,\qquad\zeta_a\ \text{standard},
+\]
+with variance $\frac4n(\E\relu^4-\frac14)=5/n$.
+The across-input variance is this minus the covariance between two independent inputs, whose $\zeta$'s are at angle $\theta_{l-1}$. That
+covariance is
+\[
+\tfrac4n\big(\E[\relu(\zeta)^2\relu(\zeta')^2]-\tfrac14\big)=\tfrac4n\big(\tfrac{J_2(\theta)}{2\pi}-\tfrac14\big)
+\]
+by the degree-two arc-cosine kernel.
+Expanding $J_2$ at $0$ gives $3\pi-2\pi\theta^2+O(\theta^4)$.
+\end{proof}
+
+\begin{proposition}[the collective mode; heuristic, measured]\label{prop:collective}
+The covariance $\Sigma_l$ has a collective direction along $m_l$, carrying the share $\approx t_lV_l/4$ of the trace. This is the norm
+fluctuation projected on the mean: $\langle\hat m,h\rangle\approx|m|(1+\delta)$ with $\Var\delta\approx V/4$, i.e.\ the diffusion along $K$.
+Through the next layer it makes the scale depend on the mean, $s_a^2\approx s_{\rm bulk}^2+\epsilon\mu_a^2$ with $\epsilon\approx V/4$. The
+field law is therefore compressed,
+\[
+r_a=\frac{\varrho_a}{\sqrt{1+\epsilon\varrho_a^2}},\qquad \varrho_a\sim N(0,t_{\rm bulk}),\qquad |r_a|<\epsilon^{-1/2}\approx2/\sqrt V .
+\]
+In the hyperbolic picture the cloud cannot go further than $\sqrt2\operatorname{asinh}\sqrt{2/V}$ from the kink geodesic. The collective
+share becomes $O(1)$ when $t_lV_l/4\sim1$, which is again $\tau_*\approx2\sqrt n$ (Proposition~\ref{prop:Tsplit}).
+\end{proposition}
+\begin{table}[h]\centering\small
+\begin{tabular}{rccccccc}\toprule
+$l$ & $\Var r$ & $t_{l-1}$ meas. & compressed & $t_{l-1}^\infty$ & $\Pr(|r|<1)$ & coll./$tV/4$ & Frob.\\\midrule
+4 & 1.38 & 1.43 & 1.41 & 1.53 & 0.615 / 0.581 & 0.008 / 0.005 & 0.034\\
+8 & 3.79 & 3.74 & 3.57 & 4.24 & 0.362 / 0.373 & 0.026 / 0.022 & 0.122\\
+12 & 7.07 & 7.51 & 6.83 & 7.73 & 0.286 / 0.281 & 0.058 / 0.053 & 0.316\\
+16 & 10.14 & 10.93 & 9.52 & 11.99 & 0.226 / 0.227 & 0.093 / 0.086 & 0.469\\
+\bottomrule\end{tabular}
+\caption{Field law of layer $l$ ($n=1024$, one network). $\Pr(|r|<1)$ is measured against $\operatorname{erf}(1/\sqrt{2t^\infty_{l-1}})$, and
+``coll.'' is the collective trace share against $tV/4$. ``Compressed'' is $\E[\varrho^2/(1+\epsilon\varrho^2)]$ with $t_{\rm bulk}$ and $\epsilon$ taken from the
+measured clock and collective share. The last column (``Frob.'') is stage 9's metric, the Frobenius share of the top eigenvalue of the
+off-diagonal covariance.}\label{tab:fields}
+\end{table}
+Table~\ref{tab:fields} supports the picture. The unresolved fraction $\Pr(|r|<1)$ matches the infinite-width $\operatorname{erf}(1/\sqrt{2t})$ to
+$0.001$ at the deepest layers, because compression acts on large $|r|$. The measured collective trace share tracks $tV/4$
+($0.093$ against $0.086$ at $l=16$). At $l=12$ and $16$ the field variance lies below the measured clock, as compression predicts, but the one-parameter model
+over-predicts the effect: at $l=16$ it gives $9.52$, against $10.14$ measured and $10.93$ uncompressed. At $l=8$ the variance exceeds the
+measured clock, which is within the quenched scatter. The over-prediction disappears once only a fraction $\eta\approx0.71$ of $V$ is
+counted as a common scale: Proposition~\ref{prop:skewlaw} measures this efficiency independently from the skewness, and it then gives
+$7.11$ and $10.09$ against $7.07$ and $10.14$. The stage-9 statement that ``37--48\% of the off-diagonal covariance
+energy is collective'' is the Frobenius share in the last column. It reaches $0.47$ at $l=16$ although the collective \emph{trace} share is
+only $0.09$: a rank-one mode of modest trace dominates the off-diagonal Frobenius norm, because the bulk off-diagonal entries are
+random and incoherent.

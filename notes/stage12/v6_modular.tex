@@ -1,0 +1,68 @@
+\label{sec:modular}
+\subsection{The layer state as a KMS state on the fibre relation}
+Let $\mathcal R_l=\{(x,x'):h_l(x)=h_l(x')\}$ be the fibre relation of layer $l$. Its fibres are polyhedral; for $l=1$ and invertible $W_1$
+the fibre through $x$ is an orthant of dimension equal to the number of closed gates. Equip it with Lebesgue measure on the fibres
+(the Haar system) and the real cocycle $c(x,x')=H(x)-H(x')$, $H=|x|^2/2$. The cocycle generates the one-parameter group
+$\sigma_s(k)(x,x')=e^{is\,c(x,x')}k(x,x')$ on kernels $k$ on $\mathcal R_l$.
+\begin{proposition}[KMS states and the centre; proved in the measured setting]\label{prop:kms}
+\begin{enumerate}[leftmargin=*]
+\item The state $\omega_\mu$ of a measure $\mu$, given by $\omega_\mu(k)=\int k(x,x)\,d\mu(x)$, is $(\sigma,\beta)$-KMS iff the conditional measures of $\mu$ on the fibres are
+$\propto e^{-\beta H}dx$ (Renault's correspondence, Feldman--Moore in the measured case). So the KMS$_\beta$ states are parametrized by
+probability measures on the quotient $h_l(\R^n)$, and the extremal ones are the fibre Gibbs states $\omega_h$, one for each value $h$
+of the representation.
+\item The Gaussian state $\omega_\gamma$ is KMS$_1$, and its extremal decomposition is the law of the representation:
+$\omega_\gamma=\int\omega_h\,d\mu_l(h)$ with $\mu_l=(h_l)_*\gamma$.
+\item The centre of the von Neumann algebra of $\mathcal R_l$ is $\cZ_l=L^\infty(h_l)$, the functions of the representation. The
+$\omega_\gamma$-preserving conditional expectation onto it is the posterior $E_l=\E[\,\cdot\,|h_l]$.
+\item Eldan's localized states $\gamma_{t,y}$ are KMS at $\beta=1+t$ for the perturbed cocycle $c-\frac1\beta\langle y,x-x'\rangle$. At infinite
+width layer $l$ is at $\beta_l=1+t_l$ (Proposition~\ref{prop:cooling}).
+\end{enumerate}
+\end{proposition}
+\begin{proof}
+(1) The KMS condition for $\sigma$ on the groupoid algebra says that the Radon--Nikodym cocycle of $\mu$ along $\mathcal R_l$, relative to the
+Haar system, is $e^{-\beta c}$. That is the stated property of the conditionals, and extremality is ergodicity, i.e.\ a single fibre.
+(2) is disintegration of $\gamma$ along $h_l$. (3) $\mathcal R_l$ has a proper (smooth) quotient, so its von Neumann algebra is the direct
+integral of $B(L^2(\text{fibre}))$ over $h_l(\R^n)$, and the centre is the diagonal. (4) is Proposition~\ref{prop:cooling}.
+\end{proof}
+Since $h_{l+1}$ is a function of $h_l$, $\mathcal R_l\subset\mathcal R_{l+1}$. The algebras increase, and the centres form a decreasing tower
+\[
+L^\infty(\gamma)\supset\cZ_1\supset\cZ_2\supset\cdots\supset\cZ_L\ni f,\qquad E_{l+1}E_l=E_{l+1}.
+\]
+The mean is $\omega_\gamma(f)$ for $f$ in the smallest centre. This is ``localization in the commutant'' (stage 9) realized inside the
+network: each layer is a central decomposition, and the representation at depth $l$ \emph{is} the spectrum of its centre. The forward
+pass computes, for one input, the extremal KMS component it belongs to.
+
+\begin{remark}[what the modular picture adds]
+The upper tier of stages 9--10 (the localized balls $\gamma_{t,y}$) and the network's own tower (the centres $\cZ_l$) are two families of
+states for one modular Hamiltonian $H$. The external family varies $\beta$ at fixed algebra. The internal family varies the algebra at
+fixed $\beta=1$, and by Theorem~\ref{thm:selfloc} its effect on the next layer equals a change of $\beta$ to $1+t_l$. Cooling (raising
+$\beta$) and coarse-graining (shrinking the centre) are thus interchangeable on the next layer, to leading order at infinite width. This
+is the operator-algebraic form of ``depth is localization time''.
+\end{remark}
+
+\subsection{Two harmonic states, two clocks}
+Stage 11 identified the forward activations and the backward sensitivities $\delta_l=\partial f/\partial h_l$ as the two harmonic states of
+the network's Bratteli diagram, with $\langle h_l,\delta_l\rangle=f$ at every layer. Their clocks run in opposite directions.
+\begin{proposition}[backward clock; infinite width, gradient independence]\label{prop:backclock}
+For $f=c^{\top}h_L$, with readout $c$ independent of the weights,
+\[
+\frac{|\E\delta_l|^2}{\E|\delta_l|^2}\ \longrightarrow\ \prod_{k=l+1}^{L}\Big(1-\frac{\theta_{k-1}}\pi\Big)\ \approx\ \Big(\frac{\tau_l}{\tau_L}\Big)^3 .
+\]
+The forward state localizes with depth ($q_l=\cos\theta_l\uparrow1$), while the backward state delocalizes as it travels towards the input,
+with a parabolic power law of exponent $3=1/(\pi a)$, where $F(\theta)=\theta-a\theta^2+\dots$ and $a=1/3\pi$.
+\end{proposition}
+\begin{proof}[Derivation]
+$\E_W\langle\delta_{k-1}(x),\delta_{k-1}(x')\rangle=2\Pr(g_k=g'_k=1)\langle\delta_k,\delta'_k\rangle=(1-\theta_{k-1}/\pi)\langle\delta_k,\delta'_k\rangle$, while
+$\E|\delta_{k-1}|^2=\E|\delta_k|^2$ at criticality. This uses the gradient-independence ansatz, justified by Yang's tensor programs for a
+readout independent of the weights. Then $\theta_{k-1}/\pi=3/\tau+O(\tau^{-2}\log\tau)$, so the product is $\exp(-3\sum1/\tau)\approx(\tau_l/\tau_L)^3$.
+\end{proof}
+On the width-1024 network the measured backward clock is $0.0108$, $0.0354$, $0.0800$, $0.2489$, $0.5571$, $0.8798$ at $l=0,2,4,8,12,15$. The
+infinite-width products are $0.0133$, $0.0442$, $0.0941$, $0.2663$, $0.5589$, $0.8743$. Agreement is close near the output, and the measured state
+delocalizes about $20\%$ faster near the input, where finite-width errors compound. Far out, the power law is accurate: the product
+over $l=1000..10^4$ is $0.00104$, against $(\Fa(\theta_{1000})/\Fa(\theta_{10^4}))^3=0.00102$.
+
+The Euler split at layer $l$ pairs the two states: $\E f=\langle m_l,\E\delta_l\rangle+\sum_i\Cov(h_{l,i},\delta_{l,i})$. The upper-tier
+(mean--mean) term needs both states localized. Near the output the forward state is localized and the backward state is trivially so.
+Near the input the backward state has delocalized to $1\%$ of its energy, so the mean there is almost entirely lower tier, which is
+stage 11's border formula at $l=0$. In Montanari's correspondence between stochastic localization and diffusion models, the forward
+(localizing) clock and the backward (delocalizing) clock are the two time directions of one process (an analogy only).

@@ -1,0 +1,131 @@
+\label{sec:clock}
+\subsection{Eldan's localization seen through one row}
+Eldan's localization of $\gamma$ tilts it by $\exp(\langle y,x\rangle-t|x|^2/2)$. The result is the ball $\gamma_{t,y}=N(y/(1+t),I/(1+t))$,
+and along the localization path ($y_t=tX+B_t$) the centre $y_t/(1+t)$ has law $N(0,\frac t{1+t}I)$. Project onto a unit row $w$:
+the ball becomes $N(\nu,\frac1{1+t})$, with standardized centre $\nu\sqrt{1+t}\sim N(0,t)$. Two independent samples from the same
+localized ball have overlap $t/(1+t)+o(1)$ in high dimension. So a first layer that sees the input at localization time $t$ sees,
+through every row, a unit ball at a field distributed as $N(0,t)$.
+
+\begin{lemma}[field law; proved]\label{lem:field}
+For $t\ge0$, $\E_{r\sim N(0,t)}\,\Phi(r)\Phi(-r)=\dfrac{\arccos\frac t{1+t}}{2\pi}$.
+\end{lemma}
+\begin{proof}
+$\Phi(r)\Phi(-r)=\Pr(\xi_1<r,\ \xi_2<-r)$ for independent standard $\xi_i$. Averaging over $r$, the pair $(\xi_1-r,\xi_2+r)$ is centred
+Gaussian with variances $1+t$ and correlation $-t/(1+t)$. The orthant formula gives $\frac14-\frac1{2\pi}\arcsin\frac t{1+t}=\frac1{2\pi}\arccos\frac t{1+t}$.
+\end{proof}
+
+\subsection{The internal clock}
+\begin{definition}
+For a fixed network, the \emph{internal clock} and \emph{internal overlap} of layer $l$ are
+\[
+t_l=\frac{|m_l|^2}{\Tr\Sigma_l},\qquad q_l=\frac{|m_l|^2}{\E|h_l|^2}=\frac{t_l}{1+t_l}.
+\]
+Since $|m_l|^2=\E\langle h_l(x),h_l(x')\rangle$ for independent inputs $x,x'$, $q_l$ is the \emph{replica overlap} of two independent inputs at depth $l$.
+\end{definition}
+
+\begin{theorem}[self-localization; proved at infinite width]\label{thm:selfloc}
+Fix $l$ and let $n\to\infty$.
+\begin{enumerate}[leftmargin=*]
+\item $q_l\to\cos\theta_l$ and $t_l\to t_l^\infty:=\cos\theta_l/(1-\cos\theta_l)$. Equivalently $\arccos\frac{t_l}{1+t_l}=\theta_l$: the internal clock is the Eldan
+time whose input overlap equals the folding angle.
+\item The empirical law over $a\in[n]$ of the fields $r_{l+1,a}$ of the next layer converges to $N(0,t_l^\infty)$. For almost every row, the
+law of $(z_{l+1,a}-\mu_{l+1,a})/s_a$ over $x$ converges to $N(0,1)$.
+\item The mean gate variance of layer $l+1$ converges to $\frac1n\sum_ap_a q_a\to\E_{N(0,t_l)}\Phi(r)\Phi(-r)=\theta_l/2\pi$.
+\item The clock obeys the closed recursion
+\[
+t_{l+1}^\infty=\frac{\E\,m_1(r)^2}{\E\,s_1(r)^2},\qquad r\sim N(0,t_l^\infty),
+\]
+and in the chart $t\mapsto\arccos\frac t{1+t}$ this recursion is the folding map $F$.
+\end{enumerate}
+So layer $l+1$ looks at the law of $h_l$, through each of its rows, exactly as a first layer looks at Eldan's localized input at time
+$t_l$. The rows of $W_{l+1}$ play the role of localization paths, and self-averaging over neurons replaces averaging over paths.
+\end{theorem}
+\begin{proof}
+(1) For independent $x,x'$ the pair $(h_l(x),h_l(x'))$ obeys the arc-cosine (NNGP) recursion. The input angle concentrates at $\pi/2$, so
+the normalized overlap is $\cos\theta_l$ in the limit. Also $|m_l|^2=\E\langle h_l(x),h_l(x')\rangle$ because $x,x'$ are independent given
+$W$.
+(2) $W_{l+1}$ is independent of $(m_l,\Sigma_l)$, so $\mu_{l+1,a}=\langle w_a,m_l\rangle\sim N(0,2|m_l|^2/n)$ exactly. The quadratic form
+$s_a^2=w_a^{\top}\Sigma_lw_a$ concentrates at $\frac2n\Tr\Sigma_l$ because $\|\Sigma_l\|_{op}=o(\Tr\Sigma_l)$ at fixed $l$: the largest
+(collective) eigenvalue carries a share $O(1/n)$, see Proposition~\ref{prop:collective}. The ratio therefore converges in law to
+$N(0,|m_l|^2/\Tr\Sigma_l)$. Gaussianity of the projected law is Sudakov's (Diaconis--Freedman's) theorem for random projections of a
+thin-shell vector, and thin shell holds by the Hanin--Nica log-normal law of $|h_l|^2$ (Proposition~\ref{prop:diffusion}).
+(3) follows from (2) with $p_a=\Phi(r_a)$ and Lemma~\ref{lem:field}.
+(4) Under (2), $m_{l+1,a}=s\,m_1(r_a)$ and $\Sigma_{l+1,aa}=s^2s_1(r_a)^2$, which gives the ratio. For the chart, mixing over $r$ turns
+$z=s(r+\xi)$ into $N(0,s^2(1+t))$, so $s^2\E m_2=s^2(1+t)/2$. Likewise $s^2\E m_1(r)^2=\E[\relu(z)\relu(z')]$ for two draws sharing
+the centre, with correlation $t/(1+t)=\cos\theta$. By Cho--Saul this is $\frac{s^2(1+t)}{2\pi}(\sin\theta+(\pi-\theta)\cos\theta)$. Hence
+$\frac{t'}{1+t'}=\frac{\E m_1^2}{\E m_2}=\cos F(\theta)$.
+\end{proof}
+
+\begin{remark}[what is and is not proved]
+Items (1), (3) and (4) are the standard infinite-width (NNGP) statements, rephrased. The new content is the identification in (2):
+the rows of the next layer sample Eldan centres at time $t_l$. The projection CLT used in (2) is rigorous given thin shell. We have not
+written out rates, and at fixed $n$ the collective mode makes $s_a$ depend on $\mu_a$ (Proposition~\ref{prop:collective}).
+\end{remark}
+
+\subsection{Depth is localization time}
+\begin{corollary}[one clock; proved at infinite width]\label{cor:oneclock}
+Put $\Theta(t)=\arccos\frac t{1+t}$ and $\cT(t)=\Fa(\Theta(t))$. Then $\cT(t_l^\infty)=\Fa(\pi/2)+l$ exactly. Externally localizing the input to time
+$t$ and then running $l$ layers gives internal time $t'$ with $\cT(t')=\cT(t)+l$. This is the stage-11 collapse theorem seen from inside:
+the gates of layer $l+1$ at external time $t$ sit at the stage-11 Fatou time $\tau(l+1,t)=\cT(t)+l$.
+\end{corollary}
+Write $\tau_l:=\Fa(\theta_l)=7.755+l$ for the Fatou time of the representation $h_l$; it is also the Fatou time of the gates of layer $l+1$.
+Szekeres' regular iteration $F^s=\Fa^{-1}(\Fa+s)$ is the unique $C^1$ flow embedding of the parabolic germ that is regular at $0$. It
+defines \emph{fractional depth}, and Corollary~\ref{cor:oneclock} says that Eldan localization to time $t$ \emph{is} fractional depth
+\[
+s(t)=\Fa(\Theta(t))-\Fa(\pi/2)\ \sim\ 3\pi\sqrt{(1+t)/2}\qquad(t\to\infty).
+\]
+Exactly, $\sqrt{1+t_l}=1/(\sqrt2\sin(\theta_l/2))$. One layer is worth $\Delta\sqrt{1+t}\to\sqrt2/3\pi=0.150$ (stage 11), and
+$t_l^\infty=0.47,0.98,2.13,5.04,8.72,13.18$ at $l=1,2,4,8,12,16$. The infinite-width network is therefore the time-one map of a flow
+on the clock line, and the external upper tier of stages 9--10 is the same flow started earlier.
+
+\subsection{The network cools itself}
+\begin{proposition}[cooling; proved]\label{prop:cooling}
+$\gamma_{t,y}\propto\exp(-(1+t)H+\langle y,x\rangle)$ with $H(x)=|x|^2/2$. So the localized ball is the Gibbs (KMS) state of $H$ at inverse
+temperature $\beta=1+t$ with external field $y$, and $\hbar=1/\beta$ is a temperature. At infinite width layer $l$ is at internal
+temperature
+\[
+T_l=\frac1{1+t_l}=1-\cos\theta_l=2\sin^2\tfrac{\theta_l}2\approx\frac{\theta_l^2}2,
+\]
+and its unresolved gate fraction $\theta_l/\pi=\frac2\pi\arcsin\sqrt{T_l/2}$ freezes like $\sqrt{T_l}$. The schedule $T_l\approx\frac{9\pi^2}{2\tau_l^2}$ is an
+annealing schedule in Fatou time, and it is critical: the accumulated unresolved fraction $\sum_l\theta_l/\pi\approx3\log\tau$ diverges
+logarithmically.
+\end{proposition}
+
+\begin{proposition}[angular and radial temperature; heuristic, consistent with data]\label{prop:Tsplit}
+Write $h_l=\rho\,u$ with $\rho^2=|h_l|^2/\E|h_l|^2$, and let $V_l=\Var_x\log|h_l|^2$. Suppose $\rho$ and $u$ are independent and $\log\rho^2$
+is Gaussian; independence is exact for the input's own radius, since $h_l(x)=|x|\,h_l(x/|x|)$. Then
+\[
+T_l=1-e^{-V_l/4}\cos\angle_l=\underbrace{(1-\cos\angle_l)}_{T^{\rm ang}_l}+\underbrace{V_l/4}_{T^{\rm rad}_l}+O(V_lT_l^{\rm ang}),
+\]
+where $\cos\angle_l$ is the overlap of the normalized representations, which tends to $\cos\theta_l$. The radial temperature is a
+finite-width effect. It is the log-normal norm, and it does not vanish with depth: by Proposition~\ref{prop:diffusion}, $V_l$ saturates at
+$44.6/n$. The two temperatures cross at $\theta^2/2=V_\infty/4$, i.e.\ at Fatou time $\tau_*\approx3\pi\sqrt{2n/44.6}=2.0\sqrt n$. Beyond
+it the clock saturates at $t\approx4/V$, while the angle keeps shrinking (compare the stage-11 conjecture on the end of the parabolic
+regime).
+\end{proposition}
+\begin{proof}[Derivation]
+$q_l=|\E[\rho u]|^2/\E|h_l|^2=(\E\rho)^2\cos\angle_l$ under independence. With $\log\rho^2\sim N(-V/2,V)$, $(\E\rho)^2=e^{-V/4}$.
+\end{proof}
+At $n=1024$ and $l=16$ the measured temperature is $T=1/(1+11.84)=0.0779$. Proposition~\ref{prop:Tsplit} with the measured $V_{16}=0.0321$
+predicts $1-e^{-0.0080}\cos\theta_{16}=0.0779$, so the radial part accounts for the whole gap between the measured clock $11.84$ and the
+infinite-width $13.18$. At $l=4,8,12$ the same comparison is off by $+0.024$, $+0.010$, $-0.003$. That scatter has the size of the quenched
+fluctuations of the clock. A width scan over $l=2,\dots,8$ ($n=256,1024,4096$; $6,3,2$ networks) gave mean deviations
+$\cos\theta_l-q_l=+0.012,-0.007,-0.001$, which change sign and shrink with $n$: they are quenched $O(n^{-1/2})$ fluctuations of a random
+clock, not a bias. The radial part is a systematic $O(1/n)$ effect. At these widths it is visible only in the deepest layers, where it
+has grown to $V/4\approx0.008$.
+
+\subsection{Measured self-localization}
+A single He network ($n=1024$, $L=16$, $2\times10^5$ standard inputs, seed 5) gives the following; full output in the Verification section.
+\begin{center}\small
+\begin{tabular}{rcccc}\toprule
+$l$ & $q_l$ meas./$\cos\theta_l$ & $t_l$ meas./$t_l^\infty$ & gate var.\ meas./$\theta_{l-1}/2\pi$ & $V_l$ meas./pred.\\\midrule
+1 & 0.3183 / 0.3183 & 0.47 / 0.47 & 0.2500 / 0.2500 & 0.0069 / 0.0068\\
+2 & 0.4857 / 0.4937 & 0.94 / 0.98 & 0.1994 / 0.1984 & 0.0107 / 0.0107\\
+4 & 0.6545 / 0.6810 & 1.89 / 2.13 & 0.1517 / 0.1466 & 0.0172 / 0.0164\\
+8 & 0.8196 / 0.8344 & 4.54 / 5.04 & 0.1009 / 0.1000 & 0.0249 / 0.0233\\
+12 & 0.8933 / 0.8971 & 8.38 / 8.72 & 0.0765 / 0.0769 & 0.0292 / 0.0274\\
+16 & 0.9221 / 0.9295 & 11.84 / 13.18 & 0.0614 / 0.0629 & 0.0321 / 0.0300\\
+\bottomrule\end{tabular}
+\end{center}
+The field law of the next layer is checked in Section~\ref{sec:hyper}. The fraction of unresolved neurons ($|r|<1$) at $l=4,8,12,16$
+is listed in Table~\ref{tab:fields}.

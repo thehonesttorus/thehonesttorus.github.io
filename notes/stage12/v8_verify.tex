@@ -1,0 +1,29 @@
+The checks are run by \texttt{scripts/verify\_stage12.py}; its output is saved next to this note. The network checks use one He network
+($n=1024$, $L=16$, seed 5) and $2\times10^5$ standard inputs.
+\begin{center}\small
+\begin{tabular}{>{\raggedright\arraybackslash}p{5.2cm}>{\raggedright\arraybackslash}p{9.6cm}}\toprule
+identity or prediction & result\\\midrule
+1. Self-localization (Thm~\ref{thm:selfloc}) & $q_l$, $t_l$, gate variance, $V_l$: see the table in Section~\ref{sec:clock}; gate variance within $0.006$ of $\theta_{l-1}/2\pi$ at all
+layers; $\Pr(|r|<1)=0.226$ against $0.227$ at $l=16$\\
+2. Field lemma, clock recursion & $\E\Phi(r)\Phi(-r)=\arccos(\frac t{1+t})/2\pi$ to $10^{-8}$ at $t=0.5,2,13$; $\E m_1^2/\E s_1^2$ equals the angle map to $10^{-6}$\\
+3. Temperature split (Prop.~\ref{prop:Tsplit}) & $l=16$: $1-q=0.0779$ against $1-e^{-V/4}\cos\theta_{16}=0.0779$; $l=4,8,12$ off by $+0.024$, $+0.010$, $-0.003$
+(quenched scatter)\\
+4. Fisher--Rao distance (Prop.~\ref{prop:hyper}) & numerical minimization equals $\sqrt2\operatorname{asinh}(|r|/\sqrt2)$ to $10^{-6}$ at $r=0.5,4.29,-6.67$\\
+5. Saturation of $V$ (Prop.~\ref{prop:diffusion}) & $(\frac32-\frac{J_2}{2\pi})/\theta^2=0.99671,0.99997$ at $\theta=0.1,0.01$; $nV_l=30.76$, $41.42$, $44.60$ at $l=16,10^2,10^5$; measured
+$V_l$ at most $7\%$ above prediction at every layer\\
+6. Collective mode (Prop.~\ref{prop:collective}) & trace share $0.008$, $0.026$, $0.058$, $0.093$ against $tV/4=0.005$, $0.022$, $0.053$, $0.086$ at $l=4,8,12,16$\\
+7. Collective-mode cumulant law & \input{tab_skew}\\
+8. Ising couplings (Prop.~\ref{prop:ising}) & log odds ratio $0.05614/0.05605$, $0.03382/0.03388$, $0.13388/0.13206$ (exact/first order)\\
+9. Wall-density law (Thm~\ref{thm:walldensity}) & $\int\Phi(r)\Phi(-r)dr=1/\sqrt\pi$ to $10^{-10}$; $\E\varphi=\sin(\Theta/2)/\sqrt\pi$ to $10^{-8}$; gate variance $0.022415$ against
+$0.022396$ at $t=100$\\
+10. Hermite cancellation (Prop.~\ref{prop:hermite}) & $\E\He_2\varphi=-(1+t)^{-3/2}/\sqrt{2\pi}$ to four digits at $t=1,13,100$\\
+11. Marginal memory (Section~\ref{sec:gates}) & Gram--Charlier wall terms against the empirical closure error: correlation $0.983$, $0.993$, $0.996$ at $l=8,12,16$;
+residual $\le1.7\times10^{-4}$ per $|r|$-bin; error $<5\times10^{-5}$ for $|r|\ge3$\\
+12. Stratified third order (Thm~\ref{thm:strata}) & softplus $\beta=5$: $0.1242$ vs $0.1224$ (difference $0.0018\pm0.0028$); $\beta=20$: $0.1677$ vs $0.1698$ ($-0.0022\pm0.0039$)\\
+13. Birth law (Prop.~\ref{prop:birth}) & $c_3=0.326458$; $\int k_3^2=0.27002$; $\E k_3^2=0.02904$ against $0.02988$ at $t=13$, $0.01512$ against $0.01523$ at $t=50$\\
+14. Backward clock (Prop.~\ref{prop:backclock}) & measured $0.0108$, $0.0800$, $0.2489$, $0.5571$, $0.8798$ against $0.0133$, $0.0941$, $0.2663$, $0.5589$, $0.8743$ at $l=0,4,8,12,15$; power law: $0.00131/0.00122$
+($l=10^2..10^3$), $0.00104/0.00102$ ($l=10^3..10^4$)\\\bottomrule
+\end{tabular}
+\end{center}
+The folding angles and clocks: $\theta_l=1.247$, $1.054$, $0.822$, $0.584$, $0.458$, $0.378$ and $t_l^\infty=0.47$, $0.98$, $2.13$, $5.04$, $8.72$, $13.18$ at $l=1,2,4,8,12,16$;
+$\tau_{16}=\Fa(\theta_{16})=23.75$; $\tau_*=2.0\sqrt n=64$ at $n=1024$.

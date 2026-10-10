@@ -1,0 +1,75 @@
+\label{sec:synthesis}
+\subsection{The realisation}
+The two-tier framework of stages 9--11 is not imposed on the network. The network realizes it, layer by layer.
+\begin{center}\small
+\begin{tabular}{>{\raggedright\arraybackslash}p{4.2cm}>{\raggedright\arraybackslash}p{5.1cm}>{\raggedright\arraybackslash}p{5.3cm}}\toprule
+ & external (stages 9--10) & internal (this note)\\\midrule
+upper tier & Eldan balls $\gamma_{t,y}$ & quasi-free projection $(\mu_l,C_l)$; a cloud in the Fisher--Rao plane\\
+clock & localization time $t$ & $t_l=|m_l|^2/\Tr\Sigma_l=\cos\theta_l/(1-\cos\theta_l)$\\
+paths & Brownian localization paths & rows of $W_{l+1}$ (self-averaging)\\
+temperature & $1/(1+t)$ & $1-\cos\theta_l$ (+ radial $V_l/4$ at finite width)\\
+lower tier & gates conditioned on $\cF_t$ & the gate gas: dichotomized Gaussian, Mattis pattern $=$ field\\
+coupling & conditioning & Euler split; Edgeworth series stratified by codimension\\
+algebra & conditional expectation on $\cF_t$ & centres $\cZ_l=L^\infty(h_l)$ of the fibre relations; KMS decomposition\\
+renormalization time & Fatou time $\tau(l,t)$ & $\tau_l=\Fa(\theta_l)=7.755+l$; fractional depth\\\bottomrule
+\end{tabular}
+\end{center}
+Corollary~\ref{cor:oneclock} makes the dictionary exact at infinite width: the external upper tier is the internal one started at
+fractional depth $s(t)$.
+
+\subsection{What it unlocks}
+\begin{enumerate}[leftmargin=*]
+\item \textbf{One flow for all depths.} The infinite-width network is the time-one map of Szekeres' flow on the clock line, and
+localization is fractional depth. A quantity calibrated at one $(l,t)$ transfers to every $(l',t')$ with the same Fatou time. Stage 11
+stated this as an open problem (``chains in Fatou time''). At infinite width it is now a theorem for every quantity determined by the
+pair angle. Departures from it are finite-width signals by definition.
+\item \textbf{A temperature budget.} $T_l=T^{\rm ang}_l+T^{\rm rad}_l$. The angular part is the parabolic, infinite-width cooling
+$\approx9\pi^2/2\tau^2$. The radial part $V_l/4$ is the log-normal norm, which saturates at $44.6/(4n)$. For the competition
+networks ($n=1024$, $L=16$), $\tau_{16}=23.8$ is far below $\tau_*\approx2\sqrt n=64$, so they are angular-dominated. Yet at $l=16$ the
+radial part ($0.008$) is already $11\%$ of the angular one ($0.0705$), and it accounts for the gap between the measured and the
+infinite-width clock.
+\item \textbf{A harmonic budget for the lower tier.} The layer average of each wall-localized one-body quantity $Q$ is $(\int Q)\sin(\theta_l/2)/\sqrt\pi$, which is about $2.66(\int Q)/\tau_l$.
+The memory is born at rate $0.718/\tau$ and accumulates like $\log\tau$. A correction scheme must therefore treat every layer, with
+weight $\propto1/\tau_l$. Truncating to the last few layers is not justified.
+\item \textbf{The memory is a sum over bent strata.} The Edgeworth corrections decompose over chain strata of the wall arrangement,
+with Kikuchi level equal to codimension. Normal crossings carry nothing, and pair memory lives only on bent crossings (the $\aff(1)$
+points). This is an algorithmic skeleton: one-body corrections on single walls (hub and deep-wall terms, both already present in
+stage 9), plus a pair correction on each (deep, shallow) bent crossing. Because the strata cancel, all three must be kept together.
+\item \textbf{Hermite cancellation.} The neuron-averaged marginal memory is suppressed by powers of $T_l$, but its mean square is not.
+Averaged diagnostics (for example the mean of the output vector) understate the memory that an MSE score sees.
+\item \textbf{The collective mode is a symmetry direction.} The norm mode is translation along the kink geodesic, and
+\textsc{ReLU} commutes with it. For the input's own radius this gives an exact factorization, $\E h_L=\E|x|\cdot\E_{\hat x\sim\text{unif}}h_L(\hat x)$.
+Any memory carried by the collective mode is a mixture over this translation. It can therefore be integrated out in one dimension
+rather than expanded in cumulants, to the extent that the radial factor decouples from the angular one.
+\item \textbf{Two clocks.} The forward state localizes and the backward state delocalizes as $(\tau_l/\tau_L)^3$. The Euler split shows where
+the upper-tier (mean--mean) term is reliable and where the mean is a pure border functional.
+\end{enumerate}
+
+\subsection{Predictions}
+\begin{enumerate}[leftmargin=*]
+\item For a fixed He network and $l\ll\sqrt n$, the empirical field law of layer $l+1$ is $N(0,t_l)$ with $t_l\to\cos\theta_l/(1-\cos\theta_l)$. The
+unresolved fraction is $\Pr(|r|<1)=\operatorname{erf}(1/\sqrt{2t_l})$, which is $0.227$ at $l=16$ (measured $0.226$).
+\item The across-input variance of $\log|h_l|^2$ saturates: $nV_l\to44.6$, not $2+5l$.
+\item The internal clock saturates at $t\approx4/V$ once $\tau\gtrsim2\sqrt n$, while the angle between inputs keeps decreasing.
+\item The marginal skewness of deep pre-activations is dominated by the collective mode, $\gamma_1\approx\frac32\eta V_{l-1}r$, and the excess
+kurtosis is flat in $r$ at $\approx3\eta' V_{l-1}$, rather than following the one-body birth law, which contributes $O(n^{-1})$. Measured at
+width $1024$: $\eta=0.71$--$0.72$ at three depths, $\eta'=0.57$--$0.63$, and $R^2\approx0.9$ for the linear law. Confirmed in form; the
+efficiency $\eta$ is not yet derived.
+\item The backward clock follows $\prod(1-\theta_{k-1}/\pi)$, with exponent $3$ in Fatou time.
+\end{enumerate}
+
+\subsection{Open problems}
+\begin{enumerate}[leftmargin=*]
+\item \textbf{Rates.} Prove Theorem~\ref{thm:selfloc}(2) with explicit rates at fixed $n$, including the compression by the collective mode, and
+identify the law of the quenched clock fluctuations.
+\item \textbf{The bent-crossing pair term at width $n$.} Compute its size and sign as a function of $\tau$. It is the only genuinely
+two-body memory at third order, and it is the term stage 9's hub pairing did not contain.
+\item \textbf{Radial--angular factorization beyond the input.} The input radius decouples exactly. How much of $V_l$ (and hence of the
+collective memory) decouples at depth, and can the closure be run on the angular part with the radial mixture integrated exactly?
+\item \textbf{A modular bound.} Is the closure error controlled by a modular quantity, for example the relative entropy of the layer
+state to its quasi-free projection (the negentropy of $z_l$), through a transport inequality on the chain strata?
+\item \textbf{The radial efficiency.} Derive $\eta\approx0.71$, the fraction of the across-input log-norm variance that acts as a common
+scale on the bulk noise, and its kurtosis analogue $\eta'\approx0.6$. Both are constant across depths $8$--$16$ at width $1024$.
+\item \textbf{Beyond the parabolic regime.} For $\tau\gg2\sqrt n$ the radial temperature dominates. Does the two-tier dynamics there
+become the hyperbolic (Gauss-type) renormalization conjectured in stage 11?
+\end{enumerate}

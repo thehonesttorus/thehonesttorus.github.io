@@ -1,0 +1,98 @@
+\label{sec:gates}
+\subsection{The gate gas}
+For a fixed network the \emph{gate gas} of layer $l$ is the law of $g_l(x)\in\{0,1\}^n$, $x\sim\gamma$. Under the quasi-free law of $z_l$ it is
+the dichotomized Gaussian of Emrich--Piedmonte and Macke et al.: $g_a=\1\{r_a+\xi_a>0\}$ with $\xi\sim N(0,c)$. The one-body marginals are
+$p_a=\Phi(r_a)$. The two-body marginals are orthant probabilities $\Phi_2(r_a,r_b;c_{ab})$.
+
+\begin{proposition}[Ising couplings; proved to first order in $c$]\label{prop:ising}
+The pair coupling of the gate gas (the log odds ratio of the $2\times2$ table) is
+\[
+J_{ab}=\log\frac{P_{11}P_{00}}{P_{10}P_{01}}=\frac{c_{ab}\,\varphi(r_a)\varphi(r_b)}{p_aq_a\,p_bq_b}+O(c_{ab}^2).
+\]
+\end{proposition}
+\begin{proof}
+$\partial_c\Phi_2(r_a,r_b;c)|_{c=0}=\varphi(r_a)\varphi(r_b)$. A covariance $\epsilon$ in a table with margins $p_a,p_b$ changes the log odds ratio by
+$\epsilon(\frac1{p_ap_b}+\frac1{p_aq_b}+\frac1{q_ap_b}+\frac1{q_aq_b})=\epsilon/(p_aq_ap_bq_b)$.
+\end{proof}
+The correlations $c_{ab}$ have two parts.
+\begin{itemize}[leftmargin=*]
+\item A \emph{bulk} part of size $O(n^{-1/2})$ with random signs, which is Sherrington--Kirkpatrick-like.
+\item A \emph{collective} part $c^{\rm coll}_{ab}\approx\epsilon\,r_ar_b$ coming from the norm mode (Proposition~\ref{prop:collective}).
+\end{itemize}
+By Proposition~\ref{prop:ising} the collective part is a Mattis coupling, $J^{\rm coll}_{ab}=\epsilon\,\xi_a\xi_b$, with stored pattern
+\[
+\xi_a=\frac{r_a\varphi(r_a)}{p_aq_a}\ \approx\ r_a|r_a|\quad(|r_a|\gg1).
+\]
+The pattern the gate gas stores is the field itself, that is, the representation's own mean. Its Mattis order parameter is not
+spontaneous. It is the input's radial coordinate $\delta(x)$, a latent variable shared by all neurons. Given $\delta$, the gates are
+conditionally independent up to the bulk couplings, which is a de Finetti form. Resolved neurons ($|r|\gg1$) have large couplings
+per unit correlation but tiny variance $p_aq_a$; the gas is thermally active only near its ``Fermi level'' $r=0$.
+
+\begin{remark}[two statistics; analogy]
+The field $z$ is a quasi-free boson field (a Gaussian, i.e.\ a quasi-free state on a CCR algebra). The gates are fermionic occupation
+numbers ($g^2=g$). In the independent-gate approximation their state is the product (gauge-invariant quasi-free) state with diagonal
+one-particle density $\diag(\Phi(r_a))$, and the occupation is a probit-smeared Fermi function of the ``energy'' $-r_a$. The
+\textsc{ReLU} coupling $h=g\,z$ is a boson--fermion (Yukawa-type) vertex with the occupation slaved to the field. The Euler split
+(Proposition~\ref{prop:split}) is its Wick decomposition, $\E[gz]=\E g\,\E z+\Cov(g,z)$, and the closure is the corresponding
+mean-field (Hartree--Fock--Bogoliubov) decoupling. Depth lowers the density of states at the Fermi level as $1/\tau$
+(Theorem~\ref{thm:walldensity}).
+\end{remark}
+
+\subsection{The wall-density law}
+\begin{theorem}[wall-density law; proved]\label{thm:walldensity}
+Let $Q$ be integrable with $\int r^2|Q|<\infty$, and $\Theta=\arccos\frac t{1+t}$. Then
+\[
+\E_{r\sim N(0,t)}Q(r)=\Big(\int Q\Big)\frac{\sin(\Theta/2)}{\sqrt\pi}\Big(1-\frac{m_2(Q)-1}{2t}+O(t^{-2})\Big),\qquad m_2(Q)=\frac{\int r^2Q}{\int Q},
+\]
+and $\sin(\Theta/2)/\sqrt\pi=1/\sqrt{2\pi(1+t)}$ exactly. At layer $l+1$, where $\Theta=\theta_l$, every wall-localized one-body quantity therefore equals
+\[
+\Big(\int Q\Big)\frac{\sin(\theta_l/2)}{\sqrt\pi}\approx\Big(\int Q\Big)\frac{\theta_l}{2\sqrt\pi}\approx\frac{3\sqrt\pi}2\Big(\int Q\Big)\frac1{\tau_l}=2.659\Big(\int Q\Big)\frac1{\tau_l}.
+\]
+\end{theorem}
+\begin{proof}
+Expand $e^{-r^2/2t}/\sqrt{2\pi t}=(2\pi t)^{-1/2}(1-r^2/2t+O(t^{-2}r^4))$ and $(2\pi(1+t))^{-1/2}=(2\pi t)^{-1/2}(1-1/2t+O(t^{-2}))$. Use
+$1+t=1/(2\sin^2(\Theta/2))$.
+\end{proof}
+\begin{center}\small
+\begin{tabular}{lccl}\toprule
+quantity $Q$ & $\int Q$ & law at layer $l+1$ & check\\\midrule
+wall density $\varphi(r)$ & $1$ & $\sin(\theta_l/2)/\sqrt\pi$ (exact) & $t=13$: $0.10662181$ both\\
+gate variance $\Phi(r)\Phi(-r)$ & $1/\sqrt\pi$ & $\theta_l/2\pi+O(\theta^3)$ & $t=100$: $0.022415$ vs $0.022396$\\
+third-cumulant source $k_3(r)^2$ & $0.2700$ & $0.2700\,\sin(\theta_l/2)/\sqrt\pi$ & Section~\ref{sec:coupling}\\\bottomrule
+\end{tabular}
+\end{center}
+\begin{corollary}[the harmonic budget; proved at infinite width]\label{cor:budget}
+The activity of the lower tier decays harmonically in Fatou time, and its total over depth grows like $2.659(\int Q)\log\tau$. Each
+$e$-fold of Fatou time costs the same: the lower tier, and with it the memory it gives birth to, is spread log-uniformly over depth,
+not concentrated in the deepest layers. For the gate variance the total over $16$ layers is $\sum_{l\le16}\theta_{l-1}/\pi=3.658$.
+\end{corollary}
+
+\begin{proposition}[Hermite cancellation; proved]\label{prop:hermite}
+$\E_{r\sim N(0,t)}[\He_k(r)\varphi(r)]=0$ for odd $k$, and for $k=2j$
+\[
+\E_{r\sim N(0,t)}[\He_{2j}(r)\varphi(r)]=\frac{(-1)^j(2j-1)!!}{\sqrt{2\pi}}\,(1+t)^{-j-1/2}.
+\]
+\end{proposition}
+\begin{proof}
+$\varphi(r)\,\varphi_t(r)=(2\pi(1+t))^{-1/2}\varphi_{\sigma^2}(r)$ with $\sigma^2=t/(1+t)$. For $Y\sim N(0,\sigma^2)$, $\E\He_{2j}(Y)=(\sigma^2-1)^j(2j-1)!!$, from
+the generating function $\E e^{sY-s^2/2}=e^{s^2(\sigma^2-1)/2}$.
+\end{proof}
+The marginal memory of a neuron, i.e.\ the error of the one-neuron closure, is by the Gram--Charlier form of the Edgeworth series
+(Section~\ref{sec:coupling})
+\[
+\frac{\E\relu(z_a)-s_am_1(r_a)}{s_a}=\Big(-\frac{\gamma_{1,a}}6\He_1(r_a)+\frac{\gamma_{2,a}}{24}\He_2(r_a)+\frac{\gamma_{1,a}^2}{72}\He_4(r_a)\Big)\varphi(r_a)+\dots,
+\]
+where $\gamma_1,\gamma_2$ are the standardized skewness and excess kurtosis of $z_a$. Every term is wall-localized. By
+Proposition~\ref{prop:hermite}, its \emph{average} over neurons is suppressed by extra powers of $T=1/(1+t)$ when the $\gamma$'s are
+uncorrelated with $r$. Its \emph{mean square}, the quantity an MSE score sees, obeys the wall-density law with $\int(\He_k\varphi)^2$. The
+marginal memory is therefore a sign-alternating wall-localized field over neurons. It nearly cancels in neuron averages, but not in
+the MSE.
+
+On the width-1024 network the measured marginal skewness and kurtosis of the pre-activations grow with depth: mean $|\gamma_1|=0.043$,
+$0.070$, $0.095$, and mean $|\gamma_2|=0.041$, $0.055$, $0.066$, at $l=8,12,16$. The sampling noise is about $0.004$ and $0.009$. Their
+source is the collective mode, not the birth law (Proposition~\ref{prop:skewlaw}). With the empirical
+cumulants, the three Gram--Charlier wall terms reproduce the empirical one-neuron closure error neuron by neuron: the correlation is
+$0.983$, $0.993$ and $0.996$ at $l=8,12,16$, and the residual is $\le1.7\times10^{-4}$ in every $|r|$-bin. The error vanishes for $|r|\ge3$ (rms
+$4\times10^{-5}$) and peaks at $1\le|r|<2$ (rms $1.9\times10^{-3}$ at $l=16$). Both sides are computed from the same $2\times10^5$ samples, so
+this checks the expansion and the wall-localized profile. It does not fix the absolute size of the true memory, which is comparable to
+the Monte Carlo floor ($1.4$--$1.6\times10^{-3}$).

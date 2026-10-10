@@ -1,0 +1,101 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1.05in]{geometry}
+\usepackage{amsmath,amsthm,amssymb,mathtools,bm}
+\usepackage{booktabs,array,enumitem}\usepackage[expansion=false]{microtype}
+\usepackage{xcolor}
+\usepackage[colorlinks=true,linkcolor=blue!60!black,citecolor=blue!60!black,urlcolor=blue!60!black]{hyperref}
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]\newtheorem{proposition}[theorem]{Proposition}\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}\newtheorem{conjecture}[theorem]{Conjecture}
+\theoremstyle{definition}\newtheorem{definition}[theorem]{Definition}\newtheorem{remark}[theorem]{Remark}
+\newtheorem{example}[theorem]{Example}
+\newcommand{\R}{\mathbb R}\newcommand{\Z}{\mathbb Z}\newcommand{\E}{\mathbb E}\newcommand{\Var}{\operatorname{Var}}\newcommand{\Cov}{\operatorname{Cov}}
+\newcommand{\relu}{\operatorname{relu}}\newcommand{\diag}{\operatorname{diag}}\newcommand{\tr}{\operatorname{tr}}
+\newcommand{\Tr}{\operatorname{Tr}}\newcommand{\1}{\mathbf 1}\newcommand{\cA}{\mathcal A}\newcommand{\cB}{\mathcal B}
+\newcommand{\cF}{\mathcal F}\newcommand{\cT}{\mathcal T}\newcommand{\cH}{\mathcal H}\newcommand{\aff}{\mathfrak{aff}}
+\newcommand{\He}{\mathrm{He}}\newcommand{\Fa}{\Phi_{\mathrm F}}\newcommand{\cZ}{\mathcal Z}
+\title{\textsc{Localization in the commutant, stage 12:}\\ \large the network as its own two-tier system.\\
+Self-localization and the internal Eldan clock, a hyperbolic upper tier, the gate gas,\\ and the memory as a cumulant series
+stratified by border codimension}
+\author{}
+\date{10 October 2026}
+\begin{document}
+\maketitle
+\begin{abstract}
+Stages 9--11 studied the bias-free He-initialised \textsc{ReLU} network with Gaussian input inside a two-tier framework imposed from
+outside. The lower tier is the network's gates; the upper tier is Eldan's stochastic localization of the input. Here we show that
+the network carries the same two-tier structure \emph{internally}, and that the external framework is the internal one shifted in
+time. (i)~\emph{Self-localization.} Each layer of a fresh network acts as a localization step. Through every row of $W_{l+1}$, the law
+of $h_l$ looks like a Gaussian ball whose standardized centre is $N(0,t_l)$-distributed across rows, exactly as Eldan's localized
+input looks to a first layer at time $t_l$. The internal clock is $t_l=|\E h_l|^2/\Tr\Cov h_l=\cos\theta_l/(1-\cos\theta_l)$, where
+$\theta_l$ is the folding angle of independent inputs. It obeys a closed recursion, and in the Fatou chart of stage 11 it advances by
+exactly one unit per layer. Depth and localization time are therefore one coordinate, Szekeres' regular iteration defines fractional
+depth, and the stage-11 collapse theorem is this statement seen from outside. Measured on a width-1024 network, the field law,
+gate variance, clock and log-norm variance match the predictions. (ii)~\emph{Cooling.} A localized state is the Gibbs state of
+$H=|x|^2/2$ at $\beta=1+t$, so the network anneals itself on the schedule $T_l=1-\cos\theta_l\approx\theta_l^2/2$. At finite width
+the temperature splits into an angular part and a radial part, $T_l\approx(1-\cos\theta_l)+V_l/4$, where $V_l$ is the across-input
+variance of $\log|h_l|^2$. This variance saturates at $44.6/n$ because its increments decay like $\theta^2$. The radial part takes
+over at Fatou time $\tau_*\approx2\sqrt n$. (iii)~\emph{A hyperbolic upper tier.} Under the Fisher--Rao metric, the per-neuron
+Gaussian laws form a hyperbolic plane. Positive homogeneity is translation along the kink geodesic $\{\mu=0\}$, and rectification is
+a skew product over the signed distance to it. Criticality means zero drift along this geodesic, and the collective (norm) mode is
+the finite-width diffusion along it. Measured, this diffusion, not the birth of cumulants at the walls, is what makes deep
+pre-activations non-Gaussian at width 1024: each neuron's skewness is linear in its field ($R^2\approx0.9$) and its excess kurtosis is
+flat, both proportional to $V$ with one efficiency $\approx0.7$ at every depth. (iv)~\emph{The gate gas.} The lower tier is a dichotomized-Gaussian lattice gas. Its Ising
+couplings are $c_{ab}\varphi(r_a)\varphi(r_b)/(p_aq_ap_bq_b)$, with a Mattis component whose stored pattern is the field itself.
+Every wall-localized one-body quantity obeys a \emph{wall-density law}: it equals $(\int Q)\sin(\theta/2)/\sqrt\pi$, so it decays
+harmonically in Fatou time and its total over depth grows like $\log\tau$. (v)~\emph{Tier coupling.} At every layer an exact Euler
+split writes the mean as an upper-tier term plus a gate--field covariance. The non-Gaussian corrections form an Edgeworth series. We
+prove that each Edgeworth term is a sum over strata of the wall arrangement, and that the joint cumulant entering a stratum is that
+of exactly the fields whose walls meet there: the Kikuchi level equals the codimension. Normal crossings carry nothing. Two-body
+memory lives only on the bent crossings, where stage 11 found the non-abelian isotropy $\aff(1)$. (vi)~\emph{Modular structure.}
+The layer's Gaussian state is a KMS state on the fibre relation of $h_l$. Its extremal decomposition is the law of $h_l$, its
+conditional expectation onto the centre is the posterior, and the centres form a decreasing tower. The forward state localizes
+while the backward (sensitivity) state delocalizes with the power law $(\tau_l/\tau_L)^3$. Every claim is labelled as proved, proved
+at infinite width, conjectural or an analogy. The identities are checked by \texttt{scripts/verify\_stage12.py}.
+\end{abstract}
+\tableofcontents
+\section{The realisation in one page}
+\input{v0_summary}
+\section{Two tiers inside one layer}
+\input{v1_cycle}
+\section{The internal Eldan clock}
+\input{v2_clock}
+\section{The upper tier is hyperbolic}
+\input{v3_hyperbolic}
+\section{The lower tier: the gate gas and the wall-density law}
+\input{v4_gates}
+\section{Coupling the tiers: the memory as a stratified cumulant series}
+\input{v5_coupling}
+\section{Modular structure: KMS states, centres and the two clocks}
+\input{v6_modular}
+\section{What the realisation unlocks}
+\input{v7_synthesis}
+\section*{Verification}
+\input{v8_verify}
+\begin{thebibliography}{99}\small
+\bibitem{stage11} Stage 11 note: \emph{tilings, Bratteli diagrams and singular foliations} (this repository, \texttt{notes/stage11}).
+\bibitem{stage10} Stage 10 note: \emph{the selected Dirac operator} (\texttt{notes/stage10}).
+\bibitem{stage9} Stage 9 note: \emph{the mean of a random ReLU network as a central localization} (\texttt{notes/stage9}).
+\bibitem{Eldan} R.~Eldan, Thin shell implies spectral gap up to polylog via a stochastic localization scheme, GAFA 23 (2013) 532--569.
+\bibitem{Montanari} A.~Montanari, Sampling, diffusions, and stochastic localization, arXiv:2305.10690.
+\bibitem{CS} Y.~Cho, L.~K.~Saul, Kernel methods for deep learning, NeurIPS 2009.
+\bibitem{HN} B.~Hanin, M.~Nica, Products of many large random matrices and gradients in deep neural networks, Comm.~Math.~Phys.~376 (2020) 287--322.
+\bibitem{Szekeres} G.~Szekeres, Regular iteration of real and complex functions, Acta Math.~100 (1958) 203--258.
+\bibitem{Milnor} J.~Milnor, \emph{Dynamics in One Complex Variable}, 3rd ed., Princeton 2006 (\S10).
+\bibitem{Sudakov} V.~N.~Sudakov, Typical distributions of linear functionals in finite-dimensional spaces of high dimension, Soviet Math.~Dokl.~19 (1978) 1578--1582;
+P.~Diaconis, D.~Freedman, Asymptotics of graphical projection pursuit, Ann.~Statist.~12 (1984) 793--815.
+\bibitem{Amari} S.~Amari, H.~Nagaoka, \emph{Methods of Information Geometry}, AMS 2000; L.~T.~Skovgaard, A Riemannian geometry of the multivariate normal model, Scand.~J.~Statist.~11 (1984) 211--223.
+\bibitem{EP} L.~J.~Emrich, M.~R.~Piedmonte, A method for generating high-dimensional multivariate binary variates, Amer.~Statist.~45 (1991) 302--304;
+J.~H.~Macke, P.~Berens, A.~S.~Ecker, A.~S.~Tolias, M.~Bethge, Generating spike trains with specified correlation coefficients, Neural Comput.~21 (2009) 397--423.
+\bibitem{Mattis} D.~C.~Mattis, Solvable spin systems with random interactions, Phys.~Lett.~A 56 (1976) 421--422.
+\bibitem{Kikuchi} R.~Kikuchi, A theory of cooperative phenomena, Phys.~Rev.~81 (1951) 988--1003.
+\bibitem{McC} P.~McCullagh, \emph{Tensor Methods in Statistics}, Chapman and Hall 1987 (Edgeworth series in tensor notation).
+\bibitem{LP} A.~Lytova, L.~Pastur, Central limit theorem for linear eigenvalue statistics of random matrices with independent entries, Ann.~Probab.~37 (2009) 1778--1840 (the cumulant expansion).
+\bibitem{Stein} C.~Stein, Estimation of the mean of a multivariate normal distribution, Ann.~Statist.~9 (1981) 1135--1151.
+\bibitem{Renault} J.~Renault, \emph{A Groupoid Approach to C$^*$-Algebras}, LNM 793, Springer 1980.
+\bibitem{FM} J.~Feldman, C.~C.~Moore, Ergodic equivalence relations, cohomology, and von Neumann algebras I, II, Trans.~AMS 234 (1977) 289--359.
+\bibitem{BR} O.~Bratteli, D.~W.~Robinson, \emph{Operator Algebras and Quantum Statistical Mechanics 2}, 2nd ed., Springer 1997 (KMS states, quasi-free states).
+\bibitem{Yang} G.~Yang, Tensor programs II: neural tangent kernel for any architecture, arXiv:2006.14548 (gradient independence).
+\bibitem{PT} I.~F.~Putnam, R.~Trevi\~no, Bratteli diagrams, translation flows and their $C^*$-algebras, arXiv:2205.01537.
+\end{thebibliography}
+\end{document}

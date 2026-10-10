@@ -1,0 +1,102 @@
+\label{sec:coupling}
+\subsection{The Edgeworth series of a suffix}
+Fix a layer $l$ and let $S:\R^n\to\R$ be the suffix from $z_l$ to the output; it is piecewise linear and positively homogeneous. Let
+$\kappa_k$ be the cumulant tensors of $z_l$ and $\E_G$ the expectation under the quasi-free projection $N(\mu_l,C_l)$. The density of $z_l$
+is formally $\exp\big(\sum_{k\ge3}(-1)^k\kappa_k\cdot\partial^k/k!\big)$ applied to the Gaussian density. Integrating by parts gives the
+formal Edgeworth series (McCullagh)
+\[
+\E f=\E_GS+\tfrac16\langle\kappa_3,\E_G\nabla^3S\rangle+\tfrac1{24}\langle\kappa_4,\E_G\nabla^4S\rangle+\tfrac1{72}\langle\kappa_3^{\otimes2},\E_G\nabla^6S\rangle+\cdots
+\]
+The first term is the closure (upper tier composed with lower tier). The rest is the memory. Equivalently, by the cumulant expansion
+$\E[z_aG(z)]=\sum_k\frac1{k!}\kappa_{k+1}(a,\cdot)\,\E\nabla^kG$ (Lytova--Pastur), the lower-tier term of the Euler split is
+$\sum_a\Cov(J_a,z_a)=\sum_{k\ge1}\frac1{k!}\langle\kappa_{k+1},\E\nabla^{k+1}f\rangle$. Its $k=1$ term is the Stein (Gaussian) part of
+Proposition~\ref{prop:split}.
+
+For piecewise linear $S$ each $\nabla^kS$, $k\ge2$, is a distribution. Every derivative that hits a gate produces a $\delta$ (or a
+derivative of $\delta$) on that neuron's wall. So each term of $\nabla^kS$ is supported on an intersection of walls, a stratum of the
+wall arrangement, whose codimension is the number of distinct $\delta$ factors.
+
+\subsection{Which strata carry memory}
+\begin{proposition}[chain support; proved]\label{prop:chain}
+Every stratum that carries a term of $\nabla^kS$ is a \emph{chain}: a set of walls in which every wall except the deepest lies in the
+input cone of a deeper wall of the set. Strata spanned by walls of a single layer (normal crossings) carry no term. In particular, if
+the suffix is one layer with a linear readout, $S=\sum_bW_b\relu(z_b)$, then all mixed derivatives vanish and the memory is purely
+marginal: $\E f-\E_GS=\sum_bW_b(\E\relu(z_b)-\E_G\relu(z_b))$.
+\end{proposition}
+\begin{proof}
+A gate of neuron $a$ depends on $z_b$ only through the input cone of $a$. Differentiating $\sigma'(y_a)\prod(\cdots)$ in $z_b$ and $z_c$ for two
+neurons of one layer produces a $\delta$ on $z_b$ or $z_c$ only together with a derivative of a deeper gate that both feed. So the two
+shallow walls never appear without a deeper wall in their common output cone. Induct over layers.
+\end{proof}
+
+\begin{theorem}[stratified third order; proved]\label{thm:strata}
+Consider a two-layer suffix $S(z)=\sigma(y)$ with $y=\sum_bW_b\sigma(z_b)$, with $\sigma$ smooth and $g=W\odot\sigma'(z)$ the pulled-back deep normal,
+\[
+\langle\kappa,\nabla^3S\rangle=\underbrace{\sigma'''(y)\,\kappa(g,g,g)}_{\text{deep wall}}
++\underbrace{3\,\sigma''(y)\sum_cW_c\,\sigma''(z_c)\,\kappa(g,e_c,e_c)}_{\text{bent crossings}}
++\underbrace{\sigma'(y)\sum_cW_c\,\sigma'''(z_c)\,\kappa_{ccc}}_{\text{hub layer}}
+\]
+for every symmetric $3$-tensor $\kappa$. In the \textsc{ReLU} limit ($\sigma'=\1_{>0}$, $\sigma''=\delta$, $\sigma'''=\delta'$) the three terms live on:
+\begin{itemize}[leftmargin=*]
+\item the deep wall $\{y=0\}$ (codimension $1$), where they pair with the third cumulant of the linearized deep field $\langle g,z\rangle$;
+\item the bent crossings $\{y=0\}\cap\{z_c=0\}$ (codimension $2$), where they pair with the two-body cumulant
+$\kappa(\langle g,z\rangle,z_c,z_c)$ and are weighted by the bending $T_c=W_c$ of stage 11;
+\item the shallow walls $\{z_c=0\}$ (codimension $1$), where they pair with the one-body cumulants $\kappa_3(z_c)$ and are weighted by the deep
+gate.
+\end{itemize}
+\end{theorem}
+\begin{proof}
+Chain rule: $\partial_aS=\sigma'(y)g_a$; $\partial_a\partial_bS=\sigma''(y)g_ag_b+\delta_{ab}\sigma'(y)W_a\sigma''(z_a)$; one more derivative gives the three
+groups, and the middle one appears in three index positions. Contract with symmetric $\kappa$.
+\end{proof}
+\begin{center}\small
+\begin{tabular}{lcccccc}\toprule
+softplus $\beta$ & Hermite IBP & deep wall & bent crossings & hub layer & sum & difference (s.e.)\\\midrule
+$5$ & $0.1242$ & $-0.0159$ & $-0.1514$ & $0.2896$ & $0.1224$ & $0.0018\ (0.0028)$\\
+$20$ & $0.1677$ & $0.2421$ & $-0.5730$ & $0.5007$ & $0.1698$ & $-0.0022\ (0.0039)$\\\bottomrule
+\end{tabular}
+\end{center}
+The check uses a $3$-neuron Gaussian $z$ with a random symmetric $\kappa$ and $2\times10^7$ samples. The left side is
+$\E[S(z)\He_\kappa(z)]$ by Hermite integration by parts; the right side is the three strata. They agree within one standard error.
+The strata cancel substantially, so no single one dominates. A truncation that keeps one stratum and drops the others is not
+justified by this structure.
+
+\begin{corollary}[Kikuchi level $=$ codimension; proved at third order, by Proposition~\ref{prop:chain} in general]\label{cor:kikuchi}
+The cumulant that enters a stratum is the joint cumulant of exactly the fields whose walls meet there: deep and shallow neurons along a
+chain, with the deep field linearized. One-body cumulants live on codimension-one walls, two-body cumulants on codimension-two bent
+crossings, and $j$-body cumulants on codimension-$j$ chains. The cluster (Kikuchi) level of the memory equals the codimension of its
+border. The Gaussian closure is exact on normal-crossing arrangements. Two-body memory lives only where stage 11 found the non-abelian
+isotropy $\aff(1)$.
+\end{corollary}
+This places the stage-9 decomposition: its hub-diagonal pairing is the hub layer, its coherent (mean-field) memory is the deep-wall
+term, and the bent-crossing term is new.
+
+\subsection{Birth of the third cumulant}
+\begin{proposition}[birth law; proved at infinite width]\label{prop:birth}
+For $z\sim N(rs,s^2)$, $\kappa_3(\relu z)=s^3k_3(r)$ with $k_3=m_3-3m_1m_2+2m_1^3$, $m_3(r)=(r^3+3r)\Phi(r)+(r^2+2)\varphi(r)$, and
+$k_3(0)=c_3=(\pi+2)/(2\pi)^{3/2}=0.32646$. The mean-square source of one-body third cumulants at layer $l+1$ is
+\[
+B_l=\E_{N(0,t_l)}k_3(r)^2=0.2700\,\frac{\sin(\theta_l/2)}{\sqrt\pi}\big(1+O(\theta_l^2)\big)\approx\frac{0.718}{\tau_l}.
+\]
+\end{proposition}
+Measured against $0.2700/\sqrt{2\pi t}$: $0.0802/0.1077$, $0.0493/0.0539$, $0.0290/0.0299$, $0.0151/0.0152$ at $t=1,4,13,50$. By the
+harmonic budget the total one-body third-cumulant source over depth grows like $0.718\log\tau$, at the same rate for every $e$-fold of
+Fatou time.
+
+\begin{remark}[which route the measured skewness takes]
+Transported through $W_{l+1}$ with random signs, the one-body source alone gives a standardized skewness of order $n^{-1}$. That is far
+below the measured $0.095$ at $l=16$. The measured skewness must therefore come from many-body cumulants, and the natural candidate
+is the collective mode. If $h=(1+\delta)\tilde h$ with $\Var\delta=v\approx V/4$ independent of the bulk, then $z_a-\mu_a=\delta\mu_a+s\xi_a(1+\delta)$,
+which gives
+\[
+\kappa_3=6\mu_as^2v,\qquad\kappa_4=12s^4v+O(v^2),\qquad\gamma_1\approx6v\,r_a\approx\tfrac32V\,r_a,\qquad\gamma_2\approx12v\approx3V.
+\]
+So skewness should be linear in the field, and excess kurtosis flat in it, both proportional to $V$.
+\end{remark}
+\begin{proposition}[collective-mode cumulant law; measured]\label{prop:skewlaw}
+On the width-1024 network the marginal cumulants of the pre-activations follow this law in form. \input{tab_skewtext}
+\end{proposition}
+The law identifies the dominant finite-width source of marginal non-Gaussianity at $L=16$, $n=1024$. It is not the one-body birth at
+the walls. It is the radial diffusion along the kink geodesic, acting as a common random scale on the bulk noise. Because
+\textsc{ReLU} commutes with that scale, this part of the memory is a one-dimensional mixture rather than a genuine many-body effect
+(Section~\ref{sec:synthesis}, item 6).

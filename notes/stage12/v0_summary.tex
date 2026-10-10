@@ -1,0 +1,45 @@
+\label{sec:summary}
+\paragraph{1. One layer is a two-tier system (Section~\ref{sec:cycle}).}
+\begin{itemize}[leftmargin=*]
+\item The upper tier is the quasi-free projection $(\mu_l,C_l)$ of the pre-activations.
+\item The lower tier is the gate gas.
+\item The up map is the gating $h=Dz$ followed by $W_{l+1}$, and the closure is the second-order moment chain.
+\item The memory is the non-quasi-free part of the law.
+\item An exact Euler split, $\E f=\langle\E J_l,\mu_l\rangle+\sum_a\Cov(J_{l,a},z_{l,a})$, separates the tiers at every layer. At the input the whole
+mean is the lower-tier border functional of stage 11.
+\end{itemize}
+
+\paragraph{2. The network localizes itself (Section~\ref{sec:clock}).} Through every row of the next layer, the law of $h_l$ is a Gaussian
+ball whose standardized centre is $N(0,t_l)$ across rows, with $t_l=|m_l|^2/\Tr\Sigma_l\to\cos\theta_l/(1-\cos\theta_l)$. This is exactly what a
+first layer sees of Eldan's localized input at time $t_l$, with rows playing the role of localization paths. The clock obeys
+$t'=\E m_1^2/\E s_1^2$, which is the folding map in disguise, and in the Fatou chart it advances by one per layer. Depth is localization
+time: Szekeres' regular iteration gives fractional depth, and external localization to time $t$ is fractional depth
+$\Fa(\arccos\frac t{1+t})-\Fa(\pi/2)$. Localized states are Gibbs states of $|x|^2/2$ at $\beta=1+t$, so the network anneals itself on
+$T_l=1-\cos\theta_l\approx9\pi^2/2\tau_l^2$. At finite width a radial temperature $V_l/4$ (the log-normal norm) is added. It explains the
+measured clock at $l=16$ ($0.0779$ against $0.0705+0.0080$) and takes over at $\tau_*\approx2\sqrt n$.
+
+\paragraph{3. The upper tier is hyperbolic (Section~\ref{sec:hyper}).} With the Fisher--Rao metric the per-neuron laws form a hyperbolic
+plane. The field is the signed distance to the kink geodesic $\{\mu=0\}$, $r=\sqrt2\sinh(d/\sqrt2)$. Positive homogeneity is translation
+along that geodesic, and rectification is a skew product with base map $R=m_1/s_1>0$, which pushes every neuron to the positive side.
+Criticality means zero drift along the geodesic. The finite-width diffusion along it has across-input increments
+$\frac4n(\frac32-\frac{J_2(\theta)}{2\pi})\approx4\theta^2/n$, which are summable, so $nV_l\to44.6$ rather than growing like $5l$. The
+collective mode (trace share $\approx tV/4$) is this diffusion. It compresses the field law and skews the pre-activations: skewness is
+linear in the field ($R^2\approx0.9$) and the excess kurtosis is flat, both proportional to $V$.
+
+\paragraph{4. The lower tier is a gate gas with a wall-density law (Section~\ref{sec:gates}).} The gas is a dichotomized Gaussian with Ising
+couplings $c_{ab}\varphi_a\varphi_b/(p_aq_ap_bq_b)$, and its Mattis component stores the field as its pattern. Every wall-localized
+one-body quantity equals $(\int Q)\sin(\theta_l/2)/\sqrt\pi\approx2.66(\int Q)/\tau_l$. The lower tier is therefore active
+harmonically in Fatou time, and its accumulated activity grows like $\log\tau$. Hermite cancellation suppresses neuron averages of
+the marginal memory, but not its mean square.
+
+\paragraph{5. The memory is a cumulant series stratified by codimension (Section~\ref{sec:coupling}).} Each Edgeworth term is a sum over
+chain strata of the wall arrangement, and the cumulant on a stratum is the joint cumulant of the fields whose walls meet there.
+One-body cumulants live on walls and two-body cumulants on bent crossings: the Kikuchi level is the codimension. Normal crossings carry
+nothing, so the Gaussian closure is exact for them, and pair memory sits exactly at stage 11's $\aff(1)$ points. The third-order
+formula is checked to one standard error, and the strata cancel. Third cumulants are born at rate $0.718/\tau$.
+
+\paragraph{6. Modular structure (Section~\ref{sec:modular}).} The Gaussian state is KMS on the fibre relation of $h_l$. Its extremal
+decomposition is the law of the representation, the conditional expectation onto the centre is the posterior, and the centres
+$L^\infty(h_l)$ form a decreasing tower. Coarse-graining the centre and cooling are interchangeable on the next layer. The forward state
+localizes while the backward state delocalizes, as $\prod(1-\theta_{k-1}/\pi)\approx(\tau_l/\tau_L)^3$; this is confirmed on the width-1024
+network near the output and is about $20\%$ faster near the input.

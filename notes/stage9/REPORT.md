@@ -261,3 +261,41 @@ Helffer–Nourrigat cone, arXiv:2509.01133). Checks: `scripts/verify_stage11.py`
   GM: moment chains = Fock truncations; depth -> commutative quotient (hbar_l ~ theta_{l-1}^2/2); u = kernel mean embedding, estimator
   error = MMD in the depth-L feature space.
 - Mean = border functional on codim-1 faces = supertrace pairing of the wall flip with the normal derivative (checked 8 digits).
+
+## 11. Stage 12: the network as its own two-tier system (`notes/stage12/ncg_mlp_stage12.pdf`, 20 pp)
+
+Theory, with quick identity checks only: `scripts/verify_stage12.py` -> `notes/stage12/verify_stage12.txt` (all pass; one He
+network, n=1024, L=16, 2e5 inputs, plus quadrature and small Monte Carlo identities).
+- One layer is a two-tier system. Upper tier = quasi-free projection (mu_l, C_l) of z_l; lower tier = gate gas; up map = gating
+  then W; closure = the second-order moment chain; memory = non-quasi-free remainder. Exact Euler split at every layer:
+  E f = <E J_l, mu_l> + sum_a Cov(J_la, z_la); at l=0 the mean is pure lower tier (stage-11 border formula).
+- Self-localization (proved at infinite width): through every row of layer l+1 the law of h_l is a ball whose standardized centre
+  is N(0, t_l) across rows, t_l = |m_l|^2/Tr Sigma_l -> cos theta_l/(1 - cos theta_l) = Eldan time with input overlap theta_l.
+  Rows = localization paths. Clock recursion t' = E m1^2 / E s1^2 = folding map. Lemma: E_{N(0,t)} Phi(r)Phi(-r) = arccos(t/(1+t))/2pi.
+  Measured at l=16: t 11.84 vs 13.18, gate variance 0.0614 vs 0.0629, P(|r|<1) 0.226 vs 0.227.
+- Depth = localization time: in the Fatou chart the clock advances by exactly 1 per layer; Szekeres' regular iteration gives
+  fractional depth; Eldan time t = fractional depth Phi_F(arccos(t/(1+t))) - Phi_F(pi/2). Stage-11 collapse seen from inside.
+- Cooling: gamma_{t,y} is the Gibbs state of |x|^2/2 at beta = 1+t; the network anneals itself on T_l = 1 - cos theta_l ~ 9pi^2/2tau^2.
+  At finite width T_l ~ (1 - cos theta_l) + V_l/4 (angular + radial; V = across-input Var log|h|^2). l=16: 0.0779 measured vs
+  0.0705 + 0.0080 -> 0.0779. Crossover tau* ~ 2.0 sqrt(n) (= 64 at n=1024; the competition nets are at tau_16 = 23.8).
+- Hyperbolic upper tier: Fisher-Rao plane (curvature -1/2); field r = signed distance to the kink geodesic {mu=0},
+  r = sqrt2 sinh(d/sqrt2); homogeneity = translation along it; rectification = skew product, base map R = m1/s1 > 0.
+  Across-input log-norm increments (4/n)(3/2 - J2(theta)/2pi) ~ 4 theta^2/n are summable: n V_l -> 44.6 (30.8 at l=16), not 2+5l.
+  Collective mode = this diffusion (trace share ~ tV/4: 0.093 vs 0.086 at l=16); stage 9's 47% is its Frobenius share.
+- NEW (measured): the dominant source of marginal non-Gaussianity of deep pre-activations at width 1024 is the collective mode,
+  not the one-body birth at walls (which is O(1/n)). Skewness gamma1 = eta * 1.5 V_{l-1} * r (R^2 0.86-0.91, eta = 0.72, 0.72, 0.71
+  at l = 8, 12, 16); excess kurtosis flat in r at ~0.6 * 3V. The same eta fixes the field-compression prediction (10.09 vs 10.14).
+  Since ReLU commutes with the radial scale, this part of the memory is a one-dimensional mixture, not a many-body effect.
+- Gate gas: dichotomized Gaussian; Ising couplings J_ab = c_ab phi_a phi_b / (p_a q_a p_b q_b); Mattis component with pattern
+  r phi(r)/(pq) ~ r|r| (the field itself). Wall-density law: any wall-localized one-body Q averages to (int Q) sin(theta/2)/sqrt(pi)
+  ~ 2.66 (int Q)/tau -> harmonic in Fatou time, total ~ log tau (memory spread log-uniformly over depth). Hermite cancellation:
+  neuron averages of marginal memory are suppressed by powers of T, mean squares are not (MSE sees it).
+- Memory = Edgeworth series stratified by codimension (proved): each term is supported on chain strata; the cumulant on a stratum is
+  the joint cumulant of the fields whose walls meet there (Kikuchi level = codimension). Normal crossings carry nothing; pair memory
+  lives only on bent crossings (stage 11's aff(1) points). Third-order formula checked (softplus, difference 0.0018 +- 0.0028 and
+  -0.0022 +- 0.0039); strata cancel strongly, so all three must be kept together. Birth of third cumulants ~ 0.718/tau.
+- Modular: the Gaussian state is KMS on the fibre relation of h_l; extremal decomposition = law of h_l; conditional expectation onto
+  the centre = posterior; centres L^inf(h_l) form a decreasing tower. Forward state localizes, backward state delocalizes as
+  prod(1 - theta_{k-1}/pi) ~ (tau_l/tau_L)^3 (measured 0.0108 vs 0.0133 at the input, 0.5571 vs 0.5589 at l=12).
+- Open: derive eta ~ 0.71; size of the bent-crossing pair term vs tau; radial-angular factorization at depth (integrate the radial
+  mixture exactly, run the closure on the angular part); a modular (negentropy) bound on the closure error.
