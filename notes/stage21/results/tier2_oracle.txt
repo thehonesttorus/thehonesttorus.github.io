@@ -1,0 +1,4 @@
+net 0: final err (coherent part): none: 2.01e-03 (1.58e-03) | a: 1.31e-03 (2.09e-04) | ab: 1.44e-03 (2.95e-04) | abc: 1.49e-03 (3.54e-04)
+   closure's own collective-variance error mu_hat K mu_hat / Var c - 1 by layer: -0.001 -0.261 -0.330 -0.357 -0.384 -0.394 -0.411 -0.422 -0.414 -0.415 -0.408 -0.413 -0.415 -0.425 -0.430 -0.450
+net 1: final err (coherent part): none: 2.17e-03 (1.80e-03) | a: 1.32e-03 (1.98e-04) | ab: 1.33e-03 (2.64e-04) | abc: 1.35e-03 (3.01e-04)
+   closure's own collective-variance error mu_hat K mu_hat / Var c - 1 by layer: -0.001 -0.254 -0.316 -0.363 -0.373 -0.397 -0.417 -0.427 -0.433 -0.417 -0.430 -0.441 -0.449 -0.449 -0.447 -0.431

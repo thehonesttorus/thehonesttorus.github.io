@@ -1,0 +1,157 @@
+\section{Graded mixing and localisation in depth}\label{sec:graded}
+Call a level-$k$ tensor \emph{incoherent} if it is orthogonal to every tensor containing a factor
+$\hat\mu_{l-1}$, the collective direction.
+
+\begin{theorem}[Graded spectral gap]\label{thm:graded}
+\begin{enumerate}[label=(\alph*),leftmargin=1.6em,itemsep=1pt,topsep=1pt]
+\item \emph{Closed form.} With $\alpha_{l,j}\sim N(0,\rho_{l-1}/(1-\rho_{l-1}))$ across neurons along the arc-cosine
+trajectory,
+\[
+g_l:=2\,\E\,\Phi(\alpha_l)^2=\tfrac12+\tfrac1\pi\arcsin\rho_{l-1}=f'(\rho_{l-1}),
+\]
+where $f(\rho)=(\sqrt{1-\rho^2}+(\pi-\arccos\rho)\rho)/\pi$ is the ReLU correlation map.
+\item \emph{Level $k$.} For incoherent rank-one $T=v^{\otimes k}$ with $W_l$ independent of $T$,
+\[
+\E\big\|K^{(k)}\circ(W_l\T)^{\otimes k}T\big\|^2=g_l^k\,\|T\|^2\,\big(1+O(k^2/n)\big),
+\]
+and by linearity the same holds for incoherent tensors whose rank-one parts are mutually orthogonal.
+\item \emph{Neutral mode.} The scale component, the trace in Proposition~\ref{prop:tp} and the cocycle in
+stage~18, has multiplier exactly $1$.
+\end{enumerate}
+\end{theorem}
+\begin{proof}
+(a) $\E\Phi(\alpha)^2=\Pr(\gamma_1\le\alpha,\gamma_2\le\alpha)$ for independent standard $\gamma_1,\gamma_2$ and $\alpha$. The pair
+$(\gamma_1-\alpha,\gamma_2-\alpha)$ is Gaussian with correlation $v/(1+v)=\rho$, where $v=\rho/(1-\rho)$. The orthant probability is
+$\tfrac14+\arcsin\rho/(2\pi)$. Also $f'(\rho)=1-\arccos\rho/\pi$.
+
+(b) For distinct indices $K^{(k)}=\Phi^{\otimes k}(1+O(n^{-1/2}))$, because cross-gate correlations are random of size
+$O(n^{-1/2})$, and coincident indices are a fraction $O(k^2/n)$. So the squared norm is
+$\|AW\T v\|^{2k}$. Here $\E\|AW\T v\|^2=g\|v\|^2$ (stage~17, Thm.~3.1), and $\|AW\T v\|^2$ concentrates with relative variance
+$O(1/n)$.
+
+(c) Proposition~\ref{prop:tp} and stage~18, Prop.~4.1.
+\end{proof}
+
+\noindent\textbf{Values along the trajectory} ($L=16$):
+\begin{center}\small
+\begin{tabular}{@{}lcccccccccccccccc@{}}\toprule
+$l$ & 1&2&3&4&5&6&7&8&9&10&11&12&13&14&15&16\\\midrule
+$g_l$ & .500&.603&.664&.707&.738&.763&.783&.800&.814&.826&.837&.846&.854&.862&.868&.874\\\bottomrule
+\end{tabular}
+\end{center}
+A Monte Carlo check at $n=512$ and $\rho=0.8$ gives $\E\|AW\T v\|^{2k}=0.794$, $0.627$, $0.540$ for
+$k=1,2,3$, against $g^k=0.795$, $0.632$, $0.503$. The deviation at $k=3$ is the $O(k^2/n)$ term.
+
+\begin{corollary}[Localisation radii; a depth Lieb--Robinson bound]\label{cor:loc}
+Incoherent level-$k$ information born at layer $b$ reaches the final readout with ensemble amplitude
+$\prod_{b<l\le L}g_l^{k/2}$. To suppress it by a factor $\eta$, one must keep the last $\ell_k(\eta)$ layers:
+\begin{center}\small
+\begin{tabular}{@{}lcccc@{}}\toprule
+ & $\eta=0.1$ & $0.05$ & $0.02$ & $0.01$\\\midrule
+$k=1$ & $>16$ & $>16$ & $>16$ & $>16$\\
+$k=2$ & $12$ & $14$ & $16$ & $>16$\\
+$k=3$ & $9$ & $11$ & $13$ & $14$\\
+$k=4$ & $8$ & $9$ & $11$ & $12$\\\bottomrule
+\end{tabular}
+\end{center}
+\end{corollary}
+
+The mean sector ($k=1$) remembers the whole network: the amplitude from layer~$2$ is still $0.21$. Higher
+levels forget geometrically faster. This matches the Kikuchi intuition that higher levels cost more
+dimension but carry a larger energy scale, here a larger depth gap $1-g^k$. Criticality closes all gaps at
+depth at once, since $g\to1$.
+
+\section{Quantum walk, sparsification, and traces in this object}\label{sec:qw}
+\begin{proposition}[Szegedy quantisation of the weight-space walk]\label{prop:szegedy}
+The weight-space Ornstein--Uhlenbeck operator $P_t$ of stage~19 is self-adjoint with eigenvalue $e^{-rt}$ on Wick
+level $r$. Factor it as $P_t=RR^*$ through the bipartite incidence of $(w,w^{t/2})$; the singular values of
+$R$ are $e^{-rt/2}$. The reflection walk $(2\mathsf P-I)(2\mathsf Q-I)$ then has eigenphases $\pm2\arccos(e^{-rt/2})$ on level
+$r$. The phase gap at level~$1$ is $2\arccos e^{-t/2}=2\sqrt t\,(1+O(t))$, against the classical gap $1-e^{-t}=t+O(t^2)$.
+\end{proposition}
+\begin{proof}
+Two-projection geometry: on each singular pair the projections meet at angle $\arccos\sigma$, so the product of
+reflections rotates by twice that angle. The singular values follow from Mehler's formula, since $P_{t/2}$
+acts by $e^{-rt/2}$.
+\end{proof}
+
+Phase estimation would therefore resolve the Wick level, which is the ledger order, with
+$O(t^{-1/2})$ steps instead of $O(t^{-1})$. This needs coherent access to the readout. We record it as the exact
+quantum-walk structure of the object, and claim no classical gain.
+
+\begin{proposition}[Lifting a spectral approximation to every level, uniformly over neurons]\label{prop:lift}
+\begin{enumerate}[label=(\alph*),leftmargin=1.6em,itemsep=1pt,topsep=1pt]
+\item If $(1-\varepsilon)C\preceq\tilde C\preceq(1+\varepsilon)C$, then for all $r$ at once, on $\mathrm{Sym}^r$,
+\[
+(1-\varepsilon)^rC^{\otimes r}\preceq\tilde C^{\otimes r}\preceq(1+\varepsilon)^rC^{\otimes r}.
+\]
+\item For every final neuron simultaneously,
+\[
+|G(m_k,w_k\T\tilde Cw_k)-G(m_k,w_k\T Cw_k)|\le\tfrac12\varepsilon\,\sigma_k\,\varphi(\alpha_k)(1+O(\varepsilon)).
+\]
+\end{enumerate}
+\end{proposition}
+\begin{proof}
+(a) Tensor powers of positive operators preserve the Loewner order:
+$A\preceq B\Rightarrow A^{\otimes r}\preceq B^{\otimes r}$ for $0\preceq A$, by induction using $A\otimes A\preceq A\otimes B\preceq B\otimes B$. Then
+restrict to symmetric tensors.
+
+(b) The hypothesis holds for every vector, so it holds for every $w_k$. Then use
+$\partial_{\sigma^2}G=\varphi(\alpha)/(2\sigma)$.
+\end{proof}
+
+In this Gaussian (bosonic) object, lifting to all levels comes free by functoriality. That is the
+counterpart of what a quantum-cut sparsifier must prove for hard-core Kikuchi levels. The obstacle is the
+tolerance, which depends on the tier:
+\begin{itemize}[leftmargin=1.2em,itemsep=0pt,topsep=1pt]
+\item \emph{Per-neuron sector.} Part~(b) at the target needs $\varepsilon\lesssim2.4\times10^{-4}/\varphi(\alpha_k)$, so dense
+computation is required.
+\item \emph{Collective sector.} Its effect on $y$ is damped by $\kappa_2/8\approx3.7\times10^{-3}$, so a relative error
+of about $3\%$ suffices. Sparse or randomised linear algebra is enough there.
+\end{itemize}
+
+\begin{theorem}[Orthogonal-probe trace estimation; exact]\label{thm:hutch}
+Let $A$ be symmetric $n\times n$, and let $q_1,\dots,q_m$ be the first $m$ columns of a Haar orthogonal matrix. Put
+$\hat t=\frac nm\sum_{i\le m}q_i\T Aq_i$. Then $\E\hat t=\operatorname{tr}A$ and
+\[
+\mathrm{Var}\,\hat t=\frac{2n(n-m)}{m(n-1)(n+2)}\Big(\|A\|_F^2-\frac{(\operatorname{tr}A)^2}n\Big).
+\]
+In particular $\hat t=\operatorname{tr}A$ exactly when $m=n$.
+\end{theorem}
+\begin{proof}
+For a uniform unit vector, $\E(q\T Aq)^2=((\operatorname{tr}A)^2+2\|A\|_F^2)/(n(n+2))$, so
+$V:=\mathrm{Var}(q\T Aq)=2(\|A\|_F^2-(\operatorname{tr}A)^2/n)/(n(n+2))$. Summing over a full orthonormal basis gives exactly
+$\operatorname{tr}A$, so $nV+n(n-1)\,\mathrm{Cov}=0$, that is $\mathrm{Cov}=-V/(n-1)$. Then
+$\mathrm{Var}\sum_{i\le m}=mV(n-m)/(n-1)$; multiply by $n^2/m^2$.
+\end{proof}
+
+This is the trace-theoretic reason that stage~19's orthogonal blocks cancel the degree-$2$ harmonic: a
+degree-$2$ statistic of the input is a traceless quadratic form, and a full frame computes traces exactly.
+Collective sampling is random-probe trace estimation, the classical shadow of canonical (quantum)
+typicality.
+
+\begin{proposition}[The means as diagonals and traces]\label{prop:side}
+At the order of stage~18's collective form (Thm.~4.4), the final means are
+\[
+y=\mathcal J\big(\,\mathbb E_D[\mathcal X_1],\dots,\mathbb E_D[\mathcal X_p];\ \tau(\mathcal O_1\mathcal S_0),\dots,\tau(\mathcal O_q\mathcal S_0)\big),
+\]
+where:
+\begin{itemize}[leftmargin=1.2em,itemsep=0pt,topsep=1pt]
+\item $\mathbb E_D$ is the trace-preserving conditional expectation onto the diagonal algebra of the $n$ output
+slots;
+\item $\mathcal X_1=W_L\T\mu\mu\T W_L$, $\mathcal X_2=W_L\T S^u_{L-1}W_L$, and the cubic and quartic readouts are Schr\"odinger-evolved
+objects read by $W_L$;
+\item $\tau(\mathcal O_j\mathcal S_0)$ are traces, against the input state $\mathcal S_0=I$, of a few Heisenberg-evolved observables
+$\mathcal O_j$: the collective cumulants (stage~19, Thm.~3.1);
+\item $\mathcal J$ is the fixed jet map: the collective mixture of $F$.
+\end{itemize}
+\end{proposition}
+\begin{proof}
+Every argument of stage~18's Theorem~4.4 is of one of these two kinds. The per-neuron arguments
+$m_k,\tau_k^2,\kappa_{3,k},\kappa_{4,k}$ are diagonal entries of operators or of tensors read along $w_k$. The collective
+inputs are second-order functionals of the input law: by the carried-vector recursion they are traces of
+backward-transported observables against $\mathcal S_0$.
+\end{proof}
+
+So the means are a by-product of two NCG operations: evolve one state forward, which is dense and gives the
+per-neuron diagonals, and a few observables backward, which is cheap and gives the traces. Then apply one
+fixed jet map.

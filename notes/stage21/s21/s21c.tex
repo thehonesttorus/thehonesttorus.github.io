@@ -1,0 +1,99 @@
+\section{The adaptive two-tier system}\label{sec:adaptive}
+\subsection{Pass 1: deterministic, from the weights alone}
+\begin{enumerate}[label=\arabic*.,leftmargin=1.6em,itemsep=1pt,topsep=1pt]
+\item \emph{Forward state (Schr\"odinger).} Run the Gaussian-part sweep for $m_l$ and $S^u_l$, and record each
+layer's cut marginals: the level-$1$ marginals $\Phi(\alpha_{l,j})$ and the level-$2$ kernel through the
+bivariate orthant law. This gives the channel data $(W_l,K_l)$.
+\item \emph{Spectral diagnostics.}
+\begin{itemize}[leftmargin=1.2em,itemsep=0pt,topsep=1pt]
+\item the gaps $g_l=2\overline{\Phi(\alpha_l)^2}$, computed from the realised $\alpha_{l,j}$ rather than the trajectory;
+\item the localisation radii $\ell_k(\eta)$ (Cor.~\ref{cor:loc});
+\item the flatness defects $\delta_l=\gamma_l\T\Pi_\perp(F_l-I)\Pi_\perp\gamma_l/\|\gamma_l\|^2$ along the collective gradients $\gamma_l$
+(written $g_l$ in stage~18, Thm.~4.2; renamed here to avoid a clash with the gap);
+\item the undecided cut $\mathcal C_\theta=\{k:\varphi(\alpha_{L,k})\ge\theta\}$.
+\end{itemize}
+\item \emph{Backward observables (Heisenberg).} Run the carried-vector recursion for the collective traces,
+and form the coherent function $\Ybar(a)$.
+\item \emph{Per-neuron diagonals.} Compute $\mathbb E_D[W_L\T S^u_{L-1}W_L]$ and the cubic readout, with history
+restricted to the window $[L-\ell_3,L]$ by backward composition.
+\item \emph{First output.} Assemble $\hat y^{(1)}=\mathcal J(\cdots)$ (Prop.~\ref{prop:side}).
+\end{enumerate}
+
+\subsection{What the first output can reveal: four exact diagnostics}
+\begin{proposition}[Wick-orthogonality test]\label{prop:wo}
+Let $\eta_k=y_k-\Ybar(a_k)$ be the true incoherent residuals. For every function $\psi$,
+$\E[\eta_k\psi(a_k)\mid\mathcal F]=0$. Since the $w_k$ are i.i.d., the statistic $T_\psi=\frac1n\sum_k\eta_k\psi(a_k)$ has mean zero and
+variance $\mathrm{Var}(\eta\psi)/n$.
+\end{proposition}
+\begin{proof}
+Stage~18, Theorem~2.1(a): $\E[\eta_k\mid a_k,\mathcal F]=0$. Independence over $k$ gives the variance.
+\end{proof}
+
+Apply $T_\psi$ to the first output's residuals $\hat y^{(1)}_k-\Ybar(a_k)$, with $\psi\in\{1,\mathrm{He}_1(a/s),\mathrm{He}_2(a/s)\}$. A value
+many standard errors from zero means coherent content has leaked into the per-neuron corrections, which is
+double counting between the tiers. The $n$ output neurons are $n$ independent probes of one function $h_Z$,
+so this ``uniqueness'' property can be checked from the output itself.
+
+The other three diagnostics:
+\begin{itemize}[leftmargin=1.2em,itemsep=1pt,topsep=1pt]
+\item[(D2)] \emph{Flatness flags.} Layers with large $\delta_l$ are where the leading-order collective description
+is least accurate. They get the exact Wick-order-$2$ couplings $q_l$ and $\rho_l$.
+\item[(D3)] \emph{Collective cumulants.} This is stage~19's pass~2. One orthogonal block, read as trace
+estimation (Thm.~\ref{thm:hutch}), gives $\hat\kappa_2$ and $\hat\kappa_3$ per layer, with test statistics $D_l$.
+\item[(D4)] \emph{Cut-localised orders.} By stage~20, Theorem~2.2, neuron $k$'s order-$r$ correction is at most
+$\sigma_k\varphi(\alpha_k)|\mathrm{He}_{r-2}(\alpha_k)||c_{r,k}|$. Only neurons in the undecided cut $\mathcal C_\theta$ need orders beyond $G$.
+\end{itemize}
+
+\subsection{Pass 2: dynamic, restarting from a chosen intermediate distribution}
+\begin{theorem}[Tier-reduced restart]\label{thm:restart}
+Fix a layer $b^*$. Replace the law at $b^*$ by the \emph{tier-reduced state}: the exact Gaussian part
+$(m_{b^*},S^u_{b^*})$, together with the collective law (cocycle cumulants and angular spread). In other
+words, erase the incoherent cumulants of order $\ge3$ born before $b^*$. Then propagate exactly from $b^*$ to
+$L$, with births, cherries and readouts. At leading order, the per-neuron error from the erased history has
+ensemble mean square
+\[
+\mathcal E(b^*)=\Big(\frac{a_3}{6}\Big)^2\sum_{b<b^*}\beta_b^2\prod_{b<l<L}g_l^3,\qquad \beta_b^2=15\,s^6\sum_iB_{b,i}^2 .
+\]
+Here $B_{b,i}$ are the diagonal and cherry birth amplitudes at layer $b$, computed in pass~1 at cost $O(n)$ per
+layer.
+\end{theorem}
+\begin{proof}
+The erased part of neuron $k$'s cubic readout is $\sum_{b<b^*}\sum_i(w_k\T T_{L-1\leftarrow b}e_i)^3B_{b,i}$. By stage~14's
+coherence dichotomy (path orthogonality), contributions from different birth layers are uncorrelated over
+$W_L$ at leading order. Within a layer, $\E(w\T t)^6=15s^6\|t\|^6$, and
+$\|T_{L-1\leftarrow b}e_i\|^6=\prod_{b<l<L}g_l^3\,(1+O(n^{-1/2}))$ by Theorem~\ref{thm:graded} with $k=3$, since $e_i$ is incoherent.
+Multiply by the readout coefficient $a_3/6$ of stage~17's Theorem~1.1.
+\end{proof}
+
+This is the precise form of ``feeding in a given distribution at an intermediate layer, chosen from the
+first attempt''. The layer is $b^*=\max\{b:\mathcal E(b)\le\theta^2\cdot\text{target}^2\}$, read off from pass-1 quantities. The
+distribution is the tier-reduced state, which provably carries everything older that still matters.
+Everything after $b^*$ is recomputed exactly.
+
+\noindent\textbf{Iteration.}
+\begin{enumerate}[label=\roman*.,leftmargin=1.6em,itemsep=0pt,topsep=1pt]
+\item Restart at $b^*$, and recompute the window history ($2(L-b^*)$ products).
+\item Insert the exact couplings at the flagged layers (D2) and the sampled collective cumulants (D3).
+\item Add orders $r\ge3$ only on $\mathcal C_\theta$ (D4).
+\item Re-test (Prop.~\ref{prop:wo}, $D_l$). Each refinement adds an orthogonal Wick component, so by stage~18,
+Theorem~2.1(c), the ledger is non-increasing. Stop when every diagnostic passes and the ledger is below
+target.
+\end{enumerate}
+The cost is pass~1 (a few hundred products), plus a window of $2\ell_3\approx20$--$28$ products, plus $O(n^3)$ per flagged
+layer, plus about $1.5\%$ of the budget for one probe block.
+
+\section*{Status}
+\noindent\textbf{Exact:} Theorems~\ref{thm:price} and \ref{thm:hutch}; Propositions~\ref{prop:kraus}, \ref{prop:tp},
+\ref{prop:szegedy}, \ref{prop:lift} and \ref{prop:wo}; Theorem~\ref{thm:graded}(a) and (c).
+
+\noindent\textbf{Leading order:} Theorem~\ref{thm:graded}(b), checked by Monte Carlo; Corollary~\ref{cor:loc};
+Proposition~\ref{prop:side}; Theorem~\ref{thm:restart}.
+
+\noindent\textbf{Open:}
+\begin{itemize}[leftmargin=1.2em,itemsep=0pt,topsep=1pt]
+\item the joint-cut correction, meaning the difference between the true multi-layer cut law and the
+product of marginal channels, at the next order;
+\item spectral independence for the cut law, which would give the register walk its own gap;
+\item the general-depth Onsager pairing;
+\item validation at $n=1024$ when experiments resume.
+\end{itemize}

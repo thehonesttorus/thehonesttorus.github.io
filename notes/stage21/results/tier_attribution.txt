@@ -1,0 +1,10 @@
+net 0: closure E c rel err +1.63e-03, E|h|^2 rel err -4.53e-04 | final err 2.01e-03 (coherent 1.58e-03) | coherent tier replaced: 1.72e-02 | two-scalar repair: 2.02e-03 (coherent 1.53e-03)
+net 1: closure E c rel err +1.79e-03, E|h|^2 rel err +2.19e-04 | final err 2.17e-03 (coherent 1.80e-03) | coherent tier replaced: 2.41e-02 | two-scalar repair: 2.02e-03 (coherent 1.49e-03)
+Traceback (most recent call last):
+  File "/home/user/thehonesttorus.github.io/scripts/s21_tier_attrib.py", line 22, in <module>
+    W = [np.asarray(w, dtype=np.float64) for w in np.load(f"{D}/W_off{net}.npy")]
+                                                  ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.13/dist-packages/numpy/lib/_npyio_impl.py", line 454, in load
+    fid = stack.enter_context(open(os.fspath(file), "rb"))
+                              ~~~~^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/tmp/claude-0/-home-user-thehonesttorus-github-io/9523ef6a-ff73-5ab2-8be3-275df2b5fcc6/scratchpad/data/W_off2.npy'

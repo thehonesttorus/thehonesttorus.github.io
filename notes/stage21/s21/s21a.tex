@@ -1,0 +1,119 @@
+\begin{abstract}
+We identify the natural operator object behind the final means and prove its walk-theoretic properties.
+Then we use them to build the adaptive system proposed earlier: a deterministic first pass, diagnostics
+read from its output, and a dynamic second pass that feeds a chosen distribution in at an intermediate
+layer.
+\begin{enumerate}[label=(\arabic*),leftmargin=1.6em,itemsep=1pt,topsep=1pt]
+\item \emph{The gate channel} (Thm.~\ref{thm:price}). The tangent of the second-moment transport is exactly
+the completely positive map
+\[
+\Phi_l(X)=\E_x\big[D_l(x)W_l\T XW_lD_l(x)\big].
+\]
+Its Kraus operators are the realised gated layer maps. Its Stinespring register is the space of
+\emph{cuts}, the active subsets $S\subseteq[n]$: this is the Kikuchi subset algebra. The channel sees only the
+level-$2$ marginal of the cut law; the level-$k$ cumulant channel sees the level-$k$ marginals; the final
+means read level~$1$ weighted by $z$.
+\item \emph{Trace preservation is flatness} (Prop.~\ref{prop:tp}). $\operatorname{Tr}\Phi_l(X)=\operatorname{Tr}(F_lX)$ with
+$F_l=\sum_j\Phi(\alpha_j)w_jw_j\T$. On incoherent directions $\E F_l=I$ at He criticality, and $F_l-I$ is the frame
+autocorrelation of stage~18's Rudin--Shapiro decomposition.
+\item \emph{Graded mixing and localisation} (Thm.~\ref{thm:graded}). Per layer, incoherent level-$k$
+information contracts by $g_l^k$, where
+\[
+g_l=f'(\rho_{l-1})=\tfrac12+\tfrac1\pi\arcsin\rho_{l-1}
+\]
+is the derivative of the arc-cosine correlation map. The coherent scale mode is neutral. Level~$3$ is
+localised to the last $9$--$14$ layers; level~$1$ is not localised within $16$.
+\item \emph{Quantum walk, sparsification, traces} (\S\ref{sec:qw}).
+\begin{itemize}[leftmargin=1.2em,itemsep=0pt,topsep=1pt]
+\item The Szegedy quantisation of the weight-space walk has phase gap about $2\sqrt t$, against the classical
+gap $t$.
+\item One-particle spectral approximations lift to all Wick levels, with a bound uniform over all neurons.
+\item The collective sector tolerates about $270$ times the per-neuron error, so randomised trace estimation
+suffices there. Orthogonal probes have an exact variance formula and are exact for quadratic forms.
+\end{itemize}
+\item \emph{The adaptive two-tier system} (\S\ref{sec:adaptive}). Pass~1 computes, from the weights alone,
+one forward state, a few backward observables, and the spectral diagnostics $g_l$, flatness defects and
+undecided cuts. The means drop out as diagonals and traces of these. Pass~2 restarts at the layer the
+localisation theorem selects, feeding in a provably sufficient tier-reduced state. It refines only where
+the diagnostics point.
+\end{enumerate}
+\end{abstract}
+\maketitle
+
+\section{The fundamental object: the gate channel and its two tiers}
+Fix the Gaussian-part trajectory: for each layer, $z_l\sim N(m_l,\Sigma_l)$ with $m_l=W_l\T\mu_{l-1}$. Its gate
+pattern is $D_l=\mathrm{diag}(\mathbf 1(z_{l,i}>0))$, with cut $S_l=\{i:z_{l,i}>0\}$ and law $p_l(S)$. Write
+$S^u_l=\E[u_lu_l\T]$ for the second-moment operator.
+
+\begin{theorem}[Price channel; exact]\label{thm:price}
+Let $z\sim N(m,\Sigma)$ and $u=\relu(z)$. At fixed $m$, the derivative of $S^u=\E[uu\T]$ with respect to
+$S^z=\Sigma+mm\T$ is the Schur multiplier with the cut co-activation kernel $K_{ij}=\Pr(i,j\in S)$:
+\[
+dS^u=K\circ dS^z=\E\big[D\,dS^z\,D\big].
+\]
+Consequently, the tangent of the layer map $S^u_{l-1}\mapsto S^u_l$ at fixed means is
+$\Phi_l(X)=\E[D_lW_l\T XW_lD_l]$.
+\end{theorem}
+\begin{proof}
+For $i\neq j$, Price's theorem gives $\partial\E[u_iu_j]/\partial\Sigma_{ij}=\E[\mathbf 1(z_i>0)\mathbf 1(z_j>0)]=K_{ij}$.
+For $i=j$, the heat equation $\partial_{\Sigma_{ii}}\E g(z_i)=\tfrac12\E g''(z_i)$ with $g=t_+^2$ and $g''=2\mathbf 1(t>0)$
+gives $\Pr(z_i>0)=K_{ii}$. At fixed $m$, $dS^z=d\Sigma$. Next, $(K\circ X)_{ij}=\E[d_iX_{ij}d_j]=\E[DXD]_{ij}$. Finally,
+$S^z_l=W_l\T S^u_{l-1}W_l$ exactly.
+\end{proof}
+
+\begin{proposition}[Kraus form, Stinespring register, Kikuchi marginals]\label{prop:kraus}
+$\Phi_l$ is completely positive, with Kraus decomposition $\Phi_l(X)=\sum_Sp_l(S)\,T_SXT_S\T$ and $T_S=D_SW_l\T$. Its
+Stinespring isometry is
+\[
+V_l=\sum_S\sqrt{p_l(S)}\;T_S\otimes|S\rangle:\ \R^n\to\R^n\otimes\ell^2(2^{[n]}),\qquad\Phi_l(X)=\operatorname{Tr}_{\rm reg}(V_lXV_l^*).
+\]
+The register is the Kikuchi subset space, and tracing it out is ``forgetting the cut''. Moreover:
+\begin{itemize}[leftmargin=1.2em,itemsep=0pt,topsep=1pt]
+\item $\Phi_l(X)_{ij}=K_{ij}(W_l\T XW_l)_{ij}$, so $\Phi_l$ depends on the cut law only through its level-$2$ marginal;
+\item the level-$k$ cumulant tangent is
+\[
+T\mapsto K^{(k)}\circ\big((W_l\T)^{\otimes k}T\big),\qquad K^{(k)}_{i_1\cdots i_k}=\Pr(i_1,\dots,i_k\in S),
+\]
+so it sees the level-$k$ marginal;
+\item the final means read level~$1$ weighted by the amplitude: $y_k=\E[z_{L,k};\,k\in S_L]$.
+\end{itemize}
+\end{proposition}
+\begin{proof}
+The Kraus form is the expectation over $S$. The Stinespring identity holds because register states are
+orthonormal. The entrywise form uses that $D_S$ is diagonal. For level $k$, the Edgeworth form of Price's
+identity gives $\partial\E[\prod_ru_{i_r}]/\partial\kappa_{i_1\cdots i_k}=\E[\prod_r\mathbf 1(z_{i_r}>0)]$ at the Gaussian point
+for distinct indices.
+\end{proof}
+
+This is the requested ``Kikuchi C*-algebra realised by the network''. The physical register $\R^n$ carries
+the realised weights. The cut register $\ell^2(2^{[n]})$ carries the gates. The cut law enters level by level,
+and only through its marginals. Up and down moves on the cut register (revealing or forgetting a gate)
+correspond to conditioning or marginalising the Kraus data.
+
+There are two tiers:
+\begin{itemize}[leftmargin=1.2em,itemsep=0pt,topsep=1pt]
+\item \emph{tier~1}, within a layer: the Wick/Kikuchi levels, with births raising level and readouts
+lowering it;
+\item \emph{tier~2}, across depth: the channels $\Phi_l$ and their level-$k$ lifts, together with the
+collective (vacuum) sector carried by the cocycle.
+\end{itemize}
+
+\begin{proposition}[Trace preservation is flatness]\label{prop:tp}
+We have
+\[
+\operatorname{Tr}\Phi_l(X)=\operatorname{Tr}(F_lX),\qquad F_l=\Phi_l^*(I)=\sum_j\Phi(\alpha_{l,j})\,w_jw_j\T .
+\]
+On $\hat\mu^\perp$, $\E F_l=ns^2\,\E\Phi(\alpha)\,\Pi_\perp=\Pi_\perp$, since the mean activation probability is $\tfrac12$ at He. The
+fluctuation $\Pi_\perp(F_l-\E F_l)\Pi_\perp$ is the frame autocorrelation. For an orthogonal mirrored layer
+(stage~18, Prop.~6.1(b)) the channel is exactly trace preserving.
+\end{proposition}
+\begin{proof}
+$\operatorname{Tr}(DW\T XWD)=\operatorname{Tr}(W D W\T X)$ since $D^2=D$; take expectations. For $w_j=a_j\hat\mu+w_{\perp j}$, $w_{\perp j}$ is
+independent of $\alpha_j$, so $\E\,\Phi(\alpha_j)w_{\perp j}w_{\perp j}\T=s^2\E\Phi\,\Pi_\perp$. For mirrored pairs $\pm o$ the
+weights $\Phi(\alpha)$ and $\Phi(-\alpha)=1-\Phi(\alpha)$ sum to $1$, and $\sum_io_io_i\T=I$.
+\end{proof}
+
+So He criticality is trace preservation of the gate channel on incoherent operators. Littlewood
+non-flatness is its failure, and the neutral scale mode is the trace. The time-like history of
+stages~12--14 is the difference between composing the marginal channels $\Phi_L\circ\cdots\circ\Phi_1$ and the true
+joint-cut dynamics, in which cuts at different layers are correlated through the same input.

@@ -1,0 +1,24 @@
+PASS  Thm 2.1: Price derivative = co-activation kernel (off-diagonal and diagonal), by quadrature and Genz: 8.87e-10
+PASS  Thm 2.1, off-diagonal directions: dS^u = K o dS^z exactly: 3.87e-12
+      Thm 2.1, general direction: |dS^u - K o dS^z| = 1.77e-01 (the omitted wall coupling)
+PASS  Thm 2.1 corrected: dS^u = K o dS^z + (diag(dS) psi + psi^T diag(dS))/2, psi_ij = p_i(0) E[u_j | z_i = 0]: 2.82e-11
+      centred covariance: off-diagonal |dKh - K o dSigma| = 5.27e-02 vs raw S^u 1.77e-01 (the wall coupling minus d(m m^T) leaves only correlation-order terms)
+PASS  Prop 2.2: sum_S p(S) T_S X T_S^T = K o (W X W^T), K = level-2 marginal; V^*V = F: 4.02e-08
+PASS  Prop 2.2: tetrachoric series kernel = Genz orthant probabilities: 3.68e-08
+PASS  Prop 2.2: level-3 tangent dE[u1u2u3]/dkappa_123 = Pr(1,2,3 in S) (z-score, 8e6 samples): 3.74e-01
+PASS  Prop 2.3: Tr Phi(X) = Tr(F X): 0.00e+00
+PASS  Prop 2.3(b): mirrored orthogonal layer, F = I exactly: 5.55e-16
+PASS  Prop 2.3: E Tr_perp(F - I)/(n-1) = 0 at He (20 draws, n = 400; |mean| below 4 standard errors): 2.10e-01
+PASS  Thm 3.1(a): 2 E Phi(alpha)^2 = 1/2 + arcsin(rho)/pi = f'(rho) (adaptive quadrature; numerical derivative): 8.75e-11
+PASS  Thm 3.1: trajectory table g_1..g_16 (to the printed 3 decimals): 4.34e-04
+PASS  Cor 3.2: localisation-radius table: 0.00e+00
+PASS  Thm 3.1(c): scale mode is neutral (homogeneity m(l mu, l^2 C) = l m, Kh -> l^2 Kh): 8.88e-16
+      Thm 3.1(b), n=1024, rho=0.8: k=1: 0.7874 vs g^k 0.7952, k=2: 0.6235 vs g^k 0.6323, k=3: 0.4964 vs g^k 0.5028
+PASS  Thm 3.1(b): level-k contraction at n = 1024 within 2.5% of g^k (k <= 3): 1.39e-02
+PASS  Prop 4.1: reflection-walk phases +-2 arccos(e^(-rt/2)); level-1 gap 2 arccos e^(-t/2) ~ 2 sqrt t: 0.00e+00
+PASS  Prop 4.2(a): (1-eps)^r C^(x r) <= Ct^(x r) <= (1+eps)^r C^(x r): 6.15e-15
+PASS  Prop 4.2(b): |G(m, w^T Ct w) - G(m, w^T C w)| <= eps sigma phi(alpha)/2 (1 + O(eps)): -3.71e-01
+PASS  Thm 4.3: unbiased, exact variance formula (z-scores), exact at m = n: 2.26e+00
+PASS  Prop 5.1: T_psi has mean zero for psi = 1, He1, He2 (z-scores over 200 draws of 1024 i.i.d. rows): 1.42e+00
+
+ALL PASS
