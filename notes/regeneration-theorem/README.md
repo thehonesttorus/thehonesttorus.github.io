@@ -270,3 +270,24 @@ state that history consists of objects of the same kind as the kappa3 sources (ย
 
 The next theory item is the chaos-state formula for all three fourth-order slices, with its cost. Its check is the same
 ladder: it must hold at every depth, not only at 0 -> 1.
+
+## 8. Pre-registration: the memory ladder (committed before the run)
+
+**Claim (multilinearity).** Each leading structure is multilinear in the rows of W, one row factor per leg. So the
+transport of layer m's newborn fourth cumulant into the slice of layer l+1, by first jets on every leg, is the same
+structure sum with W_(m+1) replaced by the transported matrix
+
+    Wt_m = T_(l+1) T_l ... T_(m+2) W_(m+1),     T_k = W_k diag(Phi^(k-1)).
+
+Site factors, C-edges and slice hyperedges are those of layer m.
+
+**Test (code/regen_mem.py).**
+- Ladder: sum_(m <= l) newborn_m(Wt_m), with nothing fitted.
+- Network 0, (3,1) slice, transitions 2->3, 6->7 and 13->14. Same metric as ยง7.
+- Reported with and without a best-scaled dilation shape. The dilation's own memory is the gain mode, which the
+  ladder may or may not reproduce.
+
+**Prediction P5.** The ladder reaches R^2 >= 0.6 at 6->7 and 13->14 (one-step: 19.5% and 1.2%), with scale in
+[0.7, 1.3]. If it falls short, the residual memory is the part this transport omits:
+- the dressing of coincident legs at intermediate layers;
+- the kappa3 -> kappa4 conversion through three-site kappa3 hyperedges.
