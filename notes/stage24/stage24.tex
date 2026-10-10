@@ -1,0 +1,30 @@
+\documentclass[11pt]{amsart}
+\usepackage[margin=1.0in]{geometry}
+\usepackage{amsmath,amssymb,amsthm,mathtools,booktabs,enumitem,xcolor,array,graphicx}
+\usepackage[colorlinks=true,linkcolor=blue!50!black,citecolor=blue!50!black,urlcolor=blue!50!black]{hyperref}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\T}{^{\mathsf T}}
+\newcommand{\cov}{\operatorname{Cov}}
+\newcommand{\corr}{\operatorname{Corr}}
+\newcommand{\relu}{\operatorname{relu}}
+\newcommand{\gap}{\operatorname{gap}}
+
+\title[The activation graph at width 1024]{The activation graph at width 1024:\\ verification, the wall-chain gap law,\\ and the quantities the certified-approximation theorem needs}
+\author{Stage 24 of the quantum-cut / noncommutative-geometry programme}
+\date{10 October 2026}
+
+\begin{document}
+\sloppy
+\input{s24/s24a}
+\input{s24/s24b}
+\end{document}

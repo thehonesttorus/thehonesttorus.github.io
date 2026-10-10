@@ -1,0 +1,232 @@
+\begin{abstract}
+This note responds to \emph{Approximation bridges} (relayed 10 October 2026). Its finite claims were re-checked
+exactly; all pass. The bridges are then specialised to the bias-free ReLU network in three theorems. The first is an
+exact identity: every layerwise scheme's final-mean error equals
+$\sum_\ell\Gamma_\ell\,\Delta_\ell$. Here $\Delta_\ell$ is the scheme's error in the absolute moments $\E|z_\ell|$, and
+$\Gamma_\ell=2^{-(L-\ell+1)}W_L\cdots W_{\ell+1}$ is a gate-free, state-free transport fixed by the weights. On the official
+net 0 its operator norm equals the Fuss--Catalan edge $\tfrac12\,2^{-k/2}((k+1)^{k+1}/k^k)^{1/2}$ to within $6\%$ at every
+depth $k=L-\ell$: $0.50,0.70,0.64,0.54,0.43,\dots,0.018$. The second identifies the final-only localisation's terminal
+covariance actions for quadratic input features with the Hessian means $\E\nabla^2F$, which are wall sums, and proves a
+transfer lemma: driving the deformation with approximate actions costs exactly their error integrated against the removed
+interaction. The third gives the cost of exact local spherical actions on the network, about $2\sqrt2\,L$ wall crossings
+per coordinate circle. Together these turn the open realisation theorem into one precise requirement: the late-layer laws,
+projected on the next layer's rows, must be accurate in the kink (resolvent) test, weighted by $\|\Gamma_\ell\|$.
+\end{abstract}
+
+\maketitle
+
+\section{The bridges' finite claims, checked}
+
+Each claim below was re-derived and checked exactly, symbolically or with exact rationals; where a law is continuous, by
+adaptive quadrature (\texttt{theory25/check\_bridges.py}). None of these is a network experiment.
+
+\begin{center}\footnotesize
+\begin{tabular}{@{}p{4.4cm}p{8.8cm}l@{}}\toprule
+claim & check & result\\\midrule
+double occupancy under a $\mathrm{Beta}(\frac12,\frac12)$ split & $ii:ij:jj=\frac38:\frac14:\frac38$; $\E\cos^4=\frac38$ & pass\\
+complete-graph quartic mode & $H_{K_d}(S-\frac3{d+2})=\frac{d+2}4(S-\frac3{d+2})$, $d=3,4,6$, symbolic & pass\\
+final-only drift & It\^o drift of $m_t$ equals $-V\T C^2a$; zero when $V\T C=0$ & pass\\
+25-query resolvent quadrature & $M=12$: worst error $2.98\times10^{-5}\sigma$ over nine laws (atoms at $0$, $t_3$) $\le4.95\times10^{-5}\sigma$ & pass\\
+variational bracket & $q_s\in[1-s^2J-\|r\|^2,\,1-s^2J]$, width $\le\|r\|^2$, 500 cases & pass\\
+local leakage & $\|Pe(A)P\|\le\delta+(1-\delta)\min\{1,\eta^2/(a-\tau)^2\}$, 300 cases & pass\\
+constant escape profile & $A\mathbf 1_E=a\mathbf 1_E\Rightarrow$ one step exact for every reward & pass\\\bottomrule
+\end{tabular}
+\end{center}
+
+The It\^o computation is worth recording because it also gives the martingale version used in
+Lemma~\ref{lem:transfer}. For $p\propto\exp(\frac12\phi\T J\phi+h\T\phi)\nu$ we have $\nabla_hm=V\T$,
+$\nabla_Jm:X=\frac12\cov(F,\phi\T X\phi)$ and $\nabla_h^2m:X=\kappa_3(F,\phi,\phi):X$. Since
+$\cov(F,\phi\T C^2\phi)=\kappa_3:C^2+2V\T C^2a$, the drift under $dJ=-C^2dt$, $dh=C\,dB$ is $-V\T C^2a$. Adding $C^2a\,dt$
+to $dh$ removes it, so $dm=V\T C\,dB$.
+
+\section{The final means are a fixed linear readout of absolute moments}
+
+Write $z_\ell=W_\ell a_{\ell-1}$, $a_\ell=\relu(z_\ell)$, $a_0=X$ with $\E X=0$, $m_\ell=\E a_\ell$ and
+$A_\ell=\E|z_\ell|$ (componentwise).
+
+\begin{theorem}[Ungated recursion]\label{thm:ungated}
+$m_\ell=\frac12(W_\ell m_{\ell-1}+A_\ell)$, hence
+\[
+m_L=\sum_{\ell=1}^L\Gamma_\ell A_\ell,\qquad \Gamma_\ell=2^{-(L-\ell+1)}\,W_L\cdots W_{\ell+1}\quad(\Gamma_L=\tfrac12I).
+\]
+\end{theorem}
+\begin{proof}
+$\relu(z)=\frac12(z+|z|)$; take expectations and unroll from $m_0=0$.
+\end{proof}
+
+\begin{theorem}[Exact error of any layerwise scheme]\label{thm:err}
+Let a scheme carry model laws $\hat\nu_\ell$ of $a_\ell$ with means $\hat m_\ell$, and set $\hat m_\ell=\E_{\hat\nu_{\ell-1}}
+\relu(W_\ell a)$. This covers every closure, mixture state and cumulant chain. With
+$\Delta_\ell=\E_{\hat\nu_{\ell-1}}|W_\ell a|-\E_{\nu_{\ell-1}}|W_\ell a|$,
+\[
+\hat m_L-m_L=\sum_{\ell=1}^L\Gamma_\ell\,\Delta_\ell\qquad\text{exactly.}
+\]
+\end{theorem}
+\begin{proof}
+The scheme satisfies Theorem~\ref{thm:ungated} with $\hat A_\ell=\E_{\hat\nu_{\ell-1}}|W_\ell a|$, because its means are the
+means of its laws. Subtract the two unrolled sums.
+\end{proof}
+
+Checked to $6\times10^{-17}$ for a Gaussian closure on a network with 2-D input, with the input law replaced by a
+2-million-point angular quadrature; the identity is algebraic, so it holds for any law. The closure error itself is $0.15$
+there.
+
+\begin{proposition}[The transport contracts]\label{prop:gamma}
+$\Gamma_\ell$ depends only on the weights. For i.i.d.\ $N(0,2/n)$ weights and $k=L-\ell$, the edge of the order-$k$
+Fuss--Catalan law gives
+\[
+\|\Gamma_\ell\|_{\rm op}\to\gamma_k=\tfrac12\,2^{-k/2}\Big(\tfrac{(k+1)^{k+1}}{k^k}\Big)^{1/2},
+\qquad \tfrac1{\sqrt n}\|\Gamma_\ell\|_F\to\tfrac12\,2^{-k/2}.
+\]
+Here $\gamma_k\le0.71$ for every $k$; $\gamma_0=\frac12$, $\gamma_1=0.707$, $\gamma_4=0.437$, $\gamma_8=0.150$ and
+$\gamma_{15}=0.018$. On the official net 0 the exact norms, computed by power iteration on the weights, are
+\[
+\begin{aligned}
+&0.500,\ 0.699,\ 0.637,\ 0.537,\ 0.429,\ 0.329,\ 0.249,\ 0.193,\\
+&0.148,\ 0.107,\ 0.080,\ 0.060,\ 0.045,\ 0.033,\ 0.024,\ 0.0175
+\end{aligned}
+\]
+for $k=0,\dots,15$, within $6\%$ of $\gamma_k$, and $\sum_k\|\Gamma\|\approx4.1$.
+\end{proposition}
+\begin{proof}
+The squared singular values of a product of $k$ independent Ginibre matrices with entry variance $1/n$ converge to the
+Fuss--Catalan law of order $k$, supported on $[0,(k+1)^{k+1}/k^k]$. Rescale by $2^{k/2}$ and multiply by $2^{-(k+1)}$. The
+Frobenius statement is $\E\|Wv\|^2=2\|v\|^2$ iterated.
+\end{proof}
+
+No product of layer operator norms appears. The gated tangent $\prod D_\Phi W$ that carries mean errors in the closure
+has gains near one at depth. The ungated transport is a contraction at every depth, and it is known before any state is
+computed.
+
+\begin{theorem}[Resolvent readout through depth]\label{thm:readout}
+Let $\sigma_{\ell,i}^2\ge\E z_{\ell,i}^2$ and $q_{\ell,i,j}=\E\big[z_{\ell,i}^2/(z_{\ell,i}^2+\sigma_{\ell,i}^2e^{2jh})\big]
+\in[0,1]$, with $h=\pi/\sqrt M$ and $|j|\le M$. Then
+\[
+m_L=\sum_{\ell=1}^L\Gamma_\ell\Big(\tfrac{2h}{\pi}\,\sigma_\ell\circ\sum_{j=-M}^Me^{jh}q_{\ell,\cdot,j}\Big)+R,\qquad
+|R_i|\le\sum_\ell(|\Gamma_\ell|\,2\varepsilon_M\sigma_\ell)_i,
+\]
+with $\varepsilon_M=\big[\tfrac2{1-e^{-\pi\sqrt M}}+\tfrac2\pi\big]e^{-\pi\sqrt M}$ ($4.95\times10^{-5}$ at $M=12$). If every
+query is bracketed, $q\in[q^-,q^+]$, the midpoint readout has error at most
+$\sum_\ell|\Gamma_\ell|\,\frac{2h}{\pi}\,\sigma_\ell\circ\sum_je^{jh}\frac{q^+-q^-}2$ componentwise, plus $|R|$.
+\end{theorem}
+\begin{proof}
+$|z|=\frac2\pi\int_0^\infty z^2/(z^2+t^2)\,dt$. Substitute $t=\sigma e^s$ and apply the companion's trapezoid bound to $\E|z|=2\E
+z_+-\E z$, which doubles its constant. Then insert into Theorem~\ref{thm:ungated}.
+\end{proof}
+
+\begin{corollary}[A final-only certificate along actual rows]\label{cor:sliced}
+\[
+\operatorname{RMS}(\hat m_L-m_L)\le\sum_{\ell=1}^L\|\Gamma_\ell\|_{\rm op}\,\operatorname{RMS}_i\,
+W_1\big(\mathcal L_{\hat\nu_{\ell-1}}(w_{\ell,i}\!\cdot a),\,\mathcal L_{\nu_{\ell-1}}(w_{\ell,i}\!\cdot a)\big).
+\]
+Only one-dimensional projected laws along the next layer's actual rows enter, tested by $|\cdot|$, the kink. Their weights
+are $0.50, 0.70, 0.64, 0.54, 0.43$ for the last five layers and fall to $0.018$ at the first.
+\end{corollary}
+\begin{proof}
+$|\cdot|$ is $1$-Lipschitz, so $|\Delta_{\ell,i}|$ is at most the $W_1$ distance of the projections. Apply
+Theorem~\ref{thm:err} with the triangle inequality.
+\end{proof}
+
+\begin{remark}[Inheritance is relocated, not removed]
+If $\hat\nu_{\ell-1}$ differs from $\nu_{\ell-1}$ only by a mean shift $\delta m$, then
+$\Delta_\ell\approx\operatorname{diag}(2\Phi(\alpha_\ell)-1)\,W_\ell\,\delta m$. The identity of Theorem~\ref{thm:err} then
+gives $\delta m_\ell=\operatorname{diag}\Phi(\alpha_\ell)W_\ell\,\delta m$, the gated tangent. The theorems therefore do not
+say that early errors vanish. They say where the final readout spends accuracy: in the late-layer projected laws, at the
+kink, with known weights. Errors born early count only through the late-layer projected laws they distort.
+\end{remark}
+
+\section{Final-only deformation, specialised}
+
+\begin{proposition}[Terminal actions for quadratic features are Hessian means]\label{prop:price}
+For $X\sim N(0,I_d)$ and $\phi=\operatorname{svec}(XX\T-I)$, Stein's identity applied twice gives
+$\cov(\phi,F_i)=\operatorname{svec}\E\nabla^2F_i$. For the ReLU network,
+\[
+\E\nabla^2F_i=\sum_{\ell,j}\E\Big[\delta(z_{\ell,j})\,(A_\ell e_j)_i\,\nabla z_{\ell,j}\nabla z_{\ell,j}\T\Big],
+\qquad \tr\E\nabla^2F_i=\mu_i,
+\]
+with $A_\ell$ the downstream gated product. These are the wall currents of the companion's eq.~(10), with the normal
+outer product in place of its trace. Equivalently, $\partial\mu/\partial\Sigma=\frac12\E\nabla^2F$ at $\Sigma=I$ (Price).
+The invisible quadratic deformations are the symmetric $\Delta$ with $\tr(\Delta\,\E\nabla^2F_i)=0$ for all $i$: codimension
+at most $n$ among $d(d+1)/2$. A closure supplies approximate actions through its adjoint.
+\end{proposition}
+
+\begin{lemma}[Transfer, not removal]\label{lem:transfer}
+Run the martingale version ($dJ=-C^2dt$, $dh=C\,dB+C^2a\,dt$) with $C_t\perp\hat V_t$, where $\hat V_t$ are approximate
+actions. Then exactly
+\[
+\E\|m_T-m_0\|^2=\E\int_0^T\big\|(V_t-\hat V_t)\T C_t\big\|_F^2\,dt\;\le\;\sup_t\|V_t-\hat V_t\|_{\rm op}^2\;\E\tr(J_0-J_T).
+\]
+\end{lemma}
+\begin{proof}
+$dm=V\T C\,dB=(V-\hat V)\T C\,dB$, then It\^o's isometry. Also $\|E\T C\|_F\le\|E\|_{\rm op}\|C\|_F$, and
+$\int\tr C^2\,dt=\tr(J_0-J_T)$.
+\end{proof}
+
+Consequences for this network. The Gaussian input carries no interaction, $J_0=0$, so any final-only deformation
+starts from an interaction we introduce. That is the companion's gauge trap. Lemma~\ref{lem:transfer} prices every such
+path: the drift is at most the action error (operator norm) times the square root of the interaction removed, and for
+errors without special alignment it is of that order. An endpoint that differs materially from the start requires removing a material interaction. The
+actions must then be accurate to about the target RMS divided by that amount. The mechanism therefore moves the accuracy
+requirement from the means to the terminal actions. It removes the requirement only where the actions are exact, for
+instance a single layer, where $\mu_i=\sqrt{w_i\T\Sigma w_i}/\sqrt{2\pi}$ and its Price derivative are closed-form, so the
+constraints are explicit. At depth two and beyond no exact action is available.
+
+\section{Exact local actions and what they cost}
+
+\begin{proposition}[Coordinate circles cross few walls]
+For uniform $\theta$ and a uniform coordinate pair $(i,j)$, the circle obtained by rotating $(\theta_i,\theta_j)$ crosses
+in expectation approximately $2\pi\cdot\frac{\sqrt2}d\sum_{\rm gates}r_g$ walls of the whole network, $r_g$ being each gate's rotation
+flip rate. With $r_g\approx1/\pi$, which holds exactly at layer 1 and in aggregate at every depth because $f'(1)=1$, this
+is $2\sqrt2\,L\,n/d\approx45$ for $n=d=1024$, $L=16$. An exact action $Q_{ij}F(\theta)$ by circle traversal therefore costs
+about $25$ forward passes. Each crossing is a rank-one update of the network's two-column restriction.
+\end{proposition}
+\begin{proof}
+Rice's formula along the circle. The velocity has length $r_{ij}=\sqrt{\theta_i^2+\theta_j^2}$, with $\E r_{ij}\approx
+\sqrt{2/d}$, and lies in a random coordinate plane. Its projection on a generic gradient has mean absolute value
+$\|\nabla z\|\sqrt{2/(\pi d)}$, against $\|\nabla z\|\sqrt{2/\pi}$ for the full rotation, so the ratio is $\sqrt2/d$.
+\end{proof}
+
+The certified angular gap of the collision process is therefore real, and an exact local action on the terminal
+observable costs about $25$ forward passes, not one. A Markov-chain use pays this per step and mixes at a rate of order
+$1/d$ per collision. The process controls relaxation; it does not by itself evaluate $\E F$ more cheaply than sampling. The
+exchange element $\Omega_G$ of the sparsifier bridge acts through relations that the network's layer maps break: no
+positive map sends the transpositions to gate products, by the companion's three-slot obstruction. The leakage and clock
+bounds apply as soon as a reversible representation with cheap actions exists. None of the exact primitives below
+supplies one at depth.
+
+\section{The remaining requirement, precisely}
+
+Three primitives have exact and inexpensive actions on this problem:
+\begin{itemize}[leftmargin=1.5em]
+\item Gaussian integrals at the input;
+\item linear algebra in the weights, including $\Gamma_\ell$;
+\item network evaluations, forward passes and Jacobian--vector products, at chosen inputs.
+\end{itemize}
+Any certified computation of the final means is assembled from these. Theorem~\ref{thm:err} and
+Corollary~\ref{cor:sliced} state the requirement exactly: produce model laws whose \emph{one-dimensional projections along
+the next layer's rows} are accurate in the kink test, with errors $\varepsilon_\ell$ satisfying
+$\sum_\ell\|\Gamma_\ell\|\varepsilon_\ell\le$ target. The weights concentrate the demand on the last five layers, where
+$\|\Gamma\|\in[0.43,0.70]$. Earlier layers matter only through the late-layer projections they shape.
+
+This fixes the joint construction the bridges ask for.
+\begin{itemize}[leftmargin=1.5em]
+\item \textbf{State.} The projected laws $\mathcal L(w_{\ell,i}\cdot a_{\ell-1})$, $n$ per layer, together with the shared
+structure needed to transport them: covariance, the collective coordinate, and the incoherent per-neuron shape.
+\item \textbf{Moves.} The layer map acting on that state. A projection of the next pre-activation is the dependent sum
+$\sum_kw_k\relu(z_k)$, so its law needs pair structure (Price series), the collective mixture, and diagonal cumulant
+contractions $\sum_kw_k^3\kappa_3(\relu z_k)$.
+\item \textbf{Solver.} The $25$ bounded resolvent queries per neuron and layer of Theorem~\ref{thm:readout}, combined by
+$\Gamma$.
+\item \textbf{Certificate.} Projected-discrepancy bounds per layer weighted by $\|\Gamma_\ell\|$. Their widths direct
+refinement to the neurons and layers whose weighted brackets dominate.
+\end{itemize}
+The decisive theorem is then a quantitative statement about one object. It is a bound, at the kink scale and conditional
+on the collective structure, on the error of an affordable state's projected laws for dependent sums
+$\sum_kw_k\relu(z_k)$ at the last five layers: a quantitative central limit theorem for these sums at resolution about
+$10^{-4}$.
+
+One measured fact already points the second computation at the right target. On net 0 the oblique (whitened) oracle
+calibration of CC1's error reaches $8\times10^{-9}<3.1\times10^{-8}$ at the floor budget, with $82\%$ of its
+signal-to-noise beyond the top $256$ output modes, which hold only $14\%$ of its error energy. A template for the quiet component of the first pass's error,
+for instance the $\Gamma$-transported late-layer kink corrections of Theorem~\ref{thm:readout}, would need only one
+whitened Monte Carlo coefficient.

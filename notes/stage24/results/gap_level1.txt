@@ -1,0 +1,14 @@
+case | gap | linear bound 1/lambda_max(Gamma^-1/2 Cov(g) Gamma^-1/2) | gap/linear | level-1 share of the gap eigenvector | next eigenvalue | orthant sum error
+  n=5 Gaussian W, mu=0                             | 0.325768 | 0.325881 | 0.999654 | 0.999952 | 0.5273 | 2.9e-07
+  n=5 Gaussian W, random mu (alpha ~ N(0,1))       | 0.457639 | 0.458921 | 0.997207 | 0.998101 | 0.5934 | 1.5e-07
+  n=5 two collective modes + noise, mu=0           | 0.320075 | 0.320274 | 0.999377 | 0.999917 | 0.4133 | 2.0e-07
+  n=5 two collective modes, alpha ~ N(0, 2^2)      | 0.486002 | 0.486131 | 0.999733 | 0.999863 | 0.7774 | 2.6e-07
+  n=5 ill-conditioned Wishart, mild means          | 0.400186 | 0.402270 | 0.994819 | 0.997264 | 0.4576 | 1.9e-07
+  n=7 Gaussian W, mu=0                             | 0.311555 | 0.311963 | 0.998691 | 0.999752 | 0.3341 | 5.6e-06
+  n=7 Gaussian W, random mu (alpha ~ N(0,1))       | 0.334540 | 0.335269 | 0.997826 | 0.999237 | 0.4711 | 4.4e-07
+  n=7 two collective modes + noise, mu=0           | 0.217873 | 0.218207 | 0.998472 | 0.999826 | 0.3465 | 9.1e-07
+  n=7 two collective modes, alpha ~ N(0, 2^2)      | 0.353184 | 0.354460 | 0.996402 | 0.998406 | 0.4073 | 9.5e-08
+  n=7 ill-conditioned Wishart, mild means          | 0.318069 | 0.318731 | 0.997924 | 0.999396 | 0.4785 | 1.0e-06
+  n=8 Gaussian W, random mu                        | 0.323729 | 0.324384 | 0.997981 | 0.999190 | 0.3944 | 4.5e-07
+
+[exited with code 0]

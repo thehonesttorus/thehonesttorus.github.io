@@ -1,0 +1,11 @@
+# python notes/stage24/theory24/check_companion.py (all ten checks; outputs recorded 10 Oct 2026)
+[A] two-row heat-bath spectrum {1, 1-eps, eps, 0} for eps = 1/10, 1/4, 1/2: PASS
+[B] five-sector example: jumps [-1.0, 1.414214, 0.0, 0.0, 1.0], mu = 0.2820947918 vs 1/(2 sqrt pi) = 0.2820947918 (Monte Carlo 0.28242): PASS
+[C] P(X in C, X_t in D) / (sqrt(t/pi) S_CD) for a half-plane, t = 1e-2, 2.5e-3: 0.9982 0.9985 (-> 1): PASS
+[D] finite-noise arrow readout (16), rho = 0.6: max |est - E F| / max E F = 4.56e-03: PASS
+[E] one-ReLU second moment (17): rho=0.5: MC 0.6091 vs 0.6090, rho=0.9: MC 1.4101 vs 1.4116: PASS
+[F] posterior-refresh cut gap vs 1/(1+|M|^2) (gap, bound, min eigenvalue, cells): 0.8268 >= 0.5379, +0.0002, 8; 0.6480 >= 0.2582, -0.0004, 8; 0.4206 >= 0.1766, +0.0091, 8: PASS
+[G] cycle local Laplacian gap (28) for m = 6, 12, 40: PASS
+[H] three-state chain exactly: T, f* = (1,2), tau = (3/2,3/2), mu = 1, (48) and both identities for m = 0..7, table rows: PASS; endpoint-reward average 1/2, rewards without clock 3/2
+[I] residual identity (36), spectrum (32), Chebyshev bound (40), denominator (39), one-row quotient (43), ellipsoid (44) on 200 random reversible chains: PASS (0 failures)
+[J] commutator (3) and the D_rs(c) counts behind (4): PASS

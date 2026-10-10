@@ -1,0 +1,146 @@
+\section{Dependence of the gate law at width 1024}\label{sec:dep}
+
+Section~5 of the companion composes a Gaussian observation tier with a conditional lower tier of gap $\delta$. Its \S2.2
+explains that spectral independence would supply $\delta$, provided influence is controlled under every pinning. The
+unpinned influence radius $\eta=\lambda_{\max}(\corr g)-1$ is a necessary condition for that, and it is measurable
+(Table~\ref{tab:gap}).
+
+\begin{itemize}[leftmargin=1.5em]
+\item $\eta$ is about $2$ at layer $1$, matching the Marchenko--Pastur prediction $3\cdot2/\pi=1.91$. It rises to $6$--$8$
+in the deep layers. The gate correlation spectrum is broad, with participation ratio $520$--$720$ out of $1024$. Even
+unpinned, the law is far from the $\eta<1$ regime.
+\item Conditioning on $k$ principal components of the pre-activations lowers $\eta$ only slowly: at $k=16$ it is still
+$4$--$5$ at depth, and at $k=128$ it is $1.2$--$1.6$. The Marchenko--Pastur noise edge at these sample sizes is
+$0.18$--$0.27$.
+\item Gates do not decorrelate across depth. $\|\corr(g_\ell,g_{\ell+d})\|_{\rm op}$ is $2.4$ at layer $1$ and $6$--$7$ at
+depth, with essentially no decay over $d=1,2,4$.
+\item The closure's level-1 depth gain $\prod_{k>\ell}g_k$, with $g_k=2\,\overline{\Phi(\alpha_k)^2}$, is $0.03$ from layer
+$1$, $0.31$ from layer $8$ and $0.6$--$0.9$ over the last four layers. Unresolved late-layer structure is not forgotten
+before the output.
+\end{itemize}
+
+The wall-chain bound of Proposition~\ref{prop:lin} is reported per layer from the measured gate covariance and wall rates.
+It is $0.20$--$0.33$ per unit rotation angle on every layer, against $2/\pi=0.64$ for independent gates. Removing $16$
+principal components raises it to $0.23$--$0.65$; removing $128$ raises it to $0.33$--$1.7$. Gates with large $|\alpha|$
+have both small variance and slow walls, which offsets the larger $\eta$ at depth. The physical single-layer chain is
+therefore never degenerate on these networks, while the information heat-bath walk has no comparable guarantee.
+
+The level process relaxes at rate $0.65$ at layer $1$, the independent-gate value $2/\pi$, and at $2$--$3$ at depth. That
+stiffness is what pins $r$ at $n/2$. Whether the joint chain over all $nL$ gates, the companion's full-history graph,
+keeps this rate is a separate question, because gate dependence does not decay across depth. Section~\ref{sec:full}
+measures it.
+
+\section{The full-history wall graph}\label{sec:full}
+
+The companion's geometric graph uses complete gate histories. Proposition~\ref{prop:lin} applies to any set of gates, so
+it bounds that graph by the rate-normalised covariance of all $nL$ gates at once (\texttt{scripts/s24\_fullgates.py}).
+On net 0 there are $14{,}748$ live gates in $N=2^{16}$ inputs.
+
+\begin{itemize}[leftmargin=1.5em]
+\item The stacked gate correlation has many large eigenvalues: $71,63,59,56,55,53$ against a noise edge of $2.2$. The
+rate-normalised covariance has top eigenvalues $41.6,37.8,35.9,34.1,32.9,32.4$. Hence
+\[
+\gap(\text{full-history wall chain})\le 1/41.6=0.024\ \text{per unit rotation angle},
+\]
+about nine times below any single layer.
+\item The bound falls steadily with the number of layers taken together. The best windows give $0.21$ for one layer,
+$0.12$--$0.17$ for two, $0.064$--$0.089$ for four, $0.038$--$0.043$ for eight and $0.024$ for all sixteen.
+\item The slowest mode is spread over the whole depth. Each layer holds $3.5$--$8.7\%$ of the top eigenvector, with most in
+layers $5$--$12$.
+\end{itemize}
+
+Cross-depth coherence is what makes the local full-history chain slow, not any single layer. In the companion's terms
+this is the quantitative content of ``local adjacency does not inherit the dense gap'' for the real networks. The actual
+rotation process decorrelates within an angle of $\pi/2$, while its local Markov shadow needs about $1/0.024\approx40$.
+A two-tier construction must therefore place these coherent cross-depth modes in its global observation tier, and the
+count of such modes sets the dimension of that tier. The count of such modes was not measured; that run was stopped in favour of theory (Stage 25).
+
+\section{The terminal ellipsoid at width 1024}\label{sec:ell}
+
+For hidden states equal to inputs, the companion's operator $\mathcal B$ in eq.~(44) has the nonzero spectrum of $S/n$,
+where $S=\cov F(X)$ is the output covariance. A first-pass error $e=\mu-b$ can be resolved in the eigenbasis of $S$
+(\texttt{scripts/s24\_ellipsoid.py}; net 0 also from the larger run behind \texttt{scripts/s24\_terminal.py}).
+Table~\ref{tab:ell} gives the results.
+
+\begin{itemize}[leftmargin=1.5em]
+\item The visible spectrum is concentrated. The participation ratio of $S$ is about $51$. The top $16$, $64$ and $256$
+eigenvectors carry $42\%$, $75\%$ and $95\%$ of the trace, and the bottom half carries $1\%$.
+\item First-pass errors live where the variance lives. For the closure, $69\%$ of $|e|^2$ is in the top $16$ eigenvectors,
+which is the collective tier. CC1 removes most of that, and its remaining error is still $86\%$ inside the top $256$. The
+v56 error is the most spread, with $6\%$ in the bottom half. The Rayleigh ratio $e\T Se/(|e|^2\,\overline\lambda)$ is
+$66$, $8.3$ and $5.1$ for closure, CC1 and v56 on net 0.
+\item Sampling at the floor budget ($M\approx4500$ samples after a CC1-sized pass) resolves this residual only with
+information about its direction. We give three oracle bounds for CC1 on net 0, each assuming $e$ is known.
+
+\emph{Orthogonal projections.} The best $\mu=b+P(\bar Y-b)$ has rank at most one, because $ee\T-S/M$ has at most one
+positive eigenvalue. Its risk is $1.3\times10^{-7}$, and the projection onto $e/|e|$ gives $1.4\times10^{-7}$. Both are
+about four times the floor target $3.1\times10^{-8}$.
+
+\emph{Per-direction choice.} Keeping or dropping each eigendirection with oracle knowledge gains $2\%$ over CC1.
+
+\emph{Oblique filter.} The best linear filter estimates one coefficient along $e$ through the whitened statistic
+$e\T S^{+}(\bar Y-b)$. Its risk is $|e|^2/(1+M\,e\T S^{+}e)/n=8.0\times10^{-9}$, below the target, because
+$M\,e\T S^{+}e=233$. That signal-to-noise comes from the error's small components along the \emph{quiet} directions,
+pooled coherently.
+
+Hence a response direction predicted accurately where $S$ is small would make one Mahalanobis-weighted calibration
+sufficient. None of the weight-derived families tried (coherent functions of $a$, propagated coherent functions, tangent
+singular subspaces, readout shapes, the CC1$-$closure direction) captures more than $86\%$ of $|e|^2$ even orthogonally.
+They are built in the loud directions.
+
+Variance reduction does not change this. Exact-mean input controls of degree $\le k$ reduce variance by at most $1.23$,
+$1.52$, $2.10$ and $3.38$ for $k=1,2,4,8$. These are the chaos shares of the depth-16 arc-cosine kernel
+(\texttt{theory24/chaos\_spectrum.py}); the measured linear control gives $1.23$. No sampling density helps by more than
+$(\E|z|)^2/\E|z|^2\approx1\%$ for the full output, because $|z|$ concentrates.
+\end{itemize}
+
+The residual that matters in (44) therefore sits mostly in the same $\sim50$--$250$ modes that carry the output variance,
+with a small but statistically decisive part in the quiet directions. The companion's deterministic route has no sampling
+variance: one occupation row and operator actions replace Monte Carlo. Its open obligation is a representation of the
+operator action that is accurate on the loud modes, with the quiet-direction part as a natural target for a final
+whitened calibration.
+
+\section{What the theory and the measurements now say to build}\label{sec:build}
+
+\begin{enumerate}[leftmargin=1.5em]
+\item \textbf{The operator.} Use the physical wall chain, or a block or collective refinement of it, not single-gate
+heat-bath resampling. Its gap is governed by the rate-normalised gate covariance (Proposition~\ref{prop:lin},
+Remark~\ref{rem:near}), and it is bounded away from zero on every single layer of these networks: the level-1 values are
+$0.20$--$0.33$ per unit rotation angle. The full-history graph is the open case (Section~\ref{sec:full}).
+\item \textbf{The slow block.} About $100$--$250$ modes are needed, by three independent measures. These are the visible
+spectrum of $\mathcal B$ (95\% of trace in $256$ modes), the location of CC1's error (86\% in $256$ modes), and the
+conditioning that brings the gate law near $\eta\approx1$ ($128$ modes). Those modes are wide but low-rank compared
+with $n$.
+\item \textbf{The information level.} Record deviations from the closure's reference pattern. The deviation set has
+$0.5n$ elements at layer $1$ but only $0.085n$ at layer $16$, and the closure predicts its size. Active cardinality is
+pinned at $n/2\pm8$ and carries almost no information.
+\item \textbf{Depth.} Gate dependence persists across at least four layers, and the depth gain of the last four layers is
+$0.6$--$0.9$. The occupation recurrence cannot truncate late-layer return paths. In the companion's language, $m$ must
+grow where the hidden operator's gap is small; that happens in the last layers, not the first.
+\item \textbf{What the first pass gives.} The closure is the mean-field wall sum (Proposition~\ref{prop:closure}), and
+its wall measures are accurate in aggregate (Rice--Gauss to $0.1$--$0.6\%$). Its error is in the downstream-jump channel,
+the conditional expectation of the gated product at a wall. That is the quantity a represented operator must improve.
+\end{enumerate}
+
+\appendix
+\section{Independent verification of the companion's finite claims}
+\texttt{theory24/check\_companion.py}; exact rationals where the claim is finite.
+
+\begin{center}\small
+\begin{tabular}{@{}lll@{}}\toprule
+claim & check & result\\\midrule
+eq.~(7) two-row heat bath & exact spectrum, $\varepsilon=\frac1{10},\frac14,\frac12$ & pass\\
+eq.~(13) five-sector example & jumps $(-1,\sqrt2,0,0,1)$, $\mu=1/(2\sqrt\pi)$ to $10^{-10}$; Monte Carlo & pass\\
+eq.~(11) $\sqrt{t/\pi}$ constant & half-plane, $t=10^{-2},2.5\cdot10^{-3}$: ratio $0.998$ & pass\\
+eq.~(16) finite-noise readout & 3-layer net, $\rho=0.6$: $4.6\times10^{-3}$ relative & pass\\
+eq.~(17) one-ReLU moment & $\rho=0.5,0.9$ & pass\\
+eq.~(22) posterior gap & three random $M$, 8 cells: gaps $0.83,0.65,0.42\ge0.54,0.26,0.18$ & pass\\
+eq.~(28) cycle gap & $m=6,12,40$ & pass\\
+Thms 7.1--7.2, eq.~(48), table & exact rationals, $m=0..7$; $\frac12$ without hidden reward, $\frac32$ without clock & pass\\
+Thms 8.1--8.2, (39), (43), (44) & 200 random reversible chains & pass\\
+eqs.~(3)--(4) & commutator; $D_{r,s}(c)$ counts & pass\\\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Tables}
+\input{s24/tables}

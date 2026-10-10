@@ -1,0 +1,8 @@
+[B1a] double-occupancy split ii/ij/jj = 3/8/1/4/3/8; E cos^4 = 3/8, E cos^2 sin^2 = 1/8: PASS
+[B1b] H_(K_d) (S - 3/(d+2)) = (d+2)/4 (S - 3/(d+2)) on the simplex, d = 3, 4, 6: PASS
+[B3] Ito drift of the final means = -V'C^2 a: max dev 7.3e-08; with V'C = 0 drift 6.9e-09, martingale part V'C = 3.7e-17: PASS
+[B4] 25-query resolvent quadrature (M=12): worst |error|/sigma over 9 laws 2.98e-05 <= stated bound 4.95e-05 (< 5e-5): PASS; per law: N(0.0,1.0^2) 7.7e-06, N(0.7,0.4^2) 8.6e-06, N(-1.3,0.5^2) 5.1e-06, N(2.5,0.3^2) 1.9e-05, N(0.05,0.001^2) 3.0e-05, atoms 2.5e-05, atoms 1.6e-05, atoms 6.7e-06, t_3 7.3e-06
+[B4b] variational bracket q_s in [1 - s^2 J - |r|^2, 1 - s^2 J], width <= |r|^2, 500 random cases: PASS
+[B5a] leakage bound |P e(A) P| <= delta + (1-delta) min(1, eta^2/(a-tau)^2), 300 random cases: PASS
+[B5b] constant escape profile A 1_E = a 1_E makes p = 1/a exact for every reward: PASS
+[U] ungated recursion m_l = (W_l m_(l-1) + E|z_l|)/2: max dev 1.4e-17; closure error identity m_hat_L - m_L = sum_l Gamma_l (A_hat_l - A_l): max dev 5.6e-17 (closure error itself 1.5e-01): PASS

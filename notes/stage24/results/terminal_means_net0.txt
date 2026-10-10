@@ -1,0 +1,85 @@
+
+=== net 0  (pass 1: closure 3s, CC1 10s; MC 131072 angular samples 26s) ===
+first-pass final RMS: closure 2.014e-03, CC1 1.365e-03, v56 1.215e-04 | MC means vs truth: pilot 9.91e-04, held-out 1.15e-03 (expected 1.09e-03)
+output covariance: tr/n = 0.0782 (truth file avg_variance 0.0787; the angular frame removes the radial part)
+spectrum (pilot): PR 50.9; top-k share of trace k=1/4/16/64/256: 0.097/0.186/0.415/0.754/0.949; bottom half carries 0.0099; CC1 pass-1 K: PR 48.4, tr K/tr S 1.007
+(1a) quiet subspaces P_k = drop the top-k eigvecs; per b: captured fraction | risk at M=4500 (= missed/n + held-out var/(nM)); basis from the pilot covariance / from CC1's pass-1 K
+   pilot  b=closure : k0:1.0000|1.7e-05 k1:0.3653|1.8e-05 k2:0.3627|1.8e-05 k4:0.3510|1.7e-05 k8:0.3343|1.5e-05 k16:0.3125|1.3e-05 k32:0.2442|1.0e-05 k64:0.1629|7.7e-06 k128:0.0940|5.8e-06 k256:0.0518|4.8e-06 k512:0.0145|4.2e-06 k768:0.0002|4.1e-06 k896:0.0000|4.1e-06 k960:0.0000|4.1e-06 k992:0.0000|4.1e-06 k1008:0.0000|4.1e-06 k1016:0.0000|4.1e-06 k1020:0.0000|4.1e-06
+                      best k=1024: captured 0.0000, risk 4.06e-06 (b alone 4.06e-06); oracle per-eigvec keep/drop 3.16e-06; M for target at best k: unreachable (missed part alone > target)
+   pilot  b=CC1     : k0:1.0000|1.7e-05 k1:0.9957|1.6e-05 k2:0.9699|1.5e-05 k4:0.9289|1.4e-05 k8:0.8785|1.3e-05 k16:0.7887|1.1e-05 k32:0.6356|7.8e-06 k64:0.4238|5.3e-06 k128:0.2593|3.5e-06 k256:0.1367|2.5e-06 k512:0.0308|2.0e-06 k768:0.0003|1.9e-06 k896:0.0000|1.9e-06 k960:0.0000|1.9e-06 k992:0.0000|1.9e-06 k1008:0.0000|1.9e-06 k1016:0.0000|1.9e-06 k1020:0.0000|1.9e-06
+                      best k=1024: captured 0.0000, risk 1.86e-06 (b alone 1.86e-06); oracle per-eigvec keep/drop 1.82e-06; M for target at best k: unreachable (missed part alone > target)
+   pilot  b=v56     : k0:1.0000|1.7e-05 k1:0.9903|1.6e-05 k2:0.9858|1.5e-05 k4:0.9786|1.4e-05 k8:0.9531|1.3e-05 k16:0.9109|1.0e-05 k32:0.8191|7.2e-06 k64:0.6615|4.3e-06 k128:0.4406|2.2e-06 k256:0.2529|9.1e-07 k512:0.0588|1.9e-07 k768:0.0010|1.7e-08 k896:0.0000|1.5e-08 k960:0.0000|1.5e-08 k992:0.0000|1.5e-08 k1008:0.0000|1.5e-08 k1016:0.0000|1.5e-08 k1020:0.0000|1.5e-08
+                      best k=1024: captured 0.0000, risk 1.48e-08 (b alone 1.48e-08); oracle per-eigvec keep/drop 1.48e-08; M for target at best k: 0
+   CC1-K  b=closure : k0:1.0000|1.7e-05 k1:0.3672|1.8e-05 k2:0.3641|1.8e-05 k4:0.3502|1.7e-05 k8:0.3345|1.5e-05 k16:0.3103|1.3e-05 k32:0.2440|1.0e-05 k64:0.1648|7.7e-06 k128:0.0985|5.8e-06 k256:0.0553|4.8e-06 k512:0.0156|4.2e-06 k768:0.0002|4.1e-06 k896:0.0000|4.1e-06 k960:0.0000|4.1e-06 k992:0.0000|4.1e-06 k1008:0.0000|4.1e-06 k1016:0.0000|4.1e-06 k1020:0.0000|4.1e-06
+                      best k=943: captured 0.0000, risk 4.06e-06 (b alone 4.06e-06); oracle per-eigvec keep/drop 3.15e-06; M for target at best k: unreachable (missed part alone > target)
+   CC1-K  b=CC1     : k0:1.0000|1.7e-05 k1:0.9946|1.6e-05 k2:0.9700|1.5e-05 k4:0.9313|1.4e-05 k8:0.8977|1.3e-05 k16:0.8072|1.1e-05 k32:0.6454|7.8e-06 k64:0.4364|5.3e-06 k128:0.2645|3.5e-06 k256:0.1424|2.5e-06 k512:0.0339|2.0e-06 k768:0.0003|1.9e-06 k896:0.0000|1.9e-06 k960:0.0000|1.9e-06 k992:0.0000|1.9e-06 k1008:0.0000|1.9e-06 k1016:0.0000|1.9e-06 k1020:0.0000|1.9e-06
+                      best k=943: captured 0.0000, risk 1.86e-06 (b alone 1.86e-06); oracle per-eigvec keep/drop 1.77e-06; M for target at best k: unreachable (missed part alone > target)
+   CC1-K  b=v56     : k0:1.0000|1.7e-05 k1:0.9905|1.6e-05 k2:0.9856|1.5e-05 k4:0.9783|1.4e-05 k8:0.9487|1.3e-05 k16:0.9197|1.0e-05 k32:0.8123|7.2e-06 k64:0.6524|4.3e-06 k128:0.4375|2.2e-06 k256:0.2462|9.4e-07 k512:0.0568|2.0e-07 k768:0.0011|1.7e-08 k896:0.0000|1.5e-08 k960:0.0000|1.5e-08 k992:0.0000|1.5e-08 k1008:0.0000|1.5e-08 k1016:0.0000|1.5e-08 k1020:0.0000|1.5e-08
+                      best k=943: captured 0.0000, risk 1.48e-08 (b alone 1.48e-08); oracle per-eigvec keep/drop 1.48e-08; M for target at best k: 0
+   alignment b=closure: error share in pilot eigvec bands [0,16) [16,64) [64,256) [256,512) [512,1024): 0.687 0.150 0.111 0.037 0.015; variance share: 0.415 0.338 0.194 0.042 0.010
+   alignment b=CC1: error share in pilot eigvec bands [0,16) [16,64) [64,256) [256,512) [512,1024): 0.211 0.365 0.287 0.106 0.031; variance share: 0.415 0.338 0.194 0.042 0.010
+   alignment b=v56: error share in pilot eigvec bands [0,16) [16,64) [64,256) [256,512) [512,1024): 0.089 0.249 0.409 0.194 0.059; variance share: 0.415 0.338 0.194 0.042 0.010
+(1b) captured fraction |P e|^2/|e|^2 per family (dim) and held-out variance tr(V^T S V)/n of the family:
+   coherent J=2                                         r=   2: closure 0.5444  CC1 0.0008  v56 0.0062   | var 6.15e-03 -> var/(M=4500) 1.4e-06
+   coherent J=4                                         r=   4: closure 0.6138  CC1 0.0045  v56 0.0089   | var 7.42e-03 -> var/(M=4500) 1.6e-06
+   coherent J=8                                         r=   8: closure 0.6191  CC1 0.0134  v56 0.0178   | var 7.88e-03 -> var/(M=4500) 1.8e-06
+   coherent J=12                                        r=  12: closure 0.6212  CC1 0.0170  v56 0.0232   | var 8.20e-03 -> var/(M=4500) 1.8e-06
+   propagated coherent 15x6                             r=  90: closure 0.8281  CC1 0.5750  v56 0.3549   | var 5.04e-02 -> var/(M=4500) 1.1e-05
+   readout shape 9                                      r=   9: closure 0.2625  CC1 0.0176  v56 0.0138   | var 3.12e-03 -> var/(M=4500) 6.9e-07
+   readout shape 9 + coherent 8                         r=  17: closure 0.6290  CC1 0.0265  v56 0.0236   | var 8.54e-03 -> var/(M=4500) 1.9e-06
+   CC1-closure direction                                r=   1: closure 0.5804  CC1 0.0859  v56 0.0024   | var 6.04e-03 -> var/(M=4500) 1.3e-06
+   tangent T(L<-1) top 8 (energy 0.42)                  r=   8: closure 0.6019  CC1 0.1583  v56 0.0372   | var 2.07e-02 -> var/(M=4500) 4.6e-06
+   tangent T(L<-1) top 32 (energy 0.82)                 r=  32: closure 0.7079  CC1 0.3158  v56 0.1566   | var 4.44e-02 -> var/(M=4500) 9.9e-06
+   tangent T(L<-1) top 128 (energy 1.00)                r= 128: closure 0.8688  CC1 0.6768  v56 0.5100   | var 6.69e-02 -> var/(M=4500) 1.5e-05
+   tangent T(L<-2) top 8 (energy 0.40)                  r=   8: closure 0.5973  CC1 0.0817  v56 0.0348   | var 2.06e-02 -> var/(M=4500) 4.6e-06
+   tangent T(L<-2) top 32 (energy 0.81)                 r=  32: closure 0.7082  CC1 0.3557  v56 0.1681   | var 4.44e-02 -> var/(M=4500) 9.9e-06
+   tangent T(L<-2) top 128 (energy 1.00)                r= 128: closure 0.8704  CC1 0.6800  v56 0.5061   | var 6.70e-02 -> var/(M=4500) 1.5e-05
+   tangent T(L<-4) top 8 (energy 0.34)                  r=   8: closure 0.6205  CC1 0.0951  v56 0.0520   | var 2.02e-02 -> var/(M=4500) 4.5e-06
+   tangent T(L<-4) top 32 (energy 0.76)                 r=  32: closure 0.6953  CC1 0.3368  v56 0.1751   | var 4.43e-02 -> var/(M=4500) 9.8e-06
+   tangent T(L<-4) top 128 (energy 0.99)                r= 128: closure 0.8729  CC1 0.6937  v56 0.5218   | var 6.71e-02 -> var/(M=4500) 1.5e-05
+   tangent T(L<-8) top 8 (energy 0.24)                  r=   8: closure 0.5463  CC1 0.1167  v56 0.0609   | var 1.82e-02 -> var/(M=4500) 4.0e-06
+   tangent T(L<-8) top 32 (energy 0.63)                 r=  32: closure 0.6761  CC1 0.3441  v56 0.2206   | var 4.15e-02 -> var/(M=4500) 9.2e-06
+   tangent T(L<-8) top 128 (energy 0.97)                r= 128: closure 0.8764  CC1 0.7069  v56 0.5283   | var 6.72e-02 -> var/(M=4500) 1.5e-05
+   tangent T(L<-12) top 8 (energy 0.14)                 r=   8: closure 0.2059  CC1 0.0774  v56 0.0968   | var 1.05e-02 -> var/(M=4500) 2.3e-06
+   tangent T(L<-12) top 32 (energy 0.43)                r=  32: closure 0.5377  CC1 0.3169  v56 0.2186   | var 3.06e-02 -> var/(M=4500) 6.8e-06
+   tangent T(L<-12) top 128 (energy 0.88)               r= 128: closure 0.8232  CC1 0.7034  v56 0.5375   | var 6.28e-02 -> var/(M=4500) 1.4e-05
+   tangent T(L<-14) top 8 (energy 0.08)                 r=   8: closure 0.0815  CC1 0.0383  v56 0.0309   | var 6.26e-03 -> var/(M=4500) 1.4e-06
+   tangent T(L<-14) top 32 (energy 0.27)                r=  32: closure 0.3197  CC1 0.1422  v56 0.1261   | var 2.00e-02 -> var/(M=4500) 4.5e-06
+   tangent T(L<-14) top 128 (energy 0.71)               r= 128: closure 0.7036  CC1 0.5976  v56 0.4584   | var 5.24e-02 -> var/(M=4500) 1.2e-05
+   defect-weighted tangent Gram top 8                   r=   8: closure 0.6061  CC1 0.0936  v56 0.0739   | var 1.92e-02 -> var/(M=4500) 4.3e-06
+   defect-weighted tangent Gram top 32                  r=  32: closure 0.7121  CC1 0.3649  v56 0.2162   | var 4.26e-02 -> var/(M=4500) 9.5e-06
+   defect-weighted tangent Gram top 128                 r= 128: closure 0.8760  CC1 0.7392  v56 0.5632   | var 6.72e-02 -> var/(M=4500) 1.5e-05
+   defect-weighted tangent Gram top 256                 r= 256: closure 0.9338  CC1 0.8532  v56 0.7287   | var 7.34e-02 -> var/(M=4500) 1.6e-05
+   oracle rank-1 V = e/|e| (b=closure): risk 1.12e-06 (Rayleigh quotient 5.1606)
+   oracle rank-1 V = e/|e| (b=CC1): risk 1.42e-07 (Rayleigh quotient 0.6526)
+   oracle rank-1 V = e/|e| (b=v56): risk 8.74e-08 (Rayleigh quotient 0.4025)
+(2) held-out projected residual covariance tr(V^T S_z V)/n, and risk at M=4500, per control (fit on pilot):
+   all of R^n                               r=1024  none: 7.82e-02 (risk CC1 1.7e-05) | lin: 6.34e-02 (risk CC1 1.4e-05) | lin+h1: 5.83e-02 (risk CC1 1.3e-05) | lin+h1+gram: 5.83e-02 (risk CC1 1.3e-05)
+   coherent J=8                             r=   8  none: 7.88e-03 (risk CC1 3.6e-06) | lin: 4.99e-03 (risk CC1 2.9e-06) | lin+h1: 3.77e-03 (risk CC1 2.7e-06) | lin+h1+gram: 3.70e-03 (risk CC1 2.7e-06)
+   propagated coherent 15x6                 r=  90  none: 5.04e-02 (risk CC1 1.2e-05) | lin: 3.86e-02 (risk CC1 9.4e-06) | lin+h1: 3.45e-02 (risk CC1 8.4e-06) | lin+h1+gram: 3.44e-02 (risk CC1 8.4e-06)
+   defect-weighted tangent Gram top 256     r= 256  none: 7.34e-02 (risk CC1 1.7e-05) | lin: 5.87e-02 (risk CC1 1.3e-05) | lin+h1: 5.36e-02 (risk CC1 1.2e-05) | lin+h1+gram: 5.35e-02 (risk CC1 1.2e-05)
+   pilot quiet: bottom 512                  r= 512  none: 7.97e-04 (risk CC1 2.0e-06) | lin: 8.06e-04 (risk CC1 2.0e-06) | lin+h1: 8.17e-04 (risk CC1 2.0e-06) | lin+h1+gram: 8.17e-04 (risk CC1 2.0e-06)
+   pilot quiet: bottom 256                  r= 256  none: 8.03e-06 (risk CC1 1.9e-06) | lin: 8.15e-06 (risk CC1 1.9e-06) | lin+h1: 8.27e-06 (risk CC1 1.9e-06) | lin+h1+gram: 8.27e-06 (risk CC1 1.9e-06)
+(1c) oracle lower bounds at M=4500 (e known exactly; no realizable estimator does better):
+   control none         b=closure : best projection 9.66e-07, best linear filter 1.51e-08 (M e^T S^+ e = 267.970; 112 null directions hold 2.1e-08 of |e|^2), rank-1 V=e/|e| 1.12e-06 (Rayleigh 5.161 = 66.0x mean eigenvalue); adjusted score of the rank-1 oracle as M -> inf: 7.88e-08 (v56: 3.1e-09)
+   control none         b=CC1     : best projection 1.28e-07, best linear filter 7.96e-09 (M e^T S^+ e = 232.862; 112 null directions hold 7.2e-09 of |e|^2), rank-1 V=e/|e| 1.42e-07 (Rayleigh 0.653 = 8.3x mean eigenvalue); adjusted score of the rank-1 oracle as M -> inf: 9.97e-09 (v56: 3.1e-09)
+   control none         b=v56     : best projection 1.14e-08, best linear filter 2.04e-09 (M e^T S^+ e = 6.239; 112 null directions hold 5.1e-08 of |e|^2), rank-1 V=e/|e| 8.74e-08 (Rayleigh 0.403 = 5.1x mean eigenvalue); adjusted score of the rank-1 oracle as M -> inf: 6.15e-09 (v56: 3.1e-09)
+   control lin+h1+gram  b=closure : best projection 4.88e-07, best linear filter 1.55e-08 (M e^T S^+ e = 260.136; 98 null directions hold 1.8e-08 of |e|^2), rank-1 V=e/|e| 5.16e-07 (Rayleigh 2.377 = 40.8x mean eigenvalue); adjusted score of the rank-1 oracle as M -> inf: 3.63e-08 (v56: 3.1e-09)
+   control lin+h1+gram  b=CC1     : best projection 9.14e-08, best linear filter 8.03e-09 (M e^T S^+ e = 230.912; 98 null directions hold 5.7e-09 of |e|^2), rank-1 V=e/|e| 9.58e-08 (Rayleigh 0.441 = 7.6x mean eigenvalue); adjusted score of the rank-1 oracle as M -> inf: 6.74e-09 (v56: 3.1e-09)
+   control lin+h1+gram  b=v56     : best projection 1.13e-08, best linear filter 2.51e-09 (M e^T S^+ e = 4.877; 98 null directions hold 2.3e-08 of |e|^2), rank-1 V=e/|e| 6.23e-08 (Rayleigh 0.287 = 4.9x mean eigenvalue); adjusted score of the rank-1 oracle as M -> inf: 4.39e-09 (v56: 3.1e-09)
+   controlled (lin+h1+gram) quiet subspace, b=closure: best k=1024, captured 0.0000, risk 4.06e-06 (b alone 4.06e-06); variance reduction by the control on all of R^n: 1.34x
+   controlled (lin+h1+gram) quiet subspace, b=CC1: best k=1024, captured 0.0000, risk 1.86e-06 (b alone 1.86e-06); variance reduction by the control on all of R^n: 1.34x
+   controlled (lin+h1+gram) quiet subspace, b=v56: best k=1024, captured 0.0000, risk 1.48e-08 (b alone 1.48e-08); variance reduction by the control on all of R^n: 1.34x
+(3) metric codes on held-out samples (z = V^T(Y - b) - c with V = R^n, b = CC1; w = |z|^2). A gain needs int w Psi_H / int w of order d^2/16 (relative J reduction (4 G / (d E w))^2 / 8 at the best t); the ceiling bounds every density:
+   control none: IS ceiling (any density q, q* ~ |z|): J(q*)/J(1) = (E|z|)^2/E|z|^2 = 0.9867 for V = R^n, 0.6337 for the rank-1 oracle V = e_CC1/|e_CC1|
+   control none: E w = 8.008e+01; single ellipsoid along pilot M0: held-out first-order slope (d/2) tr(H M0_B)/E w = +5.492e-03 per unit t (|H|_F = 1)
+      single-ellipsoid exact held-out J(q_t)/J(1): t=-1.0:1.6597 t=-0.5:1.1362 t=-0.2:1.0331 t=+0.2:1.0302 t=+0.5:1.1292 t=+1.0:1.6326
+      H from W1^T W1               : int w Psi_H / int w = +6.034e-02 +- 1.5e+00; exact J(q_mix)/J(1) t=0.01:1.0012 t=0.02:1.0154 t=0.04:1.1601 t=0.08:2.7836 | rank-1 oracle z: -5.16e+00 +- 2.5e+00
+      H from input-Jacobian Gram   : int w Psi_H / int w = -2.385e-01 +- 1.5e+00; exact J(q_mix)/J(1) t=0.01:1.0012 t=0.02:1.0156 t=0.04:1.1607 t=0.08:2.7858 | rank-1 oracle z: -2.20e-01 +- 2.5e+00
+      H from pilot M0              : int w Psi_H / int w = +6.998e-01 +- 1.5e+00; exact J(q_mix)/J(1) t=0.01:1.0011 t=0.02:1.0153 t=0.04:1.1600 t=0.08:2.7831 | rank-1 oracle z: +4.76e-01 +- 2.6e+00
+   control lin+h1+gram: IS ceiling (any density q, q* ~ |z|): J(q*)/J(1) = (E|z|)^2/E|z|^2 = 0.9891 for V = R^n, 0.6348 for the rank-1 oracle V = e_CC1/|e_CC1|
+   control lin+h1+gram: E w = 5.965e+01; single ellipsoid along pilot M0: held-out first-order slope (d/2) tr(H M0_B)/E w = +4.022e-03 per unit t (|H|_F = 1)
+      single-ellipsoid exact held-out J(q_t)/J(1): t=-1.0:1.6565 t=-0.5:1.1353 t=-0.2:1.0327 t=+0.2:1.0306 t=+0.5:1.1301 t=+1.0:1.6355
+      H from W1^T W1               : int w Psi_H / int w = -2.197e+00 +- 1.4e+00; exact J(q_mix)/J(1) t=0.01:1.0014 t=0.02:1.0161 t=0.04:1.1618 t=0.08:2.7902 | rank-1 oracle z: -2.50e+00 +- 2.5e+00
+      H from input-Jacobian Gram   : int w Psi_H / int w = -1.988e+00 +- 1.4e+00; exact J(q_mix)/J(1) t=0.01:1.0014 t=0.02:1.0161 t=0.04:1.1620 t=0.08:2.7904 | rank-1 oracle z: -1.38e+00 +- 2.4e+00
+      H from pilot M0              : int w Psi_H / int w = -1.469e-01 +- 1.5e+00; exact J(q_mix)/J(1) t=0.01:1.0012 t=0.02:1.0156 t=0.04:1.1609 t=0.08:2.7869 | rank-1 oracle z: -8.99e-01 +- 2.5e+00

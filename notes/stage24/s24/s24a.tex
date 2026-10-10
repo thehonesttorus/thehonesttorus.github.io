@@ -1,0 +1,157 @@
+\begin{abstract}
+This note is written against the companion \emph{Weighted activation graphs and certified approximation}
+(10 October 2026). It does three things. (i) Every finite claim of the companion was re-derived and checked
+independently (ten checks, exact rationals where finite; all pass). Its wall formula $\mu=\sum_e S_e j_e$ is
+re-proved in a Stein form, $\E F=\E\,\Delta F$, which shows that the layerwise Gaussian closure is \emph{exactly} the
+mean-field version of the wall sum. (ii) For the physical wall graph we prove the one-particle upper bound
+$\gap\le 1/\lambda_{\max}(\Gamma^{-1/2}\cov(g)\,\Gamma^{-1/2})$, where $g$ is the gate vector and $\Gamma$ the diagonal of
+one-way wall fluxes. Numerically the bound is attained to within $0.5\%$ on every Gaussian sign law tested, and exactly
+on the companion's own crowded-sector family. Its obstruction in \S6.1 is therefore a statement about the top eigenvalue
+of the gate covariance. (iii) At width $1024$ on the official networks we measure the quantities that the companion's
+remaining theorem depends on. These are the active-cardinality and excitation levels, the wall rates, the
+spectral-independence radius, cross-depth gate dependence, the wall-chain gaps, and the visible spectrum of the terminal
+ellipsoid with the location of first-pass errors in it.
+\end{abstract}
+
+\maketitle
+
+\section{Four indices, measured}\label{sec:levels}
+
+The companion separates MLP depth $\ell$, active cardinality $r=|S_\ell|$, information level $k$ and spectral depth $m$.
+Two of these can be read off the real networks directly (\texttt{scripts/s24\_kikuchi.py}, net 0, $N=2^{16}$ and $2^{17}$
+Gaussian inputs, Table~\ref{tab:levels}).
+
+\emph{Active cardinality is pinned.} On every layer of net 0, $r/n=0.50\pm0.03$ in the mean. Its standard deviation is
+$0.0155n$ at layer $1$, the binomial value $\sqrt{n}/2$ for independent fair gates, and falls to $0.008n$, about $8$
+neurons, at depth. That is tighter than independent coins. The level is also decoupled from the collective mode, because
+the gates of neurons with $a_i=w_i\cdot\hat\mu>0$ and $a_i<0$ respond to it in opposite directions. Consecutive levels are
+uncorrelated ($|\corr(r_\ell,r_{\ell+1})|\le0.06$). The next level is predicted twice as well by the current activation
+\emph{values} as by the current \emph{signs}: linear $R^2$ is $0.44$--$0.60$ against $0.26$--$0.37$. This quantifies
+\S1.1 of the companion at width $1024$.
+
+\emph{The excitation level shrinks with depth.} Let $S^{\rm ref}_\ell=\{i:\alpha_{\ell,i}>0\}$ be the closure's reference
+pattern. The number of gates in which an input deviates from it, $|S_\ell\triangle S^{\rm ref}_\ell|$, falls from $n/2$
+at layer $1$ to $0.31n$, $0.25n$, \dots, $0.085n$ (about $87$ gates) at layer $16$. The closure's prediction
+$\sum_i\Phi(-|\alpha_{\ell,i}|)$ agrees to three digits, and the spread is $10$--$16$ gates. A partial assignment that
+records the deviations from $S^{\rm ref}$ is therefore much shorter at depth than one recording the active set.
+
+\section{The wall graph: three independent derivations}\label{sec:wall}
+
+\subsection{The wall formula in Stein form}
+Let $F=a_L$, which is piecewise linear and positively homogeneous with $\nabla F=M(x)=D_LW_L\cdots D_1W_1$. Euler's
+identity and Stein's lemma, applied twice, give $\E F(X)=\E[M(X)X]=\E\,\Delta F$. In generic position the distributional
+derivative of a gate is $\partial_j\mathbf 1\{z_{\ell,i}>0\}=\delta(z_{\ell,i})\,\partial_jz_{\ell,i}$, and $e_i\T
+W_\ell D_{\ell-1}\cdots W_1=\nabla z_{\ell,i}\T$ on the wall. Hence
+\begin{equation}\label{eq:stein}
+\mu=\sum_{\ell=1}^L\sum_{i=1}^n\E\Big[\delta(z_{\ell,i})\,\|\nabla z_{\ell,i}\|^2\,A_\ell(X)e_i\Big]
+=\sum_{\ell,i}\int_{\{z_{\ell,i}=0\}}\|\nabla z_{\ell,i}\|\,A_\ell e_i\,d\sigma_\gamma,\qquad
+A_\ell=D_LW_L\cdots D_{\ell+1}W_{\ell+1}.
+\end{equation}
+By the co-area formula this is the companion's $\sum_eS_ej_e$ with $j_e=\|v_e\|A_{>b}e_i$, its eq.~(12).
+
+\begin{remark}[Generic position is needed for the $\delta$ form]
+On narrow nets ($n=6,8$, $L=3,4$) whole hidden layers switch off with positive probability. A pre-activation can then
+vanish identically on an open set, and the $\delta$ form of \eqref{eq:stein} gives wrong values. On those nets a
+window-estimator check misses by $30\%$. The aggregate-jump form, the companion's eq.~(9), remains valid there. On generic
+nets ($n=24$ with $L=3$, and $n=32$ with $L=4$, with no dead hidden layer in $2\times10^6$ samples) the window and
+flip-count estimators of \eqref{eq:stein} both agree with direct Monte Carlo to within their sampling error, $2$--$5\%$
+max over neurons (\texttt{theory24/check\_kink\_sum.py}).
+\end{remark}
+
+\subsection{The rotation clock}
+Under the Mehler rotation $X_s=X\cos s+Y\sin s$ ($Y$ an independent copy), paths are smooth and the gate process jumps
+along single-flip arrows. The velocity $\dot z=\nabla z\cdot Y$ is independent of $X$ at $s=0$, so Rice's formula gives
+the stationary one-way flux through a wall $e$:
+\begin{equation}\label{eq:rice}
+c_e=\tfrac12\,\E\big[|\dot z|\,\delta(z)\,\mathbf 1_e\big]=\tfrac12\sqrt{2/\pi}\;S_e=S_e/\sqrt{2\pi}\quad\text{per unit angle}.
+\end{equation}
+At layer $1$ this is $c=(2\pi)^{-1}\,\Pr(\text{signs of }z_{-i}\mid z_i=0)$, a conditional orthant probability with the
+Schur-complement covariance. Its flip rate is exactly $1/\pi$ per neuron, whatever $W_1$ is. The correlated pair
+$(X,X_s)$ has the law of the companion's OU pair when $\cos s=e^{-t}$. Then $s\approx\sqrt{2t}$, and
+\eqref{eq:rice} reproduces its constant: $\Pr(X\in C,X_t\in D)\approx\sqrt{2t}\,S_{CD}/\sqrt{2\pi}=\sqrt{t/\pi}\,S_{CD}$.
+Both were checked numerically: facet fluxes against Schur-complement orthants, and the $\sqrt{t/\pi}$ constant.
+
+\subsection{The Gaussian closure is the mean-field wall sum}
+\begin{proposition}\label{prop:closure}
+Let $m^{\rm cl}_\ell=\sigma_\ell\varphi(\alpha_\ell)+\Phi(\alpha_\ell)\circ(W_\ell m^{\rm cl}_{\ell-1})$ be the closure
+recursion, and $T_{L\leftarrow\ell}=\prod_{k>\ell}\operatorname{diag}\Phi(\alpha_k)W_k$ its tangent. Then exactly
+\[
+m^{\rm cl}_L=\sum_{\ell=1}^L T_{L\leftarrow\ell}\big(\sigma_\ell\circ\varphi(\alpha_\ell)\big).
+\]
+\end{proposition}
+\begin{proof}
+Unroll the recursion; $m_0=0$.
+\end{proof}
+Compare \eqref{eq:stein}. The closure replaces the wall measure-weighted gradient,
+$\E[\delta(z_{\ell,i})\|\nabla z_{\ell,i}\|^2]$, by its Gaussian value $\sigma_{\ell,i}\varphi(\alpha_{\ell,i})$. It also
+replaces the conditional downstream jump $\E[A_\ell e_i\mid\text{wall}]$ by the product of averaged gates
+$T_{L\leftarrow\ell}e_i$. Every closure error is therefore exactly a sum over layers of a \emph{wall-measure} error and a
+\emph{downstream-jump} error. The identity holds to $10^{-16}$ (\texttt{theory24/check\_kink\_sum.py}). At width $1024$
+the aggregate wall rate per layer is predicted by the Gaussian Rice formula
+$(1/\pi)e^{-\alpha_i^2/2}\sqrt{\E\dot z_i^2}/\sigma_i$ to within $0.1$--$0.6\%$ on every layer (Table~\ref{tab:levels}).
+The wall-measure channel is thus not where a first pass loses accuracy in aggregate.
+
+\section{The gap of the physical wall chain}\label{sec:gap}
+
+Fix one layer. Let $g\in\{0,1\}^n$ be its gate vector with law $p$. Its wall chain has one-way conductances $c_i(s_{-i})$
+for flipping gate $i$ at the rest-pattern $s_{-i}$, and $\Gamma_i=\sum_{s_{-i}}c_i(s_{-i})$ is gate $i$'s total one-way
+flux, half its flip rate. For Gaussian $z_i$ with standardised mean $\alpha_i$, $\Gamma_i=e^{-\alpha_i^2/2}/(2\pi)$.
+
+\begin{proposition}[One-particle bound]\label{prop:lin}
+$\displaystyle\gap\le\lambda_{\rm lin}:=\frac1{\lambda_{\max}\big(\Gamma^{-1/2}\cov_p(g)\,\Gamma^{-1/2}\big)}$.
+At $\alpha=0$ this is $\lambda_{\rm lin}=\frac{2/\pi}{\lambda_{\max}(\corr(g))}$.
+\end{proposition}
+\begin{proof}
+Test $f=v\cdot g$. Every arrow of gate $i$ changes $f$ by $v_i$. Hence the Dirichlet form is
+$\mathcal E(f,f)=\sum_iv_i^2\Gamma_i$, while $\operatorname{Var}f=v\T\cov(g)v$. Minimise the quotient.
+\end{proof}
+
+\begin{proposition}[Two gates]\label{prop:two}
+For two gates of a centred Gaussian pair with correlation $\rho$, the gap equals $\lambda_{\rm lin}=(2/\pi)/(1+\tfrac2\pi
+\arcsin\rho)$. For two unit rows at angle $\pi\varepsilon$ this is $1/(\pi(1-\varepsilon))\ge1/\pi$.
+\end{proposition}
+\begin{proof}
+The four patterns form a cycle with stationary law $(a,b,a,b)$, $a=\frac14+\frac{\arcsin\rho}{2\pi}$. Given $z_i=0$ the
+other coordinate is symmetric, so all four conductances equal $1/(4\pi)$. The reflections (swap the two gates; flip both)
+diagonalise the generator. $g_1+g_2-1$ has Rayleigh quotient $1/(2\pi a)$, $g_1-g_2$ has $1/(2\pi b)$, and the centred
+parity has at least $4/\pi$. Also $\corr(g_1,g_2)=\frac2\pi\arcsin\rho$ by Sheppard's formula.
+\end{proof}
+
+The contrast with the information walk is the point of Proposition~\ref{prop:two}. For the same two rows the companion's
+random-site heat-bath walk has spectrum $\{1,1-\varepsilon,\varepsilon,0\}$, so its gap $\varepsilon\to0$ as the rows
+align. The physical chain instead passes quickly through the thin wedge cells. Parallel walls are not an obstruction for
+it.
+
+\begin{remark}[Near-equality, and the companion's crowded sectors]\label{rem:near}
+Exact enumeration (\texttt{theory24/gap\_level1.py}, Genz orthants at relative tolerance $10^{-6}$) gives
+$\gap/\lambda_{\rm lin}\in[0.995,1.000]$ for every Gaussian sign law tested. The cases cover $n=5,7,8$; square Gaussian
+rows; two collective modes plus noise; ill-conditioned Wishart covariances; and standardised means up to $N(0,2^2)$. The
+gap eigenvector is $99.7$--$99.995\%$ linear in the gates. Equality is \emph{not} exact once means are present (ratios
+$0.9948$--$0.9997$), so the statement is a near-equality, not an identity.
+
+For the companion's \S6.1 family ($n$ equiangular lines in $\R^2$, $m=2n$ sectors) the ratio is $1.0000$, and
+$\lambda_{\max}(\corr g)=4n/\pi^2$ exactly as $n$ grows. Its local gap $\Theta(1/m)$ is therefore precisely
+$(2/\pi)/\lambda_{\max}(\corr g)$. The obstruction is a large top eigenvalue of the gate covariance, produced by many
+nearly parallel walls in few dimensions.
+\end{remark}
+
+\begin{conjecture}\label{conj:lin}
+For the wall chain of any Gaussian sign law, $\gap\ge c\,\lambda_{\rm lin}$ with an absolute constant $c$; numerically
+$c\ge0.99$.
+\end{conjecture}
+
+\begin{remark}[Isoperimetry does not suffice]
+The Gaussian isoperimetric inequality gives every wall chain the conductance $h\ge1/\pi$ (sets of mass at most
+$\tfrac12$; use $I(p)/p\ge2\varphi(0)$). Cheeger's inequality, however, divides by the maximal out-rate, which grows
+without bound on thin cells. The companion's crowded-sector family shows that the gap really does vanish, so a gap theorem
+must use the gate covariance, as Proposition~\ref{prop:lin} does.
+\end{remark}
+
+\emph{Random rows in high dimension are not crowded.} For square random $W$ the row correlations follow the
+Marchenko--Pastur law with top eigenvalue $4$. Sheppard's formula then gives $\corr(g)\approx(1-\frac2\pi)I+\frac2\pi R$,
+so $\lambda_{\max}(\corr g)\approx 1+3\cdot\frac2\pi=2.91$. The measured layer-1 value on the official nets is $2.95$, and
+$\lambda_{\rm lin}\approx0.21$ per unit rotation angle. Deeper layers have larger gate correlations, but their wall rates
+are also more heterogeneous: gates that are nearly determined have both small variance and small flux. In the
+rate-normalised form of Proposition~\ref{prop:lin} the bound stays at $0.20$--$0.33$ on every layer
+(Table~\ref{tab:gap}). For deep layers the gate law is not Gaussian; there Proposition~\ref{prop:lin} is still an upper
+bound, and the near-equality is conjectural.

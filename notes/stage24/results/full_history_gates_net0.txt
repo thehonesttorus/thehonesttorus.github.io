@@ -1,0 +1,9 @@
+net 0: N = 65536, 14748 live gates of 16384, 314s
+  gate correlation of the whole stack: top eigenvalues 70.9 63.2 58.8 56.1 54.8 52.6 (MP noise edge 2.17)
+  rate-normalised covariance: top eigenvalues 41.6 37.8 35.9 34.1 32.9 32.4 -> full-history wall-chain gap <= 1/lambda_max = 0.0240 per unit angle
+  layer shares of the top rate-normalised eigenvector: 0.035 0.042 0.049 0.063 0.072 0.077 0.087 0.083 0.070 0.074 0.076 0.071 0.057 0.054 0.051 0.038
+  window of  1 layers: gap bound per start layer 1:0.211 2:0.215 3:0.202 4:0.193 5:0.202 6:0.200 7:0.207 8:0.197 9:0.223 10:0.227 11:0.229 12:0.243 13:0.280 14:0.315 15:0.286 16:0.332
+  window of  2 layers: gap bound per start layer 1:0.129 2:0.128 3:0.120 4:0.115 5:0.115 6:0.114 7:0.114 8:0.117 9:0.125 10:0.126 11:0.130 12:0.141 13:0.161 14:0.163 15:0.169
+  window of  4 layers: gap bound per start layer 1:0.075 3:0.068 5:0.064 7:0.065 9:0.070 11:0.077 13:0.089
+  window of  8 layers: gap bound per start layer 1:0.040 5:0.038 9:0.043
+  window of 16 layers: gap bound per start layer 1:0.024
