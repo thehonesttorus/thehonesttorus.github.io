@@ -1,0 +1,4 @@
+net 0 eps0.0001: raw 1.47355e-08 | F 4.87235e+11 (0.22157 B) residual wall 0.930 s
+net 0 eps0.01: raw 1.48520e-08 | F 4.87235e+11 (0.22157 B) residual wall 0.898 s
+net 0 eps0.00001: raw 1.47461e-08 | F 4.87235e+11 (0.22157 B) residual wall 0.991 s
+done

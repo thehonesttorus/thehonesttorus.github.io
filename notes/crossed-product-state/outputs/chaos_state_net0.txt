@@ -1,0 +1,26 @@
+=== network 0, jets = true: chaos-state slices vs truth and vs chain (active set; energies noise-free)
+layer | N sources | D3: R2 chaos, R2 chain, best scale chaos | D21: R2 chaos, R2 chain, best scale chaos | D21: share of the chain's error explained by (chaos - chain) at coefficient c | cov: R2 of L L^T for the truth's off-diagonal covariance
+   2 |  2048 | D3: chaos   81.9 chain  100.0 scale +1.51 | D21: chaos   83.9 chain   99.9 scale +1.41 | chain-err share   2.5% (c -0.01) | cov R2  89.8
+   3 |  3072 | D3: chaos   68.8 chain   99.9 scale +1.90 | D21: chaos   70.9 chain   99.9 scale +1.77 | chain-err share  18.8% (c -0.03) | cov R2  84.2
+   4 |  4096 | D3: chaos   58.9 chain   99.9 scale +2.33 | D21: chaos   60.1 chain   99.8 scale +2.18 | chain-err share  26.3% (c -0.04) | cov R2  78.7
+   6 |  6144 | D3: chaos   45.9 chain   99.9 scale +3.23 | D21: chaos   46.8 chain   99.7 scale +3.01 | chain-err share  17.7% (c -0.03) | cov R2  69.4
+   8 |  8192 | D3: chaos   36.6 chain   99.8 scale +4.12 | D21: chaos   37.1 chain   99.6 scale +3.90 | chain-err share  26.2% (c -0.04) | cov R2  61.0
+  10 | 10240 | D3: chaos   31.1 chain   99.8 scale +5.04 | D21: chaos   31.6 chain   99.5 scale +4.70 | chain-err share  19.0% (c -0.04) | cov R2  54.9
+  12 | 12288 | D3: chaos   28.2 chain   99.7 scale +5.81 | D21: chaos   28.2 chain   99.4 scale +5.53 | chain-err share  22.4% (c -0.04) | cov R2  48.8
+  13 | 13312 | D3: chaos   26.7 chain   99.7 scale +6.11 | D21: chaos   26.4 chain   99.4 scale +5.89 | chain-err share  15.2% (c -0.04) | cov R2  46.2
+  14 | 14336 | D3: chaos   25.6 chain   99.6 scale +6.46 | D21: chaos   25.6 chain   99.4 scale +6.13 | chain-err share  14.6% (c -0.04) | cov R2  45.0
+  15 | 15360 | D3: chaos   24.3 chain    n/a scale +6.78 | D21: chaos   24.2 chain    n/a scale +6.52 | cov R2  42.6
+=== network 0, jets = chain: chaos-state slices vs truth and vs chain (active set; energies noise-free)
+layer | N sources | D3: R2 chaos, R2 chain, best scale chaos | D21: R2 chaos, R2 chain, best scale chaos | D21: share of the chain's error explained by (chaos - chain) at coefficient c | cov: R2 of L L^T for the truth's off-diagonal covariance
+   2 |  2048 | D3: chaos   81.9 chain  100.0 scale +1.51 | D21: chaos   83.9 chain   99.9 scale +1.41 | chain-err share   2.5% (c -0.01) | cov R2  89.8
+   3 |  3072 | D3: chaos   68.8 chain   99.9 scale +1.90 | D21: chaos   70.9 chain   99.9 scale +1.77 | chain-err share  18.8% (c -0.03) | cov R2  84.2
+   4 |  4096 | D3: chaos   58.9 chain   99.9 scale +2.33 | D21: chaos   60.1 chain   99.8 scale +2.18 | chain-err share  26.3% (c -0.04) | cov R2  78.7
+   6 |  6144 | D3: chaos   45.9 chain   99.9 scale +3.23 | D21: chaos   46.8 chain   99.7 scale +3.01 | chain-err share  17.7% (c -0.03) | cov R2  69.4
+   8 |  8192 | D3: chaos   36.6 chain   99.8 scale +4.12 | D21: chaos   37.1 chain   99.6 scale +3.90 | chain-err share  26.2% (c -0.04) | cov R2  61.0
+  10 | 10240 | D3: chaos   31.1 chain   99.8 scale +5.04 | D21: chaos   31.6 chain   99.5 scale +4.70 | chain-err share  19.0% (c -0.04) | cov R2  54.9
+  12 | 12288 | D3: chaos   28.2 chain   99.7 scale +5.81 | D21: chaos   28.2 chain   99.4 scale +5.53 | chain-err share  22.4% (c -0.04) | cov R2  48.8
+  13 | 13312 | D3: chaos   26.7 chain   99.7 scale +6.11 | D21: chaos   26.5 chain   99.4 scale +5.89 | chain-err share  15.2% (c -0.04) | cov R2  46.2
+  14 | 14336 | D3: chaos   25.6 chain   99.6 scale +6.45 | D21: chaos   25.6 chain   99.4 scale +6.13 | chain-err share  14.6% (c -0.04) | cov R2  45.0
+  15 | 15360 | D3: chaos   24.4 chain    n/a scale +6.78 | D21: chaos   24.2 chain    n/a scale +6.52 | cov R2  42.6
+
+[exit 0 after 28s on 20 visible cores, cpu=4.0, code 1b1bbcbdbe]

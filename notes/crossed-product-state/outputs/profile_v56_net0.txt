@@ -1,0 +1,195 @@
+/home/user/thehonesttorus.github.io/workbench/k3work/estimator_final_v56.py:973: FlopscopeWarning: stats.norm.pdf promoted its float32 input to float64 to match scipy.stats. If float64 output was not intended, cast the result back with result.astype(np.float32) before downstream operations; float64 operations are billed at twice the float32 dtype rate.
+  flops.stats.norm.pdf(v)
+/home/user/thehonesttorus.github.io/workbench/k3work/estimator_final_v56.py:974: FlopscopeWarning: stats.norm.cdf promoted its float32 input to float64 to match scipy.stats. If float64 output was not intended, cast the result back with result.astype(np.float32) before downstream operations; float64 operations are billed at twice the float32 dtype rate.
+  flops.stats.norm.cdf(v)
+/home/user/thehonesttorus.github.io/workbench/k3work/estimator_final_v56.py:988: SymmetryLossWarning: Symmetry lost along dims (1, 2): slicing removed all symmetric dim groups. Use as_symmetric() to re-tag if you know the result is symmetric. Suppress with flops.configure(symmetry_warnings=False).
+  fnp.einsum("tij,ti,tj,tg->gij", t3, t3[:, :, 0], t3[:, 0, :], g3)
+/home/user/thehonesttorus.github.io/workbench/k3work/estimator_final_v56.py:989: SymmetryLossWarning: Symmetry lost along dims (1, 2): slicing removed all symmetric dim groups. Use as_symmetric() to re-tag if you know the result is symmetric. Suppress with flops.configure(symmetry_warnings=False).
+  fnp.einsum("ti,ti,tg->gi", t3[:, :, 0], t3[:, :, 1], g3)
+/home/user/thehonesttorus.github.io/workbench/k3work/estimator_final_v56.py:990: SymmetryLossWarning: Symmetry lost along dims (0, 1): slicing removed all symmetric dim groups. Use as_symmetric() to re-tag if you know the result is symmetric. Suppress with flops.configure(symmetry_warnings=False).
+  fnp.einsum("iq,kqn->kin", m[:, :16], t3[:, :16, :])
+/home/user/thehonesttorus.github.io/workbench/k3work/estimator_final_v56.py:990: SymmetryLossWarning: Symmetry lost along dims (1, 2): slicing removed all symmetric dim groups. Use as_symmetric() to re-tag if you know the result is symmetric. Suppress with flops.configure(symmetry_warnings=False).
+  fnp.einsum("iq,kqn->kin", m[:, :16], t3[:, :16, :])
+/home/user/thehonesttorus.github.io/workbench/k3work/estimator_final_v56.py:991: SymmetryLossWarning: Symmetry lost along dims (1, 2): slicing removed all symmetric dim groups. Use as_symmetric() to re-tag if you know the result is symmetric. Suppress with flops.configure(symmetry_warnings=False).
+  fnp.einsum("ki,kc->ic", t3[:, :, 0], t3[:, :, 1])
+/home/user/thehonesttorus.github.io/workbench/k3work/estimator_final_v56.py:993: SymmetryLossWarning: Symmetry lost along dims (1, 2): slicing removed all symmetric dim groups. Use as_symmetric() to re-tag if you know the result is symmetric. Suppress with flops.configure(symmetry_warnings=False).
+  fnp.einsum("kij,kj->ki", t3, t3[:, 0, :])
+/home/user/thehonesttorus.github.io/workbench/k3work/estimator_final_v56.py:994: SymmetryLossWarning: Symmetry lost along dims (1, 2): slicing removed all symmetric dim groups. Use as_symmetric() to re-tag if you know the result is symmetric. Suppress with flops.configure(symmetry_warnings=False).
+  fnp.einsum("ki,ki->i", t3[:, :, 0], t3[:, :, 1])
+/home/user/thehonesttorus.github.io/workbench/k3work/estimator_final_v56.py:995: SymmetryLossWarning: Symmetry lost along dims (1, 2): slicing removed all symmetric dim groups. Use as_symmetric() to re-tag if you know the result is symmetric. Suppress with flops.configure(symmetry_warnings=False).
+  fnp.einsum("kij,kqj->iq", t3, t3[:, :16, :])
+/home/user/thehonesttorus.github.io/workbench/k3work/estimator_final_v56.py:2032: FlopscopeWarning: stats.norm.pdf promoted its float32 input to float64 to match scipy.stats. If float64 output was not intended, cast the result back with result.astype(np.float32) before downstream operations; float64 operations are billed at twice the float32 dtype rate.
+  phi = flops.stats.norm.pdf(alpha).astype(f32)
+/home/user/thehonesttorus.github.io/workbench/k3work/estimator_final_v56.py:2033: FlopscopeWarning: stats.norm.cdf promoted its float32 input to float64 to match scipy.stats. If float64 output was not intended, cast the result back with result.astype(np.float32) before downstream operations; float64 operations are billed at twice the float32 dtype rate.
+  Phi = flops.stats.norm.cdf(alpha).astype(f32)
+/home/user/thehonesttorus.github.io/workbench/k3work/estimator_final_v56.py:1867: SymmetryLossWarning: Symmetry lost along dims (0, 1): add — no symmetry groups shared by both operands. Use as_symmetric() to re-tag if you know the result is symmetric. Suppress with flops.configure(symmetry_warnings=False).
+  _M56 = fnp.add(_C56, fnp.diag(var + P4_EPS * fnp.mean(var)), out=NN("v56m"))
+/home/user/thehonesttorus.github.io/workbench/k3work/estimator_final_v56.py:1324: FlopscopeWarning: stats.norm.cdf promoted its float32 input to float64 to match scipy.stats. If float64 output was not intended, cast the result back with result.astype(np.float32) before downstream operations; float64 operations are billed at twice the float32 dtype rate.
+  _ph = flops.stats.norm.cdf(_al).astype(f32)
+/home/user/thehonesttorus.github.io/workbench/k3work/estimator_final_v56.py:1393: SymmetryLossWarning: Symmetry lost along dims (0, 1): add — no symmetry groups shared by both operands. Use as_symmetric() to re-tag if you know the result is symmetric. Suppress with flops.configure(symmetry_warnings=False).
+  Sg = Sj if Sg is None else Sg + Sj
+/home/user/thehonesttorus.github.io/workbench/k3work/estimator_final_v56.py:1437: SymmetryLossWarning: Symmetry lost along dims (0, 1): subtract — no symmetry groups shared by both operands. Use as_symmetric() to re-tag if you know the result is symmetric. Suppress with flops.configure(symmetry_warnings=False).
+  Sg = Sg - S_s
+/home/user/thehonesttorus.github.io/workbench/k3work/estimator_final_v56.py:1412: SymmetryLossWarning: Symmetry lost along dims (0, 1): add — no symmetry groups shared by both operands. Use as_symmetric() to re-tag if you know the result is symmetric. Suppress with flops.configure(symmetry_warnings=False).
+  G2 = S_s if kb == 0 else S_s + U @ (S2 @ U.T)
+net 0: raw 1.4771e-08  total 4.8724e+11 FLOPs = 0.2216 B = 226.9 units (2n^3)
+
+== by call site in _predict_core (units, % of total)
+   87.13  38.4%  L1622: D3, D21 = self._dslices(A_rd, P_rd, Z_st, L_st, w2b_list, s_list, e_list,
+   63.72  28.1%  L1468: _family(W, w32, 2 * ka, 2 * k + extra, k if extra else None, comp_prev)
+   17.33   7.6%  L1878: _Z56 = fnp.linalg.solve(_M56, self._y56.T)
+   14.16   6.2%  L1453: smm.mm(Qc[None, None], fap4[2 * fa_off:2 * (fa_off + m1)],
+    6.66   2.9%  L1500: C_pre = self._sym_product(WC, w32, n, NN("cpre"), min(CPRE_LEV, s_lev))
+    6.16   2.7%  L1458: smm.mm(QU[None, None], fap24[:2 * kb], legs4["AP1"][:2 * kb],
+    3.34   1.5%  L1290: smm.hub(nat4[2 * j:2 * j + 2], jb4, Yq[None], smm.level(n, n, r_old, s_sb, JN_MN), JN_MN)
+    3.33   1.5%  L1286: smm.mm(Om.T[None, None], nat4[2 * j:2 * j + 2], jb4,
+    3.27   1.4%  L1363: smm.mm((Qn if QnF is None else QnF).T[None, None], nat4[2 * j:2 * j + 2], fap4_new[2 * m1:2 * m1 + 2],
+    3.25   1.4%  L1374: smm.mm(Tq[None, None], fap4[2 * fa_off:2 * (fa_off + m1)], fap4_new[:2 * m1],
+    1.68   0.7%  L1333: fnp.multiply(_sq, _mmj(W, Qn, Yq), out=Yq)
+    1.66   0.7%  L1335: QnF = _mmj(W.T, fnp.multiply(_sq, _Qt, out=Yq1), pool.get("zt", (n, r_old)))
+    1.57   0.7%  L1334: _Qt, _ = fnp.linalg.qr(Yq)
+    1.29   0.6%  L1488: _family(W, w32, 0, 2, 0, comp_prev)
+    1.05   0.5%  L2103: PK2 = [fnp.einsum("tij,ti,tj->ij", ABstack[t0:t1], WL2[t0:t1], WR2[t0:t1]) if t1 > t0
+    1.02   0.5%  L1303: fnp.matmul(Qp, Sfull @ _g, out=Yq2)
+    0.88   0.4%  L1390: Sj = fnp.einsum("an,bn->ab", _xa, _xa) + fnp.einsum("an,bn->ab", _xp, _xp)
+    0.78   0.3%  L1371: Tq = Qn.T @ Qp if QnF is None else QnF.T @ Qp   # (r, r) rotation of the old factors
+    0.62   0.3%  L1470: Z_st = fnp.matmul(WDb, Z_st, out=pool.get(("z", z_side), (L - 1, n, r + 2))[:k])
+    0.53   0.2%  L1424: smm.mm(T2[None, None], fap24[:2 * kb], fap24_new[:2 * kb], smm.level(r2, r2, n, s_sb, SB_MN), SB_MN)
+    0.50   0.2%  L1199: C_pre = fnp.einsum("ia,ib->ab", w32, w32)
+    0.49   0.2%  L1409: S_s = fnp.einsum("an,bn->ab", _xa, _xa) + fnp.einsum("an,bn->ab", _xp, _xp)
+    0.49   0.2%  L1378: Sg = Tq @ (Sg @ Tq.T)
+    0.47   0.2%  L1498: C56_last = _zero_diag(self._sym_product(WC, w32, n, NN("cpre"), min(CPRE_LEV, s_lev)))
+    0.41   0.2%  L1457: QU = fnp.matmul(Qc, U, out=pool.get("qu", (n, r2)))
+    0.39   0.2%  L1302: _g = fnp.einsum("ia,ib->ab", Qp, Qp) if ("b" in OPT and Om is Qp) else Qp.T @ Om
+    0.37   0.2%  L1448: Qc = _mmj(WD, Qc, pool.get(("qc", qc_side), (n, r_old)))
+    0.36   0.2%  L1415: Un, _ = fnp.linalg.qr(G2 @ Om2)
+    0.35   0.2%  L1684: _Y = k22q @ (k22q @ _Qk)
+    0.29   0.1%  L1419: fnp.matmul(Un.T, FA1, out=fap2_new[kb, 0])
+    0.29   0.1%  L1420: fnp.matmul(Un.T, FP1, out=fap2_new[kb, 1])
+    0.26   0.1%  L2098: fnp.multiply(b2[a_], b2[b_], out=abbuf[t_])
+    0.18   0.1%  L1686: _lb, _Ub = fnp.linalg.eigh(_Qk.T @ (k22q @ _Qk))
+    0.18   0.1%  L1682: _Y = k22q @ w32[:, :_p]
+    0.18   0.1%  L1688: _WV = WW @ _V
+    0.15   0.1%  L1431: S2 = Un.T @ (G2 @ Un)
+    0.13   0.1%  L2533: fnp.take(legs4["AP0"][2 * ka_n:2 * kk + 1], sat_perm[:sat_na], axis=2,
+    0.12   0.1%  L1604: bufs = {nm: pool.get(nm, (L - 1, n, n))
+    0.12   0.1%  L1301: Sfull = Sg if kb == 0 else Sg + U @ (S2 @ U.T)
+    0.12   0.1%  L1412: G2 = S_s if kb == 0 else S_s + U @ (S2 @ U.T)
+    0.09   0.0%  L2194: pairs = {nm: pool.get_pair(nm, (L - 1, 2, n, n)) for nm in ("AP0", "AP1")}
+    0.09   0.0%  L1511: fnp.matmul(W, Rr, out=zb[k])
+    0.07   0.0%  L1382: U = Tq @ U                      # V24: the sub-basis rides along
+    0.06   0.0%  L2444: Y = fnp.matmul(Rres, Om, out=pool.get("y", (n, r)))
+    0.06   0.0%  L2446: Y2 = fnp.matmul(Rres.T, Q, out=pool.get("y2", (n, r)))
+
+== by innermost line (units, count, first op)
+   76.47  33.7% n=  1008 prod:L887 swapaxes ((1, 343, 64, 64),) | fnp.matmul(L_, fnp.swapaxes(R_, -1, -2), out=T)
+   17.33   7.6% n=    13 _predict_core:L1878 linalg.solve ((1024, 1024),) | _Z56 = fnp.linalg.solve(_M56, self._y56.T)
+   14.09   6.2% n=   119 _leaf_mm:L825 matmul ((1, 343, 64, 64), (2, 343, 64, 64)) | fnp.matmul(Lb, Rb, out=C22)                                   # M6 -> C22
+   14.09   6.2% n=   119 _leaf_mm:L827 matmul ((1, 343, 64, 64), (2, 343, 64, 64)) | fnp.matmul(Lb, Y11, out=C21)                                  # M2 -> C21
+   14.09   6.2% n=   119 _leaf_mm:L830 matmul ((1, 343, 64, 64), (2, 343, 64, 64)) | fnp.matmul(X22, Rb, out=C11)                                  # M4 -> C11
+   14.09   6.2% n=   119 _leaf_mm:L833 matmul ((1, 343, 64, 64), (2, 343, 64, 64)) | fnp.matmul(Lb, Rb, out=Mb)                                    # M1
+   14.09   6.2% n=   119 _leaf_mm:L836 matmul ((1, 343, 64, 64), (2, 343, 64, 64)) | fnp.matmul(X11, Rb, out=C12)                                  # M3 -> C12
+   14.09   6.2% n=   119 _leaf_mm:L839 matmul ((1, 343, 64, 64), (2, 343, 64, 64)) | fnp.matmul(Lb, Y22, out=Mb)                                   # M5
+   14.09   6.2% n=   119 _leaf_mm:L842 matmul ((1, 343, 64, 64), (2, 343, 64, 64)) | fnp.matmul(Lb, Rb, out=Mb)                                    # M7
+    1.79   0.8% n=   169 _buf2:L723 copyto () | fnp.copyto(b5, 0.0)   # metered page touch (first-MLP residual, F80)
+    1.57   0.7% n=     9 _predict_core:L1334 linalg.qr ((1024, 320),) | _Qt, _ = fnp.linalg.qr(Yq)
+    1.12   0.5% n=    10 _family:L1175 matmul ((1024, 64), (64, 1024)) | fnp.matmul(Wr.T, legs["AP0"][cslot, 1][na_p:], out=T1)
+    1.05   0.5% n=    45 <listcomp>:L2103 einsum ((2, 1024, 1024), (2, 1024), (2, 1024)) | PK2 = [fnp.einsum("tij,ti,tj->ij", ABstack[t0:t1], WL2[t0:t1], WR2[t0:t1]) if t1 > t0
+    1.02   0.5% n=    16 _predict_core:L1303 matmul ((320, 320), (320, 320)) | fnp.matmul(Qp, Sfull @ _g, out=Yq2)
+    0.90   0.4% n=   169 _buf2:L724 reshape ((1, 7, 1, 512, 512),) | b4 = fnp.reshape(b5, (b, shape5[1] * shape5[2], shape5[3], shape5[4]))
+    0.88   0.4% n=    27 _predict_core:L1390 einsum ((320, 1024), (320, 1024)) | Sj = fnp.einsum("an,bn->ab", _xa, _xa) + fnp.einsum("an,bn->ab", _xp, _xp)
+    0.78   0.3% n=     8 _predict_core:L1371 matmul ((320, 1024), (1024, 320)) | Tq = Qn.T @ Qp if QnF is None else QnF.T @ Qp   # (r, r) rotation of the old factors
+    0.68   0.3% n=  1362 _combos:L762 add ((2, 1, 512, 512), (2, 1, 512, 512)) | fnp.add(X11, X22, out=buf[:, 0]); fnp.copyto(buf[:, 1], X11)
+    0.68   0.3% n=  1362 _combos:L763 subtract ((2, 1, 512, 512), (2, 1, 512, 512)) | fnp.subtract(X12, X22, out=buf[:, 2]); fnp.subtract(X21, X11, out=buf[:, 3])
+    0.68   0.3% n=  1362 _combos:L764 copyto () | fnp.copyto(buf[:, 4], X22);       fnp.add(X11, X12, out=buf[:, 5])
+    0.68   0.3% n=  1362 _assemble:L774 add ((2, 49, 128, 128), (2, 49, 128, 128)) | fnp.add(M[:, 0], M[:, 3], out=C11); fnp.subtract(C11, M[:, 4], out=C11)
+    0.68   0.3% n=  1362 _assemble:L778 subtract ((2, 49, 128, 128), (2, 49, 128, 128)) | fnp.subtract(M[:, 0], M[:, 1], out=C22); fnp.add(C22, M[:, 2], out=C22)
+    0.61   0.3% n=    14 _predict_core:L1470 matmul ((1, 1024, 1024), (1, 1024, 6)) | Z_st = fnp.matmul(WDb, Z_st, out=pool.get(("z", z_side), (L - 1, n, r + 2))[:k])
+    0.60   0.3% n=  1362 _combos:L757 add ((1, 1, 512, 512), (1, 1, 512, 512)) | fnp.add(X11, X22, out=buf[:, 0]); fnp.add(X21, X22, out=buf[:, 1])
+    0.60   0.3% n=  1362 _combos:L758 copyto () | fnp.copyto(buf[:, 2], X11);       fnp.copyto(buf[:, 3], X22)
+    0.60   0.3% n=  1362 _combos:L759 add ((1, 1, 512, 512), (1, 1, 512, 512)) | fnp.add(X11, X12, out=buf[:, 4]); fnp.subtract(X21, X11, out=buf[:, 5])
+    0.53   0.2% n=   238 _leaf_mm:L834 add ((2, 343, 64, 64), (2, 343, 64, 64)) | fnp.add(C11, Mb, out=C11); fnp.add(C22, Mb, out=C22)
+    0.53   0.2% n=   238 _leaf_mm:L840 subtract ((2, 343, 64, 64), (2, 343, 64, 64)) | fnp.subtract(C11, Mb, out=C11); fnp.add(C12, Mb, out=C12)
+    0.53   0.2% n=    30 _dslices:L2721 swapaxes ((1, 1024, 5),) | MP = fnp.matmul(Z_st[:, :, :qL], fnp.swapaxes(L_st[:, :, :qL], -1, -2), out=bufs["mp"][:k])   # V27: BLAS path
+    0.51   0.2% n=    14 _dslices:L2947 matmul ((1, 1024, 1024), (1, 1024, 5)) | PPL = fnp.matmul(PP, L_st[:, :, :qL], out=self._pool.get("ppl1", (bufs["ppl"].shape[0], n, qL))[:k])
+    0.51   0.2% n=   504 prod:L888 sum ((1, 343, 64, 64),) | fnp.sum(T, axis=0, out=dst)
+    0.51   0.2% n=    14 _dslices:L2948 einsum ((1, 1024, 5), (1, 1024, 5)) | t1 = fnp.einsum("kiq,kcq->ic", PPL, Z_st[:, :, :qL])
+    0.50   0.2% n=     1 _predict_core:L1199 einsum ((1024, 1024), (1024, 1024)) | C_pre = fnp.einsum("ia,ib->ab", w32, w32)
+    0.49   0.2% n=    15 _predict_core:L1409 einsum ((320, 1024), (320, 1024)) | S_s = fnp.einsum("an,bn->ab", _xa, _xa) + fnp.einsum("an,bn->ab", _xp, _xp)
+    0.49   0.2% n=    16 _predict_core:L1378 matmul ((320, 320), (320, 320)) | Sg = Tq @ (Sg @ Tq.T)
+    0.41   0.2% n=     7 _predict_core:L1457 matmul ((1024, 320), (320, 192)) | QU = fnp.matmul(Qc, U, out=pool.get("qu", (n, r2)))
+    0.39   0.2% n=     8 _predict_core:L1302 einsum ((1024, 320), (1024, 320)) | _g = fnp.einsum("ia,ib->ab", Qp, Qp) if ("b" in OPT and Om is Qp) else Qp.T @ Om
+    0.36   0.2% n=    20 _predict_core:L1415 matmul ((320, 320), (320, 192)) | Un, _ = fnp.linalg.qr(G2 @ Om2)
+    0.35   0.2% n=    30 _predict_core:L1684 matmul ((1024, 1024), (1024, 12)) | _Y = k22q @ (k22q @ _Qk)
+    0.35   0.2% n=     6 _dslices:L2904 matmul ((1024, 192), (192, 320)) | y2 = fnp.matmul(y2, U2.T, out=self._pool.get("lift_y", (n, U2.shape[0])))
+    0.35   0.2% n=     6 _dslices:L2908 matmul ((1024, 192), (192, 320)) | lift = fnp.matmul(inner2[0], U2.T, out=self._pool.get("lift", (n, U2.shape[0])))
+    0.34   0.2% n=   681 _combos:L765 add ((2, 1, 512, 512), (2, 1, 512, 512)) | fnp.add(X21, X22, out=buf[:, 6])
+    0.34   0.1% n=   681 _assemble:L775 add ((2, 49, 128, 128), (2, 49, 128, 128)) | fnp.add(C11, M[:, 6], out=C11)
+    0.34   0.1% n=   681 _assemble:L776 add ((2, 49, 128, 128), (2, 49, 128, 128)) | fnp.add(M[:, 2], M[:, 4], out=C12)
+    0.34   0.1% n=   681 _assemble:L777 add ((2, 49, 128, 128), (2, 49, 128, 128)) | fnp.add(M[:, 1], M[:, 3], out=C21)
+    0.34   0.1% n=   681 _assemble:L779 add ((2, 49, 128, 128), (2, 49, 128, 128)) | fnp.add(C22, M[:, 5], out=C22)
+    0.31   0.1% n=   144 _leaf_hub:L890 subtract ((1, 343, 64, 64), (1, 343, 64, 64)) | fnp.subtract(X21, X11, out=Lb); fnp.add(Y11, Y12, out=Rb); prod(Lb, Rb, C22)   # M6 -> C22
+    0.31   0.1% n=   144 _leaf_hub:L895 add ((1, 343, 64, 64), (1, 343, 64, 64)) | fnp.add(X11, X22, out=Lb); fnp.add(Y11, Y22, out=Rb); prod(Lb, Rb, Mb)       # M1
+    0.31   0.1% n=   144 _leaf_hub:L901 subtract ((1, 343, 64, 64), (1, 343, 64, 64)) | fnp.subtract(X12, X22, out=Lb); fnp.add(Y21, Y22, out=Rb); prod(Lb, Rb, Mb)  # M7
+    0.30   0.1% n=   681 _combos:L760 subtract ((1, 1, 512, 512), (1, 1, 512, 512)) | fnp.subtract(X12, X22, out=buf[:, 6])
+    0.30   0.1% n=    70 _buf:L709 copyto () | fnp.copyto(b, 0.0)   # metered page touch (first-MLP residual, F80)
+    0.29   0.1% n=     5 _predict_core:L1419 matmul ((192, 320), (320, 1024)) | fnp.matmul(Un.T, FA1, out=fap2_new[kb, 0])
+    0.29   0.1% n=     5 _predict_core:L1420 matmul ((192, 320), (320, 1024)) | fnp.matmul(Un.T, FP1, out=fap2_new[kb, 1])
+    0.27   0.1% n=   119 _leaf_mm:L828 subtract ((2, 343, 64, 64), (2, 343, 64, 64)) | fnp.subtract(C22, C21, out=C22)                               # C22 -= M2
+    0.27   0.1% n=   119 _leaf_mm:L831 add ((2, 343, 64, 64), (2, 343, 64, 64)) | fnp.add(C21, C11, out=C21)                                    # C21 += M4
+    0.27   0.1% n=   119 _leaf_mm:L837 add ((2, 343, 64, 64), (2, 343, 64, 64)) | fnp.add(C22, C12, out=C22)                                    # C22 += M3
+    0.27   0.1% n=   119 _leaf_mm:L843 add ((2, 343, 64, 64), (2, 343, 64, 64)) | fnp.add(C11, Mb, out=C11)
+    0.26   0.1% n=   535 _predict_core:L2098 multiply ((1024, 1024), (1024, 1024)) | fnp.multiply(b2[a_], b2[b_], out=abbuf[t_])
+    0.26   0.1% n=   238 _leaf_mm:L824 subtract ((1, 343, 64, 64), (1, 343, 64, 64)) | fnp.subtract(X21, X11, out=Lb); fnp.add(Y11, Y12, out=Rb)
+    0.26   0.1% n=   238 _leaf_mm:L832 add ((1, 343, 64, 64), (1, 343, 64, 64)) | fnp.add(X11, X22, out=Lb); fnp.add(Y11, Y22, out=Rb)
+
+== by op and dtype
+  184.09  81.1%  matmul [float32]
+   17.33   7.6%  linalg.solve [float32]
+    8.06   3.6%  add [float32]
+    4.30   1.9%  einsum [float32]
+    3.79   1.7%  subtract [float32]
+    2.46   1.1%  copyto [float64]
+    1.78   0.8%  multiply [float32]
+    1.76   0.8%  linalg.qr [float32]
+    1.43   0.6%  copyto [float32]
+    0.96   0.4%  reshape [float32]
+    0.52   0.2%  sum [float32]
+    0.35   0.2%  take [float32]
+    0.05   0.0%  as_symmetric [float32]
+    0.00   0.0%  divide [float32]
+    0.00   0.0%  stats.norm.cdf [float64]
+    0.00   0.0%  stack [float32]
+    0.00   0.0%  argsort [int64]
+    0.00   0.0%  stats.norm.pdf [float64]
+    0.00   0.0%  argsort [float32]
+    0.00   0.0%  copy [float32]
+    0.00   0.0%  linalg.eigh [float32]
+    0.00   0.0%  power [float32]
+    0.00   0.0%  fill_diagonal [float32]
+    0.00   0.0%  sqrt [float32]
+    0.00   0.0%  true_divide [float32]
+    0.00   0.0%  astype [float64]
+    0.00   0.0%  mean [float32]
+    0.00   0.0%  maximum [float32]
+    0.00   0.0%  sum [int64]
+    0.00   0.0%  less [int64]
+
+== by layer (units, %)
+  layer -1:     0.06   0.0%
+  layer 0:     0.65   0.3%
+  layer 1:     3.50   1.5%
+  layer 2:     5.76   2.5%
+  layer 3:     9.62   4.2%
+  layer 4:    12.14   5.4%
+  layer 5:    14.69   6.5%
+  layer 6:    15.58   6.9%
+  layer 7:    16.58   7.3%
+  layer 8:    17.55   7.7%
+  layer 9:    18.39   8.1%
+  layer 10:    18.66   8.2%
+  layer 11:    18.99   8.4%
+  layer 12:    19.27   8.5%
+  layer 13:    19.82   8.7%
+  layer 14:    18.85   8.3%
+  layer 15:    16.79   7.4%
