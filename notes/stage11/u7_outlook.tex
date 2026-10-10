@@ -1,0 +1,51 @@
+\label{sec:outlook}
+\subsection{What the placement explains}
+\begin{enumerate}[leftmargin=*]
+\item \textbf{Why the folding law needed a correction.} Depth is a parabolic germ with iterative residue $3/2$, so $3\pi/l$ misses a
+$\tfrac32\log l$ and a constant that are large at $l=16$ (Theorem~\ref{thm:fatou}). The He-critical network is Farey-like, not
+Gauss-like.
+\item \textbf{Why localization resolves deep gates first, quantitatively.} Depth and localization time are two coordinates of one
+renormalization flow; one layer is worth $\sqrt2/3\pi$ of $\sqrt{1+t}$ (Theorem~\ref{thm:collapse}). This is the Teichm\"uller flow of
+Putnam--Trevi\~no: a state deformation followed by a shift of the diagram.
+\item \textbf{Where the memory lives geometrically.} At bent crossings of the wall foliation, where the isotropy is $\aff(1)$ instead of
+abelian and the bending is the gated transport coefficient (Theorem~\ref{thm:bent}). The Gaussian closure is exact for wall systems with
+only normal crossings.
+\item \textbf{Why tiling-theoretic holonomy is absent.} Faces are convex and walls have global defining functions
+(Proposition~\ref{prop:noholonomy}). The noncommutativity that tiling theory finds in leaf spaces is, for the network, in isotropy and in
+the two-tier dynamics.
+\item \textbf{Why semiclassical expansions cannot reach the target.} At $\hbar=1$ there are $n/4$ unresolved gates per layer; the
+infinite-width description is a kinetic (van Hove) limit (Proposition~\ref{prop:kinetic}).
+\item \textbf{Why the mean is a boundary quantity.} It is the border functional of the codimension-one face diagram, or the supertrace
+pairing of the wall flip with the normal derivative (Proposition~\ref{prop:border}).
+\end{enumerate}
+
+\subsection{Predictions (falsifiable)}
+\begin{enumerate}[leftmargin=*]
+\item Two independent standard inputs differ on $n\theta_{l-1}/\pi$ gates of layer $l$, where $\theta_1=1.247$, $\theta_2=1.054$, and so on down to
+$\theta_{16}=0.378$; the total over $16$ layers is $3.66\,n$. This replaces stage 10's $3n\log L=8.32\,n$ (Corollary~\ref{cor:gates}).
+\item Every infinite-width two-tier quantity collapses on the Fatou time $\tau$. The departure of finite-width measurements from the
+$\tau$-curve is a finite-width (memory) signal; it is visible at the last layer for all three localization times in the stage-10 data.
+\item With orthogonal first-layer rows, $\kappa_3(z_{2,a})=c_3\sum_bW_2(a,b)^3|w_b|^3$ exactly, and $z_{2,a}$ is Gaussian iff no crossing is bent.
+\item (Conjectural) At width $n$ the parabolic regime ends at depth $\asymp n$. Beyond it the angle decays exponentially, the walls met by a
+small ball become finite in number, and gate sequences become eventually tail-equivalent (Conjecture~\ref{conj:hyper}).
+\end{enumerate}
+
+\subsection{Open problems}
+\begin{enumerate}[leftmargin=*]
+\item \textbf{The finite-width linear term.} Compute the projective Lyapunov gap of products of gated He matrices, prove
+Conjecture~\ref{conj:hyper}, and decide the tail algebra of the letter diagram (the stage-10 question).
+\item \textbf{The error of the Gaussian closure as a sum over bent crossings.} Interpolate each bent crossing to a normal one (send its
+$T$ to $0$) and write the closure error as a sum of crossing-local terms. This is the foliation form of stage 10's contact-resolved
+estimator problem, and the $\aff(1)$ isotropy suggests that each term is a commutator.
+\item \textbf{$K$-theory and index.} The wall-foliation algebra has a finite composition series over the faces with subquotients
+$C^*(\text{isotropy})\otimes\mathcal K$ ($C_0(\R^j)$ at normal crossings, $C^*(\mathrm{Aff}_+(1))$ at bent ones). Is there an index pairing, sharper than
+the supertrace formula, whose value is the mean or one of its chain corrections? Savinien--Bellissard's spectral sequence for tilings is
+the template.
+\item \textbf{Nonnegative networks as flat surfaces.} For $W\ge0$ (e.g.\ the majorant $|W|$) Putnam--Trevi\~no's construction yields a
+genuine translation surface for each input, with widths $h$, heights $\delta$ and area $f$. Do its Teichm\"uller flow and asymptotic cycle bound
+the signed network?
+\item \textbf{A Koopman--von Neumann wavefunction.} A unitary dilation of the gated transfer in the spirit of Giannakis--Montgomery,
+under which the Gaussian part of the layer law is invariant.
+\item \textbf{Chains in Fatou time.} Stage 9 and stage 10 transport Euler--Stein constants and window corrections layer by layer. If their
+depth dependence is a function of $\tau$ rather than of $l$, one calibration at one depth fixes all depths.
+\end{enumerate}

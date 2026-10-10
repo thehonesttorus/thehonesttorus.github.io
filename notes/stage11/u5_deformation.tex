@@ -1,0 +1,74 @@
+\label{sec:deformation}
+The upper tier is the family of Gaussian laws $N(m,\hbar I)$, $\hbar\in(0,1]$; Eldan's path has $\hbar=1/(1+t)$ and a moving centre. For a
+network output $f$ put
+\[
+F(m,\hbar)=\E f(m+\sqrt\hbar Z),\qquad \partial_\hbar F=\tfrac12\Delta_mF,\qquad u=F(0,1).
+\]
+In Paul's language $N(m,\hbar I)$ is the squared modulus of a Gaussian coherent state of width $\sqrt\hbar$, and $F(\cdot,\hbar)$ is the Husimi
+(anti-Wick, Toeplitz lower) symbol of the operator of multiplication by $f$. The classical limit $\hbar\to0$ returns $f$, which is
+singular along the wall foliation.
+
+\begin{theorem}[Boundary layer; the parabolic blowup]\label{thm:layer}
+Let $m$ lie within distance $\rho$ of a single flat wall piece $W$ of $f$, with all other walls at distance at least $R>\rho$, signed distance
+$d$ to $W$ and kink $\kappa$ (the jump of the normal derivative of $f$ across $W$). Then
+\[
+F(m,\hbar)=f(m)+\sqrt\hbar\,\kappa\,\psi\!\Big(\frac d{\sqrt\hbar}\Big)+O\big(e^{-(R-\rho)^2/2\hbar}\big),
+\]
+\[
+\psi(u)=\varphi(u)-|u|\,\Phi_{\mathcal N}(-|u|)=\E(u+Z)^+-u^+ .
+\]
+Hence $F$ lifts to a smooth function on the parabolic blowup of $W\times\{0\}$ in $(m,\hbar)$-space, with radial coordinate
+$r=(d^2+\hbar)^{1/2}$ and angular coordinate $d/\sqrt\hbar$. The correction is homogeneous of degree one in $r$, i.e.\ of transverse
+order one in Francis's sense. Near a codimension-$j$ face, iterated parabolic blowups are needed, performed deepest stratum first:
+the combinatorics of the resolution is the face multi-diagram of Section~\ref{sec:borders}.
+\end{theorem}
+\begin{proof}
+On the ball of radius $R$ about the foot point, $f=\ell+\kappa\,d^+$ with $\ell$ linear. $\E\ell(m+\sqrt\hbar Z)=\ell(m)$ and
+$\E(d+\sqrt\hbar Z_\nu)^+=\sqrt\hbar\,(\varphi(u)+u\Phi_{\mathcal N}(u))$ with $u=d/\sqrt\hbar$; subtract $d^+$. The contribution of the complement of the ball
+is bounded by the Gaussian tail times a linear bound on $|f|$.
+\end{proof}
+The check (Verification, item 6) uses a two-dimensional network with six first-layer walls and a base point $3.9$ from the other walls.
+For $\hbar\in\{0.01,0.05,0.2,0.5\}$ and $d/\sqrt\hbar\in\{0,0.7\}$ the formula holds to relative error $10^{-8}$, the quadrature accuracy.
+Stage 10's Euler--Stein constant reads naturally on this blowup. A defect of Hermite contact order $d$ is homogeneous of degree $d+1$ in
+$r$ (transverse order $d+1$), and averaging over a uniformly distributed radius gives $\int_0^1r^{d+1}dr=1/(d+2)$.
+
+\begin{proposition}[The target is deep in the quantum regime; the right limit is kinetic]\label{prop:kinetic}
+(1) At scale $\hbar$ the expected number of unresolved first-layer gates is $\E\sum_a\Var(g_{1,a}\mid\text{ball})=n\,\theta_0(\hbar)/2\pi$ with
+$\theta_0=\arccos(1-\hbar)$. At the target $\hbar=1$ this is $n/4$, and the single-wall (semiclassical) regime $n\theta_0/2\pi\lesssim1$ requires
+$\hbar\lesssim2\pi^2/n^2\approx1.9\times10^{-5}$ for $n=1024$. (2) Each wall bends the downstream pre-activations by $T=O(n^{-1/2})$ and there are
+$n$ walls per layer with $\sum_bT_{ab}^2g_b\approx1$ at He initialisation: coupling$^2\times$density$=O(1)$. This is the weak-coupling
+(van Hove) scaling of a particle among many weak scatterers \cite{EY}. The infinite-width (NNGP, moment-chain) description is the
+kinetic limit of this scaling, not a semiclassical expansion, and the finite-width memory is its correction. Ehrenfest-type arguments
+therefore cannot control the memory.
+\end{proposition}
+\begin{proof}
+(1) is stage 10's unresolved-variance formula at layer one with correlation $1-\hbar$; at $\hbar=1$ each gate is a fair coin. For small
+$\hbar$, $\theta_0\approx\sqrt{2\hbar}$. (2) $W_2(a,b)\sim N(0,2/n)$ and half the gates are open.
+\end{proof}
+
+\paragraph{Paul's two-point symbols.} Past the Ehrenfest time Paul's symbols become kernels $\sigma(z,z')$ along unstable leaves, and the
+matching states are off-diagonal Husimi functions $R_\psi(z,z')$. The network's counterparts are stage 10's time-correlated Kikuchi weights
+$K_{l,t}(a,b)=\mathbb P(g_{l,a}(X)=1,g_{l,b}(X')=1)$ and the angle operator $\Theta_{l,t}=E_{\mathfrak B_l}E_{\mathfrak F_t}E_{\mathfrak B_l}$. Both are built
+from two coherent samples $X,X'$ of one localized law, so they are two-point objects of exactly Paul's kind. In the network the role of the
+unstable foliation (the direction in which the coherent state is sheared) is played by the folding of the depth tower, whose clock is
+the Fatou time. Theorem~\ref{thm:collapse} says these two-point objects are functions of $\tau$ alone at infinite width. (Analogy, with
+the exact content of Theorem~\ref{thm:collapse}.)
+
+\paragraph{Giannakis--Montgomery's Fock space.}
+\begin{enumerate}[leftmargin=*]
+\item The Wiener chaos of $\gamma$ is the symmetric Fock space over $\R^n$. Exponential vectors are the tilted densities $e^{m\cdot x-|m|^2/2}$
+(coherent states), with $a_ve^{m\cdot x-|m|^2/2}=\langle v,m\rangle e^{m\cdot x-|m|^2/2}$: localization centres are coherent states. A moment
+chain of order $K$ is a truncation to $\le K$ quanta. The linear part of a layer acts by second quantization ($k$-th moment tensors
+transform by $W^{\otimes k}$, the functor $\Gamma(W)$), and the \textsc{ReLU} is a vertex that mixes grades.
+\item Depth drives the network toward the commutative quotient. Stage 10's Mehler pair temperature gives a mean token number
+$\approx1/(1-\cos\theta_{l-1})$ for a neuron pair at layer $l$, so the effective Planck constant is $\hbar_l\approx1-\cos\theta_{l-1}\approx\theta_{l-1}^2/2
+\approx9\pi^2/2(l+\tfrac32\log l+4.39)^2$ by Theorem~\ref{thm:fatou}. On high Fock grades the weighted canonical commutation relations become
+commutative (\cite{GM}, Prop.~32), which is the classical limit.
+\item The target is a kernel mean embedding: $u=\E_\gamma h_L$ is the mean embedding of $\gamma$ for the random feature map $h_L$, with kernel
+$k_L(x,x')=h_L(x)\cdot h_L(x')/n$ (exact). For any surrogate law $\nu$, $\frac1n\|\E_\gamma h_L-\E_\nu h_L\|^2=\mathrm{MMD}^2_{k_L}(\gamma,\nu)$
+\cite{MMD}. The competition's mean squared error of such an estimator is a maximum mean discrepancy in the depth-$L$ feature space.
+\item The Fibonacci dilation realizes a non-normal generator as the corner $(p_1\otimes1)L^kE_n$ of a skew-adjoint banded operator on
+$\ell^2(\mathbb N)\otimes H$. Stage 10 realized the network as the corner $[(1-D_\downarrow P_x)^{-1}]_{L0}$ of a resolvent of a banded chiral
+operator on $\ell^2(\{0,\dots,L\})\otimes\R^n$. A unitary dilation of the gated transfer, which would make the layer law's Gaussian part
+invariant (a Koopman--von Neumann wavefunction for the network), is open.
+\end{enumerate}

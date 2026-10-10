@@ -1,0 +1,65 @@
+\label{sec:cocycle}
+\begin{definition}[The layered diagram of an input]
+For $x$ off the walls let $B_x$ be the bi-infinite-in-spirit (here finite, levels $0,\dots,L$) weighted Bratteli diagram with
+$V_l=[n]$ (neurons of layer $l$; $V_0$ the input coordinates) and edge weights $E_l(x)=D_l(x)W_l$ from $V_{l-1}$ to $V_l$. A path
+$p=(p_0,\dots,p_L)$ has weight $\omega(p)=\prod_{k=1}^LE_k(x)_{p_kp_{k-1}}$. Put $\nu_r(l)=h_l$ and $\nu_s(l)=\delta_l$ for $f=c^\top h_L$.
+\end{definition}
+\begin{theorem}[Forward and backward states; the conserved pairing]\label{thm:bratteli}
+On the tile of $x$:
+\begin{enumerate}[leftmargin=*]
+\item $\nu_r(l)=E_l\nu_r(l-1)$ and $\nu_s(l-1)=E_l^{\top}\nu_s(l)$: activations are a left-harmonic state and sensitivities a right-harmonic
+state of $B_x$.
+\item $\sum_{v\in V_l}\nu_r(v)\nu_s(v)=\langle h_l,\delta_l\rangle=f(x)$ for every $l$ (Putnam--Trevi\~no's Lemma 2.7).
+\item $f(x)=\sum_{p}x_{p_0}\,\omega(p)\,c_{p_L}$, and the paths through a fixed sub-path $q$ from level $l$ to level $m$ contribute
+$h_{l,q_l}\,\omega(q)\,\delta_{m,q_m}$: the cylinder measure $\nu_r(s(q))\,\omega(q)\,\nu_s(r(q))$.
+\item For $s\in\R^n_{>0}$ the substitution $W_l\mapsto\diag(s)W_l$, $W_{l+1}\mapsto W_{l+1}\diag(s)^{-1}$ leaves all gates and $f$ unchanged and acts by
+$h_l\mapsto s\odot h_l$, $\delta_l\mapsto s^{-1}\odot\delta_l$. It preserves every rectangle $R_{l,i}=[0,h_{l,i}]\times[0,\delta_{l,i}]$: the
+\textsc{ReLU} rescaling symmetry is the diagonal (Teichm\"uller-type) flow $(e^{-u}\nu_r,e^{u}\nu_s)$, neuron by neuron.
+\item Crossing the wall $Z_{l,a}$ changes $E_l$ by $\pm e_ae_a^{\top}W_l$ (rank one); $f$ is continuous and $\nabla f$ jumps by
+$\delta_{l,a}\nabla z_{l,a}$, the kink of stage 10.
+\end{enumerate}
+\end{theorem}
+\begin{proof}
+(1) is the forward recursion and the chain rule $\delta_{l-1}=W_l^{\top}D_l\delta_l$. (2):
+\[
+\langle h_l,\delta_l\rangle=\langle D_lW_lh_{l-1},\delta_l\rangle=\langle h_{l-1},W_l^{\top}D_l\delta_l\rangle=\langle h_{l-1},\delta_{l-1}\rangle,\qquad\langle h_L,\delta_L\rangle=f.
+\] (3) expands the matrix product. (4): $\relu(s_iz)=s_i\relu(z)$ for $s_i>0$, so
+$z_{l+1}$ and all later quantities are unchanged; the chain rule gives the action on $\delta_l$. (5): only $g_{l,a}$ changes, $z_{l,a}=0$ on the
+wall so $h_l$ is continuous, and later gates are unchanged at a generic wall point.
+\end{proof}
+Each layer is therefore a presentation of the same total area $f(x)$ by $n$ rectangles, re-cut by the cocycle $E_{l+1}$ in passing to the
+next layer: widths transform by $E_{l+1}$ and heights by $E_{l+1}^{\top}$. This is the algebra of zippered rectangles under Rauzy--Veech
+induction, where $\lambda'=\Theta^{-\top}\lambda$, $h'=\Theta h$ and $\lambda'\cdot h'=\lambda\cdot h$ \cite[\S12.2]{PT}. The area of rectangle
+$R_{l,i}$ is the gradient$\times$input attribution of neuron $(l,i)$. Two differences are essential. The weights have both signs, so
+the cylinder ``measure'' is signed and the quotient of the path space is not a flat surface. For a nonnegative network ($W\ge0$, e.g.\
+the majorant $|W|$) Putnam--Trevi\~no's construction applies verbatim once orders on edges are fixed. And $E_l$ is neither unimodular nor
+invertible, so the cocycle is critical rather than hyperbolic (Section~\ref{sec:parabolic}).
+
+\begin{proposition}[Rauzy--Veech induction is a gated linear network]\label{prop:rv}
+Let $\pi$ be an irreducible permutation on an alphabet $\mathcal A$ and let $R$ be one step of Rauzy--Veech induction on
+$\lambda\in\R^{\mathcal A}_+$. The step is $\lambda\mapsto\lambda-g\,\lambda_{\alpha(1)}e_{\alpha(0)}-(1-g)\lambda_{\alpha(0)}e_{\alpha(1)}$ with the gate
+$g=\1\{\lambda_{\alpha(0)}>\lambda_{\alpha(1)}\}$, the sign of a linear form, and the next permutation (the wiring) depends on $g$. Hence
+$\lambda\mapsto R^k\lambda$ is piecewise linear and its linear pieces are the Rauzy cylinders, the sets of $\lambda$ with a given type
+sequence $(g_1,\dots,g_k)$. On each cylinder the map is the inverse transpose of a product of $k$ elementary unimodular matrices (the
+Rauzy--Veech cocycle). Each later gate is the sign of a linear form pulled back through the earlier steps, a bent hyperplane. So the
+cylinder partition is the activation tiling of a depth-$k$ gated network with one gate per layer and gate-dependent wiring. Veech's
+theorem \cite{Veech} (cylinders shrink to rays for Lebesgue-almost every $\lambda$) says that this network's gate sequence determines its
+input projectively.
+\end{proposition}
+\begin{proof}
+Direct from the definition of the step \cite[\S12.2]{PT}; the induction on $k$ is the chain rule for piecewise-linear maps.
+\end{proof}
+The check (Verification, item 2) runs $12$ steps for $d=4$, $\pi=(4321)$. The Jacobian on the cylinder is an integer matrix of
+determinant $1$, perturbations staying in the cylinder obey the linear map to $2\times10^{-11}$, and all $2^6=64$ type patterns of length
+$6$ occur. The comparison is instructive:
+\begin{center}\small
+\begin{tabular}{>{\raggedright\arraybackslash}p{4.4cm}>{\raggedright\arraybackslash}p{5.2cm}>{\raggedright\arraybackslash}p{5.2cm}}\toprule
+ & Rauzy--Veech induction & He-\textsc{ReLU} network\\\midrule
+gate & $\1\{\lambda_{\alpha(0)}>\lambda_{\alpha(1)}\}$, one per step & $\1\{z_{l,a}>0\}$, $n$ per layer\\
+cocycle & elementary, unimodular, $\ge0$ & $D_lW_l$, signed, rank $\approx n/2$\\
+contraction of cylinders & exponential after Zorich acceleration & parabolic: chords $\sim3\pi/(l+\tfrac32\log l)$\\
+spectrum & Forni, Avila--Viana: $g$ positive exponents & critical: top exponent $\approx0$\\
+order on $K_0$ & Schwartzman cycle (top Zorich direction) & collective direction of the layer covariance\\
+invariant measure & Veech's Gauss measure & law of $h_l$ under $\gamma$\\\bottomrule
+\end{tabular}
+\end{center}

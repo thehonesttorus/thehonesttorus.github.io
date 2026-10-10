@@ -1,0 +1,53 @@
+\label{sec:borders}
+\begin{proposition}[Two Bratteli diagrams of the depth tower]\label{prop:twodiagrams}
+\begin{enumerate}[leftmargin=*]
+\item \emph{Tile diagram.} The vertices at level $l$ are the nonempty depth-$l$ tiles, edges are inclusions, and $\nu(v)=\gamma(v)$ is a one-sided
+state ($\nu(v)=\sum_{\text{children}}\nu$). It is a tree, so its AF algebra is commutative. On a great circle, with the angular order as
+$\le_s$, it is Putnam--Trevi\~no's ``decimal expansion'' picture: the circle is the quotient of the path space by successor
+identifications, and the successor pairs are the two sides of the breakpoints.
+\item \emph{Fiber diagram.} The supertiles of level $l$ are the fibres of $h_l$; write $x\approx_lx'$ iff $h_l(x)=h_l(x')$. These relations
+increase with $l$ (the AF direction), their classes are polyhedra of dimension $n-\operatorname{rank}(D_lW_l\cdots D_1W_1)$ (about $n/2$ from the
+first layer on), and $\approx_\infty=\bigcup_l\approx_l$ (eventual indistinguishability) is contained in the tail relation of the \emph{letter
+diagram}, whose level-$l$ vertices are the layer-$l$ gate patterns alone (finite rank $2^n$). The letter diagram's tail relation is the network's
+$R_{AF}$.
+\item \emph{Borders.} Call $n-j$ the border dimension of $x$ if, for every large depth, $x$ lies on a face of codimension $j$. At infinite width
+and infinite depth every Gaussian ball, of any radius $\sqrt\hbar>0$, meets walls of every layer, with $\sum_ln\,\theta_{l-1}(\hbar)/2\pi=\infty$ by
+Theorem~\ref{thm:fatou}. So points of border dimension $<n$ are dense; they are null. This is Julien--Savinien's thin set (their
+Prop.~3.22 and Rem.~3.26), and it is dense precisely because depth is parabolic: under the hyperbolic finite-width dynamics of
+Conjecture~\ref{conj:hyper} the sum converges.
+\item \emph{Births.} A wall of layer $l$ inside a tile of depth $l-1$ is a face that does not descend from a face of the parent. The face
+multi-diagram (Bratteli diagrams of faces of each codimension, joined by incidence edges) therefore has \emph{birth} edges from tiles at
+level $l-1$ to codimension-one faces at level $l$. These are the reverse of Julien--Savinien's escaping edges (faces swallowed by
+supertiles), and they are where stage 10 locates the creation of contacts.
+\end{enumerate}
+\end{proposition}
+\begin{proof}
+(1) and (2) are immediate from the definitions; $h_l(x)=h_l(x')$ forces equal gates at all later layers. (3) uses the infinite-width
+unresolved variance at every layer and the divergence of $\sum\theta_l$. (4) is the definition of a wall.
+\end{proof}
+
+\begin{proposition}[The mean is a border functional]\label{prop:border}
+For any network output $f$ (piecewise linear, $1$-homogeneous),
+\[
+\E_\gamma f=\E\Delta f=\frac1{\sqrt{2\pi}}\sum_{F}\kappa_F\,\alpha_F ,
+\]
+where $F$ runs over the codimension-one faces of the depth-$L$ tiling, $\kappa_F$ is the jump of the normal derivative across $F$, and $\alpha_F$
+is the Gaussian measure of the cone $F$ inside its hyperplane (its solid-angle fraction). Equivalently, let $H_\partial=L^2(\bigcup_FF\times\{+,-\},\varphi\,dS)$
+(two copies of each wall piece, one per side), let $\Gamma$ be the side grading, $\mathbb F$ the side flip, and $\pi(g)$ multiplication by the
+one-sided values of a field $g$ that is constant on open tiles. Then
+\[
+[\mathbb F,\pi(g)]=0\iff g\ \text{is continuous across every wall},\qquad
+\E_\gamma f=\tfrac12\Tr_\varphi\big(\Gamma\,\mathbb F\,[\mathbb F,\pi(\partial_\nu f)]\big).
+\]
+\end{proposition}
+\begin{proof}
+Euler and Stein give $\E f=\E[x\cdot\nabla f]=\E\Delta f$, and $\Delta f=\sum_F\kappa_F\,\delta_F$ as a distribution. Moreover $\int_F\varphi_n\,dS=\varphi_1(0)\,\alpha_F$
+because $F$ is a cone through $0$. On one face, with $\pi(g)=\diag(g_+,g_-)$, $\Gamma\mathbb F[\mathbb F,\pi(g)]=\diag(g_+-g_-,g_+-g_-)$; take $g=\partial_\nu f$.
+\end{proof}
+The second form is Putnam--Trevi\~no's Fredholm module with the successor flip replaced by the wall flip. Their Theorem 9.7 (functions
+descend to the quotient iff they commute with the flip) becomes continuity across walls, and the Gaussian mean of the network becomes the
+supertrace pairing of the flip with the normal derivative: the kink current of stage 10. On a continuum of wall points the commutators
+are multiplication operators rather than compact ones, so this is a Gaussian-weighted analogue, not a Fredholm module in the strict
+sense. Its restriction to a great circle, which has finitely many breakpoints, is one. The two-dimensional check (Verification,
+item 7) has $70$ breakpoints and gives $\E f=0.36919251$ both by angular quadrature and by the border sum. In Julien--Savinien's terms, the
+whole mean is carried by the border paths of the codimension-one face diagram: the generic (AF) points contribute nothing.

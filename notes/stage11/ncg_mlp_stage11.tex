@@ -1,0 +1,93 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1.05in]{geometry}
+\usepackage{amsmath,amsthm,amssymb,mathtools,bm}
+\usepackage{booktabs,array,enumitem}\usepackage[expansion=false]{microtype}
+\usepackage{xcolor}
+\usepackage[colorlinks=true,linkcolor=blue!60!black,citecolor=blue!60!black,urlcolor=blue!60!black]{hyperref}
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]\newtheorem{proposition}[theorem]{Proposition}\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}\newtheorem{conjecture}[theorem]{Conjecture}
+\theoremstyle{definition}\newtheorem{definition}[theorem]{Definition}\newtheorem{remark}[theorem]{Remark}
+\newtheorem{example}[theorem]{Example}
+\newcommand{\R}{\mathbb R}\newcommand{\Z}{\mathbb Z}\newcommand{\E}{\mathbb E}\newcommand{\Var}{\operatorname{Var}}\newcommand{\Cov}{\operatorname{Cov}}
+\newcommand{\relu}{\operatorname{relu}}\newcommand{\diag}{\operatorname{diag}}\newcommand{\tr}{\operatorname{tr}}
+\newcommand{\Tr}{\operatorname{Tr}}\newcommand{\1}{\mathbf 1}\newcommand{\cA}{\mathcal A}\newcommand{\cB}{\mathcal B}
+\newcommand{\cF}{\mathcal F}\newcommand{\cT}{\mathcal T}\newcommand{\cH}{\mathcal H}\newcommand{\aff}{\mathfrak{aff}}
+\title{\textsc{Localization in the commutant, stage 11:}\\ \large tilings, Bratteli diagrams and singular foliations.\\
+Depth as a parabolic renormalization, the two tiers as one flow,\\ and the walls of a \textsc{ReLU} network as a stratified foliation}
+\author{}
+\date{10 October 2026}
+\begin{document}
+\maketitle
+\begin{abstract}
+We read eight papers: the tiling-groupoid and Bratteli-diagram papers of Bellissard--Julien--Savinien and Julien--Savinien, the
+bi-infinite Bratteli diagrams and translation surfaces of Putnam--Trevi\~no, the measure-free Koopman--von Neumann spectral triples
+of Giannakis--Montgomery, Paul's semiclassics beyond Ehrenfest time, and three papers on singular foliations (Francis; Fischer and
+Laurent-Gengoux; Louis). We use them to place the bias-free He-initialised \textsc{ReLU} network with Gaussian input, and the
+two-tier (localization over network) framework of stages 9 and 10, inside tiling and foliation theory. The results are these.
+(i)~At a fixed input the network is a weighted Bratteli diagram on the layered neuron set. Forward activations and backward
+sensitivities are its two harmonic states, and Putnam--Trevi\~no's conservation of $\sum_v\nu_r\nu_s$ is backpropagation: the
+output equals $\langle h_l,\partial_{h_l}f\rangle$ at every layer. The \textsc{ReLU} rescaling symmetry is the diagonal
+(Teichm\"uller-type) flow, and Rauzy--Veech induction is itself a gated linear network whose activation tiling is the partition into
+Rauzy cylinders. (ii)~Depth is a \emph{parabolic} renormalization. The folding map of the arc-cosine kernel is the germ
+$\theta-\theta^2/3\pi-\theta^3/18\pi^2+\dots$, with Fatou coordinate $3\pi/\theta+\tfrac32\log\theta$ and iterative residue $3/2$. Hence
+$\theta_l=3\pi/(l+\tfrac32\log l+4.39+o(1))$ from orthogonal inputs. At $l=16$ this gives $0.384$ against the exact $0.378$, whereas
+the stage-10 law $3\pi/l$ gives $0.589$. (iii)~The two tiers are one flow. The unresolved gate variance at depth $l$ and localization
+time $t$ depends only on the Fatou time $\tau=\Phi(\theta_0(t))+l-1$. Localization deforms the state, a layer shifts the diagram,
+and the Fatou coordinate is the renormalization time, exactly as in Putnam--Trevi\~no's description of the Teichm\"uller flow. One
+layer is worth $\sqrt2/3\pi$ of $\sqrt{1+t}$, and measured width-512 data collapse on $\tau$ except at the last layer. (iv)~The walls form
+a stratified singular foliation whose leaves are the faces of the tiling. Crossings of walls of one layer are normal crossings with
+abelian isotropy. A deep wall crossing a wall that feeds it is bent; its formal transverse model is a three-line arrangement whose
+isotropy algebra is the non-abelian $\aff(1)$, and the bending is the gated transport coefficient at which Price's theorem gives
+birth to the third cumulant. Faces are contractible and every wall has a global defining function, so outer holonomy is trivial and
+the noncommutativity is all in this isotropy. (v)~The upper tier is a semiclassical deformation: averaging over Gaussian balls is a
+coherent-state (Husimi) symbol with an exact $\sqrt\hbar$ boundary layer at every wall. At the target scale there are $n/4$ unresolved
+gates per layer, so the infinite-width description is a kinetic (van Hove) limit rather than a semiclassical one. (vi)~The mean is a
+border functional on the codimension-one faces, written as a supertrace pairing of the wall flip with the normal derivative.
+Every claim is labelled proved, known, conjectural or an analogy. The identities are checked by \texttt{scripts/verify\_stage11.py}.
+\end{abstract}
+\tableofcontents
+\section{The placement in one page}
+\input{u0_summary}
+\section{What the eight papers do}
+\input{u1_readings}
+\section{The cocycle: a network is a weighted Bratteli diagram}
+\input{u2_cocycle}
+\section{Depth is a parabolic renormalization, and the two tiers are one flow}
+\input{u3_parabolic}
+\section{The walls as a stratified singular foliation}
+\input{u4_walls}
+\section{The upper tier as a semiclassical deformation}
+\input{u5_deformation}
+\section{Borders: the mean lives on the codimension-one faces}
+\input{u6_borders}
+\section{What this explains, predicts, and leaves open}
+\input{u7_outlook}
+\section*{Verification}
+\input{u8_verify}
+\begin{thebibliography}{99}\small
+\bibitem{stage10} Stage 10 note: \emph{the selected Dirac operator} (this repository, \texttt{notes/stage10}).
+\bibitem{stage9} Stage 9 note: \emph{the mean of a random ReLU network as a central localization} (\texttt{notes/stage9}).
+\bibitem{BJS} J.~Bellissard, A.~Julien, J.~Savinien, Tiling groupoids and Bratteli diagrams, Ann.~Henri Poincar\'e 11 (2010) 69--99; arXiv:0911.0080.
+\bibitem{JS} A.~Julien, J.~Savinien, Tiling groupoids and Bratteli diagrams II: structure of the orbit equivalence relation, arXiv:1005.2965.
+\bibitem{PT} I.~F.~Putnam, R.~Trevi\~no, Bratteli diagrams, translation flows and their $C^*$-algebras, arXiv:2205.01537.
+\bibitem{GM} D.~Giannakis, M.~Montgomery, Measure-free Koopman--von Neumann dynamics and noncommutative geometry, arXiv:2608.11591.
+\bibitem{Paul} T.~Paul, Semiclassical approximation and noncommutative geometry, preprint hal-00617372 (2011).
+\bibitem{Francis} M.~Francis, On singular foliations tangent to a given hypersurface, arXiv:2311.03940.
+\bibitem{FLG} S.-R.~Fischer, C.~Laurent-Gengoux, A classification of neighborhoods around leaves of a singular foliation, arXiv:2401.05966.
+\bibitem{Louis} R.~Louis, On longitudinal differential operators and Nash blowups, arXiv:2509.01133.
+\bibitem{AS} I.~Androulidakis, G.~Skandalis, The holonomy groupoid of a singular foliation, J.~reine angew.~Math.~626 (2009) 1--37.
+\bibitem{AMY} I.~Androulidakis, O.~Mohsen, R.~Yuncken, A pseudodifferential calculus for maximally hypoelliptic operators and the Helffer--Nourrigat conjecture, arXiv:2201.12060.
+\bibitem{Saito} K.~Saito, Theory of logarithmic differential forms and logarithmic vector fields, J.~Fac.~Sci.~Univ.~Tokyo 27 (1980) 265--291.
+\bibitem{Melrose} R.~B.~Melrose, \emph{The Atiyah--Patodi--Singer Index Theorem}, A~K~Peters 1993.
+\bibitem{Scott} G.~Scott, The geometry of $b^k$ manifolds, J.~Symplectic Geom.~14 (2016) 71--95.
+\bibitem{Veech} W.~A.~Veech, Gauss measures for transformations on the space of interval exchange maps, Ann.~of Math.~115 (1982) 201--242.
+\bibitem{Zorich} A.~Zorich, Finite Gauss measure on the space of interval exchange transformations, Ann.~Inst.~Fourier 46 (1996) 325--370.
+\bibitem{Milnor} J.~Milnor, \emph{Dynamics in One Complex Variable}, 3rd ed., Princeton 2006 (\S10, parabolic points and Fatou coordinates).
+\bibitem{Ecalle} J.~\'Ecalle, \emph{Les fonctions r\'esurgentes}, Publ.~Math.~Orsay 1981; S.~M.~Voronin, Analytic classification of germs of conformal mappings $(\mathbb C,0)\to(\mathbb C,0)$, Funct.~Anal.~Appl.~15 (1981) 1--13.
+\bibitem{CS} Y.~Cho, L.~K.~Saul, Kernel methods for deep learning, NeurIPS 2009.
+\bibitem{EY} L.~Erd\H{o}s, H.-T.~Yau, Linear Boltzmann equation as the weak coupling limit of a random Schr\"odinger equation, Comm.~Pure Appl.~Math.~53 (2000) 667--735.
+\bibitem{MMD} B.~K.~Sriperumbudur, A.~Gretton, K.~Fukumizu, B.~Sch\"olkopf, G.~Lanckriet, Hilbert space embeddings and metrics on probability measures, JMLR 11 (2010) 1517--1561.
+\bibitem{Eldan} R.~Eldan, Thin shell implies spectral gap up to polylog via a stochastic localization scheme, GAFA 23 (2013) 532--569.
+\end{thebibliography}
+\end{document}

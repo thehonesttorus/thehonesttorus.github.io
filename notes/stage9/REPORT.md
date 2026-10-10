@@ -230,3 +230,34 @@ Bridges (tree edges) keep full importance at every level (their Remark 8.5).
   (checked at width 512 to layer 12).
 - The two tiers (depth tower of tile algebras; localization filtration) form a non-commuting square; the angle operator is the noise
   stability of the depth-l tiling, whose 2-point marginals are time-correlated Kikuchi weights running from Phi Phi^T (t=0) to K (t=inf).
+
+## 10. Stage 11: tilings, Bratteli diagrams, singular foliations (`notes/stage11/ncg_mlp_stage11.pdf`, 17 pp)
+
+Read in full: Bellissard–Julien–Savinien (tiling groupoids and Bratteli diagrams, arXiv:0911.0080), Julien–Savinien II
+(arXiv:1005.2965), Putnam–Treviño (bi-infinite Bratteli diagrams, translation flows, arXiv:2205.01537), Giannakis–Montgomery
+(measure-free Koopman–von Neumann, arXiv:2608.11591), Paul (semiclassics beyond Ehrenfest, hal-00617372), Francis (transverse
+order k foliations, arXiv:2311.03940), Fischer–Laurent-Gengoux (neighbourhoods of leaves, arXiv:2401.05966), Louis (Nash blowup,
+Helffer–Nourrigat cone, arXiv:2509.01133). Checks: `scripts/verify_stage11.py` -> `notes/stage11/verify_stage11.txt` (all pass).
+- Cocycle: at fixed input the network is a weighted Bratteli diagram; activations = left-harmonic state, sensitivities =
+  right-harmonic state, PT's conserved sum_v nu_r nu_s = <h_l, delta_l> = f at every layer (backprop); neuron = rectangle
+  (width h, height delta), ReLU rescaling = diagonal (Teichmüller-type) flow; wall crossing = rank-one move. Rauzy–Veech induction
+  is a gated linear network whose activation tiling is the Rauzy cylinders (checked: integer Jacobian det 1, 64/64 cylinders).
+- Depth is parabolic: F(theta) = theta - theta^2/3pi - theta^3/18pi^2 + ..., Fatou coordinate 3pi/theta + (3/2) log theta,
+  iterative residue 3/2; theta_l = 3pi/(l + 1.5 log l + 4.39 + o(1)) from orthogonal inputs. theta_16 = 0.378 exact, 0.384 Fatou,
+  0.589 by the stage-10 law 3pi/l. Correction to stage 10: two independent inputs differ on 3.66 n gates over 16 layers, not 8.32 n.
+  Farey (parabolic), not Gauss (hyperbolic); at infinite width sum theta_l = inf so gate sequences are never tail-equivalent;
+  conjecture: finite width adds a linear contraction ~1/n (crossover depth ~ n).
+- Two tiers = one flow: unresolved gate variance at (depth l, localization time t) depends only on the Fatou time
+  tau = Phi(theta_0(t)) + l - 1 — PT's Teichmüller flow (state deformation + diagram shift) realized; one layer = sqrt2/3pi = 0.150
+  of sqrt(1+t). Stage-10 width-512 data collapse on tau except the three last-layer points (finite-width signal).
+- Walls = stratified singular foliation (leaves = faces). Same-layer crossings: normal crossings, abelian isotropy, Debord, HN cone =
+  log cotangent. Deep wall crossing a wall that feeds it: bent by the gated transport T; formal transverse model = three-line
+  arrangement y1 y2 (y2 + T y1) = 0, isotropy aff(1) ([E, theta] = theta), linear isotropy 1-dim (checked). Bent crossings = Price
+  births of the third cumulant: kappa_3(z_2a) = c3 sum_b T_ab^3 |w_b|^3 for orthogonal rows, c3 = (pi+2)/(2pi)^{3/2}. Gaussian closure is
+  exact for normal-crossing wall systems. Faces contractible, walls globally defined => no holonomy (FLG, Francis/Scott): the
+  noncommutativity is isotropic and sits on the memory.
+- Upper tier = semiclassical deformation: F(m,hbar) = Husimi symbol; exact boundary layer sqrt(hbar) kappa psi(d/sqrt hbar) (checked
+  1e-8); target hbar=1 has n/4 unresolved gates per layer, so infinite width is a kinetic (van Hove) limit, not semiclassical.
+  GM: moment chains = Fock truncations; depth -> commutative quotient (hbar_l ~ theta_{l-1}^2/2); u = kernel mean embedding, estimator
+  error = MMD in the depth-L feature space.
+- Mean = border functional on codim-1 faces = supertrace pairing of the wall flip with the normal derivative (checked 8 digits).

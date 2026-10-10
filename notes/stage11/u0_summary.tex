@@ -1,0 +1,49 @@
+\label{sec:summary}
+Notation as in stage 10: $W_l\in\R^{n\times n}$ with i.i.d.\ $N(0,2/n)$ entries, $h_0=x\sim\gamma=N(0,I_n)$, $z_l=W_lh_{l-1}$,
+$h_l=\relu(z_l)$, gates $g_l=\1\{z_l>0\}$, $D_l=\diag(g_l)$; for an output functional $f=c^{\top}h_L$ put $\delta_l=\partial f/\partial h_l$.
+The activation tiling at depth $l$ is the partition of input space by $(g_1,\dots,g_l)$; its walls are $Z_{l,a}=\{z_{l,a}=0\}$. The
+upper tier is the family of laws $N(m,\hbar I)$ (or Eldan's path with $\hbar=1/(1+t)$), and $F(m,\hbar)=\E f(m+\sqrt\hbar Z)$.
+
+\paragraph{1. The cocycle (Section~\ref{sec:cocycle}).} At a fixed input the network is a weighted Bratteli diagram on the layered
+neuron set, with edge matrices $E_l(x)=D_l(x)W_l$. Forward activations are a left-harmonic state, backward sensitivities a right-harmonic
+state, and Putnam--Trevi\~no's invariant $\sum_{v\in V_l}\nu_r(v)\nu_s(v)$ is $\langle h_l,\delta_l\rangle=f(x)$ at every layer
+(Theorem~\ref{thm:bratteli}). Neuron $i$ of layer $l$ is a rectangle of width $h_{l,i}$ and height $\delta_{l,i}$ (its gradient$\times$input
+attribution), each layer is a zippered-rectangles presentation of the same area, and the \textsc{ReLU} rescaling symmetry is the diagonal
+flow that fixes every rectangle's area. Moving the input across a wall is a rank-one elementary move of the cocycle, the analogue of a
+Rauzy move. Conversely, Rauzy--Veech induction is a gated linear network: one gate per step, its activation regions are the Rauzy
+cylinders, and its Jacobians are the Rauzy--Veech cocycle (Proposition~\ref{prop:rv}).
+
+\paragraph{2. Depth is parabolic (Section~\ref{sec:parabolic}).} The pair angle obeys $\theta_{l}=F(\theta_{l-1})$ with
+$F(\theta)=\theta-\theta^2/3\pi-\theta^3/18\pi^2+O(\theta^4)$, a parabolic germ. Its Fatou coordinate is
+$\Phi(\theta)=3\pi/\theta+\tfrac32\log\theta+O(\theta)$ (iterative residue $3/2$), and $\Phi\circ F=\Phi+1$. This replaces the stage-10
+folding law $3\pi/l$, which is $56\%$ off at $l=16$, by $\theta_l=3\pi/(l+\tfrac32\log l+4.39+o(1))$, which is $1.6\%$ off
+(Theorem~\ref{thm:fatou}). The He-critical network is a Farey-type (additive, parabolic) renormalization, not a Gauss-type (hyperbolic)
+one. The infinite sum $\sum_l\theta_l$ diverges, so at infinite width two distinct inputs disagree on gates at infinitely many layers.
+
+\paragraph{3. The two tiers are one flow (Theorem~\ref{thm:collapse}).} The unresolved gate variance at depth $l$ and localization time
+$t$ is a function of the Fatou time $\tau=\Phi(\theta_0(t))+l-1$ alone. In Putnam--Trevi\~no's words, the Teichm\"uller flow is a
+deformation of the state followed by a shift of the diagram: here the localization deforms the state, a layer shifts the diagram, and
+the Fatou coordinate measures the renormalization time. One layer of depth is worth $\Delta\sqrt{1+t}=\sqrt2/3\pi\approx0.150$. The
+measured width-512 disagreement fractions of stage 10, sorted by $\tau$, fall on one curve except at the last layer.
+
+\paragraph{4. The walls are a stratified singular foliation (Section~\ref{sec:walls}).} Its leaves are the open faces of the tiling. Walls
+of one layer cross normally, so the isotropy there is abelian ($b$-calculus, Debord, Helffer--Nourrigat cone equal to the log
+cotangent). A deep wall crossing a wall that feeds it is bent by the gated transport coefficient $T=\partial z_{l,a}/\partial h_{k,b}$.
+Its formal transverse model is the three-line arrangement $y_1y_2(y_2+Ty_1)=0$, whose isotropy algebra is $\aff(1)$ with
+$[E,\vartheta]=\vartheta$. The linear isotropy drops from dimension 2 to 1 (Theorem~\ref{thm:bent}). The bent crossings are where Price's theorem gives birth to the third cumulant: with
+orthogonal first-layer rows, $\kappa_3(z_{2,a})=c_3\sum_bT_{ab}^3|w_b|^3$, $c_3=(\pi+2)/(2\pi)^{3/2}$. Faces are contractible and walls
+have global defining functions, so by Fischer--Laurent-Gengoux and Francis there is no holonomy. The wall foliation's
+noncommutativity is purely isotropic and sits exactly on the memory.
+
+\paragraph{5. The upper tier is a semiclassical deformation (Section~\ref{sec:deformation}).} $N(m,\hbar I)$ is a coherent state and
+$F(m,\hbar)$ the network's Husimi symbol. Near a wall, $F(m,\hbar)-f(m)=\sqrt\hbar\,\kappa\,\psi(d/\sqrt\hbar)$ up to exponentially small
+terms, with $\psi(u)=\varphi(u)-|u|\Phi_{\mathcal N}(-|u|)$. So $F$ is smooth on the parabolic blowup of the walls, and corners need
+iterated blowups along the face poset (Theorem~\ref{thm:layer}). The target $\hbar=1$ is deep in the quantum regime ($n/4$ unresolved gates
+per layer). The infinite-width (moment-chain) description is a weak-coupling, high-density kinetic limit. In Giannakis--Montgomery's
+language, chains are Fock truncations, deep layers approach the commutative (classical) quotient, and the target is a kernel mean
+embedding whose estimation error is a maximum mean discrepancy.
+
+\paragraph{6. Borders (Section~\ref{sec:borders}).} The depth tower carries two Bratteli diagrams. The tile diagram refines and the fiber
+diagram folds; the fibers of $h_l$ play the role of Bellissard--Julien--Savinien's supertiles. Border dimension is the codimension of the
+face containing a point. The mean is a border functional, $\E f=(2\pi)^{-1/2}\sum_{\text{codim-1 faces}}\kappa_F\alpha_F$, equivalently the
+supertrace pairing of the wall flip with the normal derivative (checked to eight digits in two dimensions).

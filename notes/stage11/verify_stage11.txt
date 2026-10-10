@@ -1,0 +1,54 @@
+== 1. Bratteli-backprop: <h_l, delta_l> = f at every layer; rescaling invariance
+  f = -1.293001399638 ; max_l |<h_l,delta_l> - f| = 2.89e-15
+  output change 4.44e-16 ; max rectangle change at the rescaled layer 8.88e-16 ; widths scaled by s: True
+== 2. Rauzy-Veech induction as a gated linear map (d = 4, permutation (4 3 2 1))
+  Rauzy path of length 12: 110111111010 ; Jacobian is an integer matrix: True ; det = 1
+  186/200 perturbed points stay in the cylinder; max deviation from the linear map 2.2e-11
+  distinct gate patterns (cylinders) seen at depth 6: 64 of 2^6 = 64
+== 3. Folding map as a parabolic germ; Fatou coordinate
+  theta=0.01: (F - series)/theta^4 = -0.0076604
+  theta=0.001: (F - series)/theta^4 = -0.00766976
+  l=    10 theta_l=0.512471  Phi(theta_l)-l=7.3880817  (3pi/theta_l - l)=8.39085  3pi/l-law error=0.839
+  l=   100 theta_l=0.0846048  Phi(theta_l)-l=7.6930038  (3pi/theta_l - l)=11.3976  3pi/l-law error=0.114
+  l=  1000 theta_l=0.00928763  Phi(theta_l)-l=7.748043  (3pi/theta_l - l)=14.7667  3pi/l-law error=0.0148
+  l= 10000 theta_l=0.000940765  Phi(theta_l)-l=7.7541698  (3pi/theta_l - l)=18.2074  3pi/l-law error=0.00182
+  l=100000 theta_l=9.42274e-5  Phi(theta_l)-l=7.7547914  (3pi/theta_l - l)=21.6595  3pi/l-law error=0.000217
+== 4. Two-tier collapse in the Fatou time
+  tau      t   l   measured  predicted theta_{l-1}/pi   (sorted by Fatou time)
+    9.80    1   1   0.333     0.333
+   10.80    1   2   0.287     0.292
+   12.80    1   4   0.223     0.236
+   16.80    1   8   0.174     0.173
+   20.02    9   1   0.140     0.144
+   20.80    1  12   0.130     0.138
+   21.02    9   2   0.135     0.136
+   23.02    9   4   0.116     0.124
+   24.80    1  16   0.136     0.115
+   27.02    9   8   0.106     0.105
+   31.02    9  12   0.082     0.092
+   35.02    9  16   0.098     0.081
+   63.76   99   1   0.044     0.045
+   64.76   99   2   0.042     0.044
+   66.76   99   4   0.041     0.043
+   70.76   99   8   0.040     0.041
+   74.76   99  12   0.033     0.039
+   78.76   99  16   0.043     0.037
+  t=   99: layer 16 resolved like layer 1 at t_eff=150.259; d sqrt(1+t)/d layer = 0.15325 (sqrt2/3pi = 0.15005)
+  t=  999: layer 16 resolved like layer 1 at t_eff=1147.48; d sqrt(1+t)/d layer = 0.1511 (sqrt2/3pi = 0.15005)
+  t= 9999: layer 16 resolved like layer 1 at t_eff=10455.3; d sqrt(1+t)/d layer = 0.15039 (sqrt2/3pi = 0.15005)
+== 5. Wall foliation: transverse isotropy at normal versus bent crossings
+  bending w=0.0: dim of tangent fields of degree 1 = 2, degree 2 = 4, degree 3 = 6
+  bending w=0.3: dim of tangent fields of degree 1 = 1, degree 2 = 3, degree 3 = 5
+  theta = [-w*y1**2 - y1*y2, 0] ; [E, theta] - theta = [0, 0] ; tangent to the phantom line y2=0, y1>0: True
+== 6. Boundary layer of the heat deformation near one wall
+  distance from the base point to the other walls: 3.90
+  hbar=0.01 d/sqrt(hbar)=0.0: F-f=-4.105073e-02  sqrt(hbar) kappa psi=-4.105073e-02  rel.err=2.1e-08
+  hbar=0.01 d/sqrt(hbar)=0.7: F-f=-1.470213e-02  sqrt(hbar) kappa psi=-1.470214e-02  rel.err=4.6e-08
+  hbar=0.05 d/sqrt(hbar)=0.0: F-f=-9.179223e-02  sqrt(hbar) kappa psi=-9.179223e-02  rel.err=2.1e-08
+  hbar=0.05 d/sqrt(hbar)=0.7: F-f=-3.287497e-02  sqrt(hbar) kappa psi=-3.287497e-02  rel.err=4.6e-08
+  hbar=0.20 d/sqrt(hbar)=0.0: F-f=-1.835845e-01  sqrt(hbar) kappa psi=-1.835845e-01  rel.err=2.1e-08
+  hbar=0.20 d/sqrt(hbar)=0.7: F-f=-6.574995e-02  sqrt(hbar) kappa psi=-6.574995e-02  rel.err=4.6e-08
+  hbar=0.50 d/sqrt(hbar)=0.0: F-f=-2.902725e-01  sqrt(hbar) kappa psi=-2.902725e-01  rel.err=2.1e-08
+  hbar=0.50 d/sqrt(hbar)=0.7: F-f=-1.039598e-01  sqrt(hbar) kappa psi=-1.039598e-01  rel.err=8.0e-08
+== 7. Mean as a border functional (two-dimensional input, rays as walls)
+  breakpoints on the circle: 70 ; E f by angular quadrature = 0.36919251 ; sum_rays kappa/(2 sqrt(2pi)) = 0.36919251

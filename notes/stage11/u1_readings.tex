@@ -1,0 +1,81 @@
+\label{sec:readings}
+\paragraph{Bellissard--Julien--Savinien \cite{BJS}.} A tiling of finite local complexity has a hull $\Omega$ (the closure of its
+translates) and a canonical transversal $\Xi$ (tilings with a puncture at the origin), a Cantor set carrying the étale equivalence relation
+$R_\Xi$ of translation. A \emph{proper nested sequence} of tilings $T_0\prec T_1\prec\dots$ (each tile of $T_{n+1}$ a patch of $T_n$, with
+buffer zones) gives a Bratteli diagram whose vertices at level $n$ are the collared prototiles of $T_n$ and whose edges record which tile
+sits in which supertile. Infinite paths are points of $\Xi$ (the Robinson map), and tail equivalence of paths is an AF subrelation
+$R_{AF}\subsetneq R_\Xi$. The two agree on a dense $G_\delta$ of full measure (points that are eventually deep inside supertiles) and
+differ on a dense, null $F_\sigma$: tilings whose origin stays on supertile boundaries at every scale. To recover $R_\Xi$ the authors add
+\emph{horizontal} edges (adjacency of supertiles through collars) labelled by translation vectors. In dimension one this reduces to
+$R_\Xi=R_{AF}\vee\{(x^i_{\min},x^i_{\max})\}$, the Vershik pairs of maximal and minimal paths (Fibonacci: two pairs; Thue--Morse: four).
+\emph{Essence:} the coarse-graining tower is a Bratteli diagram, generic points see only the AF part, and the full dynamics is the AF part
+plus a thin set of boundary identifications, which carry all the noncommutativity that the AF part misses.
+
+\paragraph{Julien--Savinien \cite{JS}.} For substitution tilings the boundary identifications are made combinatorial. The substitution
+induces substitutions $\omega_j$ on decorated $j$-faces for every $j<d$, and each has its own Bratteli diagram $B^j$. A multi-diagram joins
+them by horizontal edges (a $j$-face lies on the boundary of a $(j{+}1)$-face) and by \emph{escaping} edges (a face vanishes into the interior
+of a supertile). A path in $B^d$ has \emph{borders}: tails in $B^j$ obtained by following horizontal edges. Its border dimension is the least
+such $j$, geometrically the dimension of $\bigcap_n\lambda^n\omega^{-n}(T)^j$. Two paths are equivalent iff they have the same border
+dimension $j$ and tail-equivalent $j$-borders, giving $R_\Xi=\bigsqcup_jR^j_B$ with $R^d_B=R_{AF}$. Each $R^j_B$ with $j<d$ lives on a dense
+null set and is not AF. \emph{Essence:} the full relation decomposes by the dimension of the face on which a point is trapped across all
+scales, and each stratum is a tail relation of the face substitution of that dimension.
+
+\paragraph{Putnam--Trevi\~no \cite{PT}.} A bi-infinite Bratteli diagram has levels indexed by $\Z$, two partial orders $\le_s$ (edges
+with a common source) and $\le_r$ (common range), and a state $(\nu_r,\nu_s)$. Here $\nu_r(v)=\sum_{r(e)=v}\nu_r(s(e))$ propagates forward,
+$\nu_s(v)=\sum_{s(e)=v}\nu_s(r(e))$ propagates backward, and $\sum_{v\in V_n}\nu_r(v)\nu_s(v)$ is independent of $n$ (their Lemma 2.7). The
+cylinder of paths through a finite path $p$ has measure $\nu_r(s(p))\nu_s(r(p))$ and maps to a rectangle of width $\nu_r(s(p))$ and
+height $\nu_s(r(p))$. After removing extremal paths and the \emph{singular} set $\Sigma_B=\{\Delta_s\Delta_r\ne\Delta_r\Delta_s\}$, where the
+two successor maps fail to commute, the quotient of the path space by both successor relations is a translation surface. Right-tail
+equivalence becomes the horizontal foliation and left-tail equivalence the vertical one. Their $C^*$-algebras are AF and foliation
+algebras linked by explicit subhomogeneous inductive limits. The successor flip $F_B$ gives an even Fredholm module whose commutant
+inside the AF algebra is the algebra of the quotient (Theorem 9.7), and an excision argument computes the $K$-theory. Infinite
+genus appears exactly when $\Sigma_B\neq\emptyset$ (Chamanara's surface). In finite genus the diagram comes from backward Rauzy--Veech
+induction, $K_0(C^*(F^+))\cong H_1(S,\Sigma;\Z)$, the order on $K_0$ is given by the Schwartzman asymptotic cycle (the top Zorich
+direction), and the Teichm\"uller flow is a deformation of the state $(e^{-t}\nu_r,e^{t}\nu_s)$ followed by a shift of the diagram.
+\emph{Essence:} two transverse tail structures and a pairing-conserving state make a flat surface. The obstruction to flatness is the
+non-commutation of the two successor maps, and renormalization trades state deformation against shifts.
+
+\paragraph{Giannakis--Montgomery \cite{GM}.} Koopman evolution $f\mapsto f\circ\Phi^t$ is studied without a reference measure, on a
+reproducing-kernel Hilbert algebra $H$. The generator $V=S+A$ (symmetric plus antisymmetric) is dilated to a skew-adjoint tridiagonal
+$L$ on $\ell^2(\mathbb N)\otimes H$ with $A$ on the diagonal and $\pm S$ off it. The Fibonacci vector $E f=\sum_iF_ie_i\otimes f$ intertwines,
+$LE=EV$ (because $F_{i+1}-F_{i-1}=F_i$), so the corner $(p_1\otimes1)L^kE_n$ reproduces $V^k$. A second quantization on a weighted
+symmetric Fock space (a Banach algebra under $\vee$ for subconvolutive weights) turns $L$ into a free derivation $D$. Creation and
+annihilation operators are bounded, $(\mathcal A_n,\mathcal F,-iD)$ is a weak spectral triple, and $\Psi([D,a])=V(\Psi a)$. Points of $X$
+embed as high-grade limits of truncated coherent states. The creation/annihilation commutators vanish on high grades, so the quotient
+by the compact diagonal ideal is commutative (the classical limit), and expectations under any Borel measure are kernel mean embeddings
+$\Psi_\mu=\int\Psi_x\,d\mu$. \emph{Essence:} a nonlinear or dissipative dynamics becomes linear and unitary on an amplified Fock space, the
+classical system is the high-occupation quotient, and averages over laws are mean embeddings.
+
+\paragraph{Paul \cite{Paul}.} For an Anosov Hamiltonian flow, the quantum evolution of an observable up to times $\hbar^{-2+\epsilon}$
+(far beyond the Ehrenfest time $\log(1/\hbar)/\lambda$) is still described by a symbol. That symbol is an element of the crossed product of
+$C(h^{-1}(I))$ by the group generating the strong unstable foliation, and it is obtained by pushing the initial symbol forward along
+the flow. Operators are written as superpositions of rank-one maps between Lagrangian states built from Gaussian coherent states
+along unstable leaves. Products of symbols are convolutions along leaves, and off-diagonal Husimi functions $R_\psi(z,z')$ with $z'$ on
+the unstable leaf of $z$ are the matching states. \emph{Essence:} past the time at which a coherent state is sheared across many
+scales, the classical limit is the noncommutative algebra of the foliation that the shearing produces, and two-point objects take over
+from densities.
+
+\paragraph{Francis \cite{Francis}.} A transverse order $k$ foliation has finitely many leaves: one hypersurface $L$ and the components
+of its complement. It is generated near $L$ by vector fields tangent to $L$ to order $k$, locally $\{y^k\partial_y,\partial_{x_i}\}$. Loops
+in $L$ have holonomy only at the level of $(k-1)$-jets, a homomorphism $\pi_1(L)\to J^{k-1}$, and this is a complete local invariant that
+takes all values. The holonomy groupoid is a blowup of $(M\setminus L)^2\cup L^2$ in which $L^2$ is replaced by the gauge groupoid of a
+principal $J^k_{\R}$-bundle. Its $C^*$-algebra is an extension $0\to\mathcal K(\oplus\mathcal K)\to C^*(G)\to C^*(\Gamma_{\R})\otimes\mathcal
+K\to0$, and $J^2\cong$ the $ax+b$ group. If $L$ has a global defining function with a given $(k-1)$-jet (Scott's $b^k$-manifolds), the holonomy
+is trivial. \emph{Essence:} singular foliations with the same leaves are distinguished by order of tangency and jet holonomy, and the
+isotropy groups are solvable jet groups.
+
+\paragraph{Fischer--Laurent-Gengoux \cite{FLG}.} Near a leaf $L$ with transverse model $\cT_0$ (a formal singular foliation of
+$\R^d$ at $0$), singular foliations are classified formally by an outer holonomy $\pi_1(L)\to\mathrm{Out}(\cT_0)$ together with a
+finite-dimensional principal bundle, built from a Galois cover and a group extension of $\mathrm{Inner}(\cT_0)$. If $L$ is contractible the
+foliation is the product with $\cT_0$; if $L$ is simply connected only the principal bundle remains; if $\cT_0$ vanishes quadratically
+only the outer holonomy remains. Parallel transport along a leaf maps transverse leaves to transverse leaves (Yang--Mills
+connections). \emph{Essence:} ``travelling along a leaf one sees the same landscape through the window''. What can change is only the
+global twisting, measured by symmetries of the transverse model.
+
+\paragraph{Louis \cite{Louis}.} For a singular foliation $\cF$ with an anchored bundle $\rho:A\to TM$, the Nash blowup replaces each point by
+all limits of the kernels $\ker\rho_x$ from regular points. The pulled-back foliation becomes Debord, i.e.\ the image of a Lie algebroid
+$D_\cF$ (Mohsen's groupoid). The Helffer--Nourrigat cone $\mathrm{HN}(\cF)=\overline{\bigcup_{x\ \mathrm{regular}}\rho^*_x(T^*_xM)}$ is the image
+of $D^*_\cF$; it is a union of symplectic leaves of the linear Poisson structure, and it is exactly where the principal symbol of a
+longitudinal operator is intrinsic. Longitudinal ellipticity means positivity of the symbol on $D_\cF^*$. For Debord foliations the
+blowup is trivial and $\mathrm{HN}=A^*$. \emph{Essence:} the symbol space of a singular foliation is the closure of its regular conormal
+data, and resolving the foliation by limits of tangent spaces makes it a Lie algebroid.

@@ -1,0 +1,120 @@
+\label{sec:parabolic}
+Let $J(\theta)=\sin\theta+(\pi-\theta)\cos\theta$ and $F(\theta)=\arccos(J(\theta)/\pi)$ on $[0,\pi]$: the angle map of the arc-cosine kernel
+\cite{CS}, under which the angle between $h_{l-1}(x)$ and $h_{l-1}(x')$ evolves at infinite width (stage 10, Theorem~\emph{folding}).
+\begin{theorem}[Depth is a parabolic germ; Fatou coordinate]\label{thm:fatou}
+\begin{enumerate}[leftmargin=*]
+\item $F$ is real-analytic on $[0,\pi)$, it satisfies $F(\theta)<\theta$ on $(0,\pi]$, and
+\[
+F(\theta)=\theta-\frac{\theta^2}{3\pi}-\frac{\theta^3}{18\pi^2}+O(\theta^4)
+\]
+(numerically the $\theta^4$ coefficient is $-0.00767$). Thus $0$ is a parabolic fixed point (multiplier $1$) and $(0,\pi]$ lies in its
+attracting direction.
+\item There is a real-analytic $\Phi$ on $(0,\pi]$, unique up to an additive constant, with $\Phi\circ F=\Phi+1$ (the Fatou coordinate):
+\[
+\Phi(\theta)=\lim_{N\to\infty}\big[\Phi_0(F^N\theta)-N\big],\qquad \Phi_0(\theta)=\frac{3\pi}{\theta}+\frac32\log\theta,\qquad \Phi=\Phi_0+O(\theta).
+\]
+The coefficient $\tfrac32=1-b/a^2$ for $F=\theta-a\theta^2+b\theta^3+\dots$, $a=1/3\pi$, $b=-1/18\pi^2$, is the iterative residue
+(r\'esidu it\'eratif), the formal conjugacy invariant of the germ \cite{Milnor,Ecalle}.
+\item For every $\theta_0\in(0,\pi]$, $\theta_l=\Phi^{-1}(\Phi(\theta_0)+l)$ and
+\[
+\theta_l=\frac{3\pi}{\,l+\tfrac32\log l+\Phi(\theta_0)-\tfrac32\log(3\pi)+o(1)\,}.
+\]
+From orthogonal inputs ($\theta_0=\pi/2$) the constant is $\Phi(\pi/2)-\tfrac32\log3\pi=7.7548-3.3650=4.390$.
+\end{enumerate}
+\end{theorem}
+\begin{proof}
+(1) $1-J/\pi=\big(\pi(1-\cos\theta)-(\sin\theta-\theta\cos\theta)\big)/\pi=\theta^2u(\theta)$ with $u$ analytic, $u(0)=\tfrac12$, and
+$F=2\arcsin\sqrt{(1-J/\pi)/2}=2\arcsin(\theta\sqrt{u/2})$, which is analytic. Expanding, $\cos F=1-\tfrac{\theta^2}2+\tfrac{\theta^3}{3\pi}+\tfrac{\theta^4}{24}
++O(\theta^5)$; matching $\cos(\theta+a_2\theta^2+a_3\theta^3)$ gives $a_2=-1/3\pi$ and $a_3=-a_2^2/2=-1/18\pi^2$. $F<\theta$ because
+$J(\theta)/\pi-\cos\theta=(\sin\theta-\theta\cos\theta)/\pi>0$ on $(0,\pi]$.
+(2) With $\Phi_0=1/(a\theta)+c\log\theta$ one computes $\Phi_0(F\theta)-\Phi_0(\theta)-1=\big((a^2-b)/a-ca\big)\theta+O(\theta^2)$. The choice
+$c=(a^2-b)/a^2=\tfrac32$ makes the defect $O(\theta^2)$. Since $F^N\theta=O(1/N)$ the defects along an orbit are summable, so the limit exists,
+is analytic (uniform limits of analytic functions on compact subsets of the petal), satisfies $\Phi\circ F=\Phi+1$, and differs from
+$\Phi_0$ by $O(\theta)$. Uniqueness up to constants is the standard uniqueness of Fatou coordinates on a petal \cite[\S10]{Milnor}.
+(3) Invert $\Phi_0(\theta_l)+O(\theta_l)=\Phi(\theta_0)+l$ with $\log\theta_l=\log3\pi-\log l+o(1)$.
+\end{proof}
+Numerically (Verification, item 3) $\Phi_0(\theta_l)-l$ equals $7.388$, $7.693$, $7.748$, $7.7542$, $7.7548$ at
+$l=10,10^2,10^3,10^4,10^5$, while $3\pi/\theta_l-l$ keeps growing like $\tfrac32\log l$. At the competition depth the two laws give
+\[
+\theta_{16}=0.3779\ \text{(exact)},\qquad \frac{3\pi}{16+\frac32\log16+4.39}=0.3839,\qquad \frac{3\pi}{16}=0.5890 .
+\]
+So the stage-10 folding law is a leading-order statement whose correction is large at $L=16$.
+
+\begin{corollary}[Gate counts, corrected]\label{cor:gates}
+For two independent standard inputs ($\theta_0=\pi/2$ at large $n$) the expected number of layer-$l$ gates on which they differ is
+$n\theta_{l-1}/\pi$. The total over $L$ layers is $\frac n\pi\sum_{k<L}\Phi^{-1}(\Phi(\pi/2)+k)=3n\log L+O(n)$, but the $O(n)$ term is large
+and negative: for $L=16$ the total is $3.66\,n$, not $3n\log16=8.32\,n$ (the stage-10 prediction, which keeps only the leading term).
+\end{corollary}
+
+\paragraph{Farey, not Gauss.} The additive Rauzy--Veech induction for two intervals is the Farey map, which has a parabolic fixed point
+with infinite invariant measure. Zorich's acceleration (grouping consecutive steps of one type) makes it the Gauss map, with a finite
+measure and an integrable cocycle. The He-critical network is on the Farey side: depth acts on chords by a parabolic germ, and the
+acceleration that turns it into a translation is precisely the Fatou coordinate. The network is not hyperbolic at any finite depth.
+This is the renormalization-theoretic meaning of ``critical initialisation''.
+
+\begin{theorem}[The two tiers are one flow]\label{thm:collapse}
+Along Eldan's localization ($\Sigma_t=I/(1+t)$) two copies conditionally independent given $\mathcal F_t$ have input correlation
+$t/(1+t)$; at infinite width the fraction of layer-$l$ gates on which they disagree is $\theta_{l-1}(t)/\pi$ with
+$\theta_0(t)=\arccos\frac t{1+t}$, and $\E\Var(g_{l,a}\mid\mathcal F_t)=\theta_{l-1}(t)/2\pi$ (stage 10, Theorem \emph{depthtrickle}). Let
+\[
+\tau(l,t)=\Phi(\theta_0(t))+l-1\qquad\text{(the Fatou time).}
+\]
+\begin{enumerate}[leftmargin=*]
+\item $\E\Var(g_{l,a}\mid\mathcal F_t)=\Phi^{-1}(\tau)/2\pi$: the unresolved gate variance depends on $(l,t)$ only through $\tau$. More generally
+every infinite-width quantity built from finitely many exchangeable conditionally independent replicas at layer $l$ and time $t$ depends
+on $(l,t)$ only through $\tau$.
+\item The map $(t,l)\mapsto(t',l-1)$ with $\Phi(\theta_0(t'))=\Phi(\theta_0(t))+1$ preserves all of them: running the upper tier from $t$ to $t'$ is
+the same as deleting one layer of the lower tier.
+\item As $t\to\infty$, $\tau=3\pi\sqrt{(1+t)/2}-\tfrac34\log\frac{1+t}2+l-1+O(1)$, so the localization time worth one layer satisfies
+$\Delta\sqrt{1+t}\to\sqrt2/3\pi=0.1500$.
+\end{enumerate}
+\end{theorem}
+\begin{proof}
+(1) $\theta_{l-1}(t)=F^{l-1}(\theta_0(t))=\Phi^{-1}(\Phi(\theta_0(t))+l-1)$ by Theorem~\ref{thm:fatou}. At infinite width the pre-activations of the
+replicas at layer $l$ are jointly Gaussian with common variance (independent of $t$, since $X\sim\gamma$ marginally) and common pairwise
+correlation $\cos\theta_{l-1}(t)$ (the dual-kernel recursion applied to each pair). (2) follows from (1). (3) $1-\cos\theta_0=1/(1+t)$
+gives $\theta_0=\sqrt{2/(1+t)}\,(1+O(1/t))$; insert into $\Phi=\Phi_0+O(\theta)$.
+\end{proof}
+\paragraph{Putnam--Trevi\~no's Teichm\"uller flow, realized.} In \cite[\S12.8]{PT} the Teichm\"uller flow on bi-infinite diagrams built
+from zippered rectangles is the identification
+\[
+(B,e^{-t_R}\nu_r,e^{t_R}\nu_s)\sim(\sigma B,\sigma_*\nu_r,\sigma_*\nu_s).
+\]
+It deforms the
+state for a renormalization time $t_R$ and then shifts the diagram by one level. Theorem~\ref{thm:collapse}(2) is this identification
+for the two-tier network. The diagram is the depth tower, its state is the gate law conditional on $\mathcal F_t$ (the upper tier), the shift
+removes a layer, and the renormalization time is read off the Fatou coordinate. In log-time a layer costs
+$\Delta\log(1+t)\approx2\sqrt2/(3\pi\sqrt{1+t})$: it becomes cheaper as the localization proceeds.
+
+\paragraph{Data collapse.} The stage-10 measured disagreement fractions (width 512, 64 pairs, three times, six layers), sorted by
+$\tau$ (Verification, item 4):
+\begin{center}\small
+\begin{tabular}{rrrcc|rrrcc}\toprule
+$\tau$ & $t$ & $l$ & meas. & pred. & $\tau$ & $t$ & $l$ & meas. & pred.\\\midrule
+9.80&1&1&.333&.333 & 24.80&1&16&\textbf{.136}&.115\\
+10.80&1&2&.287&.292 & 27.02&9&8&.106&.105\\
+12.80&1&4&.223&.236 & 31.02&9&12&.082&.092\\
+16.80&1&8&.174&.173 & 35.02&9&16&\textbf{.098}&.081\\
+20.02&9&1&.140&.144 & 63.76&99&1&.044&.045\\
+20.80&1&12&.130&.138 & 70.76&99&8&.040&.041\\
+21.02&9&2&.135&.136 & 74.76&99&12&.033&.039\\
+23.02&9&4&.116&.124 & 78.76&99&16&\textbf{.043}&.037\\\bottomrule
+\end{tabular}
+\end{center}
+Points from different localization times interleave on a single decreasing curve, e.g.\ $(t,l)=(9,1)$ at $\tau=20.0$ and $(1,12)$ at $\tau=20.8$.
+The three last-layer points (bold) all sit above it. This is the finite-width drift of the last layer that stage 10 recorded, and the
+collapse makes it a clean diagnostic: a mean-field (replica-symmetric, infinite-width) quantity cannot leave the $\tau$-curve, so the
+excess at $l=16$ is a finite-width effect.
+
+\begin{proposition}[Tail equivalence at infinite width]\label{prop:tail}
+For $\theta_0>0$, $\sum_l\theta_l=\infty$ (harmonic, from Theorem~\ref{thm:fatou}). At infinite width two distinct inputs therefore disagree on a
+positive fraction $\theta_{l-1}/\pi$ of the gates of every layer, and the total expected disagreement diverges even per neuron. The
+gate sequences of distinct inputs are never tail-equivalent.
+\end{proposition}
+\begin{conjecture}[Finite width is a hyperbolic perturbation]\label{conj:hyper}
+At width $n$ the projective contraction of products of gated Gaussian matrices adds a linear term,
+$\theta\mapsto(1-c_n)\theta-\theta^2/3\pi+\dots$ with $c_n\asymp1/n$ (the gap between the top two Lyapunov exponents). The parabolic point becomes
+attracting-hyperbolic, the crossover depth is $\asymp n$, $\sum_l\theta_l<\infty$, and almost every pair of inputs (on non-dead
+networks) becomes eventually tail-equivalent. This would settle the stage-10 question about the tail algebra of the depth tower: it is
+decided by the summability of the Fatou orbit. The competition networks ($L=16\ll n=1024$) sit deep in the parabolic regime.
+\end{conjecture}
