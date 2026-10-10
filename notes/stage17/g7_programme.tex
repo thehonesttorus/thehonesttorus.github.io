@@ -1,0 +1,41 @@
+\label{sec:programme}
+\subsection{The same cocycle}
+The paper's Fox cocycle and our stage-15 error cocycle are one structure:
+\[
+D_{gb}=D_g+\lambda(g)D_b\qquad\longleftrightarrow\qquad \delta_l=T_l\delta_{l-1}+\beta_l,\quad \delta_L=\sum_lT_L\cdots T_{l+1}\beta_l .
+\]
+In both, a word's value is the sum of local contributions, each transported by part of the word: the prefix (left regular action) in theirs, the
+downstream gated maps in ours. Their analytic heart concerns the Gram of the transports. For free prefixes it tends to a circular element,
+with no atom at zero. Ours is what the measured sum rule reports: births from different layers add in quadrature, with transport factors $0.65$--$0.94$.
+\begin{itemize}[leftmargin=*]
+\item \emph{Incoherent local contributions add in $\ell^2$.} The word grows like $\sqrt m$. This is our late, incoherent residual.
+\item \emph{Designed contributions can be coherent.} The minimal-norm input $T^*(TT^*)^{-1}\cdot\mathrm{target}$ reaches an $O(1)$ target with local inputs of size $m^{-1/2}$.
+For an estimator this is the adjoint (dual-weighted) design of corrections, and it is efficient exactly when the transport Gram has no small
+singular values in the target direction.
+\end{itemize}
+
+\subsection{The same orthogonality}
+Free Khintchine, $\|\sum k_gS_g\|\lesssim\|k\|_{\ell^2}$, is the non-commutative form of our row-Mehler theorem: independence across rows makes errors add in
+$\ell^2$ rather than $\ell^1$. In the paper this is a \emph{resource}, since spread corrections are small. For us it is a \emph{constraint}, since spread errors
+cannot be cancelled by a few global corrections (stage~15, Corollary~3.3).
+
+\subsection{The same lesson about counting}
+The paper shows that a generator count is a property of the generating set, not of the algebra; the invariant structure is dynamical. Our
+stage~16 measured the analogue for estimators. A representation in a fixed basis needs degree $\sim17$ at depth~16, and the tractable
+representation co-evolves with the weights. In both cases the productive object is a \emph{flow of frames} adapted to the instance, not a count.
+
+\subsection{A template for dynamic interdependence}
+The paper's iteration is the cleanest rigorous example we know of a computation whose next step is fixed only after the previous output
+is seen. Each pass makes a small, structure-preserving move that serves a target, and the tolerance of every future move is set by the
+sensitivity of everything already achieved. The transferable design principle for an estimator has three parts:
+\begin{itemize}[leftmargin=*]
+\item \emph{Passes of small, exact moves.} A sequence of passes, each a small move of the internal frame that preserves the exact identities
+(homogeneity, Euler--Stein, moment positivity). This is the analogue of trace preservation.
+\item \emph{Moves aimed through the adjoint.} Each move is directed at the currently unresolved part, the analogue of absorbing $C$.
+\item \emph{Budgets set by sensitivity.} Each pass's tolerance comes from the adjoint sensitivities of what earlier passes achieved, the analogue
+of $r_k$.
+\end{itemize}
+
+\emph{What does not transfer.} Mechanism~3 is non-commutative. Our network's state lives in a commutative probability space, where spread moves
+cost $\ell^1$, so the absorption phenomenon itself has no classical analogue. What transfers is the cocycle algebra, the spectral (Gram)
+analysis of transports, and the order of choices in the adaptive iteration.

@@ -1,0 +1,35 @@
+\label{sec:critical}
+We went through every step, looking for the places where a proof of this kind usually breaks.
+\begin{center}\small
+\begin{tabular}{>{\raggedright\arraybackslash}p{4.4cm}>{\raggedright\arraybackslash}p{9.6cm}}\toprule
+step & what could fail, and why it does not\\\midrule
+Haar-tuple identification (L.\,2.2) & needs only orthonormality of words and density of their span; both follow from the trace conditions and generation\\
+free conjugates (L.\,2.3) & cyclic rotation turns $\tau(\prod A_{g_j}c_jA_{g_j}^*)$ into an alternating centred product of free algebras; correct\\
+labels (L.\,2.4) & the alternating-reduction induction is standard; nonidentity labels survive the removal of scalar parts\\
+derivation on $\mathcal P$ & respects $a_j^*a_j=1$ since $\sigma(h_j)$ is self-adjoint ($h_j$ real); the cocycle rule follows from the product rule\\
+first variation (L.\,3.2) & the own term commutes; $Y_g\in B_g$; conjugating one free variable by a unitary of its free complement preserves the joint law. Freeness is
+used \emph{only at $t=0$}\\
+higher derivatives & $\tau\circ\mathrm{ev}_0\circ\delta=0$ holds on all of $\mathcal P$, hence on $\delta^{r-1}p$\\
+analyticity (L.\,3.4) & the Taylor bound is uniform in $t$ because the evolved letters are unitary and $S$ is fixed; constancy on $\R$ follows from real-analytic
+continuation\\
+descent, isometry, surjectivity & faithfulness of $\tau$; $\|b\|=\lim\tau((b^*b)^k)^{1/2k}$; uniqueness of the reversed flow\\
+norm bound (L.\,2.5) & creation, annihilation and diagonal decomposition on the free product $L^2$; constant $3\pi$ (we measure $2\pi/\sqrt3$ at the free CLT edge)\\
+prefix identity (L.\,4.2) & checked exactly by computer (Section~\ref{sec:checks})\\
+free Poisson limit (L.\,4.3) & non-crossing matching count plus tightness and moment determinacy on $[0,4]$; we observe it numerically\\
+cutoff inversion (L.\,4.1) & order of choices $d\to m\to$ finite truncation; real symmetry via conjugation commuting with real functional calculus\\
+absorption (P.\,5.1) & exact algebra with $\gamma(C)=CA_w$; the error transfers isometrically\\
+adaptive limit (Thm 1.1) & $\varepsilon_k$ chosen before $w_k$, $r_k$ after; $\sum_{\ell>k}\varepsilon_\ell\le r_k$; $L^2$-density plus conditional expectation gives generation\\\bottomrule
+\end{tabular}
+\end{center}
+Further remarks.
+\begin{itemize}[leftmargin=*]
+\item \emph{Rates.} With the actual spectral asymptotics, $\|h\|^2\approx2/(\pi m\sqrt d)$ and error$^2\approx(2/\pi)\sqrt d$. Accuracy $\eta$ needs $d\sim(\pi\eta^2/2)^2$ and
+$m\sim4/(\pi^2\eta^4)$, with word length $\sim m^2\sim\eta^{-8}$. That is polynomial blow-up, irrelevant for existence and a mild cost for any numerical
+realization.
+\item \emph{Constructivity.} Each stage is explicit, with an explicit word, coefficient vector and flow. The limit is an infinite product, and the
+isomorphism has no closed form.
+\item \emph{External inputs.} Only Dykema's amplification formula is used for Theorem~1.2, and only the alternative for Corollary~6.1. Both are classical.
+\item \emph{What a referee will read hardest.} The first-variation argument, and the claim that real-analytic continuation needs no freeness
+at $t>0$. We find both correct. The authors' care in separating formal identities on $\mathcal P$ from evaluated ones is what makes the second step
+legitimate.
+\end{itemize}

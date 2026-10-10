@@ -1,0 +1,91 @@
+\label{sec:moves}
+Fix $n\ge3$ and $M=L(\F_{n+1})$ with canonical generators $(A_1,\dots,A_n,C)$, a freely generating Haar $(n+1)$-tuple. Write $\Gamma=\F_n=\langle x_1,\dots,x_n\rangle$, and
+$A_g$ for the word $g\in\Gamma$ evaluated in the first $n$ letters.
+
+\subsection{Move 1: the bounded logarithm and its free conjugate family}
+Let $S=\arg C\in W^*(C)$, with values in $(-\pi,\pi]$. Then $S=S^*$, $\|S\|\le\pi$, $\tau(S)=0$, $e^{iS}=C$ and $W^*(S)=W^*(C)$. For $g\in\Gamma$ put $S_g=A_gSA_g^*$.
+\begin{itemize}[leftmargin=*]
+\item \emph{The conjugates are free} (Lemma 2.3). The algebras $A_gW^*(C)A_g^*$, $g\in\Gamma$, form a free family: cyclicity turns any alternating
+product into an alternating product of centred elements of $W^*(A)$ and $W^*(C)$. The free group indexes a free family of copies of $S$.
+\item \emph{Group labels} (Lemma 2.4). Give a monomial in $A_j^{\pm1}$ and $S$ the product of its group letters as its \emph{label}, ignoring $S$.
+Nonidentity labels have trace $0$. Identity labels are polynomials in the $S_g$, obtained by moving letters right with $A_gS=S_gA_g$.
+\end{itemize}
+
+\subsection{Move 2: Fox-cocycle flows}
+Choose finitely supported real $h_1,\dots,h_n\in\ell^2(\Gamma)$ and extend them to the cocycle $D:\Gamma\to\ell^2(\Gamma)$,
+\[
+D_{x_j}=h_j,\qquad D_{gb}=D_g+\lambda(g)D_b .
+\]
+This is Fox's free differential calculus: a word's value is the sum over its letters of their coefficients, shifted by the preceding prefix.
+Consider the polynomial ODE, with $S$ held fixed,
+\[
+A_j'(t)=i\,s_t(h_j)\,A_j(t),\qquad s_t(k)=\sum_gk(g)A_g(t)SA_g(t)^* .
+\]
+Each letter is rotated on the left by a self-adjoint element built from conjugates of $S$ by its own words. The product rule and the cocycle give
+the \emph{word velocity}
+\[
+A_w'(t)=i\,s_t(D_w)\,A_w(t),
+\]
+so the cocycle value $D_w$ is the generator of a word's rotation.
+\begin{proposition}[the flow; paper's Proposition 3.1]
+The ODE has a global unitary solution. It defines a one-parameter group $\beta_t$ of trace-preserving normal automorphisms of $M$ fixing $S$ (hence
+$C$). Moreover
+\[
+\|\beta_t(A_j)-A_j\|\le3\pi|t|\,\|h_j\|_{\ell^2},\qquad \|\beta_t(A_w)-e^{itS}A_w\|\le3\pi|t|\,\|D_w-\delta_e\|_{\ell^2}.
+\]
+\end{proposition}
+\emph{Trace preservation} is the heart. It is proved without knowing freeness at positive times.
+\begin{enumerate}[leftmargin=*]
+\item On the universal $*$-algebra $\mathcal P$ (unitary $a_j$, self-adjoint $z$), define the derivation $\delta z=0$, $\delta a_j=i\sigma(h_j)a_j$. It respects the
+relations, and $\delta z_g=i[\sigma(D_g),z_g]$.
+\item \emph{First variation at the free point.} $\delta$ preserves labels, so nonidentity-label terms have trace $0$. On a polynomial $F(z_g)$, the derivative
+of $z_g$ is $i[Y_g,S_g]$ with $Y_g=\sum_{b\ne g}D_g(b)S_b$; the own term commutes. Because $S_g$ is free from $B_g=W^*(S_b:b\ne g)\ni Y_g$, conjugating $S_g$ by
+$e^{iuY_g}$ preserves the joint law with $B_g$. The first variation is therefore zero, and $\tau\circ\mathrm{ev}_0\circ\delta=0$ on all of $\mathcal P$.
+\item \emph{Analytic continuation.} Applied to $\delta^{r-1}p$, step 2 gives $\frac{d^r}{dt^r}\tau(\mathrm{ev}_t p)|_0=\tau(\mathrm{ev}_0\delta^rp)=0$ for every $r\ge1$. Unitarity of the
+evolving letters gives the Taylor bound $\frac1{r!}\|\frac{d^r}{dt^r}\mathrm{ev}_tp\|\le b_0R^l(B_1R^J(l+J))^r$, uniformly in $t$. So $t\mapsto\tau(\mathrm{ev}_tp)$ is real-analytic with a
+uniform radius, hence constant on $\R$.
+\item \emph{Descent.} If $\mathrm{ev}_0p=0$ then $\tau(\mathrm{ev}_t(p^*p))=0$, so the map is well defined. Since $\|b\|=\lim\tau((b^*b)^k)^{1/2k}$ it is isometric. Reversing time
+gives surjectivity, and the GNS unitary gives the normal extension.
+\end{enumerate}
+\emph{Norm control} comes from the free-sum inequality $\|\sum z_j\|\le2(\sum\|z_j\|_2^2)^{1/2}+\max\|z_j\|$ for free centred self-adjoint $z_j$. It gives $\|s(k)\|\le3\pi\|k\|_{\ell^2}$,
+\emph{independently of the support size}. Integrating the velocities gives the two bounds, since $s_t(D_w)-S=\beta_t(s(D_w-\delta_e))$.
+
+\subsection{Move 3: the coefficient problem, small letters and a big word}
+Take $h_1=h$ and $h_j=0$ for $j\ge2$. Use $a=x_1$, $b_j=x_2^jx_3x_2^{-j}$, $p_j=(ab_1)\cdots(ab_j)$ and $w_m=p_ma$.
+\begin{itemize}[leftmargin=*]
+\item \emph{Free prefixes} (Lemma 4.2). The $u_j=ab_j$ are free, and $p_j=u_1\cdots u_j$ is a triangular basis change, so $p_1,\dots,p_m$ are free.
+\item \emph{Prefix identity.} $D$ vanishes on $\langle x_2,\dots,x_n\rangle$, and $a$ occurs in $w_m$ after the prefixes $p_0,\dots,p_m$. Hence
+\[
+D_{w_m}=T_mh,\qquad T_m=\sum_{j=0}^m\lambda(p_j).
+\]
+\item \emph{Spectral limit} (Lemma 4.3). $Q_m=T_mT_m^*$ has $\tau(Q_m^r)=\mathrm{Cat}_r\,(m)_r+O(m^{r-1})$ from non-crossing matchings. So the spectral law of
+$Q_m/m$ tends to the free Poisson law $d\nu=\frac1{2\pi}\sqrt{(4-x)/x}\,dx$ on $(0,4)$: $T_m/\sqrt m$ becomes a circular element. Crucially, $\nu(\{0\})=0$.
+\item \emph{Cutoff inversion} (Lemma 4.1). $h=T_m^*R_m\delta_e$, with $R_m=Q_m^{-1}\1_{(dm,\infty)}(Q_m)$, gives
+\[
+T_mh=E_m\delta_e,\qquad \|T_mh-\delta_e\|^2=\mu_m([0,d])\to\nu([0,d])\approx\tfrac2\pi\sqrt d,\qquad \|h\|^2=\tau(R_m)\le\tfrac1{dm}.
+\]
+Real symmetry and truncation make $h$ real and finitely supported.
+\end{itemize}
+So a vector of $\ell^2$ norm of order $m^{-1/2}d^{-1/4}$ produces a cocycle value within $\approx d^{1/4}$ of $\delta_e$. The word is $\sim m^2$ letters long.
+
+\subsection{Move 4: one absorption step}
+Let $\beta=\beta_1$ for these coefficients, and let $\gamma$ be the automorphism induced by the free-group basis change $(x_1,\dots,x_n,c)\mapsto(x_1,\dots,x_n,cw)$. Then
+$\gamma(A_j)=A_j$ and $\gamma(C)=CA_w$. Put $\alpha=\gamma^{-1}\circ\beta$. Exactly,
+\[
+\alpha(A_j)-A_j=\gamma^{-1}(\beta(A_j)-A_j),\qquad \alpha(A_w)-C=\gamma^{-1}(\beta(A_w)-CA_w),
+\]
+so $\max_j\|\alpha(A_j)-A_j\|<\varepsilon$ and $\|\alpha(A_w)-C\|<\varepsilon$. The new $n$-tuple is $\varepsilon$-close to the old one, and one of its words is $\varepsilon$-close to the old $C$.
+The new completion is $C'=CA_w^*$.
+
+\subsection{Move 5: the adaptive limit}
+Fix a dense sequence $(y_j)$ in $L^2(M)$. At stage $k$ the choices are made in this order:
+\begin{enumerate}[leftmargin=*]
+\item approximate $y_1,\dots,y_k$ to $2^{-k}$ by polynomials $F_{j,k}$ in the current $(n+1)$-tuple;
+\item choose $\varepsilon_k<\min(r_{k-1}/2,\,2^{-k}/(1+H_k))$, with $H_k$ the $L^2$-Lipschitz constant of the $F_{j,k}$;
+\item absorb (Move 4), obtaining the word $w_k$;
+\item substitute $G_{j,k}(X)=F_{j,k}(X,X_{w_k})$, which are polynomials in the $n$-tuple alone;
+\item only now choose the future budget $r_k\le\min(r_{k-1}/2,\,2^{-k}/(1+L_k))$, where $L_k$ reflects the length of $w_k$.
+\end{enumerate}
+Then $\sum_{\ell>k}\varepsilon_\ell\le r_k$, so the $n$-tuples converge in operator norm to $A^{(\infty)}$. Each word's trace is norm-continuous, so $A^{(\infty)}$ is free Haar. Moreover
+$\|G_{j,k}(A^{(\infty)})-y_j\|_2\le3\cdot2^{-k}$, so the word algebra of $A^{(\infty)}$ is $L^2$-dense. The trace-preserving conditional expectation onto $W^*(A^{(\infty)})$ then fixes a dense set,
+so $W^*(A^{(\infty)})=M$. The completions $C^{(k)}$ need not converge.

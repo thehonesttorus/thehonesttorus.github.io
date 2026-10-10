@@ -1,0 +1,20 @@
+\label{sec:checks}
+The script \texttt{scripts/\allowbreak verify\_\allowbreak ffac.py} runs in a few minutes. Its transcript is
+\texttt{notes/\allowbreak stage17/\allowbreak verify\_\allowbreak ffac.txt}.
+\begin{center}\small
+\begin{tabular}{>{\raggedright\arraybackslash}p{5.0cm}>{\raggedright\arraybackslash}p{9.0cm}}\toprule
+statement & result\\\midrule
+prefix identity $D_{w_m}=T_mh$ (L.\,4.2) & exact (difference $0$) for $m=1,3,5$, with word lengths $5,19,41$\\
+cocycle identity $D_{uv}=D_u+\lambda(u)D_v$ & exact on $200/200$ random pairs\\
+free prefixes & $936$ reduced words of length $\le4$ in $p_1,p_2,p_3$: all distinct, none trivial\\
+free Poisson limit (L.\,4.3), $N=1200$ & moments of $Q_m/m$ at $m=128$: $1.007,2.021,5.060,14.18$ (Catalan $1,2,5,14$); $\mu([0,0.05])=0.1417$ vs $\nu=0.1421$; top eigenvalue $3.95$ (edge $4$)\\
+cutoff inversion (L.\,4.1) & $m=128$, $d=0.02$: $\|h\|^2=0.031$ (bound $0.39$), error$^2=0.089$ ($\nu([0,d])=0.090$)\\
+rates & $\eta=0.3$: $m\approx50$; $\eta=0.1$: $m\approx4\times10^3$, word length $\approx1.6\times10^7$\\
+free-sum bound (L.\,2.5), $N=600$ & spread coefficients: $20.1$ against bound $52.6$ and free-CLT edge $20.2$; one large coefficient: $30.6$ against $81.9$\\
+flow mechanism (P.\,3.1), $N=160$ & $m=16$: letter velocity $0.93$, word deviation $\|s(D_w)-S\|=1.38$; $m=64$: $0.74$ and $1.02$; $\|S\|=3.13$; within the $3\pi$ bounds\\
+amplification arithmetic & $N_3^{\sqrt2}=N_2$, $N_5^{\sqrt2}=N_3$\\\bottomrule
+\end{tabular}
+\end{center}
+In a matrix model, conjugation fixes the identity matrix, so $S$ must be centred and the trivial direction removed. In the free setting the
+conjugates of the centred $S$ span a copy of $\ell^2(\Gamma)$, which has no such direction. The mechanism check shows the paper's trade-off: as $m$
+grows, letters move less while the word's rotation approaches the pure rotation by $S$. Convergence is slow, as the rates predict.

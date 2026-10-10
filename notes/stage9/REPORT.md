@@ -429,3 +429,26 @@ Kikuchi closure) and on the experimental session's stage-13 tests. Checks: `scri
   subset of its own weights; added MSE (1 - q/n)(1 - R^2) E beta^2 x gain); non-Gaussian frame families; diagram selection by annealed
   two-copy variances; late-layer allocation. Suggested next measurement for the experimental session: R^2 of per-row second-order
   covariance births on their first-order proxy at layers 12-16 (decides whether self-calibration pays ~8x on the 59% channel).
+
+## 16. Stage 17: study of "An isomorphism of the free group factors" (OpenAI, 23 Sep 2026) (`notes/stage17/ffac_study.pdf`, 11 pp)
+
+Read in full (23 pp). Checks: `scripts/verify_ffac.py` -> `notes/stage17/verify_ffac.txt` (all pass). Verdict: no gap found.
+- Result: L(F_n) = L(F_{n+1}) for n >= 3 by an explicit generating free Haar n-tuple in L(F_{n+1}); amplification N_s^t = N_{1+(s-1)/t^2}
+  with t = sqrt2 turns N_3 = N_5 into L(F_2) = L(F_3); with the Dykema–Radulescu alternative all L(F_r) are isomorphic and have
+  fundamental group R_{>0}; free entropy dimensions are not W*-invariants.
+- Five moves: Haar-tuple identification; S = arg C and its free conjugate family S_g = A_g S A_g^*; Fox-cocycle polynomial flows
+  A_j' = i s(h_j) A_j (trace-preserving by a first variation at the free point plus real-analytic continuation; letters move <= 3 pi
+  ||h_j||, words rotate to within 3 pi ||D_w - delta_e|| of e^{iS} A_w); small coefficients with D_w = T_m h ~ delta_e via free prefixes
+  (T_m T_m^*/m -> free Poisson, no atom at 0, truncated inversion); absorption alpha = gamma^{-1} beta with C -> C A_w, iterated with
+  budgets chosen after each word, norm-convergent n-tuples, L^2-density + conditional expectation for generation.
+- Essence (four mechanisms): outer Fox flows exist because beta_1^(2)(F_n) > 0 (the L^2-Betti number hoped to distinguish the factors
+  supplies the cocycles that identify them); coherent sqrt(m) amplification along free prefixes; free Khintchine turns l^2 into operator
+  norm (non-commutativity is the resource); free Haar distribution is closed under norm limits, generation is not.
+- Checks: prefix identity D(w_m) = T_m h exact (m = 1,3,5); cocycle identity 200/200; free prefixes on a ball; MP moments 1.007, 2.021,
+  5.060, 14.18 at m = 128 and mu([0,0.05]) 0.1417 vs 0.1421; cutoff inversion ||h||^2 = 0.031, error^2 = 0.089 (m = 128, d = 0.02);
+  rates: eta = 0.1 needs m ~ 4e3, word length ~ 1.6e7; free-sum norm 20.1 vs bound 52.6 (free-CLT edge 20.2); flow mechanism in a matrix
+  model: letter velocity 0.93 -> 0.74, word deviation from pure S-rotation 1.38 -> 1.02 as m = 16 -> 64.
+- For the programme: the Fox cocycle is our stage-15 error cocycle (prefix vs suffix transport); free Khintchine is the non-commutative
+  row-Mehler theorem (resource there, constraint here); dimension counts vs co-evolving frames (stage 16); the adaptive budget order
+  (tolerance, then witness, then future budget) is a rigorous template for the weight-coupled multi-pass estimator. The absorption itself
+  is non-commutative and does not transfer to our commutative state space.

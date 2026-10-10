@@ -1,0 +1,31 @@
+\label{sec:summary}
+\paragraph{What is proved.}
+\begin{itemize}[leftmargin=*]
+\item For $n\ge3$, $L(\F_{n+1})$ contains a freely generating Haar $n$-tuple: $n$ unitaries whose nonidentity reduced words all have trace zero and which
+generate the whole factor. So $L(\F_n)\cong L(\F_{n+1})$.
+\item Amplifying $L(\F_3)\cong L(\F_5)$ by $\sqrt2$ gives $L(\F_2)\cong L(\F_3)$.
+\item Hence all interpolated free group factors $L(\F_r)$, $1<r\le\infty$, are isomorphic, and their fundamental group is $\R_{>0}$.
+\item The free entropy dimensions $\delta,\delta_0,\delta^*,\delta^\star$ take every integer value $n\ge2$ on finite generating tuples of $L(\F_2)$.
+\end{itemize}
+\paragraph{How.} The construction has five moves, each elementary given freeness (Section~\ref{sec:moves}).
+\begin{enumerate}[leftmargin=*]
+\item Reduce isomorphism to finding a freely generating Haar tuple.
+\item Take the logarithm $S=\arg C$ of the extra generator and its conjugates $S_g=A_gSA_g^*$. They form a free family indexed by $\F_n$.
+\item Build polynomial flows $A_j'=i\,s(h_j)A_j$ with $s(k)=\sum_gk(g)A_gSA_g^*$, where the coefficients form a Fox cocycle.
+\begin{itemize}
+\item The flows are trace-preserving, fix $C$, and move each letter by at most $3\pi\|h_j\|_{\ell^2}$.
+\item They move a word $A_w$ to within $3\pi\|D_w-\delta_e\|_{\ell^2}$ of $e^{iS}A_w$.
+\end{itemize}
+\item Make $h$ tiny while $D_w\approx\delta_e$. With $m$ free prefixes, $D_w=T_mh$ where $T_mT_m^*/m$ tends to the free Poisson law, which has no atom at $0$.
+Truncated inversion gives $\|h\|_{\ell^2}^2\approx2/(\pi m\sqrt d)$ with error $\approx(2/\pi)\sqrt d$.
+\item Absorb and iterate. Compose with the basis change $C\mapsto CA_w$, so the moved $n$-tuple contains a word close to $C$. Repeat with budgets chosen
+after each word is known. The $n$-tuples converge in norm, keep the free Haar law, and their limit generates.
+\end{enumerate}
+\paragraph{Verdict.} We checked every step's logic and every computable lemma, and found no gap (Section~\ref{sec:critical}). The weight-bearing
+steps are the trace-preservation argument (a first variation at a free point plus real-analytic continuation) and the spectral inversion
+(free Poisson without atom). Both hold. The external inputs are classical: the amplification formula and the alternative.
+
+\paragraph{For us.} The Fox cocycle $D_{gb}=D_g+\lambda(g)D_b$ is the same object as our stage-15 error cocycle. The paper's analytic heart, prefix
+transports by free unitaries adding like a circular element, is the mechanism behind our measured sum rule. Its adaptive iteration, where each
+tolerance is fixed only after the previous step's output is seen, is a rigorous template for the weight-coupled, dynamically adapted estimator
+we have been seeking (Section~\ref{sec:programme}).

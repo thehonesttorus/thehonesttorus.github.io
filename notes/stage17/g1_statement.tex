@@ -1,0 +1,26 @@
+\label{sec:statement}
+For a discrete group $G$, $L(G)=\lambda(G)''$ on $\ell^2(G)$ with trace $\tau(x)=\langle x\delta_e,\delta_e\rangle$. The free group factor problem, attributed to Kadison, asks
+whether $L(\F_m)\cong L(\F_n)$ for $m\ne n$. Three classical facts frame it.
+\begin{itemize}[leftmargin=*]
+\item \emph{Interpolated factors and amplification} (Dykema, Rădulescu). There is a family $N_s=L(\F_s)$, $s>1$, with
+\[
+N_s^{\,t}\cong N_{1+(s-1)t^{-2}}\qquad(s>1,\ t>0),
+\]
+where $Q^t$ is the corner of $Q\otimes B(\ell^2)$ of trace $t$.
+\item \emph{The alternative} (Dykema; Rădulescu with $s=\infty$). Either all $N_s$, $1<s\le\infty$, are isomorphic, or they are pairwise
+non-isomorphic.
+\item \emph{Haar tuples} (Lemma~2.2 of the paper). If unitaries $U_1,\dots,U_d$ generate $M$ and every nonidentity reduced word has trace zero, then
+$\lambda(x_j)\mapsto U_j$ extends to a trace-preserving isomorphism $L(\F_d)\to M$. The proof is that the words form an orthonormal basis of $L^2(M)$.
+\end{itemize}
+So it is enough to find, inside $L(\F_{n+1})$, $n$ unitaries with free Haar word distribution that generate it.
+\begin{center}
+\begin{tabular}{lll}\toprule
+step & isomorphism & source\\\midrule
+Theorem 1.1 at $n=3,4$ & $N_3\cong N_4\cong N_5$ & the construction\\
+amplify by $\sqrt2$ & $N_3^{\sqrt2}\cong N_5^{\sqrt2}$ & functoriality\\
+amplification formula & $N_3^{\sqrt2}=N_{1+2/2}=N_2$, $N_5^{\sqrt2}=N_{1+4/2}=N_3$ & Dykema\\
+conclusion & $L(\F_2)\cong L(\F_3)$ & \\
+alternative & all $N_r$ isomorphic, $\mathcal F(N_r)=\R_{>0}$ & Dykema--Rădulescu\\\bottomrule
+\end{tabular}
+\end{center}
+The construction needs $n\ge3$ because its prefix words use three letters, $a=x_1$ and $b_j=x_2^jx_3x_2^{-j}$. Rank $2$ comes only through amplification.

@@ -1,0 +1,45 @@
+\label{sec:essence}
+\subsection{Mechanism 1: a gauge field on words, and why it must be outer}
+The flow rotates each letter on the left by a self-adjoint element built from conjugates of $S$. A word then rotates by the
+\emph{accumulated} element $s(D_w)$, the Fox cocycle evaluated on the word. This is a gauge field along words: $D$ plays the connection, $D_w$ its
+holonomy, and $e^{iS}=C$ is the target holonomy.
+
+Inner automorphisms fixing $C$ cannot do this. $W^*(C)$ is a maximal abelian subalgebra of $M$, so they are $\Ad u$ with $u=e^{if(S)}$, and they
+send $A_j\mapsto e^{if(S)}e^{-if(S_{x_j})}A_j$. Those are coboundary coefficients, $D_g=(1-\lambda(g))v$ up to the functional calculus. A coboundary with
+$D_{x_j}=0$ for $j\ge2$ forces $v$ to be invariant under $x_2,\dots,x_n$, hence $v=0$. The absorption therefore uses \emph{non-trivial} cocycles in
+$H^1(\F_n;\ell^2\F_n)$.
+
+That group is non-zero because $\beta^{(2)}_1(\F_n)=n-1>0$. There is an irony here. The first $L^2$-Betti number, long hoped to be the invariant that
+\emph{distinguishes} the free group factors, is exactly what supplies the cocycles that make them isomorphic.
+
+\subsection{Mechanism 2: coherent $\sqrt m$ amplification along free prefixes}
+For $h$ concentrated near $e$ and free prefixes far apart, $\|T_mh\|^2\approx(m+1)\|h\|^2$. Prefix shifts are nearly orthogonal, so the word velocity
+grows like $\sqrt m$ times the letter velocity even without design: this is a free central limit, $T_m/\sqrt m\to$ circular. Design does the rest. The
+minimal-norm solution $h=T_m^*(T_mT_m^*)^{-1}\delta_e$, with the inverse truncated, hits $\delta_e$ at cost $\|h\|^2=\tau(R_m)\approx2/(\pi m\sqrt d)$.
+
+This works only because the free Poisson law has \emph{no atom at zero}, so $T_m^*$ has no kernel in the direction of $\delta_e$. Letters are moved by
+$O(m^{-1/2}d^{-1/4})$ while a word of length $\sim m^2$ is rotated by $C$ up to $O(d^{1/4})$.
+
+\subsection{Mechanism 3: freeness turns $\ell^2$ into operator norm}
+For bounded \emph{commuting} independent variables, $\|\sum k_gX_g\|_\infty=\sum|k_g|\,\|X_g\|_\infty$ is an $\ell^1$ quantity, since all extremes can coincide. For free
+variables, $\|\sum k_gS_g\|\le2\|S\|_2\|k\|_{\ell^2}+\|S\|\max|k|$, an $\ell^2$ quantity: free variables cannot conspire. This is what lets a coefficient vector of huge
+support but tiny $\ell^2$ norm move every letter by a tiny amount in operator norm. In a commutative setting the same $h$ would move letters by
+$\sim\sqrt{\text{support}}\cdot\|h\|_{\ell^2}$, which is large.
+
+\emph{Non-commutativity is the resource.} The free family $\{S_g\}$ indexed by the free group is what makes small-but-spread vector fields
+small.
+
+\subsection{Mechanism 4: distribution is closed, generation is not}
+Having free Haar word distribution is a set of trace conditions on words, each continuous in operator norm, so it survives norm limits.
+Generating $M$ is a density condition, which is neither open nor closed under norm limits. Each $A^{(k)}$ generates a proper subfactor with a
+free complement, yet the limit generates everything.
+
+The adaptive budgets are what make generation survive. Each target $y_j$, once approximated by a polynomial in the current $n$-tuple, is
+protected by all later budgets, which are chosen only after the word length that the polynomial needs is known. It is a diagonal argument in
+which the complexity of the witnesses (word lengths) grows without bound while the moves shrink faster.
+
+\subsection{The whole argument in one line}
+\begin{multline*}
+\underbrace{\beta^{(2)}_1(\F_n)>0}_{\text{outer Fox flows}}\ +\ \underbrace{\nu_{\rm FP}(\{0\})=0}_{\text{small letters, big word}}\ +\ \underbrace{\text{free Khintchine}}_{\ell^2\to\|\cdot\|}\\
++\ \underbrace{\text{adaptive budgets}}_{\text{generation in the limit}}\ \Longrightarrow\ L(\F_n)\cong L(\F_{n+1}).
+\end{multline*}
