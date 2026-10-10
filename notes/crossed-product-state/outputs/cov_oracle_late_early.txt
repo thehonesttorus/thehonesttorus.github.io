@@ -1,0 +1,12 @@
+net 0 early_full: raw 1.22972e-08
+net 0 early_h0: raw 1.49831e-08
+net 0 early_h1: raw 1.35438e-08
+net 0 late_full: raw 1.03664e-08
+net 0 late_h0: raw 1.11418e-08
+net 0 late_h1: raw 1.08022e-08
+net 1 early_full: raw 1.49102e-08
+net 1 early_h0: raw 1.69718e-08
+net 1 early_h1: raw 1.74583e-08
+net 1 late_full: raw 1.05161e-08
+net 1 late_h0: raw 1.13951e-08
+net 1 late_h1: raw 1.09787e-08

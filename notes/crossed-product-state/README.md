@@ -84,3 +84,62 @@ Noise-extrapolated, production counterterms on, oracle at every layer:
 
 So the largest remaining lever is the pair (covariance) program, which maps each layer's law to the next layer's
 post-activation covariance. It is not the third-cumulant memory that holds two thirds of the bill.
+
+## 5. What the final mean actually needs: the fresh-row theorem
+
+**Theorem (exact in expectation over the last weights).** Let h be the previous layer's post-activation. Each output
+mean is m_i = f(w_i) with f(w) = E relu(w . h). The estimator's state is built from the earlier weights, so it is
+independent of the fresh rows, and its estimate is m̂_i = f̂(w_i). Then
+
+    (1/n) sum_i (m̂_i - m_i)^2  ≈  E_w (f̂ - f)(w)^2  =  MMD_k^2(law of h, law implied by the estimator),
+
+where k(h, h') = E_w relu(w.h) relu(w.h') is the arc-cosine kernel. Its Taylor series (σ^2 = 2/n) gives the error by
+Hermite degree in the fresh row, with exact weights:
+
+    MMD^2 = (1/(nπ)) [ (δE|h|)^2 + (π/2) ‖δm‖^2 + (1/2) ‖δE[h h^T/|h|]‖_F^2 + (1/24) ‖δE[h^⊗4/|h|^3]‖^2 + ... ]
+
+Degree 1 has the exact coefficient 1/2 for any law, because P(w.h > 0) = 1/2. Hence
+
+    MSE_l = (1/2) MSE_(l-1) + R_l,        final MSE = Σ_l 2^-(15-l) R_l,
+
+where R_l is the degree ≥ 2 error: the radially normalised moments of the previous layer's law.
+
+**Measured at every layer** (networks 0 and 1, the chain against the 1e9-sample truth):
+
+| share of MSE_l | value |
+|---|---|
+| degree 0 (common mode) | 0-7% |
+| degree 1, exactly (1/2) W dm_(l-1) | 31-46%, fitted coefficient 0.89-1.07 against the predicted 1 |
+| degree ≥ 2 | 55-68% |
+
+The sum closes on network 0: 8.1 + 3.8 + 1.6 + 0.7 + ... ≈ 1.45e-8 against 1.48e-8.
+
+**Consequences.**
+- Inherited mean error halves at every layer. It is not near-critical: stage 15's 0.65-0.94 mixed degrees.
+- The final mean needs, from the last few layers' laws, their degree ≥ 2 features as fresh-row contacts:
+  - E[h h^T/|h|] in Frobenius norm;
+  - E[h^⊗4/|h|^3];
+  - the radial mean E|h|, which is already right, since degree 0 is about 0.
+- The weights are 1, 1/2, 1/4, ... by age: the last layer's R is about 55% of the final error, the last three about 90%.
+- Mean accuracy in early layers is worth 2^(-age). Early layers matter only through the error their content causes in
+  the late laws' degree ≥ 2 features.
+
+**Split covariance oracle** (`outputs/cov_oracle_late_early.txt`, noise-extrapolated):
+
+| oracle | network 0 | network 1 |
+|---|---|---|
+| true covariance at layers 12-15 only | -34% | -37% (halves agree) |
+| true covariance at layers 3-11 only | -17% to -30% | -5% to -20% (noisy) |
+| true covariance at every layer | -48% | -50% |
+
+The last four layers hold about 70% of the covariance lever.
+
+**Two remarks.** E[h h^T/|h|] is not the covariance: the radial normalisation couples it to the radius. To first
+order it adds -E[h h^T δ], with δ the relative norm fluctuation. That brings in the radially contracted third and
+fourth cumulants:
+- Σ_c κ3(a, b, c) m_c;
+- Σ_c κ(a, b, c, c), the K_+ (radial pair-creation) sector of the su(1,1) ladder, note XLV.
+
+And the fresh-row κ4 readout of every output is, at leading order, its trace part 3σ^4 [Var|h|^2 - 2‖C‖_F^2]. That is the
+radial (gain) charge, a scalar per layer that stages 12-14 compute exactly. The chain instead regenerates it with
+fitted λ.
