@@ -127,14 +127,47 @@ It must then decode them with consistent degree-six jets. Corollaries 1.1 and 2.
 deformation), a coefficient fitted to the output adds a term not in the ledger. The ledger is minimised by making each
 ĥ_k equal its true value, not by compensating one ĥ_k against another.
 
-**The ceiling.** If every low-order marginal moment of every layer is computed to its own next-order accuracy
-(relative O(1/n)), the error is the certified remainder: per neuron O(1e-6), summed through the transports. This is at
-or below the 8e-11 noise floor of our 1e9-sample truth. So the theoretical ceiling of the forced architecture lies two
-orders of magnitude below the present 1.5e-8. Its distance from that ceiling is not a representation problem. It is the
-inexactness of the present computation:
-- fitted counterterms and a fitted κ_4 coefficient λ;
-- compressed history;
-- fourth-order regeneration that omits coherent classes.
+**The ceiling (corrected, see §4a).** The paragraph first written here claimed a certified ceiling at the noise floor,
+two orders below the present error. That claim was wrong, and §4a replaces it.
+
+### 4a. Correction: what the theory does and does not say about the ceiling
+
+**The error in the withdrawn argument.** It confused the decoder's certified remainder with the error of the state.
+- Theorem 2 certifies the truncation of the decoder at degree six: O(n^-1) per neuron with a small constant, given
+  exact moments.
+- It says nothing about how accurately the moments themselves are computed. If the variance is known only to relative
+  O(1/n), the fold mean of a neuron near its wall moves by about phi(r) s / n, which is 5e-4 at n = 1024. That is
+  larger than the present error.
+
+**What power counting gives.** For an exact order-1/n state, the next layer's variance contact errs by O(n^(-3/2)),
+because Theorem 3 reads off-diagonal errors of relative size 1/n in Frobenius norm. The constant is not fixed by
+counting. The present system's variance error, inferred from its MSE through the birth ledger, is about 1e-4 relative,
+or a few times n^(-3/2). So power counting alone cannot place the ceiling at n = 1024.
+
+**What is known about the ceiling, measured on our networks.**
+- Note XXXIII F1: the forced architecture with exact local slices (D3, D21, the κ_4 diagonal, the (2,2) and (3,1)
+  slices), keeping the chain's own mean, variance and covariance, reaches 1.8e-9 on network 1 and the noise floor on
+  network 0. That is roughly ten times below v56. This is the ceiling that can be quoted.
+- The same oracle on v56 gives -39% (note XLV §4a). The two hosts differ in the components added since note XXXII
+  (joins, counterterms, adaptive λ, hubs). Those were tuned on the score against inexact slices.
+
+**The compensation statement (proved in the ledger).** Let a component θ be chosen to minimise the MSE given inexact
+slices S. Then the transported birth of θ cancels the response-projected birth of S's error along θ's directions.
+- Replace S by the truth with θ fixed, and that cancellation becomes an error of the same size.
+- So a truth oracle on a tuned host understates the headroom of an untuned one. It is not an upper bound for a redesign.
+- This is the ledger form of stage 15's consistency corollary, and it is why moving any single piece of v56 toward the
+  truth raised its MSE (note XLIV 9j).
+
+**What the theory supports.** The next system should be a clean, fit-free chain whose per-layer maps are exact at a
+consistent order. It should then be measured whole, not patched into v56. Its measured ceiling is F1, about 1e-9 raw.
+Note XXXIII F2 identifies the binding map: fed true inputs, the regeneration of the fourth-order pair slices is 14-90%
+wrong. Note XLIX derives that map.
+
+**On covariance at every layer (the question asked).** The covariance is the Gaussian backbone. It is needed as
+information (Theorem 3) and is cheap: two n^3 products per layer, about 0.03 B for the whole network. Note XXXIII F5
+shows that it is never the source of the error: true variance is worth nothing once the slices are exact, because the
+covariance program is exact given them. Carrying it as C^l or as the first-chaos matrix L^l is a free choice. All the
+difficulty of the final mean is in the non-Gaussian pair sector at the walls.
 
 ## 5. The design the theorems leave: a consistent, exact order-1/n state
 
