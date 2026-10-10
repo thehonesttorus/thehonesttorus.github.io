@@ -1,0 +1,44 @@
+=== network 0: coherent doubly-occupied hub, one-step regeneration from the true layer s-1 state
+per slice: fit truth ~ c_p package + c_h H (c_h, R2 package alone -> joint);  chain error ~ c H: coefficient and share of the chain-error energy, entrywise | in the next-layer variance readout;  q = quenched, a = annealed
+  s= 4
+    K31 q: c_h +0.79 R2  52.5-> 53.3 err c +1.23 sh   4.3% | ro c +1.81 sh   9.7%  ||  a: c_h +0.43 R2  52.5-> 52.6 err c +1.58 sh   3.1% | ro c +1.68 sh   4.1%
+    K22 q: c_h +1.01 R2  98.6-> 98.6 err c +0.90 sh  24.1% | ro c +0.73 sh  16.1%  ||  a: c_h +0.92 R2  98.6-> 98.6 err c +0.92 sh  23.6% | ro c +0.74 sh  16.3%
+    k4  q: c_h +1.05 R2  98.7-> 98.8 err c +0.23 sh   5.2% | ro c +0.28 sh   8.7%  ||  a: c_h +0.41 R2  98.7-> 98.7 err c +0.27 sh   6.5% | ro c +0.27 sh   7.7%
+    D21 q: c_h +0.88 R2  63.6-> 66.8 err c +0.04 sh   3.5% | ro c +0.03 sh   2.3%  ||  a: c_h +0.71 R2  63.6-> 64.5 err c +0.07 sh   4.8% | ro c +0.07 sh   4.2%
+    k3  q: c_h +0.88 R2  80.9-> 84.9 err c +0.03 sh   4.2% | ro c +0.18 sh  51.7%  ||  a: c_h +0.83 R2  80.9-> 82.4 err c +0.05 sh   7.3% | ro c +0.25 sh  63.4%
+  s= 6
+    K31 q: c_h +0.60 R2  49.9-> 50.3 err c +0.75 sh   1.2% | ro c +0.84 sh   1.6%  ||  a: c_h +0.19 R2  49.9-> 49.9 err c +0.73 sh   0.4% | ro c +1.17 sh   1.2%
+    K22 q: c_h +0.78 R2  97.8-> 97.8 err c +2.17 sh  19.5% | ro c +1.71 sh  17.3%  ||  a: c_h +0.30 R2  97.8-> 97.8 err c +2.80 sh  23.3% | ro c +2.16 sh  18.4%
+    k4  q: c_h +0.58 R2  98.1-> 98.1 err c +0.11 sh   0.3% | ro c +0.47 sh   4.6%  ||  a: c_h +0.12 R2  98.1-> 98.1 err c +0.46 sh   3.3% | ro c +0.68 sh   5.8%
+    D21 q: c_h +0.89 R2  67.6-> 69.3 err c +0.07 sh   5.1% | ro c +0.10 sh  12.0%  ||  a: c_h +0.68 R2  67.6-> 67.9 err c +0.14 sh   9.3% | ro c +0.15 sh  14.1%
+    k3  q: c_h +1.08 R2  81.8-> 84.9 err c +0.04 sh   3.6% | ro c +0.08 sh  59.2%  ||  a: c_h +0.78 R2  81.8-> 82.4 err c +0.08 sh   8.3% | ro c +0.09 sh  63.0%
+  s= 8
+    K31 q: c_h +0.58 R2  48.2-> 48.5 err c +1.11 sh   2.4% | ro c +0.98 sh   2.1%  ||  a: c_h -0.04 R2  48.2-> 48.2 err c +1.39 sh   1.7% | ro c +1.30 sh   1.8%
+    K22 q: c_h +0.95 R2  97.1-> 97.1 err c +1.88 sh  31.0% | ro c +1.54 sh  27.3%  ||  a: c_h +0.72 R2  97.1-> 97.1 err c +2.02 sh  32.2% | ro c +1.67 sh  28.4%
+    k4  q: c_h +0.99 R2  97.2-> 97.3 err c +0.46 sh  11.0% | ro c +0.96 sh  57.4%  ||  a: c_h +0.84 R2  97.2-> 97.2 err c +0.62 sh  16.5% | ro c +1.03 sh  61.5%
+    D21 q: c_h +0.82 R2  70.5-> 71.6 err c +0.11 sh   5.1% | ro c +0.14 sh  12.3%  ||  a: c_h +0.61 R2  70.5-> 70.8 err c +0.21 sh   9.2% | ro c +0.27 sh  19.4%
+    k3  q: c_h +0.73 R2  85.1-> 86.3 err c +0.04 sh   1.8% | ro c +0.09 sh  17.0%  ||  a: c_h +0.45 R2  85.1-> 85.3 err c +0.08 sh   4.4% | ro c +0.08 sh  34.0%
+  s=10
+    K31 q: c_h +0.00 R2  47.0-> 47.0 err c -0.25 sh   0.1% | ro c +1.04 sh   1.2%  ||  a: c_h -1.34 R2  47.0-> 47.4 err c -1.86 sh   1.2% | ro c +0.78 sh   0.3%
+    K22 q: c_h +0.23 R2  96.2-> 96.2 err c -0.26 sh   0.0% | ro c +2.26 sh   4.3%  ||  a: c_h -1.01 R2  96.2-> 96.2 err c -1.58 sh   0.5% | ro c +5.63 sh   7.1%
+    k4  q: c_h +0.89 R2  96.5-> 96.5 err c -0.34 sh   0.6% | ro c -0.94 sh   2.6%  ||  a: c_h -0.80 R2  96.5-> 96.5 err c -0.56 sh   0.6% | ro c -2.50 sh   8.0%
+    D21 q: c_h +0.97 R2  74.7-> 75.4 err c +0.19 sh   8.7% | ro c +0.24 sh  16.1%  ||  a: c_h +0.85 R2  74.7-> 74.9 err c +0.32 sh  14.1% | ro c +0.34 sh  21.2%
+    k3  q: c_h +0.89 R2  86.6-> 87.3 err c +0.12 sh   8.6% | ro c +0.25 sh  75.3%  ||  a: c_h +0.68 R2  86.6-> 86.8 err c +0.19 sh  12.8% | ro c +0.28 sh  80.0%
+  s=12
+    K31 q: c_h -0.81 R2  52.3-> 52.5 err c -1.11 sh   0.9% | ro c +0.72 sh   0.5%  ||  a: c_h -3.04 R2  52.3-> 54.0 err c -3.75 sh   4.3% | ro c -0.23 sh   0.0%
+    K22 q: c_h -0.67 R2  95.1-> 95.2 err c +1.79 sh   2.2% | ro c +2.99 sh  11.7%  ||  a: c_h -3.52 R2  95.1-> 95.3 err c +3.33 sh   3.3% | ro c +5.96 sh  23.2%
+    k4  q: c_h -1.01 R2  95.4-> 95.5 err c -0.17 sh   0.2% | ro c +1.75 sh  12.9%  ||  a: c_h -3.17 R2  95.4-> 95.7 err c +0.57 sh   0.8% | ro c +4.25 sh  40.9%
+    D21 q: c_h +1.37 R2  80.4-> 81.5 err c +0.28 sh  12.6% | ro c +0.31 sh  23.0%  ||  a: c_h +1.81 R2  80.4-> 81.3 err c +0.43 sh  19.2% | ro c +0.45 sh  33.6%
+    k3  q: c_h +1.36 R2  90.3-> 91.5 err c +0.21 sh  13.6% | ro c +0.34 sh  57.0%  ||  a: c_h +1.83 R2  90.3-> 91.3 err c +0.33 sh  23.5% | ro c +0.27 sh  72.0%
+  s=13
+    K31 q: c_h -1.20 R2  54.4-> 54.8 err c -3.53 sh   7.1% | ro c -0.78 sh   0.5%  ||  a: c_h -4.16 R2  54.4-> 56.5 err c -7.92 sh  17.2% | ro c -1.76 sh   1.1%
+    K22 q: c_h -1.21 R2  94.4-> 94.5 err c -4.84 sh  24.9% | ro c -1.60 sh   3.4%  ||  a: c_h -4.54 R2  94.4-> 94.7 err c -6.83 sh  34.9% | ro c -3.80 sh  10.3%
+    k4  q: c_h -1.38 R2  93.7-> 93.8 err c -2.23 sh  30.9% | ro c -4.02 sh  77.0%  ||  a: c_h -5.34 R2  93.7-> 94.4 err c -3.19 sh  39.6% | ro c -4.46 sh  85.4%
+    D21 q: c_h +1.26 R2  81.9-> 82.5 err c +0.31 sh  13.4% | ro c +0.27 sh  16.7%  ||  a: c_h +1.62 R2  81.9-> 82.3 err c +0.43 sh  18.3% | ro c +0.40 sh  26.3%
+    k3  q: c_h +1.21 R2  90.5-> 91.1 err c +0.30 sh  24.5% | ro c +0.39 sh  72.9%  ||  a: c_h +1.53 R2  90.5-> 90.9 err c +0.44 sh  35.6% | ro c +0.38 sh  82.1%
+  s=14
+    K31 q: c_h -1.27 R2  53.6-> 54.0 err c -3.94 sh   8.3% | ro c -1.22 sh   1.3%  ||  a: c_h -3.68 R2  53.6-> 55.1 err c -7.57 sh  16.5% | ro c -2.40 sh   2.3%
+    K22 q: c_h -1.80 R2  93.9-> 94.0 err c -4.19 sh  23.4% | ro c -0.88 sh   1.0%  ||  a: c_h -5.19 R2  93.9-> 94.2 err c -5.33 sh  29.2% | ro c -1.94 sh   3.1%
+    k4  q: c_h -1.30 R2  94.4-> 94.5 err c -2.69 sh  40.1% | ro c -3.40 sh  66.0%  ||  a: c_h -4.46 R2  94.4-> 94.9 err c -3.60 sh  49.0% | ro c -3.86 sh  76.2%
+    D21 q: c_h +1.12 R2  81.7-> 82.1 err c +0.36 sh  12.5% | ro c +0.34 sh  20.6%  ||  a: c_h +1.37 R2  81.7-> 81.9 err c +0.54 sh  18.3% | ro c +0.48 sh  27.6%
+    k3  q: c_h +0.80 R2  91.3-> 91.5 err c +0.42 sh  26.1% | ro c +0.29 sh  62.6%  ||  a: c_h +1.04 R2  91.3-> 91.4 err c +0.59 sh  36.1% | ro c +0.38 sh  66.4%

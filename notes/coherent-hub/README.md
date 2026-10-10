@@ -128,3 +128,22 @@ prediction 2 about 45%.
   term, one n^3 product per layer, behind a switch. Screen it cold on networks 0-7 with counterterms on and off.
 - If prediction 2 fails: the coherent doubly-occupied class is not the missing (3,1) content, and the note records
   what the residual is instead.
+
+## 4. Pre-registration of the build gate: all slices true at once, late layers only (committed before the runs)
+
+F1 (note XXXIII) measured the all-slice, all-layer oracle on an older system. The build decision needs the same on
+the production estimator, and its split by depth.
+
+**Setup.**
+- Production estimator with counterterms. V37_ORACLE=D3,D21,G4,WK4M,K31 (all five readout slices true together),
+  with the consistent wiring V41_ORC_CONSIST=1: the legs keep carrying the chain's own content.
+- Network 0, Monte Carlo full and halves. Noise-extrapolated a = 2 MSE(full) - mean(MSE(h0), MSE(h1)), against
+  1.4771e-8.
+- (A) layers 10-14; (B) every layer.
+
+**Expected.** (B) -80% to -95%, i.e. F1 replicates on the production system. (A) -40% to -70%.
+
+**Gate.**
+- If (A) is at least -40%, the target of the next system is a consistent recomputation of the late slices. It is
+  priced against the 2x that the adjusted score allows (C/B from 0.2 to at most 0.4 for a 2x raw gain, break even).
+- If (A) is under -25% while (B) is large, the slices must be right at every depth, and the cost question is global.

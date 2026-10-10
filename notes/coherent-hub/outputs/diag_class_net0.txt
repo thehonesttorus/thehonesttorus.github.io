@@ -1,0 +1,30 @@
+=== network 0: single-site classes transported by the fresh rows, against the truth and the chain's error
+slice: R2 package alone -> package + X (noise-free), c_X;  X alone R2;  chain error ~ c X: c, share of error energy
+  s= 4
+    K31: R2 pkg  52.5 -> +X  53.4 (c_p +0.00, c_X +1.42) | X alone   1.0 (c +1.45) | chain err: c +1.42 share   1.8%, with pkg   8.8% (c_X +1.41)
+    K22: R2 pkg  98.6 -> +X  98.6 (c_p +0.00, c_X +1.61) | X alone  94.0 (c +17.99) | chain err: c +1.19 share  22.8%, with pkg  23.6% (c_X +0.30)
+    D21: R2 pkg  63.6 -> +X  66.1 (c_p +0.00, c_X +1.02) | X alone  19.6 (c +2.64) | chain err: c +0.06 share   5.6%, with pkg  23.4% (c_X +0.02)
+  s= 6
+    K31: R2 pkg  49.9 -> +X  50.3 (c_p +0.00, c_X +1.65) | X alone   0.0 (c +0.61) | chain err: c +1.42 share   0.5%, with pkg   5.1% (c_X +1.65)
+    K22: R2 pkg  97.8 -> +X  97.9 (c_p +0.00, c_X +2.86) | X alone  87.4 (c +42.22) | chain err: c +3.87 share  25.5%, with pkg  27.3% (c_X +1.09)
+    D21: R2 pkg  67.6 -> +X  68.9 (c_p +0.00, c_X +1.22) | X alone  14.8 (c +3.79) | chain err: c +0.10 share   3.3%, with pkg  18.1% (c_X +0.02)
+  s= 8
+    K31: R2 pkg  48.2 -> +X  48.5 (c_p +0.00, c_X +1.99) | X alone   0.3 (c +2.23) | chain err: c +2.04 share   0.5%, with pkg   7.4% (c_X +1.97)
+    K22: R2 pkg  97.1 -> +X  97.2 (c_p +0.00, c_X +4.31) | X alone  90.0 (c +39.51) | chain err: c +4.86 share  32.4%, with pkg  33.7% (c_X +1.73)
+    D21: R2 pkg  70.5 -> +X  71.4 (c_p +0.00, c_X +1.24) | X alone   8.8 (c +3.73) | chain err: c +0.16 share   3.6%, with pkg  25.9% (c_X +0.06)
+  s=10
+    K31: R2 pkg  47.0 -> +X  47.1 (c_p +0.00, c_X +2.12) | X alone   0.0 (c +1.02) | chain err: c +1.70 share   0.1%, with pkg  11.9% (c_X +2.13)
+    K22: R2 pkg  96.2 -> +X  96.2 (c_p +0.00, c_X +4.92) | X alone  82.4 (c +95.65) | chain err: c +14.72 share  32.7%, with pkg  37.2% (c_X +2.04)
+    D21: R2 pkg  74.7 -> +X  75.1 (c_p +0.00, c_X +1.53) | X alone   8.2 (c +6.23) | chain err: c +0.25 share   2.8%, with pkg  20.3% (c_X +0.08)
+  s=12
+    K31: R2 pkg  52.3 -> +X  52.3 (c_p +0.00, c_X +2.82) | X alone   0.1 (c +2.26) | chain err: c +2.57 share   0.1%, with pkg  20.1% (c_X +2.84)
+    K22: R2 pkg  95.1 -> +X  95.1 (c_p +0.00, c_X +2.60) | X alone  81.9 (c +94.80) | chain err: c +15.89 share  29.5%, with pkg  36.0% (c_X -2.12)
+    D21: R2 pkg  80.4 -> +X  80.9 (c_p +0.01, c_X +1.99) | X alone  10.6 (c +8.98) | chain err: c +0.43 share   4.3%, with pkg  26.2% (c_X +0.14)
+  s=13
+    K31: R2 pkg  54.4 -> +X  54.5 (c_p +0.00, c_X +3.08) | X alone   0.1 (c +3.38) | chain err: c +3.25 share   0.1%, with pkg  22.3% (c_X +3.10)
+    K22: R2 pkg  94.4 -> +X  94.4 (c_p +0.01, c_X -0.96) | X alone  77.2 (c +132.83) | chain err: c +21.33 share  23.4%, with pkg  31.9% (c_X -6.13)
+    D21: R2 pkg  81.9 -> +X  82.1 (c_p +0.01, c_X +1.68) | X alone   8.6 (c +9.80) | chain err: c +0.39 share   2.3%, with pkg  20.5% (c_X +0.08)
+  s=14
+    K31: R2 pkg  53.6 -> +X  53.6 (c_p +0.00, c_X +2.83) | X alone   0.1 (c +3.85) | chain err: c +3.28 share   0.1%, with pkg  21.6% (c_X +2.77)
+    K22: R2 pkg  93.9 -> +X  93.9 (c_p +0.01, c_X -1.17) | X alone  76.0 (c +146.70) | chain err: c +20.26 share  17.1%, with pkg  24.2% (c_X -6.86)
+    D21: R2 pkg  81.7 -> +X  82.0 (c_p +0.01, c_X +2.12) | X alone   9.6 (c +11.61) | chain err: c +0.50 share   2.9%, with pkg  20.7% (c_X +0.13)
