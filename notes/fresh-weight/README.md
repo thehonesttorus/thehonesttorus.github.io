@@ -439,3 +439,42 @@ per-layer accuracy of the rest. It is one direction per layer, so exactness ther
 
 The dilation-sector item of 7b is therefore an exact (conservation-respecting) treatment of one critical mode, not a
 collective block of rank 32.
+
+## 8. Stage 9o (other chat) read against these measurements
+
+The user supplied "Ellipsoids, codes and contacts" (stage 9o: Klartag's process, centroid bodies, billiard rigidity).
+Each claim was checked by hand.
+
+**Correct as stated.**
+- **(I) The ellipsoid averaging principle.** E_N(0,Sigma) y = ((n + d)/n) E r^d <y>_(E_Sigma). This is polar
+  coordinates: Gaussian and uniform-ellipsoid laws share the angular part.
+- **(II) The centroid-body recursion.** E a_(l+1,k) = h_(Gamma+(mu_l))(w_k) is the definition of E relu<w, x>. The
+  Edgeworth coefficient -K3(w,w,w) mu phi / (6 sigma^3) is right: d^3/dmu^3 E relu = -mu phi / sigma^3.
+- **(III) The Ito-Price drift.** It is (1/8) E <grad^4 y, Pi_F>. For 1-homogeneous y, E Lap^2 y = (d - 2) d E y = -E y,
+  so the unconstrained drift is -(1/8) E y.
+- **(IV) The code-moment identity.** For layer 2 with isotropic, zero-mean input,
+  Var z_(2,k) = sum_r b_r ||M_r(nu_k)||^2.
+- **(V) Exact closure on an open set forces oddness.** On a ray, z = p|xi| + q xi has
+  kappa_3 = p (p^2 kappa_3(|xi|) + 3 q^2 sqrt(2/pi)), which vanishes only at p = 0.
+- **The token ladder.** (1 - r) f_r = (r + 1)(r + 2) tr f_(r+2) follows from the Euler operator in Fock form,
+  x . grad = N + sum_i a_i^2. Its rung r = 0 is E y = 2 tr f_2 = E Lap y, the kink sum.
+
+**Two corrections from the measurements.**
+1. **The "design defect" pairing is one channel, not the leading correction.** <K3, sum_k c_k w_k^(x)3> is the direct
+   per-neuron mean channel, and the chain already computes it exactly (its D3). The first-order error also flows
+   through the next layer's covariance. That channel pairs K3 with sum_(a,b) c_ab w_a (x) w_a (x) w_b, of CP rank up
+   to n^2, which is the Khatri-Rao wall. Here it dominates: kappa(a,a,b) carries 70-80% of the variance injection and
+   the per-neuron kappa3 1-2% (note XLIII 4d); the late D3 oracle is worth -2.5% / -13%.
+2. **The ellipsoid / radial factor is the trivial part of the gain.** The input radius contributes tau = 1/(2n) =
+   4.9e-4 to the mean direction's relative variance. The measured critical mode has tau = 0.008-0.010, about 18 times
+   larger: it is the network's own angular amplification, which no input-side disintegration separates.
+
+**What is usable.**
+- **The ladder is an exact, truth-free set of constraints between chaos traces.** Rung 1 (tr f_3 = 0) and rung 0
+  (E y = 2 tr f_2) can be checked on the chain's chaos-graded pieces: the legs (second chaos, built from first-chaos
+  vectors only) and V56's third-chaos star.
+- **The ladder measures what the legs omit.** Rung 0 makes "chain mean minus 2 tr H_chain" exactly the trace of the
+  second chaos the legs omit, unit by unit. That is a free measurement of the omitted birth kernels (the gradient
+  fluctuation at each kink). Whether it predicts the chain's error is untested.
+- **The frozen-contact Klartag drift (III ii) is the rung-2 defect** of note XLII's ladder, with the first-layer terms
+  removed. It is consistent with Theorem A5, and it has no cheap evaluation.
