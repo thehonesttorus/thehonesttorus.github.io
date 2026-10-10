@@ -1,0 +1,81 @@
+\label{sec:readings}
+\paragraph{Klartag--Lehec, the slicing problem.}
+\begin{itemize}[leftmargin=*]
+\item \textbf{Localization setup.} For an isotropic log-concave $\mu$, localization tilts by $e^{\theta\cdot x-t|x|^2/2}$ with
+$d\theta_t=dW_t+a_tdt$. The covariance process $A_t$ obeys $\E A_t+\E a_t\otimes a_t=\mathrm{Id}$ (the variance decomposition) and
+$\frac d{dt}\E A_t=-\E A_t^2$.
+\item \textbf{The final step.} Guan's bound $\E\Tr A_t^2\le Cn$ plus a projection-monotonicity lemma produce a subspace and a
+time $t_0\sim1$ with $\E A_{t_0}\ge\frac14\mathrm{Id}$, without losing the isotropic constant (Milman's $M$-ellipsoids).
+Eldan--Mikulincer's stability of Shannon--Stam then bounds $\int\E|\Gamma_r-\E\Gamma_r|^2/(1-r)\,dr$, the fluctuation of the localized
+covariance, by the entropy gain under $X\mapsto(X+X')/\sqrt2$, which Ball--Nguyen bound by $2n$.
+\item \textbf{The identity we use} (their Corollary 3.2 with Lemma 3.3): the relative entropy to the Gaussian is the integrated
+F\"ollmer drift, which in localization time reads
+\[
+D(\mu\,\|\,\gamma)=\tfrac12\int_0^\infty\Big(\tfrac n{1+t}-\E\Tr A_t\Big)dt\qquad(\mu\ \text{isotropic}).
+\]
+\end{itemize}
+
+\paragraph{Bizeul--Klartag--Lehec, KLS.}
+\begin{itemize}[leftmargin=*]
+\item \textbf{The base case.} The third-cumulant bound $R_3\le8\,\mathrm{Id}$ comes from the sharp generalized thin shell.
+\item \textbf{The induction.} It is propagated to $R_m\le K^{m-1}((m-1)!)^2\mathrm{Id}$ through Eldan's normalized localization
+$dc=A^{-1}a\,dt+A^{-1/2}dB$, $dQ=A^{-1}dt$. Its key \emph{cumulant equation} (their Lemma 4.3) is
+\begin{gather*}
+d\kappa_m=\kappa_{m+1}(\cdot,\dots,\cdot,A_t^{-1/2}dB_t)-\big(m\kappa_m+L_m\big)dt,\\
+L_m(h)=\!\!\!\sum_{\substack{J\ni1\\2\le|J|\le m-2}}\!\!\!\big\langle\kappa_{|J|+1}(h_J,\cdot),A_t^{-1}\kappa_{m-|J|+1}(h_{J^c},\cdot)\big\rangle .
+\end{gather*}
+\item \textbf{The finish.} A suspension turns cumulant bounds into bounds on the Taylor tensors of tilt averages
+$F_f(z)=\int fe^{\langle z,x\rangle}d\mu/\int e^{\langle z,x\rangle}d\mu$. The Song--Zhang criterion then gives a dimension-free Poincar\'e
+constant.
+\item \textbf{The Gaussian case.} For the Gaussian input, $F_f(z)=\E f(X+z)$ is exactly stage 11's Husimi symbol at $\hbar=1$, and its
+Taylor tensors are the Wiener chaos kernels that v56 grades.
+\end{itemize}
+
+\paragraph{Klartag--Ordentlich, SDPI under heat flow.}
+\begin{itemize}[leftmargin=*]
+\item \textbf{The contraction coefficient.} For $Y=X+\sqrt sZ$, the $\chi^2$ coefficient is the squared maximal correlation $S^2(X,Y)$.
+It is bounded between $1-\mathrm{mmse}/\E|X-\E X|^2$ and $(1+s/C_P)^{-1}$, and is at least $e^{-s/C_P}$ for log-concave $X$.
+\item \textbf{Log-convexity.} For log-concave $X$, $s\mapsto\log\Var(\E[f(X)|Y])$ is convex.
+\item \textbf{Two-flow de Bruijn.} $\frac d{ds}D(\nu_s\|\mu_s)=-\frac12J(\nu_s\|\mu_s)$, with both measures under the flow.
+\end{itemize}
+
+\paragraph{Klartag, the evolving ellipsoid.}
+\begin{itemize}[leftmargin=*]
+\item \textbf{The process.} Start from a ball free of points of a random lattice. Run a Dyson Brownian motion $dA_t=\pi_t(dW_t)$ on
+the ellipsoid matrix, where $\pi_t$ projects onto $\{B:\ Bx\cdot x=0$ for every contact point $x\}$. Every lattice point the
+ellipsoid touches stays on its boundary.
+\item \textbf{The volume accounting.} By It\^o,
+\[
+d\log\det A_t=\langle A_t^{-1},\pi_tdW_t\rangle-\tfrac12\sum_{i,j}\frac{|\pi_t(u_i\otimes_su_j)|^2}{\lambda_i\lambda_j}\,dt,
+\]
+and the drift is at most $-\dim F_t/(2\|A_t\|^2)$. Here $\dim F_t\ge n(n+1)/2-|\text{contacts}|/2$.
+\item \textbf{The count.} Contacts accrue at rate about $e^{n^2t/8}$ (Siegel's formula and the reflection principle). Maurey's
+trick $A_t-a_0=\frac12(W^1+W^2)$ controls $\|A_t\|$. At $T=16n^{-2}\log n$ this gives $\E\log\det A_T\le C-4\log n$: an empty
+ellipsoid of volume $cn^2$, hence lattice packings of density $cn^22^{-n}$.
+\end{itemize}
+
+\paragraph{Sahasrabudhe, exponentially small scales.}
+\begin{itemize}[leftmargin=*]
+\item \textbf{The common thread.} A random process is guided toward an exponentially unlikely target. Examples: the Lovett--Meka
+walk, a Brownian motion that sticks to every constraint slab it hits and continues inside it; the R\"odl nibble for independent sets;
+Klartag's ellipsoid.
+\item \textbf{Codegree control.} Campos--Jenssen--Michelen--Sahasrabudhe get $(1-o(1))\frac{d\log d}{2^{d+1}}$ packings and spherical codes
+from a nibble on a Poisson-discretized graph. Control of \emph{codegrees}, not triangles, makes the random-like heuristic exact.
+\item \textbf{Random symmetric matrices.} Inverse Littlewood--Offord theory and approximate negative correlation give an
+$e^{-cn}$ singularity bound for random symmetric $\pm1$ matrices.
+\end{itemize}
+
+\paragraph{The caustic-collar billiard paper.} A smooth strictly convex positively curved table whose grazing annulus is
+continuously foliated by invariant essential curves is an ellipse. The proof runs in four steps.
+\begin{enumerate}[leftmargin=*]
+\item \textbf{Graphs and periodic leaves.} Twist and area recurrence make every leaf a graph $p=g_b(\theta)$ in line coordinates, and
+make every small rational rotation $l/q$ a wholly periodic leaf.
+\item \textbf{Action constancy.} A closed stationary chain on a graph has its action constant in the starting point. Its $\pm q$
+Fourier rows $C_q(u)$ therefore vanish. Their derivative is the identity on high modes plus $O(1/q)$, so a Newton scheme on shrinking
+complex strips forces the curvature datum $u$ to be analytic.
+\item \textbf{Joint analyticity.} A jointly analytic conjugacy $V(y,t)$ is built across the rational resonances. The periodic leaves
+supply the compatibility of residual values and of first parameter jets.
+\item \textbf{Caustics.} The analytic line graphs are support functions $g(\theta,\lambda)$, with $\lambda=t^2$, $g+g_{\theta\theta}>0$ and
+$g_\lambda<0$. Their envelopes $\Gamma_\lambda=gn_\theta+g_\theta e_\theta$ are nested convex caustics filling a collar, and the companion theorem
+concludes.
+\end{enumerate}

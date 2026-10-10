@@ -1,0 +1,71 @@
+\label{sec:v56}
+The system is the baked file \texttt{estimator\_\allowbreak final\_\allowbreak v56.py} in \texttt{notes/\allowbreak leaderboard-\allowbreak system} on branch
+\texttt{claude/\allowbreak bold-\allowbreak albattani-\allowbreak xgecxi}, made from \texttt{est\_v29.py} with one configuration string. Scored on all $100$ official networks it has adjusted MSE
+$3.137\times10^{-9}$ in-sample for its counterterms, and $3.166\times10^{-9}$ by the held-out protocol (raw $1.56\times10^{-8}$,
+$C/B=0.203$). That is $-24\%$ against our V35 and roughly $-42\%$ against the public v29 it started from. The public leaders are
+quoted at $1.1$--$2.1\times10^{-9}$ (note XXXIX).
+
+\subsection{What it computes, layer by layer}
+The state carried from layer to layer is a truncated cumulant description of the pre-activations $z_l$:
+\begin{itemize}[leftmargin=*]
+\item the mean $\mu_l$ and the full covariance $C_l$;
+\item third-cumulant \emph{sources}: each layer gives birth to a $\kappa_3$ ``star'' $\Sym(C_b\otimes I\otimes C_b\diag(w_2))$, the Price/Hermite
+term of \textsc{ReLU} at the Gaussian point, carried as CP-factor legs $(A_s,P_s)$;
+\item a few slices of the fourth cumulant (a diagonal and some $(2,2)$ and $(3,1)$ shapes).
+\end{itemize}
+One layer then runs these steps:
+\begin{enumerate}[leftmargin=*]
+\item \textbf{Linear step.} $\mu\leftarrow W\mu$ and $C\leftarrow WCW^\top$ exactly. The legs are transported by the mean-gate propagator
+$B=W\diag(\Phi)$, which is first-order linear response, the ``product gate''. Young sources stay dense. Old sources are compressed to a
+shared rank-$320$/$192$ Lyapunov basis, re-orthogonalized at one randomized range-finder \emph{join} per layer.
+\item \textbf{Slices.} The $(3)$ and $(2,1)$ slices of $\kappa_3$ (D3, D21) are read from the legs by Hadamard ``hub'' products.
+\item \textbf{Wick stage.} The post-activation moments come from a Gaussian-plus-Edgeworth closure in the carried cumulants: a
+Hermite/$\sigma$ table, Mehler order $2$, giving K11, K21, K22, K1--K4.
+\item \textbf{Birth.} A new source is born from the closure. A rank-$4$ residual of the $(2,1)$ slice is kept, and $\kappa_4$ is fed back
+into $\kappa_3$.
+\item \textbf{Fourth-order sector.} $\kappa_4$ is regenerated without memory: annealed transport of the $(2,2)$ content plus an
+adaptively fitted $\lambda$, with corrections.
+\end{enumerate}
+All large products are written as Strassen recursions so that flopscope bills their analytic count.
+
+\subsection{Inherited, engineered, and theory-realized}
+\begin{center}\small
+\begin{tabular}{>{\raggedright\arraybackslash}p{4.3cm}>{\raggedright\arraybackslash}p{6.0cm}>{\raggedright\arraybackslash}p{4.3cm}}\toprule
+component & origin & measured worth\\\midrule
+\multicolumn{3}{l}{\emph{Inherited from the public chain (504aldo v29; probably shared with other leaders)}}\\
+Gaussian moment closure with Hermite/Wick tables & standard (the organisers' cumulant-propagation reference) & the backbone\\
+$\kappa_3$ sources as transported CP legs, young/old tiers, range-finder joins & 504aldo v29 & the backbone\\
+D3/D21 hub slices; memoryless $\kappa_4$ with fitted $\lambda$; birth residual; feedback & 504aldo v29 & the backbone\\
+Strassen-for-billing & 504aldo v29 & the cost model\\\midrule
+\multicolumn{3}{l}{\emph{Engineered by us (cost and numerics, theory-light)}}\\
+warm-started joins (Lyapunov continuity), Strassen level 6, symmetric/aliased Grams, billing fixes, dead-neuron saturation drop,
+leaf minima, join schedule, retuned ranks & notes XV, XXIX, V29--V35 & $-3$ to $-6\%$ adjusted from warm joins and level 6; $C/B$ from $0.267$ (v29) to $0.180$ (V35)\\\midrule
+\multicolumn{3}{l}{\emph{Theory realized in code}}\\
+quenched $\kappa_4$ pair class (\texttt{V33\_K4Q}) & retained transport, note XXVIII: quenched over annealed & $-2.3\%$\\
+the ``pair'' (\texttt{V33\_WK4M=3}, \texttt{V31\_K4D=3}) & gain-aware / scale-mixture shapes, notes XI, XIX, XXXVIII & $-0.9\%$\\
+the fold (\texttt{V52\_FB\_FOLD=1}) & exact first-order $(2,1)$ feedback as a displacement of the arm, $a\to a+Y_t/2w_2+X_t/6$, with the arm's double duty & $-10.0\%$ held-out adjusted\\
+counterterms (\texttt{V47\_CAL}, $103$ amplitudes) & renormalization: fitted elements as counterterms of the closure & $-3.8\%$\\
+chaos-graded $\kappa_4$ diagonal (\texttt{V56\_P4}) & Wiener chaos grading: Schur-hub path class plus third-chaos star at derived weights & $-9.8\%$ held-out adjusted ($-20.9\%$ raw)\\\bottomrule
+\end{tabular}
+\end{center}
+Three remarks.
+\begin{enumerate}[leftmargin=*]
+\item \textbf{The two large wins are exact, derived terms whose fitted amplitude stays at its derived value.} The fold refits at $0.95$
+and the chaos correction at $1.007$. In note XXXIX's sense they are law terms. The conventions (shapes of omitted classes chosen from
+the pair state) never paid, as the flex theorem predicted.
+\item \textbf{Where the programme's ideas are already inside.}
+\begin{itemize}
+\item The quenched/annealed distinction of stage 9 is realized twice. The quenched $\kappa_4$ pair class wins, and in the chaos
+correction the source-resolved hub product wins while its symmetrized (annealed) control carries nothing.
+\item The quasi-free (Fock/Bogoliubov) sector of stages 11--12 is realized as the chaos grading.
+\item Section~\ref{sec:hierarchy} shows that the Schur hub is the between-tier fourth cumulant of the two-tier (localization)
+decomposition.
+\end{itemize}
+\item \textbf{What is not inside yet.}
+\begin{itemize}
+\item Nothing of stages 10--12's quantitative structure: the Mehler clock, the parabolic depth, the internal Eldan clock and
+temperature, the hyperbolic upper tier, the wall-density law.
+\item In particular, nothing yet treats the critical dilation mode that note XLIV measured. Section~\ref{sec:dilation} supplies its law
+and a closure that respects it.
+\end{itemize}
+\end{enumerate}

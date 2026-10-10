@@ -1,0 +1,55 @@
+\label{sec:next}
+\subsection{Builds, ranked by expected value per unit cost}
+Each item is stated so that it can be pre-registered in the protocol of note XXXIX: cold screen on networks $0$--$15$, then scored
+with refitted counterterms and judged held-out.
+\begin{enumerate}[leftmargin=*]
+\item \textbf{The dilation-consistent closure} (Section~\ref{sec:dilation}).
+\begin{itemize}
+\item \emph{Build.} Carry $\varepsilon_l$. Estimate it from the chain's own D3 slope, or from the $O(n^2)$ degree-two arc-cosine sum.
+Overwrite the dilation components of C, D3, D21 and the $\kappa_4$ diagonal by the package of Corollary~\ref{cor:package}.
+\item \emph{Cost.} $O(n^2)$ per layer.
+\item \emph{Mechanism.} Theorem~\ref{thm:cancel}: once the package is consistent, the critical mode no longer moves the means at first
+order, however large its accumulated error.
+\item \emph{Prediction.} The dilation-mode share of the late covariance error (note XLIV's $c_1$, $0.33\to0.58$) falls substantially, and
+raw MSE falls by a fraction of the dilation oracle's value.
+\item \emph{Bound.} The oracle (true eigenvalue along the true mean at every layer) should be run first, as note XLIV proposed.
+\end{itemize}
+\item \textbf{The remaining $L_4$ pairings from the existing solve} (Section~\ref{sec:hierarchy}).
+\begin{itemize}
+\item \emph{Build.} The $(2,2)$ path part $\langle D_i,C^{-1}D_j\rangle$ is one product from the solve v56 already does. The off-diagonal
+pairings $2\langle\kappa_3(ij\cdot),C^{-1}\kappa_3(ij\cdot)\rangle$ and $3\langle D_i,C^{-1}\kappa_3(ij\cdot)\rangle$ need one hub-type contraction
+of each source with $y_i=C^{-1}Y_i$.
+\item \emph{Prediction.} The $(3,1)$ pairing removes a substantial part of the K31 error ($74\%$ rms), and its free amplitude refits
+near $1$.
+\item \emph{Order.} First run the diagnostic: regress the truth's K31 on the pairing, on note XLI's dumps, before any chain run.
+\end{itemize}
+\item \textbf{Sticky truth-free constraints.} After each layer, project the chain's state onto the affine set where the exact identities
+hold, by the minimal Fisher--Rao change: the dilation package, ladder rung $0$ ($\E y=2\tr f_2$, unit by unit) and rung $1$ ($\tr f_3=0$).
+The cost is $O(n^2)$. The rung-$0$ residual alone is a free measurement of what the legs omit (note XLIV, section 8).
+\item \textbf{The memory budget} (Proposition~\ref{prop:negent}). Estimate the localization deficit from the carried conditional covariances,
+and test whether it predicts the per-layer injection. This is a diagnostic, not a build.
+\end{enumerate}
+
+\subsection{Predictions (falsifiable)}
+\begin{enumerate}[leftmargin=*]
+\item Successive across-input log-norm increments are uncorrelated, with $\Var\Delta_l\approx\frac4n(\frac32-\frac{J_2(\theta_{l-1})}{2\pi})$. The gain
+saturates; it does not mean-revert.
+\item The truth's marginal cumulants satisfy, approximately, kurtosis $\approx2\times$ the skewness slope (measured $1.6$--$1.8$). The chain's
+own satisfy it less well, and the gap tracks the dilation injection.
+\item Imposing the dilation package leaves the counterterms' dilation-sensitive amplitudes (var, D21, K31 at depth) near their
+unrenormalized values. The package should absorb what they now compensate.
+\item The KLS pairings are law terms: their free amplitudes refit at their derived values ($1$, $2$, $3$ for the three slices).
+\end{enumerate}
+
+\subsection{Open problems}
+\begin{enumerate}[leftmargin=*]
+\item \textbf{Derive the efficiency $\eta\approx0.71$.} This is the fraction of the across-input log-norm variance that acts as a common
+scale on the next layer's bulk. It is a four-point function of the arc-cosine hierarchy.
+\item \textbf{Integrate the hierarchy along the network's internal clock.} Stage 12 makes each layer a localization step of size
+$\Delta\Fa=1$. Integrating $-(4\kappa_4+L_4)$ over the step with the network's own conditional cumulants should give the exact per-layer
+$\kappa_4$ update. Its leading term would be the Schur hub, and the correction terms would come with their weights.
+\item \textbf{Intrinsic volumes along depth.} $\E f=(V_1(P_+)-V_1(P_-))/\sqrt{2\pi}$. Does the Gaussian closure correspond to a
+Steiner-type approximation of the tropical polytopes, and is its error a higher intrinsic volume?
+\item \textbf{A rigidity statement for the chain.} An analogue of the caustic-collar theorem: if a closure is exact on a full
+neighbourhood of the network's localized states, is the network linear on the support?
+\end{enumerate}

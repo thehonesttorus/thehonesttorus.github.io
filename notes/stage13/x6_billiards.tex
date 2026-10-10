@@ -1,0 +1,56 @@
+\label{sec:billiards}
+\subsection{The billiard paper, read against our objects}
+\begin{enumerate}[leftmargin=*]
+\item \textbf{The machinery is ours already.} The paper's last step turns invariant line graphs $p=g(\theta,\lambda)$ into convex bodies
+through support functions. Three of its objects are ours.
+\begin{itemize}
+\item \emph{Contact points.} Its envelope $\Gamma_\lambda=g\,n_\theta+g_\theta e_\theta=\nabla h$ is the contact point of each support line. For a
+zonoid, $\nabla_wh_{Z(\mu)}(w)=\E[X\1\{\langle w,X\rangle>0\}]$ is the gate-weighted mean, i.e.\ neuron $w$'s first-chaos vector, which
+is the chain's ``arm''.
+\item \emph{Convexity.} Its condition $g+g_{\theta\theta}>0$ is Proposition~\ref{prop:curv}: positivity of the wall density.
+\item \emph{Nesting.} Its condition $g_\lambda<0$ says the family moves inward. In our setting the zonoids of localized laws are a
+martingale family: $\E h_{Z(\mu_t)}=h_{Z(\mu)}$, while each path's zonoid shrinks towards its mean. Cooling plays the role of $\lambda$.
+\end{itemize}
+\item \textbf{The grazing parameter is quadratic.} For the circle the caustic radius is $R\cos(t/2)=R-\frac R8t^2+\dots$, and $\lambda=t^2$
+makes the inward motion first order. The network's internal temperature is $T_l=1-\cos\theta_l\approx\theta_l^2/2$ (stage 12): the
+same reparametrization at the same end. In both, the grazing (deep) regime is where the advance angle is small, and the right
+coordinate is its square. With $T$ as the parameter, depth is linear in $1/\sqrt T$.
+\item \textbf{Rigidity has a probabilistic twin.}
+\begin{proposition}[proved; elementary]
+If every exponential tilt of $\mu$ has the same covariance, $\mu$ is Gaussian. Indeed $\nabla^2\Lambda_\mu$ is then constant, so $\Lambda_\mu$ is
+quadratic. Equivalently, if the Gaussian closure is exact along a full open family of tilts (a ``foliation'', not a discrete set),
+then all cumulants of order $\ge3$ vanish.
+\end{proposition}
+The analogy is in the hypothesis. The paper needs a \emph{full} foliation, because a Cantor family of caustics (Lazutkin) exists for
+non-ellipses. A closure that is exact on isolated states says nothing; exactness on a continuum forces Gaussianity. The first
+obstruction is $\kappa_3$, the first odd harmonic of the zonoid.
+\item \textbf{The method: family invariants pin the high modes.} Sliding periodic families have constant action, which gives one exact
+equation $C_q(u)=0$ per high frequency, with derivative equal to the identity plus $O(1/q)$ on the high modes. A Newton scheme on
+shrinking strips then determines the high-frequency data from the low. Our exact invariants are few:
+\begin{itemize}
+\item the dilation charge (one direction per layer);
+\item the Euler--Stein ladder, $(1-r)f_r=(r+1)(r+2)\tr f_{r+2}$ (one trace per chaos order);
+\item the localization variance decomposition $\E A_t+\E a_t\otimes a_t=\Cov$ (one matrix identity per time, automatically satisfied by the
+closure).
+\end{itemize}
+None is diagonal on the flat (incoherent) sector. This is the flex theorem of note XXXVIII seen from the billiard side: the pair state
+plus our invariants does not determine the omitted fourth-order classes. What did play the role of the missing equations in v56 was
+extra data, the source-resolved legs, read through the Schur hub (Section~\ref{sec:hierarchy}).
+\end{enumerate}
+\emph{Verdict.} The billiard paper supplies a dictionary (support functions, envelopes, positivity, the quadratic grazing
+parameter), a rigidity principle (only full families constrain), and a method. It supplies no algorithm by itself. The parabolic
+depth map has no resonances: in Fatou time it is a translation, so the small divisors that drive the billiard proof do not occur in the
+chain's depth recursion.
+
+\subsection{Packing and exponentially small scales}
+\begin{itemize}[leftmargin=*]
+\item \textbf{Why sampling cannot see cells.} The mean is a sum over exponentially many cells, each of Gaussian mass about $2^{-n}$ at
+the first layer. At flopscope's budget a Monte Carlo pass affords about $6\times10^4$ samples. That gives per-neuron MSE of order
+$10^{-6}$--$10^{-5}$, against the chain's $1.5\times10^{-8}$. The ``guide the process to the rare event'' lesson therefore transfers only in its
+deterministic form: guided, sticky evolution of the closure's state.
+\item \textbf{Codegrees.} The Campos--Jenssen--Michelen--Sahasrabudhe insight, that controlling codegrees makes a random-like
+heuristic exact, has the reading of Section~\ref{sec:support}: the closure is accurate when the gate gas's pair couplings are small,
+and the one coherent coupling is the dilation.
+\item \textbf{Anti-concentration.} The Littlewood--Offord theme, small-ball probabilities of $\sum_aw_ah_a$, is the wall density of
+stage 12. Its law $(\int Q)\sin(\theta/2)/\sqrt\pi$ is an anti-concentration statement for the network's own fields.
+\end{itemize}

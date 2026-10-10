@@ -1,0 +1,67 @@
+\label{sec:summary}
+\paragraph{1. What v56 is (Section~\ref{sec:v56}).}
+\begin{itemize}[leftmargin=*]
+\item \textbf{The base.} A public chain (504aldo's v29): Gaussian moment closure, $\kappa_3$ sources as CP legs in young and old tiers,
+hub slices, memoryless $\kappa_4$, a Wick table and Strassen-for-billing. We added cost engineering.
+\item \textbf{Five theory-derived terms on top.} The quenched $\kappa_4$ pair class, the scale-mixture ``pair'', the fold (exact
+first-order $(2,1)$ feedback as an arm displacement), $103$ renormalization counterterms, and the chaos-graded $\kappa_4$
+diagonal (the Schur hub plus the third-chaos star).
+\item \textbf{Where the gain came from.} The two large wins ($-10\%$ each, held out) are exact derived terms whose refitted amplitudes stay
+at $0.95$ and $1.007$. Shapes chosen by convention never paid.
+\item \textbf{What is not yet inside.} Stages 10--12's quantitative structure is not inside, and nothing yet treats the critical
+dilation mode.
+\end{itemize}
+
+\paragraph{2. The Schur hub is Eldan's cumulant drift (Section~\ref{sec:hierarchy}).} Along Eldan's normalized localization,
+$d\kappa_m=\kappa_{m+1}(\cdot,A^{-1/2}dB)-(m\kappa_m+L_m)dt$, and we show $L_m$ is the between-path part of the law of total cumulance.
+\begin{itemize}[leftmargin=*]
+\item $L_3=0$, so $\kappa_3$'s errors are transport errors.
+\item $L_4$ is three $\kappa_3A^{-1}\kappa_3$ pairings, three times the variance of the regression of the square on the field. This is the
+form of v56's path class $12[YC^{-1}Y^\top]_{ii}$, and it explains why the hub needs $C^{-1}$, the quenched (source-resolved) $\kappa_3$, and
+weight $1$.
+\item It predicts the $(2,2)$ and $(3,1)$ pairings, with coefficients, from the same solve.
+\item In the two-tier language, v56's largest gain is the between-tier fourth cumulant.
+\end{itemize}
+
+\paragraph{3. The critical gain is a conserved dilation charge (Section~\ref{sec:dilation}).} \textsc{ReLU} commutes with scale
+mixing, so the common scale is transported with factor exactly $1$.
+\begin{itemize}[leftmargin=*]
+\item Its size follows stage 12's increment law: $\frac4n(\frac32-\frac{J_2(\theta)}{2\pi})\approx4\theta^2/n$ per layer, saturating at $nV\to44.6$; the
+input radius contributes $1/(2n)$.
+\item Predicted values are $0.0058$--$0.0072$ at layers $8$--$14$, against measured $0.0070$--$0.0100$.
+\item The plateau needs no mean reversion; the test is stated.
+\item The Edgeworth-corrected closure is exact to $O(\varepsilon^2)$ on a scale mixture carrying its own $\gamma_1=6\varepsilon r$ and
+$\gamma_2=12\varepsilon$. So the charge moves the means only through inconsistency of the carried variance, $\kappa_3$ and $\kappa_4$.
+\item Design rule: impose the scale-mixture package, at $O(n^2)$ per layer. The truth is about $70\%$ package, with kurtosis about
+$1.7\times$ the skewness slope against the package's $2$.
+\end{itemize}
+
+\paragraph{4. The spherical geometry (Section~\ref{sec:support}).}
+\begin{itemize}[leftmargin=*]
+\item The network is $h_{P_+}-h_{P_-}$, a difference of support functions of tropical polytopes, and $\E f=(V_1(P_+)-V_1(P_-))/\sqrt{2\pi}$, a
+difference of first intrinsic volumes. Stage 11's border formula is the edge formula of $V_1$.
+\item Each layer evaluates the support function of its law's zonoid at the next rows. The closure is the Gaussian (ellipsoidal)
+zonoid, and the zonoid's curvature is the wall density.
+\item Klartag's evolving ellipsoid gives a dictionary (contacts as frozen gates, free directions as unresolved gates) and one
+principle: keep every exact constraint you touch.
+\end{itemize}
+
+\paragraph{5. Billiards, packing, heat flow (Sections~\ref{sec:billiards}--\ref{sec:heat}).}
+\begin{itemize}[leftmargin=*]
+\item The caustic paper's support-function envelopes, its positivity $g+g''>0$ and its $\lambda=t^2$ are ours: the wall density, and the
+temperature $T\approx\theta^2/2$.
+\item Its rigidity has a probabilistic twin: a closure exact on a full family of tilts forces Gaussianity.
+\item Its Newton-on-high-modes method needs family invariants we lack. That is the flex theorem from the other side; v56 supplied the
+missing data through source-resolved legs.
+\item From slicing: the negentropy is an integrated localization deficit, checked to $0.5\%$, a candidate memory budget.
+\item From Shannon--Stam stability: the quenched content is the variance of the localized covariance, whose diffusion coefficient
+is $\kappa_3$.
+\end{itemize}
+
+\paragraph{6. What to build (Section~\ref{sec:next}).}
+\begin{enumerate}[leftmargin=*]
+\item The dilation-consistent closure.
+\item The remaining $L_4$ pairings from v56's existing solve.
+\item Sticky projection onto the exact identities.
+\item The memory-budget diagnostic.
+\end{enumerate}

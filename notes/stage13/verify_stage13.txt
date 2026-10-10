@@ -1,0 +1,22 @@
+== 1. Eldan cumulant hierarchy (drift of kappa_3 and kappa_4)
+  kappa_3 drift: rel. error against -3 kappa_3 = 1.47e-07
+  kappa_4 drift: rel. error against -(4 kappa_4 + L_4) = 2.77e-07 ; |L_4|/|4 kappa_4| = 0.198 ; without L_4 the error is 2.09e-01
+  L_4(u,u,u,u) = 162.869127 ; 3 <kappa3(u,u,.), A^-1 kappa3(u,u,.)> = 162.869127
+== 2. Scale-mixture cancellation (two-point and uniform scale laws)
+  two-point mu= 0.70 s=1.0: error at eps=.02,.01,.005: 1.10e-04 2.77e-05 6.97e-06 (ratios 3.96, 3.98; O(eps^2) -> 4)
+  two-point mu=-0.40 s=0.8: error at eps=.02,.01,.005: 8.51e-05 2.16e-05 5.42e-06 (ratios 3.95, 3.97; O(eps^2) -> 4)
+  two-point mu= 1.50 s=0.6: error at eps=.02,.01,.005: -1.90e-04 -4.92e-05 -1.25e-05 (ratios 3.85, 3.94; O(eps^2) -> 4)
+  uniform   mu= 0.70 s=1.0: error at eps=.02,.01,.005: 9.68e-05 2.45e-05 6.15e-06 (ratios 3.96, 3.98; O(eps^2) -> 4)
+  uniform   mu=-0.40 s=0.8: error at eps=.02,.01,.005: 7.26e-05 1.84e-05 4.63e-06 (ratios 3.95, 3.97; O(eps^2) -> 4)
+  uniform   mu= 1.50 s=0.6: error at eps=.02,.01,.005: -1.29e-04 -3.43e-05 -8.77e-06 (ratios 3.78, 3.91; O(eps^2) -> 4)
+== 3. The dilation sector at n = 1024
+  V_l/4 (infinite-width increments): l=4 0.0041, l=6 0.0051, l=8 0.0058, l=10 0.0064, l=12 0.0068, l=14 0.0072, l=16 0.0075
+  input-radius part 2/(4n) = 4.88e-04 ; per-layer increment theta^2/n at l=6,10,14: 5.4e-04 2.9e-04 1.8e-04
+== 4. Tropical mean width in R^2
+  max |relu(h_A - h_B) - (h_conv(AuB) - h_B)| on the circle = 5.55e-16
+  E f by quadrature 0.16269286 ; (E|x|/2)(w(P+) - w(P-)) with w = perimeter/pi: 0.16269286
+== 5. Zonoid curvature = wall density (2D Gaussian mixture)
+  Hessian by finite differences: [0.210493 0.140329 0.140329 0.093552]  wall integral: [0.210493 0.140329 0.140329 0.093552]
+== 6. Negentropy as the integrated localization deficit (1D, isotropic)
+  logistic D(mu||gamma) = 0.0144 ; (1/2) int (1/(1+t) - E A_t) dt = 0.0142 (Monte Carlo over theta, t <= 3000)
+  two-bump D(mu||gamma) = 0.1720 ; (1/2) int (1/(1+t) - E A_t) dt = 0.1728 (Monte Carlo over theta, t <= 3000)

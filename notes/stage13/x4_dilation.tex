@@ -1,0 +1,113 @@
+\label{sec:dilation}
+Note XLIV (section 7) located the largest structured part of v56's late covariance error. It is one number per layer: the
+eigenvalue of the pre-activation covariance along the mean direction, biased low by $0.5$--$0.8\%$. This mode is the dilation
+(gain), its error is transported with factor about $0.95$, and its relative variance $\tau$ is roughly stationary at
+$0.008$--$0.010$ from layer $6$. Note XLIV left one theory item open: an exact law for how the gain's increments compose through a
+\textsc{ReLU} layer. Here it is.
+
+\subsection{The charge}
+\begin{proposition}[the dilation charge is conserved; proved]\label{prop:charge}
+Let $z=(1+\delta)g$ with $\delta$ independent of $g$, $\E\delta=0$, $\Var\delta=\varepsilon$ and $1+\delta>0$. Then
+$\relu(z)=(1+\delta)\relu(g)$, and the next layer is $W\relu(z)=(1+\delta)\,W\relu(g)$. The family of common-scale mixtures is
+invariant under the layer map, and the mixing variance $\varepsilon$ is transported unchanged. In covariance form,
+$\Cov(z)=(1+\varepsilon)\Cov(g)+\varepsilon\,\E g\,\E g^\top$: the charge lives on the mean direction.
+\end{proposition}
+This is the exact reason the mode is critical. An error in $\varepsilon$ is carried with factor exactly $1$, while every other direction is
+contracted: a layer-$3$ injection loses about $9\times$ in squared norm by layer $15$ (note XLII). Two other views say the same.
+\begin{itemize}[leftmargin=*]
+\item In stage 12's hyperbolic upper tier, dilation is translation along the kink geodesic, and He initialization is the unique
+scale with zero drift along it.
+\item In the information-theoretic language of Klartag--Ordentlich (an analogy): a channel contracts every perturbation it does not
+preserve, and the layer map preserves the scale-mixture family exactly. The dilation orbit is the one direction with contraction
+coefficient $1$.
+\end{itemize}
+
+\subsection{The size law}
+\begin{proposition}[the dilation sector's leading law; stage 12, Proposition 3.3, at leading order in $1/n$]\label{prop:size}
+Let $V_l=\Var_x\log|h_l|^2$ for a fixed network. Its across-input increments are
+\[
+V_l-V_{l-1}=\frac4n\Big(\frac32-\frac{J_2(\theta_{l-1})}{2\pi}\Big)=\frac{4\theta_{l-1}^2}{n}+O(\theta^4/n),\qquad V_0=\frac2n,
+\]
+so $nV_l\to44.6$. The relative variance of the mean-direction mode is
+\[
+\tau_l\simeq\frac{V_l}4+\frac1{nt_l},
+\]
+where the second term is the bulk's own projection on the mean direction and $t_l$ is the internal clock.
+\end{proposition}
+At $n=1024$ the leading law gives $V_l/4=0.0051$, $0.0058$, $0.0064$, $0.0068$, $0.0072$ at $l=6,8,10,12,14$, with limit $0.0109$. The input radius
+contributes $2/(4n)=4.9\times10^{-4}$, which is note XLIV's ``$1/(2n)$''. Measured values are:
+\begin{itemize}[leftmargin=*]
+\item on stage 12's network (seed 5), the Rayleigh quotient along the mean is $0.0070$, $0.0077$, $0.0085$ at $l=8,12,16$, with measured
+$V_l$ about $7\%$ above the leading law;
+\item note XLIV's $\tau$, which uses the top eigenvalue and so sits above the Rayleigh quotient, is $0.0087$--$0.0100$ (network 0) and
+$0.0077$--$0.0094$ (network 1) at layers $6$--$14$.
+\end{itemize}
+So the law has the right order, sign and slow saturation, and is $20$--$30\%$ low at leading order. The quenched value for a given
+network is an $O(n^2)$ sum: $\sum_{a,b}\Cov(\relu(z_a)^2,\relu(z_b)^2)$ over the chain's own correlations, a bivariate degree-two
+arc-cosine kernel per pair.
+
+\begin{remark}[saturation, not mean reversion; a falsifiable prediction]
+Note XLIV read the stationary $\tau$ as a mean-reverting gain. The increment law gives a different mechanism. The gain's across-input
+increments are independent to leading order: the weights are fresh at every layer. Their variance $4\theta^2/n$ is summable, because two
+inputs at angle $\theta$ disagree on only a fraction $\theta/\pi$ of the gates, so deep layers act alike on all inputs. $\tau$ therefore saturates
+without any restoring force.
+\begin{itemize}[leftmargin=*]
+\item \emph{Test:} the across-input correlation of successive log-norm increments $\Delta_l=\log(|h_l|^2/|h_{l-1}|^2)$.
+\item \emph{Prediction:} near $0$, with $\Var\Delta_l\approx4\theta_{l-1}^2/n$.
+\item Mean reversion would make the correlation negative.
+\end{itemize}
+\end{remark}
+
+\subsection{When the charge moves the means}
+\begin{theorem}[first-order cancellation; proved, and checked]\label{thm:cancel}
+Let $z=(1+\delta)(\mu+s\xi)$ with $\xi\sim N(0,1)$, $\delta$ independent and symmetric, $\Var\delta=\varepsilon$ and $1+\delta>0$, and put $r=\mu/s$. The
+Edgeworth-corrected Gaussian closure uses the mixture's own variance $S^2=s^2(1+\varepsilon)+\varepsilon\mu^2$, skewness $\gamma_1$ and excess
+kurtosis $\gamma_2$:
+\[
+S\Big[m_1(R)-\tfrac{\gamma_1}6\He_1(R)\varphi(R)+\tfrac{\gamma_2}{24}\He_2(R)\varphi(R)\Big],\qquad R=\mu/S.
+\]
+It equals the exact $\E\relu z=s\,m_1(r)$ up to $O(\varepsilon^2)$. To first order the three corrections are
+\[
+\underbrace{\tfrac\varepsilon2(1+r^2)}_{\text{variance}}\ \underbrace{-\,\varepsilon r^2}_{\gamma_1=6\varepsilon r}\ \underbrace{+\,\tfrac\varepsilon2(r^2-1)}_{\gamma_2=12\varepsilon}\ =0
+\qquad(\text{in units of }s\varphi(r)).
+\]
+\end{theorem}
+\begin{proof}
+$\kappa_3=6\mu s^2\varepsilon$ and $\kappa_4=12s^4\varepsilon+O(\varepsilon^2)$, by expanding $z-\E z=\delta\mu+s\xi+\delta s\xi$. Then
+$\partial_{S^2}[Sm_1(\mu/S)]=\varphi/2S$, $\gamma_1=6\varepsilon r+O(\varepsilon^2)$ and $\gamma_2=12\varepsilon+O(\varepsilon^2)$. Collect the $O(\varepsilon)$ terms.
+\end{proof}
+Checked for two-point and uniform scale laws at three $(\mu,s)$: the closure error falls by $3.8$--$4.0$ each time $\varepsilon$ halves
+($1.1\times10^{-4}\to2.8\times10^{-5}\to7.0\times10^{-6}$ at $\mu=0.7$, $s=1$).
+
+\begin{corollary}[the design rule; derived]\label{cor:package}
+The critical mode moves the neuron means only through \emph{inconsistency}. The dilation charge must enter the variance, the third
+cumulant and the fourth cumulant as one scale-mixture package. To first order in $\varepsilon$ and in the chain's notation, with
+$\widetilde C$ the non-dilation covariance:
+\[
+\Delta C=\varepsilon(\widetilde C+\mu\mu^\top),\qquad \Delta\kappa_3(a,b,c)=2\varepsilon\big(\mu_a\widetilde C_{bc}+\mu_b\widetilde C_{ac}+\mu_c\widetilde C_{ab}\big),\qquad
+\Delta\kappa_4(a,a,a,a)=12\varepsilon\widetilde C_{aa}^2 .
+\]
+In particular $\Delta D3_a=6\varepsilon\mu_a\widetilde C_{aa}$ and $\Delta D21_{ac}=2\varepsilon(2\mu_a\widetilde C_{ac}+\mu_c\widetilde C_{aa})$. v56 computes these
+three pieces by three different routes:
+\begin{itemize}[leftmargin=*]
+\item the covariance exactly, as $WCW^\top$;
+\item $\kappa_3$ through transported legs and births;
+\item $\kappa_4$ through the memoryless regeneration.
+\end{itemize}
+Their dilation parts are therefore mutually inconsistent at the measured $0.5$--$0.8\%$. Note XLIV's injection ledger says the same:
+D21 under-feeds the mode at every layer and K31 partly compensates. The rule is to carry $\varepsilon_l$ explicitly and write the three
+package terms from $(\varepsilon_l,\mu_l,\widetilde C_l)$ in place of the chain's own dilation components. The cost is $O(n^2)$ per layer.
+\end{corollary}
+\begin{remark}[the true law is $70\%$ package; measured]
+On stage 12's network the truth's marginal cumulants follow the package law in form. The skewness is linear in $r$ ($R^2=0.86$--$0.91$),
+and the excess kurtosis is flat. The amplitudes are $\eta=0.71$--$0.72$ (skewness) and $\eta'=0.57$--$0.63$ (kurtosis) of the
+full-$V/4$ prediction. The package predicts excess kurtosis $=2\times$ the skewness slope. Measured, the ratio is $1.59$, $1.75$, $1.77$ at
+$l=8,12,16$. So the truth contains one approximately consistent scale-mixture component of size $\varepsilon\approx0.005$ at $l=16$, against
+$V/4\approx0.008$. The chain can estimate it without truth: regress its own $\gamma_1$ on $r$, set $\varepsilon=\text{slope}/6$, and impose the
+package. Deriving $\eta$ is open.
+\end{remark}
+\begin{remark}[Klartag's principle, applied]
+Klartag's ellipsoid and the Lovett--Meka walk keep every constraint they touch and continue in the constraint-preserving subspace.
+The dilation package is such a constraint. Along it the chain's transport has no damping, so it must be held exactly rather than
+approximated. Every other direction forgets its errors.
+\end{remark}

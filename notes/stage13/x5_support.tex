@@ -1,0 +1,79 @@
+\label{sec:support}
+\subsection{The network is a difference of support functions}
+A bias-free \textsc{ReLU} network is positively homogeneous: $f(x)=|x|f(\hat x)$. Under $\gamma$ the radius and the direction are
+independent, so $\E f=\E|x|\cdot\int_{S^{n-1}}f\,d\sigma$: the problem lives on the sphere. Every positively homogeneous piecewise-linear
+function is a difference of support functions of polytopes (the tropical description of Zhang--Naitzat--Lim). Write
+$h_K(x)=\max_{y\in K}\langle y,x\rangle$.
+\begin{proposition}[tropical decomposition; proved]\label{prop:tropical}
+$\relu(h_A-h_B)=h_{\mathrm{conv}(A\cup B)}-h_B$. Hence, inductively, $f=h_{P_+}-h_{P_-}$ for two polytopes $P_\pm$ built from the rows by
+Minkowski sums and convex hulls. A first hidden layer contributes zonotopes $\sum_ac_a[0,w_a]$.
+\end{proposition}
+\begin{theorem}[the mean is a difference of first intrinsic volumes; proved]\label{thm:V1}
+\[
+\E f=\frac{\E|x|}2\big(w(P_+)-w(P_-)\big)=\frac{V_1(P_+)-V_1(P_-)}{\sqrt{2\pi}},
+\]
+where $w$ is the mean width and $V_1$ the first intrinsic volume. Moreover $V_1(P)=\sum_{\text{edges }e}|e|\,\gamma(e,P)$, the edge
+length times the external angle. Under the normal-fan duality this is stage 11's border formula,
+$\E f=(2\pi)^{-1/2}\sum_F\kappa_F\alpha_F$:
+\begin{itemize}[leftmargin=*]
+\item the cells of the activation tiling are normal cones of vertices;
+\item the walls are normal cones of edges;
+\item the kink $\kappa_F$ is the edge length $|e|$;
+\item $\alpha_F$ is the external angle.
+\end{itemize}
+\end{theorem}
+\begin{proof}
+$\E h_K(x)=\E\sup_{y\in K}\langle y,x\rangle=V_1(K)/\sqrt{2\pi}$ (Sudakov--Tsirelson), and polar coordinates give the mean-width form.
+The edge formula is standard (Schneider, Section 4.2).
+\end{proof}
+Checked in $\R^2$ with $8$ hidden units and a \textsc{ReLU} output.
+\begin{itemize}[leftmargin=*]
+\item The identity of Proposition~\ref{prop:tropical} holds to $6\times10^{-16}$.
+\item The quadrature mean $0.16269286$ equals $\frac{\E|x|}2\cdot\frac{\mathrm{per}(P_+)-\mathrm{per}(P_-)}\pi$ to all printed digits.
+\end{itemize}
+The packing and convex-geometry literature is therefore natively about our objects. A network is a pair of polytopes, its mean is an
+intrinsic volume, its walls are a normal fan, and its gates are a hyperplane tessellation of the sphere. For the last, two inputs at
+angle $\theta$ are separated by a fraction $\theta/\pi$ of the hyperplanes (stage 11).
+
+\subsection{Each layer evaluates the support function of a zonoid}
+For a law $\mu$ on $\R^n$, the zonoid $Z(\mu)=\{\E[Xg(X)]:\ 0\le g\le1\}$ (Koshevoy--Mosler) has support function $h_{Z(\mu)}(w)=\E\langle w,X\rangle_+$.
+\begin{proposition}[the layer map is support-function evaluation; proved]
+$\E h_{l,a}=h_{Z(\mu_{l-1})}(w_{l,a})$. The next layer's means are the values of one convex body's support function at the $n$ rows.
+The Gaussian closure replaces $Z(\mu_{l-1})$ by the zonoid of $N(\mu,C)$, whose support function is $s\,m_1(r)$. For centred laws this
+zonoid is the ellipsoid $C^{1/2}B/\sqrt{2\pi}$. In general it is an ``egg'' interpolating between that ellipsoid and the segment to the mean.
+\end{proposition}
+\begin{proposition}[the curvature of the zonoid is the wall density; proved]\label{prop:curv}
+$\nabla_w^2\,h_{Z(\mu)}(w)=\E[\delta(\langle w,X\rangle)\,X\otimes X]$. In the plane, the radius of curvature $h+h''$ is the density of the projected
+law at the wall, weighted by the transverse second moment.
+\end{proposition}
+Checked for a three-component Gaussian mixture in $\R^2$: the finite-difference Hessian and the wall integral agree to six digits.
+This joins three pictures:
+\begin{itemize}[leftmargin=*]
+\item stage 12's wall-density law (the lower tier's activity is the zonoid's curvature);
+\item stage 11's boundary layer;
+\item the billiard paper's positivity $g+g_{\theta\theta}>0$.
+\end{itemize}
+In a $2$-plane, the angular harmonics of $h_Z$ away from the Gaussian egg are the cumulant corrections by order: $\kappa_3$ feeds odd
+harmonics and $\kappa_4$ even ones. Non-Gaussianity is non-ellipticity of zonoids.
+
+\subsection{Klartag's ellipsoid in our coordinates (dictionary; analogy, labelled)}
+\begin{center}\small
+\begin{tabular}{>{\raggedright\arraybackslash}p{5.0cm}>{\raggedright\arraybackslash}p{8.8cm}}\toprule
+Klartag's process & the network and the chain\\\midrule
+ellipsoid $\{A_tx\cdot x<1\}$, $n(n+1)/2$ degrees of freedom & the closure's Gaussian state $(\mu,C)$; its $n(n+1)/2$ covariance degrees of freedom\\
+lattice point on the boundary (contact) & a frozen (resolved) gate, $|r_a|\gg1$; the ball no longer crosses that wall\\
+free directions $F_t$, $\dim F_t\ge n(n+1)/2-|\text{contacts}|/2$ & unresolved gates, a fraction $\theta/\pi\approx3/\tau$ per layer (stage 12)\\
+drift of $\log\det A_t$, $-\dim F_t/2\|A\|^2$ & the information rate of the gate filtration: log-volume of the input cell lost per layer\\
+contacts accrue at rate about $e^{n^2t/8}$ & gates freeze like $\sqrt T$, with $T\approx\theta^2/2$ the internal temperature\\
+sticky constraint $\langle A_t,x\otimes x\rangle=1$ & an exact invariant the chain must keep: the dilation package, the Euler--Stein ladder\\\bottomrule
+\end{tabular}
+\end{center}
+The structural content is the sticky principle. A process that is only approximately right gains most by holding exactly the
+constraints along which it cannot damp its own errors. In Klartag's case these are the contacts, which keep the ellipsoid lattice-free.
+In ours they are the critical (charge) directions of Section~\ref{sec:dilation}.
+
+\paragraph{Spherical codes and codegrees (analogy).} The rows of $W_1$ form a random spherical code, and the first layer's cells are
+the $2^n$ images of orthants. In the packing work of Campos, Jenssen, Michelen and Sahasrabudhe, the nibble's ``random-like''
+heuristic is made exact by controlling \emph{codegrees}. In ours, the closure (independent, dichotomized-Gaussian gates) is the random-like heuristic, and it is
+accurate when pair couplings are small. Stage 12 found the bulk couplings $O(n^{-1/2})$ and incoherent. The one coherent,
+uncontrolled ``codegree'' is the Mattis (dilation) component. It is again the charge.

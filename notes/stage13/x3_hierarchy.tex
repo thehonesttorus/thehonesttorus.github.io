@@ -1,0 +1,122 @@
+\label{sec:hierarchy}
+\subsection{Eldan's cumulant hierarchy is the law of total cumulance in time}
+Let $\mu$ be a compactly supported probability measure on $\R^d$. Run Eldan's normalized localization: $\mu_t\propto
+e^{\langle c_t,x\rangle-\frac12\langle Q_tx,x\rangle}\mu$ with $dc=A_t^{-1}a_tdt+A_t^{-1/2}dB_t$ and $dQ=A_t^{-1}dt$. Write $\kappa_m(t)$ for the
+cumulant tensors of $\mu_t$.
+\begin{proposition}[Bizeul--Klartag--Lehec, Lemma 4.3; known]\label{prop:bkl}
+$d\kappa_m=\kappa_{m+1}(\cdot,\dots,\cdot,A_t^{-1/2}dB_t)-(m\kappa_m+L_m)\,dt$, with $L_m$ as in Section~\ref{sec:readings}. In particular:
+\begin{itemize}[leftmargin=*]
+\item $L_3=0$, so $\E\kappa_3$ only decays, at rate $3$.
+\item The fourth-order term is
+\[
+L_4(h_1,\dots,h_4)=\sum_{j=2}^4\big\langle\kappa_3(h_1,h_j,\cdot),A^{-1}\kappa_3(h_{\{2,3,4\}\setminus\{j\}},\cdot)\big\rangle .
+\]
+For instance, $L_4(u,u,u,u)=3\langle\kappa_3(u,u,\cdot),A^{-1}\kappa_3(u,u,\cdot)\rangle$.
+\end{itemize}
+\end{proposition}
+\begin{proposition}[the drift is total cumulance; proved]\label{prop:totalcum}
+$\mu_{dt}$ is the posterior of $X\sim\mu$ given one infinitesimal Gaussian observation. Brillinger's law of total cumulance over
+set partitions $\pi$,
+\[
+\kappa_m(X)=\sum_\pi\kappa_{|\pi|}\big(\kappa_{B}(X\,|\,\mathcal G)\big)_{B\in\pi},
+\]
+applied to that observation, reproduces the drift $-(m\kappa_m+L_m)$ exactly:
+\begin{itemize}[leftmargin=*]
+\item the one-block partition gives $\E\kappa_m(dt)$;
+\item two-block partitions with a singleton give $m\kappa_m\,dt$;
+\item two-block partitions with both blocks of size $\ge2$ give $L_m\,dt$;
+\item partitions into three or more blocks contribute $o(dt)$.
+\end{itemize}
+\end{proposition}
+\begin{proof}
+Conditionally on the observation, $\kappa_k(dt)=\kappa_k+\kappa_{k+1}(\cdot,A^{-1/2}dB)+O(dt)$. The covariance over $dB$ of the fluctuations of
+$\kappa_{|B_1|}$ and $\kappa_{|B_2|}$ is $\langle\kappa_{|B_1|+1},A^{-1}\kappa_{|B_2|+1}\rangle dt$. A singleton block $B_1=\{i\}$ has $\kappa_2=A$, and
+$\langle A h_i,A^{-1}\kappa_m(h_{\rm rest},\cdot)\rangle=\kappa_m(h)$. Joint cumulants of three or more $O(\sqrt{dt})$ Gaussian-linear fluctuations
+vanish at order $dt$.
+\end{proof}
+So $L_m$ is the \emph{between-path} part of the $m$-th cumulant: what conditioning on the localization path moves out of the
+within-path cumulants. It is quadratic in lower cumulants, and the metric is the inverse covariance, because the observation noise is
+$A^{-1/2}dB$. The identity is checked on a $7$-point measure in $\R^3$ by Gauss--Hermite averaging over one step (Richardson
+in $dt$).
+\begin{itemize}[leftmargin=*]
+\item The drift of $\kappa_3$ matches $-3\kappa_3$ to $1.5\times10^{-7}$.
+\item The drift of $\kappa_4$ matches $-(4\kappa_4+L_4)$ to $2.8\times10^{-7}$; dropping $L_4$ errs by $21\%$.
+\item $L_4(u^4)$ equals $3\langle\kappa_3(u,u,\cdot),A^{-1}\kappa_3(u,u,\cdot)\rangle$ to all digits.
+\end{itemize}
+
+\subsection{The Schur hub is the between-tier fourth cumulant}
+\begin{proposition}[static form; proved]\label{prop:static}
+For any $\sigma$-algebra $\mathcal G$ and scalar $X$,
+\begin{multline*}
+\kappa_4(X)=\E\kappa_4(X|\mathcal G)+4\Cov\!\big(\E[X|\mathcal G],\kappa_3(X|\mathcal G)\big)+3\Var\!\big(\Var(X|\mathcal G)\big)\\
++6\,\kappa\big(\E[X|\mathcal G],\E[X|\mathcal G],\Var(X|\mathcal G)\big)+\kappa_4\big(\E[X|\mathcal G]\big).
+\end{multline*}
+If $\mathcal G\supseteq\sigma(Y)$ for a vector $Y$ with covariance $C_Y$, then the projection inequality gives
+\[
+3\Var(\Var(X|\mathcal G))\ \ge\ 3\,\Cov(\Var(X|\mathcal G),Y)\,C_Y^{-1}\,\Cov(Y,\Var(X|\mathcal G)).
+\]
+Equality holds when the conditional variance is affine in $Y$.
+\end{proposition}
+Read in the two-tier language of stage 12:
+\begin{itemize}[leftmargin=*]
+\item the upper tier is the conditioning ($\mathcal G$, the localization centre, i.e.\ the field the next layer sees);
+\item the lower tier is the conditional law;
+\item the term $3\Var(\Var(X|\mathcal G))$ is the \emph{between-tier} fourth cumulant, and its Schur projection is the
+$\kappa_3A^{-1}\kappa_3$ form of $L_4$.
+\end{itemize}
+The hierarchy's term has the same shape. For centred $X$, $\kappa_3(u,u,\cdot)=\Cov((u\cdot X)^2,X)$, so
+\[
+L_4(u^{\otimes4})=3\,\Cov((u\cdot X)^2,X)\,A^{-1}\,\Cov(X,(u\cdot X)^2)=3\Var\big(\mathrm{proj}_{\mathrm{span}X}(u\cdot X)^2\big)
+\]
+under $\mu_t$, averaged over paths: three times the variance of the linear regression of the square on the field. v56's path class is a
+regression of the same kind. Note XLI writes it as
+\[
+P4_i=12\,[YC^{-1}Y^\top]_{ii}=3\Var\big(\mathrm{proj}_{\mathrm{span}\,z_l}\,\mathsf C_i\big),\qquad 2Y_{ij}=\Cov(\mathsf C_i,z_{l,j}),
+\]
+where $\mathsf C_i$ is the cross term between neuron $i$'s first and second chaos. Using the cross term instead of the whole square removes two
+within-tier pieces: the square of the first chaos, which the Gaussian closure already handles, and the square of the second chaos, the
+$4$-cycle.
+
+In the chaos-2 model $z=L\cdot x+\frac12(x^\top Hx-\tr H)$, the cross term projects onto the input's linear span as $2(HL)\cdot x$, so
+$3\Var$ of it is $12|HL|^2$, the path class of $\kappa_4=12|HL|^2+3\tr H^4$. Under localization this projection is the part of the
+conditional variance that moves linearly with the centre. Indeed $\Var(z|\mathcal F_t)=|L+Hm_t|^2/(1+t)+\tr H^2/2(1+t)^2$, whose
+linear fluctuation is $2L^\top Hm_t/(1+t)$. So the path class is the between-tier part of the fourth cumulant, read through the field.
+
+\begin{corollary}[what it explains in v56; interpretation, with note XLI's data]
+\begin{enumerate}[leftmargin=*]
+\item \textbf{The metric is $C^{-1}$, not $\diag(C)^{-1}$.} The observation noise of localization is $A^{-1/2}dB$.
+Measured: the hub with the diagonal metric is $30$--$60$ times too large.
+\item \textbf{The cumulants must be conditional (quenched).} The drift involves $\E[\kappa_3(t)A_t^{-1}\kappa_3(t)]$ over paths, not
+$\E\kappa_3\,A^{-1}\E\kappa_3$. The annealed slice $D21=\kappa(z_i,z_i,\cdot)$ mixes within-tier and between-tier pieces. Measured: the
+symmetrized-D21 control removes $0$--$6\%$, the source-resolved hub $64$--$81\%$.
+\item \textbf{The weight is fixed.} The three pairings of $L_4(e_i^{\otimes4})$ are the $3$ in $3\Var$. Measured: free-running prefers the
+derived weight $1$, and renormalization leaves it at $1.007$.
+\item \textbf{Each half alone is adverse.} Proposition~\ref{prop:static} has five terms, and the third-chaos star is the
+$4\Cov(\E,\kappa_3)$-type partner. Measured: either piece alone is $+79\%$ to $+131\%$; together they give $-21\%$.
+\end{enumerate}
+\end{corollary}
+
+\subsection{Predictions: the other pairings from the same solve}
+The hierarchy gives every slice of $L_4$, with coefficients:
+\begin{gather*}
+L_4(e_i,e_i,e_j,e_j)=\langle D_i,A^{-1}D_j\rangle+2\langle\kappa_3(e_i,e_j,\cdot),A^{-1}\kappa_3(e_i,e_j,\cdot)\rangle,\\
+L_4(e_i,e_i,e_i,e_j)=3\langle D_i,A^{-1}\kappa_3(e_i,e_j,\cdot)\rangle,
+\end{gather*}
+with $D_i=\kappa_3(e_i,e_i,\cdot)$. In v56's dressed form the first term of the $(2,2)$ slice is note XLI's ``cheap path part''
+$4[YM^{-1}Y^\top]_{ij}$ (one product from the existing solve). The second term and the $(3,1)$ slice need the off-diagonal third cumulant
+contracted once: $\sum_k\kappa_3(i,j,k)\,y_{ik}$ with $y_i=C^{-1}D_i$ already formed. On the carried CP sources this is one hub-type
+contraction per source-layer, about the cost of the existing D21 hub.
+\begin{conjecture}[testable on note XLI's dumps]
+The source-resolved $(3,1)$ pairing
+\[
+3\sum_k\kappa_3(i,j,k)\,[C^{-1}Y]_{ik}
+\]
+removes a substantial part of the chain's K31 error. That
+error is $74\%$ rms; about $40\%$ of the (3,1) slice is ``history'', not a function of the pair state. The pairing uses the full source
+tensor, not the pair state, so it is exactly the kind of term the flex theorem allows to carry new information.
+\end{conjecture}
+\begin{remark}[$\kappa_3$ has no Schur term]
+$L_3=0$: under localization the expected third cumulant only decays. A per-layer closure of $\kappa_3$ therefore has no
+between-tier correction to add. Its errors are transport errors. This matches note XXXIX: the chain's D21 error is the flat
+incoherent sector of the transport (the product-gate defect), right to $2\%$ in its coherent part.
+\end{remark}

@@ -1,0 +1,120 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1.05in]{geometry}
+\usepackage{amsmath,amsthm,amssymb,mathtools,bm}
+\usepackage{booktabs,array,enumitem}\usepackage[expansion=false]{microtype}
+\usepackage{xcolor}
+\usepackage[colorlinks=true,linkcolor=blue!60!black,citecolor=blue!60!black,urlcolor=blue!60!black]{hyperref}
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]\newtheorem{proposition}[theorem]{Proposition}\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}\newtheorem{conjecture}[theorem]{Conjecture}
+\theoremstyle{definition}\newtheorem{definition}[theorem]{Definition}\newtheorem{remark}[theorem]{Remark}
+\newtheorem{example}[theorem]{Example}
+\newcommand{\R}{\mathbb R}\newcommand{\Z}{\mathbb Z}\newcommand{\E}{\mathbb E}\newcommand{\Var}{\operatorname{Var}}\newcommand{\Cov}{\operatorname{Cov}}
+\newcommand{\relu}{\operatorname{relu}}\newcommand{\diag}{\operatorname{diag}}\newcommand{\tr}{\operatorname{tr}}
+\newcommand{\Tr}{\operatorname{Tr}}\newcommand{\1}{\mathbf 1}\newcommand{\cA}{\mathcal A}\newcommand{\cB}{\mathcal B}
+\newcommand{\cF}{\mathcal F}\newcommand{\cT}{\mathcal T}\newcommand{\cH}{\mathcal H}\newcommand{\aff}{\mathfrak{aff}}
+\newcommand{\He}{\mathrm{He}}\newcommand{\Fa}{\Phi_{\mathrm F}}\newcommand{\cZ}{\mathcal Z}\newcommand{\Sym}{\operatorname{Sym}}
+\title{\textsc{Localization in the commutant, stage 13:}\\ \large the leaderboard system read through convex geometry.\\
+The Schur hub as Eldan's cumulant drift, the critical gain as a conserved dilation charge,\\ and the network as a difference of
+support functions}
+\author{}
+\date{10 October 2026}
+\begin{document}
+\maketitle
+\begin{abstract}
+We do three things. First, we take apart the current leaderboard system (v56) and separate what it inherits, what we engineered,
+and which pieces realize theory. Second, we read six works in full: Klartag--Lehec on the slicing problem, Bizeul--Klartag--Lehec on
+KLS, Klartag--Ordentlich on the strong data-processing inequality under heat flow, Klartag's stochastically evolving ellipsoid,
+Sahasrabudhe's survey of exponentially small scales, and the caustic-collar paper on billiard rigidity. Third, we prove or check
+the bridges they open into our setting.
+\begin{itemize}[leftmargin=*]
+\item \emph{The Schur hub is Eldan's cumulant drift.} Along Eldan's localization, the drift of the $m$-th cumulant is
+$-(m\kappa_m+L_m)$, where $L_m$ contracts pairs of lower cumulants through the inverse covariance (Bizeul--Klartag--Lehec).
+We show this is the law of total cumulance taken infinitesimally along the localization path. For $m=4$, $L_4$ is three
+$\kappa_3A^{-1}\kappa_3$ pairings; checked to $10^{-7}$ on a discrete measure, where it is $20\%$ of the drift. This is the
+algebraic form of v56's largest single gain, the Schur-hub path class $12\,[YC^{-1}Y^\top]_{ii}$.
+\begin{itemize}
+\item It explains three measured facts: why the hub needs $C^{-1}$, why it needs the source-resolved (quenched) third
+cumulant rather than the annealed one, and why its derived weight is right.
+\item It predicts the missing pairings for the $(2,2)$ and $(3,1)$ slices, with their coefficients.
+\item It says $\kappa_3$ has no such term ($L_3=0$), so the chain's third-cumulant errors are transport errors, as measured.
+\end{itemize}
+In the two-tier language of stage 12, the hub is the between-tier fourth cumulant: v56's biggest gain is the two-tier
+framework realized at fourth order.
+\item \emph{The critical gain is a conserved dilation charge.} \textsc{ReLU} commutes with scale mixing, so the network's common
+random scale is transported exactly. That is why the mean-direction mode is critical (transport factor $\approx0.95$ measured).
+\begin{itemize}
+\item Stage 12's increment law gives its size: across-input log-norm increments $\frac4n(\frac32-\frac{J_2(\theta)}{2\pi})\approx4\theta^2/n$, which
+saturate. This answers the open item of note XLIV with a parameter-free leading law: $0.0058$--$0.0072$ at layers $8$--$14$,
+against measured $0.0077$--$0.0100$; the input radius gives $1/(2n)$.
+\item The gain need not mean-revert to explain the plateau. A falsifiable prediction separates the two readings.
+\item The Edgeworth-corrected Gaussian closure is exact to $O(\varepsilon^2)$ on a scale mixture when it carries the mixture's own
+skewness $6\varepsilon r$ and kurtosis $12\varepsilon$ (checked: halving $\varepsilon$ cuts the error by $3.8$--$4.0$).
+\end{itemize}
+So the critical mode leaks into the means only through inconsistency between the chain's carried variance, $\kappa_3$ and
+$\kappa_4$ along the dilation. A dilation-consistent (scale-mixture) closure removes the leak at $O(n^2)$ per layer.
+\item \emph{The spherical geometry is a support-function geometry.} By homogeneity the problem lives on the sphere.
+\begin{itemize}
+\item A bias-free \textsc{ReLU} network is a difference of support functions of two polytopes (its tropical Newton polytopes),
+and its Gaussian mean is a difference of mean widths, i.e.\ first intrinsic volumes. Stage 11's border formula is the edge
+formula for this intrinsic volume.
+\item Each layer evaluates the support function of the zonoid of the previous layer's law at the next rows. The Gaussian
+closure replaces that zonoid by a Gaussian (ellipsoidal) one.
+\item The curvature of the zonoid is the wall density of stages 11--12. All three identities are checked exactly.
+\end{itemize}
+Klartag's evolving ellipsoid and the Lovett--Meka walk share one principle: once the process touches a constraint, it keeps it
+and continues in the constraint-preserving subspace. That principle is the right treatment of the chain's exact invariants (the
+dilation charge, the Euler--Stein ladder).
+\item \emph{What the billiard paper transfers} is the support-function machinery, the grazing parameter $\lambda=t^2$ (our
+temperature $T\approx\theta^2/2$), and the method of pinning high modes by family invariants. It brings no new algorithm by itself.
+\item \emph{Heat flow and slicing.} We record a computable memory budget, the negentropy as an integrated localization
+deficit, checked to $0.5\%$.
+\end{itemize}
+Each claim is labelled as proved, known, measured, conjectural or an analogy. The checks are in \texttt{scripts/verify\_stage13.py}.
+\end{abstract}
+\tableofcontents
+\section{The picture in one page}
+\input{x0_summary}
+\section{What v56 is: inherited, engineered, and theory-realized parts}
+\input{x1_v56}
+\section{What the six works do}
+\input{x2_readings}
+\section{The Schur hub is Eldan's cumulant drift}
+\input{x3_hierarchy}
+\section{The critical gain is a conserved dilation charge}
+\input{x4_dilation}
+\section{The spherical geometry: support functions, zonoids and mean width}
+\input{x5_support}
+\section{Billiards, packing and exponentially small scales: what transfers}
+\input{x6_billiards}
+\section{Heat flow, slicing, and a memory budget}
+\input{x7_heat}
+\section{What to build next, and what to test}
+\input{x8_next}
+\section*{Verification}
+\input{x9_verify}
+\begin{thebibliography}{99}\small
+\bibitem{stage12} Stage 12 note: \emph{the network as its own two-tier system} (this repository, \texttt{notes/stage12}).
+\bibitem{stage11} Stage 11 note: \emph{tilings, Bratteli diagrams and singular foliations} (\texttt{notes/stage11}).
+\bibitem{XLI} Working note XLI, \emph{chaos grading and the Schur hub}, and note XXXIX, \emph{the leaderboard system} (branch \texttt{claude/bold-albattani-xgecxi}, \texttt{notes/chaos-grading}, \texttt{notes/leaderboard-system}).
+\bibitem{XLIV} Working note XLIV, \emph{the fresh-weight theorem}, sections 7--8 (same branch, \texttt{notes/fresh-weight}).
+\bibitem{XV} Working note XV, \emph{every computation of the chain} (same branch, \texttt{notes/chain-anatomy}); the base chain is 504aldo's open-source factorized third-cumulant chain, v29 (MIT).
+\bibitem{KL} B.~Klartag, J.~Lehec, Affirmative resolution of Bourgain's slicing problem using Guan's bound, arXiv:2412.15044.
+\bibitem{BKL} P.~Bizeul, B.~Klartag, J.~Lehec, Presenting a proof of the Kannan--Lov\'asz--Simonovits conjecture, arXiv:2610.05474.
+\bibitem{KO} B.~Klartag, O.~Ordentlich, The strong data processing inequality under the heat flow, arXiv:2406.03427.
+\bibitem{Kl} B.~Klartag, Lattice packing of spheres in high dimensions using a stochastically evolving ellipsoid, arXiv:2504.05042.
+\bibitem{Sah} J.~Sahasrabudhe, Probabilistic combinatorics at exponentially small scales, arXiv:2512.15077.
+\bibitem{bill} OpenAI, Continuous phase foliations create analytic caustic collars (24 September 2026), with its companion \emph{Rigidity of smooth billiards with a continuous caustic collar}.
+\bibitem{Eldan} R.~Eldan, Thin shell implies spectral gap up to polylog via a stochastic localization scheme, GAFA 23 (2013) 532--569.
+\bibitem{EM} R.~Eldan, D.~Mikulincer, Stability of the Shannon--Stam inequality via the F\"ollmer process, PTRF 177 (2020) 891--922.
+\bibitem{LM} S.~Lovett, R.~Meka, Constructive discrepancy minimization by walking on the edges, SIAM J.~Comput.~44 (2015) 1573--1582.
+\bibitem{CJMS} M.~Campos, M.~Jenssen, M.~Michelen, J.~Sahasrabudhe, A new lower bound for sphere packing, arXiv:2312.10026.
+\bibitem{Brill} D.~R.~Brillinger, The calculation of cumulants via conditioning, Ann.~Inst.~Statist.~Math.~21 (1969) 215--218.
+\bibitem{ZNL} L.~Zhang, G.~Naitzat, L.-H.~Lim, Tropical geometry of deep neural networks, ICML 2018.
+\bibitem{KM} G.~A.~Koshevoy, K.~Mosler, Lift zonoids, random convex hulls and the variability of random vectors, Bernoulli 4 (1998) 377--399.
+\bibitem{Schn} R.~Schneider, \emph{Convex Bodies: the Brunn--Minkowski Theory}, 2nd ed., Cambridge 2014 (support functions, intrinsic volumes, mean width).
+\bibitem{HN} B.~Hanin, M.~Nica, Products of many large random matrices and gradients in deep neural networks, CMP 376 (2020) 287--322.
+\bibitem{CS} Y.~Cho, L.~K.~Saul, Kernel methods for deep learning, NeurIPS 2009.
+\bibitem{Clark} C.~E.~Clark, The greatest of a finite set of random variables, Oper.~Res.~9 (1961) 145--162.
+\end{thebibliography}
+\end{document}

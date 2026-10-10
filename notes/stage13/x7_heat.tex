@@ -1,0 +1,44 @@
+\label{sec:heat}
+\subsection{A memory budget: negentropy as an integrated localization deficit}
+\begin{proposition}[Klartag--Lehec, Corollary 3.2 with Lemma 3.3; restated]\label{prop:negent}
+For an isotropic law $\mu$ on $\R^n$, with $A_t$ its covariance process under Eldan's (standard) localization,
+\[
+D(\mu\,\|\,\gamma)=\tfrac12\int_0^\infty\Big(\frac n{1+t}-\E\Tr A_t\Big)dt .
+\]
+For the Gaussian $A_t=\mathrm{Id}/(1+t)$ exactly, so the integrand is the localization deficit: how much faster than a Gaussian the
+law localizes.
+\end{proposition}
+\begin{proof}
+$D(\mu\|\gamma)=\frac12\int_0^1\E|v_r|^2dr$ with $\E v_r\otimes v_r=(\mathrm{Id}-\E\Gamma_r)/(1-r)$, $\Gamma_r=(1+t)A_t$ and $r=t/(1+t)$. Change variables.
+\end{proof}
+Checked in one dimension by Monte Carlo over the localization path: logistic law, $0.0144$ against $0.0142$; two-bump mixture,
+$0.1720$ against $0.1728$.
+
+\emph{Why this matters here.} Stage 12 asked for a modular quantity that controls the closure's error, and named the negentropy
+of $z_l$ relative to its quasi-free projection as the candidate. Proposition~\ref{prop:negent} turns that negentropy into a time integral of
+second moments of \emph{localized} laws. By stage 12, the network's internal clock is a localization time. The chain could therefore
+estimate its own memory budget from quantities of the same kind it carries: the conditional (quenched) covariances along the
+localization, the same objects the Schur hub reads. Whether the budget predicts the per-layer closure error is a cheap, truth-free
+test.
+
+\subsection{Shannon--Stam stability: the quenched content as covariance fluctuation}
+Eldan--Mikulincer (as used by Klartag--Lehec) bound $\int\E|\Gamma_r-\E\Gamma_r|^2\,dr/(1-r)$ by the entropy gain of $\mu$ under
+$X\mapsto(X+X')/\sqrt2$. That integral is the variance, across localization paths, of the localized covariance, which is exactly the
+quenched content that separates the Schur hub from its annealed control (Section~\ref{sec:hierarchy}). Its volatility is the third cumulant:
+$dA_t=\sum_iH_{i,t}dB_{t,i}-A_tdt$ with $H_{i,t}=\kappa_3^{\mu_t}(\cdot,\cdot,A_t^{-1/2}e_i)$ (Bizeul--Klartag--Lehec, eq.~(69)). The closure's
+ellipsoid is deterministic. The true ellipsoid diffuses, with $\kappa_3$ as its diffusion coefficient. This is Klartag's
+stochastically evolving ellipsoid with the lattice replaced by the law's own cumulants.
+
+\subsection{Heat-flow contraction and the chaos spectrum}
+For the Gaussian input, the posterior mean of the output under the observation $X+\sqrt sZ$ is $\E[f(X)|X+\sqrt sZ]$, the Husimi symbol
+at the posterior centre. Its variance is
+\[
+\Var\,\E[f(X)\,|\,X+\sqrt sZ]=\sum_{k\ge1}(1+s)^{-k}\,\|f_k\|^2,
+\]
+with $f_k$ the $k$-th Wiener chaos component. This is log-convex in $s$, as Klartag--Ordentlich prove for every log-concave input. The
+chaos spectrum that v56 grades is thus the sequence of power-series coefficients, in $u=1/(1+s)$, of one measurable curve: the
+posterior-mean variance against noise level. The maximal correlation of the Gaussian channel is $(1+s)^{-1/2}$, attained by the first chaos. For the network output, the ratio
+$\Var\E[f|Y]/\Var f$ falls below $(1+s)^{-1}$ by exactly the share of the higher chaos. Note XLII measured the first-chaos share of
+deep pre-activations falling with depth, consistent with v56 needing the second and third chaos. One more link: the tilt averages of Bizeul--Klartag--Lehec
+are, for the Gaussian, $F_f(z)=\E f(X+z)$. Their Taylor tensors are the chaos kernels, and the Song--Zhang criterion turns geometric
+decay of those kernels into a Poincar\'e bound. For the chain, the same decay rate controls the error of truncating the chaos grading.

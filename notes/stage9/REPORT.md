@@ -299,3 +299,35 @@ network, n=1024, L=16, 2e5 inputs, plus quadrature and small Monte Carlo identit
   prod(1 - theta_{k-1}/pi) ~ (tau_l/tau_L)^3 (measured 0.0108 vs 0.0133 at the input, 0.5571 vs 0.5589 at l=12).
 - Open: derive eta ~ 0.71; size of the bent-crossing pair term vs tau; radial-angular factorization at depth (integrate the radial
   mixture exactly, run the closure on the angular part); a modular (negentropy) bound on the closure error.
+
+## 12. Stage 13: v56 read through convex geometry (`notes/stage13/ncg_mlp_stage13.pdf`, 21 pp)
+
+Read in full: Klartag-Lehec (slicing, arXiv:2412.15044), Bizeul-Klartag-Lehec (KLS, arXiv:2610.05474), Klartag-Ordentlich
+(SDPI under heat flow, arXiv:2406.03427), Klartag (stochastically evolving ellipsoid, arXiv:2504.05042v2), Sahasrabudhe
+(exponentially small scales, arXiv:2512.15077), and the caustic-collar billiard paper. Checks: `scripts/verify_stage13.py`
+-> `notes/stage13/verify_stage13.txt` (all pass).
+- v56 anatomy: public 504aldo v29 chain (Gaussian closure, CP-leg kappa3 sources in young/old tiers, hub slices,
+  memoryless kappa4, Wick table, Strassen billing) + our cost engineering + five theory terms: quenched kappa4 pair class,
+  scale-mixture pair, the fold (-10% held-out), 103 counterterms (-3.8%), chaos-graded kappa4 diagonal / Schur hub (-9.8%).
+  The two big wins are exact derived terms whose refitted amplitude stays at its derived value (0.95, 1.007).
+- Eldan's cumulant hierarchy (BKL Lemma 4.3) = infinitesimal law of total cumulance (proved): drift -(m kappa_m + L_m),
+  L_3 = 0, L_4 = three kappa3 A^-1 kappa3 pairings (checked 1e-7; 20% of the kappa4 drift). v56's Schur hub
+  12[Y C^-1 Y^T]_ii is this between-tier fourth cumulant: explains C^-1, the need for quenched (source-resolved) kappa3,
+  and weight 1. Predicts the (2,2) and (3,1) pairings from the same solve: L4(iijj) = <D_i,A^-1 D_j> +
+  2<k3(ij.),A^-1 k3(ij.)>, L4(iiij) = 3<D_i, A^-1 k3(ij.)> (test on K31, 74% off).
+- Critical gain = conserved dilation charge (relu commutes with scale mixing; transport factor exactly 1). Size law from
+  stage 12: increments (4/n)(3/2 - J2/2pi) ~ 4 theta^2/n, saturating (V/4 = 0.0058-0.0072 at l=8-14 vs measured
+  0.0070-0.0100; input radius 1/(2n)). Prediction: increments uncorrelated (saturation, not mean reversion).
+- First-order cancellation (proved, checked O(eps^2)): the Edgeworth-corrected closure is exact on a scale mixture when it
+  carries gamma1 = 6 eps r, gamma2 = 12 eps. So the charge moves the means only through inconsistency of the carried
+  variance/kappa3/kappa4 -> build: a dilation-consistent (scale-mixture package) closure, O(n^2)/layer. Truth is ~70% package
+  (kurtosis/skew-slope = 1.6-1.8 vs 2).
+- Spherical geometry: f = h_{P+} - h_{P-} (tropical), E f = (V_1(P+) - V_1(P-))/sqrt(2pi) (mean widths; stage-11 border
+  formula = edge formula of V_1); each layer evaluates the zonoid support function E<w,X>_+; closure = Gaussian
+  (ellipsoidal) zonoid; zonoid curvature = wall density (all checked). Klartag dictionary: contacts = frozen gates, free
+  directions = unresolved gates; principle: keep the exact constraints you touch (dilation package, Euler-Stein ladder).
+- Billiards: support-function envelopes, g + g'' > 0 (= wall density), lambda = t^2 (= our T ~ theta^2/2), rigidity twin
+  (closure exact on a full tilt family => Gaussian); Newton-on-high-modes needs family invariants we lack (flex theorem from
+  the other side). No algorithm by itself.
+- Slicing/heat flow: D(mu||gamma) = (1/2) int (n/(1+t) - E Tr A_t) dt (checked 0.5%) as a memory budget; the localized
+  covariance diffuses with kappa3 as diffusion coefficient (quenched content).

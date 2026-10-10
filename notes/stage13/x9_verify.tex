@@ -1,0 +1,17 @@
+The checks are run by \texttt{scripts/verify\_stage13.py}; its output is saved next to this note. The network measurements quoted
+from stage 12 come from \texttt{scripts/verify\_stage12.py}. The v56 figures come from notes XXXIX, XLI and XLIV on branch
+\texttt{claude/bold-albattani-xgecxi}.
+\begin{center}\small
+\begin{tabular}{>{\raggedright\arraybackslash}p{5.0cm}>{\raggedright\arraybackslash}p{9.8cm}}\toprule
+identity & result\\\midrule
+1. Eldan cumulant drift (Prop.~\ref{prop:bkl}, \ref{prop:totalcum}) & $7$-point measure in $\R^3$, Gauss--Hermite over one step, Richardson in $dt$: $\kappa_3$ drift $=-3\kappa_3$ to
+$1.5\times10^{-7}$; $\kappa_4$ drift $=-(4\kappa_4+L_4)$ to $2.8\times10^{-7}$ ($L_4$ is $20\%$; without it the error is $21\%$); $L_4(u^4)=3\langle\kappa_3(uu\cdot),A^{-1}\kappa_3(uu\cdot)\rangle$ exactly\\
+2. First-order cancellation (Thm~\ref{thm:cancel}) & two-point and uniform scale laws at three $(\mu,s)$: the error falls by $3.8$--$4.0$ per halving of $\varepsilon$, e.g.\
+$1.10\times10^{-4}$, $2.77\times10^{-5}$, $6.97\times10^{-6}$\\
+3. Dilation size law (Prop.~\ref{prop:size}) & $V_l/4=0.0051$, $0.0058$, $0.0064$, $0.0068$, $0.0072$, $0.0075$ at $l=6,8,10,12,14,16$; input radius $4.9\times10^{-4}$; per-layer
+increments $5.4$, $2.9$, $1.8\times10^{-4}$ at $l=6,10,14$\\
+4. Tropical mean width (Prop.~\ref{prop:tropical}, Thm~\ref{thm:V1}) & $\R^2$, $8$ units: $\max|\relu(h_A-h_B)-(h_{\mathrm{conv}(A\cup B)}-h_B)|=6\times10^{-16}$; $\E f=0.16269286$ by quadrature and by perimeters\\
+5. Zonoid curvature (Prop.~\ref{prop:curv}) & three-component mixture in $\R^2$: Hessian $(0.210493,0.140329,0.093552)$ by finite differences and by the wall integral\\
+6. Negentropy budget (Prop.~\ref{prop:negent}) & logistic $0.0144$ against $0.0142$; two-bump $0.1720$ against $0.1728$ (Monte Carlo over paths, $t\le3000$)\\\bottomrule
+\end{tabular}
+\end{center}
