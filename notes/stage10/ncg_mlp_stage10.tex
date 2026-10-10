@@ -44,8 +44,12 @@ Mehler factors, i.e.\ imaginary modular times of the Gibbs state of the Hermite 
 of the pair temperature is marginal at linear order with a $\beta^{3/2}$ term produced by the kink, which fixes the
 exponent of the folding law; (vii) the mean is the unique solution of a positivity-plus-Stein moment problem whose
 first loop equation is the kink-current formula, and the cumulant chains are its truncations without positivity.
-Every statement is labelled as proved, known (with a reference), or conjectural; the identities are checked by an
-accompanying script.
+(viii) in the simplest framing (input slots as vertices, layers as quadratic forms, tokens as Hermite quanta) the
+mean of every neuron is twice the trace of its quadratic form, layer two's form is the graph of two-step walks through
+the hidden layer, cumulants are walk sums on the hidden codegree graph, the Gaussian closure is the two-token walk with
+exact contacts, and the third-cumulant memory is first-order exchange whose hub coefficients are themselves walks.
+Every statement is labelled as proved, known (with a reference), or conjectural; the identities are checked by
+accompanying scripts.
 \end{abstract}
 \tableofcontents
 \section{The placement in one page}
@@ -62,6 +66,8 @@ accompanying script.
 \input{s5_clock}
 \section{Bootstrap: the mean as the unique solution of a positivity problem}
 \input{s6_bootstrap}
+\section{The token picture: vertices, quadratic forms, two-token walks}
+\input{s9_tokens}
 \section{What the placement explains, what it predicts, and what is open}
 \input{s7_outlook}
 \section*{Verification}
@@ -82,6 +88,7 @@ accompanying script.
 \bibitem{HDR} S.~Hayou, A.~Doucet, J.~Rousseau, On the impact of the activation function on deep neural networks training, ICML 2019.
 \bibitem{HR} B.~Hanin, D.~Rolnick, Complexity of linear regions in deep networks, ICML 2019.
 \bibitem{Scarf} H.~Scarf, A min-max solution of an inventory problem, in \emph{Studies in the Mathematical Theory of Inventory and Production}, Stanford 1958.
+\bibitem{NP} D.~Nualart, G.~Peccati, Central limit theorems for sequences of multiple stochastic integrals, Ann.~Probab.~33 (2005) 177--193; I.~Nourdin, G.~Peccati, \emph{Normal Approximations with Malliavin Calculus}, Cambridge 2012.
 \bibitem{Las} J.-B.~Lasserre, Global optimization with polynomials and the problem of moments, SIAM J.~Optim.~11 (2001) 796--817.
 \bibitem{Tak} M.~Takesaki, Conditional expectations in von Neumann algebras, J.~Funct.~Anal.~9 (1972) 306--321.
 \bibitem{Rief} M.~A.~Rieffel, Metrics on state spaces, Doc.~Math.~4 (1999) 559--600.

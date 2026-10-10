@@ -184,3 +184,26 @@ two-level lift and Klartag's contact structure. Proved (with an identity-check s
 - Bootstrap: the mean is the unique value of a positivity + Stein moment problem; its first loop equation is the kink
   current; cumulant chains are its truncations without positivity (single-neuron level-one island = Scarf's interval).
 The workflow agents' raw findings (readers of the three earlier papers, five lenses) are in `notes/stage10/workflow_findings/`.
+
+## 8. The token picture (stage 10, Section 9)
+
+Input slots are vertices, weights are edges, tokens are Hermite quanta: Gaussian L^2 = bosonic Fock space over the
+vertices, the k-th chaos = the k-token (bosonic Kikuchi) level, quadratic forms = elements of the pair-groupoid algebra,
+contractions = groupoid convolution.
+- Each layer-1 neuron is a one-mode token tower along its edge vector; its quadratic form is w w^T / (2 sqrt(2 pi) |w|).
+- Euler–Fock ladder: for any 1-homogeneous F, (N + sum_i a_i a_i) F = F, so the mean of every neuron = 2 tr(its quadratic form).
+- Layer 2: Q_c = W1^T D_c W1 (two-step walks i -> a -> j through the hidden layer); cumulants of the linear+quadratic part are
+  closed and open walk sums on the hidden codegree graph G = W1 W1^T (log char. function = log det + resolvent). Exactly, distinct
+  neurons contribute diagram sums (hub paths + triangles: 0.059 / 0.0115 vs leading diagrams 0.064 / 0.0133 at widths 24 / 96),
+  while contacts (repeated neurons) carry most of a single pre-activation's kappa_3 and must be exact.
+- Mean token number of layer-l pre-activations = 1/(1 - cos theta_{l-1}) (pair temperature): 1, 1.47, 1.98, ..., 13.0 at layer 16
+  (width-256 net: 10.6). The tower does not truncate; Gaussianity is controlled by token contractions (codegree), not token number.
+- Two tiers: E_{N(m,S)} F = <m, E grad F> + <S, E Hess F> (one token + two tokens); the heat equation = "a token pair equals two
+  displacements"; a chain's heat defect is its violation; localization cools the environment (contact and exchange switch off).
+- Two-token walk: Gamma -> W (K o Gamma) W^T with K = Phi Phi^T (independent) + diag(Phi - Phi^2) (contact) + exchange series.
+  Independent walkers are O(1) wrong (two layers: 1.9e-1 vs Gaussian closure 1.7e-3) by exactly the contact term
+  f_c sum_a W_ca^2 mu_a^2 (corr 0.999); removing it lands within 7.8e-4 of the Gaussian closure.
+  => Gaussian closure = walk with exact contacts; kappa_3 chain = + first-order exchange; Euler–Stein = cooling correction.
+- Sparsification: two-token objects and hub sums with hub coefficients known at birth accumulate (n^3 per layer; layer-2 stars
+  cost one product W2 G). From layer 3 the hub coefficient is itself a walk (three transported tokens meet at the hub): that is
+  the memory, and no operation on the input (which contracts input vertices, not hidden hubs) removes it.

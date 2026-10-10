@@ -1,0 +1,223 @@
+\label{sec:tokens}
+This section develops the simplest framing of the problem: every input slot is a vertex, the weights are weighted
+edges, a layer is a quadratic form on the vertex graph, the next layer is read from the two-token (Kikuchi) lift of
+that graph, and a second tier---the input law---sets the environment in which the lower tier's walks take place. The
+framing is exact: it is the Wiener chaos (bosonic Fock) structure of Gaussian space, with tokens as Hermite quanta.
+It reorganises everything above in a few lines, and it locates the obstruction precisely: it is a contact of tokens at
+a hidden neuron.
+
+\subsection{Dictionary}
+Let $V=[n]$ be the input slots. By the Wiener--It\^o isomorphism
+\[
+L^2(\R^n,\gamma)\;\cong\;\bigoplus_{k\ge0}\Sym^k\big(\ell^2(V)\big),\qquad
+F=\sum_k\big\langle f_k,\,{:}x^{\otimes k}{:}\big\rangle,\qquad f_k=\tfrac1{k!}\,\E\big[\nabla^kF\big]\ \ \text{(Stroock)},
+\]
+the $k$-th chaos is spanned by the multivariate Hermite polynomials $\He_\alpha$, $|\alpha|=k$: configurations of $k$
+indistinguishable tokens on the vertices, repetitions allowed (the bosonic $k$-token Kikuchi level). The Gaussian input
+is the vacuum $\Omega=1$; $a_i=\partial_i$ removes a token at $i$, $a_i^\dagger=x_i-\partial_i$ adds one, $N=\sum_ia_i^\dagger a_i$ is the
+Ornstein--Uhlenbeck number operator. A weighted graph on $V$ is a function on the pair groupoid $V\times V$, i.e.\ an element
+of $M_n=\mathbb C[V\times V]$; it moves one token along an edge as $d\Gamma(A)$ and all tokens as $\Gamma(A)$. Two-token kernels
+are quadratic forms, i.e.\ elements of the groupoid algebra, and contracting two kernels in $r$ shared token slots,
+$f\otimes_rg$, is groupoid convolution ($Q\otimes_1Q'=QQ'$, $Q\otimes_2Q'=\Tr QQ'$). Positive definite functions on the pair
+groupoid act by Schur multiplication as completely positive maps; the unit space (the diagonal) is where two tokens sit
+on one vertex.
+
+\subsection{Layer one: each neuron is a one-mode token tower, and its mean is a trace}
+\begin{proposition}[Ridge towers]\label{prop:ridge}
+With $c_k=\E[\relu(Z)\He_k(Z)]$, i.e.\ $(c_0,c_1,c_2,c_3,c_4,c_5,c_6,\dots)=(\varphi_0,\tfrac12,\varphi_0,0,-\varphi_0,0,3\varphi_0,\dots)$,
+$\varphi_0=1/\sqrt{2\pi}$, $c_k=\He_{k-2}(0)\varphi_0$ for $k\ge2$,
+\[
+h_{1,a}=|w_a|\sum_k\frac{c_k}{k!}\big(a^\dagger(\hat w_a)\big)^k\Omega ,\qquad
+f_2(h_{1,a})=Q_a=\frac{w_aw_a^{\top}}{2\sqrt{2\pi}\,|w_a|}.
+\]
+Each layer-one neuron lives in the one-mode Fock space of its own edge vector, and its quadratic form is the rank-one
+graph of that edge. Its degree-$k$ coefficient is $\E[\relu^{(k)}]$: the gate for $k=1$, the kink density for $k=2$, and
+derivatives of the kink for $k\ge3$.
+\end{proposition}
+\begin{proof}
+$\relu(|w|s)=|w|\relu(s)$ with $s=\hat w\cdot x\sim N(0,1)$, the one-dimensional Hermite expansion, and $\He_k(\hat w\cdot x)=
+(a^\dagger(\hat w))^k\Omega$. $c_k=\E[\relu^{(k)}]=\E[\delta^{(k-2)}]=\He_{k-2}(0)\varphi_0$ by Gaussian integration by parts.
+\end{proof}
+
+\begin{theorem}[Euler--Fock ladder]\label{thm:ladder}
+If $F$ is positively homogeneous of degree one then $(N+\sum_ia_ia_i)F=F$, i.e.
+\[
+f_0=2\tr f_2,\qquad \tr_{23}f_3=0,\qquad f_k=-\frac{(k+1)(k+2)}{k-1}\,\tr_{k+1,k+2}f_{k+2}\quad(k\ge2).
+\]
+In particular the mean of every neuron of every layer is twice the trace of its quadratic form: the mean is a closed
+two-token loop, the two tokens of the quadratic form placed on the same input vertex and summed.
+\end{theorem}
+\begin{proof}
+$x\cdot\nabla=\sum_i(a_i^\dagger+a_i)a_i=N+\sum_ia_ia_i$, and Euler's relation $x\cdot\nabla F=F$ holds for one-homogeneous $F$.
+$\sum_ia_ia_i$ maps the chaos-$(k+2)$ component with kernel $f_{k+2}$ to chaos $k$ with kernel $(k+2)(k+1)\tr f_{k+2}$, the trace over
+two token slots. Compare the chaos-$k$ components. For $h_{1,a}$: $2\tr Q_a=|w_a|/\sqrt{2\pi}$, and $-12\tr f_4=f_2$ with
+$f_4=-\tfrac{\varphi_0}{24}|w_a|\hat w_a^{\otimes4}$.
+\end{proof}
+
+\subsection{Layer two: the quadratic form is the graph of two-step walks}
+\begin{theorem}[Layer-two tokens]\label{thm:layer2}
+For $z_{2,c}=\sum_aW_2(c,a)h_{1,a}$, with $\omega=W_2(c,\cdot)^{\top}$,
+\begin{gather*}
+z_{2,c}=m_c+\langle f_c,x\rangle+{:}x^{\top}Q_cx{:}+(\text{chaos}\ge4),\\
+f_c=\tfrac12W_1^{\top}\omega,\qquad
+Q_c=W_1^{\top}D_cW_1,\qquad D_c=\diag\Big(\frac{W_2(c,a)}{2\sqrt{2\pi}|w_a|}\Big).
+\end{gather*}
+$Q_c(i,j)=\sum_aW_1(a,i)\,D_c(a)\,W_1(a,j)$ is the weighted graph of two-step walks $i\to a\to j$ through the hidden layer,
+turning at $a$ with weight $D_c(a)$. By Sylvester's identity every spectral quantity of $Q_c$ is one of $D_cG$, where
+$G=W_1W_1^{\top}$ is the codegree graph of the hidden neurons (overlaps of their input supports; normalised, the cosines
+$\rho_{ab}$).
+\end{theorem}
+\begin{proof}
+Linearity of the chaos decomposition and Proposition~\ref{prop:ridge} ($\E g_{1,a}=\tfrac12$).
+\end{proof}
+
+\begin{theorem}[Cumulants are walk sums]\label{thm:walks}
+(i) For $z=m+\langle f,x\rangle+x^{\top}Qx-\tr Q$,
+\[
+\log\E e^{itz}=it\,(m-\tr Q)-\tfrac12\log\det(I-2itQ)-\tfrac{t^2}2\,f^{\top}(I-2itQ)^{-1}f ,
+\]
+\begin{align*}
+\kap_r(z)&=2^{r-1}(r-1)!\,\Tr Q^r+r!\,2^{r-3}f^{\top}Q^{r-2}f\\
+&=2^{r-1}(r-1)!\,\Tr(D_cG)^r+r!\,2^{r-5}\,\omega^{\top}G(D_cG)^{r-2}G\omega :
+\end{align*}
+closed walks on the hidden codegree graph, and open walks whose two ends are the linear token.
+(ii) Exactly (all chaoses), $\kap_r(z_{2,c})=\sum_{a_1,\dots,a_r}\prod_j\omega_{a_j}|w_{a_j}|\;\kap\big(\relu(s_{a_1}),\dots,\relu(s_{a_r})\big)$, and for
+distinct indices the joint cumulant of the ridge functions is the sum over connected multigraphs on $\{a_1,\dots,a_r\}$
+with weight $\rho^m/m!$ on an edge of multiplicity $m$ and weight $c_{\deg(v)}$ on a vertex of degree $\deg(v)$ (the diagram
+formula). For $r=3$ the leading graphs are the three paths, centred at a hub of degree two (a kink, $c_2=\varphi_0$) with
+two gated arms ($c_1=\tfrac12$), and the triangle ($c_2^3$). Repeated indices (two or three tokens on the same hidden
+neuron: contacts) are given by the exact single-neuron and pair laws, not by the quadratic truncation.
+\end{theorem}
+\begin{proof}
+(i) Diagonalise $Q$; each mode is a shifted noncentral $\chi^2$, and completing the square gives the displayed
+log-characteristic function. Expand $\log\det(I-2itQ)=-\sum_r(2it)^r\Tr Q^r/r$ and $(I-2itQ)^{-1}=\sum_s(2it)^sQ^s$, and read off $r!$
+times the coefficient of $(it)^r$. Substitute $Q=W_1^{\top}D_cW_1$ and $f=\tfrac12W_1^{\top}\omega$. (ii) Mehler's formula for
+Gaussian vectors with unit variances: $\E\prod_jg_j(s_j)=\sum\prod_{v}\E[g_v^{(\deg v)}]\prod_{e}\rho_e^{m_e}/m_e!$ over multigraphs;
+cumulants keep the connected ones.
+\end{proof}
+\begin{center}\small
+\begin{tabular}{lccccc}\toprule
+width & $\kap_3(z_{2,c})$ (MC) & self & contacts & distinct neurons & leading diagrams\\\midrule
+$24$ & $-0.521$ & $-0.465$ & $-0.115$ & $0.059$ & $0.064$\\
+$96$ & $0.210$ & $0.078$ & $0.121$ & $0.0115$ & $0.0133$\\\bottomrule
+\end{tabular}
+\end{center}
+(Self: all three indices on one neuron; contacts: two of three on one neuron, by the exact pair law; distinct: Monte
+Carlo minus the two exact parts; leading diagrams: hub paths and triangles.) The distinct-neuron part is the walk sum, to the accuracy of its leading diagrams; at these widths the contacts carry
+most of a single pre-activation's third cumulant. The quadratic truncation of (i) applied to the whole of $z_{2,c}$ gives
+$0.070$ against the true $-0.521$ ($n=24$): the walk picture is right for exchange between distinct neurons and wrong for
+contacts, which must be computed exactly.
+
+\subsection{How many tokens: depth heats the tower}
+\begin{proposition}[Mean token number]\label{prop:tokens}
+For $F\in L^2(\gamma)$ the mean token number of its centred part is $\bar N(F)=\E|\nabla F|^2/\Var F$ (since
+$\E|\nabla F|^2=\sum_kk\,k!\|f_k\|^2$ and $\Var F=\sum_{k\ge1}k!\|f_k\|^2$). In the infinite-width limit the pre-activations of layer $l$
+have
+\[
+\bar N_l=\frac1{1-\cos\theta_{l-1}},\qquad \theta_0=\tfrac\pi2,\quad \cos\theta_{k+1}=J(\theta_k)/\pi ,
+\qquad \bar N_l\simeq\frac{2l^2}{9\pi^2}\ (l\to\infty),
+\]
+the pair temperature of Proposition~\ref{prop:heattrace}.
+\end{proposition}
+\begin{proof}
+For a one-homogeneous random field with kernel $K(x,y)=\tfrac{|x||y|}nk(\hat x\cdot\hat y)$ differentiating at $y=x$, $|x|^2=n$, gives
+$\E|\nabla_xz|^2=\sum_i\partial_{x_i}\partial_{y_i}K|_{y=x}=\tfrac1n\big(k(1)+(n-1)k'(1)\big)$ while $\E z^2=k(1)$; the normalised dual kernel of \textsc{ReLU} has derivative $1$ at $t=1$ at every layer (criticality), so
+$\E|\nabla z|^2=\E z^2(1+O(1/n))$. The squared mean $m^2$ is the kernel at two independent inputs, whose cosine tends to $0$, so
+$m^2/\E z^2\to\cos\theta_{l-1}$ with the angle recursion of Theorem~\ref{thm:folding} started at $\pi/2$. Then
+$\bar N=\E z^2/(\E z^2-m^2)$; the asymptotics follow from $\beta_l\simeq9\pi^2/(2l^2)$.
+\end{proof}
+\begin{center}\small
+\begin{tabular}{lccccccc}\toprule
+layer & $1$ & $2$ & $3$ & $5$ & $9$ & $13$ & $16$\\\midrule
+infinite width & $1.00$ & $1.47$ & $1.98$ & $3.13$ & $6.04$ & $9.72$ & $12.99$\\
+width $256$ (Monte Carlo) & $1.00$ & $1.47$ & $2.01$ & $3.12$ & $6.26$ & $9.46$ & $10.56$\\\bottomrule
+\end{tabular}
+\end{center}
+So the token tower does not truncate: the last pre-activation of a sixteen-layer network carries eleven to thirteen
+tokens on average, far from the two of a quadratic form (and far below the $2^{l-1}$ of naive degree doubling).
+Its marginal law is nevertheless close to Gaussian (skewness about $0.1$ on network $0$). The two facts are reconciled by the
+fourth-moment theorem of Nualart and Peccati \cite{NP}: within a chaos, Gaussianity is controlled by the contractions $f\otimes_rf$
+($1\le r<k$), the overlaps of a kernel's token configurations with themselves, i.e.\ token codegrees, and not by the token
+number. The Gaussian closure works because these contractions are small at He initialisation, and it fails exactly
+where they are not: at contacts, and along the collective mode.
+
+\subsection{Two tiers: the input law is the environment}
+\begin{theorem}[One-token plus two-token]\label{thm:tiers}
+For a one-homogeneous $F$ and every Gaussian input law $N(m,\Sigma)$,
+\[
+\E_{N(m,\Sigma)}F=\big\langle m,\ \E\nabla F\big\rangle+\big\langle\Sigma,\ \E\nabla^2F\big\rangle ,
+\]
+with the distributional Hessian (walls). Equivalently, the exact mean $u(m,\Sigma)$ satisfies Euler's relation and the heat
+equation $\partial_{\Sigma_{ij}}u=\tfrac12\partial_{m_i}\partial_{m_j}u$; in token language, adding a token pair at $(i,j)$ to the input
+state has the same effect as two successive displacements along $i$ and $j$.
+\end{theorem}
+\begin{proof}
+$\E F=\E[x\cdot\nabla F]=\langle m,\E\nabla F\rangle+\E[(x-m)\cdot\nabla F]$ and Stein's identity for $N(m,\Sigma)$,
+$\E[(x-m)g]=\Sigma\,\E\nabla g$, with $g=\nabla F$. The heat equation is $\partial_\Sigma\E F(m+\Sigma^{1/2}Z)=\tfrac12\E\nabla^2F$.
+\end{proof}
+
+The upper tier is the input law; it sets the environment of the lower tier, namely the kink densities and the
+gate-pair kernels of every layer. A moment chain $e(m,\Sigma)$ obeys Euler's relation (scale covariance) but not the heat
+equation: its pair response and its double-displacement response disagree, and that disagreement is the heat defect of
+stage 9. Along a localization (Eldan's balls of radius $r$ about a moving centre, Theorem~\ref{thm:uniform}) the environment
+cools. Gates freeze, the contact weights $\Phi(1-\Phi)$ vanish away from walls, the two-token term transfers into the
+one-token term, and at $r=0$ the walk is free and every chain is exact. The Euler--Stein correction integrates the
+chain's mismatch over this cooling, and its constant $1/(d+2)$ records the token order of the mismatch at the kink.
+
+\subsection{The two-token walk and its environment}
+Pathwise, the gradient Gram $\Gamma_l=J_lJ_l^{\top}$ ($J_l=\partial z_l/\partial x$) obeys $\Gamma_l=W_lD_{l-1}\Gamma_{l-1}D_{l-1}W_l^{\top}$: two tokens
+walk up the layered graph, each picking up weights and gates. In a factorised environment its expectation is the
+completely positive map $\Gamma\mapsto W(K\circ\Gamma)W^{\top}$, where the gate-pair kernel $K(a,b)=\mathbb P(z_a>0,z_b>0)$ is a positive definite
+function on the pair groupoid. The tetrachoric (Mehler) series splits it into three interactions:
+\[
+K=\underbrace{\Phi\Phi^{\top}}_{\text{independent walkers}}+\underbrace{\diag(\Phi-\Phi^2)}_{\text{contact}}+\underbrace{\sum_{k\ge1}\frac{1}{k!}\big(\rho^{\circ k}\circ\psi_k\psi_k^{\top}\big)_{\rm off}}_{\text{exchange of $k$ quanta}},
+\qquad\psi_k=\varphi(\alpha)\He_{k-1}(\alpha).
+\]
+The first term is a congruence (the two tokens move independently with mean gates). The second acts only when both
+tokens sit on one neuron, and it is diagonal, so it is sparse in the two-token graph. The third is dense, with
+off-diagonal entries of order $n^{-k/2}$. The mean reads the unit space of the final quadratic form (its trace).
+
+\begin{proposition}[Independent walkers are wrong at order one, by exactly the contact term]\label{prop:contactterm}
+For two layers, let $u^{\rm walk}_c=\Phi_cm_c+f_c(0)\,\E|\nabla z_{2,c}|^2$ be the kink current with independent walkers, and
+$u^{\rm GC}_c=\Phi_cm_c+f_c(0)\sigma_c^2$ the Gaussian closure (same exact $m_c,\sigma_c$, $\alpha_c=m_c/\sigma_c$). Then
+\[
+u^{\rm walk}_c-u^{\rm GC}_c=f_c(0)\big(\E|\nabla z_{2,c}|^2-\sigma_c^2\big)
+=f_c(0)\sum_aW_2(c,a)\,\mu_a\big(m_c-\E[z_{2,c}\mid z_{1,a}=0]\big),
+\]
+whose contact part ($b=a$ in $z_{2,c}=\sum_bW_2(c,b)h_{1,b}$) is $f_c(0)\sum_aW_2(c,a)^2\mu_a^2=O(1)$, while the exchange part
+($b\neq a$) is second order in $\rho_{ab}$.
+\end{proposition}
+\begin{proof}
+Stein's identity gives $\E z^2=\E|\nabla z|^2+\E[z\Delta z]$ for the one-homogeneous $z=z_{2,c}$, and
+$\Delta z=\sum_aW_2(c,a)\delta(z_{1,a})|w_a|^2$ with $f_{1,a}(0)|w_a|^2=\mu_a$; hence $\E|\nabla z|^2-\sigma^2=m^2-\sum_aW_2(c,a)\mu_a\E[z\mid z_{1,a}=0]$, and
+$m=\sum_aW_2(c,a)\mu_a$. Conditioning on $z_{1,a}=0$ sets $h_{1,a}=0$ (the contact) and shifts the other neurons through their
+correlations with $z_{1,a}$, which at zero mean changes their means at order $\rho^2$.
+\end{proof}
+Numerically (width $256$, $2^{20}$ inputs): the Gaussian closure has rms error $1.7\cdot10^{-3}$, independent walkers
+$1.9\cdot10^{-1}$; $\E|\nabla z|^2-\sigma^2$ and the contact sum agree in mean ($0.639$ and $0.639$, correlation $0.999$); removing the contact term
+brings the walkers to within $7.8\cdot10^{-4}$ of the Gaussian closure. So the Gaussian closure is the two-token walk with
+exact contacts. Re-projecting each layer onto a fresh one-token (Gaussian) vector with the same covariance is precisely
+what handles self-pinning, and the third-cumulant chain adds first-order exchange.
+
+\subsection{What sparsifies, and what does not}
+\begin{enumerate}[leftmargin=*]
+\item \textbf{Two-token objects close.} Every sum
+$\sum_{l'}T_{l\leftarrow l'}X_{l'}T_{l\leftarrow l'}^{\top}$ accumulates into one $n\times n$ recursion ($n^3$ per layer): the covariance, the gradient Gram, the Gaussian closure, and any hub sum whose hub coefficient is known
+when the hub is born.
+\item \textbf{Layer two is cheap.} The open walk of length two (the star of Theorem~\ref{thm:walks}) is
+\[\textstyle\sum_aD_c(a)\,(W_2G)(c,a)^2 ;\] its hub coefficient is $W_2$ itself, known at birth, so all $n$ of them cost one product
+$W_2G$ and a Hadamard square.
+\item \textbf{From layer three on the hub coefficient is a walk.} A hub born at layer $l'$ and read at layer $l$ needs
+three tokens that meet at the hub, each transported from $l'$ to $l$ (two arms and the reader). Nothing accumulates, and
+this is the third-cumulant memory. The trace over input slots (the operation the Gaussian input performs) contracts
+input vertices, never hidden hubs, so no operation on the input removes it.
+\end{enumerate}
+\begin{center}\small
+\begin{tabular}{llc}\toprule
+token-walk level & estimator & network $0$, MSE\\\midrule
+independent walkers & factorised kink current & $O(1)$ (two layers)\\
+$+$ exact contacts & Gaussian closure & $4.1\cdot10^{-6}$\\
+$+$ first-order exchange & third-cumulant chain (radial $\kap_4$ off/on) & $5.6\cdot10^{-7}$ / $3.5\cdot10^{-8}$\\
+$+$ cooling, $d=2$ & Euler--Stein merge, $a\approx\tfrac14$ & $6.6\cdot10^{-9}$\\\bottomrule
+\end{tabular}
+\end{center}

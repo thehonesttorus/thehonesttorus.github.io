@@ -1,5 +1,5 @@
 \label{sec:verify}
-\texttt{scripts/verify\_stage10.py} compares the two sides of each identity numerically; it runs no estimator and
+\texttt{scripts/verify\_stage10.py}, \texttt{scripts/verify\_tokens.py} and \texttt{scripts/verify\_tokens\_contacts.py} compare the two sides of each identity numerically; it runs no estimator and
 no network of the competition. Output in \texttt{notes/stage10/verify\_stage10.txt}.
 \begin{center}\small
 \begin{tabular}{>{\raggedright\arraybackslash}p{4.4cm}>{\raggedright\arraybackslash}p{6.0cm}>{\raggedright\arraybackslash}p{4.4cm}}\toprule
@@ -12,7 +12,10 @@ Proposition~\ref{prop:mehler} (Mehler, Hermite coefficients of $\relu$) & closed
 Theorem~\ref{thm:order} (contact order) & stage-9 $\tau$-integral for $d=0,2,4$ & $0.497,0.246,0.164$ against $\tfrac12,\tfrac14,\tfrac16$ (truncated tail)\\
 Theorem~\ref{thm:birth} (births are contacts) & $\kap_3/\varepsilon^2$ by Sobol quasi-Monte Carlo, $2^{23}$ points & ratio to the hub formula $1.064,1.030,1.015,1.009$ at $\varepsilon=0.16,\dots,0.02$\\
 Theorem~\ref{thm:complement} (complementarity) & $\|E_BE_A-J\|$ against $\|C\|$ for $S=WW^{\top}$ & equal; $0.333$ / $0.173$ against $2\sqrt{2/n}=0.354$ / $0.177$ ($n=64,256$)\\
-Theorem~\ref{thm:frame} (frame bound) & $2000$ random rank-$10$ compressions & bound holds\\\bottomrule
+Theorem~\ref{thm:frame} (frame bound) & $2000$ random rank-$10$ compressions & bound holds\\
+Proposition~\ref{prop:contactterm} (contact term) & two layers, width $256$, $2^{20}$ inputs & walkers $1.9\cdot10^{-1}$, closure $1.7\cdot10^{-3}$; contact sum explains the gap (corr $0.999$, slope $0.99$)\\
+Theorem~\ref{thm:walks} (walk sums, contacts) & $\kap_3$ split into self, contact and distinct parts, widths $24$, $96$ & distinct part $0.059$, $0.0115$ against leading diagrams $0.064$, $0.0133$\\
+Proposition~\ref{prop:tokens} (token number) & $\E|\nabla z|^2/\Var z$ on a width-$256$ He network & matches $1/(1-\cos\theta)$ to layer $13$; $10.6$ against $13.0$ at layer $16$\\\bottomrule
 \end{tabular}
 \end{center}
 The asymptotic $3\pi/l$ is reached slowly ($O(\log l/l)$ corrections), so at the depth $L=16$ of the competition the exact
