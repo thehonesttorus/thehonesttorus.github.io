@@ -430,7 +430,7 @@ Kikuchi closure) and on the experimental session's stage-13 tests. Checks: `scri
   two-copy variances; late-layer allocation. Suggested next measurement for the experimental session: R^2 of per-row second-order
   covariance births on their first-order proxy at layers 12-16 (decides whether self-calibration pays ~8x on the 59% channel).
 
-## 16. Stage 17: study of "An isomorphism of the free group factors" (OpenAI, 23 Sep 2026) (`notes/stage17/ffac_study.pdf`, 11 pp)
+## 16. Stage 17: study of "An isomorphism of the free group factors" (OpenAI, 23 Sep 2026) (`notes/stage17/ffac_study.pdf`, 15 pp)
 
 Read in full (23 pp). Checks: `scripts/verify_ffac.py` -> `notes/stage17/verify_ffac.txt` (all pass). Verdict: no gap found.
 - Result: L(F_n) = L(F_{n+1}) for n >= 3 by an explicit generating free Haar n-tuple in L(F_{n+1}); amplification N_s^t = N_{1+(s-1)/t^2}
@@ -452,3 +452,15 @@ Read in full (23 pp). Checks: `scripts/verify_ffac.py` -> `notes/stage17/verify_
   row-Mehler theorem (resource there, constraint here); dimension counts vs co-evolving frames (stage 16); the adaptive budget order
   (tolerance, then witness, then future budget) is a rigorous template for the weight-coupled multi-pass estimator. The absorption itself
   is non-commutative and does not transfer to our commutative state space.
+- Addendum (Section 9, `g8_deductions.tex`): the companion study "Absorbing a free generator" (deductions 8.1–8.3 and a
+  crossed-product reading) is confirmed, with sharpenings. (1) Only the first letter moves, which gives a relative absorption
+  P*L(Z) = P*L(F_{k+1}) fixing P = L(F_{n-1}); free complements are not unique up to isomorphism. (2) E_k -> I strongly with
+  ||I - E_k|| = 1, and the completions C^(k) -> 0 weakly, so they have no L^2 limit and give a free Haar unitary in M^omega. (3) The
+  universal bound is #x_1-occurrences > 2/eps - 1. A steering (Pareto) law ||T_m h - delta_e|| ||h|| >= (1+o(1))/(2 sqrt m) holds:
+  Tikhonov attains it (checked 0.4992 at d = 1e-5) and the paper's cutoff gets 2/pi (0.6358). So the paper's route needs
+  m = Theta(eps^-4) and |w| = Theta(eps^-8). The exponent is the free Poisson hard edge (alpha = 1/2), and the general law is
+  m >~ ||h||^-2 err^(-2(1-alpha)/alpha). (4) M = (*_Gamma L(Z)) x| Gamma (free Bernoulli shift), and the Fox flows are cocycle
+  self-conjugacies of it: they preserve the core and the grading, beta_t(A_g) = U_g(t) A_g with U a unitary 1-cocycle, and the
+  derivative of U at 0 is i s(D_g). The basis change gamma is the only grading-breaking move. Proposed check for the programme: the
+  hard-edge exponent alpha_k of the gated transport Gram at depth gap k. A Fuss–Catalan edge alpha = 1/(k+1) would make steering
+  cost err^-2k.

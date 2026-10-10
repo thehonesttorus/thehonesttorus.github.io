@@ -8,6 +8,9 @@
 4. The free-sum norm bound (Lemma 2.5) for conjugates of S = arg(C), against the free-CLT edge.
 5. The mechanism of Proposition 3.1 in a matrix model: letter velocity ||s(h)|| vs word deviation ||s(D_w) - S||.
 6. The amplification arithmetic of Section 6.
+7. Deductions from the companion study: the steering (Pareto) law ||T_m h - delta_e|| ||h|| >= (1+o(1))/(2 sqrt m) for the
+   coefficient problem (Tikhonov attains 1/2, the paper's cutoff 2/pi), the resulting cost of the Fox-prefix route against the
+   universal bound (moved-letter count > 2/eps - 1), and ||C - A_w|| = 2.
 """
 import numpy as np
 from scipy.stats import unitary_group
@@ -154,3 +157,33 @@ for m, K in ((16, 24), (64, 96)):
 hdr("6. Amplification arithmetic: N_s^t = N_{1 + (s-1) t^-2}")
 amp = lambda s, t: 1 + (s - 1) / t ** 2
 print(f"N_3^sqrt2 = N_{amp(3, np.sqrt(2)):.0f}, N_5^sqrt2 = N_{amp(5, np.sqrt(2)):.0f}: so N_3 ~ N_5 gives N_2 ~ N_3")
+
+# ------------------------------------------------------------------------------------------------------------------
+hdr("7. Deductions: steering law sqrt(m) ||T_m h - delta_e|| ||h|| >= 1/2 + o(1); cost of the route; ||C - A_w|| = 2")
+from scipy.integrate import quad
+# free Poisson(1) in the variable u = sqrt(x): dnu = sqrt(4 - u^2)/pi du on [0, 2], no singularity at 0
+I = lambda f, lo=0.0, pts=None: quad(lambda u: f(u * u) * np.sqrt(4 - u * u) / np.pi, lo, 2, limit=500, points=pts)[0]
+print("limit law; Tikhonov h = T^*(Q + md)^{-1} delta_e (the Pareto frontier) vs the paper's cutoff h = T^* Q^{-1} 1{Q > md} delta_e:")
+for d in (1e-2, 1e-3, 1e-4, 1e-5):
+    r = np.sqrt(d)
+    e2t = I(lambda x: (d / (x + d)) ** 2, pts=[r]); at = I(lambda x: x / (x + d) ** 2, pts=[r])   # at = m ||h||^2
+    e2c = nu_cdf(d)[0]; ac = I(lambda x: 1 / x, lo=r)
+    print(f"  d={d:.0e}: Tikhonov err^2 {e2t:.2e}, m||h||^2 {at:.2e}, sqrt(m) err ||h|| = {np.sqrt(e2t * at):.4f} (-> 1/2);"
+          f"  cutoff {np.sqrt(e2c * ac):.4f} (-> 2/pi = {2 / np.pi:.4f})")
+print("finite m, random-matrix spectra of section 2 (trace in place of the delta_e spectral measure):")
+for m in (32, 128):
+    ev = spectra[m]
+    for d in (0.03, 0.01):
+        e2t = np.mean((d / (ev + d)) ** 2); at = np.mean(ev / (ev + d) ** 2)
+        keep = ev > d; e2c = np.mean(~keep); ac = np.mean(np.where(keep, 1 / np.where(keep, ev, 1), 0))
+        print(f"  m={m:3d}, d={d}: sqrt(m) err ||h||: Tikhonov {np.sqrt(e2t * at):.4f}, cutoff {np.sqrt(e2c * ac):.4f}")
+print("cost of absorbing at accuracy eps (letters and word both within eps): moved-letter occurrences l_1(w) = m + 1")
+for eps in (0.3, 0.1, 0.03):
+    print(f"  eps={eps}: universal l_1(w) > 2/eps - 1 = {2 / eps - 1:.1f};  Fox-prefix route: sufficient with the 3pi bounds"
+          f" m = 81 pi^4/(4 eps^4) = {81 * np.pi ** 4 / (4 * eps ** 4):.1e}, first-order necessary m ~ pi^4/(36 eps^4) = {np.pi ** 4 / (36 * eps ** 4):.1e}")
+N = 400
+A = [unitary_group.rvs(N, random_state=rng) for _ in range(3)]; C = unitary_group.rvs(N, random_state=rng)
+Aw = A[0] @ A[1] @ A[2] @ A[1].conj().T @ A[0]                      # w = a b_1 a
+z = np.linalg.eigvals(C.conj().T @ Aw)
+print(f"||C - A_w|| = {np.linalg.norm(C - Aw, 2):.4f} (free: 2), ||C - A_w||_2 = {np.linalg.norm(C - Aw) / np.sqrt(N):.4f} (free: sqrt2 = {np.sqrt(2):.4f});"
+      f" eigenvalues of C^* A_w: max gap on the circle {np.max(np.diff(np.sort(np.angle(z)))):.3f} (Haar: -> 0)")

@@ -1,0 +1,145 @@
+\label{sec:deductions}
+The companion proof study (\emph{Absorbing a free generator}, 13 pp) reconstructs the argument independently. It adds three deductions
+(its 8.1--8.3) and reads $M$ as a crossed product (its \S9). We confirm all four. We also sharpen three of them and add one quantitative law:
+\begin{itemize}[leftmargin=*]
+\item a relative form of the theorem that fixes a subfactor pointwise;
+\item weak nullness of the completions;
+\item a hard-edge steering law that fixes the cost exponent of the paper's route;
+\item the identification of the Fox flows as cocycle self-conjugacies of the free Bernoulli shift.
+\end{itemize}
+Two verification caveats from the study stand. We have not rerun the reported Lean formalization, and the quoted expert is not
+authenticated. Our verdict rests on our own reading.
+
+\subsection{Only one letter moves (study 8.1), and a relative absorption}
+In Move~3, $h_1=h$ and $h_j=0$ for $j\ge2$, so $A_j'=0$ for $j\ge2$ and $\beta$ fixes $A_2,\dots,A_n$. The basis change $\gamma$ fixes every $A_j$, so $\alpha$
+fixes $A_2,\dots,A_n$. Every stage of the adaptive limit does the same with the current first letter. The limit tuple is therefore
+$(B_1,A_2,\dots,A_n)$ with $\|B_1-A_1\|<\delta$.
+\begin{corollary}[relative absorption]
+Let $n\ge3$, $P=W^*(A_2,\dots,A_n)\cong L(\F_{n-1})$ and $k\ge1$. There is an isomorphism $P*L(\Z)\cong P*L(\F_{k+1})$ that is the identity on $P$ and
+sends the generator of $L(\Z)$ to within any prescribed $\delta$ of $A_1$. In particular a fixed copy of $L(\F_{n-1})$ has free complements
+$W^*(B_1)\cong L(\Z)$ (abelian) and $W^*(A_1,C)\cong L(\F_2)$ (a factor) in the same algebra. Free complements are not unique even up to isomorphism.
+\end{corollary}
+\begin{proof}
+For $k=1$, apply the theorem to the $n$-tuple $(A_1,\dots,A_n)$ with completion $C$. Only $A_1$ moves, and the limit tuple is free Haar, so $B_1$ is
+free from $P$. For general $k$, start from $(A_1,\dots,A_n,C_1,\dots,C_k)$ and absorb $C_1,\dots,C_k$ in turn into the current first letter, using the
+tuple $(B_1^{(i)},A_2,\dots,A_n,C_{i+2},\dots,C_k)$ at step $i+1$. The prefix words use only the first three letters, so $n\ge3$ suffices, and the
+$\delta_i$ can be summed.
+\end{proof}
+
+\subsection{Strong but never uniform recovery (study 8.2), and an escaping completion}
+Let $\cA_k=W^*(A^{(k)})$ and let $E_k$ be its trace-preserving conditional expectation. The study proves $E_k\to I$ strongly on $L^2(M)$:
+\begin{itemize}[leftmargin=*]
+\item $\|E_ky_j-y_j\|_2\le\|G_{j,k}(A^{(k)})-y_j\|_2\to0$ on a dense set;
+\item $\|E_k\|\le1$ extends this to all of $L^2(M)$.
+\end{itemize}
+It also proves $\|I-E_k\|=1$: $C^{(k)}$ is a Haar unitary free from $\cA_k$, so $E_kC^{(k)}=\tau(C^{(k)})=0$ with $\|C^{(k)}\|_2=1$. We add:
+\begin{proposition}
+$C^{(k)}\to0$ weakly in $L^2(M)$. Hence the completions have no $L^2$ limit, where the paper's ``need not converge'' leaves this open. In the
+ultrapower, $(C^{(k)})_\omega\in M^\omega$ is a Haar unitary free from $M$.
+\end{proposition}
+\begin{proof}
+For $y\in L^2(M)$, $|\langle C^{(k)},y\rangle|=|\langle C^{(k)},(I-E_k)y\rangle|\le\|(I-E_k)y\|_2\to0$.
+
+For freeness, take an alternating product of centred $y_i\in M$ and centred polynomials in $C^{(k)}$. Replace each $y_i$ by the centred, norm-bounded
+$E_k(y_i)$. This changes the trace by at most $\sum_i\|y_i-E_ky_i\|_2\prod_{j\ne i}\|x_j\|\to0$, and the replaced product has trace $0$ by freeness at stage
+$k$.
+\end{proof}
+Popa showed that every separable II$_1$ factor has such a free Haar unitary in $M^\omega$. Here the construction produces one explicitly, as the
+discarded completions. Recovery is target by target: every fixed observable is recovered, while a unit direction, the current completion, is
+always invisible and drifts off to infinity.
+
+\subsection{Word length (study 8.3), refined, and a steering law}
+$C$ is free from $W^*(A)$, and $A_w$ is a Haar unitary for $w\ne e$. So $C^*A_w$ is Haar, its spectrum is the whole circle, and $\|C-A_w\|=2$. The study
+telescopes this against $\varepsilon$-moves of the letters to get $|w|>2/\varepsilon-1$. By 8.1 only occurrences of $x_1^{\pm1}$ cost anything.
+\begin{proposition}[universal bound]
+If an absorption moves only the first letter, by less than $\varepsilon$, and $\|B_w-C\|<\varepsilon$, then $\ell_1(w)>2/\varepsilon-1$, where $\ell_1(w)$ is the number of
+occurrences of $x_1^{\pm1}$ in $w$.
+\end{proposition}
+In the construction $\ell_1(w_m)=m+1$, while $|w_m|=m^2+3m+1$: the letters $b_j=x_2^jx_3x_2^{-j}$ are padding that keeps the prefixes free. How
+large must $m$ be on the paper's route? The answer is set by the coefficient problem of Move~3.
+
+\begin{proposition}[steering law]
+Let $\mu_m$ be the spectral measure of $Q_m=T_mT_m^*$ at $\delta_e$. For every $h$ and every $\lambda>0$,
+\[
+\|T_mh-\delta_e\|^2+\lambda\|h\|^2\ \ge\ \int\frac{\lambda}{q+\lambda}\,d\mu_m(q),
+\]
+with equality at the Tikhonov solution $h=T_m^*(Q_m+\lambda)^{-1}\delta_e$. Take $\lambda=md$ with $1/m\ll d\ll1$ and replace $\mu_m(m\,\cdot)$ by its free Poisson limit
+$\nu$, whose density is $\sim1/(\pi\sqrt x)$ near $0$. The right side is then $\sqrt d\,(1+o(1))$. Optimising over $d$ gives the Pareto frontier
+\[
+\|T_mh-\delta_e\|_{\ell^2}\cdot\|h\|_{\ell^2}\ \ge\ \frac{1+o(1)}{2\sqrt m}.
+\]
+Tikhonov attains it. The paper's spectral cutoff attains $2/(\pi\sqrt m)$, within a factor $4/\pi$.
+\end{proposition}
+\begin{proof}
+The inequality is the minimum of a quadratic, with value $\lambda\langle\delta_e,(Q_m+\lambda)^{-1}\delta_e\rangle$. Also
+$\int_0^\infty\frac{d}{x+d}\frac{dx}{\pi\sqrt x}=\sqrt d$. With $a=m\|h\|^2$, $\|T_mh-\delta_e\|^2\ge\sup_d(\sqrt d-da)=1/(4a)$.
+
+For the cutoff, $\nu([0,d])\approx\frac2\pi\sqrt d$ and $\int_d\frac{d\nu}x\approx\frac2{\pi\sqrt d}$, whose product is $4/\pi^2$.
+\end{proof}
+\begin{corollary}[cost of the Fox-prefix route]
+Asking for letter moves and the word error both below $\varepsilon$, with the proven constant $3\pi$, is sufficient, to leading order, once
+$m\ge81\pi^4/(4\varepsilon^4)$. To first order, $\|s(k)\|\ge\|S\|_2\|k\|_2=(\pi/\sqrt3)\|k\|_2$, so $m\gtrsim\pi^4/(36\varepsilon^4)$ is necessary on this route.
+
+Hence the route needs $m=\Theta(\varepsilon^{-4})$ moved letters and $|w|=\Theta(\varepsilon^{-8})$, against the universal $\ell_1(w)>2/\varepsilon-1$.
+\end{corollary}
+\begin{remark}[the exponent is the hard edge]
+Suppose the Gram law near $0$ is $\nu([0,x])\sim c\,x^\alpha$ with $0<\alpha<1$. The same Legendre argument gives
+$m\gtrsim\|h\|^{-2}\,\mathrm{err}^{-2(1-\alpha)/\alpha}$.
+\begin{itemize}[leftmargin=*]
+\item A spectral gap costs nothing in accuracy.
+\item An atom at $0$ makes the target unreachable.
+\item The free Poisson law has the square-root hard edge $\alpha=\frac12$, which is what fixes the paper's $\varepsilon^{-4}$.
+\end{itemize}
+With free prefixes, shorter padding could shorten $|w|$ but cannot change the exponent in $m$. Whether a different absorption mechanism closes the gap between $\varepsilon^{-1}$ and $\varepsilon^{-4}$ is open.
+\end{remark}
+
+\subsection{The crossed product (study \S9), and what the flows are in it}
+Let $\cN=W^*(S_g:g\in\Gamma)$. By Lemma~2.3 it is the free product $*_{g\in\Gamma}W^*(S_g)$ of copies of $L(\Z)$. The unitaries $A_g$ normalise it,
+$\sigma_g:=\Ad A_g$ shifts the index, and by Lemma~2.4 $E_\cN(A_g)=0$ for $g\ne e$. Together with $C=e^{iS}\in\cN$, this gives the study's
+\[
+M=\cN\rtimes_\sigma\Gamma\qquad\text{(the free Bernoulli shift of $\Gamma=\F_n$ with base $L(\Z)$)},
+\]
+and $L^2(M)=\bigoplus_g L^2(\cN)A_g$, graded by labels. The theorem then reads $(*_\Gamma L(\Z))\rtimes\Gamma\cong L(\Gamma)$: the crossed product absorbs its
+coefficient algebra into the group algebra.
+\begin{proposition}[Fox flows are cocycle self-conjugacies]
+For all $t$, $\beta_t(\cN)=\cN$ and $\beta_t(A_g)=U_g(t)A_g$ with $U_g(t)\in\mathcal U(\cN)$. Moreover:
+\begin{itemize}[leftmargin=*]
+\item $U_{gb}=U_g\,\sigma_g(U_b)$, so $U(t)$ is a unitary $1$-cocycle of the shift;
+\item $\theta_t=\beta_t|_\cN$ satisfies $\theta_t\sigma_g\theta_t^{-1}=\Ad U_g(t)\,\sigma_g$ and $\theta_t(S)=S$;
+\item $\frac d{dt}U_g(t)|_{0}=i\,s(D_g)$.
+\end{itemize}
+So $\beta_t$ preserves the grading. The Fox cocycle, pushed through the equivariant map $s:\ell^2\Gamma\to\cN$ (with $\sigma_g\circ s=s\circ\lambda(g)$), is the tangent of a
+unitary cocycle of the free Bernoulli shift.
+\end{proposition}
+\begin{proof}
+The derivation $\delta$ preserves labels. So $\mathrm{ev}_0(\delta^ra_j)$ lies in $\cN A_j$, because a label-$x_j$ monomial times $A_j^*$ is a polynomial in the $S_g$ by
+Lemma~2.4. The Taylor series converges in norm for $|t|<R$, with the uniform radius of Lemma~3.4. Since $\cN A_j$ is norm closed,
+$\beta_t(A_j)\in\cN A_j$ for $|t|<R$.
+
+The cocycle rule follows from $\beta(A_gA_b)=U_gA_gU_bA_b$. Then $\beta_t(S_g)=U_gS_gU_g^*\in\cN$, and with $\beta_{-t}$ this gives $\beta_t(\cN)=\cN$. The group law
+extends everything to all $t$. The derivative is the word velocity of Move~2 at $t=0$.
+\end{proof}
+The basis change $\gamma$ is the one move that breaks the grading. $\gamma(C)=CA_w$ lies in the $w$-graded piece $\cN A_w$, so $\gamma(\cN)\ne\cN$. Each absorption
+step is therefore:
+\begin{enumerate}[leftmargin=*]
+\item a continuous, grading-preserving cocycle move $\beta$, which steers the $w$-component of $A_w$ to $\approx e^{iS}A_w=CA_w$;
+\item a discrete regrading $\gamma^{-1}$ by $w$.
+\end{enumerate}
+The rank changes only through the discrete regradings, and each one costs $\ell_1(w)>2/\varepsilon-1$.
+
+We agree with the study's caveats. $\beta_t$ is not a modular flow, since $\tau$ is a trace and the modular group is trivial. $D$ is a group cocycle,
+not a Dirac operator. An abstract isomorphism forgets the marked generators, and with them all geometric and computational data.
+
+\subsection{For the programme}
+\begin{itemize}[leftmargin=*]
+\item \emph{A steering law for our transports (conjecture, to measure).} The stage-15 no-free-lunch for local corrections should have the quantitative
+form above. Cancelling a target at depth gap $k$ with corrections of size $\|h\|$ should cost $\|h\|^{-2}\mathrm{err}^{-2(1-\alpha_k)/\alpha_k}$, where $\alpha_k$ is the
+hard-edge exponent of the gated transport Gram $T_L\cdots T_{L-k+1}(\cdot)^*$ in the output-mean direction. Products of $k$ free circular factors have
+Fuss--Catalan edges $\alpha=1/(k+1)$, which would predict a cost $\mathrm{err}^{-2k}$. Measuring $\alpha_k$ on net~0 from the stage-16 Jacobians is a single
+quick check.
+\item \emph{The right notion of convergence for an instance-coupled estimator} is 8.2's: strong, target by target, never uniform. A frame fixed
+before the target is known has a blind unit direction. The adaptive order of choices is what turns strong convergence into recovery.
+\item \emph{Continuous frame motion does not change rank.} The co-evolving frames of stage~16 are the analogue of the grading-preserving
+cocycle moves. Changing \emph{what} is carried requires a separate, discrete regrading move. Its decoder complexity grows at least like
+$1/\varepsilon$, and on linear-response routes like the hard-edge law. This is a reading, not a theorem, for our commutative setting.
+\end{itemize}

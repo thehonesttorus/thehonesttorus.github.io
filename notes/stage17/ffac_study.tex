@@ -14,7 +14,7 @@
 \newcommand{\Tr}{\operatorname{Tr}}\newcommand{\1}{\mathbf 1}\newcommand{\cA}{\mathcal A}\newcommand{\cB}{\mathcal B}
 \newcommand{\cF}{\mathcal F}\newcommand{\cT}{\mathcal T}\newcommand{\cH}{\mathcal H}\newcommand{\aff}{\mathfrak{aff}}
 \newcommand{\He}{\mathrm{He}}\newcommand{\Fa}{\Phi_{\mathrm F}}\newcommand{\cZ}{\mathcal Z}\newcommand{\Sym}{\operatorname{Sym}}
-\newcommand{\Aff}{\mathrm{Aff}}
+\newcommand{\Aff}{\mathrm{Aff}}\newcommand{\cN}{\mathcal N}
 \newcommand{\F}{\mathbb F}\newcommand{\Ad}{\operatorname{Ad}}\renewcommand{\arg}{\operatorname{arg}}
 \title{\textsc{Localization in the commutant, stage 17:}\\ \large a study of ``An isomorphism of the free group factors''.\\
 The argument, its five constructs, its essence,\\ and what it changes for the programme}
@@ -45,6 +45,15 @@ $C$, and therefore generates everything. Four mechanisms make it work:
 \end{itemize}
 We end with what this changes for our programme. Its central cocycle is literally our stage-15 error cocycle, and its adaptive iteration is a
 precise template for the instance-coupled dynamics the user has been asking for.
+
+\emph{Addendum} (Section~\ref{sec:deductions}). We confirm the companion study's deductions and sharpen them:
+\begin{itemize}[leftmargin=*]
+\item a relative absorption $P*L(\Z)\cong P*L(\F_{k+1})$ fixing $P$;
+\item weak nullness of the discarded completions, which form a free Haar unitary in $M^\omega$;
+\item a hard-edge steering law, $\|T_mh-\delta_e\|\,\|h\|\ge(1+o(1))/(2\sqrt m)$, which forces $m=\Theta(\varepsilon^{-4})$ on the paper's route against the
+universal $2/\varepsilon-1$;
+\item the Fox flows as cocycle self-conjugacies of the free Bernoulli shift $M=(*_\Gamma L(\Z))\rtimes\Gamma$.
+\end{itemize}
 \end{abstract}
 \tableofcontents
 \section{Summary and verdict}
@@ -63,4 +72,6 @@ precise template for the instance-coupled dynamics the user has been asking for.
 \input{g6_checks}
 \section{What it means for our programme}
 \input{g7_programme}
+\section{Addendum: deductions from the companion proof study}
+\input{g8_deductions}
 \end{document}

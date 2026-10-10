@@ -12,9 +12,13 @@ cutoff inversion (L.\,4.1) & $m=128$, $d=0.02$: $\|h\|^2=0.031$ (bound $0.39$), 
 rates & $\eta=0.3$: $m\approx50$; $\eta=0.1$: $m\approx4\times10^3$, word length $\approx1.6\times10^7$\\
 free-sum bound (L.\,2.5), $N=600$ & spread coefficients: $20.1$ against bound $52.6$ and free-CLT edge $20.2$; one large coefficient: $30.6$ against $81.9$\\
 flow mechanism (P.\,3.1), $N=160$ & $m=16$: letter velocity $0.93$, word deviation $\|s(D_w)-S\|=1.38$; $m=64$: $0.74$ and $1.02$; $\|S\|=3.13$; within the $3\pi$ bounds\\
-amplification arithmetic & $N_3^{\sqrt2}=N_2$, $N_5^{\sqrt2}=N_3$\\\bottomrule
+amplification arithmetic & $N_3^{\sqrt2}=N_2$, $N_5^{\sqrt2}=N_3$\\
+steering law (Sec.~\ref{sec:deductions}), limit law & $\sqrt m\,\mathrm{err}\,\|h\|$: Tikhonov $0.475,0.492,0.4975,0.4992$ at $d=10^{-2},\dots,10^{-5}$ ($\to\frac12$ from below); cutoff $0.611,\dots,0.6358$ ($\to2/\pi=0.6366$)\\
+steering law, finite $m$ & $m=128$, $d=0.01$: Tikhonov $0.470$, cutoff $0.606$ (random-matrix spectra)\\
+$\|C-A_w\|=2$ (8.3), $N=400$ & $2.0000$; $\|C-A_w\|_2=1.4151$ ($\sqrt2=1.4142$); largest spectral gap of $C^*A_w$ on the circle $0.035$\\\bottomrule
 \end{tabular}
 \end{center}
 In a matrix model, conjugation fixes the identity matrix, so $S$ must be centred and the trivial direction removed. In the free setting the
 conjugates of the centred $S$ span a copy of $\ell^2(\Gamma)$, which has no such direction. The mechanism check shows the paper's trade-off: as $m$
-grows, letters move less while the word's rotation approaches the pure rotation by $S$. Convergence is slow, as the rates predict.
+grows, letters move less while the word's rotation approaches the pure rotation by $S$. Convergence is slow, as the rates predict. In the steering law the $o(1)$ is negative at moderate $d$, because the free
+Poisson density lies below its edge asymptote $1/(\pi\sqrt x)$.
