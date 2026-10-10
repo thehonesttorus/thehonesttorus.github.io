@@ -463,6 +463,19 @@ ABL_WK4M = _os.environ.get("V33_ABL_WK4M", "0") == "1"   # audit: zero the regen
 SAT = float(_os.environ.get("V33_SAT", "-2.5"))
 F64 = _os.environ.get("V60_F64", "0") == "1"   # research only: run the chain in float64
 K31SC = float(_os.environ.get("V58_K31SC", "0"))   # research only: second-chaos (3,1) closure (note XLIII 6c)
+# V62 (research only; note XLIV section 9): set the dilation-package amplitude of each slice the Wick stage reads.
+# V62_GPK = "FILE:SLICES:LAYERS:PERSIST[:MODE]": FILE = npz with per-layer targets e_v, e_3, e_21, e_22, e_31, e_4 (NaN = skip);
+# SLICES = letters from v 3 a (D21) b (K22) c (K31) 4; LAYERS = comma list (empty = every layer with a finite target);
+# PERSIST = 1 keeps the pre-injection D3/D21 as what the legs carry (the injected content then flows into the newborn
+# source); MODE = oracle (targets from FILE, default) | cons (every target = the chain's own k3 charge).
+# The package for a common-scale mixture z = (1 + delta) g, Var delta = eps, to first order:
+#   C: eps mu mu^T   D3: 6 eps mu var   D21[a,c]: 2 eps (2 mu_a C_ac + mu_c var_a)   K22[a,b]: eps (4 var_a var_b + 8 C_ab^2)
+#   wk431[a,c] = K31[c,a]: 12 eps var_c C_ac   g4: 12 eps var^2.
+_GPK = _os.environ.get("V62_GPK", "")
+GPK_FILE, GPK_SL, GPK_LAYERS, GPK_PERSIST, GPK_MODE = (
+    (lambda a: (a[0], a[1], frozenset(int(x) for x in a[2].split(",") if x), a[3] == "1", a[4] if len(a) > 4 else "oracle")
+     )(_GPK.split(":")) if _GPK else ("", "", frozenset(), False, "oracle"))
+_GPK_T = {}
 SAT_MODE = _os.environ.get("V33_SAT_MODE", "both")   # both | t (transport rows only) | r (D21 rows only)
 # V35 (note XXIX): the drop made real. SAT_ROUND > 0: the active set is the top-na neurons by alpha with na = the count
 # above SAT rounded UP to a multiple of SAT_ROUND (Strassen-compatible sides), so the dropped set is a subset of the
@@ -1907,6 +1920,70 @@ class Estimator(BaseEstimator):
                 _r = D3 / var
                 _sc = 2.0 * (_r[:, None] * D21) - (2.0 / 3.0) * ((_r * _r)[:, None] * C_off)
                 wk431 = wk431 + K31SC * _sc.T
+            _gpk_on = False
+            if _GPK and mode == 1 and (not GPK_LAYERS or li in GPK_LAYERS):
+                import numpy as _np
+                if not _GPK_T:
+                    _GPK_T.update({k: v for k, v in _np.load(GPK_FILE).items()})
+                _t = lambda k: float(_GPK_T[k][li]) if k in _GPK_T else float("nan")
+                _mu = _np.asarray(mu, dtype=_np.float64); _v = _np.asarray(var, dtype=_np.float64)
+                _Co = None if C_off is None else _np.asarray(C_off, dtype=_np.float64)
+                _msk = None if sat_mask is None else _np.asarray(sat_mask, dtype=_np.float64)
+                _f3 = 6.0 * _mu * _v
+                _f4 = 12.0 * _v * _v
+                _e3c = float(_f3 @ _np.asarray(D3, dtype=_np.float64) / (_f3 @ _f3)) if D3 is not None else float("nan")
+                _ref = _e3c if GPK_MODE == "cons" else float("nan")
+                _tg = lambda k: _ref if GPK_MODE == "cons" else _t(k)
+                _off = None if _Co is None else ~_np.eye(n, dtype=bool)
+                _upd = {}
+                if "v" in GPK_SL and _Co is not None and _tg("e_v") == _tg("e_v"):
+                    _rho = float(_mu @ (_Co @ _mu + _v * _mu) / (_mu @ _mu) ** 2)
+                    _dl = _tg("e_v") - _rho
+                    _upd["v"] = _dl
+                    _v = _v + _dl * _mu * _mu
+                    _Co = _Co + _dl * _np.outer(_mu, _mu); _np.fill_diagonal(_Co, 0.0)
+                    _f3 = 6.0 * _mu * _v; _f4 = 12.0 * _v * _v
+                if "3" in GPK_SL and D3 is not None and _tg("e_3") == _tg("e_3"):
+                    _d3n = _np.asarray(D3, dtype=_np.float64)
+                    _dl = _tg("e_3") - float(_f3 @ _d3n / (_f3 @ _f3)); _upd["3"] = _dl
+                    _d3n = _d3n + _dl * _f3
+                if "4" in GPK_SL and g4row is not None and _tg("e_4") == _tg("e_4"):
+                    _g4n = _np.asarray(g4row, dtype=_np.float64)
+                    _dl = _tg("e_4") - float(_f4 @ _g4n / (_f4 @ _f4)); _upd["4"] = _dl
+                    _g4n = _g4n + _dl * _f4
+                _inj = {}
+                if _Co is not None:
+                    def _mat(name, f, S, key):
+                        if S is None or _tg(key) != _tg(key):
+                            return
+                        _Sn = _np.asarray(S, dtype=_np.float64)
+                        _ff = _np.where(_off, f, 0.0)
+                        _dl = _tg(key) - float(_np.sum(_ff * _Sn) / _np.sum(_ff * _ff)); _upd[name] = _dl
+                        _inj[name] = _dl * _ff
+                    if "a" in GPK_SL and D21 is not None:
+                        _mat("a", 2.0 * (2.0 * _mu[:, None] * _Co + _mu[None, :] * _v[:, None]), D21, "e_21")
+                    if "b" in GPK_SL and wk4m is not None:
+                        _mat("b", 4.0 * _v[:, None] * _v[None, :] + 8.0 * _Co * _Co, wk4m, "e_22")
+                    if "c" in GPK_SL and wk431 is not None:
+                        _mat("c", 12.0 * _Co * _v[None, :], wk431, "e_31")
+                if GPK_PERSIST:
+                    D3_keep = None if D3 is None else fnp.multiply(D3, 1.0)
+                    D21_keep = None if D21 is None else fnp.multiply(D21, 1.0)
+                if "v" in _upd:
+                    var = fnp.asarray(_v, dtype=f32); C_off = fnp.asarray(_Co, dtype=f32)
+                if "3" in _upd:
+                    D3 = fnp.asarray(_d3n if _msk is None else _d3n * _msk, dtype=f32)
+                if "4" in _upd:
+                    g4row = fnp.asarray(_g4n, dtype=f32)
+                if "a" in _inj:
+                    _x = _inj["a"] if _msk is None else _inj["a"] * _msk[:, None]
+                    D21 = D21 + fnp.asarray(_x, dtype=f32)
+                if "b" in _inj:
+                    wk4m = wk4m + fnp.asarray(_inj["b"], dtype=f32)
+                if "c" in _inj:
+                    wk431 = wk431 + fnp.asarray(_inj["c"], dtype=f32)
+                _gpk_on = bool(_upd) and GPK_PERSIST
+                print(f"[gpk] layer {li}: charge corrections " + " ".join(f"{k}:{v:+.2e}" for k, v in _upd.items()), flush=True)
             # ---- wick matrix ----
             sigma = fnp.sqrt(var)
             alpha = mu / sigma
@@ -2058,7 +2135,7 @@ class Estimator(BaseEstimator):
                 fnp.multiply(legs4["AP0"][2 * ka:2 * kk], w1col[None, None],
                              out=legs4["AP0"][2 * ka:2 * kk])
             if mode == 1:
-                _cons = ORC_CONSIST or (li == NI_LAYER and NI_CONS)
+                _cons = ORC_CONSIST or (li == NI_LAYER and NI_CONS) or _gpk_on
                 _d3s = D3_keep if (_cons and D3_keep is not None) else D3
                 _d21s = D21_keep if (_cons and D21_keep is not None) else D21
                 D3_w = _d3s * w1 ** 3

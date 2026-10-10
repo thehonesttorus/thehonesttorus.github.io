@@ -1,0 +1,27 @@
+=== network 1
+(A) apparent charge eps_S x 1e3 (truth | chain), layer: Rayleigh | k3 | D21 | K22 | K31 | k4
+   3 truth   4.93 |   2.71 |   2.72 |   1.69 |   1.46 |   1.69     chain   4.92 |   2.67 |   2.67 |   1.58 |   0.96 |   1.64
+   4 truth   5.42 |   3.05 |   3.10 |   2.13 |   1.78 |   2.13     chain   5.40 |   3.00 |   3.02 |   1.99 |   1.33 |   2.08
+   5 truth   5.77 |   3.46 |   3.42 |   2.48 |   2.07 |   2.50     chain   5.74 |   3.39 |   3.08 |   2.30 |   1.44 |   2.43
+   6 truth   5.97 |   3.71 |   3.75 |   2.92 |   2.47 |   2.92     chain   5.93 |   3.65 |   3.35 |   2.62 |   1.85 |   2.81
+   7 truth   6.20 |   4.08 |   4.05 |   3.26 |   2.77 |   3.25     chain   6.15 |   3.98 |   3.59 |   2.89 |   1.91 |   3.01
+   8 truth   6.32 |   4.30 |   4.26 |   3.53 |   3.01 |   3.52     chain   6.27 |   4.21 |   3.41 |   3.04 |   2.00 |   3.31
+   9 truth   6.66 |   4.38 |   4.40 |   3.79 |   3.24 |   3.78     chain   6.62 |   4.29 |   3.56 |   3.24 |   2.30 |   3.65
+  10 truth   7.01 |   4.69 |   4.63 |   4.01 |   3.49 |   4.01     chain   6.95 |   4.56 |   3.72 |   3.33 |   1.97 |   3.64
+  11 truth   7.12 |   4.92 |   4.81 |   4.30 |   3.99 |   4.33     chain   7.07 |   4.78 |   3.77 |   3.53 |   2.34 |   4.00
+  12 truth   7.13 |   4.93 |   4.89 |   4.49 |   4.31 |   4.50     chain   7.06 |   4.76 |   3.51 |   3.61 |   2.02 |   4.02
+  13 truth   7.31 |   5.02 |   5.01 |   4.63 |   4.34 |   4.58     chain   7.25 |   4.81 |   3.68 |   3.82 |   2.25 |   4.09
+  14 truth   7.34 |   5.01 |   5.01 |   5.05 |   5.12 |   5.01     chain   7.27 |   4.75 |   3.48 |   4.16 |   2.30 |   4.22
+(B) one-step mean-error ledger, rms x 1e5 (noise-free): from var / k3 / k4 / mean errors, their sum, ratios; corr(var-term, k3-term), corr(var-term, k4-term), corr(k3-term, k4-term); actual one-step post-activation mean error rms x 1e5
+   3  var   2.68 k3   1.37 k4   1.56 mu   0.00 | sum(var,k3,k4)   2.96 (quad   3.39, ratio 0.87) | corr vk3 -0.17 vk4 -0.14 k3k4 -0.08 | actual   3.64
+   4  var   2.16 k3   1.87 k4   1.46 mu   0.00 | sum(var,k3,k4)   2.71 (quad   3.21, ratio 0.84) | corr vk3 -0.21 vk4 -0.17 k3k4 -0.04 | actual   4.32
+   5  var   2.63 k3   2.41 k4   1.66 mu   2.61 | sum(var,k3,k4)   3.62 (quad   3.94, ratio 0.92) | corr vk3 -0.17 vk4 -0.01 k3k4 -0.02 | actual   5.18
+   6  var   2.70 k3   2.36 k4   1.49 mu   4.34 | sum(var,k3,k4)   3.63 (quad   3.88, ratio 0.94) | corr vk3 -0.12 vk4 -0.02 k3k4 -0.02 | actual   5.92
+   7  var   3.29 k3   2.67 k4   2.11 mu   5.88 | sum(var,k3,k4)   3.97 (quad   4.73, ratio 0.84) | corr vk3 -0.24 vk4 -0.09 k3k4 -0.11 | actual   6.69
+   8  var   3.42 k3   2.61 k4   1.81 mu   6.57 | sum(var,k3,k4)   4.25 (quad   4.67, ratio 0.91) | corr vk3 -0.08 vk4 -0.12 k3k4 -0.08 | actual   7.53
+   9  var   3.47 k3   2.98 k4   1.51 mu   6.79 | sum(var,k3,k4)   4.63 (quad   4.81, ratio 0.96) | corr vk3 -0.04 vk4 +0.01 k3k4 -0.13 | actual   7.80
+  10  var   4.05 k3   3.17 k4   2.30 mu   7.35 | sum(var,k3,k4)   4.98 (quad   5.64, ratio 0.88) | corr vk3 -0.14 vk4 -0.08 k3k4 -0.12 | actual   8.67
+  11  var   3.66 k3   3.32 k4   1.81 mu   8.29 | sum(var,k3,k4)   5.03 (quad   5.26, ratio 0.96) | corr vk3 -0.09 vk4 +0.05 k3k4 -0.06 | actual   9.49
+  12  var   4.55 k3   3.45 k4   2.30 mu   8.85 | sum(var,k3,k4)   5.70 (quad   6.16, ratio 0.93) | corr vk3 -0.14 vk4 +0.00 k3k4 -0.06 | actual  10.61
+  13  var   4.85 k3   3.64 k4   2.33 mu   8.90 | sum(var,k3,k4)   5.99 (quad   6.50, ratio 0.92) | corr vk3 -0.13 vk4 -0.02 k3k4 -0.08 | actual  11.22
+  14  var   5.22 k3   4.17 k4   2.65 mu   9.08 | sum(var,k3,k4)   6.30 (quad   7.19, ratio 0.88) | corr vk3 -0.11 vk4 -0.17 k3k4 -0.12 | actual  11.85

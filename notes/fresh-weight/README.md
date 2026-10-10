@@ -541,3 +541,71 @@ Delta_l = log(|h_l|^2 / |h_(l-1)|^2) across inputs:
   on log|h_l|^2 lies within +-0.1 (mean reversion would make it clearly negative);
 - Var Delta_l is 0.8-1.6 times the leading law 4 theta_(l-1)^2 / n at layers 6-15 (theta from the arc-cosine recursion);
 - V_l / 4 (V_l = Var_x log|h_l|^2) is 0.0065-0.0090 at layers 8, 12, 15.
+
+### 9b. Results of the log-norm test and the ledger (read after the pre-registration above)
+
+**P1 holds on network 0** (`outputs/lognorm_net0.txt`, N = 40000):
+- successive log-norm increments: correlation within +-0.14 at every layer, and no sign preference (mean +0.01);
+- AR(1) slope of the next increment on the current log-norm: |b| < 0.025 at every layer (mean reversion would be clearly negative);
+- Var Delta_l is 0.84-1.19 times the leading law 4 theta_(l-1)^2 / n at layers 6-16;
+- V_l / 4 = 0.0060, 0.0077, 0.0083 at layers 8, 12, 15 (registered 0.0065-0.0090; layer 8 is 8% below the interval's floor), and
+  flat from layer 13 (0.0081, 0.0082, 0.0083, 0.0081).
+
+**So the gain saturates; it does not mean-revert. My reading in section 7b was wrong** and is superseded by this section. The
+stationary relative variance seen in section 7 is a saturating sum of uncorrelated increments (summable because two inputs
+at angle theta disagree on a fraction theta/pi of gates), not a restoring force.
+
+**Ledger, part (A)** (`outputs/dil_ledger_net{0,1}.txt`; charges x 1e-3, layer 14, truth | chain):
+
+| | Rayleigh | k3 | D21 | K22 | K31 | k4 |
+|---|---|---|---|---|---|---|
+| net 0 | 8.56 \| 8.49 | 5.53 \| 5.27 | 5.48 \| 3.81 | 5.24 \| 4.30 | 5.53 \| 2.35 | 5.27 \| 4.47 |
+| net 1 | 7.34 \| 7.27 | 5.01 \| 4.75 | 5.01 \| 3.48 | 5.05 \| 4.16 | 5.12 \| 2.30 | 5.01 \| 4.22 |
+
+- **The truth is a pure common-scale mixture at deep layers.** At layers 12-14 the five slices give one charge, eps = 5.0-5.5e-3,
+  to within 1-4% (net 1, layer 14: 5.01, 5.01, 5.05, 5.12, 5.01). The agreement is the cancellation structure of the stage-13
+  note (and of our own gain-mode null tuple of note XXXVI) showing up in five independent Monte Carlo slices. At shallow
+  layers kappa4's charge is lower than kappa3's (ratio 0.65 at layer 3, 0.85 at 10, 0.95 at 14), as in the stage-13 note.
+- **The mixture explains 65-68% of the gain variance**: V_14 / 4 = 0.0082 against eps = 0.0054 (the note's 0.71 and 0.57-0.63).
+- **The chain's slices are mutually inconsistent along the dilation**, and strongly so. At layer 14 it carries, as a fraction
+  of the truth's charge: Rayleigh 99% / 99%, k3 95% / 95%, k4 85% / 84%, K22 82% / 82%, D21 70% / 69%, K31 42% / 45%
+  (nets 0 / 1). The D21 and K31 deficits grow with depth (D21 0.89 at layer 5 -> 0.70 at layer 14; K31 0.66 -> 0.42).
+
+**Ledger, part (B)** (one-step mean-error terms at the true state, rms x 1e-5, layer 14, nets 0 / 1): variance term 4.9 / 5.2,
+k3 term 3.9 / 4.2, k4 term 2.7 / 2.7, propagated-mean term 10.2 / 9.1, actual one-step error 11.3 / 11.9. The sum of the three
+slice terms is 5.9 / 6.3 (0.86 / 0.88 of their quadrature sum) with pairwise correlations between -0.17 and -0.09.
+**B1 fails as registered**: ratios 0.80-0.96, correlations within +-0.25 (the criterion was < -0.3 at 8 of 12 layers and a ratio
+< 0.8). The slice errors compensate each other only weakly at one step. **B2 holds**: each slice term is 2.3-4.3 times smaller
+than the actual one-step error, so the three slice errors together carry about 27% of its energy; the rest is the inherited
+mean error. Consequence: whatever the dilation inconsistency does, it does not do it through compensation among the three
+terms at the same layer. What it does through the transport (which the one-step ledger cannot see) is what the oracle below
+measures. This agrees with note XXXVI section 3k(3): the per-unit mean error implied by the inconsistency is not aligned with
+the chain's one-step query error (cosines -0.08 to +0.05 there).
+
+**What is already known and what is new.** The cancellation theorem (Cor. 5.5) is our note XXXVI null tuple: the exact
+direction (t (Sigma + mu mu^T), 6 t mu Sigma, 12 t Sigma Sigma), invisible to every future mean, with the earlier amplitude fits
+(kappa4 at 83-85%, (3,1) at 54-57% of the truth). Our earlier tests changed single amplitudes at a time, always at the chain's
+unchanged mean amplitude, and each made the output worse (3 g var^2 +53%, x1.19 +58%; note XXXVI 3k). **Not tested before: all
+slices' gain amplitudes set jointly to the truth's, including the D21 deficit (30%) that the earlier templates did not see**
+(they fitted t3 on D21 at 99%). That joint correction is O(n^2) per layer.
+
+### 9c. Pre-registration of the gain-package oracle (committed before the runs)
+
+Research switch `V62_GPK` in the research copy of the production estimator (`workbench/k3work/estimator_final_v56.py`, off by
+default): after the counterterms, at layers 3-14, each chosen slice is shifted along its package form so that its charge equals
+the target from `code/gpk_targets.py` (truth); the pre-injection D3 / D21 stay as what the legs carry (the V43 convention), so the
+injected content flows into the newborn source. Networks 0 and 1, counterterms on, float32, baseline raw 1.4771e-8 (network 0).
+
+Runs (raw final-layer MSE against the dataset truth, change from the same network's baseline):
+- G1: all six slices (variance Rayleigh, k3, D21, K22, K31, k4);
+- G2: D21 + K31 only;
+- G3: k4 diagonal + K22 only;
+- G4: the variance (Rayleigh) only.
+
+Predictions: G1 -10% to -30% (central -18%) on both networks; G2 -8% to -25% (central -15%); G3 between -3% and +10%; G4 between
+-5% and +15%. The compensation story predicts that partial corrections (G3, G4) do not help while the joint correction (G1)
+does.
+
+Decision rule: G1 <= -10% on both networks -> build the truth-free version (every charge set to the chain's own k3 charge at
+deep layers, shapes below layer 10 from the derived ratio profile) and run a cold 16-network screen; -3% to -10% -> record the
+ladder and examine which slices matter; > -3% or worse -> the gain-shaped amplitude is not the lever and this line closes.
