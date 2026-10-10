@@ -765,3 +765,57 @@ with the wrong mask and overcorrected targets and say nothing about the question
 slices and stands. 9g (cos^2 of each slice with its package form, all neurons) must be recomputed on the active set before it is
 quoted. The registered ladder of 9c is rerun with the corrected hook (no D3 mask, charges and corrections on the active set only,
 pin from a recorded baseline); the P0 check is now a no-op (1.4779e-8 against 1.4771e-8, +0.05%).
+
+### 9j. The registered gain-package ladder, rerun with the corrected hook (`outputs/gpk_ladder2_net{0,1}.txt`)
+
+Truth charges on the active set, readout only unless marked, layers 3-14, counterterms on. Baselines 1.4771e-8 (network 0) and
+1.5733e-8 (network 1).
+
+| variant | network 0 | network 1 |
+|---|---|---|
+| G1 all six slices | 2.303e-8 (+56%) | 2.360e-8 (+50%) |
+| G1 persisted into the newborn source | 2.209e-8 (+50%) | |
+| G2 D21 + K31 | 1.804e-8 (+22%) | 1.870e-8 (+19%) |
+| G3 k4 + K22 | 2.093e-8 (+42%) | |
+| G4 variance (Rayleigh) only | 1.504e-8 (+1.9%) | |
+| D21 alone | 1.781e-8 (+21%) | 1.814e-8 (+15%) |
+| k3 alone | 1.682e-8 (+14%) | |
+| K31 alone | 1.554e-8 (+5.2%) | |
+
+**Against the registration**: G1 predicted -10% to -30%, observed +56% / +50%; G2 predicted -8% to -25%, observed +22% / +19%; G3
+predicted between -3% and +10%, observed +42%; G4 predicted between -5% and +15%, observed +1.9% (inside). **Decision rule: G1 worse
+than -3%, so the gain-shaped amplitude is not the lever and this line closes.** The magnitudes are smaller than the withdrawn
+results of 9d but the sign is the same. The singles do not add up (they sum to more than +80%, the joint correction gives +56%), so
+corrections made together partly cancel, as the cancellation structure says, but their net is still harmful.
+
+A shift of 4% in D21's gain amplitude (5.45 -> 5.67 e-3 at layer 14; 2.2e-4 in charge) changes the raw MSE by +21% and +15%. The
+output is extremely sensitive to the coherent gain sector, and the baseline sits at the optimum of the counterterm fit along it.
+Together with the 0.4-3.7% of final-error energy along the mean direction (`outputs/err_along_mean.txt`) this is the mechanism: the
+coherent sector is where the counterterms act, and it is tuned out; the error that remains is incoherent.
+
+### 9k. Gain-shaped energy share, active set (`code/gain_share_act.py`, `outputs/gain_share_act_net{0,1}.txt`)
+
+cos^2 between each slice and its package form (percent), neurons with alpha > -2.5, layer 14, network 0 | 1, truth | chain:
+
+| slice | truth | chain | share of the chain's slice-error energy that is package-shaped |
+|---|---|---|---|
+| k3 diagonal | 91 \| 88 | 91 \| 88 | 45% \| 49% |
+| D21 | 82 \| 78 | 80 \| 77 | 21% \| 19% |
+| K22 | 94 \| 92 | 100 \| 100 | 24% \| 17% |
+| K31 | 53 \| 45 | 96 \| 97 | 22% \| 14% |
+| k4 diagonal | 94 \| 93 | 95 \| 93 | 56% \| 49% |
+
+At deep layers 82-94% of the true k3, K22 and k4 energy and 78-82% of D21 is the dilation shape; K31 only 45-53% (the chain's own K31
+is 96-97% package-shaped, so the truth's non-package half of it is not represented). The package is a large part of what the
+sources carry but, with 80% of the chain's slice-error energy outside it in D21 and 50% in the diagonals, it is not where the error is.
+
+### 9l. What the stage-13 note delivered, in one place
+
+| claim | verdict on our data |
+|---|---|
+| Eldan's cumulant drift = the Schur hub (diagonal) | verified by hand: Cov(z^2, x) = 2HL, so 3 Var(proj) = 12 \|HL\|^2. The other pairings cost a hub-sized contraction per source-layer; their shares (K22 3-9% of the injection energy; K31 15-25%) do not pay for it |
+| the dilation charge is conserved and its law is saturating | holds: successive log-norm increments uncorrelated (\|corr\| <= 0.14), AR(1) slope < 0.025, Var Delta_l within 0.84-1.19 of 4 theta^2 / n at layers 6-16, V_l / 4 flat at 0.0081-0.0083 from layer 13. My section 7b "mean-reverting" was wrong |
+| the true cumulants are a common-scale mixture | 80-94% of the energy of k3, D21, K22, k4 is mixture-shaped at deep layers; the third- and fourth-order charges differ by about 10% (5.6e-3 against 5.0e-3 at layer 14), so it is not a pure mixture; the mixture is 65-68% of V_l / 4 |
+| the chain's pieces are inconsistent along the dilation and an O(n^2) package removes the leak | fails: chain/truth charges (active set, layer 14) Rayleigh 99%, k3 95%, D21 96%, K22 85%, k4 87%, K31 50%; moving any of them toward the truth raises the MSE by 2-56% |
+| the collective sector is the lever | top-K covariance oracle: K = 8 -4%, 32 -12 to -16%, 128 -16 to -32%; eigenvalues alone +9% |
+| the cancellation theorem | exact and our own note XXXVI null tuple (t (Sigma + mu mu^T), 6 t mu Sigma, 12 t Sigma Sigma); it explains why the fitted counterterms look as they do and why partial amplitude corrections fail, not how to beat them |

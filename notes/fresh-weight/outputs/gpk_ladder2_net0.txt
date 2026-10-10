@@ -1,0 +1,9 @@
+net 0 G1: raw 2.30305e-08 | F 4.87374e+11 (0.22163 B) residual wall 1.664 s
+net 0 G2: raw 1.80376e-08 | F 4.87311e+11 (0.22160 B) residual wall 1.410 s
+net 0 G3: raw 2.09337e-08 | F 4.87273e+11 (0.22159 B) residual wall 1.223 s
+net 0 G4: raw 1.50441e-08 | F 4.87261e+11 (0.22158 B) residual wall 1.186 s
+net 0 Gc: raw 1.55372e-08 | F 4.87273e+11 (0.22159 B) residual wall 1.298 s
+net 0 Ga: raw 1.78118e-08 | F 4.87273e+11 (0.22159 B) residual wall 1.299 s
+net 0 G3k: raw 1.68167e-08 | F 4.87235e+11 (0.22157 B) residual wall 1.109 s
+net 0 G1p: raw 2.20868e-08 | F 4.87386e+11 (0.22164 B) residual wall 1.483 s
+done
