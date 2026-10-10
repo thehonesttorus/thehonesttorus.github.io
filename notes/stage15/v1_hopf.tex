@@ -1,0 +1,95 @@
+\label{sec:hopf}
+\subsection{The essence of Ebrahimi-Fard--Patras--Tapia--Zambotti}
+Let $H=\R[x_a:a\in A]$ with the coproduct that makes every $x_a$ primitive, $\Delta x_a=x_a\otimes1+1\otimes x_a$. The dual product is
+$(\alpha\star\beta)(P)=(\alpha\otimes\beta)\Delta P$, and the unital functionals $G(H)=\{\lambda:\lambda(1)=1\}$ form a group under $\star$. The paper's
+points, in the form we use:
+\begin{enumerate}[leftmargin=*]
+\item \emph{Moments and cumulants are a group element and its logarithm}: $\mu=\exp^\star(\kappa)$ is the Leonov--Shiryaev relation, and the
+cumulants form an infinitesimal character.
+\item \emph{A law is a deformation of the product.} The Wick map $W=\mu^{-1}\star\mathrm{id}$ is the unique map with $W(1)=1$, $\partial_a W=W\partial_a$
+and $\mu\circ W=\varepsilon$ on non-constants. It is a Hopf isomorphism onto $(H,\cdot_\mu,\Delta_\mu,\varepsilon_\mu=\mu)$, with
+$:\!A_1A_2\!:\;=\;:\!A_1\!:\cdot_\mu:\!A_2\!:$. In the deformed algebra the expectation is the counit.
+\item \emph{Renormalization is centring by a character of the noise.} On a comodule of trees over a Hopf algebra of forests, the BPHZ
+character $\hat\mu^{-1}=\hat\mu\circ\hat S$ is the unique one making every non-empty tree centred (their Theorem 9.1). A good deformation
+must preserve the remaining structure.
+\end{enumerate}
+The Gaussian input is one such group element. The heat semigroup is $\gamma_t=\exp^\star(t\,q)$ with $q(x_ax_b)=\delta_{ab}$, so
+$e^{t\Delta/2}=\phi_{\gamma_t}$ and Hermite polynomials are $\gamma^{-1}\star\mathrm{id}$ of monomials. Stage~9's Eldan path and merge constants
+live in this one-parameter subgroup.
+
+\subsection{A layer acts on the character group}
+\begin{proposition}[proved]\label{prop:layeraction}
+Let $\mu_l\in G(H_l)$ be the moment functional of $z_l$.
+\begin{enumerate}[leftmargin=*]
+\item A linear map $z'=Wz$ induces $W^*:x'_i\mapsto\sum_jW_{ij}x_j$, which is a morphism of Hopf algebras. Hence $\mu'=\mu\circ W^*$ and
+$\kappa'=\kappa\circ W^*$: cumulants transform tensorially and no new ones are created.
+\item A coordinatewise map $g$ induces an algebra map that is not a coalgebra map. It creates cumulants, by the diagram law of
+Theorem~\ref{thm:walljet}.
+\item The Gaussian closure is the projection $\mu\mapsto\exp^\star(\kappa_1+\kappa_2)$ after every layer, a truncation in the Lie algebra. Its
+neglected part is the \emph{vacuum} $\nu=\exp^\star(\kappa_{\ge3})$, with $\mu=\gamma\star\nu$ and $\E_\mu P=\E_\gamma[\phi_\nu P]$: the Edgeworth
+operator is the action of $\nu$.
+\end{enumerate}
+\end{proposition}
+\begin{proof}
+(1) $W^*$ maps primitives to primitives and is multiplicative, and $\log^\star$ commutes with Hopf morphisms. (2) $g^*(x_a)=g(x_a)$ is not
+primitive. (3) $\star$ is commutative, so $\exp^\star$ is a homomorphism from $(H^*,+)$ to $(G,\star)$.
+\end{proof}
+
+\subsection{The ReLU under its true law: wall jets}
+\begin{theorem}[wall jets and the diagram law; proved, checked]\label{thm:walljet}
+Let $Z$ have all moments and a density $p$ that is smooth near $c$, and let $\Ap_k=W(Z^k)$ be its Appell (Wick) polynomials. Then
+$\Ap_k'=k\Ap_{k-1}$, $\E\Ap_k=0$ for $k\ge1$, and every polynomial $f$ satisfies $f=\sum_k\E[f^{(k)}(Z)]\,\Ap_k/k!$ exactly. For
+$f=\relu(\cdot-c)$ the coefficients are
+\[
+\J_0=\E\relu(Z-c),\qquad \J_1=P(Z>c),\qquad \J_k=\E\,\delta^{(k-2)}(Z-c)=(-1)^kp^{(k-2)}(c)\quad(k\ge2).
+\]
+These are the density of the pre-activation at its wall and its normal derivatives. In the language of stages~11 and~14, they are the
+jet of the transverse measure of the leaf $\{z=c\}$. For a pair, with $\J^X$, $\J^Y$ taken at the respective walls,
+\begin{gather*}
+\Cov\big(f(X),g(Y)\big)=\sum_{p,q\ge1}\frac{\E f^{(p)}(X)\,\E g^{(q)}(Y)}{p!\,q!}\,\E[\Ap_p(X)\Ap_q(Y)],\\
+\E[\Ap_p(X)\Ap_q(Y)]=p!\,q!\,[s^pt^q]\exp\Big(\sum_{a,b\ge1}\frac{\kappa_{ab}s^at^b}{a!\,b!}\Big).
+\end{gather*}
+Equivalently, $\E[\Ap_p\Ap_q]$ is the sum over partitions of the $p+q$ legs in which every block meets both vertices, with weight
+$\prod\kappa(\text{block})$. For $m$ neurons, the joint cumulants of $f_i(X_i)$ are the connected diagrams with jet vertices and joint-cumulant
+hyperedges, where no hyperedge lies inside one vertex.
+\end{theorem}
+\begin{proof}
+The Appell properties are EFPTZ Theorem~1.1. The expansion of $f$ follows from uniqueness in the Appell basis, by matching
+$\E f^{(k)}$. For $\relu$, $\relu''=\delta$. For the pair, $\sum_p s^p\Ap_p(X)/p!=e^{sX}/\E e^{sX}$, so $\E[:\!e^{sX}\!:\,:\!e^{tY}\!:]=\exp(K(s,t)-K(s,0)-K(0,t))$,
+where $K$ is the joint cumulant generating function. Only mixed cumulants survive. Faà di Bruno gives the partitions.
+\end{proof}
+For a Gaussian pair, only $\kappa_{11}$ survives and $\E[\Ap_p\Ap_q]=\delta_{pq}p!\kappa_{11}^p$ (Mehler). The jets are then
+$s^{1-k}\He_{k-2}(-\alpha)\varphi(\alpha)$, which is the Gaussian closure's arc-cosine series. Every \emph{chain} is a partial
+resummation of Theorem~\ref{thm:walljet} around Gaussian jets.
+
+\emph{Check} (Section~\ref{sec:verify}). Take $X=g_1+0.15(g_1^2-1)$ and $Y=g_2-0.1(g_2^2-1)$ with $\rho(g_1,g_2)=0.6$; then $\kappa_{30}=0.93$,
+$\kappa_{22}=-0.10$. The diagram law for $\E[\Ap_p\Ap_q]$, $p,q\le7$, holds to $2\times10^{-13}$, and $\Cov(X^3-2X,Y^4+Y)$ to ten digits. For
+$\Cov(\relu(X-0.3),\relu(Y+0.2))=0.168248$:
+\begin{center}\footnotesize\setlength{\tabcolsep}{3pt}
+\begin{tabular}{lcccccc}\toprule
+order $\le$ & 1 & 2 & 3 & 4 & 5 & 7\\\midrule
+jets + all hyperedges & $-4.7\times10^{-2}$ & $-8.9\times10^{-3}$ & $+1.6\times10^{-3}$ & $+8.2\times10^{-4}$ & $+3.7\times10^{-4}$ & $+4.0\times10^{-4}$\\
+jets + $\kappa_{11}$ only & $-4.7\times10^{-2}$ & $-2.6\times10^{-2}$ & $-2.7\times10^{-2}$ & $-2.7\times10^{-2}$ & $-2.7\times10^{-2}$ & $-2.7\times10^{-2}$\\\bottomrule
+\end{tabular}
+\end{center}
+The Gaussian closure errs by $-1.2\times10^{-2}$. The full expansion is asymptotic. Its floor of about $4\times10^{-4}$ is set by the nearest
+singularity of the marginal density, the fold caustic of $g\mapsto g+0.15(g^2-1)$, at distance $2.1$ from the wall.
+
+\begin{corollary}[consistency of a deformation; checked]\label{cor:consistency}
+The jets and the hyperedges are two faces of one deformation, the Wick map of the true law. Renormalizing one without the other changes
+the product without changing the counit, and there is no reason for it to help. On the test pair it doubles the Gaussian closure's
+error ($-2.7$ against $-1.2\times10^{-2}$), while the consistent expansion reduces it $30$-fold. EFPTZ's demand that a deformation preserve
+the remaining structure is not decoration.
+\end{corollary}
+
+\subsection{Weights as the noise: BPHZ for an estimator}\label{sec:bphz}
+In regularity structures the model $\Pi_\varepsilon$ is built from a noise, the counterterm is the noise expectation, and the renormalized
+model is the centred one. Our noise is the weights.
+\begin{itemize}[leftmargin=*]
+\item Let $F(W_l;U)$ be any quantity an estimator forms at layer $l$, polynomial in the fresh matrix $W_l$ given the upstream state $U$.
+\item Its character value $\lambda_U(F)=\E_{W_l}[F\mid U]$ is the annealed counterterm.
+\item $F-\lambda_U(F)$, with nested subtractions given by the twisted antipode, is the centred (quenched) model.
+\end{itemize}
+Stages~9 and~13 found that quenched classes win and annealed controls carry nothing. This is the BPHZ split: the annealed part is already
+inside the Gaussian backbone as its mean field, and the instance's information lives only in the centred parts. Theorem~\ref{thm:rowmehler}
+below says these centred parts are orthogonal across distinct row multi-indices. That is why their contributions add in quadrature.

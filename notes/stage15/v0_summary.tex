@@ -1,0 +1,75 @@
+\label{sec:summary}
+\subsection{What this stage refuses to assume}
+Each earlier stage ended with ``what this changes for the chain''. That framing assumes the answer: a system that propagates a truncated
+law from layer to layer, plus corrections suggested by the theory. This stage drops four assumptions.
+\begin{enumerate}[leftmargin=*]
+\item \emph{That an estimator is a law propagator.} We first ask what \emph{any} estimator's error is made of (Section~\ref{sec:rows}).
+\item \emph{That corrections are fitted.} We prove which parts of an error can be predicted from cheap features and which cannot
+(Corollary~\ref{cor:nofreelunch}).
+\item \emph{That the weights enter only through matrix products.} They are the noise of a regularity structure. Their ensemble expectations
+are counterterms, and the information about the instance lives in the centred remainder (Section~\ref{sec:bphz}).
+\item \emph{That the system is the same for every instance.} The error cocycle tells, per network, layer and row, where accuracy is born
+and where it is lost (Section~\ref{sec:system}).
+\end{enumerate}
+
+\subsection{One mechanism in two papers, and in the network}
+\begin{center}\small
+\begin{tabular}{>{\raggedright\arraybackslash}p{3.6cm}>{\raggedright\arraybackslash}p{3.3cm}>{\raggedright\arraybackslash}p{3.0cm}>{\raggedright\arraybackslash}p{4.6cm}}\toprule
+EFPTZ (1710.00735) & Zhou, Kuan (2203.15920) & quantum simulation & network\\\midrule
+$\phi_\lambda=\lambda\star\mathrm{id}=(\lambda\otimes\mathrm{id})\Delta$ & $P_t=(\mathrm{id}\otimes\langle\cdot\rangle_t)\Delta$ & a channel & heat / OU semigroup on inputs; the layer map on laws\\
+moment functional $\mu$ & the state $\langle\cdot\rangle_t$ & a state & the law of $z_l$\\
+cumulants $\log^\star\mu$ & $t^{|\pi|}\prod\Tr$ (Faà di Bruno) & connected correlators & joint cumulants: the hyperedges\\
+Wick map $\mu^{-1}\star\mathrm{id}$ & --- & normal ordering & Appell polynomials of the true law; the ReLU's coefficients are wall jets\\
+deformed product $\cdot_\mu$ & --- & interaction picture & products of neurons under their true law\\
+BPHZ character $\hat\mu^{-1}$ & --- & average over random gates & ensemble expectation over $W$: the annealed counterterm\\
+centred model & --- & --- & the quenched, instance-specific part\\
+restriction to a commutative subalgebra & Gelfand--Tsetlin subalgebra & computational basis & the gate (cell) subalgebra of the Gaussian field\\
+reflecting wall (type B/D) & --- & --- & the fold $|z|$, Weyl-chamber quotient\\
+--- & --- & Pauli weight & jet order (Hermite degree at the wall)\\
+--- & --- & random-gate orthogonality & Mehler diagonalization by Gaussian rows\\
+--- & --- & noise damps high weight & higher jets live only near walls\\
+--- & --- & Clifford/Gaussian part & the Gaussian backbone $(\mu_l,C_l)$\\
+--- & --- & magic & folds, $M_\infty=0.188$ per unit field\\\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{The statements}
+\begin{enumerate}[leftmargin=*]
+\item \textbf{Wall-jet theorem} (Theorem~\ref{thm:walljet}; proved, checked). Under the true law, the Appell coefficients of
+$\relu(z-c)$ are $\J_1=P(Z>c)$ and $\J_k=(-1)^kp^{(k-2)}(c)$: the density of the transverse measure at the wall and its normal
+derivatives. Joint cumulants of \textsc{ReLU} outputs are diagram sums with jet vertices and cumulant hyperedges.
+\item \textbf{Consistency} (Corollary~\ref{cor:consistency}; checked). The jets and the hyperedges belong to one deformation. Keeping
+one without the other is worse than the Gaussian closure: on the test pair, $-2.7\times10^{-2}$ against $-1.2\times10^{-2}$, against
+$+4\times10^{-4}$ with both.
+\item \textbf{Rows are random gates} (Theorem~\ref{thm:rowmehler}; proved). This is the classical form of Pauli-path orthogonality. The
+dilation is its only obstruction.
+\item \textbf{The error cocycle} (Theorem~\ref{thm:cocycle}; leading order, measured). Error $=$ coherent modular part $+$ incoherent sum
+of row-births transported by $\Phi(r)$. The measured sum rules close to $4\%$ and $10\%$.
+\item \textbf{No free lunch} (Corollary~\ref{cor:nofreelunch}; proved). Only isotropic births are predictable from per-neuron
+features.
+\item \textbf{Quasi-free lift} (Section~\ref{sec:lift}). The fold is the reflecting wall; births come only from it; the gate gas is arcsine
+pairs plus stars (checked to $1$--$7\%$).
+\item \textbf{Complexity} (Section~\ref{sec:complexity}). The backbone is Clifford-like and the folds are magic, at density
+$M_\infty/\sqrt{2\pi(1+t)}$ per neuron (checked to $1$--$9\%$). Quantum mean estimation is about $5\times$ worse than the closures for
+all outputs.
+\end{enumerate}
+
+\subsection{The measured anatomy of an error (official network 0, truth from $10^9$ samples)}
+\begin{center}\small
+\begin{tabular}{>{\raggedright\arraybackslash}p{6.3cm}>{\centering\arraybackslash}p{3.4cm}>{\centering\arraybackslash}p{3.9cm}}\toprule
+& Gaussian closure & exact first-order chain (+ radial $\kappa_4$)\\\midrule
+final MSE & $4.06\times10^{-6}$ & $3.53\times10^{-8}$\\
+share inherited from the previous layer's means (first jet) & $0.953$ & $0.790$\\
+collective (dilation) share of the inherited error, layers $3$--$16$ & $0.48$--$0.68$ & $0.00$--$0.03$\\
+cocycle sum rule $\sum_l\mathrm{birth}_l\,\mathrm{gain}_l$ vs MSE & $2.59$ vs $4.06\ (\times10^{-6})$ & $3.20$ vs $3.53\ (\times10^{-8})$\\
+same, collective mode removed & $1.50$ vs $1.57\ (\times10^{-6})$ & $3.22$ vs $3.52\ (\times10^{-8})$\\
+per-layer transport factor of mean error & $0.65$--$1.04$ & $0.65$--$0.94$\\
+share of the MSE born in layers $11$--$16$ & $0.51$ & $0.81$\\\bottomrule
+\end{tabular}
+\end{center}
+Three readings.
+\begin{itemize}[leftmargin=*]
+\item The organisers' radial $\kappa_4$ and the $\kappa_3$ memory remove exactly the coherent part.
+\item What remains is a random walk of row-births across layers, dominated by the late layers.
+\item No global correction can touch it; only better births can.
+\end{itemize}

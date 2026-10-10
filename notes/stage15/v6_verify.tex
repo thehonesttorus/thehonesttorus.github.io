@@ -1,0 +1,29 @@
+\label{sec:verify}
+The script \texttt{scripts/\allowbreak verify\_\allowbreak stage15.py} runs in under a minute. Its transcript is
+\texttt{notes/\allowbreak stage15/\allowbreak verify\_\allowbreak stage15.txt}. Section~2 needs
+the official network~0 and its $10^9$-sample truth. The exact first-order chain is the organisers' $K=3$ simple chain with radial
+$\kappa_4$, ported and verified in stage~9 (MSE $3.53\times10^{-8}$).
+\begin{center}\small
+\begin{tabular}{>{\raggedright\arraybackslash}p{5.2cm}>{\raggedright\arraybackslash}p{8.8cm}}\toprule
+statement & result\\\midrule
+connected-cumulant law $\E[\Ap_p\Ap_q]$, $p,q\le7$ & max relative difference $2.3\times10^{-13}$\\
+Appell expansion of $\Cov(X^3-2X,Y^4+Y)$ & $2.3159134053$ both ways\\
+wall-jet expansion of $\Cov(\relu,\relu)$ & errors $-4.7\times10^{-2}\to+4.0\times10^{-4}$ (orders $1\to7$), Gaussian closure $-1.2\times10^{-2}$\\
+consistency (jets without hyperedges) & $-2.7\times10^{-2}$, worse than the Gaussian closure\\
+row Mehler, $p,q\le3$ & $|z|\le1.4$ over $4\times10^5$ rows; radial leak $0.2346$ vs $0.2364$\\
+first-jet share of the final MSE & $0.953$ (Gaussian closure), $0.790$ (exact chain)\\
+cocycle sum rule & $2.59/4.06$ (Gaussian), $1.50/1.57$ after removing the collective mode, $3.20/3.53$ (exact chain)\\
+collective share of inherited error & $0.48$--$0.68$ (Gaussian), $0.00$--$0.03$ (exact chain)\\
+births in layers $11$--$16$ & $51\%$ (Gaussian), $81\%$ (exact chain)\\
+last-layer channels (exact chain) & covariance $0.59$, $\kappa_3$ $0.31$, $\kappa_4$ $0.11$; field-explained part of the remainder $0.073$\\
+gate-gas star cumulant & exact/star $=1.013$, $1.038$, $1.074$ at scales $0.1$, $0.2$, $0.3$\\
+magic $M_\infty$ and the layer law & $0.18806$; $\E m$ vs $M_\infty/\sqrt{2\pi(1+t)}$: $0.0577/0.0531$, $0.0346/0.0336$, $0.0211/0.0208$\\
+quantum calibration & Monte Carlo $77\,B$; quantum $0.034\,B$ (one output), $1.10\,B$ (all outputs) at MSE $1.56\times10^{-8}$\\\bottomrule
+\end{tabular}
+\end{center}
+What is not checked here:
+\begin{itemize}[leftmargin=*]
+\item the Stein cross-term bound in Theorem~\ref{thm:cocycle}, beyond the measured sum rules;
+\item the knapsack allocation and the Heisenberg reads, which are designs, not results;
+\item the Laguerre parallel with Zhou's parities, which is structural, not quantitative.
+\end{itemize}

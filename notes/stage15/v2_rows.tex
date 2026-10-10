@@ -1,0 +1,98 @@
+\label{sec:rows}
+\subsection{Gaussian rows diagonalize Hermite degree}
+\begin{theorem}[rows are random gates; proved]\label{thm:rowmehler}
+Let $W$ have i.i.d.\ $N(0,\sigma^2)$ entries, independent of an upstream $\sigma$-algebra $U$. Let $a,b$ be $U$-measurable vectors with
+$\rho=\cos\angle(a,b)$, and write $\hat a=a/(\sigma|a|)$, $\hat b=b/(\sigma|b|)$.
+\begin{itemize}[leftmargin=*]
+\item For one row $w$: $\E[\He_p(w\cdot\hat a)\He_q(w\cdot\hat b)\mid U]=\delta_{pq}\,p!\,\rho^p$.
+\item Distinct rows are independent. Hence, for multi-indices $\alpha\ne\beta$ over the output neurons,
+$\E[\He_\alpha(W\hat a)\He_\beta(W\hat b)\mid U]=0$.
+\end{itemize}
+If a fixed scale $c$ is used in place of $|a|$, as any basis chosen in advance must do, degree $2$ leaks into degree $0$ by
+$\E[\He_2(w\cdot a/\sigma c)]=|a|^2/c^2-1$, and every even degree leaks similarly. On the sphere, that is with the homogeneity used, the
+orthogonality is exact.
+\end{theorem}
+\begin{proof}
+$(w\cdot a,w\cdot b)$ is centred bivariate normal with the stated correlation. Mehler's formula applies.
+\end{proof}
+This is the classical counterpart of the orthogonality of Pauli paths under random single-qubit gates. That orthogonality is what makes
+truncated Pauli-path and Pauli-propagation estimates of random circuits accurate on average: their mean squared error is the weight of
+the dropped paths. Here a Gaussian row plays the random gate. The one thing that couples paths is the norm of the activation vector,
+which is the dilation (stages~12--14). \emph{Check:} at $\rho=0.873$, all $p,q\le3$ agree within $|z|\le1.4$ ($4\times10^5$ rows); the
+radial leak is $0.2346$ predicted against $0.2364$ measured.
+
+\subsection{The error cocycle}
+Fix any estimator with layer means $\hat m_l$ and fields $r_l$. Let $\delta_l=\hat m_l-m_l$ be its error in $\E h_l$. Define the first-jet
+transport $T_l\delta=\Phi(r_l)\odot(W_l\delta)$ and the \emph{birth} $\beta_l:=\delta_l-T_l\delta_{l-1}$. Then, exactly,
+\[
+\delta_L=\sum_{l}T_{L}\cdots T_{l+1}\,\beta_l .
+\]
+\begin{theorem}[the cocycle; leading order in the law error]\label{thm:cocycle}
+\begin{enumerate}[leftmargin=*]
+\item \emph{Births live at walls.} By Theorem~\ref{thm:walljet} applied to $z=w\cdot h_{l-1}$,
+\[
+\beta_{l,i}=\sum_{k\ge2}\frac{\J_k(r_{l,i})}{k!}\,\big\langle\delta\kappa_k(h_{l-1}),\,w_{l,i}^{\otimes k}\big\rangle+\dots
+\]
+Here $\J_k=s^{1-k}\He_{k-2}(-r)\varphi(r)$ is concentrated near $r=0$. Only the first jet $\Phi(r)$, which transports, is spread out.
+\item \emph{Births are i.i.d.\ over rows} given the upstream state, being functions of the fresh row $w_{l,i}$.
+\item \emph{Births from different layers are orthogonal, except along the dilation.} Two transported births first meet at a fresh row.
+Their cross term there is $\E[(w\cdot x)\beta(w)]=\sigma^2x\cdot\E\nabla\beta$ (Stein), which carries no Hermite-degree match and is
+small. The exception is a dilation $\delta_{l-1}=\varepsilon m_{l-1}$. The first two jets together carry it to $\varepsilon(\Phi\mu+s\varphi)=\varepsilon m_l$
+\emph{exactly} (homogeneity), so its births are coherent from layer to layer.
+\item Hence $\mathrm{MSE}\approx\|\text{coherent modular part}\|^2+\sum_l\|T_{L}\cdots T_{l+1}\beta^\perp_l\|^2/n$.
+\end{enumerate}
+\end{theorem}
+\begin{proof}[Sketch]
+(1) Expand $\E\relu(w\cdot h)$ to first order in the difference between the estimated and true laws of $h_{l-1}$. The first jet is
+removed into $T_l$. (2) Rows are i.i.d.\ given $U$. (3) Stein's lemma at the first common fresh layer; homogeneity of $\relu$ for the
+dilation. (4) Expand the square and use (2)--(3).
+\end{proof}
+The theorem is the classical form of the random-circuit result. Dropping any piece of an estimator costs, additively, the energy of the
+births it no longer prevents, times their downstream gain. Stage~9's single-age ladder and its finding that ``ages do not cancel''
+(cumulative norm linear) are instances.
+
+\subsection{Measured on official network 0}
+Truth is from $10^9$ samples at every layer; its noise is about $8\times10^{-11}$ at the output.
+\begin{center}\small
+\begin{tabular}{lcccccccccccccccc}\toprule
+layer & 1&2&3&4&5&6&7&8&9&10&11&12&13&14&15&16\\\midrule
+\multicolumn{17}{l}{Gaussian closure: birth $\times$ downstream gain ($10^{-7}$)}\\
+& .00&.28&.75&1.1&1.3&1.5&1.8&2.0&2.1&1.9&2.5&2.4&1.9&2.2&2.3&1.9\\
+\multicolumn{17}{l}{exact first-order chain: birth $\times$ downstream gain ($10^{-9}$)}\\
+& .02&.01&.05&.13&.26&.50&.69&1.2&1.4&1.8&2.5&3.5&3.1&3.6&6.0&7.4\\\bottomrule
+\end{tabular}
+\end{center}
+\begin{itemize}[leftmargin=*]
+\item \textbf{First jet.} The first jet carries $95\%$ (Gaussian closure) and $79\%$ (exact chain) of the final MSE.
+\item \textbf{Transport factors.} Per layer they are $0.65$--$1.04$ and $0.65$--$0.94$: near-critical.
+\item \textbf{The collective mode.} It holds $48$--$68\%$ of the Gaussian closure's inherited error at every layer, against $0$--$3\%$
+for the exact chain.
+\item \textbf{Sum rule.} It misses for the Gaussian closure ($2.59$ against $4.06\times10^{-6}$) exactly because of the collective
+mode. With that mode projected out at every layer it closes to $4\%$ ($1.50$ against $1.57\times10^{-6}$). For the exact chain it
+closes to $10\%$ ($3.20$ against $3.53\times10^{-8}$).
+\item \textbf{Where errors are born.} The exact chain's births grow with depth: $81\%$ of its MSE is born in layers $11$--$16$, and
+$42\%$ in the last two.
+\end{itemize}
+
+\begin{corollary}[no free lunch for local corrections; proved]\label{cor:nofreelunch}
+Given the upstream state and the row's field $r_i$, $\E[\beta_{l,i}\mid r_i,U]=\beta^{\rm iso}(r_i)$. This is a function of the field
+determined by the isotropic ($O(n)$-invariant) part of the law error. The anisotropic remainder has conditional mean zero. It is
+unpredictable from the field, from $s_i$, or from any per-neuron statistic of the chain, unless the estimator already knows the
+row-projected law error, in which case it should have corrected the law.
+\end{corollary}
+\begin{proof}
+Condition on the projection of $w_i$ on the mean direction. The orthogonal part of $w_i$ is a fresh isotropic Gaussian, and it enters
+only through $\langle\delta\kappa_k,w^{\otimes k}\rangle$, whose conditional mean is a trace.
+\end{proof}
+At the last layer, after removing the first jet, the part of the error explained by any smooth function of the field is $19\%$ (Gaussian
+closure) and $7\%$ (exact chain). This settles three earlier findings:
+\begin{itemize}[leftmargin=*]
+\item stage~9's ridge regression on $34$ local features failed across networks;
+\item v56's $103$ counterterms are worth $-3.8\%$ and no more;
+\item the isotropic part is the modular sector, which should be \emph{computed} (stages~12--14), not fitted.
+\end{itemize}
+
+\subsection{Lattice reading}
+Stage~14 predicted, by analogy with Rogers' second-moment formula, that the rows are independent given the state, correlated only through
+the shared collective mode. The cocycle sum rule is the measured form of that statement. It holds once the collective mode is removed
+and fails before.

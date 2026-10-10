@@ -1,0 +1,72 @@
+
+====================================================================================================
+1. Deformed products: Appell (Wick) polynomials of a non-Gaussian pair, the connected-cumulant theorem, and the
+   wall-jet expansion of Cov(relu, relu)
+====================================================================================================
+joint cumulants: k10 +1.11e-16 k20 1.0450 k11 0.5892 k30 +0.9270 k21 +0.2815 k12 -0.1277 k22 -0.0992 k31 +0.1886
+E[A_p(X)A_q(Y)] vs connected-cumulant exponential, p,q <= 7: max rel. difference 2.3e-13
+  e.g. E[A_1A_1] 0.5892=k11, E[A_2A_1] +0.2815=k21, E[A_2A_2] 0.5951 (Mehler would give 2 k11^2 = 0.6943; the rest is k22 + ...)
+Cov(X^3-2X, Y^4+Y): quadrature 2.3159134053, Appell/connected expansion 2.3159134053
+
+Cov(relu(X-c), relu(Y-d)): exact 0.16824820; Gaussian closure 0.15654716 (error -1.17e-02)
+ wall jets of X at c: +0.3361 +0.3237 +0.1980 -0.0689 -0.4008 -0.4962 +0.2325
+  order <= 1: true jets + Mehler (k11 only) 0.12172090 (-4.7e-02);  true jets + all connected cumulants 0.12172090 (-4.7e-02)
+  order <= 2: true jets + Mehler (k11 only) 0.14201982 (-2.6e-02);  true jets + all connected cumulants 0.15937404 (-8.9e-03)
+  order <= 3: true jets + Mehler (k11 only) 0.14091263 (-2.7e-02);  true jets + all connected cumulants 0.16986215 (+1.6e-03)
+  order <= 4: true jets + Mehler (k11 only) 0.14098437 (-2.7e-02);  true jets + all connected cumulants 0.16906368 (+8.2e-04)
+  order <= 5: true jets + Mehler (k11 only) 0.14086655 (-2.7e-02);  true jets + all connected cumulants 0.16861328 (+3.7e-04)
+  order <= 6: true jets + Mehler (k11 only) 0.14086853 (-2.7e-02);  true jets + all connected cumulants 0.16871989 (+4.7e-04)
+  order <= 7: true jets + Mehler (k11 only) 0.14086667 (-2.7e-02);  true jets + all connected cumulants 0.16865286 (+4.0e-04)
+
+====================================================================================================
+2. Row orthogonality (Mehler for Gaussian rows) and the error cocycle on official network 0
+====================================================================================================
+rho = 0.8730; E[He_p He_q] - delta_pq p! rho^p over p,q<=3: max |z| = 1.39 (MC, 4e5 rows)
+radial leak: E[He_2(w.a/c)] = |a|^2/c^2 - 1 = 0.2346, MC 0.2364
+
+Gaussian closure: final MSE 4.057e-06 (truth MC noise ~8e-11)
+  first-jet share of the final MSE (inherited mean error x Phi(r)): 0.953
+  cocycle sum rule: sum_l local_l x gain_l = 2.588e-06 vs final 4.057e-06
+  local defect x downstream gain, layers 1..16: 8.2e-11 2.8e-08 7.5e-08 1.1e-07 1.3e-07 1.5e-07 1.8e-07 2.0e-07 2.1e-07 1.9e-07 2.5e-07 2.4e-07 1.9e-07 2.2e-07 2.3e-07 1.9e-07
+  transport factor per layer: 0.65 0.73 0.73 0.88 0.84 0.88 0.83 0.87 1.04 0.84 0.92 1.02 0.96 1.00 0.92
+  collective share of the inherited error: 0.00 0.48 0.54 0.54 0.62 0.61 0.62 0.62 0.65 0.68 0.63 0.65 0.66 0.63 0.65
+  share of the final MSE born in layers 11-16: 0.51
+  collective mode removed: final 1.565e-06 (0.39 of MSE), sum rule 1.497e-06
+
+exact first-order chain (+ radial k4): final MSE 3.526e-08 (truth MC noise ~8e-11)
+  first-jet share of the final MSE (inherited mean error x Phi(r)): 0.790
+  cocycle sum rule: sum_l local_l x gain_l = 3.201e-08 vs final 3.526e-08
+  local defect x downstream gain, layers 1..16: 1.6e-11 1.2e-11 4.5e-11 1.3e-10 2.6e-10 5.0e-10 6.9e-10 1.2e-09 1.4e-09 1.8e-09 2.5e-09 3.5e-09 3.1e-09 3.6e-09 6.0e-09 7.4e-09
+  transport factor per layer: 0.65 0.65 0.67 0.71 0.74 0.77 0.69 0.86 0.90 0.90 0.85 0.85 0.94 0.73 0.83
+  collective share of the inherited error: 0.00 0.00 0.00 0.00 0.01 0.00 0.02 0.03 0.03 0.02 0.01 0.01 0.01 0.00 0.01
+  share of the final MSE born in layers 11-16: 0.81
+  collective mode removed: final 3.521e-08 (1.00 of MSE), sum rule 3.221e-08
+
+====================================================================================================
+3. The gate gas as the commutative shadow of a quasi-free (Clifford) state: arcsine pairs and star cumulants
+====================================================================================================
+lambda 0.1: E[e1e2e3e4] -0.000251; arcsine pairing -0.000214; sign cumulant k4 -3.683e-05; leading star -(4/pi^2) sum_i prod_j rho_ij -3.635e-05 (ratio 1.013)
+lambda 0.2: E[e1e2e3e4] -0.001160; arcsine pairing -0.000858; sign cumulant k4 -3.018e-04; leading star -(4/pi^2) sum_i prod_j rho_ij -2.908e-04 (ratio 1.038)
+lambda 0.3: E[e1e2e3e4] -0.002996; arcsine pairing -0.001943; sign cumulant k4 -1.054e-03; leading star -(4/pi^2) sum_i prod_j rho_ij -9.813e-04 (ratio 1.074)
+
+====================================================================================================
+4. Calibration against quantum mean estimation (arithmetic; n = 1024, L = 16, B = 2048 n^3)
+====================================================================================================
+target raw MSE 1.56e-08: classical Monte Carlo    76.98 B; quantum mean estimation, one output 0.034 B, all n outputs (sqrt(n) multi-observable) 1.10 B; deterministic closures reach 1.56e-8 at ~0.2 B
+target raw MSE 1.00e-09: classical Monte Carlo  1200.87 B; quantum mean estimation, one output 0.135 B, all n outputs (sqrt(n) multi-observable) 4.33 B; deterministic closures reach 1.56e-8 at ~0.2 B
+
+====================================================================================================
+5. Magic (non-Gaussianity) injected by a fold: m(r) = Var relu(r+xi) - Phi(r)^2, its integral and the layer law
+====================================================================================================
+m(0) = 0.09085 (= 1/2 - 1/2pi - 1/4); M_inf = int m(r) dr = 0.188063
+  int E_k(r) dr, k = 2..8: 0.1410 0.0235 0.0088 0.0044 0.0026 0.0017 0.0011 (sum to 8: 0.1831)
+  field law r ~ N(0,1): E m(r) = 0.05767 vs M_inf/sqrt(2 pi (1+t)) = 0.05305
+  field law r ~ N(0,4): E m(r) = 0.03462 vs M_inf/sqrt(2 pi (1+t)) = 0.03355
+  field law r ~ N(0,12): E m(r) = 0.02105 vs M_inf/sqrt(2 pi (1+t)) = 0.02081
+
+====================================================================================================
+6. Last-layer birth channels of the exact chain: residual-variance profile fitted by squared jets
+====================================================================================================
+last-layer remainder (after first jet): 7.399e-09; field-explained 0.073
+  squared-jet fit (phi^2: covariance, (r phi)^2: kappa3, ((r^2-1) phi)^2: kappa4): coefficients [1.26374742e-07 1.34550128e-07 3.11011066e-08], rel. residual 0.30
+  channel energies over the actual fields: covariance 3.82e-09, kappa3 2.00e-09, kappa4 7.12e-10 -> shares 0.59 / 0.31 / 0.11

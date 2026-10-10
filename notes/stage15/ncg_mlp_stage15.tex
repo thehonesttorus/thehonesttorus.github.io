@@ -1,0 +1,77 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1.05in]{geometry}
+\usepackage{amsmath,amsthm,amssymb,mathtools,bm}
+\usepackage{booktabs,array,enumitem}\usepackage[expansion=false]{microtype}
+\usepackage{xcolor}
+\usepackage[colorlinks=true,linkcolor=blue!60!black,citecolor=blue!60!black,urlcolor=blue!60!black]{hyperref}
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]\newtheorem{proposition}[theorem]{Proposition}\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}\newtheorem{conjecture}[theorem]{Conjecture}
+\theoremstyle{definition}\newtheorem{definition}[theorem]{Definition}\newtheorem{remark}[theorem]{Remark}
+\newtheorem{example}[theorem]{Example}
+\newcommand{\R}{\mathbb R}\newcommand{\Z}{\mathbb Z}\newcommand{\E}{\mathbb E}\newcommand{\Var}{\operatorname{Var}}\newcommand{\Cov}{\operatorname{Cov}}
+\newcommand{\relu}{\operatorname{relu}}\newcommand{\diag}{\operatorname{diag}}\newcommand{\tr}{\operatorname{tr}}
+\newcommand{\Tr}{\operatorname{Tr}}\newcommand{\1}{\mathbf 1}\newcommand{\cA}{\mathcal A}\newcommand{\cB}{\mathcal B}
+\newcommand{\cF}{\mathcal F}\newcommand{\cT}{\mathcal T}\newcommand{\cH}{\mathcal H}\newcommand{\aff}{\mathfrak{aff}}
+\newcommand{\He}{\mathrm{He}}\newcommand{\Fa}{\Phi_{\mathrm F}}\newcommand{\cZ}{\mathcal Z}\newcommand{\Sym}{\operatorname{Sym}}
+\newcommand{\Aff}{\mathrm{Aff}}\newcommand{\Ryshkov}{\mathcal R}
+\newcommand{\Ap}{\mathsf A}\newcommand{\J}{\mathsf J}\newcommand{\cG}{\mathcal G}
+\title{\textsc{Localization in the commutant, stage 15:}\\ \large deformed products, quasi-free lifts and the error cocycle.\\
+The estimate as a renormalized character, the network as a random circuit,\\ and what a theory-native estimator must compute}
+\author{}
+\date{10 October 2026}
+\begin{document}
+\maketitle
+\begin{abstract}
+This stage starts from the problem, not from the chain. It takes two papers at their core and asks what they say about computing
+$\E_x f_W(x)$ for one sampled network $W$.
+\begin{itemize}[leftmargin=*]
+\item Ebrahimi-Fard, Patras, Tapia and Zambotti (arXiv:1710.00735): a law is a deformation of the product, Wick polynomials are the
+action $\mu^{-1}\star\mathrm{id}$, and renormalization is centering by a character of the noise.
+\item Zhou (arXiv:2203.15920), after Kuan: a classical interacting process with a reflecting wall is the commutative
+(Gelfand--Tsetlin) shadow of a free non-commutative random walk $P_t=(\mathrm{id}\otimes\langle\cdot\rangle_t)\Delta$.
+\end{itemize}
+Both run on one mechanism, a dynamics as convolution with a family of functionals through a coproduct. We read the network with it,
+and with the quantum-simulation literature, where the same questions have sharp answers.
+\begin{itemize}[leftmargin=*]
+\item \emph{Wall jets (proved; checked).} Under the \emph{true} law of a pre-activation, the Wick (Appell) coefficients of \textsc{ReLU}
+are the jets of the density at the wall: the transverse measure of the leaf and its normal derivatives. The joint cumulants of
+\textsc{ReLU} outputs are sums of diagrams with wall-jet vertices and joint-cumulant hyperedges, no hyperedge inside one vertex. On a
+non-Gaussian pair this expansion is $30\times$ more accurate than the Gaussian closure. Renormalizing the jets without the hyperedges
+is \emph{worse} than not renormalizing at all.
+\item \emph{Rows are random gates (proved).} The rows of a Gaussian weight matrix diagonalize Hermite degree exactly (Mehler). This is
+the classical counterpart of Pauli-path orthogonality under random gates, and the radial (dilation) mode is its only obstruction.
+\item \emph{The error cocycle (proved to leading order; measured on official network~0).} Every estimator's error splits into a
+coherent modular part and an incoherent sum over layers of row-births transported by the first jet $\Phi(r)$. The sum rule
+$\mathrm{MSE}\approx\sum_l\mathrm{birth}_l\times\mathrm{gain}_l$ closes to $4\%$ for the Gaussian closure once its collective mode is
+removed (that mode is $61\%$ of its error), and to $10\%$ for the exact first-order chain, where the collective mode is already gone.
+$79$--$95\%$ of the final error is inherited mean error. $81\%$ of the exact chain's error is born in layers $11$--$16$.
+\item \emph{No free lunch for local corrections (proved).} Given the computed state, a birth's anisotropic part has zero conditional
+mean. Only its isotropic part is predictable from per-neuron features. This explains stage~9's failed feature regression and bounds
+what counterterms can do.
+\item \emph{The quasi-free lift.} The fold $|z|$ is the reflecting wall (type~B), and births come only from the fold. The gate gas is the
+image of the quasi-free Gaussian field under the sign map: arcsine pairs (Grothendieck--Krivine rounding) plus star cumulants
+$-(4/\pi^2)\sum_i\prod_{j\neq i}\rho_{ij}$ (checked to $1$--$7\%$), the same stars as births.
+\item \emph{Complexity.} The Gaussian backbone is the Clifford (matchgate) part, folds are magic, and a fold injects $M_\infty=0.188$
+units of non-Gaussian energy per unit of field, so $n\,M_\infty/\sqrt{2\pi(1+t)}$ per layer. Generic quantum mean estimation would need
+about $5\times$ the closures' budget for all outputs, so the resource being exploited is structure.
+\end{itemize}
+From these we derive what a theory-native estimator computes: an exact modular sector, an exact linear cocycle, and births computed
+where birth $\times$ gain is large, decided per instance. Checks: \texttt{scripts/verify\_stage15.py}.
+\end{abstract}
+\tableofcontents
+\section{The picture in one page, and what this stage refuses to assume}
+\input{v0_summary}
+\section{Deformed products: the law as a character, the ReLU's Wick coefficients as wall jets}
+\input{v1_hopf}
+\section{Rows are random gates: the error cocycle}
+\input{v2_rows}
+\section{The quasi-free lift: reflecting walls, folds and the gate gas}
+\input{v3_lift}
+\section{Complexity: a random circuit with a Gaussian backbone}
+\input{v4_complexity}
+\section{What a theory-native estimator computes}
+\input{v5_system}
+\section{Checks}
+\input{v6_verify}
+\end{document}

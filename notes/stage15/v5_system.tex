@@ -1,0 +1,86 @@
+\label{sec:system}
+We now derive the estimator from Sections~\ref{sec:hopf}--\ref{sec:complexity}, and from nothing else.
+
+\subsection{Three sectors with three different statuses}
+By Theorem~\ref{thm:cocycle}, an estimator's error has three parts, and each needs a different treatment.
+\begin{description}[leftmargin=*]
+\item[S1, the modular sector: compute exactly.] The dilation is the one coherent mode. The first two jets carry it with factor exactly
+$1$, and its errors add in amplitude across layers. It was $61\%$ of the Gaussian closure's MSE. It must not be approximated or fitted. Use
+stage~13's dilation package (exact to $O(\varepsilon^2)$ on scale mixtures), or stage~14's radial partition function, at $O(n^2)$ per
+layer.
+\item[S2, the linear cocycle: apply exactly.] $T_l=\Phi(r_l)\odot W_l$ is a matrix--vector product. Its adjoint gives each row's downstream
+gain $a_{l,i}$, the norm of row $i$ of $T_L\cdots T_{l+1}$.
+\item[S3, the births: the only thing approximated.]
+\[\beta_{l,i}=\sum_k\J_k(r_{l,i})\langle\delta\kappa_k,w_{l,i}^{\otimes k}\rangle/k!\,.\]
+Compute them
+with true-law jets \emph{and} the matching hyperedges, at one consistent order (Corollary~\ref{cor:consistency}), and only where
+birth $\times$ gain is large.
+\end{description}
+This is the interaction picture. The Gaussian backbone is the free field. Non-Gaussianity enters only as births, and their effect on
+later means is linear and exact.
+
+\subsection{The instance decides the estimator}
+The question was how an optimal system could fail to couple the sampled weights to the shape of its own computation. In the cocycle
+picture the coupling is forced, and it can be computed.
+\begin{proposition}[additivity makes allocation a knapsack]\label{prop:knapsack}
+Under the orthogonality of Theorem~\ref{thm:cocycle}, the expected MSE of an estimator that captures the fraction $c_{l,i}$ of the birth at
+$(l,i)$ is
+\[
+\sum_{l,i}(1-c_{l,i})^2\,a_{l,i}^2\,\E\beta_{l,i}^2 ,\qquad \E\beta_{l,i}^2\approx\sum_{k\ge2}\frac{(s^{k-1}\J_k(r_{l,i}))^2}{k!}\,\epsilon_{l,k}^2 ,
+\]
+where $\epsilon_{l,k}$ is the relative row-projected error of the order-$k$ cumulant at layer $l$. The terms are additive. So the optimal
+allocation of a FLOP budget over (layer, row, order) is a fractional knapsack, solved greedily by captured energy per FLOP.
+\end{proposition}
+The weights come from a cheap first pass that depends on the instance: the fields $r_{l,i}$ and scales $s_{l,i}$ from the Gaussian
+backbone, and the gains $a_{l,i}$ from one adjoint sweep. Both are $O(n^3)$ once. The second pass spends the budget where the weights
+say. Different networks then get different estimators, as they should: a network with more near-wall rows at depth gets more late-layer
+effort. Dynamically, the allocation of layer $l+1$ can be revised once layer $l$'s births are known.
+
+\subsection{Where the budget goes on the official networks}
+On network~0 the exact first-order chain's births are $5\%$ in layers $1$--$6$ and $81\%$ in $11$--$16$.
+\begin{itemize}[leftmargin=*]
+\item \textbf{Last-layer channels.} A fit of the last layer's residual-variance profile by squared jets, weighted over the actual
+fields, attributes $59\%$ of the last-layer birth to the second jet (a covariance error of $h_{15}$, profile $\varphi^2$). The third jet
+($\kappa_3$, profile $r^2\varphi^2$) takes $31\%$ and the fourth $11\%$. The fit is coarse: $20$ bins, residual $0.30$.
+\item \textbf{What causes them.} By Theorem~\ref{thm:walljet}, covariance births at a late layer come from the $(2,2)$ and $(3,1)$
+hyperedges and the $\kappa_3$-pair diagrams in $\Cov(\relu,\relu)$. These are what the exact chain lacks and what v56's $\kappa_4$ sector
+partly adds. The theory points the effort at late covariance births.
+\end{itemize}
+\paragraph{Heisenberg reads for the late layers.} The late readouts dominate, so read the old $\kappa_3$ families \emph{backwards}.
+\begin{itemize}[leftmargin=*]
+\item \emph{The read.} Transport the readout rows of a late layer $L'$ to the layer $l_f$ where a family was born, giving
+$V=(B_{L'-1}\cdots B_{l_f+1})^\top w$. Then evaluate $\sum_ac_a(V u_a)(Vv_a)^2$ exactly. Old sources need no compression, and stage~9 showed
+that Frobenius compression fails against Hadamard readouts.
+\item \emph{Restricting rows.} Only near-wall rows need this ($\J_3\propto r\varphi(r)$): about half at $t\approx12$.
+\item \emph{Cost.} About $6$ late readout layers, each with backward transport and family reads over at most $16$ layers on half the
+rows, cost on the order of $100\,n^3\approx0.05\,B$.
+\item \emph{Early layers} keep a short forward window. Their births are small and discounted by the gain.
+\end{itemize}
+This is a meet-in-the-middle estimator: Schrödinger (forward) where births are cheap and discounted, Heisenberg (adjoint) where they
+dominate.
+
+\subsection{What this system is not}
+\begin{center}\small
+\begin{tabular}{>{\raggedright\arraybackslash}p{6.4cm}>{\raggedright\arraybackslash}p{7.6cm}}\toprule
+standard (public chain, v56) & theory-native\\\midrule
+one closure, the same at every layer and for every network & three sectors; allocation decided per instance (Proposition~\ref{prop:knapsack})\\
+law propagator with feedback of corrections into $(\mu,C)$ & interaction picture: exact backbone, births transported by the exact cocycle\\
+dilation absorbed in fitted pair classes and counterterms & modular sector computed exactly; counterterms proved useless beyond the isotropic part\\
+old sources compressed forward & late readouts done backward (Heisenberg), exactly, on near-wall rows\\
+Gaussian jets with Edgeworth patches & true-law jets and hyperedges at one consistent order\\\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Predictions and the next measurements}
+\begin{enumerate}[leftmargin=*]
+\item \textbf{The modular sector alone.} Making it exact in the Gaussian closure removes at most its collective share, $61\%$ of the MSE. The
+MSE then goes from $4.1\times10^{-6}$ towards $1.6\times10^{-6}$, at $O(n^2)$ cost.
+\item \textbf{Counterterms.} On top of an exact first-order chain, counterterms of any kind gain at most about
+$0.21\times0.07+0.01\approx2.5\%$.
+\item \textbf{The last layer.} The true covariance of $h_{15}$ will show that about $60\%$ of the exact chain's last-layer birth is
+row-projected covariance error. Testing this needs one Monte Carlo run of $\Cov(h_{15})$, about $2\times10^6$ samples.
+\item \textbf{Early precision.} Readout and birth precision in layers $1$--$6$ can be relaxed about $3\times$ in amplitude at a cost of $\lesssim5\%$
+of the MSE, provided the sources born there are kept for the late Heisenberg reads.
+\item \textbf{Biased networks} (stage~14's conjecture). With biases the dilation is no longer free. The collective share and the
+coherent part of the cocycle should then shrink with the bias scale.
+\end{enumerate}

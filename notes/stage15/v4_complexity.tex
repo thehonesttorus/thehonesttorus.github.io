@@ -1,0 +1,80 @@
+\label{sec:complexity}
+\subsection{Gaussian backbone, magic folds}
+A Gaussian law under linear maps is simulated exactly by $(\mu,C)$. This is the classical counterpart of Gottesman--Knill
+(stabilizer states under Clifford gates) and of fermionic linear optics (matchgates). Folds are the only non-Gaussian gates. Their
+``magic'' at field $r$ is the energy above the first chaos, which is stage~14's kink law summed over orders:
+\[
+m(r)=\Var\relu(r+\xi)-\Phi(r)^2=\sum_{k\ge2}\frac{\He_{k-2}(r)^2\varphi(r)^2}{k!},\qquad m(0)=\tfrac12-\tfrac1{2\pi}-\tfrac14=0.0908 .
+\]
+\begin{proposition}[the magic budget; checked]
+$M_\infty=\int m(r)\,dr=0.18806$. The order $k$ contributes $\int E_k=0.141,0.024,0.009,0.004,\dots$ for $k=2,3,4,5$. Under stage~12's field law
+$r\sim N(0,t_l)$, the magic per neuron is $\E\,m(r)\simeq M_\infty/\sqrt{2\pi(1+t_l)}$:
+\begin{itemize}[leftmargin=*]
+\item $0.0577$ against $0.0531$ at $t=1$;
+\item $0.0346$ against $0.0336$ at $t=4$;
+\item $0.0211$ against $0.0208$ at $t=12$.
+\end{itemize}
+So a late layer of the competition networks injects about $0.021\,n\approx22$ units, and the total over depth grows like $\log\tau$
+(stage~12's harmonic Fatou law).
+\end{proposition}
+For circuits dominated by Clifford gates, the cost of exact simulation is exponential in the magic. The mean, however, needs only
+connected diagrams of low order. The cumulant (birth) expansion is a low-magic expansion. Its cost is set by how many magic insertions
+must be tracked \emph{coherently}, which for a chain is its number of live $\kappa_3$ families. Theorem~\ref{thm:cocycle} says that
+incoherent magic costs only its energy.
+
+\subsection{The Pauli-propagation dictionary}
+\begin{center}\small
+\begin{tabular}{>{\raggedright\arraybackslash}p{5.6cm}>{\raggedright\arraybackslash}p{8.4cm}}\toprule
+random quantum circuit & bias-free He \textsc{ReLU} network\\\midrule
+Pauli weight of a path & jet order $k$ (Hermite degree at a wall)\\
+random single-qubit gate & a fresh Gaussian row (Theorem~\ref{thm:rowmehler})\\
+paths orthogonal on average & births orthogonal across rows and layers (Theorem~\ref{thm:cocycle})\\
+noise damps weight $k$ by $(1-p)^k$ & jets $k\ge2$ live at walls: $\E_r[s^{2k-2}\J_k^2]\propto(1+t)^{-1/2}$, algebraic, not exponential\\
+weight $1$ propagates & the first jet $\Phi(r)$ transports with factor $0.65$--$0.94$, near-critical\\
+truncation MSE $=$ weight of dropped paths & the cocycle sum rule, measured to $4$--$10\%$\\
+the one non-orthogonal coupling & the dilation (radial norm)\\\bottomrule
+\end{tabular}
+\end{center}
+The network is a weakly damped, near-critical random circuit. Damping is algebraic, through the wall density, so memory persists over
+many layers (stage~9: eleven ages matter). Births are not damped where they are born, so the late layers dominate.
+
+\subsection{Calibration against quantum mean estimation}
+Take $\sigma^2=0.0787$ (average output variance), one forward pass $=2Ln^2$, and $B=2048n^3$. Quantum mean estimation needs about
+$\sigma/\varepsilon$ coherent passes per output, and about $\sqrt n\,\sigma/\varepsilon$ for all $n$ outputs. The latter is the multi-observable
+bound. We ignore reversibility and error-correction overheads, which is optimistic for the quantum side.
+\begin{center}\footnotesize\setlength{\tabcolsep}{4pt}
+\begin{tabular}{lcccc}\toprule
+target raw MSE & classical Monte Carlo & quantum, one output & quantum, all outputs & deterministic closures\\\midrule
+$1.56\times10^{-8}$ & $77\,B$ & $0.034\,B$ & $1.10\,B$ & about $0.2\,B$ (v56)\\
+$1.0\times10^{-9}$ & $1201\,B$ & $0.135\,B$ & $4.33\,B$ & ---\\\bottomrule
+\end{tabular}
+\end{center}
+For all outputs, the closures beat generic quantum mean estimation by about $5\times$. They exploit structure that a generic algorithm does
+not: one covariance gives every output at once, the Gaussian backbone. Large further gains can only come from more structure. They
+cannot come from better generic sampling, classical or quantum.
+
+\subsection{The low-degree view in weight space}
+Average the MSE over networks. In $L^2$ of the weight ensemble the truth and any estimator have Hermite (weight-chaos) expansions, and
+errors of different weight-degree are orthogonal. Corollary~\ref{cor:nofreelunch} says the following in this language.
+\begin{itemize}[leftmargin=*]
+\item Corrections built from features of degree $0$ in the anisotropic directions of a fresh row reach only the isotropic births.
+\item An anisotropic birth at row $i$ is a polynomial of degree $k\ge1$ in those directions, contracted with the instance's
+$\delta\kappa_k$.
+\item The hardness of the problem is the number of anisotropic cumulant directions that must be resolved at the late layers. Global
+calibration cannot change it.
+\end{itemize}
+
+\subsection{Coding}
+\begin{itemize}[leftmargin=*]
+\item \emph{A layer is a one-bit embedding.} $E[d_H(\operatorname{sign}Wx,\operatorname{sign}Wy)]=n\,\theta(x,y)/\pi$. Each layer one-bit-senses the
+previous one. The closure's two-point law is the code's distance law, which is the stage-12 angle map.
+\item \emph{Two Grams of one operator.} Let $(\cG f)_i=\E[\bar g_i f]$ with centred gates $\bar g_i$.
+\begin{itemize}
+\item $\cG\cG^*$ is the neuron-side gate covariance, which the closure computes.
+\item $\cG^*\cG$ is the input-side code kernel $\sum_i\bar g_i(x)\bar g_i(y)$, which NNGP theory computes.
+\item They have the same non-zero spectrum. The neuron picture and the input picture are dual codes of one operator, a
+MacWilliams-type duality.
+\end{itemize}
+\item \emph{Lattice side.} The cell masses are the code's weight distribution (stage~14's gap labels). The tight frames of contact
+normals are its local codes.
+\end{itemize}

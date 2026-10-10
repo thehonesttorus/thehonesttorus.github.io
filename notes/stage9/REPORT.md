@@ -362,3 +362,38 @@ Theory with quick checks (`scripts/verify_stage14.py` -> `notes/stage14/verify_s
   theta series n(1+st)^-1/2.
 - For the chain: carry the dilation (cannot be pinned); effort follows the wall density (resolution r^2/4); positivity on the
   truncated operator system as a truth-free sticky constraint (diagnostic: PSD failures of per-neuron moment matrices).
+
+## 14. Stage 15: deformed products, quasi-free lifts and the error cocycle (`notes/stage15/ncg_mlp_stage15.pdf`, 17 pp)
+
+Read in full: Ebrahimi-Fard–Patras–Tapia–Zambotti (Hopf-algebraic deformations of products and Wick polynomials, arXiv:1710.00735)
+and Zhou (non-commutative random surface growth with a reflecting wall, arXiv:2203.15920). Checks: `scripts/verify_stage15.py` ->
+`notes/stage15/verify_stage15.txt` (official net 0 with its 1e9-sample truth at every layer; under a minute).
+- Stance: start from the problem, not from the chain. Ask what any estimator's error is made of, which parts are predictable, and
+  how the instance should shape the computation.
+- Common mechanism of both papers: dynamics = convolution with a semigroup of functionals through a coproduct
+  (phi_lambda = lambda * id; P_t = (id (x) <.>_t) Delta); classical process = commutative (Gelfand–Tsetlin) shadow of a free NC walk.
+- Wall-jet theorem (proved, checked): under the TRUE law, the Wick (Appell) coefficients of relu(z - c) are P(Z > c), p(c), -p'(c), ...
+  (the jet of the transverse measure at the wall); joint cumulants of relu outputs = diagrams with jet vertices and joint-cumulant
+  hyperedges (no hyperedge inside one vertex). Connected law checked to 2e-13; Cov(relu, relu) on a non-Gaussian pair:
+  Gaussian closure -1.2e-2, consistent expansion +4e-4 (30x), true jets with only k11 -2.7e-2 (worse): partial renormalization hurts.
+- Rows are random gates (proved): Gaussian rows diagonalize Hermite degree (Mehler) = classical Pauli-path orthogonality; the radial
+  (dilation) mode is the only obstruction.
+- Error cocycle (leading order; measured on net 0): delta_L = sum_l T_L..T_{l+1} beta_l with T = Phi(r) (.) W (first jet).
+  First jet carries 95% (Gaussian closure) / 79% (exact first-order chain) of the final MSE. Sum rule sum birth x gain vs MSE:
+  Gaussian 2.59/4.06e-6, collective mode removed 1.50/1.57e-6; exact chain 3.20/3.53e-8. Collective share of inherited error 48-68%
+  (Gaussian) vs 0-3% (exact chain). Transport factors 0.65-1.04 (near-critical). 81% of the exact chain's MSE is born in layers
+  11-16 (42% in the last two). Last-layer channels (squared-jet fit): covariance 59%, kappa3 31%, kappa4 11%.
+- No free lunch (proved): given the state, anisotropic births have zero conditional mean; only the isotropic part is predictable
+  from per-neuron features (measured: 19% / 7% of the last-layer remainder). Explains stage 9's ridge failure and the -3.8% ceiling
+  of v56's counterterms; on an exact first-order chain counterterms can gain at most ~2.5%.
+- Lift: relu = (id + |.|)/2; the fold is the type-B reflecting wall (Weyl group B_n), births come only from it; Hermite even/odd =
+  Laguerre(-1/2)/(+1/2) (Zhou's a = +-1/2 parities). Gate gas = arcsine pairs (Grothendieck–Krivine rounding of the quasi-free
+  correlation) + star cumulants -(4/pi^2) sum_i prod_j rho_ij (checked: ratio 1.013/1.038/1.074) = the hub stars of stage 9.
+- Complexity: Gaussian backbone = Clifford/matchgate; folds = magic, M_inf = 0.188, per neuron M_inf/sqrt(2 pi (1+t)) (checked
+  1-9%). Generic quantum mean estimation for all n outputs ~1.1 B at MSE 1.56e-8 (MC 77 B) vs closures ~0.2 B: the resource is structure.
+- Theory-native estimator: S1 modular sector exact (the one coherent mode); S2 linear cocycle exact (matvecs + adjoint gains);
+  S3 births with true-law jets AND hyperedges at one order, allocated per instance by a fractional knapsack (additivity from the
+  cocycle), Heisenberg (adjoint) exact reads of old kappa3 families at the late layers on near-wall rows (~100 n^3), short forward
+  windows early. Predictions: exact modular sector takes the Gaussian closure from 4.1e-6 towards 1.6e-6; counterterms <= ~2.5% on an
+  exact chain; ~60% of the last-layer birth is row-projected covariance error (test: one MC of Cov(h_15)); early-layer precision can be
+  relaxed ~3x at <= 5% cost; biased nets shrink the coherent part.
