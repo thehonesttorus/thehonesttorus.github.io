@@ -126,3 +126,22 @@ slices together, roughly 4 units of 2 n^3, against production's 227 units in tot
   clean, fit-free chain built on it.
 - If the (3,1) R^2 is below 0.6, the leading list is incomplete. The residual is then examined against the two
   undetermined classes of §3.
+
+## 4a. A caveat recorded before the results (two expansion parameters, not one)
+
+Lemma 2 counts powers of n with C entries of size n^(-1/2). On network 0 the true off-diagonal correlations are larger:
+- rms 0.076 at layer 6 and 0.118 at layer 13, against n^(-1/2) = 0.031;
+- a collective outlier eigenvalue of the off-diagonal correlation matrix of 22 (layer 6) and 72 (layer 13);
+- eigenvalues at -1, from dead neurons.
+
+With an entry scale c, a structure with f free sites and e edges has E|X|^2 ~ sigma^8 n^f c^(2e). So two parameters
+order the structures:
+- 1/n per lost free site (coherence);
+- c^2 (about 0.06 here, in units of the site variance) per extra edge that adds no site (a loop or multi-edge).
+
+The leading list of §4 is maximal in f - e. Within it, structures with more tree edges dominate, as (n c^2)^e.
+The first omitted group is the one with the same free sites and one extra loop edge (e = 4, f - e = 0: 93 structures
+for (3,1)). It is suppressed only by c^2 per structure, so as a group it may carry tens of percent of the energy.
+
+The second run (EXPO_MIN = 0, network 0, (3,1)) measures that group directly. A leading-only shortfall of up to about
+20% is therefore not a failure of Lemma 1. It is the c^2 tail, and the decision of §4 is read with this group included.
