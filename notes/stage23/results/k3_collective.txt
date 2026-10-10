@@ -1,0 +1,32 @@
+net 0: penultimate collective: Var c / Ec^2 0.0085, skew c +0.215, corr(c, r^2) +0.666
+   skewness gamma3_k: rms 0.1120 (MC noise 0.0012); predicted coherent rms 0.1165 (Cov(c,r^2) term alone 0.1049)
+   variance of gamma3 explained by the two-scalar collective prediction: 0.884; regression slope 0.909; residual rms 0.0381
+   excess kurtosis: mean +0.0660; naive scale-mixture 3 s^4 Var(r^2)/sigma^4 mean +0.1223 (the Wick term -6 s^4 |C_perp|_F^2 must be subtracted)
+net 1: penultimate collective: Var c / Ec^2 0.0075, skew c +0.198, corr(c, r^2) +0.635
+   skewness gamma3_k: rms 0.1072 (MC noise 0.0012); predicted coherent rms 0.1079 (Cov(c,r^2) term alone 0.0978)
+   variance of gamma3 explained by the two-scalar collective prediction: 0.876; regression slope 0.933; residual rms 0.0377
+   excess kurtosis: mean +0.0617; naive scale-mixture 3 s^4 Var(r^2)/sigma^4 mean +0.1225 (the Wick term -6 s^4 |C_perp|_F^2 must be subtracted)
+net 2: penultimate collective: Var c / Ec^2 0.0068, skew c +0.188, corr(c, r^2) +0.624
+   skewness gamma3_k: rms 0.1032 (MC noise 0.0012); predicted coherent rms 0.1023 (Cov(c,r^2) term alone 0.0939)
+   variance of gamma3 explained by the two-scalar collective prediction: 0.869; regression slope 0.943; residual rms 0.0373
+   excess kurtosis: mean +0.0584; naive scale-mixture 3 s^4 Var(r^2)/sigma^4 mean +0.1240 (the Wick term -6 s^4 |C_perp|_F^2 must be subtracted)
+net 3: penultimate collective: Var c / Ec^2 0.0083, skew c +0.209, corr(c, r^2) +0.618
+   skewness gamma3_k: rms 0.1020 (MC noise 0.0012); predicted coherent rms 0.1016 (Cov(c,r^2) term alone 0.0920)
+   variance of gamma3 explained by the two-scalar collective prediction: 0.885; regression slope 0.946; residual rms 0.0347
+   excess kurtosis: mean +0.0580; naive scale-mixture 3 s^4 Var(r^2)/sigma^4 mean +0.1193 (the Wick term -6 s^4 |C_perp|_F^2 must be subtracted)
+net 4: penultimate collective: Var c / Ec^2 0.0075, skew c +0.197, corr(c, r^2) +0.644
+   skewness gamma3_k: rms 0.0951 (MC noise 0.0012); predicted coherent rms 0.0939 (Cov(c,r^2) term alone 0.0875)
+   variance of gamma3 explained by the two-scalar collective prediction: 0.861; regression slope 0.941; residual rms 0.0354
+   excess kurtosis: mean +0.0631; naive scale-mixture 3 s^4 Var(r^2)/sigma^4 mean +0.1263 (the Wick term -6 s^4 |C_perp|_F^2 must be subtracted)
+net 5: penultimate collective: Var c / Ec^2 0.0072, skew c +0.197, corr(c, r^2) +0.618
+   skewness gamma3_k: rms 0.1057 (MC noise 0.0012); predicted coherent rms 0.1069 (Cov(c,r^2) term alone 0.0969)
+   variance of gamma3 explained by the two-scalar collective prediction: 0.880; regression slope 0.930; residual rms 0.0365
+   excess kurtosis: mean +0.0614; naive scale-mixture 3 s^4 Var(r^2)/sigma^4 mean +0.1250 (the Wick term -6 s^4 |C_perp|_F^2 must be subtracted)
+net 6: penultimate collective: Var c / Ec^2 0.0074, skew c +0.208, corr(c, r^2) +0.639
+   skewness gamma3_k: rms 0.1031 (MC noise 0.0012); predicted coherent rms 0.1031 (Cov(c,r^2) term alone 0.0945)
+   variance of gamma3 explained by the two-scalar collective prediction: 0.881; regression slope 0.941; residual rms 0.0356
+   excess kurtosis: mean +0.0636; naive scale-mixture 3 s^4 Var(r^2)/sigma^4 mean +0.1260 (the Wick term -6 s^4 |C_perp|_F^2 must be subtracted)
+net 7: penultimate collective: Var c / Ec^2 0.0074, skew c +0.206, corr(c, r^2) +0.641
+   skewness gamma3_k: rms 0.1092 (MC noise 0.0012); predicted coherent rms 0.1101 (Cov(c,r^2) term alone 0.0999)
+   variance of gamma3 explained by the two-scalar collective prediction: 0.890; regression slope 0.937; residual rms 0.0362
+   excess kurtosis: mean +0.0620; naive scale-mixture 3 s^4 Var(r^2)/sigma^4 mean +0.1205 (the Wick term -6 s^4 |C_perp|_F^2 must be subtracted)

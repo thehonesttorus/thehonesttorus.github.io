@@ -1,0 +1,118 @@
+\begin{abstract}
+Treat the realised final layer as what it is: $n$ independent Gaussian random-feature measurements of one
+state, the law $\lambda$ of the penultimate activations. Three things follow.
+\begin{enumerate}[label=(\arabic*),leftmargin=1.6em,itemsep=1pt,topsep=1pt]
+\item \emph{Exact RMS as a kernel distance} (Thm.~\ref{thm:mmd}). Let $\lambda'$ be any signed surrogate state
+independent of $W_L$; every estimator of stages~14--22 is the readout of one. Then
+$\E[\mathrm{RMS}^2\mid\mathcal F]=\mathrm{MMD}^2_{k_1}(\lambda,\lambda')$, the maximum mean discrepancy for the degree-$1$
+arc-cosine kernel. The realised RMS concentrates around it at rate $n^{-1/2}$. The error ledger of stage~18 is
+exactly the Mercer expansion of this distance.
+\item \emph{Transverse analyticity} (Thm.~\ref{thm:analytic}). The arc-cosine kernel is singular only on
+coincident directions. Expanded around the collective angle, its Taylor series in the transverse overlap
+$\rho_\perp$ of two inputs has nonnegative coefficients. The tail beyond order $J$ is bounded by $\pi\,|\rho_\perp|^{J+1}$.
+So for the RMS, the kink is averaged over the random final weights, and the obstruction of stage~20, which
+concerns a single neuron's moments, does not apply.
+\item \emph{What a real network demands} (\S\ref{sec:real}). We measured one realised network ($n=512,1024$;
+$L=16$). The transverse field is strongly anisotropic: its effective dimension is $n_{\rm eff}\approx80$ at $n=1024$,
+so $|\rho_\perp|\approx0.11$, not $n^{-1/2}=0.03$. The per-neuron standardised skewness is $\approx0.12$ RMS. The absolute
+$\kappa_3$ is $O(1/n)$, as before, but the collapsed transverse variance ($\sigma_k^3\approx0.06$) amplifies it. This
+corrects earlier size claims. The $\kappa_3$ term moves each mean by $\approx10^{-3}$ RMS, sixteen times the target,
+so the history readout must be accurate to about $6\%$. The $10\kappa_3^2$ term of $m_6$, which the audit flagged,
+and the incoherent $\kappa_4$ are each at the target scale and must be kept.
+\end{enumerate}
+We also prove that each random layer adds $1/n$ to the inverse participation ratio
+(Prop.~\ref{prop:pr}). Measured, $n/n_{\rm eff}$ grows linearly in depth with slope $0.85$. So the per-neuron expansion
+parameter is the depth-to-width ratio $\sqrt{0.85L/n}\approx0.12$, not $n^{-1/2}$. Two adaptive checks follow from the
+probe block: an order selector from $n_{\rm eff}$, and a skewness calibration test with a slope standard error of
+about $0.02$ (\S\ref{sec:adapt}).
+\end{abstract}
+\maketitle
+
+\section{The final layer measures a state}
+Conditional on $\mathcal F=\sigma(W_1,\dots,W_{L-1})$, the columns $w_k\sim N(0,s^2I)$ are i.i.d. and independent of the penultimate
+law $\lambda$. Put $y(w)=\int(w\cdot u)_+\,d\lambda(u)$, so $y_k=y(w_k)$. For a finite signed measure $\lambda'$ independent of
+$W_L$, put $\hat y(w)=\int(w\cdot u)_+\,d\lambda'(u)$.
+
+\begin{theorem}[Exact RMS as an arc-cosine MMD]\label{thm:mmd}
+Let $k_1(u,u')=\E_w[(w\cdot u)_+(w\cdot u')_+]=\frac{s^2}{2\pi}\|u\|\|u'\|\,\kappa(\cos\theta)$, where
+$\kappa(t)=\sqrt{1-t^2}+(\pi-\arccos t)\,t$. Then
+\[
+\E\big[\mathrm{RMS}(\hat y-y)^2\,\big|\,\mathcal F\big]=\mathrm{MMD}^2_{k_1}(\lambda,\lambda')=\iint k_1\,d(\lambda-\lambda')^{\otimes2},
+\]
+and $\mathrm{Var}(\mathrm{RMS}^2\mid\mathcal F)=\mathrm{Var}_w\big((\hat y-y)^2\big)/n$. Moreover:
+\begin{enumerate}[label=(\alph*),leftmargin=1.6em,itemsep=1pt,topsep=1pt]
+\item \emph{Mercer equals ledger.}
+\[
+\mathrm{MMD}^2=s^2\sum_{r\ge0}\frac{c_r^2}{r!}\,\big\|M_r(\lambda)-M_r(\lambda')\big\|_F^2,\qquad M_r(\nu)=\int\|u\|^{1-r}u^{\otimes r}d\nu ,
+\]
+with $c_r$ the Hermite coefficients of $\relu$. This is stage~18's Wiener-chaos ledger in the final weights.
+\item \emph{All our estimators are signed-state readouts.} The Gaussian closure is the readout of $N(\mu,C)$.
+The cumulant corrections are readouts of the multivariate Edgeworth signed measure, whose $\kappa_r$ tensors
+are the hidden cumulants. The collective form is the readout of a mixture of these.
+\end{enumerate}
+\end{theorem}
+\begin{proof}
+$\hat y-y=\int(w\cdot u)_+\,d(\lambda'-\lambda)$. Squaring, taking $\E_w$ and using Fubini gives the MMD. The $n$ columns are
+i.i.d., which gives the variance. The arc-cosine formula is the classical Gaussian computation.
+
+For (a), the Mehler expansion $(w\cdot u)_+=s\|u\|\sum_rc_r\mathrm{He}_r(w\cdot\hat u/s)/r!$ and Hermite orthogonality give
+$k_1=s^2\|u\|\|u'\|\sum_r(c_r^2/r!)(\hat u\cdot\hat u')^r$. Integrate against $(\lambda-\lambda')^{\otimes2}$.
+
+For (b), the one-dimensional marginal of a multivariate Edgeworth measure along $w$ is the one-dimensional
+Edgeworth measure with cumulants $\langle\kappa_r,w^{\otimes r}\rangle$. Its $\relu$ readout is stage~17's $F$.
+\end{proof}
+
+In NCG terms, the kernel $k_1$ is the GNS inner product of the ``final-layer state''. The mean embedding
+$\xi_\lambda=\int\phi_u\,d\lambda(u)$, with $\phi_u=(w\mapsto(w\cdot u)_+)$, is a vector in $L^2(\gamma_s)$. The final means are its overlaps
+with $n$ random Gaussian measurement vectors. As with classical shadows, random measurements estimate a
+distance between states: the RMS is the GNS distance $\|\xi_\lambda-\xi_{\lambda'}\|$ up to $n^{-1/2}$ fluctuations. The
+design question becomes: find a computable signed state $\lambda'$ at the penultimate layer within GNS
+distance $6\times10^{-5}$ of the true one.
+
+\section{Transverse analyticity: why the RMS escapes the moment obstruction}
+Write each penultimate vector as $u=R(\cos\beta\,\hat\mu+\sin\beta\,\hat v)$, with $\hat v\perp\hat\mu$ (stage~18), and for a pair put
+$\rho_\perp=\hat v\cdot\hat v'$. Then
+\[
+\cos\theta=t_0+h,\qquad t_0=\cos\beta\cos\beta',\qquad h=\sin\beta\sin\beta'\,\rho_\perp .
+\]
+
+\begin{lemma}[Positivity]\label{lem:pos}
+$\kappa(t)=\sum_{m\ge0}b_mt^m$ with $b_m=2\pi c_m^2/m!\ge0$ and $\kappa(1)=\pi$. For $t_0\in[0,1)$, every Taylor coefficient
+$\kappa^{(j)}(t_0)/j!=\sum_mb_m\binom mjt_0^{m-j}$ is nonnegative, and $\sum_j\kappa^{(j)}(t_0)(1-t_0)^j/j!=\kappa(1)$.
+\end{lemma}
+\begin{proof}
+The expansion is Mehler's, as in Theorem~\ref{thm:mmd}(a), normalised so that $k_1(u,u)=s^2\|u\|^2/2$. The series has
+nonnegative coefficients and converges at $t=1$, so Taylor re-expansion at $t_0$ is valid on $|h|\le1-t_0$.
+\end{proof}
+
+\begin{theorem}[Transverse expansion with geometric tail]\label{thm:analytic}
+For every pair, $|h|\le1-t_0$. Splitting $\kappa(t_0+h)=\sum_{j\le J}\kappa^{(j)}(t_0)h^j/j!+\mathcal T_J$, we have
+\[
+0\le\mathcal T_J\ \text{in the PD sense},\qquad|\mathcal T_J|\le\pi\,|\rho_\perp|^{J+1}.
+\]
+Consequently
+$\mathrm{MMD}^2_{k_1}(\lambda,\lambda')=\sum_{j\le J}\sum_m\frac{s^2b_m}{2\pi}\binom mj\|\Delta_{jm}\|^2+E_{>J}$, where
+\[
+\Delta_{jm}=\int R^{1-m}P^{m-j}u_\perp^{\otimes j}\,d(\lambda-\lambda'),\qquad
+0\le E_{>J}\le\frac{s^2}2\iint RR'|\rho_\perp|^{J+1}\,d|\lambda-\lambda'|^{\otimes2}.
+\]
+\end{theorem}
+\begin{proof}
+$1-t_0-|h|\ge1-\cos(\beta-\beta')\ge0$, so $|h|\le1-t_0$. Also $|h|/(1-t_0)\le|\rho_\perp|$, because $1-\cos\beta\cos\beta'\ge\sin\beta\sin\beta'$. By
+Lemma~\ref{lem:pos} the tail is a nonnegative combination of powers of $h$, bounded by
+$(|h|/(1-t_0))^{J+1}\sum_j\kappa^{(j)}(t_0)(1-t_0)^j/j!$. The low part is a finite sum of products of feature maps. Indeed
+$R\cos^{m-j}\beta\sin^j\beta\,\hat v^{\otimes j}=R^{1-m}P^{m-j}u_\perp^{\otimes j}$, which gives the $\Delta_{jm}$.
+\end{proof}
+
+\noindent\textbf{What this means.}
+\begin{itemize}[leftmargin=1.2em,itemsep=1pt,topsep=1pt]
+\item The arc-cosine kernel is singular only where two hidden directions coincide, which has probability
+zero for pairs of independent inputs. On the support of such pairs it is analytic, with expansion parameter
+$|\rho_\perp|$.
+\item The per-neuron obstruction of stage~20 concerns one fixed $w$, which probes the kink. The RMS is an
+average over $n$ independent $w$, which smooths the kink into $k_1$.
+\item The order-$j$ terms vanish exactly when $\lambda'$ matches the transverse moment tensors of order $j$
+\emph{jointly with} the collective coordinates (all $m$). That is stage~18's $B_j(a)$ matching.
+\item A certificate needs two things: bounds on the mismatches $\|\Delta_{jm}\|$ for $j\le J$, and a pair-overlap tail
+bound. It needs no per-neuron cancellation theorem.
+\end{itemize}

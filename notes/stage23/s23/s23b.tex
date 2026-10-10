@@ -1,0 +1,131 @@
+\noindent The expansion around $t_0$ assumes $P\ge0$, that is $\beta\le\pi/2$. This holds on the collective cap at depth; at
+$n=1024$, $L=16$, $\sin^2\beta\approx0.07$ for every input sampled.
+
+\section{What a real depth-16 network looks like}\label{sec:real}
+One realised He network, with $2000$ Gaussian inputs for the penultimate layer and $20000$ for the final
+preactivations. Script: \texttt{theory23/}.
+\begin{center}\small
+\begin{tabular}{@{}lcc@{}}\toprule
+quantity at layer $L-1=15$ & $n=512$ & $n=1024$\\\midrule
+$\sin^2\beta$: mean (sd) & $0.068\ (0.015)$ & $0.067\ (0.010)$\\
+pair $\cos\theta$: mean (sd), max & $0.932\ (0.015)$, $0.979$ & $0.933\ (0.010)$, $0.973$\\
+transverse overlap $\rho_\perp$: RMS ($n^{-1/2}$) & $0.157\ (0.044)$ & $0.112\ (0.031)$\\
+$n_{\rm eff}=1/\E\rho_\perp^2$; participation ratio of $C_\perp$ & $40.8$; $38.1$ & $80.1$; $75.1$\\
+$\mathrm{Var}\log R^2$ over inputs & $0.052$ & $0.029$\\\midrule
+final preactivations: standardised skewness, mean (RMS) & $+0.006\ (0.203)$ & $+0.004\ (0.116)$\\
+excess kurtosis: mean; incoherent sd & $0.155$; $0.061$ & $0.066$; $0.026$\\\bottomrule
+\end{tabular}
+\end{center}
+At $n=256$ the RMS skewness is $0.319$.
+
+\noindent\textbf{Reading.}
+\begin{enumerate}[label=(\roman*),leftmargin=1.6em,itemsep=1pt,topsep=1pt]
+\item \emph{The transverse field is effectively about $n/13$-dimensional at depth.} Its covariance is far from
+isotropic, so the expansion parameter of Theorem~\ref{thm:analytic} is $|\rho_\perp|\approx0.11$, not $0.03$. The
+participation ratio of $C_\perp$ is a Gaussian-part quantity, $(\operatorname{tr}C_\perp)^2/\|C_\perp\|_F^2$, costing $O(n^2)$ once $C_{L-1}$ is
+known. Its agreement with $1/\E\rho_\perp^2$ makes it a computable order selector.
+\item \emph{Skewness has random sign but is not small.} Its mean is near zero, consistent with stage~22's
+$\E_w\kappa_3=0$. Its RMS is $0.12$. The absolute size is what that lemma predicted:
+$\kappa_3=\mathrm{skew}\cdot\sigma^3\approx0.116\times0.064\approx7.4\times10^{-3}\approx7/n$, which implies $\|T\|_F^2\approx1.2n$. The standardised size is
+large because $\sigma_k^2\approx s^2\operatorname{tr}C_\perp\approx2(1-\rho_{L-1})$ has collapsed at depth. So the factor $(1-\rho)^{-3/2}\approx40$
+multiplies every standardised third cumulant.
+\item \emph{The collective cocycle is confirmed.} $\mathrm{Var}\log R^2=0.029$ at $n=1024$, against stage~18's
+trajectory estimate of $0.030$.
+\end{enumerate}
+
+\noindent\textbf{Corrections.} Stage~20's ``$c_3,c_4=O(1/n)$'' and stage~22's Lemma~2.2 are correct in absolute
+units, as $n$-scaling statements. But the Edgeworth coefficients act on \emph{standardised} cumulants, and at
+$L=16$ these carry the depth factor $(1-\rho_{L-1})^{-(r-2)/2}$. The audit's $10\kappa_3^2$ objection is therefore
+numerically relevant here, though not as an $n$-scaling issue; see the ledger below.
+
+\begin{proposition}[Inverse participation ratio grows by $1/n$ per random layer]\label{prop:pr}
+For a fixed PSD $C$ and $W$ with i.i.d.\ $N(0,s^2)$ entries,
+\[
+\frac{\E\|W\T CW\|_F^2}{(\E\operatorname{tr}W\T CW)^2}=\Big(1+\frac1n\Big)\frac{\|C\|_F^2}{(\operatorname{tr}C)^2}+\frac1n .
+\]
+So, to leading order, a linear random layer acts by $1/\mathrm{PR}\mapsto1/\mathrm{PR}+1/n$. This is the participation-ratio form of free
+multiplicative convolution with a Marchenko--Pastur law. Starting from $\mathrm{PR}(I)=n$, the linear part predicts
+$n/\mathrm{PR}_l\approx l+1$.
+\end{proposition}
+\begin{proof}
+$\E\sum_{ij}(W\T CW)_{ij}^2$ has two contributions. The $n(n-1)$ off-diagonal pairs give $s^4\|C\|_F^2$ each, and the
+$n$ diagonal terms give $s^4((\operatorname{tr}C)^2+2\|C\|_F^2)$ each, by Wick. Also $\E\operatorname{tr}W\T CW=s^2n\operatorname{tr}C$.
+\end{proof}
+
+Measured along the same network ($n=1024$, $4000$ inputs, finite-sample corrected), $n/\mathrm{PR}(C_{\perp,l})$ is
+\begin{center}\small
+\begin{tabular}{@{}lccccccccccccccc@{}}\toprule
+$l$&1&2&3&4&5&6&7&8&9&10&11&12&13&14&15\\\midrule
+$n/\mathrm{PR}$&1.55&2.40&3.25&4.22&5.08&5.93&6.88&7.78&8.41&9.12&9.90&10.76&11.55&12.17&12.91\\\bottomrule
+\end{tabular}
+\end{center}
+The growth is linear with slope $\approx0.85$ instead of $1$, because gating and the higher Mehler terms add diffuse
+mass. So $n_{\rm eff}\approx n/(1+0.85\,l)$. The effective expansion parameter of the per-neuron transverse sector is then
+$n_{\rm eff}^{-1/2}\approx\sqrt{0.85\,L/n}$: the depth-to-width ratio, not $n^{-1/2}$. The measured skewness RMS fits this
+($\sqrt{16/1024}=0.125$ against $0.116$; at $n=512$, $0.177$ against $0.203$). It matches the general finding of
+effective-theory analyses of deep networks that finite-width effects grow like $L/n$.
+
+\section{The per-neuron ledger at $n=1024$, $L=16$}
+Each entry is $\sigma\,\frac{m_r}{r!}\,\mathrm{He}_{r-2}(-\alpha)\varphi(\alpha)$ (stage~20, Thm.~2.2). The RMS is taken over neurons with
+$\alpha\sim N(0,\rho/(1-\rho))$, $\rho=0.916$, $\sigma=0.4$, using the measured standardised cumulants.
+\begin{center}\small
+\begin{tabular}{@{}lccl@{}}\toprule
+term & standardised size & RMS mean shift & verdict\\\midrule
+$m_3=\kappa_3$ & $0.116$ & $9.8\times10^{-4}$ & compute to $\approx6\%$\\
+$m_4=\kappa_4$, coherent part & $0.066$ & $1.7\times10^{-4}$, same sign & collective resummation\\
+$m_4=\kappa_4$, incoherent part & $0.026$ & $6.8\times10^{-5}$ & compute ($K$-register)\\
+$m_6\ni10\kappa_3^2$ & $0.135$ & $3.5\times10^{-5}$ & include (free from $\kappa_3$)\\
+$m_7\ni35\kappa_3\kappa_4$ (total $\kappa_4$) & $0.268$ & $2.1\times10^{-5}$ & include (free)\\
+$m_7\ni35\kappa_3\kappa_4^{\rm inc}$ & $0.106$ & $8\times10^{-6}$ & negligible\\
+$m_8\ni35\kappa_4^2$, $m_9\ni280\kappa_3^3$ & --- & $\le3.5\times10^{-6}$ & negligible\\\bottomrule
+\end{tabular}
+\end{center}
+The target RMS is $6\times10^{-5}$. The products of cumulants enter with known Edgeworth coefficients:
+$m_6=\kappa_6+10\kappa_3^2$, $m_7=\kappa_7+35\kappa_3\kappa_4$, $m_8=\kappa_8+56\kappa_3\kappa_5+35\kappa_4^2$, all read from the generating function
+$\E e^{tF-t^2/2}=\exp\sum_{r\ge3}\kappa_rt^r/r!$. They need no new information beyond $\kappa_3$ and $\kappa_4$. The pure higher
+cumulants $\kappa_5,\kappa_6,\kappa_7$ were not measured. The effective-dimension scaling suggests
+$\kappa_5\sim n_{\rm eff}^{-3/2}\approx10^{-3}$, which would give a shift of about $10^{-5}$.
+
+\noindent\textbf{Design constraints this imposes.}
+\begin{itemize}[leftmargin=1.2em,itemsep=1pt,topsep=1pt]
+\item The per-neuron $\kappa_3$ readout is the dominant term and must be accurate to about $6\%$ RMS. By
+stage~21's localisation table, $\eta\approx0.06$ needs the last $\ell_3\approx11$ layers of history.
+\item The per-neuron readout should be the Edgeworth series in standardised cumulants through $m_7$,
+with products included, in the collective form. The collective mixture removes the coherent $\kappa_4$.
+\item The incoherent $\kappa_4$ is needed to about $50\%$, which is the incoherent part of $K^z_{kk}$.
+\end{itemize}
+
+\section{Adaptive consequences}\label{sec:adapt}
+\begin{enumerate}[label=(\roman*),leftmargin=1.6em,itemsep=1pt,topsep=1pt]
+\item \emph{Order selector.} Pass~1 computes $n_{\rm eff}=(\operatorname{tr}C_\perp)^2/\|C_\perp\|_F^2$. The scale of the transverse orders is
+$n_{\rm eff}^{-1/2}$. Pass~2's probe block of $N=n$ inputs gives $N(N-1)/2$ pair overlaps, hence $\E\rho_\perp^{2k}$ with negligible
+error. This checks $n_{\rm eff}$ and supplies the tail term of Theorem~\ref{thm:analytic}.
+\item \emph{Skewness calibration test.} The same block, read one layer further, gives per-neuron sample
+skewnesses $\hat\gamma_k$ with noise $\approx\sqrt{6/N}=0.077$. Regressing $\hat\gamma_k$ on the theory's
+$\kappa_{3,k}/\sigma_k^3$ across the $n$ neurons, with signal RMS $0.116$, estimates the slope with standard error
+$\approx0.077/(0.116\sqrt n)\approx0.02$. A slope away from $1$ flags a systematic error in the history readout,
+the dominant term, at the $2\%$ level. That means extending the window or adding missing births. Shared
+inputs correlate the errors across neurons only weakly, at $O(n_{\rm eff}^{-1/2})$.
+\item \emph{Collective check.} The block also gives $\mathrm{Var}\log R^2$ and $\kappa_3(\log R^2)$ (stage~19). The value measured
+here, $0.029$, agrees with the carried-vector prediction scale.
+\end{enumerate}
+
+\section*{Status}
+\noindent\textbf{Exact:} Theorem~\ref{thm:mmd} (with (a) and (b)), Lemma~\ref{lem:pos},
+Theorem~\ref{thm:analytic} and Proposition~\ref{prop:pr}.
+
+\noindent\textbf{Measured} (one realised network, quick check): the table of \S\ref{sec:real}.
+
+\noindent\textbf{Estimates:} the per-neuron ledger. These are exact Edgeworth coefficients times measured RMS
+sizes, assuming $\alpha$ is independent of the cumulant sizes.
+
+\noindent\textbf{Corrected:} the standardised-size reading of stages~20 and 22 (depth factor
+$(1-\rho)^{-(r-2)/2}$).
+
+\noindent\textbf{Open:}
+\begin{itemize}[leftmargin=1.2em,itemsep=0pt,topsep=1pt]
+\item the slope $0.85$ of $n/\mathrm{PR}$ from the gated Mehler transport, beyond the linear $1$ of
+Proposition~\ref{prop:pr};
+\item the accuracy of the history $\kappa_3$ at the $6\%$ level;
+\item level-wise mismatch bounds $\|\Delta_{jm}\|$ for the certificate.
+\end{itemize}

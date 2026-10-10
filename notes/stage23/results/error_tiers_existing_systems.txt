@@ -1,0 +1,5 @@
+net 0 v56: final RMS 1.215e-04, coherent 1.69e-05 (MSE share 0.02); per-layer RMS 2.7e-05 2.6e-05 3.2e-05 3.9e-05 4.4e-05 5.0e-05 5.9e-05 6.7e-05 7.2e-05 8.1e-05 8.8e-05 9.1e-05 1.0e-04 1.1e-04 1.1e-04 1.2e-04
+net 0 closure: final RMS 2.014e-03, coherent 1.58e-03 (MSE share 0.62); per-layer RMS 2.6e-05 3.9e-04 7.1e-04 9.0e-04 1.1e-03 1.2e-03 1.4e-03 1.4e-03 1.5e-03 1.7e-03 1.7e-03 1.7e-03 1.9e-03 1.9e-03 2.0e-03 2.0e-03
+net 3 v56: final RMS 1.308e-04, coherent 8.79e-06 (MSE share 0.00); per-layer RMS 2.6e-05 2.4e-05 2.9e-05 3.8e-05 4.6e-05 5.3e-05 6.0e-05 6.6e-05 7.4e-05 8.0e-05 8.8e-05 9.1e-05 1.0e-04 1.1e-04 1.2e-04 1.3e-04
+net 3 closure: final RMS 1.872e-03, coherent 1.48e-03 (MSE share 0.63); per-layer RMS 2.5e-05 3.8e-04 6.7e-04 9.0e-04 1.1e-03 1.2e-03 1.4e-03 1.4e-03 1.5e-03 1.6e-03 1.6e-03 1.8e-03 1.7e-03 1.9e-03 1.9e-03 1.9e-03
+net 0 kprop3: final RMS 1.878e-04, coherent 2.77e-05 (MSE share 0.02)

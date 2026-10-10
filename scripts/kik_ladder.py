@@ -16,8 +16,8 @@ def hermite_means(t, q, m3, m4):
     return sd * d0, sd * (d0 + c3 / 6 * d3), sd * (d0 + c3 / 6 * d3 + c4 / 24 * d4 + c3 ** 2 / 72 * d6), c3, c4, sd, al, ph
 
 rms = lambda x: np.sqrt(np.mean(x ** 2))
-R, D = sys.argv[1], sys.argv[2]
-for net in map(int, sys.argv[3:]):
+R, D = (sys.argv[1], sys.argv[2]) if __name__ == "__main__" else (None, None)
+for net in (map(int, sys.argv[3:]) if __name__ == "__main__" else []):
     a = pool_net(R, net); N = a["N"]; mc = a["pos"] / N; L = mc.shape[0]
     print(f"net {net}: same-sample shape errors per layer (RMS over neurons):  gauss | +k3 | +k3+k4   [rms k3, mean k4]")
     for l in range(L):

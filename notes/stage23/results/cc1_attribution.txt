@@ -1,0 +1,24 @@
+net 0:
+  closure  final 2.014e-03 (coherent 1.58e-03) | inherited 1.93e-03, readout residual 4.36e-04 | layers 1/4/8/12/15: 3.9e-04 1.1e-03 1.5e-03 1.9e-03 2.0e-03
+  cc1      final 1.365e-03 (coherent 1.59e-04) | inherited 1.26e-03, readout residual 4.40e-04 | layers 1/4/8/12/15: 2.0e-04 6.6e-04 9.6e-04 1.3e-03 1.4e-03
+net 1:
+  closure  final 2.172e-03 (coherent 1.80e-03) | inherited 2.10e-03, readout residual 4.82e-04 | layers 1/4/8/12/15: 4.0e-04 1.0e-03 1.6e-03 2.1e-03 2.2e-03
+  cc1      final 1.442e-03 (coherent 1.46e-04) | inherited 1.34e-03, readout residual 4.79e-04 | layers 1/4/8/12/15: 2.3e-04 6.8e-04 1.1e-03 1.3e-03 1.4e-03
+net 2:
+  closure  final 2.323e-03 (coherent 2.03e-03) | inherited 2.24e-03, readout residual 5.17e-04 | layers 1/4/8/12/15: 3.7e-04 1.1e-03 1.8e-03 2.3e-03 2.3e-03
+  cc1      final 1.287e-03 (coherent 2.59e-04) | inherited 1.18e-03, readout residual 4.95e-04 | layers 1/4/8/12/15: 2.1e-04 6.8e-04 1.1e-03 1.2e-03 1.3e-03
+net 3:
+  closure  final 1.872e-03 (coherent 1.48e-03) | inherited 1.77e-03, readout residual 4.98e-04 | layers 1/4/8/12/15: 3.8e-04 1.1e-03 1.5e-03 1.7e-03 1.9e-03
+  cc1      final 1.461e-03 (coherent 1.14e-04) | inherited 1.33e-03, readout residual 5.26e-04 | layers 1/4/8/12/15: 1.9e-04 6.9e-04 1.0e-03 1.2e-03 1.5e-03
+net 4:
+  closure  final 1.839e-03 (coherent 1.39e-03) | inherited 1.75e-03, readout residual 5.05e-04 | layers 1/4/8/12/15: 3.8e-04 1.1e-03 1.6e-03 1.7e-03 1.8e-03
+  cc1      final 1.528e-03 (coherent 1.24e-04) | inherited 1.41e-03, readout residual 5.20e-04 | layers 1/4/8/12/15: 2.1e-04 6.7e-04 1.1e-03 1.4e-03 1.5e-03
+net 5:
+  closure  final 2.201e-03 (coherent 1.86e-03) | inherited 2.13e-03, readout residual 4.72e-04 | layers 1/4/8/12/15: 4.0e-04 1.1e-03 1.7e-03 2.1e-03 2.2e-03
+  cc1      final 1.432e-03 (coherent 2.79e-04) | inherited 1.31e-03, readout residual 4.92e-04 | layers 1/4/8/12/15: 2.1e-04 7.0e-04 1.1e-03 1.3e-03 1.4e-03
+net 6:
+  closure  final 1.519e-03 (coherent 1.13e-03) | inherited 1.45e-03, readout residual 4.08e-04 | layers 1/4/8/12/15: 3.9e-04 1.1e-03 1.5e-03 1.6e-03 1.5e-03
+  cc1      final 1.260e-03 (coherent 3.59e-04) | inherited 1.18e-03, readout residual 4.16e-04 | layers 1/4/8/12/15: 2.2e-04 7.1e-04 9.6e-04 1.2e-03 1.3e-03
+net 7:
+  closure  final 2.190e-03 (coherent 1.86e-03) | inherited 2.10e-03, readout residual 4.55e-04 | layers 1/4/8/12/15: 3.9e-04 1.1e-03 1.6e-03 2.0e-03 2.2e-03
+  cc1      final 1.169e-03 (coherent 1.11e-04) | inherited 1.06e-03, readout residual 4.36e-04 | layers 1/4/8/12/15: 2.0e-04 6.4e-04 9.5e-04 1.2e-03 1.2e-03

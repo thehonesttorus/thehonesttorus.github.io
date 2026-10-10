@@ -1,0 +1,4 @@
+net 0: (a) CC1 1.36e-03 | (b) mixture at exact (t, var) 3.05e-04 [same-sample 2.78e-04] | (c) Gaussian at exact 4.38e-04 [same-sample 4.22e-04] | (d) Hermite k3+k4 [same-sample 1.13e-05]
+   CC1 moment errors: t 1.85e-03, var 1.82e-03 (rel 1.08e-02); mixture skewness rms 0.098 vs MC 0.112, corr 0.952, residual rms 0.035
+net 1: (a) CC1 1.44e-03 | (b) mixture at exact (t, var) 3.45e-04 [same-sample 3.20e-04] | (c) Gaussian at exact 4.50e-04 [same-sample 4.32e-04] | (d) Hermite k3+k4 [same-sample 1.10e-05]
+   CC1 moment errors: t 1.99e-03, var 1.96e-03 (rel 1.06e-02); mixture skewness rms 0.091 vs MC 0.107, corr 0.940, residual rms 0.038
