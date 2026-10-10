@@ -1,0 +1,1 @@
+net 0 transport-memory estimator: final MSE 2.4320e-07 (62s) | per layer: 7.0e-10 7.3e-10 3.2e-09 9.7e-09 1.9e-08 3.1e-08 4.4e-08 5.6e-08 7.0e-08 9.6e-08 1.1e-07 1.4e-07 1.7e-07 2.1e-07 2.2e-07 2.4e-07
