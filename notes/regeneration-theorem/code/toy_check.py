@@ -2,7 +2,7 @@
 # Compares the linked-cluster structure sum (all structures up to EMAX edges, no power-counting cut, Moebius-exact
 # distinct-site sums) with a large Monte Carlo of the fourth cumulants of z' = W relu(z).
 import sys, re, math, numpy as np
-src = open(__file__.replace("toy_check.py", "regen4.py")).read()
+src = open(__file__.replace("toy_check.py", "regen4_fast.py")).read()
 head = src[src.index("def he("):src.index("def r2(")]
 rng = np.random.default_rng(int(sys.argv[1]) if len(sys.argv) > 1 else 1)
 n = 6

@@ -218,3 +218,55 @@ So the design object is the chaos-state formula for the fourth-order slices, rea
 one-step slice map is not.
 
 If the (3,1) R^2 is instead at or above 0.8, the memory is small, and the one-step regeneration of §3 is the design.
+
+## 7. Result (network 0; outputs/fast31_net0_L*.txt, outputs/regen4_net0_L13.txt)
+
+**The engine was rebuilt for speed.** The first fleet runs evaluated each structure as one multi-operand einsum. Its
+intermediate steps ran in numpy's scalar loop, at about 1 GFLOP/s and on one thread, so each slice took 25 minutes or
+more. code/regen4_fast.py compiles every structure into BLAS matrix products by leaf elimination:
+- it agrees with the einsum engine to 7e-15 on all 4806 structure terms (code/equiv_fast.py);
+- one slice now runs in 17 s;
+- two kinds of term are handled apart. The (i,j)(i,j) structures of the (2,2) slice are n^4 as full matrices and are
+  evaluated on 8000-20000 sampled pairs. The 12 cyclic coincidence terms per slice (path ends merged into a triangle)
+  have f - e = 0 by Lemma 2 and are skipped.
+
+(3,1) slice, leading structures from the true layer-l state, readout-weighted, noise-free R^2:
+
+| transition | all leading | scale | C-edges only | dilation shape alone (fitted on the target) |
+|---|---|---|---|---|
+| 0 -> 1 | **100.2%** | 1.006 | 100.2% | 48.9% |
+| 1 -> 2 | 56.3% | 1.11 | 36.0% | 49.6% |
+| 2 -> 3 | 42.2% | 1.03 | 14.2% | 51.1% |
+| 4 -> 5 | 29.3% | 0.95 | 4.4% | 51.9% |
+| 6 -> 7 | 19.5% | 0.85 | -1.8% | 46.5% |
+| 10 -> 11 | 8.6% | 0.70 | -4.9% | 42.9% |
+| 13 -> 14 | 1.2% | 0.53 | -8.3% | 40.0% |
+
+**What this settles.**
+- **The theorem is exact where its hypotheses hold.** At 0 -> 1 the layer is exactly Gaussian (z^0 = W_0 x), so no
+  cross-site cumulant beyond C exists. There the leading structures of Lemmas 1-2 reproduce the truth's (3,1) slice to
+  the Monte Carlo noise, at scale 1.006, on the real network with its real correlations. The truncation of Lemma 2 is
+  therefore adequate, and the c^2 loop tail of §4a is negligible.
+- **P1 fails at every deeper transition, and it fails as P4 predicted, only more strongly.** The shortfall grows
+  monotonically with depth, from 44% at layer 1 to 99% at layer 13. That is the profile of accumulated memory:
+  - the cross-site third cumulants of z^l with three distinct sites;
+  - the (2,1,1) and (1,1,1,1) classes of kappa4(z^l).
+
+  The carried slices do not contain these, and every layer adds to them. P4 estimated memory at 1.9 times the newborn
+  energy (one-step R^2 about 35%). The measured deep-layer values, 1-9%, mean the memory is about 10-100 times the
+  newborn energy there.
+- **The C-only part becomes anti-correlated at depth.** The newborn Gaussian-closure content is a small piece pointing
+  against the transported history. This is the regime where any one-step or Gaussian-closure regeneration, including
+  production's lambda C_off and every single-class repair of notes XLIII-XLV, must fail. It explains F2 (74-90% error
+  with true inputs) from first principles.
+
+**Consequence for the design.** The fourth-order pair slices cannot be regenerated from the layer's slices. They must
+be read from a carried history, exactly as the third-order slices are read from the kappa3 sources. In the chaos
+state that history consists of objects of the same kind as the kappa3 sources (§6):
+- second-chaos pairs contracted through the birth Gram (path and hub);
+- third-chaos sources (stars), primary (born with the wall's third jet) and secondary (the wall's second jet times the
+  incoming second chaos);
+- second-chaos loops.
+
+The next theory item is the chaos-state formula for all three fourth-order slices, with its cost. Its check is the same
+ladder: it must hold at every depth, not only at 0 -> 1.
