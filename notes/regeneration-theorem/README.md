@@ -145,3 +145,49 @@ for (3,1)). It is suppressed only by c^2 per structure, so as a group it may car
 
 The second run (EXPO_MIN = 0, network 0, (3,1)) measures that group directly. A leading-only shortfall of up to about
 20% is therefore not a failure of Lemma 1. It is the c^2 tail, and the decision of §4 is read with this group included.
+
+## 4b. Engine check on an exact toy (before the network results)
+
+The one-step run first failed (outputs/regen4_net0_L13_coincidence_bug.txt: (3,1) R^2 -8%). The cause was an
+implementation error, not the theory:
+- the einsums summed over all site tuples;
+- non-adjacent site coincidences therefore reproduced the doubly-occupied structures, which are leading and are also
+  enumerated on their own, so they were counted twice.
+
+The engine now sums over distinct site indices exactly, by Moebius inversion over coincidence patterns.
+
+Two checks of the corrected engine:
+- **Covariance and variance of z' (two legs).** The enumeration reproduces the layer-14 truth from layer-13 inputs with
+  R^2 100.000% and scale 1.0001 (outputs/validate_low_net0_L13.txt). This checks the site factors, the edges and the
+  weights.
+- **Fourth cumulants on an exact Gaussian toy (code/toy_check.py).** Setup: n = 6 sites, correlations about 0.1, all
+  structures up to 4 edges, against a Monte Carlo of 4e8 samples. Every entry agrees to the Monte Carlo noise
+  (outputs/toy_check_seed1.txt):
+
+| entry | engine | Monte Carlo |
+|---|---|---|
+| K31[0,1] | -0.007823 | -0.007825 |
+| K31[2,0] | +0.017719 | +0.017717 |
+| K22[0,1] | +0.021897 | +0.021901 |
+| k4[1] | +0.055611 | +0.055583 |
+
+So Lemma 1 and its implementation are verified exactly. The network run tests only two things: the truncation of
+Lemma 2, and the classes of §3 that the state does not carry.
+
+## 5. The same theorem as a TAP / Plefka expansion (the compact form for production)
+
+Write C = D + C_o, with D the site variances. The layer's readout generating function is
+
+    G(theta) = log [ exp( (1/2) d_u^T C_o d_u ) exp( sum_a K_a(theta_a; u_a) ) ]_(u=0).
+
+Its connected expansion splits by loop number.
+- **Tree level is a saddle point.** G_tree(theta) = stat_u [ sum_a K_a(theta_a; u_a) - (1/2) u^T C_o^(-1) u ], with
+  u = C_o grad_u K. Site labels are summed independently, so trees that revisit a site, the split-vertex structures,
+  are automatically included.
+- **The first loop correction is -(1/2) log det(I - C_o H(theta))**, with H = diag(d_u^2 K_a(theta_a; u_a)). Its
+  two-cycle term (1/4) tr((C_o H)^2) is exactly the doubled-edge (doubly-occupied) family. The longer cycles are the
+  c^2-suppressed loop tail of §4a.
+
+So the leading regeneration is the tree level plus the two-cycle of the TAP free energy of one layer. The cumulants of
+the readouts are the theta-derivatives along s W_i + t W_j. Expanding the saddle to third order in theta gives the
+structure sums as a few matrix products per layer. The production form needs no enumeration.

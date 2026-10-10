@@ -1,0 +1,12 @@
+=== network 0, transition 13 -> 14: 809 active neurons
+  (3,1): 117 structures | all: R2   -8.5% scale +0.304 | Gaussian site factors: R2   -8.0% scale +0.312 | C-only: R2  -20.1% scale -0.589
+      C e=0 expo=1           n=  1  share of prediction energy    0.3%  alone R2    0.0%
+      C e=1 expo=1           n=  7  share of prediction energy    2.4%  alone R2   -0.7%
+      C e=2 expo=1           n= 27  share of prediction energy   -0.6%  alone R2   -4.9%
+      C e=3 expo=1           n= 28  share of prediction energy   32.0%  alone R2  -13.9%
+      hyper:D21 e=0 expo=1   n= 12  share of prediction energy    6.6%  alone R2    2.2%
+      hyper:D21 e=1 expo=1   n= 18  share of prediction energy   -8.2%  alone R2    5.3%
+      hyper:K22 e=0 expo=1   n= 12  share of prediction energy   56.6%  alone R2    6.7%
+      hyper:K22 e=1 expo=1   n= 12  share of prediction energy   10.9%  alone R2   -6.2%
+      dilation shape (best-scaled on the target): R2   40.0%
+      all + best-scaled dilation shape: R2   31.7%

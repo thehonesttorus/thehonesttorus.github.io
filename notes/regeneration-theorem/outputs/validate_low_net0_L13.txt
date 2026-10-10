@@ -1,0 +1,22 @@
+cov offdiag: all R2 100.000% scale +1.0001
+    C e=0        alone R2   12.466% scale +0.9456
+    C e=1        alone R2   85.737% scale +0.9932
+    C e=2        alone R2    0.017% scale +3.6939
+    C e=3        alone R2    0.005% scale +681.6008
+    h:D21 e=0    alone R2    0.741% scale +1.7100
+    h:D21 e=1    alone R2   -0.012% scale -145.7262
+    h:K22 e=0    alone R2    0.007% scale +5.2629
+    h:K22 e=1    alone R2    0.005% scale +1129.1014
+    h:K31 e=0    alone R2   -0.181% scale -120.9315
+    h:K31 e=1    alone R2    0.000% scale +119.3550
+var diag: all R2 100.000% scale +1.0000
+    C e=0        alone R2   97.360% scale +0.9749
+    C e=1        alone R2   -2.400% scale +0.0376
+    C e=2        alone R2   -0.004% scale -28.6956
+    C e=3        alone R2    0.000% scale +1394.5250
+    h:D21 e=0    alone R2   -0.066% scale -3.4673
+    h:D21 e=1    alone R2   -0.000% scale -114.3320
+    h:K22 e=0    alone R2    0.001% scale +27.2695
+    h:K22 e=1    alone R2    0.000% scale +1814.9373
+    h:K31 e=0    alone R2   -0.000% scale -10.9515
+    h:K31 e=1    alone R2   -0.000% scale -2010.9982
