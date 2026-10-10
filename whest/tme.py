@@ -30,14 +30,24 @@ def tokens(m, var):
     return dict(sigma=sigma, alpha=alpha, a1=a1, a2=a2, a3=a3, a4=a4, G=G, G2=G2, k3=k3, k4=k4, F1=F1, F2=F2)
 
 
-def coincidence_rows(t, C, Kz):
-    """Delta with rows delta_a (Prop. coinc, plus the (1/4) F2^a a2^b K^z_ab term of (L4))."""
-    a1, a2, F1, F2, k3 = t["a1"], t["a2"], t["F1"], t["F2"], t["k3"]
+def coincidence_rows(t, C, Kz, M=None, k3z=None):
+    """Delta with rows delta_a: the births of Prop. coinc, the (1/4) F2^a a2^b K^z_ab term of (L4), and the exact
+    first-order transfer of the coincident class of kappa3(z). The register transport A^{x3} gives a1_a^2 a1_b on an
+    (a,a,b) entry, but two derivatives on the same variable give E[1{z_a>0}] = a1_a, so the exact coefficient is
+    (1/2) F2^a a1^b = (a1 - G a2)_a a1_b (the 3 kappa_aab d_a^2 d_b / 6 term of the Edgeworth operator on
+    Cov(X_a, u_b)); the difference is added here from the (2,1) readout M = kappa3(z)_aab. On the diagonal the exact
+    coefficient of kappa3(z_a) in kappa3(u_a) is a1 - G a2 + a3 (G^2 - G2/2) in place of a1^3."""
+    a1, a2, a3, F1, F2, k3, G, G2 = t["a1"], t["a2"], t["a3"], t["F1"], t["F2"], t["k3"], t["G"], t["G2"]
     Cd = np.diag(C)
     D = (a1[None, :] * C * (F1 - 2 * a1 * a2 * Cd)[:, None]
          + a2[None, :] * C * C * (0.5 * F2 - a1 * a1)[:, None]
          + 0.25 * F2[:, None] * a2[None, :] * Kz)
-    np.fill_diagonal(D, (k3 - 3 * a1 * a1 * a2 * Cd * Cd) / 3.0)
+    diag = (k3 - 3 * a1 * a1 * a2 * Cd * Cd) / 3.0
+    if M is not None:
+        D = D + (0.5 * F2 - a1 * a1)[:, None] * a1[None, :] * M
+        c_aaa = a1 - G * a2 + a3 * (G * G - 0.5 * G2)
+        diag = diag + (c_aaa - a1 ** 3) * k3z / 3.0
+    np.fill_diagonal(D, diag)
     return D
 
 
@@ -52,7 +62,7 @@ def readouts(regs):
     return k3, M
 
 
-def tme_chain(W, record=None, nreg=None):
+def tme_chain(W, record=None, nreg=None, coinc_transfer=True):
     """Returns the activation means of every layer, shape (L, n). `nreg`: keep only the nreg youngest births
     (None = all; the derived system keeps all)."""
     W = [np.ascontiguousarray(Wl, dtype=np.float64) for Wl in W]
@@ -90,7 +100,7 @@ def tme_chain(W, record=None, nreg=None):
         A = a1
         for r in regs:
             r["T"] = Wn @ (A[:, None] * r["T"]); r["TX"] = Wn @ (A[:, None] * r["TX"]); r["TD"] = Wn @ (A[:, None] * r["TD"])
-        Delta = coincidence_rows(t, C, Kz)
+        Delta = coincidence_rows(t, C, Kz, M if coinc_transfer else None, k3)
         regs.append(dict(T=Wn.copy(), TX=Wn @ (A[:, None] * C), TD=Wn @ Delta.T, a2=a2.copy(), born=l))
         if nreg is not None and len(regs) > nreg:
             regs = regs[-nreg:]

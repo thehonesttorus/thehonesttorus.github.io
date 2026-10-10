@@ -9,7 +9,8 @@ instance role, but its own Fleet tag so it never collides with other sessions' i
         FILE lines: "tag<TAB>command"; the command runs in a private work dir with this repo's whest/ and scripts/
         copied in, DATA=/opt/data/official (W_off*.npy, truth_off*.npz), OUT=$W/out; new files and the log go to
         s3://BUCKET/results9/JOB/.
-  python3 infra/fleet.py watch JOB            stream results; summary.txt at the end
+  python3 infra/fleet.py watch JOB            stream logs and output files as each task finishes (3 s polls)
+  python3 infra/fleet.py ready NAME           wait for running + SSM online + data bootstrap
   python3 infra/fleet.py get JOB [PATTERN]    download results to SCRATCH/results/JOB
   python3 infra/fleet.py ssm NAME 'CMD'       run a shell command on one instance (diagnostics)
 """
@@ -245,20 +246,45 @@ def _line(tag, log):
     if rc != "0": tail = [l for l in log.splitlines() if l.strip()][-4:]
     return f"[{tag} exit {rc}] " + " | ".join(tail)
 
-def watch(job, timeout=7200):
+def watch(job, timeout=7200, every=3.0):
+    """Stream a job: every finished task's log AND output files are downloaded the moment they land in S3
+    (tasks upload outputs before their log, so a log's arrival means its outputs are complete)."""
     d = os.path.join(SCRATCH, "results", job); os.makedirs(d, exist_ok=True)
-    tags = json.load(open(os.path.join(d, "tags.json"))); seen = {}; t0 = time.time()
+    tags = json.load(open(os.path.join(d, "tags.json"))); seen = {}; have = set(os.listdir(d)); t0 = time.time()
     while len(seen) < len(tags) and time.time() - t0 < timeout:
-        for page in s3.get_paginator("list_objects_v2").paginate(Bucket=BUCKET, Prefix=f"results9/{job}/log_"):
+        logs = []
+        for page in s3.get_paginator("list_objects_v2").paginate(Bucket=BUCKET, Prefix=f"results9/{job}/"):
             for o in page.get("Contents", []):
-                tag = o["Key"].rsplit("/log_", 1)[1][:-4]
-                if tag in seen or tag not in tags: continue
-                log = s3.get_object(Bucket=BUCKET, Key=o["Key"])["Body"].read().decode()
-                open(os.path.join(d, f"log_{tag}.txt"), "w").write(log)
-                seen[tag] = _line(tag, log); print(seen[tag], f"(+{time.time() - t0:.0f}s)", flush=True)
-        if len(seen) < len(tags): time.sleep(10)
+                name = o["Key"].split("/", 2)[2]
+                if name.startswith("log_"):
+                    logs.append((name, o["Key"]))
+                elif name not in have:
+                    s3.download_file(BUCKET, o["Key"], os.path.join(d, name)); have.add(name)
+        for name, key in logs:
+            tag = name[4:-4]
+            if tag in seen or tag not in tags: continue
+            log = s3.get_object(Bucket=BUCKET, Key=key)["Body"].read().decode()
+            open(os.path.join(d, name), "w").write(log)
+            seen[tag] = _line(tag, log); print(seen[tag], f"(+{time.time() - t0:.0f}s)", flush=True)
+        if len(seen) < len(tags): time.sleep(every)
     open(os.path.join(d, "summary.txt"), "w").write("\n".join(seen[t] for t in tags if t in seen) + "\n")
     print(f"{job}: {len(seen)}/{len(tags)} results in {time.time() - t0:.0f}s", flush=True)
+
+def ready(which, timeout=1500):
+    """Block until the named instance is running, its SSM agent is online and its bootstrap wrote /opt/data/READY."""
+    t0 = time.time()
+    while time.time() - t0 < timeout:
+        xs = [x for x in fleet(("pending", "running")) if _name(x) == which]
+        if xs and xs[0]["State"]["Name"] == "running":
+            x = xs[0]
+            info = cl("ssm", x["Region"]).describe_instance_information(Filters=[{"Key": "InstanceIds", "Values": [x["InstanceId"]]}])["InstanceInformationList"]
+            if info and info[0].get("PingStatus") == "Online":
+                _, res = _ssm([x], "test -f /opt/data/READY && echo READY $(ls /opt/data/official | wc -l) files $(nproc) cores || echo booting", timeout=60)
+                out = " ".join(" ".join(v[1].split()) for v in res.values()) if res else ""
+                if "READY" in out:
+                    print(f"{which} ready after {time.time() - t0:.0f}s: {out}", flush=True); return True
+        time.sleep(10)
+    sys.exit(f"{which} not ready after {timeout}s")
 
 def get(job, pattern="*"):
     d = os.path.join(SCRATCH, "results", job); os.makedirs(d, exist_ok=True); n = 0
@@ -274,6 +300,7 @@ if __name__ == "__main__":
     c = a[0]
     if c == "launch": launch(int(a[1]), a[2], spot=("spot" in a[3:]), region=a[a.index("--region") + 1] if "--region" in a else None)
     elif c == "list": show()
+    elif c == "ready": ready(a[1])
     elif c in ("start", "stop", "terminate"): power(c, a[1])
     elif c == "batch": batch(a[1], a[2], int(a[a.index("--threads") + 1]) if "--threads" in a else 8,
                              a[a.index("--only") + 1].split(",") if "--only" in a else None,
