@@ -1,0 +1,5 @@
+=== network 0, (3,1) slice of layer 7: four-loop on 64 sampled rows (58816 entries)
+  ladder                               R2   59.3%  scale +1.110
+  ladder + cross pairs + sec. stars    R2   71.5%  scale +0.995
+  four-loop alone                      R2   10.6%  scale +8.366
+  ladder + pairs + stars + four-loop   R2   70.5%  scale +0.918

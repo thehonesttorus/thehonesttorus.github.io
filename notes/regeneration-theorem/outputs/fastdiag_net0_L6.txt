@@ -1,1 +1,12 @@
 === network 0, transition 6 -> 7: 920 active neurons
+  diag: 177 structures (12 cyclic coincidence terms skipped) | all: R2   95.4% scale +0.989 | C-only: R2    8.2% scale +7.069
+      C e=0 expo=2             n=  1  share of prediction energy    1.8%  alone R2    3.4%  alone scale +48.620
+      C e=1 expo=1             n=  7  share of prediction energy    1.1%  alone R2    2.0%  alone scale +20.904
+      C e=2 expo=1             n= 18  share of prediction energy    0.1%  alone R2    0.3%  alone scale +1.936
+      C e=2 expo=2             n=  9  share of prediction energy    1.5%  alone R2    2.9%  alone scale +31.111
+      C e=3 expo=1             n= 40  share of prediction energy    0.3%  alone R2   -0.2%  alone scale -0.059
+      hyper:D21 e=0 expo=2     n= 12  share of prediction energy   16.9%  alone R2   29.9%  alone scale +5.771
+      hyper:D21 e=1 expo=1     n= 36  share of prediction energy   -0.2%  alone R2    0.2%  alone scale +1.029
+      hyper:K22 e=0 expo=2     n= 12  share of prediction energy   78.2%  alone R2   91.4%  alone scale +1.263
+      hyper:K22 e=1 expo=1     n= 24  share of prediction energy    0.1%  alone R2   -0.5%  alone scale -1.900
+      hyper:K31 e=0 expo=1     n= 18  share of prediction energy    0.1%  alone R2    0.1%  alone scale +1230.932

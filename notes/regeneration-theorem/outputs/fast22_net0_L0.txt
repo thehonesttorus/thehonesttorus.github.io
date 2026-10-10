@@ -1,1 +1,11 @@
 === network 0, transition 0 -> 1: 1023 active neurons
+  (2,2): 67 structures (12 cyclic coincidence terms skipped) | all: R2  100.0% scale +1.000 | C-only: R2  100.0% scale +1.001 | on 8000 sampled pairs
+      C e=0 expo=1             n=  1  share of prediction energy   72.9%  alone R2   92.1%  alone scale +1.358
+      C e=1 expo=1             n=  7  share of prediction energy   -1.2%  alone R2   -3.1%  alone scale -1.719
+      C e=2 expo=1             n= 21  share of prediction energy   28.2%  alone R2   48.2%  alone scale +3.452
+      C e=3 expo=1             n= 20  share of prediction energy   -0.0%  alone R2   -0.1%  alone scale -0.019
+      hyper:D21 e=0 expo=1     n=  4  share of prediction energy    0.0%  alone R2    0.1%  alone scale +901.284
+      hyper:D21 e=1 expo=1     n=  6  share of prediction energy    0.0%  alone R2    0.0%  alone scale +163.049
+      hyper:K22 e=0 expo=1     n=  4  share of prediction energy   -0.0%  alone R2   -0.1%  alone scale -785.193
+      hyper:K22 e=1 expo=1     n=  4  share of prediction energy    0.0%  alone R2    0.0%  alone scale +154832.358
+      dilation shape alone (best-scaled on the target): R2   99.0% | all + best-scaled dilation shape: R2  100.0%

@@ -1,0 +1,15 @@
+=== network 0, memory ladder into the 31 slice of layer 14 (genuinely newborn only: True)
+  source layer 13: alone R2    2.3% scale +0.780 | ladder from 13 down to 13: R2    2.3% scale +0.780 | + best-scaled dilation R2   42.5%
+  source layer 12: alone R2    6.1% scale +1.349 | ladder from 13 down to 12: R2    7.9% scale +0.988 | + best-scaled dilation R2   44.5%
+  source layer 11: alone R2    6.9% scale +1.639 | ladder from 13 down to 11: R2   13.8% scale +1.068 | + best-scaled dilation R2   45.3%
+  source layer 10: alone R2    6.4% scale +2.080 | ladder from 13 down to 10: R2   18.6% scale +1.089 | + best-scaled dilation R2   45.3%
+  source layer  9: alone R2    5.5% scale +2.663 | ladder from 13 down to 9: R2   22.0% scale +1.074 | + best-scaled dilation R2   44.6%
+  source layer  8: alone R2    6.2% scale +3.461 | ladder from 13 down to 8: R2   25.7% scale +1.065 | + best-scaled dilation R2   44.0%
+  source layer  7: alone R2    7.1% scale +4.179 | ladder from 13 down to 7: R2   29.6% scale +1.051 | + best-scaled dilation R2   43.3%
+  source layer  6: alone R2    4.9% scale +5.453 | ladder from 13 down to 6: R2   31.7% scale +1.024 | + best-scaled dilation R2   42.3%
+  source layer  5: alone R2    4.2% scale +7.509 | ladder from 13 down to 5: R2   33.3% scale +1.003 | + best-scaled dilation R2   41.6%
+  source layer  4: alone R2    3.4% scale +10.250 | ladder from 13 down to 4: R2   34.5% scale +0.986 | + best-scaled dilation R2   41.1%
+  source layer  3: alone R2    2.9% scale +13.404 | ladder from 13 down to 3: R2   35.3% scale +0.969 | + best-scaled dilation R2   40.7%
+  source layer  2: alone R2    2.3% scale +20.909 | ladder from 13 down to 2: R2   36.1% scale +0.961 | + best-scaled dilation R2   40.6%
+  source layer  1: alone R2    2.0% scale +25.495 | ladder from 13 down to 1: R2   36.8% scale +0.953 | + best-scaled dilation R2   40.5%
+  source layer  0: alone R2    1.5% scale +33.757 | ladder from 13 down to 0: R2   37.3% scale +0.947 | + best-scaled dilation R2   40.5%

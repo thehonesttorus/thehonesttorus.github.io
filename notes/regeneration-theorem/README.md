@@ -291,3 +291,53 @@ Site factors, C-edges and slice hyperedges are those of layer m.
 [0.7, 1.3]. If it falls short, the residual memory is the part this transport omits:
 - the dressing of coincident legs at intermediate layers;
 - the kappa3 -> kappa4 conversion through three-site kappa3 hyperedges.
+
+## 9. Results of §8 and the cross-age classes (network 0, (3,1) unless stated)
+
+**The memory ladder, consistent version** (code/regen_mem.py, NB=1; outputs/memnb_*). Each layer contributes only
+genuinely newborn content: C-edge structures and kappa3 (D21) conversions, with site factors carrying kappa3 and no
+kappa4. That content is transported by first jets and summed over ages. No kappa4 truth is used and nothing is fitted.
+
+The first ladder (outputs/mem31_*) used each layer's true kappa4 slices and marginals, which already contain all
+earlier history, so it double counted. Its sum overshot, reaching R^2 -87% at 6->7.
+
+| slice, transition | one-step newborn | ladder over all ages | scale | with best-scaled dilation |
+|---|---|---|---|---|
+| (3,1), 6->7 | 16.2% | 58.2% | 1.09 | 59.8% |
+| (3,1), 13->14 | 2.3% | 37.3% | 0.95 | 40.5% |
+| diagonal, 6->7 | 36.5% | 95.0% | 1.21 | 98.1% |
+| diagonal, 13->14 | - | 78.6% | 1.22 | 86.4% |
+| (2,2), 6->7 | 38.9% | 96.2% | 1.18 | 98.5% |
+
+P5 (R^2 >= 0.6 at both depths) is borderline at 6->7 and fails at 13->14. The scale condition holds.
+
+**Cross-age classes from the chaos state** (code/chaos_qq.py; outputs/chaosqq_*). These are absent from a ladder whose
+structures carry at most one hyperedge:
+- pairs of second-chaos sources born at different layers, contracted through their birth Gram;
+- secondary third chaos, the fold's second jet acting on the second chaos it receives.
+
+The same-age pair term correlates 0.78 (6->7) and 0.63 (13->14) with the ladder. That is the predicted identity
+between the ladder's C-trees and same-age pairs.
+
+| (3,1) | 6->7 | 13->14 |
+|---|---|---|
+| ladder | 58.2% (scale 1.09) | 37.3% (0.95) |
+| + cross-age pairs | 68.1% (1.05) | 44.4% (0.98) |
+| + secondary stars | **70.8% (0.99)** | **47.0% (0.97)** |
+
+**The second-chaos four-loop**, 48 tr(A_i^3 A_j) (code/chaos_loop.py, 64 sampled rows; outputs/chaosloop_net0_L6.txt).
+It was run at 6->7 only, where it does not help:
+- alone it gives 10.6% at scale 8.4;
+- added to the rest, R^2 goes from 71.5% to 70.5% on the sampled rows, and the scale falls to 0.92.
+
+The 13->14 run was stopped before it finished.
+
+**State of the theorem.**
+- The linked-cluster regeneration is exact at the Gaussian transition.
+- At depth, the fourth-order slices are the first-jet transport of what the backbone and kappa3 create at each layer,
+  plus the cross-age second-chaos classes. All of it is computed with no fitted parameter, at scale 0.95-1.09 across
+  every step.
+- Still unexplained for (3,1): 29% of the energy at 6->7 and 53% at 13->14. Remaining candidates:
+  - the transport dressing of coincident legs at intermediate layers;
+  - higher chaos;
+  - the corrections to first-jet transport of the legs that note XXXVI 3c identified.

@@ -1,0 +1,8 @@
+=== network 0, (3,1) slice of layer 7: second-chaos pair terms from the chaos state (7 birth layers)
+  ladder (section 8)       R2   58.2%  scale +1.088
+  QQ cross-age alone       R2   19.5%  scale +4.787
+  QQ same-age alone        R2   30.4%  scale +2.188
+  secondary stars alone    R2   12.7%  scale +6.537
+  ladder + QQ cross-age    R2   68.1%  scale +1.053
+  ladder + QQ cross + sec. stars R2   70.8%  scale +0.989
+  energy ratio |QQ cross| / |ladder| = 0.214;  corr(QQ same, ladder) = +0.776

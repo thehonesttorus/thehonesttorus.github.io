@@ -1,0 +1,15 @@
+=== network 0, memory ladder into the (3,1) slice of layer 14
+  source layer 13: alone R2    1.2% scale +0.531 | ladder from 13 down to 13: R2    1.2% scale +0.531 | + best-scaled dilation R2   33.0%
+  source layer 12: alone R2    9.7% scale +0.688 | ladder from 13 down to 12: R2  -12.4% scale +0.409 | + best-scaled dilation R2    1.5%
+  source layer 11: alone R2   16.9% scale +0.855 | ladder from 13 down to 11: R2  -46.4% scale +0.337 | + best-scaled dilation R2  -45.0%
+  source layer 10: alone R2   20.1% scale +1.008 | ladder from 13 down to 10: R2  -98.3% scale +0.290 | + best-scaled dilation R2  -96.1%
+  source layer  9: alone R2   20.5% scale +1.126 | ladder from 13 down to 9: R2 -164.6% scale +0.256 | + best-scaled dilation R2 -147.2%
+  source layer  8: alone R2   21.9% scale +1.362 | ladder from 13 down to 8: R2 -235.3% scale +0.234 | + best-scaled dilation R2 -188.9%
+  source layer  7: alone R2   22.0% scale +1.653 | ladder from 13 down to 7: R2 -302.7% scale +0.221 | + best-scaled dilation R2 -215.5%
+  source layer  6: alone R2   17.8% scale +2.215 | ladder from 13 down to 6: R2 -358.0% scale +0.211 | + best-scaled dilation R2 -231.4%
+  source layer  5: alone R2   15.1% scale +2.805 | ladder from 13 down to 5: R2 -404.4% scale +0.205 | + best-scaled dilation R2 -239.7%
+  source layer  4: alone R2   12.4% scale +3.669 | ladder from 13 down to 4: R2 -440.9% scale +0.200 | + best-scaled dilation R2 -242.4%
+  source layer  3: alone R2    9.2% scale +5.180 | ladder from 13 down to 3: R2 -467.4% scale +0.197 | + best-scaled dilation R2 -242.3%
+  source layer  2: alone R2    6.2% scale +8.447 | ladder from 13 down to 2: R2 -483.3% scale +0.196 | + best-scaled dilation R2 -240.6%
+  source layer  1: alone R2    3.9% scale +13.746 | ladder from 13 down to 1: R2 -492.5% scale +0.195 | + best-scaled dilation R2 -238.6%
+  source layer  0: alone R2    1.5% scale +33.764 | ladder from 13 down to 0: R2 -495.8% scale +0.195 | + best-scaled dilation R2 -237.7%

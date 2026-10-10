@@ -1,0 +1,15 @@
+=== network 0, memory ladder into the 22 slice of layer 14 (genuinely newborn only: True)
+  source layer 13: alone R2   21.8% scale +6.711 | ladder from 13 down to 13: R2   21.8% scale +6.711 | + best-scaled dilation R2   95.3%
+  source layer 12: alone R2   25.3% scale +6.235 | ladder from 13 down to 12: R2   43.7% scale +3.527 | + best-scaled dilation R2   95.8%
+  source layer 11: alone R2   23.9% scale +6.571 | ladder from 13 down to 11: R2   60.9% scale +2.416 | + best-scaled dilation R2   95.9%
+  source layer 10: alone R2   19.3% scale +8.211 | ladder from 13 down to 10: R2   72.3% scale +1.938 | + best-scaled dilation R2   96.1%
+  source layer  9: alone R2   16.2% scale +10.042 | ladder from 13 down to 9: R2   80.0% scale +1.659 | + best-scaled dilation R2   96.1%
+  source layer  8: alone R2   15.1% scale +11.071 | ladder from 13 down to 8: R2   85.9% scale +1.466 | + best-scaled dilation R2   96.2%
+  source layer  7: alone R2   15.2% scale +11.016 | ladder from 13 down to 7: R2   90.5% scale +1.312 | + best-scaled dilation R2   96.2%
+  source layer  6: alone R2   10.8% scale +15.804 | ladder from 13 down to 6: R2   92.9% scale +1.221 | + best-scaled dilation R2   96.3%
+  source layer  5: alone R2    8.7% scale +19.964 | ladder from 13 down to 5: R2   94.4% scale +1.157 | + best-scaled dilation R2   96.3%
+  source layer  4: alone R2    6.7% scale +26.033 | ladder from 13 down to 4: R2   95.2% scale +1.112 | + best-scaled dilation R2   96.3%
+  source layer  3: alone R2    5.5% scale +32.040 | ladder from 13 down to 3: R2   95.7% scale +1.077 | + best-scaled dilation R2   96.3%
+  source layer  2: alone R2    3.8% scale +47.115 | ladder from 13 down to 2: R2   96.0% scale +1.055 | + best-scaled dilation R2   96.3%
+  source layer  1: alone R2    3.3% scale +54.597 | ladder from 13 down to 1: R2   96.2% scale +1.036 | + best-scaled dilation R2   96.3%
+  source layer  0: alone R2    2.4% scale +74.125 | ladder from 13 down to 0: R2   96.2% scale +1.023 | + best-scaled dilation R2   96.3%
