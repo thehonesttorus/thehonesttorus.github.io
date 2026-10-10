@@ -609,3 +609,64 @@ does.
 Decision rule: G1 <= -10% on both networks -> build the truth-free version (every charge set to the chain's own k3 charge at
 deep layers, shapes below layer 10 from the derived ratio profile) and run a cold 16-network screen; -3% to -10% -> record the
 ladder and examine which slices matter; > -3% or worse -> the gain-shaped amplitude is not the lever and this line closes.
+
+### 9d. Result of the gain-package oracle (network 0; `outputs/gpk_ladder_net0.txt`): the prediction fails by a wide margin
+
+Baseline raw 1.4771e-8 (cold, local, float32). Every variant that moves the gain-shaped part of D21, K22, K31 or k4 toward the
+truth's charge makes the output worse:
+
+| variant (layers 3-14, counterterms on) | raw | change |
+|---|---|---|
+| G1 all six slices, readout only | 6.239e-8 | +322% |
+| G1 all six slices, persisted into the newborn source | 1.433e-7 | +870% |
+| G2 D21 + K31, readout only | 5.594e-8 | +279% |
+| G2 D21 + K31, persisted | 1.824e-7 | +1135% |
+| D21 alone | 5.762e-8 | +290% |
+| K31 alone | 1.612e-8 | +9.1% |
+| G3 k4 + K22 | 2.314e-8 | +57% |
+| G4 variance (Rayleigh) only | 1.4757e-8 | -0.1% |
+
+**Against the registration**: G1 predicted -10% to -30%, observed +322%; G2 predicted -8% to -25%, observed +279%; G3
+predicted between -3% and +10%, observed +57%; G4 predicted between -5% and +15%, observed -0.1% (inside). **Decision rule:
+G1 worse than -3% -> the gain-shaped amplitude is not the lever and this line closes.** (Network 1 was not run: the
+network-0 outcome is far outside any plausible network-to-network spread.)
+
+**Why** (one measurement, `outputs/err_along_mean.txt`): the chain's final-layer error vector has only 0.4-3.7% of its energy
+along the mean direction (layers 3-15, both networks), and its neuron-averaged signed error is 2-12% of its rms. The error that
+remains is incoherent per-neuron scatter. The coherent (mean-direction) sector is exactly the one the output-fitted counterterms
+(the V47 table: per-layer rescales of var, D3, D21, g4, k22, k31, coff) have already tuned out, and the output is extremely
+sensitive to it: moving D21's gain amplitude alone by +30% multiplies the raw MSE by 3.9. The chain's deficits in the five slices
+(D21 70%, K31 42%, K22 82%, k4 85% of the truth's charge) are therefore not an error to remove; together with its other errors
+they are the compensated optimum that the counterterm fit found. Setting them to the truth's values destroys the compensation.
+The variance-only correction (G4), which has no compensation partner, is neutral because the chain's own Rayleigh quotient is
+already within 1% of the truth's.
+
+**What this settles**
+- The stage-13 build item 1 as formulated ("overwrite the dilation components of C, D3, D21 and k4 by the package at O(n^2)")
+  fails its pre-registered test. It is the same family as our earlier tests of single amplitudes (note XXXVI 3k, all worse),
+  now also for the joint correction.
+- The mixture structure itself is real and sharper than we had it (section 9b: five slices, one charge, to 1-4% at deep layers;
+  the 65-68% mixture share of V_l / 4). It explains why the counterterm table has the shape it has. It does not provide a lever
+  for the score: the chain's visible error is not in the dilation sector.
+- Note XLIV section 7's finding (the top-mode eigenvalue 0.5-0.8% low, inherited, transport factor 0.95) stays as measured, but
+  its reading as "where the late error lives" is withdrawn. It is where the covariance error has the most energy; the output
+  error, which is read through per-neuron variances and means, is not coherent along it.
+
+### 9e. Pre-registration: is the collective block of the covariance error the lever? (committed before the runs)
+
+Research switch `V63_TOPK` ("K:FILE:LAYERS:MODE", default off): at layers 1-14, after the pre-activation covariance is formed,
+replace the chain's covariance by the truth's in the subspace of the true top-K eigenvectors U of C_T:
+- MODE `block`: C <- C + (D P + P D - P D P), D = C_T - C_chain, P = U U^T (everything that touches the subspace; the bulk-bulk
+  error stays);
+- MODE `eig`: C <- C + U diag(lambda_j^T - u_j^T C u_j) U^T (the true top-K eigenvalues along the true eigenvectors only).
+
+Monte Carlo covariance (1.6e7 samples) from `mc2_off{N}_full.npz`; its noise projected on K dimensions is about sqrt(K/n) of the
+full noise, so the oracle is nearly noise-free. Network 0, counterterms on, baseline 1.4771e-8.
+
+Predictions (raw MSE change): block K = 1: -3% (-8% to +3%; the top-mode oracle G4 was neutral); K = 8: -12% (-25% to -3%);
+K = 32: -25% (-50% to -8%); K = 128: -40% (-65% to -15%); eig K = 32: -10% (-25% to +3%).
+
+Decision rule: block K = 32 at or below -20% on network 0 (then confirm on network 1): the collective sector is a lever, and the
+next step is a cheaper way to compute that block (a K-dimensional exact latent for the top modes). Between -20% and -5%: the
+bulk matters as much; record the ladder. Above -5%: the collective covariance error is not the lever either, and the output
+error is in per-neuron structure that no low-dimensional treatment reaches.
