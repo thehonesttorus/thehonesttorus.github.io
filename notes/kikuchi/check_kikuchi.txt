@@ -1,0 +1,44 @@
+PASS  [D,U] = (N - 2k) I on each sector (eq. 1): 0.00e+00
+PASS  L_G >= 0 and its quadratic form (eq. 2): 1.42e-14
+PASS  modular flow: multiplicative and state-invariant (Sec. 2.3): 2.67e-15
+PASS  Thm 3.1 at k=0: D = U*, D f_(k+1) = f_k, norm identity: 1.60e-16
+PASS  Thm 3.1 at k=1: D = U*, D f_(k+1) = f_k, norm identity: 2.22e-16
+PASS  Thm 3.1 at k=2: D = U*, D f_(k+1) = f_k, norm identity: 1.11e-16
+PASS  Example 3.2: E1 E2 X = X/4, E2 E1 X = Y/2: 0.00e+00
+PASS  Example 3.2: Gaussian halfspaces at angle pi/4 give P(equal signs) = 3/4: 0.00e+00
+PASS  Thm 4.1: t_+ <= m <= (t+s)/2, rank-two relaxation value, gap identity (7): 2.22e-16
+PASS  Thm 4.1 sharpness: +-s law attains the upper end, {0, q/t} law the lower end: 1.11e-16
+PASS  Thm 5.1: m = t_+ + Delta E_nu g_c, both anchor signs (eq. 9): 2.22e-16
+PASS  Thm 5.1: 0 <= g_c <= 1 and nu is a probability law: 5.44e-15
+PASS  Sec 5.1: filtered moment update, coherent slot state, G_f <= G, ancilla projection: 6.66e-16
+PASS  Sec 6: gap = d4/(4 s^3) E_nu4 s^2/(|Z|+s)^2 <= d4/(4 s^3), and the quadratic/quartic consistency constraint: 3.75e-16
+PASS  Sec 6: moment-null mechanism (support on the roots of p: E Z_+ = E h(Z)): 1.11e-16
+PASS  Sec 9.1 table: L1, L2, U2, U1, R1, R2 (rounded to 1e-10): 4.47e-11
+PASS  R1 = (r - q^2)/(4 q^{3/2}): 0.00e+00
+PASS  Thm 7.1/7.2/8.1 on finite laws: L_k <= m <= U_k, monotone in k, U_k - m <= R_k: 0.00e+00
+PASS  exact termination once the cyclic space stabilises (6 atoms, k = 6): 1.11e-16
+PASS  three-atom law with an atom at 0: odd two-dimensional lower space already exact: 2.22e-16
+PASS  Prop 9.1: m = E P - kappa E_nu 1/max(P,Q), E_nu max^-2 <= 1/kappa: 1.67e-16
+PASS  Sec 9.1: E 1/max(R1,R2) = sqrt(pi)(sqrt2 - 1) and E F = 1/(2 sqrt pi) (eq. 19): 2.22e-16
+PASS  Sec 9.1: baseline 0.3989423, correction 0.1168475, gate occupation 3/8: 1.96e-08
+PASS  Sec 9.1: Monte Carlo of E(X_+ - Y_+)_+ agrees with 1/(2 sqrt pi) (4e6 samples, 5 sigma): 1.41e+00
+PASS  Sec 9: pair chain K = S*S is a reversible Markov contraction with eq. (18): 1.11e-16
+PASS  Sec 9: (1,1,0,0)/(0,0,1,1) example gives two disconnected pair states: 0.00e+00
+PASS  eq. (20) three lengths, by Monte Carlo (z-score): 6.15e-01
+PASS  Sec 9.2: sign correlation 1 - 2 alpha/pi (z-score): 2.11e-01
+PASS  Sec 9.2: heat-bath (E1+E2)/2 eigenvalues 1, (1+c)/2, (1-c)/2, 0: 2.22e-16
+PASS  Thm 10.1: l_k up, u_k down, l <= m <= u, midpoint RMS bound (21): 2.22e-16
+PASS  eq. (22): squared certificate drop identity: 2.08e-17
+PASS  lower residual: E[Z_+|C] - (E[Z|C])_+ = min(E Z_+, E Z_-): 0.00e+00
+PASS  eq. (23) injection identity: 2.22e-16
+PASS  Sec 10.1 example: E U/2 = 1/sqrt(2 pi): 6.11e-16
+      sampled sparsifier (60 of 15 edges with replacement): relative spectrum [0.639, 1.450]
+PASS  Prop 11.1: congruence keeps the relative spectrum inside [1-eps, 1+eps]: 0.00e+00
+PASS  Sec 11: Q_p 1 = 0, detailed balance in L^2(p), ker H_p = sqrt p: 8.99e-16
+PASS  Thm 12.1: identity (24), certificate (25), enrichment updates, trace decrease, monotonicity: 1.74e-13
+PASS  Sec 12.1 example: empty trial 0, first coordinate 1, exact 0: 0.00e+00
+PASS  Sec 12.2: H = M*M >= 2/((L+1)(L+2)) for contractive T: 0.00e+00
+PASS  Sec 12.2: residual recycling r_t = r - S u_t and the gap bound: 5.93e-16
+PASS  Thm 13.1: RMS <= 2b sqrt(q(1-q)) + d q <= 2b sqrt(eps/gamma) + d eps/gamma: 0.00e+00
+
+ALL PASS

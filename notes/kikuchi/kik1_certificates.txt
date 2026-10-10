@@ -1,0 +1,232 @@
+
+=== net 0: 4325376.0 samples in 11 tasks; final layer: mean t +0.024, rms t 1.357, mean s 1.202
+  Monte Carlo m vs truth: rms 1.44e-04 (sampling sd ~ 6.8e-04 upper bound)
+  [4.1] first interval: RMS cert 3.540e-02; mean half-gap Delta 0.057; midpoint err 1.883e-02
+  [5.1] restart: E_nu g_c = (m - t_+)/Delta in [0.000, 0.795], mean 0.181, sd 0.254 (a certified [l,u] on it gives RMS cert Delta*(u-l)/2: needs u-l <= 1.7e-03)
+  [6]   quartic: d4/q^2 mean 0.836 (Gaussian with these t,q: 0.810); gap 0.0362 <= bound 0.1506; E_nu4 effect mean 0.245
+  [ref] Gaussian shape at exact (t, q): err vs truth 4.376e-04; vs the same-sample m 4.219e-04 (the shape defect itself)
+        standardised kappa3 rms 0.112, kappa4 mean +0.066; Hermite shape with kappa3: err 1.472e-04, kappa3+kappa4: 1.128e-05; restart effect: Gaussian value err 6.35e-03 (needs <= 1.7e-03 for the target)
+  [A2]  closure contractions: t err 2.86e-03, q err 5.26e-03; interval RMS cert 3.511e-02, covers truth 0.763; closure mean err 2.014e-03; Gaussian at closure (t,q) err 2.014e-03
+  [7-8] cyclic hierarchy (RMS certs; maintained interval [max(t_+, L_k, U_k - R_k), U_k] intersected over k):
+    layer  0: k=1: [L,U] 1.49e-01 kept 1.49e-01 mid err 6.51e-03 R/(U-L) 2.37 | k=2: [L,U] 7.83e-02 kept 7.83e-02 mid err 1.46e-02 R/(U-L) 4.00
+    layer  3: k=1: [L,U] 1.10e-01 kept 8.93e-02 mid err 2.49e-02 R/(U-L) 2.17 | k=2: [L,U] 5.25e-02 kept 4.72e-02 mid err 9.57e-03 R/(U-L) 3.65
+    layer  6: k=1: [L,U] 8.29e-02 kept 6.01e-02 mid err 2.19e-02 R/(U-L) 1.95 | k=2: [L,U] 3.71e-02 kept 3.12e-02 mid err 7.01e-03 R/(U-L) 3.26
+    layer  9: k=1: [L,U] 6.36e-02 kept 4.23e-02 mid err 1.79e-02 R/(U-L) 1.71 | k=2: [L,U] 2.71e-02 kept 2.17e-02 mid err 5.35e-03 R/(U-L) 2.76
+    layer 12: k=1: [L,U] 5.41e-02 kept 3.37e-02 mid err 1.55e-02 R/(U-L) 1.56 | k=2: [L,U] 2.20e-02 kept 1.71e-02 mid err 4.34e-03 R/(U-L) 2.40
+    layer 15: k=1: [L,U] 4.75e-02 kept 2.76e-02 mid err 1.41e-02 R/(U-L) 1.42 | k=2: [L,U] 1.84e-02 kept 1.36e-02 mid err 3.72e-03 R/(U-L) 2.07 | k=3: [L,U] 1.13e-02 kept 9.43e-03 mid err 2.37e-03 R/(U-L) 2.83 | k=4: [L,U] 8.08e-03 kept 7.20e-03 mid err 1.85e-03 R/(U-L) 3.59
+  [10]  nested cells on 8 penultimate gates per final neuron (pilot greedy order):
+    K=0: cert 3.540e-02 (x1.000) mid err 1.88e-02
+    K=1: cert 3.299e-02 (x0.932) mid err 1.65e-02
+    K=2: cert 3.235e-02 (x0.914) mid err 1.59e-02
+    K=3: cert 3.163e-02 (x0.894) mid err 1.52e-02
+    K=4: cert 3.101e-02 (x0.876) mid err 1.47e-02
+    K=5: cert 3.044e-02 (x0.860) mid err 1.43e-02
+    K=6: cert 2.997e-02 (x0.847) mid err 1.39e-02
+    K=7: cert 2.952e-02 (x0.834) mid err 1.36e-02
+    K=8: cert 2.913e-02 (x0.823) mid err 1.33e-02
+    exact lower residual identity, max error 7.5e-09
+    best single penultimate gate (full-sample eq. 22 scores): width decrease 0.0390 of the first width (median), max 0.2646
+  [9]   pair overlap: E P 10.05, E Q 10.02, kappa 101.2, corr(P,Q) 0.916; identity err 1.3e-08; E_nu 1/max 0.0938 vs 1/E max 0.0946; relative spread of max under nu (from E_nu 1/max^2 vs (E_nu 1/max)^2): 0.0936
+
+=== net 1: 4325376.0 samples in 11 tasks; final layer: mean t +0.027, rms t 1.497, mean s 1.308
+  Monte Carlo m vs truth: rms 1.26e-04 (sampling sd ~ 7.5e-04 upper bound)
+  [4.1] first interval: RMS cert 3.713e-02; mean half-gap Delta 0.059; midpoint err 1.947e-02
+  [5.1] restart: E_nu g_c = (m - t_+)/Delta in [0.000, 0.795], mean 0.183, sd 0.256 (a certified [l,u] on it gives RMS cert Delta*(u-l)/2: needs u-l <= 1.6e-03)
+  [6]   quartic: d4/q^2 mean 0.827 (Gaussian with these t,q: 0.802); gap 0.0373 <= bound 0.1552; E_nu4 effect mean 0.244
+  [ref] Gaussian shape at exact (t, q): err vs truth 4.498e-04; vs the same-sample m 4.322e-04 (the shape defect itself)
+        standardised kappa3 rms 0.107, kappa4 mean +0.062; Hermite shape with kappa3: err 1.477e-04, kappa3+kappa4: 1.102e-05; restart effect: Gaussian value err 5.86e-03 (needs <= 1.6e-03 for the target)
+  [A2]  closure contractions: t err 3.12e-03, q err 5.39e-03; interval RMS cert 3.688e-02, covers truth 0.731; closure mean err 2.172e-03; Gaussian at closure (t,q) err 2.172e-03
+  [7-8] cyclic hierarchy (RMS certs; maintained interval [max(t_+, L_k, U_k - R_k), U_k] intersected over k):
+    layer  0: k=1: [L,U] 1.50e-01 kept 1.50e-01 mid err 6.53e-03 R/(U-L) 2.37 | k=2: [L,U] 7.84e-02 kept 7.84e-02 mid err 1.46e-02 R/(U-L) 4.01
+    layer  3: k=1: [L,U] 1.12e-01 kept 9.03e-02 mid err 2.57e-02 R/(U-L) 2.18 | k=2: [L,U] 5.31e-02 kept 4.76e-02 mid err 9.74e-03 R/(U-L) 3.66
+    layer  6: k=1: [L,U] 8.27e-02 kept 5.83e-02 mid err 2.25e-02 R/(U-L) 1.88 | k=2: [L,U] 3.64e-02 kept 3.01e-02 mid err 7.04e-03 R/(U-L) 3.11
+    layer  9: k=1: [L,U] 6.68e-02 kept 4.37e-02 mid err 1.90e-02 R/(U-L) 1.69 | k=2: [L,U] 2.81e-02 kept 2.23e-02 mid err 5.47e-03 R/(U-L) 2.71
+    layer 12: k=1: [L,U] 5.69e-02 kept 3.57e-02 mid err 1.62e-02 R/(U-L) 1.54 | k=2: [L,U] 2.30e-02 kept 1.80e-02 mid err 4.55e-03 R/(U-L) 2.35
+    layer 15: k=1: [L,U] 4.91e-02 kept 2.89e-02 mid err 1.43e-02 R/(U-L) 1.41 | k=2: [L,U] 1.90e-02 kept 1.43e-02 mid err 3.74e-03 R/(U-L) 2.02 | k=3: [L,U] 1.17e-02 kept 9.97e-03 mid err 2.48e-03 R/(U-L) 2.71 | k=4: [L,U] 8.40e-03 kept 7.61e-03 mid err 1.98e-03 R/(U-L) 3.47
+  [10]  nested cells on 8 penultimate gates per final neuron (pilot greedy order):
+    K=0: cert 3.713e-02 (x1.000) mid err 1.95e-02
+    K=1: cert 3.453e-02 (x0.930) mid err 1.69e-02
+    K=2: cert 3.380e-02 (x0.910) mid err 1.62e-02
+    K=3: cert 3.299e-02 (x0.888) mid err 1.55e-02
+    K=4: cert 3.232e-02 (x0.870) mid err 1.49e-02
+    K=5: cert 3.175e-02 (x0.855) mid err 1.45e-02
+    K=6: cert 3.124e-02 (x0.841) mid err 1.41e-02
+    K=7: cert 3.079e-02 (x0.829) mid err 1.37e-02
+    K=8: cert 3.038e-02 (x0.818) mid err 1.34e-02
+    exact lower residual identity, max error 6.5e-09
+    best single penultimate gate (full-sample eq. 22 scores): width decrease 0.0428 of the first width (median), max 0.2909
+  [9]   pair overlap: E P 10.66, E Q 10.63, kappa 113.7, corr(P,Q) 0.905; identity err 1.4e-08; E_nu 1/max 0.0885 vs 1/E max 0.0891; relative spread of max under nu (from E_nu 1/max^2 vs (E_nu 1/max)^2): 0.0874
+
+=== net 2: 4325376.0 samples in 11 tasks; final layer: mean t +0.010, rms t 1.559, mean s 1.371
+  Monte Carlo m vs truth: rms 1.40e-04 (sampling sd ~ 7.8e-04 upper bound)
+  [4.1] first interval: RMS cert 4.131e-02; mean half-gap Delta 0.065; midpoint err 2.171e-02
+  [5.1] restart: E_nu g_c = (m - t_+)/Delta in [0.000, 0.795], mean 0.190, sd 0.261 (a certified [l,u] on it gives RMS cert Delta*(u-l)/2: needs u-l <= 1.5e-03)
+  [6]   quartic: d4/q^2 mean 0.843 (Gaussian with these t,q: 0.818); gap 0.0401 <= bound 0.1673; E_nu4 effect mean 0.244
+  [ref] Gaussian shape at exact (t, q): err vs truth 4.957e-04; vs the same-sample m 4.783e-04 (the shape defect itself)
+        standardised kappa3 rms 0.103, kappa4 mean +0.058; Hermite shape with kappa3: err 1.508e-04, kappa3+kappa4: 1.144e-05; restart effect: Gaussian value err 6.07e-03 (needs <= 1.5e-03 for the target)
+  [A2]  closure contractions: t err 3.24e-03, q err 5.56e-03; interval RMS cert 4.107e-02, covers truth 0.745; closure mean err 2.323e-03; Gaussian at closure (t,q) err 2.323e-03
+  [7-8] cyclic hierarchy (RMS certs; maintained interval [max(t_+, L_k, U_k - R_k), U_k] intersected over k):
+    layer  0: k=1: [L,U] 1.50e-01 kept 1.50e-01 mid err 6.54e-03 R/(U-L) 2.37 | k=2: [L,U] 7.84e-02 kept 7.84e-02 mid err 1.46e-02 R/(U-L) 4.01
+    layer  3: k=1: [L,U] 1.08e-01 kept 8.70e-02 mid err 2.49e-02 R/(U-L) 2.16 | k=2: [L,U] 5.14e-02 kept 4.59e-02 mid err 9.28e-03 R/(U-L) 3.63
+    layer  6: k=1: [L,U] 8.51e-02 kept 5.94e-02 mid err 2.31e-02 R/(U-L) 1.86 | k=2: [L,U] 3.73e-02 kept 3.08e-02 mid err 7.06e-03 R/(U-L) 3.07
+    layer  9: k=1: [L,U] 7.22e-02 kept 4.71e-02 mid err 2.04e-02 R/(U-L) 1.64 | k=2: [L,U] 3.01e-02 kept 2.40e-02 mid err 5.85e-03 R/(U-L) 2.58
+    layer 12: k=1: [L,U] 5.95e-02 kept 3.48e-02 mid err 1.76e-02 R/(U-L) 1.44 | k=2: [L,U] 2.32e-02 kept 1.74e-02 mid err 4.62e-03 R/(U-L) 2.10
+    layer 15: k=1: [L,U] 5.25e-02 kept 3.14e-02 mid err 1.52e-02 R/(U-L) 1.41 | k=2: [L,U] 2.05e-02 kept 1.57e-02 mid err 4.05e-03 R/(U-L) 2.04 | k=3: [L,U] 1.27e-02 kept 1.09e-02 mid err 2.70e-03 R/(U-L) 2.75 | k=4: [L,U] 9.12e-03 kept 8.30e-03 mid err 2.15e-03 R/(U-L) 3.54
+  [10]  nested cells on 8 penultimate gates per final neuron (pilot greedy order):
+    K=0: cert 4.131e-02 (x1.000) mid err 2.17e-02
+    K=1: cert 3.795e-02 (x0.919) mid err 1.84e-02
+    K=2: cert 3.705e-02 (x0.897) mid err 1.76e-02
+    K=3: cert 3.608e-02 (x0.873) mid err 1.67e-02
+    K=4: cert 3.525e-02 (x0.853) mid err 1.60e-02
+    K=5: cert 3.455e-02 (x0.836) mid err 1.55e-02
+    K=6: cert 3.396e-02 (x0.822) mid err 1.50e-02
+    K=7: cert 3.344e-02 (x0.809) mid err 1.46e-02
+    K=8: cert 3.294e-02 (x0.797) mid err 1.43e-02
+    exact lower residual identity, max error 9.5e-09
+    best single penultimate gate (full-sample eq. 22 scores): width decrease 0.0437 of the first width (median), max 0.2633
+  [9]   pair overlap: E P 11.87, E Q 11.86, kappa 141.4, corr(P,Q) 0.906; identity err 6.7e-09; E_nu 1/max 0.0796 vs 1/E max 0.0801; relative spread of max under nu (from E_nu 1/max^2 vs (E_nu 1/max)^2): 0.0844
+
+=== net 3: 4325376.0 samples in 11 tasks; final layer: mean t +0.059, rms t 1.352, mean s 1.208
+  Monte Carlo m vs truth: rms 1.39e-04 (sampling sd ~ 6.8e-04 upper bound)
+  [4.1] first interval: RMS cert 3.811e-02; mean half-gap Delta 0.062; midpoint err 2.019e-02
+  [5.1] restart: E_nu g_c = (m - t_+)/Delta in [0.000, 0.796], mean 0.191, sd 0.260 (a certified [l,u] on it gives RMS cert Delta*(u-l)/2: needs u-l <= 1.6e-03)
+  [6]   quartic: d4/q^2 mean 0.866 (Gaussian with these t,q: 0.840); gap 0.0384 <= bound 0.1598; E_nu4 effect mean 0.244
+  [ref] Gaussian shape at exact (t, q): err vs truth 4.604e-04; vs the same-sample m 4.419e-04 (the shape defect itself)
+        standardised kappa3 rms 0.102, kappa4 mean +0.058; Hermite shape with kappa3: err 1.428e-04, kappa3+kappa4: 1.117e-05; restart effect: Gaussian value err 6.09e-03 (needs <= 1.6e-03 for the target)
+  [A2]  closure contractions: t err 2.57e-03, q err 4.47e-03; interval RMS cert 3.788e-02, covers truth 0.747; closure mean err 1.872e-03; Gaussian at closure (t,q) err 1.872e-03
+  [7-8] cyclic hierarchy (RMS certs; maintained interval [max(t_+, L_k, U_k - R_k), U_k] intersected over k):
+    layer  0: k=1: [L,U] 1.50e-01 kept 1.50e-01 mid err 6.51e-03 R/(U-L) 2.37 | k=2: [L,U] 7.84e-02 kept 7.84e-02 mid err 1.46e-02 R/(U-L) 4.01
+    layer  3: k=1: [L,U] 1.09e-01 kept 8.65e-02 mid err 2.55e-02 R/(U-L) 2.15 | k=2: [L,U] 5.13e-02 kept 4.56e-02 mid err 9.45e-03 R/(U-L) 3.61
+    layer  6: k=1: [L,U] 8.56e-02 kept 5.99e-02 mid err 2.36e-02 R/(U-L) 1.85 | k=2: [L,U] 3.76e-02 kept 3.09e-02 mid err 7.31e-03 R/(U-L) 3.04
+    layer  9: k=1: [L,U] 6.70e-02 kept 4.36e-02 mid err 1.91e-02 R/(U-L) 1.70 | k=2: [L,U] 2.82e-02 kept 2.23e-02 mid err 5.44e-03 R/(U-L) 2.73
+    layer 12: k=1: [L,U] 5.61e-02 kept 3.45e-02 mid err 1.65e-02 R/(U-L) 1.54 | k=2: [L,U] 2.27e-02 kept 1.73e-02 mid err 4.55e-03 R/(U-L) 2.36
+    layer 15: k=1: [L,U] 4.99e-02 kept 2.95e-02 mid err 1.46e-02 R/(U-L) 1.43 | k=2: [L,U] 1.95e-02 kept 1.46e-02 mid err 3.92e-03 R/(U-L) 2.09 | k=3: [L,U] 1.20e-02 kept 1.01e-02 mid err 2.55e-03 R/(U-L) 2.84 | k=4: [L,U] 8.56e-03 kept 7.70e-03 mid err 2.00e-03 R/(U-L) 3.67
+  [10]  nested cells on 8 penultimate gates per final neuron (pilot greedy order):
+    K=0: cert 3.811e-02 (x1.000) mid err 2.02e-02
+    K=1: cert 3.537e-02 (x0.928) mid err 1.75e-02
+    K=2: cert 3.466e-02 (x0.909) mid err 1.68e-02
+    K=3: cert 3.378e-02 (x0.886) mid err 1.60e-02
+    K=4: cert 3.313e-02 (x0.869) mid err 1.55e-02
+    K=5: cert 3.247e-02 (x0.852) mid err 1.50e-02
+    K=6: cert 3.190e-02 (x0.837) mid err 1.45e-02
+    K=7: cert 3.145e-02 (x0.825) mid err 1.42e-02
+    K=8: cert 3.100e-02 (x0.813) mid err 1.39e-02
+    exact lower residual identity, max error 8.4e-09
+    best single penultimate gate (full-sample eq. 22 scores): width decrease 0.0411 of the first width (median), max 0.2667
+  [9]   pair overlap: E P 10.28, E Q 10.22, kappa 105.6, corr(P,Q) 0.908; identity err 2.2e-09; E_nu 1/max 0.0920 vs 1/E max 0.0927; relative spread of max under nu (from E_nu 1/max^2 vs (E_nu 1/max)^2): 0.0919
+
+=== net 4: 4325376.0 samples in 11 tasks; final layer: mean t -0.006, rms t 1.127, mean s 1.024
+  Monte Carlo m vs truth: rms 1.33e-04 (sampling sd ~ 5.7e-04 upper bound)
+  [4.1] first interval: RMS cert 3.925e-02; mean half-gap Delta 0.064; midpoint err 2.006e-02
+  [5.1] restart: E_nu g_c = (m - t_+)/Delta in [0.000, 0.795], mean 0.224, sd 0.270 (a certified [l,u] on it gives RMS cert Delta*(u-l)/2: needs u-l <= 1.5e-03)
+  [6]   quartic: d4/q^2 mean 0.966 (Gaussian with these t,q: 0.935); gap 0.0378 <= bound 0.1593; E_nu4 effect mean 0.242
+  [ref] Gaussian shape at exact (t, q): err vs truth 4.839e-04; vs the same-sample m 4.670e-04 (the shape defect itself)
+        standardised kappa3 rms 0.095, kappa4 mean +0.063; Hermite shape with kappa3: err 1.598e-04, kappa3+kappa4: 1.150e-05; restart effect: Gaussian value err 6.45e-03 (needs <= 1.5e-03 for the target)
+  [A2]  closure contractions: t err 2.57e-03, q err 3.89e-03; interval RMS cert 3.905e-02, covers truth 0.812; closure mean err 1.839e-03; Gaussian at closure (t,q) err 1.839e-03
+  [7-8] cyclic hierarchy (RMS certs; maintained interval [max(t_+, L_k, U_k - R_k), U_k] intersected over k):
+    layer  0: k=1: [L,U] 1.49e-01 kept 1.49e-01 mid err 6.53e-03 R/(U-L) 2.37 | k=2: [L,U] 7.83e-02 kept 7.83e-02 mid err 1.46e-02 R/(U-L) 4.01
+    layer  3: k=1: [L,U] 1.09e-01 kept 8.87e-02 mid err 2.46e-02 R/(U-L) 2.20 | k=2: [L,U] 5.19e-02 kept 4.67e-02 mid err 9.46e-03 R/(U-L) 3.70
+    layer  6: k=1: [L,U] 8.48e-02 kept 5.98e-02 mid err 2.29e-02 R/(U-L) 1.88 | k=2: [L,U] 3.74e-02 kept 3.10e-02 mid err 7.06e-03 R/(U-L) 3.10
+    layer  9: k=1: [L,U] 6.92e-02 kept 4.60e-02 mid err 1.96e-02 R/(U-L) 1.72 | k=2: [L,U] 2.95e-02 kept 2.35e-02 mid err 5.67e-03 R/(U-L) 2.77
+    layer 12: k=1: [L,U] 5.76e-02 kept 3.67e-02 mid err 1.66e-02 R/(U-L) 1.60 | k=2: [L,U] 2.38e-02 kept 1.85e-02 mid err 4.71e-03 R/(U-L) 2.49
+    layer 15: k=1: [L,U] 4.77e-02 kept 2.98e-02 mid err 1.37e-02 R/(U-L) 1.54 | k=2: [L,U] 1.94e-02 kept 1.51e-02 mid err 3.80e-03 R/(U-L) 2.36 | k=3: [L,U] 1.21e-02 kept 1.05e-02 mid err 2.60e-03 R/(U-L) 3.29 | k=4: [L,U] 8.76e-03 kept 8.02e-03 mid err 2.09e-03 R/(U-L) 4.23
+  [10]  nested cells on 8 penultimate gates per final neuron (pilot greedy order):
+    K=0: cert 3.925e-02 (x1.000) mid err 2.01e-02
+    K=1: cert 3.632e-02 (x0.925) mid err 1.71e-02
+    K=2: cert 3.558e-02 (x0.907) mid err 1.65e-02
+    K=3: cert 3.469e-02 (x0.884) mid err 1.57e-02
+    K=4: cert 3.396e-02 (x0.865) mid err 1.51e-02
+    K=5: cert 3.332e-02 (x0.849) mid err 1.46e-02
+    K=6: cert 3.277e-02 (x0.835) mid err 1.41e-02
+    K=7: cert 3.227e-02 (x0.822) mid err 1.38e-02
+    K=8: cert 3.183e-02 (x0.811) mid err 1.34e-02
+    exact lower residual identity, max error 7.7e-09
+    best single penultimate gate (full-sample eq. 22 scores): width decrease 0.0382 of the first width (median), max 0.2691
+  [9]   pair overlap: E P 8.78, E Q 8.79, kappa 77.6, corr(P,Q) 0.879; identity err 1.8e-09; E_nu 1/max 0.1075 vs 1/E max 0.1083; relative spread of max under nu (from E_nu 1/max^2 vs (E_nu 1/max)^2): 0.0884
+
+=== net 5: 4325376.0 samples in 11 tasks; final layer: mean t -0.049, rms t 1.449, mean s 1.265
+  Monte Carlo m vs truth: rms 1.41e-04 (sampling sd ~ 7.2e-04 upper bound)
+  [4.1] first interval: RMS cert 3.479e-02; mean half-gap Delta 0.055; midpoint err 1.828e-02
+  [5.1] restart: E_nu g_c = (m - t_+)/Delta in [0.000, 0.795], mean 0.175, sd 0.251 (a certified [l,u] on it gives RMS cert Delta*(u-l)/2: needs u-l <= 1.7e-03)
+  [6]   quartic: d4/q^2 mean 0.805 (Gaussian with these t,q: 0.781); gap 0.0354 <= bound 0.1468; E_nu4 effect mean 0.245
+  [ref] Gaussian shape at exact (t, q): err vs truth 4.363e-04; vs the same-sample m 4.125e-04 (the shape defect itself)
+        standardised kappa3 rms 0.106, kappa4 mean +0.061; Hermite shape with kappa3: err 1.355e-04, kappa3+kappa4: 1.111e-05; restart effect: Gaussian value err 5.70e-03 (needs <= 1.7e-03 for the target)
+  [A2]  closure contractions: t err 3.20e-03, q err 5.41e-03; interval RMS cert 3.458e-02, covers truth 0.753; closure mean err 2.201e-03; Gaussian at closure (t,q) err 2.201e-03
+  [7-8] cyclic hierarchy (RMS certs; maintained interval [max(t_+, L_k, U_k - R_k), U_k] intersected over k):
+    layer  0: k=1: [L,U] 1.50e-01 kept 1.50e-01 mid err 6.55e-03 R/(U-L) 2.37 | k=2: [L,U] 7.84e-02 kept 7.84e-02 mid err 1.46e-02 R/(U-L) 4.01
+    layer  3: k=1: [L,U] 1.09e-01 kept 8.64e-02 mid err 2.57e-02 R/(U-L) 2.14 | k=2: [L,U] 5.12e-02 kept 4.54e-02 mid err 9.50e-03 R/(U-L) 3.60
+    layer  6: k=1: [L,U] 8.68e-02 kept 6.00e-02 mid err 2.38e-02 R/(U-L) 1.83 | k=2: [L,U] 3.77e-02 kept 3.09e-02 mid err 7.24e-03 R/(U-L) 3.00
+    layer  9: k=1: [L,U] 6.89e-02 kept 4.50e-02 mid err 1.95e-02 R/(U-L) 1.66 | k=2: [L,U] 2.88e-02 kept 2.29e-02 mid err 5.66e-03 R/(U-L) 2.62
+    layer 12: k=1: [L,U] 5.59e-02 kept 3.44e-02 mid err 1.61e-02 R/(U-L) 1.48 | k=2: [L,U] 2.23e-02 kept 1.72e-02 mid err 4.39e-03 R/(U-L) 2.21
+    layer 15: k=1: [L,U] 4.68e-02 kept 2.73e-02 mid err 1.36e-02 R/(U-L) 1.39 | k=2: [L,U] 1.80e-02 kept 1.35e-02 mid err 3.54e-03 R/(U-L) 1.97 | k=3: [L,U] 1.10e-02 kept 9.38e-03 mid err 2.31e-03 R/(U-L) 2.63 | k=4: [L,U] 7.89e-03 kept 7.15e-03 mid err 1.84e-03 R/(U-L) 3.34
+  [10]  nested cells on 8 penultimate gates per final neuron (pilot greedy order):
+    K=0: cert 3.479e-02 (x1.000) mid err 1.83e-02
+    K=1: cert 3.229e-02 (x0.928) mid err 1.59e-02
+    K=2: cert 3.155e-02 (x0.907) mid err 1.52e-02
+    K=3: cert 3.087e-02 (x0.887) mid err 1.46e-02
+    K=4: cert 3.021e-02 (x0.868) mid err 1.40e-02
+    K=5: cert 2.968e-02 (x0.853) mid err 1.36e-02
+    K=6: cert 2.921e-02 (x0.839) mid err 1.32e-02
+    K=7: cert 2.876e-02 (x0.827) mid err 1.29e-02
+    K=8: cert 2.836e-02 (x0.815) mid err 1.26e-02
+    exact lower residual identity, max error 8.4e-09
+    best single penultimate gate (full-sample eq. 22 scores): width decrease 0.0436 of the first width (median), max 0.3103
+  [9]   pair overlap: E P 10.52, E Q 10.57, kappa 111.7, corr(P,Q) 0.909; identity err 1.8e-08; E_nu 1/max 0.0894 vs 1/E max 0.0900; relative spread of max under nu (from E_nu 1/max^2 vs (E_nu 1/max)^2): 0.0864
+
+=== net 6: 4325376.0 samples in 11 tasks; final layer: mean t -0.052, rms t 1.208, mean s 1.071
+  Monte Carlo m vs truth: rms 1.20e-04 (sampling sd ~ 6.1e-04 upper bound)
+  [4.1] first interval: RMS cert 3.431e-02; mean half-gap Delta 0.055; midpoint err 1.790e-02
+  [5.1] restart: E_nu g_c = (m - t_+)/Delta in [0.000, 0.795], mean 0.197, sd 0.261 (a certified [l,u] on it gives RMS cert Delta*(u-l)/2: needs u-l <= 1.7e-03)
+  [6]   quartic: d4/q^2 mean 0.877 (Gaussian with these t,q: 0.849); gap 0.0338 <= bound 0.1415; E_nu4 effect mean 0.244
+  [ref] Gaussian shape at exact (t, q): err vs truth 4.381e-04; vs the same-sample m 4.189e-04 (the shape defect itself)
+        standardised kappa3 rms 0.103, kappa4 mean +0.064; Hermite shape with kappa3: err 1.346e-04, kappa3+kappa4: 1.032e-05; restart effect: Gaussian value err 6.30e-03 (needs <= 1.7e-03 for the target)
+  [A2]  closure contractions: t err 2.18e-03, q err 4.43e-03; interval RMS cert 3.407e-02, covers truth 0.783; closure mean err 1.519e-03; Gaussian at closure (t,q) err 1.519e-03
+  [7-8] cyclic hierarchy (RMS certs; maintained interval [max(t_+, L_k, U_k - R_k), U_k] intersected over k):
+    layer  0: k=1: [L,U] 1.49e-01 kept 1.49e-01 mid err 6.53e-03 R/(U-L) 2.37 | k=2: [L,U] 7.84e-02 kept 7.84e-02 mid err 1.46e-02 R/(U-L) 4.01
+    layer  3: k=1: [L,U] 1.10e-01 kept 8.89e-02 mid err 2.48e-02 R/(U-L) 2.18 | k=2: [L,U] 5.23e-02 kept 4.70e-02 mid err 9.44e-03 R/(U-L) 3.66
+    layer  6: k=1: [L,U] 8.29e-02 kept 5.78e-02 mid err 2.28e-02 R/(U-L) 1.86 | k=2: [L,U] 3.63e-02 kept 2.98e-02 mid err 7.03e-03 R/(U-L) 3.07
+    layer  9: k=1: [L,U] 6.58e-02 kept 4.35e-02 mid err 1.85e-02 R/(U-L) 1.69 | k=2: [L,U] 2.78e-02 kept 2.23e-02 mid err 5.37e-03 R/(U-L) 2.72
+    layer 12: k=1: [L,U] 5.32e-02 kept 3.26e-02 mid err 1.55e-02 R/(U-L) 1.51 | k=2: [L,U] 2.14e-02 kept 1.64e-02 mid err 4.21e-03 R/(U-L) 2.29
+    layer 15: k=1: [L,U] 4.38e-02 kept 2.64e-02 mid err 1.27e-02 R/(U-L) 1.47 | k=2: [L,U] 1.73e-02 kept 1.33e-02 mid err 3.44e-03 R/(U-L) 2.17 | k=3: [L,U] 1.07e-02 kept 9.23e-03 mid err 2.29e-03 R/(U-L) 2.96 | k=4: [L,U] 7.76e-03 kept 7.07e-03 mid err 1.83e-03 R/(U-L) 3.79
+  [10]  nested cells on 8 penultimate gates per final neuron (pilot greedy order):
+    K=0: cert 3.431e-02 (x1.000) mid err 1.79e-02
+    K=1: cert 3.174e-02 (x0.925) mid err 1.54e-02
+    K=2: cert 3.105e-02 (x0.905) mid err 1.47e-02
+    K=3: cert 3.027e-02 (x0.882) mid err 1.40e-02
+    K=4: cert 2.965e-02 (x0.864) mid err 1.35e-02
+    K=5: cert 2.908e-02 (x0.848) mid err 1.31e-02
+    K=6: cert 2.861e-02 (x0.834) mid err 1.27e-02
+    K=7: cert 2.820e-02 (x0.822) mid err 1.24e-02
+    K=8: cert 2.780e-02 (x0.810) mid err 1.21e-02
+    exact lower residual identity, max error 5.9e-09
+    best single penultimate gate (full-sample eq. 22 scores): width decrease 0.0410 of the first width (median), max 0.2523
+  [9]   pair overlap: E P 8.94, E Q 8.99, kappa 80.7, corr(P,Q) 0.896; identity err 4.0e-09; E_nu 1/max 0.1052 vs 1/E max 0.1059; relative spread of max under nu (from E_nu 1/max^2 vs (E_nu 1/max)^2): 0.0874
+
+=== net 7: 4325376.0 samples in 11 tasks; final layer: mean t -0.076, rms t 1.472, mean s 1.309
+  Monte Carlo m vs truth: rms 1.65e-04 (sampling sd ~ 7.4e-04 upper bound)
+  [4.1] first interval: RMS cert 3.398e-02; mean half-gap Delta 0.055; midpoint err 1.779e-02
+  [5.1] restart: E_nu g_c = (m - t_+)/Delta in [0.000, 0.792], mean 0.162, sd 0.238 (a certified [l,u] on it gives RMS cert Delta*(u-l)/2: needs u-l <= 1.8e-03)
+  [6]   quartic: d4/q^2 mean 0.783 (Gaussian with these t,q: 0.759); gap 0.0367 <= bound 0.1518; E_nu4 effect mean 0.246
+  [ref] Gaussian shape at exact (t, q): err vs truth 4.437e-04; vs the same-sample m 4.336e-04 (the shape defect itself)
+        standardised kappa3 rms 0.109, kappa4 mean +0.062; Hermite shape with kappa3: err 1.309e-04, kappa3+kappa4: 1.127e-05; restart effect: Gaussian value err 5.99e-03 (needs <= 1.8e-03 for the target)
+  [A2]  closure contractions: t err 3.22e-03, q err 4.99e-03; interval RMS cert 3.372e-02, covers truth 0.751; closure mean err 2.190e-03; Gaussian at closure (t,q) err 2.190e-03
+  [7-8] cyclic hierarchy (RMS certs; maintained interval [max(t_+, L_k, U_k - R_k), U_k] intersected over k):
+    layer  0: k=1: [L,U] 1.49e-01 kept 1.49e-01 mid err 6.55e-03 R/(U-L) 2.37 | k=2: [L,U] 7.84e-02 kept 7.84e-02 mid err 1.46e-02 R/(U-L) 4.01
+    layer  3: k=1: [L,U] 1.09e-01 kept 8.89e-02 mid err 2.40e-02 R/(U-L) 2.20 | k=2: [L,U] 5.19e-02 kept 4.69e-02 mid err 9.56e-03 R/(U-L) 3.70
+    layer  6: k=1: [L,U] 8.33e-02 kept 5.81e-02 mid err 2.28e-02 R/(U-L) 1.87 | k=2: [L,U] 3.67e-02 kept 3.01e-02 mid err 7.03e-03 R/(U-L) 3.09
+    layer  9: k=1: [L,U] 6.64e-02 kept 4.32e-02 mid err 1.88e-02 R/(U-L) 1.69 | k=2: [L,U] 2.79e-02 kept 2.21e-02 mid err 5.36e-03 R/(U-L) 2.71
+    layer 12: k=1: [L,U] 5.57e-02 kept 3.53e-02 mid err 1.57e-02 R/(U-L) 1.52 | k=2: [L,U] 2.25e-02 kept 1.78e-02 mid err 4.43e-03 R/(U-L) 2.31
+    layer 15: k=1: [L,U] 4.88e-02 kept 2.80e-02 mid err 1.43e-02 R/(U-L) 1.37 | k=2: [L,U] 1.86e-02 kept 1.38e-02 mid err 3.66e-03 R/(U-L) 1.92 | k=3: [L,U] 1.13e-02 kept 9.57e-03 mid err 2.40e-03 R/(U-L) 2.55 | k=4: [L,U] 8.10e-03 kept 7.29e-03 mid err 1.91e-03 R/(U-L) 3.26
+  [10]  nested cells on 8 penultimate gates per final neuron (pilot greedy order):
+    K=0: cert 3.398e-02 (x1.000) mid err 1.78e-02
+    K=1: cert 3.213e-02 (x0.946) mid err 1.60e-02
+    K=2: cert 3.147e-02 (x0.926) mid err 1.54e-02
+    K=3: cert 3.076e-02 (x0.905) mid err 1.48e-02
+    K=4: cert 3.023e-02 (x0.890) mid err 1.43e-02
+    K=5: cert 2.970e-02 (x0.874) mid err 1.39e-02
+    K=6: cert 2.921e-02 (x0.860) mid err 1.35e-02
+    K=7: cert 2.875e-02 (x0.846) mid err 1.32e-02
+    K=8: cert 2.837e-02 (x0.835) mid err 1.29e-02
+    exact lower residual identity, max error 6.2e-09
+    best single penultimate gate (full-sample eq. 22 scores): width decrease 0.0408 of the first width (median), max 0.2307
+  [9]   pair overlap: E P 11.03, E Q 11.10, kappa 123.0, corr(P,Q) 0.914; identity err 1.2e-08; E_nu 1/max 0.0852 vs 1/E max 0.0858; relative spread of max under nu (from E_nu 1/max^2 vs (E_nu 1/max)^2): 0.0875

@@ -31,7 +31,8 @@ REGIONS = os.environ.get("CLAUDE_AWS_REGIONS", "eu-north-1,eu-west-1,eu-central-
 _C = {}
 def cl(service, region=REGION):
     if (service, region) not in _C:
-        _C[service, region] = S.client(service, region_name=region)
+        from botocore.config import Config
+        _C[service, region] = S.client(service, region_name=region, config=Config(max_pool_connections=32))
     return _C[service, region]
 s3 = cl("s3")
 def _state_path(): return os.path.join(SCRATCH, "state.json")
@@ -252,14 +253,18 @@ def watch(job, timeout=7200, every=3.0):
     d = os.path.join(SCRATCH, "results", job); os.makedirs(d, exist_ok=True)
     tags = json.load(open(os.path.join(d, "tags.json"))); seen = {}; have = set(os.listdir(d)); t0 = time.time()
     while len(seen) < len(tags) and time.time() - t0 < timeout:
-        logs = []
+        logs, new = [], []
         for page in s3.get_paginator("list_objects_v2").paginate(Bucket=BUCKET, Prefix=f"results9/{job}/"):
             for o in page.get("Contents", []):
                 name = o["Key"].split("/", 2)[2]
                 if name.startswith("log_"):
                     logs.append((name, o["Key"]))
                 elif name not in have:
-                    s3.download_file(BUCKET, o["Key"], os.path.join(d, name)); have.add(name)
+                    new.append((name, o["Key"]))
+        if new:                                    # parallel streams: one S3 stream tops out near 20 MB/s here
+            with ThreadPoolExecutor(16) as pool:
+                list(pool.map(lambda nk: s3.download_file(BUCKET, nk[1], os.path.join(d, nk[0])), new))
+            have.update(nk[0] for nk in new)
         for name, key in logs:
             tag = name[4:-4]
             if tag in seen or tag not in tags: continue
