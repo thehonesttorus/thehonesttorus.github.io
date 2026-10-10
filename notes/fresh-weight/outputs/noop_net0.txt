@@ -1,0 +1,4 @@
+net 0 empty: raw 1.47712e-08 | F 4.87235e+11 (0.22157 B) residual wall 0.881 s
+net 0 only3: raw 1.75538e-08 | F 4.87235e+11 (0.22157 B) residual wall 0.851 s
+net 0 onlya: raw 1.47593e-08 | F 4.87273e+11 (0.22159 B) residual wall 1.019 s
+done

@@ -1,0 +1,7 @@
+net 0 s3_m1: raw 1.75613e-08 | F 4.87235e+11 (0.22157 B) residual wall 0.868 s
+net 0 s3_p02: raw 1.75628e-08 | F 4.87235e+11 (0.22157 B) residual wall 0.913 s
+net 0 s3_p2: raw 1.75492e-08 | F 4.87235e+11 (0.22157 B) residual wall 0.858 s
+net 0 s3_L37: raw 1.47819e-08 | F 4.87235e+11 (0.22157 B) residual wall 0.853 s
+net 0 s3_L811: raw 1.57375e-08 | F 4.87235e+11 (0.22157 B) residual wall 0.861 s
+net 0 s3_L1214: raw 1.63084e-08 | F 4.87235e+11 (0.22157 B) residual wall 0.831 s
+done

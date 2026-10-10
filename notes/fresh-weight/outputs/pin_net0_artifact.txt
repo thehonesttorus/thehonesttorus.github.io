@@ -1,0 +1,4 @@
+net 0 P0: raw 1.75418e-08 | F 4.87374e+11 (0.22163 B) residual wall 1.305 s
+net 0 P1: raw 3.28050e-08 | F 4.13844e+11 (0.18819 B) residual wall 0.725 s
+net 0 P2: raw 3.55698e-08 | F 4.13982e+11 (0.18826 B) residual wall 1.125 s
+done

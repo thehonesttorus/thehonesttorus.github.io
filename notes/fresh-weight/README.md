@@ -734,3 +734,34 @@ confidence.
 Decision rule: P2 removes at least 40% of P1's degradation and P2's adjusted MSE (raw x C/B) beats the baseline's: the package acts
 as a control variate for the sources; next build a truth-free version (charges from the chain's own k3 charge and a universal
 ratio profile) and run a cold 16-network screen. Removes 15-40%: record; the lever is real but small. Below 15%: close.
+
+### 9i. Correction: the oracle of 9d and the chain deficits of 9b were measured with an implementation error (found by the pre-registered no-op check)
+
+The pinned run P0 (section 9h) was registered as a no-op and was not: raw 1.7542e-8 against 1.4771e-8 (+18.8%) with charge
+corrections of about 1e-6. Bisecting (`outputs/sens3_net0.txt`): the hook path with no modification reproduces the baseline
+exactly; pinning only D3 gives +18.8% for correction scales -1, 0.2, 1 and 2 alike (a step, not a response), and the effect
+grows with depth (layers 3-7: +0.07%, 8-11: +6.5%, 12-14: +10.4%). Cause: the hook multiplied D3 by the saturation mask
+(neurons with alpha <= -2.5 dropped, 2% of rows at layer 3 and about 21% at layer 14). The production chain does not mask D3 (only
+`V35_SAT_FULL` does, and it is off); it masks the rows of D21. Zeroing D3 of the saturated neurons is the "full drop" variant that
+note XXIX found harmful.
+
+A second, deeper error in the same measurement: **the charges of 9b and of the oracle targets were fitted over all neurons**. The
+saturated neurons have the largest |mu|, so they carry a disproportionate share of every package form, and the chain's D21 has
+zero rows there by design. Restricted to the neurons the output reads (alpha > -2.5, `outputs/dil_ledger_act_net{0,1}.txt`):
+
+| layer 14, charge x 1e-3, truth \| chain | Rayleigh | k3 | D21 | K22 | K31 | k4 |
+|---|---|---|---|---|---|---|
+| net 0, all neurons (9b) | 8.56 \| 8.49 | 5.53 \| 5.27 | 5.48 \| 3.81 | 5.24 \| 4.30 | 5.53 \| 2.35 | 5.27 \| 4.47 |
+| net 0, active set | 8.61 \| 8.54 | 5.56 \| 5.30 | 5.67 \| 5.45 | 5.09 \| 4.34 | 4.91 \| 2.46 | 5.14 \| 4.49 |
+| net 1, active set | 7.50 \| 7.43 | 5.08 \| 4.81 | 5.19 \| 4.99 | 4.85 \| 4.21 | 4.33 \| 2.41 | 4.81 \| 4.23 |
+
+**Retracted**: "the chain's D21 carries 70% of the charge" (it carries 96% on the active set; the 30% deficit was the saturation
+drop, and it tracked the dropped fraction 2% -> 23% with depth), and "the five slices give one charge to 1-4%" (on the active set
+the truth's third-order slices are 5.6-5.7 and its fourth-order slices 4.9-5.1 at layer 14, a ratio about 0.9, i.e. the stage-13
+note's kurtosis-to-skewness ratio of 1.7-1.8 and not a pure mixture). **Stands**: the chain's Rayleigh charge is within 1%,
+k3 within 5%, D21 within 4%, K22 and k4 low by 13-15%, and K31 low by about 50% (genuine: its regenerated shape is 96-99% package-shaped
+and carries none of the truth's non-package half). The oracle results of 9d (G1 +322% etc.) are **withdrawn**: they were produced
+with the wrong mask and overcorrected targets and say nothing about the question. The top-K covariance oracle of 9f does not touch these
+slices and stands. 9g (cos^2 of each slice with its package form, all neurons) must be recomputed on the active set before it is
+quoted. The registered ladder of 9c is rerun with the corrected hook (no D3 mask, charges and corrections on the active set only,
+pin from a recorded baseline); the P0 check is now a no-op (1.4779e-8 against 1.4771e-8, +0.05%).
