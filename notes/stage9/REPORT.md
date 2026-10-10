@@ -397,3 +397,35 @@ and Zhou (non-commutative random surface growth with a reflecting wall, arXiv:22
   windows early. Predictions: exact modular sector takes the Gaussian closure from 4.1e-6 towards 1.6e-6; counterterms <= ~2.5% on an
   exact chain; ~60% of the last-layer birth is row-projected covariance error (test: one MC of Cov(h_15)); early-layer precision can be
   relaxed ~3x at <= 5% cost; biased nets shrink the coherent part.
+
+## 15. Stage 16: the commutant tower, operator growth, transport memory (`notes/stage16/ncg_mlp_stage16.pdf`, 13 pp)
+
+Built on the user's two companion notes (Branching, angular geometry and joint dynamics; Wick geometry, covariance holonomy and
+Kikuchi closure) and on the experimental session's stage-13 tests. Checks: `scripts/verify_stage16.py` -> `notes/stage16/verify_stage16.txt`
+(~6 min; `SKIP_SLOW=1` skips the network-0 Jacobian scan).
+- Audit (all hold): spin branching p+- = (j+1)/(2j+1), j/(2j+1); three-spin logical qubit S12 = -Z, S23 = Z/2 + (sqrt3/2)X,
+  [S12,S23] = -i sqrt3 Y; Zhou v1 Thm 4.3 must be read nested (E[Z_a^2 Z_b^2] = ab + 2a^2 + a: MC 3.021 vs 3.010, product 1.33);
+  G_1 = diag(1/2, 1/2n, ...); squeeze holonomy of a contact loop -> a^2/4 (ratio 0.985 at a = 0.02); hard-core normalizer; mixture
+  kappa4 = Cov(Q); Bernoulli Wick relation -2p(B-p).
+- Commutant tower (proved, checked): O(n) -> Brauer (pairings), B_n -> even partitions, S_n -> partitions; dims 3 < 4 < 15 (2k=4),
+  15 < 31 < 203 (2k=6). Annealed pre-activation cumulants are Brauer (odd ones vanish); upper-geometry mixtures give only pairing
+  kappa4 (the dilation package); folds create the other blocks; three-block content of pre-activations is purely quenched, so no
+  counterterm or mean-field tier can reach v56's remaining "bulk three-site structure". Annealed theory = noiseless subsystem of the
+  O(n) twirl (multiplicity spaces); the instance lives in the spatial factor the twirl destroys.
+- Operator growth (measured, net 0, 49152 inputs, Hutchinson JVPs): first-chaos share of neurons 0.73 -> 0.19 (layers 1 -> 16);
+  mean degree of the higher chaos 2.76 -> 17.14, about +1 per layer. Fixed-basis (Pauli-path/input-Hermite) expansions are
+  hopeless; per-layer Wick re-centring (frames that co-evolve with the instance's weights) is forced.
+- Where the correction lives (net 0): 60-66% of truth - Gaussian closure is an isotropic function of each row's field; the exact
+  first-order chain captures 99.1-99.7% of the correction; the residual is incoherent and late (matches the experimental session's
+  0.4-3.7% along the mean).
+- Transport memory (proved): the covariance chain leaves the frame rotation free; the normalizer theorem forbids diagonal-only
+  (slice) closures under any transport outside B_n = Aut(Z^n) cap O(n) -> slices must be regenerated from transported legs (exact
+  reason for stage 9's Hadamard/Frobenius obstruction). Lattice reading: consecutive coordinate lattices in general position.
+- Ruled out: (i) the leaf/wall-sum estimator with global Dirac energies (carre du champ): exact at layer 1, MSE 3.5e-2 at layer 2
+  (Gaussian closure 1.5e-7), 8.3 at layer 16; Dirac energy / variance of z = 1.00, 1.47, 2.54, 13.7 at layers 1, 2, 4, 16 (Poincare
+  deficit = the chaos ladder); the exact identity relies on cancellation between layers, so transverse (leaf-conditional) energies would be needed.
+  (ii) Minimal-sensitivity Wick frames: no gain over the centred (BPHZ) frame.
+- Free and open: row-exchangeable self-calibration (theorem: an estimator can learn its own per-row correction from a random q-row
+  subset of its own weights; added MSE (1 - q/n)(1 - R^2) E beta^2 x gain); non-Gaussian frame families; diagram selection by annealed
+  two-copy variances; late-layer allocation. Suggested next measurement for the experimental session: R^2 of per-row second-order
+  covariance births on their first-order proxy at layers 12-16 (decides whether self-calibration pays ~8x on the 59% channel).

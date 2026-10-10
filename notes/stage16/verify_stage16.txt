@@ -1,0 +1,74 @@
+
+====================================================================================================
+1. Audit of the companion notes
+====================================================================================================
+j=0.5: p+=0.7500 (=(j+1)/(2j+1) 0.7500), p-=0.2500, sum 1.0000
+j=1.0: p+=0.6667 (=(j+1)/(2j+1) 0.6667), p-=0.3333, sum 1.0000
+j=3.5: p+=0.5625 (=(j+1)/(2j+1) 0.5625), p-=0.4375, sum 1.0000
+S12 = -Z: True; S23 = Z/2 + (sqrt3/2) X: True; [S12,S23] = -i sqrt3 Y: True
+E[Z_a^2 Z_b^2] MC 3.0214 vs ab+2a^2+a = 3.0100; product of separate means 1.3300
+G_1 diagonal [0.5    0.0998 0.1004 0.1001 0.1    0.0998] (pred 0.5, 0.1000); max off-diagonal 2.9e-04
+square loop side 0.02: rotation +9.854409e-05, a^2/4 = 1.000000e-04, ratio +0.9854; |T T^t - I| 1.6e-14
+square loop side 0.05: rotation +6.032346e-04, a^2/4 = 6.250000e-04, ratio +0.9652; |T T^t - I| 3.1e-14
+square loop side 0.1: rotation +2.338052e-03, a^2/4 = 2.500000e-03, ratio +0.9352; |T T^t - I| 4.9e-13
+coefficient of z_i^2 in (Rz)_j (Rz)_k, j != k: signed permutation 0.00e+00, random rotation 0.391
+kappa4(0, 0, 0, 0): MC +1.5729; Cov(Q) formula +1.5584
+kappa4(0, 0, 1, 1): MC +0.5376; Cov(Q) formula +0.5184
+kappa4(0, 1, 2, 2): MC -0.0067; Cov(Q) formula -0.0006
+Bernoulli(0.3): :b^2:-:b: at B=0,1 -> [ 0.18 -0.42]; -2p(B-p) -> [ 0.18 -0.42]
+
+====================================================================================================
+2. The commutant hierarchy on (R^n)^{(x)2k}: Brauer (O(n)) < even partitions (B_n) < partitions (S_n)
+====================================================================================================
+2k=4, n=4: S_n 15.0 (Bell: 15); B_n 4.0 (even partitions: 4); O(n+2) Haar 3.01 +- 0.02 (pairings: 3)
+2k=6, n=6: S_n 203.0 (Bell: 203); B_n 31.0 (even partitions: 31); O(n+2) Haar 15.17 +- 0.22 (pairings: 15)
+
+====================================================================================================
+3. Carre du champ: Cov(f,g) = int_0^1 E[grad f(X) . grad g(X_rho)] d rho, and the chaos structure of the neurons
+====================================================================================================
+n=32, L=3: |Cov_MC - replica integral|_F / |Cov|_F = 0.0080 (MC noise ~ 0.004); diagonal ratio mean 0.9977
+official network 0, 49152 inputs: per layer, totals over neurons (first chaos F, variance V, gradient energy G)
+ layer  F/V(first-chaos share)  1-F/V(higher chaos)  <k>_{>=2} = 1+(G-V)/(V-F)
+   1       0.7340               0.2660               2.76
+   2       0.5953               0.4047               3.41
+   3       0.5067               0.4933               4.10
+   4       0.4405               0.5595               4.85
+   5       0.3941               0.6059               5.63
+   6       0.3592               0.6408               6.47
+   7       0.3264               0.6736               7.38
+   8       0.2929               0.7071               8.42
+   9       0.2715               0.7285               9.41
+  10       0.2557               0.7443               10.42
+  11       0.2409               0.7591               11.52
+  12       0.2311               0.7689               12.72
+  13       0.2223               0.7777               13.79
+  14       0.2134               0.7866               14.84
+  15       0.2021               0.7979               16.00
+  16       0.1929               0.8071               17.14
+
+====================================================================================================
+4. What any estimator must add to the Gaussian closure: isotropic (field) and anisotropic parts, network 0
+====================================================================================================
+ layer | truth - Gauss: field-explained share | exact chain - Gauss: field-explained share | chain captures of (truth-Gauss)
+   4   |              0.596                    |               0.597                       |   0.9966
+   8   |              0.637                    |               0.643                       |   0.9951
+  12   |              0.658                    |               0.657                       |   0.9908
+  16   |              0.626                    |               0.622                       |   0.9913
+
+====================================================================================================
+5. Is the moment-matched (centred, BPHZ) Wick frame optimal? Minimal-sensitivity frames in one dimension
+====================================================================================================
+a=0.15, wall 0.3, order 3: centred frame error +4.73e-03; stationary frames (v/k2: error) 1.22:+2.3e-03
+a=0.15, wall 0.3, order 4: centred frame error -1.03e-02; stationary frames (v/k2: error) 0.69:-9.2e-03, 1.22:-1.1e-02
+a=0.15, wall -0.8, order 3: centred frame error +6.71e-03; stationary frames (v/k2: error) none
+a=0.15, wall -0.8, order 4: centred frame error +1.81e-03; stationary frames (v/k2: error) 0.51:-1.9e-02
+a=0.3, wall 0.5, order 3: centred frame error +1.84e-02; stationary frames (v/k2: error) none
+a=0.3, wall 0.5, order 4: centred frame error -2.49e-02; stationary frames (v/k2: error) 1.41:-2.8e-02
+
+====================================================================================================
+6. The wall (leaf) decomposition E f = sum_walls p(0) E[|grad z|^2 df/dh | wall] with global Dirac energies (network 0)
+====================================================================================================
+  layer  1: wall-sum MSE 6.98e-10 vs Gaussian closure 6.98e-10; mean Dirac energy / variance of z: 1.000
+  layer  2: wall-sum MSE 3.47e-02 vs Gaussian closure 1.53e-07; mean Dirac energy / variance of z: 1.468
+  layer  4: wall-sum MSE 3.01e-01 vs Gaussian closure 8.03e-07; mean Dirac energy / variance of z: 2.537
+  layer 16: wall-sum MSE 8.30e+00 vs Gaussian closure 4.06e-06; mean Dirac energy / variance of z: 13.716

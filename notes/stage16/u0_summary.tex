@@ -1,0 +1,50 @@
+\label{sec:summary}
+\subsection{An accounting of stage 15}
+Stage~15 refused to assume that an estimator is a law propagator, and derived the error cocycle from first principles. Its proposed
+``theory-native estimator'' was still chain-shaped, however. It kept an exact backbone, transported births and allocated effort; the
+Heisenberg reads and the knapsack are reorganisations of the same object. This stage asks the prior question: which features of a chain are
+\emph{forced} by the mathematics, and which are free? Every claim below is labelled forced (a theorem or a measurement that leaves no choice)
+or free (a design freedom), and the free ones are tested where possible.
+
+\subsection{What is forced}
+\begin{enumerate}[leftmargin=*]
+\item \textbf{Co-evolving frames} (Section~\ref{sec:growth}; measured). Network~0's neurons, as functions of the input, have mean
+higher-chaos degree $2.8$ at layer~1 and $17.1$ at layer~16. A representation in a fixed basis is hopeless. The representation must be
+re-centred at every layer by the instance's own law, the Wick map $\mu_l^{-1}\star\mathrm{id}$. The estimator's frame therefore depends on
+the weights dynamically.
+\item \textbf{Algebraic sectors} (Section~\ref{sec:commutant}; proved). Annealed pre-activation statistics are Brauer elements (pairings),
+which covers the Gaussian and the dilation. The folds create every other partition block. The instance-specific (quenched) parts are
+orthogonal to all annealed ones.
+\item \textbf{Transport memory} (Section~\ref{sec:transport}; proved). No closure on neuron-diagonal data alone can be exact under a
+transport outside the hyperoctahedral group $B_n=\mathrm{Aut}(\Z^n)\cap O(n)$. Gaussian weights are almost surely outside it. Births must be
+carried with their own transported legs, or recomputed.
+\item \textbf{Incoherence of the residual} (stage~15; confirmed by the experimental session). Once the modular sector is right, the
+error is a sum of independent row-births, and no global correction reaches it.
+\end{enumerate}
+
+\subsection{What is free, and what testing it showed}
+\begin{center}\small
+\begin{tabular}{>{\raggedright\arraybackslash}p{4.6cm}>{\raggedright\arraybackslash}p{5.0cm}>{\raggedright\arraybackslash}p{4.4cm}}\toprule
+freedom & candidate & status\\\midrule
+frame parameters & minimal-sensitivity (PMS) Gaussian frames & no gain over centring (checked)\\
+frame family & non-Gaussian (mixture, skew) frames & open\\
+decomposition of the mean & leaf/wall sum with Dirac energies & fails without transverse conditioning (checked)\\
+which blocks to evaluate & partition-algebra diagram selection by annealed variance & framework; open\\
+which rows & row-exchangeable self-calibration & theorem; protocol for test\\
+which layers & cocycle allocation (late layers) & measured value; untested in a system\\
+instruments & task-preserving branching on collective walls & theory; cost doubles per branch\\\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{The numbers that decide}
+\begin{center}\small
+\begin{tabular}{>{\raggedright\arraybackslash}p{8.4cm}>{\raggedright\arraybackslash}p{5.2cm}}\toprule
+quantity (official network~0) & value\\\midrule
+first-chaos share of neurons, layer $1\to16$ & $0.73\to0.19$\\
+mean degree of higher chaos, layer $1\to16$ & $2.8\to17.1$ (about $+1$ per layer)\\
+isotropic (field) share of truth $-$ Gaussian closure, layers $4$--$16$ & $0.60$--$0.66$\\
+share of truth $-$ Gaussian closure captured by the exact first-order chain & $0.991$--$0.997$\\
+wall-sum estimator with global Dirac energies, layer 2 & MSE $3.5\times10^{-2}$ (Gaussian closure $1.5\times10^{-7}$)\\
+Dirac energy / variance of pre-activations, layers $1,2,4,16$ & $1.00$, $1.47$, $2.54$, $13.7$\\\bottomrule
+\end{tabular}
+\end{center}

@@ -1,0 +1,43 @@
+\label{sec:audit}
+\subsection{Branching, angular geometry and joint dynamics}
+The note reads Zhou's paper constructively. We checked its finite statements and kept the following.
+\begin{itemize}[leftmargin=*]
+\item \emph{Poisson tensor growth.} $\kappa_t=e^{t(\chi_V-d)}$ is a Poisson mixture of normalized characters of $V^{\otimes k}$. The label chain
+$K(\lambda,\nu)=c^\nu_{\lambda V}\dim V_\nu/(d\dim V_\lambda)$ is stochastic. For spin $\frac12$ appended to spin $j$ the branches are
+$p_\pm=(j+1)/(2j+1),\,j/(2j+1)$ (checked at $j=\frac12,1,\frac72$).
+\item \emph{Multiplicity as a logical qubit.} In the three-spin decoherence-free subsystem with the stated basis, $S_{12}=-Z$,
+$S_{23}=\frac12Z+\frac{\sqrt3}2X$ and $[S_{12},S_{23}]=-i\sqrt3\,Y$ (checked exactly). Appending a spin preserves the multiplicity register even
+conditionally on the branch, because each branch effect is scalar on $V_j$ (Schur).
+\item \emph{The angular tower.} $|\psi_\theta\rangle=(|0\rangle+\theta)/\sqrt2$ gives $\Tr(R_{W,m}A_{W,m})=\int f_W\,d\sigma$ and $T_m^*B_{m-1}=B_m$. These are exact,
+including for coupled registers. The isotropic reference is $G_1=\operatorname{diag}(\frac12,\frac1{2n},\dots)$ (checked: $0.5$, $0.0998$--$0.1004$
+at $n=5$), faithful and non-tracial, with modular phases $n^{iu}$ on $|0\rangle\langle i|$.
+\item \emph{The correction to Zhou v1, Theorem~4.3.} For the signed Poisson walk, $\E[Z_a^2Z_b^2]=ab+2a^2+a$. Monte Carlo gives $3.021$ against
+$3.010$; the product of separate means would be $1.33$. The multi-time formula must be read as nested conditional expectations. Stage~15
+cited that theorem only for the restriction mechanism, which stands.
+\item \emph{The product-defect identity} $P_t(AB)-P_tAP_tB=\int_0^tP_s\Gamma(P_{t-s}A,P_{t-s}B)\,ds$, the Dirac realization
+$\|[D_G,\pi(A)]\Omega_\rho\|^2=\Tr(GC_\rho(A))$, moving contacts, and protected logical observables. We use the first two in
+Section~\ref{sec:gamma}.
+\end{itemize}
+What does not transfer by itself:
+\begin{itemize}[leftmargin=*]
+\item The angular representation needs the cell integrals, so it is exact but not cheap.
+\item Growth needs a real increment.
+\item The note says both of these itself.
+\end{itemize}
+
+\subsection{Wick geometry, covariance holonomy and Kikuchi closure}
+\begin{itemize}[leftmargin=*]
+\item \emph{Holonomy.} For the symmetric-squeeze connection $\dot T=\frac12\dot QQ^{-1}T$ around a contact-preserving square of side $a$ in
+$Q=\begin{psmallmatrix}1&v\\v&1+u\end{psmallmatrix}$, the transport is exactly orthogonal ($|TT^\top-I|\le5\times10^{-13}$). Its angle over $a^2/4$ is
+$0.985$, $0.965$, $0.935$ at $a=0.02$, $0.05$, $0.1$, so the leading coefficient $\frac14$ is confirmed with an $O(a^3)$ correction.
+\item \emph{Hard-core normalizer.} The coefficient of $z_i^2$ in $(Rz)_j(Rz)_k$ is exactly $0$ for a signed permutation and $0.39$ for a
+random rotation.
+\item \emph{Mixture fourth cumulant.} $\kappa_4(X)=\Cov(Q_{ij},Q_{kl})+\Cov(Q_{ik},Q_{jl})+\Cov(Q_{il},Q_{jk})$. Monte Carlo gives $1.573$, $0.538$,
+$-0.007$ against $1.558$, $0.518$, $-0.001$.
+\item \emph{Realization relations.} For $B\sim\mathrm{Bern}(p)$, $b^2-b=0$ but $:\!b^2\!:-:\!b\!:\;=-2p(B-p)$ (checked). Our gates satisfy $g^2=g$, so
+a Wick deformation must respect this relation. That is one reason the centred Gaussian frame works on pre-activations, where it is
+nowhere violated, and not on gates.
+\item \emph{The all-degree sparsifier and the Poisson-coupled weights.} They concern a mean-estimation \emph{dynamics} (sampling), so they
+are bounded by stage~9's sampling law; we do not use them as estimators. The convex variational principle with equalized edge energies is
+the exact form of stage~15's knapsack (Section~\ref{sec:interdep}).
+\end{itemize}

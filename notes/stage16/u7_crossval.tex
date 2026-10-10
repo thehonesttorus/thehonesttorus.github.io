@@ -1,0 +1,27 @@
+\label{sec:crossval}
+The experimental session tested stage~13 on v56 and on the truth of network~0, in §9 of its
+\texttt{notes/\allowbreak fresh-weight}. Its results read cleanly in
+this stage's terms.
+\begin{center}\small
+\begin{tabular}{>{\raggedright\arraybackslash}p{6.2cm}>{\raggedright\arraybackslash}p{7.8cm}}\toprule
+experimental finding & reading\\\midrule
+gain saturates; increments uncorrelated ($V_l/4\approx0.0082$ flat from layer~13) & stage~12--13 prediction (saturation, not mean reversion)\\
+the chain's slices carry the gain shape (82--94\% for $\kappa_3$, K22, $\kappa_4$ diagonal) & the Brauer (dilation) component of each slice (Proposition~\ref{prop:annealed})\\
+setting slice gain amplitudes to the truth's: $+56\%$, $+50\%$ (predicted $-10$ to $-30\%$) & the counterterms already hold the coherent sector; coherent errors add in amplitude across layers (stage~15), so local amplitude changes are amplified\\
+final error has $0.4$--$3.7\%$ of its energy along the mean & stage~15: collective share $0$--$3\%$ for the exact chain; the residual is incoherent births\\
+gain package with the old-tier ranks cut recovers only $5.3\%$ & the lost old-tier content is three-block (stars), purely quenched; a Brauer package cannot replace it\\
+top-32 / top-128 covariance modes exact: $-12$ to $-16\%$ / $-16$ to $-32\%$; eigenvalues only: $+9\%$ & row theorem: a row's covariance birth $\frac12\J_2\,w^\top\delta C\,w$ weighs every mode by its share of $\|\delta C\|_F^2$; eigenvalues alone leave the anisotropic error\\
+layers 0--6 create a few percent of the final error & stage~15 measured $5\%$ (layers $1$--$6$)\\\bottomrule
+\end{tabular}
+\end{center}
+\paragraph{What this suggests for the experimental session.}
+\begin{enumerate}[leftmargin=*]
+\item \emph{Leave the coherent sector alone.} It is held by the counterterms. Further work on it is fighting the amplification
+mechanism.
+\item \emph{Go after the late-layer covariance births, full rank.} These are the $59\%$ channel. Use the consistent second-order
+diagram set, the $(2,2)$, $(3,1)$ and $\kappa_3$-pair terms of the wall-jet expansion at matching order, in layers $11$--$16$. Fund it from layers
+$1$--$6$, and refit the counterterms afterwards.
+\item \emph{Decide self-calibration with one cheap diagnostic first.} At layers $12$--$16$ on network~0, measure the $R^2$ of the per-row
+second-order covariance birth on its first-order proxy and the field jets. If $R^2\gtrsim0.7$, Theorem~\ref{thm:selfcal} cuts the readout cost of the
+channel about eightfold.
+\end{enumerate}

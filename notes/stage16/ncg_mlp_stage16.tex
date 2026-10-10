@@ -1,0 +1,89 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1.05in]{geometry}
+\usepackage{amsmath,amsthm,amssymb,mathtools,bm}
+\usepackage{booktabs,array,enumitem}\usepackage[expansion=false]{microtype}
+\usepackage{xcolor}
+\usepackage[colorlinks=true,linkcolor=blue!60!black,citecolor=blue!60!black,urlcolor=blue!60!black]{hyperref}
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]\newtheorem{proposition}[theorem]{Proposition}\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}\newtheorem{conjecture}[theorem]{Conjecture}
+\theoremstyle{definition}\newtheorem{definition}[theorem]{Definition}\newtheorem{remark}[theorem]{Remark}
+\newtheorem{example}[theorem]{Example}
+\newcommand{\R}{\mathbb R}\newcommand{\Z}{\mathbb Z}\newcommand{\E}{\mathbb E}\newcommand{\Var}{\operatorname{Var}}\newcommand{\Cov}{\operatorname{Cov}}
+\newcommand{\relu}{\operatorname{relu}}\newcommand{\diag}{\operatorname{diag}}\newcommand{\tr}{\operatorname{tr}}
+\newcommand{\Tr}{\operatorname{Tr}}\newcommand{\1}{\mathbf 1}\newcommand{\cA}{\mathcal A}\newcommand{\cB}{\mathcal B}
+\newcommand{\cF}{\mathcal F}\newcommand{\cT}{\mathcal T}\newcommand{\cH}{\mathcal H}\newcommand{\aff}{\mathfrak{aff}}
+\newcommand{\He}{\mathrm{He}}\newcommand{\Fa}{\Phi_{\mathrm F}}\newcommand{\cZ}{\mathcal Z}\newcommand{\Sym}{\operatorname{Sym}}
+\newcommand{\Aff}{\mathrm{Aff}}\newcommand{\Ryshkov}{\mathcal R}
+\newcommand{\Ap}{\mathsf A}\newcommand{\J}{\mathsf J}\newcommand{\cG}{\mathcal G}\newcommand{\Br}{\mathsf{Br}}\newcommand{\Pa}{\mathsf P}
+\title{\textsc{Localization in the commutant, stage 16:}\\ \large the commutant tower, operator growth, and transport memory.\\
+What the companion notes establish, what the network forces,\\ and where an estimator is actually free}
+\author{}
+\date{10 October 2026}
+\begin{document}
+\maketitle
+\begin{abstract}
+This stage starts from two companion notes and from the experimental session's tests of stage~13, all supplied by the user. The notes are
+\emph{Branching, angular geometry and joint dynamics} and \emph{Wick geometry, covariance holonomy and the closure of Kikuchi dynamics}.
+\begin{itemize}[leftmargin=*]
+\item We audit the notes' claims numerically, all of which hold.
+\item We prove what in them is forced for the network, and we measure what decides between design directions.
+\item We test two non-standard estimator designs that the notes suggest; both fail, and we say exactly why.
+\end{itemize}
+\begin{itemize}[leftmargin=*]
+\item \emph{The commutant tower (proved; checked).} The weight ensemble's symmetry $O(n)$ has the Brauer algebra (pairings) as its
+commutant on tensors. The ReLU fold's symmetry $B_n$ has even-block partitions, and hidden-unit relabelling $S_n$ has all partitions. For
+$4$ and $6$ legs the dimensions are $3<4<15$ and $15<31<203$.
+\begin{itemize}
+\item Annealed pre-activation statistics are pairings: Gaussian plus dilation, exactly the companion's mixture formula
+$\kappa_4=\Cov(Q)$. In particular annealed odd cumulants of pre-activations vanish.
+\item Folds create the other blocks. The ``bulk three-site structure'' left in v56 is the quenched three-block sector.
+\item The hard-core normalizer theorem says that the hyperoctahedral group, $B_n=\mathrm{Aut}(\Z^n)\cap O(n)$, is the only
+transport keeping neuron-diagonal data closed. Gaussian weights are almost surely not in it, so the slices must be regenerated from transported
+legs: \emph{transport memory} is forced.
+\end{itemize}
+\item \emph{Operator growth (measured on official network~0).} As functions of the input, the neurons' first-chaos share falls from
+$73\%$ (layer~1) to $19\%$ (layer~16). The mean degree of their higher chaos grows linearly, $2.8\to17.1$, about one degree per layer. A
+fixed-basis (Pauli-path, input-Hermite) expansion is therefore hopeless at depth. The layer-wise Wick re-centring of
+Ebrahimi-Fard--Patras--Tapia--Zambotti, a frame that co-evolves with the instance's weights, is what makes the problem low-order. The
+interdependence of representation and weights is not optional; it is forced.
+\item \emph{Where the correction lives (measured).}
+\begin{itemize}
+\item $60$--$66\%$ of what any estimator must add to the Gaussian closure is an isotropic function of each row's field (the Brauer and
+dilation sector). The rest is anisotropic.
+\item The exact first-order chain captures $99.1$--$99.7\%$ of the correction.
+\item Its residual is incoherent and born late, consistent with the experimental session's finding that $0.4$--$3.7\%$ of v56's error lies
+along the mean.
+\end{itemize}
+\item \emph{Two designs tested and ruled out.}
+\begin{itemize}
+\item The leaf (wall-sum) estimator, using the companion's Dirac energies (carré du champ), fails by a factor $10^5$ already at layer~2.
+The global Dirac energy exceeds the transverse one by the Poincaré deficit, the higher-chaos energy, and the exact identity relies on
+cancellations between layers.
+\item Minimal-sensitivity Wick frames do not beat the centred (BPHZ) frame.
+\end{itemize}
+\item \emph{What is free.} We state a row-exchangeable self-calibration theorem: an estimator can learn its own correction from its own
+weights. We then give the design space that remains: frame family, diagram blocks, rows, layers, instruments.
+\end{itemize}
+Checks: \texttt{scripts/verify\_stage16.py}.
+\end{abstract}
+\tableofcontents
+\section{The picture, and an accounting of stage 15}
+\input{u0_summary}
+\section{Audit of the companion notes}
+\input{u1_audit}
+\section{The commutant tower: Brauer, even partitions, partitions}
+\input{u2_commutant}
+\section{Operator growth and the necessity of co-evolving frames}
+\input{u3_growth}
+\section{Transport memory: holonomy, the normalizer, and lattice mismatch}
+\input{u4_transport}
+\section{The carré du champ, Dirac energies, and two designs ruled out}
+\input{u5_gamma}
+\section{Interdependence of weights and estimate, made exact}
+\input{u6_interdependence}
+\section{Cross-validation with the experimental session}
+\input{u7_crossval}
+\section{Checks}
+\input{u8_verify}
+\end{document}

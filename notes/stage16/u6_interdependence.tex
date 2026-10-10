@@ -1,0 +1,68 @@
+\label{sec:interdep}
+The question was how an optimal system could fail to couple the sampled weights and its estimate, perhaps dynamically. There are four
+exact couplings, ordered by how much they are forced.
+
+\subsection{Forced: the frame}
+Section~\ref{sec:growth} shows that the representation must be re-centred at every layer by the instance's own law. The frame of layer $l$ is a
+function of $W_1,\dots,W_l$, and it changes as the computation proceeds.
+
+\subsection{Free: the estimator learns its own correction from its own rows}
+\begin{theorem}[row-exchangeable self-calibration; proved]\label{thm:selfcal}
+Fix a layer $l$ and the upstream state $U$, meaning the weights below $l$ and the estimator's state up to layer $l-1$. For each row $w_i$ of $W_l$,
+let $\pi_i=\pi(w_i;U)\in\R^p$ be a cheap per-row feature vector and $\beta_i=\beta(w_i;U)$ an expensive per-row quantity, for instance a higher-order birth.
+Choose a uniformly random set $S$ of $q$ rows, fit $\hat a$ by least squares of $\beta$ on $\pi$ over $S$, and set $\hat\beta_i=\hat a\cdot\pi_i$ off $S$. Then:
+\begin{enumerate}[leftmargin=*]
+\item Given $U$, the pairs $(\pi_i,\beta_i)$ are i.i.d., because the rows are.
+\item $\hat a$ converges to the population regression $a_*$, with excess error $O(p/q)$ relative to the residual.
+\item The estimator's added mean squared error at layer $l$ is $(1-\frac qn)(1-R^2)\,\E\beta^2\,(1+O(p/q))$, where $R^2$ is the population fit.
+\item By the error cocycle, this error reaches the output additively, multiplied by the layer's downstream gain.
+\end{enumerate}
+\end{theorem}
+\begin{proof}
+(1) The rows are i.i.d.\ and independent of $U$. (2) and (3) are least squares on i.i.d.\ samples. (4) is Theorem~3.2 of stage~15.
+\end{proof}
+In this precise sense an estimator learns its own correction from its own weights. The training set is the instance's rows, and what makes
+it valid is exchangeability, not any independence of weights and estimate. Corollary~3.3 of stage~15 bounds $R^2$ by the isotropic share
+whenever $\pi$ holds only per-neuron or field features. A large $R^2$ needs anisotropic proxies, such as a short-window or first-order
+version of $\beta$ itself.
+
+\emph{Where it should pay, and the test.} It pays where per-row costs dominate and such a proxy exists. Late-layer covariance births are
+the case: layers $11$--$16$ hold $81\%$ of the exact chain's births, and $59\%$ of the last-layer birth is covariance.
+\begin{itemize}[leftmargin=*]
+\item The expensive quantity: the second-order covariance-birth readout of a row (the $(2,2)$, $(3,1)$ and $\kappa_3$-pair diagrams),
+computed on $q\approx n/8$ rows.
+\item The proxy: the first-order readout plus the field jets.
+\item The prediction: the share $R^2$ of the channel is recovered at about an eighth of its readout cost.
+\end{itemize}
+
+\subsection{Free: geometry coupled to the readout}
+The holonomy note's principle $\mathcal V(w)=\langle f,\mathsf K_w^{-1}f\rangle$ is convex in the weights $w$, and its optimality conditions equalize the edge
+energies of the Poisson solution. Our analogue is stage~15's allocation:
+\begin{itemize}[leftmargin=*]
+\item The predicted MSE is convex in the capture fractions.
+\item At the optimum the marginal MSE reduction per FLOP is equal across the (layer, row, diagram) choices used.
+\item The Poisson solution is the adjoint: the downstream gains.
+\end{itemize}
+The two are coupled self-consistently. The allocation depends on the adjoint, and the adjoint depends on what was computed. Two passes,
+or one pass with revision, solve it.
+
+\subsection{Free: task-preserving instruments}
+The companion's condition $\sum_\alpha\mathcal I_\alpha^*(A_\alpha)=A$ has a classical realization.
+\begin{itemize}[leftmargin=*]
+\item Branch on the sign of a chosen functional $u\cdot x$. By symmetry each branch has mass $\frac12$.
+\item Run each branch with its own Wick frame. Then $\E f=\sum_\alpha P(\alpha)\E[f\mid\alpha]$ holds exactly.
+\item A branch resolves all orders of non-Gaussianity along $u$, at twice the cost.
+\end{itemize}
+Its value depends on concentration, and the residual is not concentrated. In the experimental session, making the covariance exact in the top
+$128$ collective modes gave only $16$--$32\%$, which a branching tree could approach only with $2^{128}$ leaves. Instruments are the right tool for
+a coherent residual and the wrong one for an incoherent residual.
+
+\subsection{The design space}
+An estimator is a point in (frame family) $\times$ (partition blocks evaluated on the instance) $\times$ (rows) $\times$ (layers) $\times$ (instruments).
+\begin{itemize}[leftmargin=*]
+\item \emph{The standard chain.} Gaussian centred frames, pair and three-block diagrams, all rows, all layers, no instruments.
+\item \emph{Forced by this stage.} Co-evolving frames and transport memory.
+\item \emph{Ruled out here.} Leaf estimators with global energies, and minimal-sensitivity Gaussian frames.
+\item \emph{Open, with protocols.} Non-Gaussian frame families, diagram selection by annealed two-copy variances,
+self-calibration over rows, and late-layer allocation.
+\end{itemize}

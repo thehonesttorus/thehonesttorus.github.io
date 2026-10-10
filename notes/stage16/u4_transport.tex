@@ -1,0 +1,44 @@
+\label{sec:transport}
+\subsection{The covariance chain does not determine the transport}
+Fluctuations, and births, are carried from $z_{l-1}$ to $z_l$ by the first jet $B_l=W_l\diag\Phi(r_l)$. Whiten with the backbone covariances:
+\[
+\tilde O_l=C_l^{-1/2}B_lC_{l-1}^{1/2},\qquad \tilde O_l\tilde O_l^\top=I-C_l^{-1/2}\Sigma^{\rm birth}_lC_l^{-1/2},\qquad \Sigma^{\rm birth}_l=C_l-B_lC_{l-1}B_l^\top\succeq0 .
+\]
+So $\tilde O_l$ is a contraction times a rotation $U_l$. The contraction is the share of variance newly born from higher Mehler chaos. The
+rotation is the network's frame turning, and $(C_{l-1},C_l)$ leaves it free: every $C_l^{1/2}RC_{l-1}^{-1/2}$ with $R\in O(n)$ is compatible with the
+same pair of covariances. The holonomy note makes the same point sharply. Even the canonical symmetric-squeeze connection
+$\dot T=\frac12\dot QQ^{-1}T$ depends on the \emph{path} of covariances, through the curvature $\frac14[HQ^{-1},KQ^{-1}]$, and a contact-preserving loop
+returns with a rotation (checked, Section~\ref{sec:audit}).
+\begin{proposition}[transport memory; proved]
+Any estimator that propagates non-Gaussian content must carry the actual transports $B_l$ (or their action on its sources), and not
+only the backbone $(\mu_l,C_l)$. Two instances with identical backbones but different rotations $U_l$ send the same births to different
+places.
+\end{proposition}
+
+\subsection{The normalizer: why slices cannot be propagated as slices}
+\begin{theorem}[hard-core normalizer, from the holonomy note]
+An orthogonal $R$ preserves the square-free quadratic sector $\operatorname{span}\{z_iz_j:i<j\}$ if and only if it is a signed permutation.
+\end{theorem}
+\begin{corollary}[no closed diagonal closure; proved]
+Suppose a closure keeps only neuron-diagonal data of the non-Gaussian state at each layer: the hub slices D3, D21 and $\kappa_4$
+diagonals. It is closed under transport exactly when the transport, in the neuron bases, is a signed permutation. For Gaussian $W_l$ this
+fails almost surely. Slices must therefore be \emph{regenerated} at every readout from sources carried with their legs, or from rows
+transported backwards.
+\end{corollary}
+This is the exact form of stage~9's two empirical laws: Hadamard readouts defeat Frobenius truncation, and old slices correlate only
+$0.3$--$0.5$ with young ones. A hub-localized leg $e_m$ becomes, after one transport, the dense column $\Phi_mW_{:,m}$, with inverse
+participation ratio of order $3/n$. The chain's CP legs are one realization of transport memory. Stage~15's Heisenberg reads are the
+other.
+
+\subsection{Lattice reading}
+$B_n=\mathrm{Aut}(\Z^n)\cap O(n)$.
+\begin{itemize}[leftmargin=*]
+\item Each layer's neuron basis defines a coordinate lattice $\Z^n$ in pre-activation space. Its reflections are the folds and its
+orthants are the cells (stage~14: the layer map $z=Wx$ is Klartag's normalizing map).
+\item The diagonal (hub) sector is the invariant sector of that lattice's automorphism group.
+\item The transport between consecutive layers is a generic linear map, not an automorphism of the next layer's lattice.
+\end{itemize}
+So \emph{the memory obstruction is a lattice mismatch}: consecutive coordinate lattices are in general position. In the holonomy note's
+example ($\Lambda=\Z e_1\oplus2\Z e_2$), contact-preserving deformations still produce rotations outside $\mathrm{Aut}(\Lambda)$, and irrational ones
+produce a noncommutative torus. In the network the depth path is not a loop, but the same non-integrability makes the frame
+unrecoverable from its endpoints.

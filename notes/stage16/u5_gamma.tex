@@ -1,0 +1,56 @@
+\label{sec:gamma}
+\subsection{The product defect of the input heat flow is the network's covariance}
+For the Ornstein--Uhlenbeck flow on inputs, $\Gamma(f,g)=\nabla f\cdot\nabla g$. The companion's accumulated product-defect identity, integrated to infinite
+time, gives
+\[
+\Cov\big(f(X),g(X)\big)=\int_0^1\E\big[\nabla f(X)\cdot\nabla g(X_\rho)\big]\,d\rho,\qquad X_\rho=\rho X+\sqrt{1-\rho^2}\,X'.
+\]
+For neurons this is an integral over input overlaps of two-replica Jacobian correlators, $\Cov(h_l)=\int_0^1\E[J_l(X)J_l(X_\rho)^\top]\,d\rho$.
+\emph{Check} on a small He network ($n=32$, $L=3$): the relative Frobenius difference from the Monte Carlo covariance is $0.008$, against
+noise of about $0.004$, with diagonal ratio $0.998$.
+
+The companion's Dirac energy, with coordinate derivations and $G=I$, is $\Tr C_\rho(A)=\E|\nabla A|^2$, the $G$ of Section~\ref{sec:growth}. Its excess over the
+variance is the Poincaré deficit, $\E|\nabla h|^2-\Var h=\sum_k(k-1)\|h_k\|^2\ge0$: the higher-chaos (magic) energy of the neuron.
+
+\subsection{Design ruled out: the leaf estimator with global Dirac energies}
+For a bias-free \textsc{ReLU} network and Gaussian input, every output is $1$-homogeneous. Euler and Stein then give the exact leaf
+decomposition
+\[
+\E f=\E\Delta f=\sum_{l,j}p_{z_{lj}}(0)\;\E\big[|\nabla z_{lj}|^2\,\partial f/\partial h_{lj}\;\big|\;z_{lj}=0\big],
+\]
+the transverse measure of each wall times the energy and sensitivity on it (stage~11). This offers a second estimator, independent of any
+law closure. Decouple each wall term into
+\begin{itemize}[leftmargin=*]
+\item the backbone wall density $\varphi(r)/s$;
+\item the \emph{global} Dirac energy $(W_lK_{l-1}W_l^\top)_{jj}$, from the Jacobian-Gram recursion
+\[K_l=P_l\circ(W_lK_{l-1}W_l^\top),\]
+with gate second moments $P_l$;
+\item the first-jet cocycle as the sensitivity.
+\end{itemize}
+It costs about $2n^3$ per layer. On network~0 it is exact at layer~1 (MSE $7\times10^{-10}$, the truth's noise). At layer~2 its MSE is
+$3.5\times10^{-2}$, against the Gaussian closure's $1.5\times10^{-7}$, and it grows to $8$ at layer~16.
+\begin{itemize}[leftmargin=*]
+\item \emph{Why it fails.} The global energy exceeds the variance of $z$ by the Poincaré deficit. The measured ratio of mean Dirac
+energy to variance is $1.00$, $1.47$, $2.54$ and $13.7$ at layers $1$, $2$, $4$ and $16$, which is the chaos ladder of Section~\ref{sec:growth}.
+\item \emph{Where the exact identity hides the cancellation.} In the exact identity this excess is cancelled between layers: a wall at
+layer $l-1$ conditions the gates above it.
+\item \emph{Consequence.} The leaf decomposition is exact but not term-wise stable, and the energy that enters the mean is the
+\emph{transverse} one, $\E[|\nabla z|^2\mid z=0]$. In the companion's language, contact matrices must be evaluated in the leaf-conditioned state, not the
+global state.
+\end{itemize}
+This also explains why stage~9's Euler--Stein merge had to use the chain's own Laplacian response rather than a wall sum.
+
+\subsection{Design ruled out: minimal-sensitivity Wick frames}
+The truncated Wick expansion of $\E\relu(Z-c)$ around a Gaussian frame $N(\kappa_1,v)$ depends on $v$; the exact answer does not. Principles of
+minimal sensitivity pick a stationary $v$ instead of the centred $v=\kappa_2$. For $Z=g+a(g^2-1)$:
+\begin{center}\small
+\begin{tabular}{lcc}\toprule
+case & centred frame error & stationary frames ($v/\kappa_2$: error)\\\midrule
+$a=0.15$, wall $0.3$, order 3 & $+4.7\times10^{-3}$ & $1.22$: $+2.3\times10^{-3}$\\
+$a=0.15$, wall $0.3$, order 4 & $-1.0\times10^{-2}$ & $0.69$: $-9.2\times10^{-3}$; $1.22$: $-1.1\times10^{-2}$\\
+$a=0.15$, wall $-0.8$, order 4 & $+1.8\times10^{-3}$ & $0.51$: $-1.9\times10^{-2}$\\
+$a=0.3$, wall $0.5$, order 4 & $-2.5\times10^{-2}$ & $1.41$: $-2.8\times10^{-2}$\\\bottomrule
+\end{tabular}
+\end{center}
+Stationary frames are sometimes absent and are no better on balance. The centred frame, which is EFPTZ's unique centring character, is the
+right choice of variance. Non-Gaussian frame \emph{families} remain untested.

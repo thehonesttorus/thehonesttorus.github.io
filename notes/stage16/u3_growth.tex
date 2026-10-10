@@ -1,0 +1,44 @@
+\label{sec:growth}
+\subsection{The chaos ladder of a real network}
+Regard a neuron $h(x)$ as a function of the Gaussian input and expand it in Wiener chaos, $h=\sum_kh_k$. Three energies are accessible by
+forward-mode differentiation alone:
+\[
+F=|\E\nabla h|^2=\|h_1\|^2,\qquad V=\Var h=\sum_{k\ge1}\|h_k\|^2,\qquad G=\E|\nabla h|^2=\sum_kk\|h_k\|^2 .
+\]
+From them we get the higher-chaos share $1-F/V$ and the mean degree of the higher chaos, $\langle k\rangle_{\ge2}=1+(G-V)/(V-F)$. Hutchinson's
+identities give unbiased estimates,
+\[G=\E_{x,v}(\nabla h\cdot v)^2,\qquad F=\E_{x,x',v}(\nabla h(x)\cdot v)(\nabla h(x')\cdot v),\]
+with independent $x,x'$ and a shared probe $v$. On official network~0, with $49152$ inputs and totals over neurons:
+\begin{center}\footnotesize\setlength{\tabcolsep}{3pt}
+\begin{tabular}{lcccccccccccccccc}\toprule
+layer&1&2&3&4&5&6&7&8&9&10&11&12&13&14&15&16\\\midrule
+$F/V$&.73&.60&.51&.44&.39&.36&.33&.29&.27&.26&.24&.23&.22&.21&.20&.19\\
+$\langle k\rangle_{\ge2}$&2.8&3.4&4.1&4.9&5.6&6.5&7.4&8.4&9.4&10.4&11.5&12.7&13.8&14.8&16.0&17.1\\\bottomrule
+\end{tabular}
+\end{center}
+Layer~1 is exact for $\relu$ of a centred Gaussian: $F/V=\frac14/(\frac12-\frac1{2\pi})=0.733$ and $\langle k\rangle_{\ge2}=2.75$.
+
+\begin{proposition}[operator growth; measured]
+As functions of the input, the neurons' first chaos decays to under a fifth of their variance. The mean degree of the rest grows linearly in
+depth, about one degree per layer.
+\end{proposition}
+This is the classical counterpart of operator spreading in scrambling circuits, where the size of a Heisenberg operator grows linearly in
+time. Its consequence for algorithm design is blunt. A degree-$d$ chaos component in $n=1024$ variables has about $n^d/d!$ coefficients. Any
+expansion in a basis fixed in advance, whether Pauli-path or Heisenberg propagation in input Hermite coordinates, would need degree around
+$17$ at the output. It is hopeless.
+
+\subsection{Why closures work at all: frames that co-evolve with the weights}
+Stage~15's wall-jet theorem expands each neuron's $\relu$ in the Appell (Wick) polynomials of \emph{its own layer's law}. In that frame the
+births at one layer have low order: stage~14's kink law puts order $K$ at resolution radius $2\sqrt K$, and $K\le4$ suffices. Composing frames
+telescopes the degree. Measured in the fixed input frame, the degree grows by one per layer; each frame change $\mu_l^{-1}\star\mathrm{id}$ absorbs that
+growth, so in the moving frames it stays bounded.
+\begin{itemize}[leftmargin=*]
+\item \emph{The frame is a function of the instance.} The frame of layer $l$ is $(\mu_l,C_l)$, computed from $W_1,\dots,W_l$.
+\item \emph{So the interdependence is forced.} The representation co-evolves with the sampled weights, and any tractable estimator must
+have this property. The chain is one instance of it, not the template.
+\item \emph{Quantum reading.} Classical simulations of random circuits by Pauli propagation truncate operator weight in a fixed basis. For
+deep \textsc{ReLU} networks the truncation must be done in moving frames, which is the interaction picture with the Wick map as frame
+change.
+\end{itemize}
+The open question this raises is about frame \emph{families}. Gaussian centred frames are one choice. Section~\ref{sec:gamma} shows
+that reshaping a Gaussian frame variationally does not help; non-Gaussian frames are untested.

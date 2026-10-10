@@ -1,0 +1,28 @@
+\label{sec:verify}
+\texttt{scripts/\allowbreak verify\_\allowbreak stage16.py} runs in about six minutes. Most of that is the Jacobian scan of network~0; set
+\texttt{SKIP\_SLOW=1} to skip it. The transcript is \texttt{notes/\allowbreak stage16/\allowbreak verify\_\allowbreak stage16.txt}.
+\begin{center}\small
+\begin{tabular}{>{\raggedright\arraybackslash}p{5.4cm}>{\raggedright\arraybackslash}p{8.6cm}}\toprule
+statement & result\\\midrule
+spin branching $p_\pm$ & $(j+1)/(2j+1)$, $j/(2j+1)$, sum $1$ at $j=\frac12,1,\frac72$\\
+three-spin logical qubit & $S_{12}=-Z$, $S_{23}=\frac12Z+\frac{\sqrt3}2X$, $[S_{12},S_{23}]=-i\sqrt3Y$ exactly\\
+Zhou v1 multi-time display & $\E[Z_a^2Z_b^2]$: $3.021$ (MC) vs $ab+2a^2+a=3.010$; product of means $1.33$\\
+isotropic angular reference $G_1$ & $0.5$ and $0.0998$--$0.1004$ (pred.\ $0.1$), off-diagonal $\le3\times10^{-4}$\\
+squeeze holonomy of a contact loop & angle$/(a^2/4)=0.985,0.965,0.935$ at $a=0.02,0.05,0.1$; orthogonal to $5\times10^{-13}$\\
+hard-core normalizer & $z_i^2$ leak $0$ (signed permutation), $0.39$ (random rotation)\\
+mixture $\kappa_4=\Cov(Q)$ & $1.573/1.558$, $0.538/0.518$, $-0.007/-0.001$\\
+Bernoulli realization relation & $:\!b^2\!:-:\!b\!:\;=-2p(B-p)$ exactly\\
+commutant tower & $15,4,3.01$ ($2k=4$) and $203,31,15.17$ ($2k=6$) for $S_n,B_n,O(n)$\\
+replica covariance identity & relative Frobenius $0.008$ (noise $\approx0.004$), diagonal ratio $0.998$\\
+chaos ladder (network 0) & $F/V$: $0.73\to0.19$; $\langle k\rangle_{\ge2}$: $2.76\to17.14$ over layers $1\to16$\\
+isotropic share of truth $-$ Gaussian & $0.60$--$0.66$; exact chain captures $0.991$--$0.997$\\
+minimal-sensitivity frames & no gain over the centred frame (table in Section~\ref{sec:gamma})\\
+wall-sum estimator & MSE $3.5\times10^{-2}$ (layer 2), $8.3$ (layer 16); Dirac/variance $1.47$, $13.7$\\\bottomrule
+\end{tabular}
+\end{center}
+Not checked numerically:
+\begin{itemize}[leftmargin=*]
+\item the self-calibration theorem, whose protocol is in Section~\ref{sec:crossval};
+\item the claim that three-block content is purely quenched, which follows from Proposition~\ref{prop:annealed}(1), beyond the vanishing of annealed
+odd cumulants of pre-activations.
+\end{itemize}

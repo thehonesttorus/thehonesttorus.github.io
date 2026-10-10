@@ -1,0 +1,63 @@
+\label{sec:commutant}
+\subsection{Three symmetry groups and their tensor commutants}
+Three groups act on a hidden layer's $\R^n$.
+\begin{itemize}[leftmargin=*]
+\item $O(n)$, under which the Gaussian weight ensemble is invariant on each side.
+\item The hyperoctahedral group $B_n$ of signed permutations, which commutes with the fold $|\cdot|$.
+\item $S_n$, the relabelling of hidden units, which commutes with $\relu$.
+\end{itemize}
+\begin{theorem}[the commutant tower; classical, checked]\label{thm:tower}
+For $n\ge2k$, the algebras of operators on $(\R^n)^{\otimes k}$ commuting with the diagonal action are as follows.
+\begin{itemize}[leftmargin=*]
+\item $O(n)$: the Brauer algebra $\Br_k(n)$, spanned by perfect matchings of the $2k$ legs.
+\item $B_n$: the span of set partitions of the $2k$ legs with all blocks of even size.
+\item $S_n$: the partition algebra $\Pa_k(n)$, spanned by all set partitions.
+\end{itemize}
+So $\Br_k\subset\Pa^{\rm even}_k\subset\Pa_k$.
+\end{theorem}
+\begin{proof}
+An operator commuting with all coordinate permutations has entries that depend only on the equality pattern of its $2k$ indices, a set
+partition. Commuting also with the sign flips forces every block to contain an even number of legs. The $O(n)$ case is Brauer's
+theorem.
+\end{proof}
+\emph{Check.} Invariant dimensions are $\frac1{|G|}\sum_g\chi(g)^{2k}$ for the finite groups and $\E\,(\Tr O)^{2k}$ for Haar $O(n)$.
+\begin{itemize}[leftmargin=*]
+\item $2k=4$: $S_4$ gives $15$, $B_4$ gives $4$, and $O(6)$ gives $3.01\pm0.02$. The counts are $15$ (Bell), $4$ (even
+partitions) and $3$ (pairings).
+\item $2k=6$: $203$, $31$, and $15.17\pm0.22$; the counts are $203$, $31$, $15$.
+\end{itemize}
+
+\subsection{Which statistics live where}
+\begin{proposition}[annealed statistics; proved]\label{prop:annealed}
+Let $W_l$ have i.i.d.\ $N(0,\sigma^2)$ entries independent of the upstream state, and $z_l=W_lh_{l-1}$.
+\begin{enumerate}[leftmargin=*]
+\item $\E_{W_l}[\kappa_k(z_l)]=\sigma^k\sum_\pi\prod_{(a,b)\in\pi}\delta_{i_ai_b}\cdot\langle\kappa_k(h_{l-1}),\pi\rangle$, summed over perfect matchings $\pi$ of the $k$ legs. Annealed
+pre-activation cumulants are Brauer elements; in particular \emph{all annealed odd cumulants of pre-activations vanish}.
+\item Post-activation annealed statistics are $S_n$-invariant, hence partition-algebra elements. Odd blocks appear because $\relu$
+breaks the sign symmetry. Even non-pairing blocks such as $\delta_{iiii}$ come from the fold and odd blocks such as $\delta_{iii}$ from the
+asymmetry.
+\item If $z\mid Q\sim N(0,Q)$, then $\kappa_4=\Cov(Q_{ij},Q_{kl})+{}$two permutations, a pure pairing element. With $Q=qI$ (the dilation) it is
+$\Var(q)(\delta\delta+\delta\delta+\delta\delta)$. Upper-geometry fluctuations create only Brauer-type cumulants. The dilation package of stage~13 is the
+Brauer $\kappa_4$.
+\end{enumerate}
+\end{proposition}
+\begin{proof}
+(1) Gaussian Wick calculus for $E[W_{i_1j_1}\cdots W_{i_kj_k}]$ pairs the factors, identifying row and column indices together. (2) Relabelling
+of hidden units is a symmetry of the ensemble of networks, while sign flips are not. (3) Condition on $Q$ and subtract the three pair
+products (checked in Section~\ref{sec:audit}).
+\end{proof}
+\begin{corollary}[where the residual lives]
+Stage~15's isotropic sector is the Brauer span. Three-block content of pre-activations, the ``stars'', has zero annealed part, so it is
+\emph{purely quenched}: no counterterm, mean-field tier or annealed correction can reach it. Only contractions with the instance's
+transported legs can. This is the experimental session's ``bulk three-site structure''. The dilation, by contrast, is Brauer, and the
+fitted counterterms had already absorbed it; that is why its exact package did not pay on v56.
+\end{corollary}
+
+\subsection{The noiseless subsystem of the ensemble}
+By Schur--Weyl--Brauer duality, $(\R^n)^{\otimes k}=\bigoplus_\lambda V^{O(n)}_\lambda\otimes M_\lambda$, where $\Br_k$ acts on the multiplicity spaces $M_\lambda$. The
+ensemble average over $O(n)$ is the twirl that keeps only the multiplicity (leg-pattern, replica-overlap) information. This is the
+companion's ``information behind the label'' with the roles reversed. The collective noise here is the randomness of the weights; it
+\emph{decoheres the spatial factor}, where the instance-specific information lives, and preserves the multiplicity factor, which is the
+annealed (NNGP-type) theory. Annealed theory is the dynamics of the noiseless subsystem. Estimation of one instance is the recovery of
+what that twirl destroys, and a quantum Schur transform would not help with it: it gives access to multiplicities, which are classically
+cheap here.
