@@ -63,9 +63,13 @@ def play_one(args):
     except Exception as e:
         err = traceback.format_exc()
     score, cap = rhae(level_actions, info.baseline_actions or [], f.win_levels if f else len(info.baseline_actions))
+    diag = None
+    if hasattr(agent, "diagnostics"):
+        try: diag = agent.diagnostics()
+        except Exception as e: diag = {"error": repr(e)}
     return dict(game=gid, levels=last_levels, win_levels=info.baseline_actions and len(info.baseline_actions), actions=n,
                 level_actions=level_actions, baselines=info.baseline_actions, score=round(score*100,2), cap=round(cap*100,1),
-                seconds=round(time.time()-t0,1), error=err)
+                seconds=round(time.time()-t0,1), error=err, diag=diag)
 
 if __name__ == "__main__":
     p = argparse.ArgumentParser()
@@ -87,4 +91,8 @@ if __name__ == "__main__":
     for r in res:
         print(f"{r['game']:6} {r['levels']:>2}/{r['win_levels']:<2} {r['actions']:>6} {r['score']:>7} {r['cap']:>6} {r['seconds']:>6}  {r['level_actions']} / {r['baselines']}" + (f"  ERROR: {r['error'].splitlines()[-1]}" if r['error'] else ""))
     print(f"MEAN RHAE over {len(res)} games: {tot:.2f}%   levels: {sum(r['levels'] for r in res)}   wall {time.time()-t:.0f}s")
+    if a.v or any(r.get('diag') for r in res):
+        print("\n--- agent-internal diagnostics (counts only) ---")
+        for r in res:
+            if r.get('diag'): print(f"  {r['game']:6} {r['diag']}")
     if a.out: json.dump(res, open(a.out, "w"), indent=1)
