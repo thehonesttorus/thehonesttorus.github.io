@@ -196,17 +196,44 @@ def _predicate_candidates(recs: list[Record]) -> list[tuple]:
     return preds
 
 
-def _fits_exactly(selector: tuple, recs: list[Record], targets: list[set[int]]) -> bool:
-    for r, B in zip(recs, targets):
-        sel = {c.id for c in select(selector, r.A0, r.data)}
-        if sel != B:
+class _Selections:
+    """Memo of selector applications per record (the fit loops apply the same selector many times)."""
+
+    def __init__(self, recs: list[Record]):
+        self.recs = recs
+        self.cache: dict[tuple, list] = {}
+
+    def get(self, selector: tuple, ri: int) -> list:
+        key = (selector, ri)
+        v = self.cache.get(key)
+        if v is None:
+            r = self.recs[ri]
+            v = select(selector, r.A0, r.data)
+            self.cache[key] = v
+        return v
+
+
+def _fits_exactly(selector: tuple, recs: list[Record], targets: list[set[int]], memo: Optional[_Selections] = None) -> bool:
+    memo = memo or _Selections(recs)
+    for ri, B in enumerate(targets):
+        if {c.id for c in memo.get(selector, ri)} != B:
             return False
     return True
 
 
-def _fits_with_gate(selector: tuple, pred: tuple, recs: list[Record], targets: list[set[int]], body: tuple = ()) -> bool:
-    for r, B in zip(recs, targets):
-        selected = select(selector, r.A0, r.data)
+def _is_superset(selector: tuple, recs: list[Record], targets: list[set[int]], memo: _Selections) -> bool:
+    for ri, B in enumerate(targets):
+        if B and not B <= {c.id for c in memo.get(selector, ri)}:
+            return False
+    return True
+
+
+def _fits_with_gate(selector: tuple, pred: tuple, recs: list[Record], targets: list[set[int]], body: tuple = (),
+                    memo: Optional[_Selections] = None) -> bool:
+    memo = memo or _Selections(recs)
+    for ri, B in enumerate(targets):
+        r = recs[ri]
+        selected = memo.get(selector, ri)
         if not B <= {c.id for c in selected}:
             return False
         for comp in selected:
@@ -392,6 +419,23 @@ def _synthesize_reading_inner(a: int, recs: list[Record], terminal: list[Record]
         if rel_sets and all(cs == rel_sets[0] for cs in rel_sets):
             creation_ok = True
             creations = [Creation(k, col, g, off, relative=True) for (k, col, g, off) in rel_sets[0]]
+        elif rel_sets:
+            # gated creation: the same pointed-relative (or constant) set in every record where something was created,
+            # nothing elsewhere, and a predicate on the pointed component separating the two groups exactly
+            nonempty = [i for i, cs in enumerate(rel_sets) if cs]
+            if nonempty and all(rel_sets[i] == rel_sets[nonempty[0]] for i in nonempty):
+                pointed = [r.A0.comps[int(r.A0.cell2comp[int(r.data["y"]), int(r.data["x"])])] for r in recs]
+                want = [bool(cs) for cs in rel_sets]
+                for pred in _predicate_candidates(recs):
+                    if all(gate_holds(pred, (), p, r.A0) == w for p, r, w in zip(pointed, recs, want)):
+                        creation_ok = True
+                        spec = rel_sets[nonempty[0]]
+                        const = all(created_sets[i] == created_sets[nonempty[0]] for i in nonempty)
+                        if const:
+                            creations = [Creation(k, col, g, off, gate=pred) for (k, col, g, off) in created_sets[nonempty[0]]]
+                        else:
+                            creations = [Creation(k, col, g, off, relative=True, gate=pred) for (k, col, g, off) in spec]
+                        break
     if not creation_ok and any(created_lists):
         # a copy left relative to each moved component's old place (SelX . Copy . units): one creation per mover
         mover_sets = []
@@ -428,6 +472,7 @@ def _synthesize_reading_inner(a: int, recs: list[Record], terminal: list[Record]
 
     selectors = _selector_candidates(recs)
     predicates = _predicate_candidates(recs)
+    memo = _Selections(recs)
 
     # 2. per class: clauses whose selector/gate separates exactly, with constant fill
     alternatives: list[list[Clause]] = []
@@ -458,7 +503,7 @@ def _synthesize_reading_inner(a: int, recs: list[Record], terminal: list[Record]
         for selector in selectors:
             if time.time() - t0 > budget_s:
                 break
-            if _fits_exactly(selector, recs, targets):
+            if _fits_exactly(selector, recs, targets, memo):
                 found.append(Clause(selector, None, body, term, fill))
         if not found:
             preds = predicates
@@ -470,11 +515,12 @@ def _synthesize_reading_inner(a: int, recs: list[Record], terminal: list[Record]
                         + [("inside", c) for c in cols] + [("notcollidecolour", c) for c in cols] \
                         + [("collide", None), ("offgrid", None)] + [("collide", k) for k in keys] \
                         + [("collidecolour", c) for c in cols] + [("notinside", c) for c in cols]
-            for selector in selectors:
+            supers = [s_ for s_ in selectors if _is_superset(s_, recs, targets, memo)]
+            for selector in supers:
                 for pred in preds:
                     if time.time() - t0 > budget_s:
                         break
-                    if _fits_with_gate(selector, pred, recs, targets, body):
+                    if _fits_with_gate(selector, pred, recs, targets, body, memo):
                         found.append(Clause(selector, pred, body, term, fill))
         if found and vacates and len(fills_ok) > 1:
             found = found + [Clause(cl.selector, cl.bind, cl.body, cl.term, f) for cl in found for f in fills_ok[1:]]
@@ -492,7 +538,7 @@ def _synthesize_reading_inner(a: int, recs: list[Record], terminal: list[Record]
     #    The exact test is the arbiter: an unexplained class may be a decomposition artifact (occlusion,
     #    reveal) that identity rendering reproduces, so combinations are tried regardless.
     res.creation_failed = not creation_ok
-    if alternatives or creation_ok:
+    if True:   # the exact test is the arbiter: even with unexplained classes or creations the identity combination may be exact in the quotient
         combos = itertools.product(*alternatives) if alternatives else [()]
         for n, combo in enumerate(combos):
             if n >= MAX_COMBOS or time.time() - t0 > budget_s:

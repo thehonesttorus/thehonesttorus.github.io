@@ -140,11 +140,15 @@ class Creation:
     offset: tuple[int, int]      # absolute bbox corner, or offset relative to the anchor component when relative
     relative: bool = False       # Copy/placement relative to the pointed component (SelPointed . Copy . units)
     anchor: Optional[tuple] = None   # ("mover", selector) : placed relative to each component the clause selector picks
+    gate: Optional[tuple] = None     # (predicate): the creation happens iff the pointed component satisfies it
 
     def letters(self) -> list[str]:
         if self.anchor is not None:
-            return [{"all": "SelAll", "pointed": "SelPointed", "colour": "SelColour", "rank": "SelRank", "type": "SelType"}[self.anchor[1][0]], "Copy"]
-        return ["SelPointed", "Copy"] if self.relative else ["Create"]
+            return [SEL_NAME[self.anchor[1][0]], "Copy"]
+        base = ["SelPointed", "Copy"] if self.relative else ["Create"]
+        if self.gate is not None:
+            base = ["SelPointed", "Bind", "Gate"] + base
+        return base
 
     def lettered(self) -> list[tuple]:
         names = self.letters()
@@ -153,6 +157,12 @@ class Creation:
 
     def cells_list(self, A: BaseAlgebra, data: Optional[dict]) -> Optional[list[np.ndarray]]:
         from .algebra import canonical_image_from_key, cells_from_canonical
+        if self.gate is not None:
+            if not data:
+                return []
+            cid = int(A.cell2comp[int(data["y"]), int(data["x"])])
+            if cid < 0 or not gate_holds(self.gate, (), A.comps[cid], A):
+                return []
         canon = canonical_image_from_key(self.key)
         if self.anchor is not None:
             bases = [c.offset for c in select(self.anchor[1], A, data)]
