@@ -62,6 +62,9 @@ def build(accelerator: str) -> dict:
         # A global deadline for every game (the notebook's 9-hour limit, minus a margin for submission writing):
         # games may run in batches, so a per-game wall clock alone cannot guarantee the notebook finishes.
         os.environ.setdefault("NCE_DEADLINE", str(time.time() + 8.25 * 3600))
+        # 48 vCPUs for the hidden games: several seconds of compute per action are available, so every engine budget
+        # (synthesis, planning, Kato) is raised together
+        os.environ.setdefault("NCE_COMPUTE_SCALE", "4")
         _B64 = """{pkg_b64}"""
         os.makedirs("/kaggle/working/nce_pkg", exist_ok=True)
         with zipfile.ZipFile(io.BytesIO(base64.b64decode(_B64))) as zf:

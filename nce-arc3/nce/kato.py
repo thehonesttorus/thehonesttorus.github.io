@@ -128,7 +128,8 @@ def purity_deficit(hyps: list[Hypothesis], A: BaseAlgebra, data: Optional[dict],
 
 
 def kato_select(A: BaseAlgebra, avail: list[int], H: dict[int, list[Hypothesis]], partials: dict[int, list[ClauseSet]],
-                store: Store, actions_since_level: int, restrict: Optional[set] = None, memory=None) -> Optional[tuple[int, Optional[dict]]]:
+                store: Store, actions_since_level: int, restrict: Optional[set] = None, memory=None,
+                budget_s: float = KATO_BUDGET_S) -> Optional[tuple[int, Optional[dict]]]:
     # 1. try once: an action with no demonstration (RESET is learned like any other, but only when offered)
     for a in avail:
         if a == 0:
@@ -140,7 +141,7 @@ def kato_select(A: BaseAlgebra, avail: list[int], H: dict[int, list[Hypothesis]]
     import time as _time
     t_start = _time.time()
     for (a, data) in candidates(A, avail):
-        if _time.time() - t_start > KATO_BUDGET_S:
+        if _time.time() - t_start > budget_s:
             break
         if restrict is not None and (a, None if data is None else (data["x"], data["y"])) not in restrict:
             continue

@@ -31,7 +31,8 @@ def _key(fr: np.ndarray) -> bytes:
 
 
 def plan_reachable(A0: algebra.BaseAlgebra, avail: list[int], Hc: dict[int, Hypothesis], node_budget: int = 60,
-                   time_budget_s: float = 0.08, perceive=None, memory=None) -> dict[bytes, tuple[list[Action], algebra.BaseAlgebra]]:
+                   time_budget_s: float = 0.08, perceive=None, memory=None,
+                   cand_budget_s: Optional[float] = None) -> dict[bytes, tuple[list[Action], algebra.BaseAlgebra]]:
     """Reachable predicted states within the budget: frame key -> (path, base algebra)."""
     t0 = time.time()
     start_key = A0.key()

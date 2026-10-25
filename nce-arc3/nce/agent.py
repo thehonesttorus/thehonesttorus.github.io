@@ -35,6 +35,14 @@ class NCEAgent:
     PLAN_TIME_S = 0.08
 
     def __init__(self, game_id: str, win_levels: int, available_actions: list[int]):
+        import os
+        # compute bounds scale together (NCE_COMPUTE_SCALE): the score counts actions, not seconds, so a deployment
+        # with seconds per action to spare raises every budget at once; nothing else changes
+        scale = max(0.1, float(os.environ.get("NCE_COMPUTE_SCALE", "1")))
+        self.SYNTH_BUDGET_S = NCEAgent.SYNTH_BUDGET_S * scale
+        self.PLAN_NODES = int(NCEAgent.PLAN_NODES * scale)
+        self.PLAN_TIME_S = NCEAgent.PLAN_TIME_S * scale
+        self.KATO_BUDGET_S = kato.KATO_BUDGET_S * scale
         self.game_id = game_id
         self.win_levels = int(win_levels)
         self.lib = Library(win_levels=max(2, self.win_levels))
@@ -192,17 +200,18 @@ class NCEAgent:
         Hc = plan.consensus(self.H)
         restrict = None
         if Hc and self.goals.G:
-            reach = plan.plan_reachable(A, avail, Hc, self.PLAN_NODES, self.PLAN_TIME_S, perceive=self.perceive, memory=self.memory)
+            reach = plan.plan_reachable(A, avail, Hc, self.PLAN_NODES, self.PLAN_TIME_S, perceive=self.perceive, memory=self.memory,
+                                        cand_budget_s=self.KATO_BUDGET_S)
             path = self.goals.split_target(reach, self.store)
             if path:
                 first = path[0]
                 restrict = {(first[0], None if first[1] is None else (first[1]["x"], first[1]["y"]))}
-                choice = kato.kato_select(A, avail, self.H, self.partials, self.store, self.actions_since_level, restrict=restrict, memory=self.memory)
+                choice = kato.kato_select(A, avail, self.H, self.partials, self.store, self.actions_since_level, restrict=restrict, memory=self.memory, budget_s=self.KATO_BUDGET_S)
                 self.diag["plan_steps"] += 1
                 self.last_reason = f"plan a{first[0]} len{len(path)}" + (" +kato" if choice else "")
                 return choice if choice else first
         # 3. Kato over all candidates
-        choice = kato.kato_select(A, avail, self.H, self.partials, self.store, self.actions_since_level, memory=self.memory)
+        choice = kato.kato_select(A, avail, self.H, self.partials, self.store, self.actions_since_level, memory=self.memory, budget_s=self.KATO_BUDGET_S)
         if choice is not None:
             self.diag["kato_steps"] += 1
             self.last_reason = f"kato a{choice[0]}"
@@ -234,7 +243,7 @@ class NCEAgent:
         untried = None
         t0 = time.time()
         for (a, data) in cands:
-            if time.time() - t0 > kato.KATO_BUDGET_S:
+            if time.time() - t0 > self.KATO_BUDGET_S:
                 break
             hyps = self.H.get(a) or []
             if hyps:
@@ -333,15 +342,50 @@ class NCEAgent:
             self.H = {}                            # the flow changed: every word is re-derived in the new quotient
             self.partials = {}
         hyps = self.H.get(aid, [])
-        survivors = [h for h in hyps if synth.exact(h.cs, rec.A0, rec.data, rec.A1, rec.flag1, rec.memory,
-                                                     clock if rec.level == self.store.clock_level else None)]
+        ign = clock if rec.level == self.store.clock_level else None
+        survivors, failed = [], []
+        for h in hyps:
+            (survivors if synth.exact(h.cs, rec.A0, rec.data, rec.A1, rec.flag1, rec.memory, ign) else failed).append(h)
         for h in survivors:
             h.n_verified += 1
             h.contexts.add(word_context(h.cs, rec.A0, rec.data))
         if not survivors:
-            survivors = self._synthesize(aid)
+            # T12, incrementally: a word that fails on one new demonstration keeps it memorised while it still codes the
+            # action's demonstrations shorter than memorising them all and reproduces more than it memorises; a full
+            # re-synthesis is tried too, and an exact word from it wins
+            kept = [h2 for h2 in (self._memorise(h, aid, rec, ign) for h in failed) if h2 is not None]
+            fresh = self._synthesize(aid)
+            exact_fresh = [h for h in fresh if not h.cs.exceptions]
+            survivors = exact_fresh or sorted(kept + fresh, key=lambda h: -h.logw)[:synth.K_MAX]
         self.H[aid] = survivors
         self.prev = A1
+
+    def _memorise(self, h: Hypothesis, aid: int, rec, ign) -> Optional[Hypothesis]:
+        from dataclasses import replace as _replace
+        from .words import MEMO_CELL, _datum
+        fr, flag = predicted(h.cs, rec.A0, rec.data, rec.memory)
+        if rec.flag1 == "GAME_OVER":
+            post, cells = b"GAME_OVER", 1
+        else:
+            post = np.ascontiguousarray(rec.A1.frame, dtype=np.int8).tobytes()
+            if fr is None:
+                cells = 64 * 64
+            else:
+                d = fr != rec.A1.frame
+                for c in (ign or ()):
+                    d &= (fr != c) & (rec.A1.frame != c)
+                cells = max(int(np.count_nonzero(d)), 1)
+        exc = tuple(h.cs.exceptions) + ((rec.A0.key(), _datum(rec.data), post, cells),)
+        if h.n_verified <= len(exc):
+            return None
+        cs = _replace(h.cs, exceptions=exc)
+        logw = clause_set_log_weight(cs, self.lib)
+        live = [r for r in self.store.transitions(aid) if r.flag1 != "GAME_OVER"]
+        baseline = self.lib.beta_c * MEMO_CELL * float(sum(r.tr.changed_cells for r in live))
+        if -logw >= baseline:
+            return None
+        h2 = Hypothesis(cs, logw, h.n_verified, h.beyond_ceiling, set(h.contexts))
+        return h2
 
     def _synthesize(self, aid: int) -> list[Hypothesis]:
         self.diag["synth_calls"] += 1
