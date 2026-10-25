@@ -60,8 +60,17 @@ model stated in the docstring; **[I]** an interface fact.
 `SelPointed` 2 (component, cell) · `SelAll` 1 · `SelColour` 16 · `SelRank` 16 · `SelType` |Ξ₀| ·
 `Step` 4 · `Move` 16128 · `Rot` 7 · `Recolour` 15 · `Fill` 17 (palette + the remembered canvas) ·
 `Layer` 2 · `Grow` 64 · `Erode` 4 · `Copy` 2 · `Annihilate` 16 · `Create` |Ξ₀|·8·4096 ·
-`Bind` 6(|Ξ₀|+1)+16+|Ξ₀|+8 · `Gate` 2 · `Const` 2 · `LevelGate` win_levels · `Over` 1.
+`Bind` 6(|Ξ₀|+1)+2(16+|Ξ₀|+8) (pair predicates, unary tests on the component or the pointed one, couplings) ·
+`Meter` 2·16·4097 (a colour mass against a threshold) · `Gate` 2 · `Const` 2 · `LevelGate` win_levels · `Over` 1.
 The d = 1 subgraph is acyclic, so β_c exists (Thm 2.1(iv)); this is asserted at every refresh.
+
+Two further structures complete a word:
+
+- **The memorised part (T12).** A clause set may carry exact (pre-state, datum, post-state) memories for the
+  demonstrations its generalising part does not reproduce. It is admitted only when its letters plus
+  β_c·log(16·4096) per memorised cell are a shorter code than memorising every demonstration.
+- **Coupled clauses (pair vertex P).** A clause gated by `cofire` fires exactly when the clause fitted to
+  another behaviour class changed something in the same step (two correspondences tensored into one event).
 
 ## The governing rule
 
@@ -79,7 +88,7 @@ true-environment search.
 
 ```
 cd nce-arc3
-python3 -m pytest -q tests/                      # 29 tests: core math, algebra, matcher, proxy, toy mechanics
+python3 -m pytest -q tests/                      # core math, algebra, matcher, proxy, toy mechanics
 python3 tools/harness.py nce.agent:NCEAgent --games ls20,vc33 --max-actions 300 --procs 4
 python3 tools/play_local_framework.py --games vc33 --max-actions 200     # official framework loop
 python3 tools/build_kaggle_notebook.py           # -> notebooks/submission.ipynb

@@ -31,6 +31,21 @@ sometimes failed with identical local surroundings).
 | A colour shrank by one or two cells per click, the count depending on the click | Powers of a boundary letter, gated by the datum | `Erode^k`, `Grow^k`; gates that test the pointed component (`ptr`) |
 | Two colours were taken for a clock although a null click left them unchanged | A clock is a change no action withholds, with a witness of action independence | Null steps count against a clock; the same own-frame change must be seen under two action contexts |
 
+| Words exact on 117 of 118 (and 114 of 116, 54 of 57) demonstrations were rejected outright | Exactness without a memorised part forbids any generalisation in the presence of one rare event | The memorised part under a code-length test (T12) |
+| One cell joined a bar exactly in the steps where another component moved | Two correspondences tensored into one event | Coupled clauses (`cofire`) through the pair vertex |
+
+## Adversarial review (three lenses, skeptic-verified)
+
+Confirmed and fixed: Kato purity grouped hypotheses by changed cells rather than predicted frames; death-gate
+fitting could time out and leave words calling a lethal action safe; the clock quotient covered a whole colour;
+the newborn family count was hand-set. Also fixed from unverified but plausible findings: the 4ℓ translation
+prior in the matcher, the lexicographic combination cap, the perception and candidate caps, the round-robin
+fallthrough, goal windows, LevelGate level choice, fill constraints from created cells, stale weights after a
+library change, the replay counter, the shared `GameAction` singleton race, engine creation from the
+placeholder frame, worker failure recovery, frame-list growth, and the per-game wall clock. Refuted on
+verification: a stale-observation path that the real framework does not take, and a stale notebook that is a
+gitignored build artifact.
+
 ## Scoreboard
 
 (filled by the latest `tools/harness.py` run over the 25 public games; see the table appended
