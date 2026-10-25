@@ -23,7 +23,7 @@ import numpy as np
 from .algebra import GRID, BaseAlgebra, Component
 from .library import Library
 from .store import Record, Store
-from .words import REVEAL, VIRTUAL_ID, Clause, ClauseSet, Creation, Hypothesis, clause_set_log_weight, d4_relative, eroded_cells, exact, gate_holds, grown_cells, predicted_frame, select, word_context, _pair_predicate
+from .words import REVEAL, VIRTUAL_ID, Clause, ClauseSet, Creation, Hypothesis, clause_set_log_weight, d4_relative, eroded_cells, exact, gate_holds, grown_cells, pointed_cell, predicted_frame, select, word_context, _pair_predicate
 
 K_MAX = 32
 MAX_STEP_WORD = 6          # Step^k beats Move for k <= 6 under the Parry order (Section 0, item 1)
@@ -228,6 +228,23 @@ def _is_superset(selector: tuple, recs: list[Record], targets: list[set[int]], m
     return True
 
 
+def _gate_table(rec: Record, pred: tuple, body: tuple) -> dict[int, bool]:
+    """gate_holds(pred, body, comp, A0) for every component of the record (and the pointed cell), cached on the
+    record for body-independent predicates (pair and unary tests), per body for the collision tests."""
+    dep = pred[0] in ("collide", "offgrid", "collidecolour", "inside", "notcollide", "notoffgrid", "notcollidecolour", "notinside")
+    key = (pred, body if dep else ())
+    cache = rec.__dict__.setdefault("_gates", {})
+    t = cache.get(key)
+    if t is None:
+        t = {c.id: gate_holds(pred, body, c, rec.A0) for c in rec.A0.comps}
+        if rec.data:
+            pc = pointed_cell(rec.A0, rec.data)
+            if pc is not None:
+                t[pc.id] = gate_holds(pred, body, pc, rec.A0)
+        cache[key] = t
+    return t
+
+
 def _fits_with_gate(selector: tuple, pred: tuple, recs: list[Record], targets: list[set[int]], body: tuple = (),
                     memo: Optional[_Selections] = None) -> bool:
     memo = memo or _Selections(recs)
@@ -236,9 +253,20 @@ def _fits_with_gate(selector: tuple, pred: tuple, recs: list[Record], targets: l
         selected = memo.get(selector, ri)
         if not B <= {c.id for c in selected}:
             return False
+        t = _gate_table(r, pred, body)
         for comp in selected:
-            if gate_holds(pred, body, comp, r.A0) != (comp.id in B):
+            if t[comp.id] != (comp.id in B):
                 return False
+    return True
+
+
+def _holds_on_positives(pred: tuple, body: tuple, recs: list[Record], targets: list[set[int]]) -> bool:
+    for ri, B in enumerate(targets):
+        if not B:
+            continue
+        t = _gate_table(recs[ri], pred, body)
+        if not all(t[cid] for cid in B):
+            return False
     return True
 
 
@@ -516,6 +544,8 @@ def _synthesize_reading_inner(a: int, recs: list[Record], terminal: list[Record]
                         + [("collide", None), ("offgrid", None)] + [("collide", k) for k in keys] \
                         + [("collidecolour", c) for c in cols] + [("notinside", c) for c in cols]
             supers = [s_ for s_ in selectors if _is_superset(s_, recs, targets, memo)]
+            if supers:
+                preds = [p_ for p_ in preds if _holds_on_positives(p_, body, recs, targets)]   # a gate must admit every positive
             for selector in supers:
                 for pred in preds:
                     if time.time() - t0 > budget_s:
