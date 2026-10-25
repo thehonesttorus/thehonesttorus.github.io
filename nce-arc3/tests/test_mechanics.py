@@ -249,14 +249,42 @@ class MoverWithCountdown(Mover):
         return super().step(aid, data)
 
 
-def test_action_independent_countdown_is_an_erode_clause_in_every_word():
+def test_action_independent_countdown_is_the_level_clock():
+    """A colour touched on every non-null step under every action is the level's autonomous flow (T2, T12):
+    it is not a word of any action, and the exact test is taken in the quotient by its cells."""
     env = MoverWithCountdown()
     agent = NCEAgent("toy-countdown", 1, [1, 2, 3, 4])
     drive(agent, env, 16)
     d = agent.diagnostics()
     assert all(d["H_sizes"].get(a, 0) > 0 for a in (2, 3, 4)), d
+    assert agent.store.clock_colours() == frozenset({12})
     for a in (2, 3, 4):
-        assert any(k == "erode" for cl in agent.H[a][0].cs.clauses for k, _ in cl.body), agent.H[a][0].cs.describe()
+        assert not any(k == "erode" for cl in agent.H[a][0].cs.clauses for k, _ in cl.body), agent.H[a][0].cs.describe()
     A = agent.perceive(env.frame())
     fr, _ = predicted(agent.H[3][0].cs, A, None, agent.memory)
-    assert np.array_equal(fr, env.step(3, None)["frames"][0])
+    nxt = env.step(3, None)["frames"][0]
+    keep = (fr != 12) & (nxt != 12)
+    assert np.array_equal(fr[keep], nxt[keep])
+
+
+def test_erode_is_a_word_when_only_one_action_erodes():
+    """The same bar, eroded only by action 1 (action 2 is the identity): now it is action 1's word, not the clock."""
+    class OneActionErodes(MoverWithCountdown):
+        def reset_obs(self):
+            o = super().reset_obs()
+            self.y = 30                          # away from the wall: action 1 never kills here
+            return obs_of(self.frame(), full_reset=True)
+
+        def step(self, aid, data):
+            if aid == 1:
+                self.bar = max(self.bar - 1, 1)
+            return Mover.step(self, aid, data)
+    env = OneActionErodes()
+    agent = NCEAgent("toy-erode", 1, [1, 2])
+    o = env.reset_obs()
+    for _ in range(12):
+        aid, data = agent.act(o)
+        o = env.step(aid, data); agent.observe(o, aid, data)
+    assert not agent.store.clock_colours()
+    hs = agent.H.get(1) or []
+    assert hs and any(k == "erode" for cl in hs[0].cs.clauses for k, _ in cl.body), [h.cs.describe() for h in hs]

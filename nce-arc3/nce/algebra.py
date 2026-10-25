@@ -247,7 +247,7 @@ def _finish(F: np.ndarray, hist: np.ndarray, strata: list[list[int]], stratum_of
 
 def from_components(frame: np.ndarray, parts: list[tuple[int, np.ndarray]]) -> "BaseAlgebra":
     """Base algebra with an explicit component partition (colour, cells) of the frame (split rules, Section 2.5)."""
-    F = np.asarray(frame, dtype=np.int8)
+    F = np.array(frame, dtype=np.int8, copy=True)     # never alias a caller's buffer (the engine mutates its grid in place)
     hist = np.bincount(F.ravel().astype(np.int64), minlength=NCOL)
     strata = hn_strata(hist)
     stratum_of = {c: k for k, group in enumerate(strata) for c in group}
@@ -258,7 +258,7 @@ def from_components(frame: np.ndarray, parts: list[tuple[int, np.ndarray]]) -> "
 
 def build(frame: np.ndarray, max_components: int = 512) -> BaseAlgebra:
     """Construct the base algebra of a frame. Deterministic; no game knowledge."""
-    F = np.asarray(frame, dtype=np.int8)
+    F = np.array(frame, dtype=np.int8, copy=True)     # never alias a caller's buffer (the engine mutates its grid in place)
     if F.shape != (GRID, GRID):
         raise ValueError(f"frame must be {GRID}x{GRID}, got {F.shape}")
     hist = np.bincount(F.ravel().astype(np.int64), minlength=NCOL)

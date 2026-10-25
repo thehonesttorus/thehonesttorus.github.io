@@ -45,6 +45,7 @@ class SynthResult:
     min_mismatch_cells: int = -1     # best combination's cell mismatch (0 when exact)
     level_gated: bool = False
     death_gated: bool = False
+    clock: frozenset = frozenset()   # colours verified modulo (the level's autonomous flow)
     death_unexplained: bool = False  # terminal records exist but no gate separates them from the live ones
 
 
@@ -203,13 +204,13 @@ def _fits_exactly(selector: tuple, recs: list[Record], targets: list[set[int]]) 
     return True
 
 
-def _fits_with_gate(selector: tuple, pred: tuple, recs: list[Record], targets: list[set[int]]) -> bool:
+def _fits_with_gate(selector: tuple, pred: tuple, recs: list[Record], targets: list[set[int]], body: tuple = ()) -> bool:
     for r, B in zip(recs, targets):
         selected = select(selector, r.A0, r.data)
         if not B <= {c.id for c in selected}:
             return False
         for comp in selected:
-            if _pair_predicate(pred, comp, r.A0) != (comp.id in B):
+            if gate_holds(pred, body, comp, r.A0) != (comp.id in B):
                 return False
     return True
 
@@ -222,6 +223,7 @@ def synthesize(a: int, store: Store, lib: Library, budget_s: float = 0.25, k_max
     recs_all = store.transitions(a)
     recs = [r for r in recs_all if r.flag1 != "GAME_OVER"]
     terminal = [r for r in recs_all if r.flag1 == "GAME_OVER"]
+    res.clock = store.clock_colours()
     if not recs:
         if terminal:
             cs = ClauseSet(over=True)
@@ -231,9 +233,9 @@ def synthesize(a: int, store: Store, lib: Library, budget_s: float = 0.25, k_max
 
     # 1. behaviour classes across all non-terminal records. Readings are tried in Parry order: first every
     #    congruent in-place D4 change as an identity with a changed rendering (cost 0), then as a Rot (cost log 7).
-    readings = [False] + ([True] if any(r.tr.inplace_rot for r in recs) else [])
-    for use_rot in readings:
-        _synthesize_reading(a, recs, terminal, lib, t0, budget_s, k_max, res, use_rot)
+    readings = _readings(recs, lib)
+    for use_rot, short in readings:
+        _synthesize_reading(a, recs, terminal, lib, t0, budget_s, k_max, res, use_rot, short)
         if res.hypotheses:
             break
     # LevelGate (T9, T13): when no word covers every level, the current level's records alone, at the
@@ -242,8 +244,8 @@ def synthesize(a: int, store: Store, lib: Library, budget_s: float = 0.25, k_max
         cur = max(r.level for r in recs)
         recs = [r for r in recs if r.level == cur]
         terminal = [r for r in terminal if r.level == cur]
-        for use_rot in readings:
-            _synthesize_reading(a, recs, terminal, lib, t0, budget_s, k_max, res, use_rot)
+        for use_rot, short in readings:
+            _synthesize_reading(a, recs, terminal, lib, t0, budget_s, k_max, res, use_rot, short)
             if res.hypotheses:
                 break
         for h in res.hypotheses:
@@ -283,11 +285,64 @@ def _fit_death_gate(live: list[Record], terminal: list[Record], res: SynthResult
     res.death_unexplained = True
 
 
+def _short_shift(lib: Library) -> int:
+    """The translation length beyond which the Parry order prefers annihilation plus a pointed copy to a move:
+    4 l > d_Annihilate * d_SelPointed * d_Copy (log weights), so l* = that product / 4 (no free constant)."""
+    return max(1, int(lib.dims["Annihilate"] * lib.dims["SelPointed"] * lib.dims["Copy"]) // 4)
+
+
+def _readings(recs: list[Record], lib: Library) -> list[tuple[bool, bool]]:
+    """Readings of the demonstrations in Parry order: (identity, Rot) x (long moves as moves, as annihilate + copy).
+    The second reading of each pair exists only when some record makes it differ."""
+    rot = any(r.tr.inplace_rot for r in recs)
+    short = any(r.data for r in recs) and any(g.l1 > _short_shift(lib) for r in recs for _, _, g in r.tr.moved)
+    out = [(False, False)]
+    if rot:
+        out.append((True, False))
+    if short:
+        out.append((False, True))
+        if rot:
+            out.append((True, True))
+    return out
+
+
+def _with_reading(recs: list[Record], lib: Library, short: bool):
+    """Context manager swapping each record's decomposition for its short-shift reading (cached on the record)."""
+    class _Ctx:
+        def __enter__(self_):
+            self_.saved = []
+            if short:
+                from .match import decompose
+                ms = _short_shift(lib)
+                for r in recs:
+                    alt = r.__dict__.get("_tr_short")
+                    if alt is None:
+                        alt = decompose(r.A0, r.A1, max_shift=ms)
+                        r.__dict__["_tr_short"] = alt
+                    self_.saved.append((r, r.tr))
+                    r.tr = alt
+            return self_
+
+        def __exit__(self_, *exc):
+            for r, tr in self_.saved:
+                r.tr = tr
+            return False
+    return _Ctx()
+
+
 def _synthesize_reading(a: int, recs: list[Record], terminal: list[Record], lib: Library, t0: float, budget_s: float,
-                        k_max: int, res: SynthResult, use_rot: bool) -> None:
+                        k_max: int, res: SynthResult, use_rot: bool, short: bool = False) -> None:
+    with _with_reading(recs, lib, short):
+        _synthesize_reading_inner(a, recs, terminal, lib, t0, budget_s, k_max, res, use_rot)
+
+
+def _synthesize_reading_inner(a: int, recs: list[Record], terminal: list[Record], lib: Library, t0: float, budget_s: float,
+                              k_max: int, res: SynthResult, use_rot: bool) -> None:
     classes: dict[tuple, list[set[int]]] = {}
     for ri, r in enumerate(recs):
         for c in r.A0.comps:
+            if c.color in res.clock:
+                continue                      # the autonomous flow is not a word of this action
             sig = _signature(r, c.id, use_rot)
             if sig is None:
                 continue
@@ -314,6 +369,8 @@ def _synthesize_reading(a: int, recs: list[Record], terminal: list[Record], lib:
             vacated[r.A0.comps[i].cells] = True
         for j in r.tr.created:
             cells = r.A1.comps[j].cells
+            if r.A1.comps[j].color in res.clock:
+                continue                      # the autonomous flow is not a creation of this action
             if r.memory is not None and np.all(vacated[cells]) and np.all(r.memory.ravel()[cells] == r.A1.frame.ravel()[cells]):
                 continue
             out.append(j)
@@ -404,11 +461,20 @@ def _synthesize_reading(a: int, recs: list[Record], terminal: list[Record], lib:
             if _fits_exactly(selector, recs, targets):
                 found.append(Clause(selector, None, body, term, fill))
         if not found:
+            preds = predicates
+            if body and any(k in ("step", "move", "rot") for k, _ in body):
+                # a move that sometimes does not happen: gated on what the transported component would meet
+                keys = sorted({c.key for r in recs for c in r.A0.comps})
+                cols = sorted({c.color for r in recs for c in r.A0.comps})
+                preds = preds + [("notcollide", None), ("notoffgrid", None)] + [("notcollide", k) for k in keys] \
+                        + [("inside", c) for c in cols] + [("notcollidecolour", c) for c in cols] \
+                        + [("collide", None), ("offgrid", None)] + [("collide", k) for k in keys] \
+                        + [("collidecolour", c) for c in cols] + [("notinside", c) for c in cols]
             for selector in selectors:
-                for pred in predicates:
+                for pred in preds:
                     if time.time() - t0 > budget_s:
                         break
-                    if _fits_with_gate(selector, pred, recs, targets):
+                    if _fits_with_gate(selector, pred, recs, targets, body):
                         found.append(Clause(selector, pred, body, term, fill))
         if found and vacates and len(fills_ok) > 1:
             found = found + [Clause(cl.selector, cl.bind, cl.body, cl.term, f) for cl in found for f in fills_ok[1:]]
@@ -433,14 +499,20 @@ def _synthesize_reading(a: int, recs: list[Record], terminal: list[Record], lib:
                 break
             cs = ClauseSet(tuple(combo), tuple(creations))
             res.combos_tried += 1
-            if all(exact(cs, r.A0, r.data, r.A1, r.flag1, r.memory) for r in recs):
+            if all(exact(cs, r.A0, r.data, r.A1, r.flag1, r.memory, res.clock) for r in recs):
                 res.hypotheses.append(Hypothesis(cs, clause_set_log_weight(cs, lib), len(recs)))
                 res.min_mismatch_cells = 0
             elif res.min_mismatch_cells != 0:
                 mm = 0
                 for r in recs:
                     fr = predicted_frame(cs, r.A0, r.data, r.memory)
-                    mm += 4096 if fr is None else int(np.count_nonzero(fr != r.A1.frame))
+                    if fr is None:
+                        mm += 4096
+                    else:
+                        d = fr != r.A1.frame
+                        for c in res.clock:
+                            d &= (fr != c) & (r.A1.frame != c)
+                        mm += int(np.count_nonzero(d))
                 if res.min_mismatch_cells < 0 or mm < res.min_mismatch_cells:
                     res.min_mismatch_cells = mm
         res.hypotheses.sort(key=lambda h: -h.logw)

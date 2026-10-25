@@ -294,7 +294,9 @@ def gate_holds(gate: Letter, body: tuple, comp: Component, A: BaseAlgebra) -> bo
     """Death gates: a pair predicate on the pre-state, or a predicate on the transported component
     ("collide" with a component of a type, or any non-top component when the type is None; "offgrid")."""
     kind, key = gate
-    if kind not in ("collide", "offgrid"):
+    if kind in ("notcollide", "notoffgrid", "notcollidecolour", "notinside"):
+        return not gate_holds((kind[3:], key), body, comp, A)
+    if kind not in ("collide", "offgrid", "collidecolour", "inside"):
         return _pair_predicate(gate, comp, A)
     g, (oy, ox) = comp.g, comp.offset
     for k, param in body:
@@ -307,6 +309,10 @@ def gate_holds(gate: Letter, body: tuple, comp: Component, A: BaseAlgebra) -> bo
         return kind == "offgrid"
     if kind == "offgrid":
         return False
+    if kind in ("collidecolour", "inside"):
+        new = np.setdiff1d(cells, comp.cells, assume_unique=True)
+        under = A.frame.ravel()[new]
+        return bool(np.any(under == key)) if kind == "collidecolour" else bool(np.all(under == key))
     occ = A.cell2comp.ravel()[cells]
     ids = set(occ[occ >= 0].tolist()) - {comp.id}
     top = len(A.strata) > 1
@@ -356,7 +362,7 @@ class Fate:
 
 def apply_clause(cl: Clause, comp: Component, A: BaseAlgebra) -> Optional[Fate]:
     """The clause's fate for a component it selects; None if the gate excludes the component."""
-    if cl.bind is not None and not _pair_predicate(cl.bind, comp, A):
+    if cl.bind is not None and not gate_holds(cl.bind, cl.body, comp, A):
         return None
     g, (oy, ox), color = comp.g, comp.offset, comp.color
     moved = False
@@ -468,11 +474,16 @@ def render(A: BaseAlgebra, fates: list[Fate], creations: list[Creation], data: O
     return canvas.reshape(GRID, GRID)
 
 
-def frame_matches(pred: Optional[np.ndarray], frame: np.ndarray) -> bool:
-    """Cell-for-cell equality, with -1 cells of the prediction (unknown canvas under a reveal) as wildcards."""
+def frame_matches(pred: Optional[np.ndarray], frame: np.ndarray, ignore: Optional[frozenset] = None) -> bool:
+    """Cell-for-cell equality, with -1 cells of the prediction (unknown canvas under a reveal) as wildcards.
+    Cells showing a colour in `ignore` (the level's clock colours) before or after are outside the comparison:
+    the exact test is taken in the quotient by the autonomous flow."""
     if pred is None:
         return False
     known = pred >= 0
+    if ignore:
+        for c in ignore:
+            known &= (pred != c) & (frame != c)
     return bool(np.array_equal(pred[known], frame[known].astype(np.int16)))
 
 
@@ -486,14 +497,15 @@ def concretize(pred: Optional[np.ndarray], A: BaseAlgebra) -> Optional[np.ndarra
     return pred.astype(np.int8)
 
 
-def exact(cs: ClauseSet, A0: BaseAlgebra, data: Optional[dict], A1: BaseAlgebra, flag1: str, memory: Optional[np.ndarray] = None) -> bool:
+def exact(cs: ClauseSet, A0: BaseAlgebra, data: Optional[dict], A1: BaseAlgebra, flag1: str, memory: Optional[np.ndarray] = None,
+          ignore: Optional[frozenset] = None) -> bool:
     fates, creations, flag = predict(cs, A0, data)
     if (flag == "GAME_OVER") != (flag1 == "GAME_OVER"):
         return False
     if flag1 == "GAME_OVER":
         return True  # the terminal transition's frame is not predicted beyond the flag
     out = render(A0, fates, creations, data, memory)
-    return frame_matches(out, A1.frame)
+    return frame_matches(out, A1.frame, ignore)
 
 
 def predicted_frame(cs: ClauseSet, A: BaseAlgebra, data: Optional[dict], memory: Optional[np.ndarray] = None) -> Optional[np.ndarray]:
@@ -508,7 +520,7 @@ def word_context(cs: ClauseSet, A: BaseAlgebra, data: Optional[dict]) -> tuple:
     out = []
     for cl in cs.clauses:
         sel = select(cl.selector, A, data)
-        out.append(tuple(sorted((c.type, True if cl.bind is None else _pair_predicate(cl.bind, c, A)) for c in sel)))
+        out.append(tuple(sorted((c.type, True if cl.bind is None else gate_holds(cl.bind, cl.body, c, A)) for c in sel)))
     if cs.over_gate is not None:
         sel_, gate, body = cs.over_gate
         out.append(tuple(sorted((c.type, gate_holds(gate, body, c, A)) for c in select(sel_, A, data))))

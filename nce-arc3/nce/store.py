@@ -16,6 +16,23 @@ from .algebra import BaseAlgebra
 from .match import Transition, decompose
 
 
+def _mask_bytes(rec: "Record", c: int) -> tuple[bytes, bytes]:
+    """Packed masks of colour c before and after the transition (cached on the record)."""
+    cache = rec.__dict__.setdefault("_masks", {})
+    if c not in cache:
+        cache[c] = (np.packbits(rec.A0.frame == c).tobytes(), np.packbits(rec.A1.frame == c).tobytes())
+    return cache[c]
+
+
+def _change_descriptor(rec: "Record", c: int) -> tuple:
+    """What happened to colour c, up to position: cells lost and gained, and the colours they went to / came from."""
+    lost = (rec.A0.frame == c) & (rec.A1.frame != c)
+    gained = (rec.A0.frame != c) & (rec.A1.frame == c)
+    return (int(lost.sum()), int(gained.sum()),
+            tuple(sorted(int(v) for v in np.unique(rec.A1.frame[lost]))),
+            tuple(sorted(int(v) for v in np.unique(rec.A0.frame[gained]))))
+
+
 @dataclass
 class Record:
     A0: BaseAlgebra
@@ -39,6 +56,7 @@ class Store:
     ignorance: dict[int, dict] = field(default_factory=dict)              # action -> {(pre_key, datum): post_key}
     nondeterministic: set[int] = field(default_factory=set)
     order: list[Record] = field(default_factory=list)                     # all records in time order
+    _clock_cache: Optional[tuple[int, frozenset]] = None
 
     def append(self, a: int, A0: BaseAlgebra, data: Optional[dict], A1: BaseAlgebra, flag1: str, level: int,
                memory: Optional[np.ndarray] = None) -> Record:
@@ -91,6 +109,48 @@ class Store:
                 write(rec.A1)
             prev_level = rec.level
         return mem.reshape(64, 64)
+
+    # ---- the action-independent flow (T2, T12) -------------------------------------------------------------
+    def clock_colours(self, min_records: int = 5) -> frozenset[int]:
+        """Colours that evolve autonomously of the action: over the current level's non-null records, the colour's
+        post-state is a function of its pre-state alone (no pre-state ever has two post-states), that function is
+        witnessed as action-independent (some pre-state recurs under two different actions or data with the same,
+        changed, post-state), and it changes in at least `min_records` records. Such a colour is the modular flow
+        sigma_t of the level, not a correspondence of any action; verification is taken modulo its cells."""
+        if self._clock_cache is not None and self._clock_cache[0] == len(self.order):
+            return self._clock_cache[1]
+        level = self.order[-1].level if self.order else 0
+        out: set[int] = set()
+        items = [(a, r) for a, recs in self.records.items() for r in recs
+                 if r.level == level and r.flag1 != "GAME_OVER" and r.tr.changed_cells > 0]
+        if len(items) >= min_records:
+            colours = set()
+            for _, r in items:
+                colours.update(int(c) for c in np.unique(r.A0.frame[r.A0.frame != r.A1.frame]))
+                colours.update(int(c) for c in np.unique(r.A1.frame[r.A0.frame != r.A1.frame]))
+            for c in colours:
+                posts: dict[bytes, set[bytes]] = {}
+                witness: dict[tuple, set] = {}
+                changed = 0
+                consistent = True
+                for a, r in items:
+                    pre, post = _mask_bytes(r, c)
+                    posts.setdefault(pre, set()).add(post)
+                    if len(posts[pre]) > 1:
+                        consistent = False       # the same state of the colour went two ways: the action matters
+                        break
+                    if pre != post:
+                        changed += 1
+                        key = (a, None if not r.data else (int(r.data["x"]), int(r.data["y"])))
+                        witness.setdefault(_change_descriptor(r, c), set()).add(key)
+                if not consistent or changed < min_records:
+                    continue
+                # witnessed as action-independent: the same kind of change under two different actions or data
+                if any(len(ks) >= 2 for ks in witness.values()):
+                    out.add(c)
+        res = frozenset(out)
+        self._clock_cache = (len(self.order), res)
+        return res
 
     def retire_level(self, a: int, level: int) -> None:
         self.records[a] = [r for r in self.records.get(a, []) if r.level >= level]

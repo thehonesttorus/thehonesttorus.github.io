@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import sys
 import time
+import traceback
 from typing import Optional
 
 import numpy as np
@@ -51,6 +52,7 @@ class NCEAgent:
         self.plan_path: list = []
         self.memory = np.full((64, 64), -1, dtype=np.int16)   # remembered canvas: last colour seen at a cell not covered by a mover type
         self.mover_types: set[tuple[int, bytes]] = set()      # types seen to move, vanish or appear
+        self.clock: frozenset = frozenset()                   # the level's autonomous colours (Store.clock_colours)
         self.diag = dict(synth_calls=0, deaths=0, kato_steps=0, plan_steps=0, fallthrough=0, try_once=0,
                          step_time_max=0.0, step_time_sum=0.0, unexplained=0, goal_probes=0,
                          synth_reshaped=0, synth_fill_inconsistent=0, synth_creation_failed=0, synth_combo_fail=0,
@@ -70,7 +72,7 @@ class NCEAgent:
             avail = [a for a in obs.get("available_actions", []) if a != 0] or [1]
             choice = self._decide(A, avail)
         except Exception as e:  # floor policy: never leave a game idle
-            print(f"[nce] act error on {self.game_id}: {e!r}", file=sys.stderr)
+            print(f"[nce] act error on {self.game_id}: {e!r}\n{traceback.format_exc()}", file=sys.stderr)
             avail = [a for a in obs.get("available_actions", []) if a != 0] or [1]
             a = avail[self.total_actions % len(avail)]
             choice = (a, {"x": 0, "y": 0} if a == 6 else None)
@@ -84,7 +86,7 @@ class NCEAgent:
         try:
             self._observe(obs, int(aid), data)
         except Exception as e:
-            print(f"[nce] observe error on {self.game_id}: {e!r}", file=sys.stderr)
+            print(f"[nce] observe error on {self.game_id}: {e!r}\n{traceback.format_exc()}", file=sys.stderr)
             self.prev = self.perceive(obs["frames"][-1])
 
     def on_game_over(self, obs: dict) -> None:
@@ -129,6 +131,7 @@ class NCEAgent:
             synth_creation_failed=self.diag["synth_creation_failed"], synth_combo_fail=self.diag["synth_combo_fail"],
             synth_mismatch_hist=self.diag["synth_mismatch_hist"], splits=self.diag.get("splits", 0), split_rules=sum(len(v) for v in self.split.remainders.values()),
             promotions=self.diag["promotions"], library_letters=len(self.lib.dims), beta_c=round(self.lib.beta_c, 4),
+            clock_colours=len(self.store.clock_colours()),
             level_gated=self.diag["level_gated"], death_gated=self.diag["death_gated"], death_unexplained=self.diag["death_unexplained"],
         )
 
@@ -238,8 +241,13 @@ class NCEAgent:
                 Af = self.perceive(f)
                 self.store.append_null(aid, prev, Af, self.level)
                 prev = Af
+        clock = self.store.clock_colours()
+        if clock != self.clock:
+            self.clock = clock
+            self.H = {}                            # the flow changed: every word is re-derived in the new quotient
+            self.partials = {}
         hyps = self.H.get(aid, [])
-        survivors = [h for h in hyps if synth.exact(h.cs, rec.A0, rec.data, rec.A1, rec.flag1, rec.memory)]
+        survivors = [h for h in hyps if synth.exact(h.cs, rec.A0, rec.data, rec.A1, rec.flag1, rec.memory, clock)]
         for h in survivors:
             h.n_verified += 1
             h.contexts.add(word_context(h.cs, rec.A0, rec.data))
