@@ -6,7 +6,8 @@ Theorem 2.1(i)), fixed by interface facts (palette 16, lattice 4096, |D4| = 8, w
 or by a snapshot |Xi_0| = max(2, |Xi|) of the shape alphabet taken at level start and at
 every library change (T11). Units (specific gauge elements) are fitted parameters, never
 edges (Section 3.2); the d = 1 subgraph {SelPointed, SelAll: F->C; Over: F->TOP} is acyclic,
-so beta_c exists (Theorem 2.1(iv)) and this is asserted at every refresh.
+so beta_c exists (Theorem 2.1(iv)) and this is asserted at every refresh. (SelPointed now has
+two members, component and cell, so the d = 1 subgraph is {SelAll: F->C; Over: F->TOP}.)
 """
 from __future__ import annotations
 
@@ -34,7 +35,7 @@ class LetterSpec:
 def letter_specs(xi0: int, win_levels: int, promoted: Optional[list[LetterSpec]] = None) -> list[LetterSpec]:
     xi0 = max(2, int(xi0))
     specs = [
-        LetterSpec("SelPointed", F, C, 1),
+        LetterSpec("SelPointed", F, C, 2),          # the pointed component, or the pointed cell (finest projection)
         LetterSpec("SelAll", F, C, 1),
         LetterSpec("SelColour", F, C, PALETTE),
         LetterSpec("SelRank", F, C, PALETTE),
@@ -43,7 +44,9 @@ def letter_specs(xi0: int, win_levels: int, promoted: Optional[list[LetterSpec]]
         LetterSpec("Move", C, C, 127 * 127 - 1),   # translations v in [-63,63]^2 \ {0}: 16128 summands
         LetterSpec("Rot", C, C, D4_ORDER - 1),
         LetterSpec("Recolour", C, C, PALETTE - 1),
-        LetterSpec("Fill", C, C, PALETTE),
+        LetterSpec("Fill", C, C, PALETTE + 1),      # palette colours + the remembered canvas (reveal)
+        LetterSpec("Layer", C, C, 2),              # mover painted in HN order, or above every stratum
+        LetterSpec("Grow", C, C, 4 * PALETTE),      # P -> P v (T_d P ^ Q_c): advance one cell along d into colour c
         LetterSpec("Copy", C, C, 2),
         LetterSpec("Annihilate", C, F, PALETTE),
         LetterSpec("Create", F, C, xi0 * D4_ORDER * GRID_CELLS),
@@ -64,6 +67,7 @@ class Library:
     win_levels: int
     xi0: int = 2
     promoted: list[LetterSpec] = field(default_factory=list)
+    composites: dict[str, tuple[str, ...]] = field(default_factory=dict)   # promoted name -> the letter path it abbreviates
     gauge_subgroup: tuple[int, ...] = tuple(range(8))      # H <= D4 (Section 8.4)
     beta_c: float = 0.0
     log_v: dict[str, float] = field(default_factory=dict)
@@ -103,15 +107,25 @@ class Library:
             self.xi0 = new
             self.refresh()
 
-    def with_promoted(self, spec: LetterSpec) -> "Library":
-        lib = Library(self.win_levels, self.xi0, list(self.promoted) + [spec], self.gauge_subgroup)
-        return lib
+    def with_promoted(self, spec: LetterSpec, composite: tuple[str, ...]) -> "Library":
+        comps = dict(self.composites)
+        comps[spec.name] = tuple(composite)
+        return Library(self.win_levels, self.xi0, list(self.promoted) + [spec], comps, self.gauge_subgroup)
+
+    def abbreviate(self, letters: list[str]) -> list[str]:
+        """Rewrite a letter path with the promoted composites (longest first): the shorter coding (T5, T10)."""
+        out = tuple(letters)
+        for name, comp in sorted(self.composites.items(), key=lambda kv: -len(kv[1])):
+            out = kms.substitute(out, comp, name)
+        return list(out)
 
     # ---- the conditional Parry kernel (E3 reading) -------------------------------------
     def log_P(self, letters: list[str]) -> float:
         """log P(w | start) = log v_r - log v_s - beta_c * sum log d_e for a typed path of letter names."""
         if not letters:
             return 0.0
+        if self.composites:
+            letters = self.abbreviate(letters)
         prims = [self._graph.primitives[n] for n in letters]
         for a, b in zip(prims, prims[1:]):
             if a.target != b.source:
@@ -120,6 +134,8 @@ class Library:
 
     def log_weight_cost(self, letters: list[str]) -> float:
         """-beta_c * sum log d_e, the path's energy term alone (used for ranking clauses of equal endpoints)."""
+        if self.composites:
+            letters = self.abbreviate(letters)
         return -self.beta_c * float(sum(np.log(self.dims[n]) for n in letters))
 
     @property

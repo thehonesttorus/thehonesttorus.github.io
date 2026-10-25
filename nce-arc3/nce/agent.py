@@ -20,11 +20,12 @@ from typing import Optional
 
 import numpy as np
 
-from . import algebra, kato, plan, synth
+from . import algebra, kato, maternity, plan, synth
 from .goals import GoalSet
+from .split import SplitRules
 from .library import Library
 from .store import Store
-from .words import ClauseSet, Hypothesis, predicted_frame
+from .words import ClauseSet, Hypothesis, clause_set_log_weight, predicted, predicted_frame, word_context
 
 
 class NCEAgent:
@@ -38,6 +39,7 @@ class NCEAgent:
         self.lib = Library(win_levels=max(2, self.win_levels))
         self.store = Store()
         self.goals = GoalSet(self.lib)
+        self.split = SplitRules()
         self.H: dict[int, list[Hypothesis]] = {}
         self.partials: dict[int, list[ClauseSet]] = {}
         self.prev: Optional[algebra.BaseAlgebra] = None
@@ -47,16 +49,23 @@ class NCEAgent:
         self.last_reason = ""
         self.visited_level: set[bytes] = set()
         self.plan_path: list = []
+        self.memory = np.full((64, 64), -1, dtype=np.int16)   # remembered canvas: last colour seen at a cell not covered by a mover type
+        self.mover_types: set[tuple[int, bytes]] = set()      # types seen to move, vanish or appear
         self.diag = dict(synth_calls=0, deaths=0, kato_steps=0, plan_steps=0, fallthrough=0, try_once=0,
                          step_time_max=0.0, step_time_sum=0.0, unexplained=0, goal_probes=0,
                          synth_reshaped=0, synth_fill_inconsistent=0, synth_creation_failed=0, synth_combo_fail=0,
-                         synth_no_classes_fail=0, synth_mismatch_hist={})
+                         synth_no_classes_fail=0, synth_mismatch_hist={}, promotions=0, level_gated=0, death_gated=0,
+                         death_unexplained=0)
 
     # ------------------------------------------------------------------ protocol
     def act(self, obs: dict) -> tuple[int, Optional[dict]]:
         t0 = time.time()
         try:
-            A = self.prev if self.prev is not None else algebra.build_cached(obs["frames"][-1])
+            if self.prev is None:
+                A = self.perceive(obs["frames"][-1])
+                self._seed_memory(A)
+            else:
+                A = self.prev
             self.prev = A
             avail = [a for a in obs.get("available_actions", []) if a != 0] or [1]
             choice = self._decide(A, avail)
@@ -76,13 +85,30 @@ class NCEAgent:
             self._observe(obs, int(aid), data)
         except Exception as e:
             print(f"[nce] observe error on {self.game_id}: {e!r}", file=sys.stderr)
-            self.prev = algebra.build_cached(obs["frames"][-1])
+            self.prev = self.perceive(obs["frames"][-1])
 
     def on_game_over(self, obs: dict) -> None:
         self.diag["deaths"] += 1
 
     def want_stop(self, obs: dict) -> bool:
         return False
+
+    def perceive(self, frame: np.ndarray) -> algebra.BaseAlgebra:
+        """Base algebra through the learned split rules (Section 2.5)."""
+        return self.split.apply(algebra.build_cached(frame))
+
+    def _reperceive_store(self) -> None:
+        """Split rules changed: rebuild every stored demonstration's algebras and decompositions; words must re-verify."""
+        from .match import decompose
+        for recs in list(self.store.records.values()) + list(self.store.null_records.values()):
+            for r in recs:
+                r.A0 = self.perceive(r.A0.frame)
+                r.A1 = self.perceive(r.A1.frame)
+                r.tr = decompose(r.A0, r.A1)
+        self.H = {}
+        self.partials = {}
+        if self.prev is not None:
+            self.prev = self.perceive(self.prev.frame)
 
     def diagnostics(self) -> dict:
         """Agent-internal counts only (blind-scoreboard discipline): never words, never frames."""
@@ -101,7 +127,9 @@ class NCEAgent:
             unexplained_classes=self.diag["unexplained"], types=self._n_types(),
             synth_reshaped=self.diag["synth_reshaped"], synth_fill_inconsistent=self.diag["synth_fill_inconsistent"],
             synth_creation_failed=self.diag["synth_creation_failed"], synth_combo_fail=self.diag["synth_combo_fail"],
-            synth_mismatch_hist=self.diag["synth_mismatch_hist"],
+            synth_mismatch_hist=self.diag["synth_mismatch_hist"], splits=self.diag.get("splits", 0), split_rules=sum(len(v) for v in self.split.remainders.values()),
+            promotions=self.diag["promotions"], library_letters=len(self.lib.dims), beta_c=round(self.lib.beta_c, 4),
+            level_gated=self.diag["level_gated"], death_gated=self.diag["death_gated"], death_unexplained=self.diag["death_unexplained"],
         )
 
     # ------------------------------------------------------------------ decision
@@ -114,21 +142,21 @@ class NCEAgent:
                 return (a, kato.representative_data(a, A))
         # 2. goal-splitting over the consensus model (Section 6.4), with decision-relevant interleaving (T7)
         self.goals.ensure(A)
-        self.goals.resolve_pending(self.H, predicted_frame)
+        self.goals.resolve_pending(self.H, lambda cs, A, d: predicted_frame(cs, A, d, self.memory))
         Hc = plan.consensus(self.H)
         restrict = None
         if Hc and self.goals.G:
-            reach = plan.plan_reachable(A, avail, Hc, self.PLAN_NODES, self.PLAN_TIME_S)
+            reach = plan.plan_reachable(A, avail, Hc, self.PLAN_NODES, self.PLAN_TIME_S, perceive=self.perceive, memory=self.memory)
             path = self.goals.split_target(reach, self.store)
             if path:
                 first = path[0]
                 restrict = {(first[0], None if first[1] is None else (first[1]["x"], first[1]["y"]))}
-                choice = kato.kato_select(A, avail, self.H, self.partials, self.store, self.actions_since_level, restrict=restrict)
+                choice = kato.kato_select(A, avail, self.H, self.partials, self.store, self.actions_since_level, restrict=restrict, memory=self.memory)
                 self.diag["plan_steps"] += 1
                 self.last_reason = f"plan a{first[0]} len{len(path)}" + (" +kato" if choice else "")
                 return choice if choice else first
         # 3. Kato over all candidates
-        choice = kato.kato_select(A, avail, self.H, self.partials, self.store, self.actions_since_level)
+        choice = kato.kato_select(A, avail, self.H, self.partials, self.store, self.actions_since_level, memory=self.memory)
         if choice is not None:
             self.diag["kato_steps"] += 1
             self.last_reason = f"kato a{choice[0]}"
@@ -148,8 +176,8 @@ class NCEAgent:
             hyps = self.H.get(a) or []
             if not hyps:
                 continue
-            fr = predicted_frame(hyps[0].cs, A, data)
-            if fr is None:
+            fr, flag = predicted(hyps[0].cs, A, data, self.memory)
+            if fr is None or flag == "GAME_OVER":
                 continue
             key = np.ascontiguousarray(fr, dtype=np.int8).tobytes()
             if key == A.key():
@@ -167,7 +195,7 @@ class NCEAgent:
     # ------------------------------------------------------------------ learning
     def _observe(self, obs: dict, aid: int, data: Optional[dict]) -> None:
         frames = obs["frames"]
-        A1 = algebra.build_cached(frames[-1])
+        A1 = self.perceive(frames[-1])
         flag1 = str(obs["state"])
         self.total_actions += 1
         self.actions_since_level += 1
@@ -180,46 +208,110 @@ class NCEAgent:
             return
         if A0 is None or obs.get("full_reset"):
             self.prev = A1
+            self.memory[:] = -1
+            self._seed_memory(A1)
             return
         if flag1 == "GAME_OVER":
             self.store.append(aid, A0, data, A1, "GAME_OVER", self.level)
+            hyps = [h for h in self.H.get(aid, []) if synth.exact(h.cs, A0, data, A1, "GAME_OVER")]
+            for h in hyps:
+                h.contexts.add(word_context(h.cs, A0, data))
+            if not hyps and self.H.get(aid):
+                self._synthesize(aid)             # the word must now carry a death gate
+            else:
+                self.H[aid] = hyps
             self.prev = A1
             return
-        rec = self.store.append(aid, A0, data, A1, flag1, self.level)
+        if self.split.learn(A0, A1):                      # Section 2.5: a mover type earned its own stratum
+            self.diag["splits"] = self.diag.get("splits", 0) + 1
+            A1 = self.perceive(A1.frame)
+            self._reperceive_store()
+            A0 = self.prev
+        rec = self.store.append(aid, A0, data, A1, flag1, self.level, memory=self.memory)
+        self._update_memory(rec)
         self.visited_level.add(A1.key())
         self.goals.negative(A1)                          # a non-winning post-state is a certified negative
         if len(frames) > 1:                              # animation sub-steps as serial compositions (stored, v1)
             prev = A0
             for f in frames:
-                Af = algebra.build_cached(f)
+                Af = self.perceive(f)
                 self.store.append_null(aid, prev, Af, self.level)
                 prev = Af
         hyps = self.H.get(aid, [])
-        survivors = [h for h in hyps if synth.exact(h.cs, rec.A0, rec.data, rec.A1, rec.flag1)]
+        survivors = [h for h in hyps if synth.exact(h.cs, rec.A0, rec.data, rec.A1, rec.flag1, rec.memory)]
         for h in survivors:
             h.n_verified += 1
+            h.contexts.add(word_context(h.cs, rec.A0, rec.data))
         if not survivors:
-            self.diag["synth_calls"] += 1
-            r = synth.synthesize(aid, self.store, self.lib, budget_s=self.SYNTH_BUDGET_S)
-            survivors = r.hypotheses
-            self.partials[aid] = r.partials
-            self.diag["unexplained"] += r.unexplained_classes
-            self.diag["synth_reshaped"] += r.reshaped_records > 0
-            self.diag["synth_fill_inconsistent"] += r.fill_inconsistent
-            self.diag["synth_creation_failed"] += r.creation_failed
-            if not survivors and r.combos_tried:
-                self.diag["synth_combo_fail"] += 1
-                b = "0" if r.min_mismatch_cells == 0 else ("1-4" if r.min_mismatch_cells <= 4 else ("5-32" if r.min_mismatch_cells <= 32 else ("33-256" if r.min_mismatch_cells <= 256 else ">256")))
-                self.diag["synth_mismatch_hist"][b] = self.diag["synth_mismatch_hist"].get(b, 0) + 1
+            survivors = self._synthesize(aid)
         self.H[aid] = survivors
         self.prev = A1
+
+    def _synthesize(self, aid: int) -> list[Hypothesis]:
+        self.diag["synth_calls"] += 1
+        r = synth.synthesize(aid, self.store, self.lib, budget_s=self.SYNTH_BUDGET_S)
+        self.partials[aid] = r.partials
+        self.diag["unexplained"] += r.unexplained_classes
+        self.diag["synth_reshaped"] += r.reshaped_records > 0
+        self.diag["synth_fill_inconsistent"] += r.fill_inconsistent
+        self.diag["synth_creation_failed"] += r.creation_failed
+        self.diag["level_gated"] += r.level_gated
+        self.diag["death_gated"] += r.death_gated
+        self.diag["death_unexplained"] += r.death_unexplained
+        if not r.hypotheses and r.combos_tried:
+            self.diag["synth_combo_fail"] += 1
+            b = "0" if r.min_mismatch_cells == 0 else ("1-4" if r.min_mismatch_cells <= 4 else ("5-32" if r.min_mismatch_cells <= 32 else ("33-256" if r.min_mismatch_cells <= 256 else ">256")))
+            self.diag["synth_mismatch_hist"][b] = self.diag["synth_mismatch_hist"].get(b, 0) + 1
+        self.H[aid] = r.hypotheses
+        return r.hypotheses
+
+    def _update_memory(self, rec) -> None:
+        """Canvas memory: cells not covered by a mover-type component take the observed colour (strata persist
+        under occlusion). When a new mover type is identified the whole history is re-read (Store.recompute_memories)."""
+        tr = rec.tr
+        before = len(self.mover_types)
+        for i, j, g in tr.moved:
+            self.mover_types.add(rec.A0.comps[i].type); self.mover_types.add(rec.A1.comps[j].type)
+        for i in tr.annihilated:
+            self.mover_types.add(rec.A0.comps[i].type)
+        for j in tr.created:
+            self.mover_types.add(rec.A1.comps[j].type)
+        if len(self.mover_types) != before:
+            self.memory = self.store.recompute_memories(self.mover_types)
+            self.H = {}                            # fills were fitted against the old memories
+            return
+        covered = np.zeros(64 * 64, dtype=bool)
+        for c in rec.A1.comps:
+            if c.type in self.mover_types:
+                covered[c.cells] = True
+        mem = self.memory.ravel()
+        frame = rec.A1.frame.ravel()
+        mem[~covered] = frame[~covered]
+
+    def _seed_memory(self, A: algebra.BaseAlgebra) -> None:
+        covered = np.zeros(64 * 64, dtype=bool)
+        for c in A.comps:
+            if c.type in self.mover_types:
+                covered[c.cells] = True
+        self.memory.ravel()[~covered] = A.frame.ravel()[~covered]
 
     def _on_level_end(self, A_new: algebra.BaseAlgebra, new_level: int) -> None:
         self.level = new_level
         self.actions_since_level = 0
         self.visited_level = set()
+        self.memory[:] = -1
+        self._seed_memory(A_new)
         self.goals.new_level()
         self.lib.snapshot_alphabet(self._n_types())     # T11: refresh the alphabet snapshot
+        # the maternity ward (T5, T10): exact promotion against the corpus of verified words
+        lib2, names = maternity.promote(self.lib, maternity.corpus_of(self.H))
+        if names:
+            self.lib = lib2
+            self.goals.lib = lib2
+            self.diag["promotions"] += len(names)
+            for hs in self.H.values():
+                for h in hs:
+                    h.logw = clause_set_log_weight(h.cs, lib2)
 
     def _n_types(self) -> int:
         keys = set()

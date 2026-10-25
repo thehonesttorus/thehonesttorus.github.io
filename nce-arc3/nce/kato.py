@@ -20,7 +20,7 @@ import numpy as np
 
 from .algebra import BaseAlgebra
 from .store import Store
-from .words import ClauseSet, Hypothesis, predicted_frame
+from .words import ClauseSet, Hypothesis, predict, predicted_frame, word_context
 
 CANDIDATE_CAP = 64
 FAMILIES_APPLICABLE = 6   # identity, Step/Move, Rot, Recolour, Annihilate, Create (Fill unfixed inside each)
@@ -65,13 +65,13 @@ def representative_data(a: int, A: BaseAlgebra) -> Optional[dict]:
     return {"x": x, "y": y}
 
 
-def purity_deficit(hyps: list[Hypothesis], A: BaseAlgebra, data: Optional[dict]) -> float:
+def purity_deficit(hyps: list[Hypothesis], A: BaseAlgebra, data: Optional[dict], memory=None) -> float:
     """1/2 (1 - Tr rho^2) over the classes of distinct predicted frames, weighted by KMS weights."""
     classes: dict[bytes, list] = {}
     logws = np.array([h.logw for h in hyps])
     w = np.exp(logws - logws.max())
     for h, wi in zip(hyps, w):
-        fr = predicted_frame(h.cs, A, data)
+        fr = predicted_frame(h.cs, A, data, memory)
         if fr is None:
             key = b"OFFGRID"
             diff = None
@@ -100,7 +100,7 @@ def purity_deficit(hyps: list[Hypothesis], A: BaseAlgebra, data: Optional[dict])
 
 
 def kato_select(A: BaseAlgebra, avail: list[int], H: dict[int, list[Hypothesis]], partials: dict[int, list[ClauseSet]],
-                store: Store, actions_since_level: int, restrict: Optional[set] = None) -> Optional[tuple[int, Optional[dict]]]:
+                store: Store, actions_since_level: int, restrict: Optional[set] = None, memory=None) -> Optional[tuple[int, Optional[dict]]]:
     # 1. try once: an action with no demonstration (RESET is learned like any other, but only when offered)
     for a in avail:
         if a == 0:
@@ -114,13 +114,21 @@ def kato_select(A: BaseAlgebra, avail: list[int], H: dict[int, list[Hypothesis]]
             continue
         if a in store.nondeterministic:
             continue
+        if store.seen_post(a, A, data) == b"GAME_OVER":
+            continue          # a certified death in exactly this context teaches nothing (C8)
         hyps = H.get(a) or []
+        from_partials = False
         if not hyps and partials.get(a):
             hyps = [Hypothesis(cs, 0.0) for cs in partials[a]]
-        newborn = newborn_context(a, A, data, store, seen_cache)
+            from_partials = True
         if hyps:
-            D = purity_deficit(hyps, A, data)
-            p_death = sum(np.exp(h.logw) for h in hyps if h.cs.over) / max(sum(np.exp(h.logw) for h in hyps), 1e-300)
+            # newborn relative to the words: some member has never been verified on what it sees here
+            newborn = from_partials or any(word_context(h.cs, A, data) not in h.contexts for h in hyps)
+        else:
+            newborn = newborn_context(a, A, data, store, seen_cache)
+        if hyps:
+            D = purity_deficit(hyps, A, data, memory)
+            p_death = sum(np.exp(h.logw) for h in hyps if h.cs.over or predict(h.cs, A, data)[2] == "GAME_OVER") / max(sum(np.exp(h.logw) for h in hyps), 1e-300)
             if newborn:
                 # the word has never been tested in this context: its unfixed branch is a direct sum (T7)
                 D = max(D, 0.5 * (1.0 - 1.0 / FAMILIES_APPLICABLE))

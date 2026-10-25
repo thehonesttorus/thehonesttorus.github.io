@@ -74,6 +74,8 @@ class Transition:
     moves: list[tuple[int, int, Gauge]] = field(default_factory=list)      # (id0, id1, gauge)
     recolours: list[tuple[int, int]] = field(default_factory=list)         # (id0, id1)
     reshaped: list[tuple[int, int]] = field(default_factory=list)          # (id0, id1) same colour, overlapping
+    inplace_rot: list[tuple[int, int, Gauge]] = field(default_factory=list)  # reshaped pairs that are also congruent under a D4 change
+    occluded: list[int] = field(default_factory=list)                      # ids in A0 fully covered by moved/created components in A1
     annihilated: list[int] = field(default_factory=list)                   # ids in A0
     created: list[int] = field(default_factory=list)                       # ids in A1
     changed_cells: int = 0                               # Hamming distance between the frames
@@ -154,15 +156,29 @@ def decompose(A0: BaseAlgebra, A1: BaseAlgebra, beta: float = 1.0, max_shift: in
             continue
         cost = np.zeros((len(ids0), len(ids1)))
         gauges: dict[tuple[int, int], Gauge] = {}
+        inplace: set[tuple[int, int]] = set()
         for r, i in enumerate(ids0):
             for c, j in enumerate(ids1):
                 gg = _gauge_between(A0.comps[i], A1.comps[j])
                 gauges[(r, c)] = gg
-                cost[r, c] = move_cost(gg, beta) if gg.l1 <= max_shift else 1e9
+                if gg.l1 > max_shift:
+                    cost[r, c] = 1e9
+                elif gg.rotated and np.intersect1d(A0.comps[i].cells, A1.comps[j].cells, assume_unique=True).size > 0:
+                    # a congruent component overlapping its old cells under a D4 change: the cheapest word is the
+                    # identity with a changed rendering (cost 0: occlusion, reveal, a trail), so it is paired here as
+                    # a reshape; the Rot reading (cost log 7) is kept in `inplace_rot` for synthesis to try next.
+                    cost[r, c] = 0.0
+                    inplace.add((r, c))
+                else:
+                    cost[r, c] = move_cost(gg, beta)
         for r, c in _assign(cost):
             if cost[r, c] >= 1e9:
                 continue
-            tr.moves.append((ids0[r], ids1[c], gauges[(r, c)]))
+            if (r, c) in inplace:
+                tr.reshaped.append((ids0[r], ids1[c]))
+                tr.inplace_rot.append((ids0[r], ids1[c], gauges[(r, c)]))
+            else:
+                tr.moves.append((ids0[r], ids1[c], gauges[(r, c)]))
             matched0.add(ids0[r])
             matched1.add(ids1[c])
 
@@ -238,8 +254,28 @@ def decompose(A0: BaseAlgebra, A1: BaseAlgebra, beta: float = 1.0, max_shift: in
             matched0.add(aid)
             matched1.add(bid)
 
+    # 4. occlusion: an unmatched A0 component whose cells are all covered in A1 by components that moved there
+    #    or appeared is hidden, not annihilated (strata persist under occlusion; the frame is their rendering).
+    unmatched0 = [c for c in A0.comps if c.id not in matched0]
+    unmatched1 = [c.id for c in A1.comps if c.id not in matched1]
+    if unmatched0:
+        cover = np.zeros(GRID * GRID, dtype=bool)
+        for i, j, g in tr.moves:
+            if not g.is_identity:
+                cover[A1.comps[j].cells] = True
+        top = len(A1.strata) > 1
+        for i, j in tr.reshaped:
+            if top and A1.comps[j].stratum == 0:
+                continue          # the top stratum's complement always flows into vacated cells; it hides nothing
+            cover[A1.comps[j].cells] = True
+        for j in unmatched1:
+            cover[A1.comps[j].cells] = True
+        for c in unmatched0:
+            if np.all(cover[c.cells]):
+                tr.occluded.append(c.id)
+                matched0.add(c.id)
     tr.annihilated = [c.id for c in A0.comps if c.id not in matched0]
-    tr.created = [c.id for c in A1.comps if c.id not in matched1]
+    tr.created = unmatched1
     return tr
 
 
@@ -249,8 +285,12 @@ def summarize(tr: Transition, A0: BaseAlgebra, A1: BaseAlgebra) -> str:
         parts.append(f"move c{A0.comps[i].color} n{A0.comps[i].n} by ({g.dy},{g.dx}) g{g.g_before}->{g.g_after}")
     for i, j in tr.recolours:
         parts.append(f"recolour c{A0.comps[i].color}->c{A1.comps[j].color} n{A0.comps[i].n}")
+    rots = {(i, j) for i, j, _ in tr.inplace_rot}
     for i, j in tr.reshaped:
-        parts.append(f"reshape c{A0.comps[i].color} n{A0.comps[i].n}->n{A1.comps[j].n}")
+        tag = " (congruent, D4)" if (i, j) in rots else ""
+        parts.append(f"reshape c{A0.comps[i].color} n{A0.comps[i].n}->n{A1.comps[j].n}{tag}")
+    for i in tr.occluded:
+        parts.append(f"occluded c{A0.comps[i].color} n{A0.comps[i].n}")
     for i in tr.annihilated:
         parts.append(f"annihilate c{A0.comps[i].color} n{A0.comps[i].n}")
     for j in tr.created:

@@ -24,6 +24,7 @@ class Record:
     flag1: str
     level: int
     tr: Transition
+    memory: Optional[np.ndarray] = None     # remembered canvas (64x64, -1 unknown) before the transition
 
     @property
     def key(self) -> tuple[bytes, Optional[tuple[int, int]]]:
@@ -37,10 +38,13 @@ class Store:
     null_records: dict[int, list[Record]] = field(default_factory=dict)   # animation sub-steps per action
     ignorance: dict[int, dict] = field(default_factory=dict)              # action -> {(pre_key, datum): post_key}
     nondeterministic: set[int] = field(default_factory=set)
+    order: list[Record] = field(default_factory=list)                     # all records in time order
 
-    def append(self, a: int, A0: BaseAlgebra, data: Optional[dict], A1: BaseAlgebra, flag1: str, level: int) -> Record:
-        rec = Record(A0, data, A1, flag1, level, decompose(A0, A1))
+    def append(self, a: int, A0: BaseAlgebra, data: Optional[dict], A1: BaseAlgebra, flag1: str, level: int,
+               memory: Optional[np.ndarray] = None) -> Record:
+        rec = Record(A0, data, A1, flag1, level, decompose(A0, A1), None if memory is None else memory.copy())
         self.records.setdefault(a, []).append(rec)
+        self.order.append(rec)
         table = self.ignorance.setdefault(a, {})
         k = rec.key
         post = A1.key() if flag1 != "GAME_OVER" else b"GAME_OVER"
@@ -64,6 +68,29 @@ class Store:
     def seen_post(self, a: int, A0: BaseAlgebra, data: Optional[dict]) -> Optional[bytes]:
         d = (int(data["x"]), int(data["y"])) if data else None
         return self.ignorance.get(a, {}).get((A0.key(), d))
+
+    def recompute_memories(self, mover_types: set, first_frame: Optional[np.ndarray] = None) -> np.ndarray:
+        """Canvas memory per record from the stored history: a cell remembers the colour of the most recent
+        frame in which no mover-type component covered it. Returns the live memory after the last record."""
+        mem = np.full(64 * 64, -1, dtype=np.int16)
+
+        def write(A: BaseAlgebra) -> None:
+            covered = np.zeros(64 * 64, dtype=bool)
+            for c in A.comps:
+                if c.type in mover_types:
+                    covered[c.cells] = True
+            mem[~covered] = A.frame.ravel()[~covered]
+
+        prev_level = None
+        for rec in self.order:
+            if prev_level is None or rec.level != prev_level:
+                mem[:] = -1                       # a new level is a new canvas
+                write(rec.A0)
+            rec.memory = mem.copy().reshape(64, 64)
+            if rec.flag1 != "GAME_OVER":
+                write(rec.A1)
+            prev_level = rec.level
+        return mem.reshape(64, 64)
 
     def retire_level(self, a: int, level: int) -> None:
         self.records[a] = [r for r in self.records.get(a, []) if r.level >= level]

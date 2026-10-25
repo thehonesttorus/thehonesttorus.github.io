@@ -17,7 +17,7 @@ from typing import Callable, Optional
 import numpy as np
 
 from . import algebra, kato
-from .words import Hypothesis, predicted_frame
+from .words import Hypothesis, predicted
 
 Action = tuple[int, Optional[dict]]
 
@@ -31,7 +31,7 @@ def _key(fr: np.ndarray) -> bytes:
 
 
 def plan_reachable(A0: algebra.BaseAlgebra, avail: list[int], Hc: dict[int, Hypothesis], node_budget: int = 60,
-                   time_budget_s: float = 0.08) -> dict[bytes, tuple[list[Action], algebra.BaseAlgebra]]:
+                   time_budget_s: float = 0.08, perceive=None, memory=None) -> dict[bytes, tuple[list[Action], algebra.BaseAlgebra]]:
     """Reachable predicted states within the budget: frame key -> (path, base algebra)."""
     t0 = time.time()
     start_key = A0.key()
@@ -47,13 +47,13 @@ def plan_reachable(A0: algebra.BaseAlgebra, avail: list[int], Hc: dict[int, Hypo
             h = Hc.get(a)
             if h is None or h.cs.over:
                 continue
-            fr = predicted_frame(h.cs, A, data)
-            if fr is None:
+            fr, flag = predicted(h.cs, A, data, memory)
+            if fr is None or flag == "GAME_OVER":
                 continue
             k2 = _key(fr)
             if k2 in reach:
                 continue
-            A2 = algebra.build_cached(fr)
+            A2 = perceive(fr) if perceive is not None else algebra.build_cached(fr)
             reach[k2] = (path + [(a, data)], A2)
             counter += 1
             heapq.heappush(frontier, (cost + 1.0, counter, k2))

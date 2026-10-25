@@ -37,16 +37,29 @@ def test_rotation_recolour_creation_annihilation():
     F1[20:23, 20:23] = 12
     # new component created
     F1[60:62, 60:63] = 14
-    # rectangle B rotated 90 degrees about its bbox corner (3x5 -> 5x3)
-    F1[30:33, 40:45] = 5; F1[30:35, 40:43] = 2
+    # rectangle B rotated 90 degrees (3x5 -> 5x3) and carried to a disjoint position
+    F1[30:33, 40:45] = 5; F1[40:45, 50:53] = 2
     A0, A1 = algebra.build(F0), algebra.build(F1)
     tr = match.decompose(A0, A1)
     assert any(A0.comps[i].color == 7 and A1.comps[j].color == 12 for i, j in tr.recolours)
-    assert [A0.comps[i].color for i in tr.annihilated] == [9]
+    assert [A0.comps[i].color for i in tr.annihilated] == [9] and not tr.occluded
     assert [A1.comps[j].color for j in tr.created] == [14]
     rot = [g for i, j, g in tr.moved if g.rotated]
-    assert len(rot) == 1 and rot[0].l1 == 0
+    assert len(rot) == 1 and rot[0].l1 > 0
     assert tr.charge[9] == -1 and tr.charge[14] == 1 and tr.charge[7] == -1 and tr.charge[12] == 1
+
+
+def test_in_place_rotation_of_overlapping_cells_is_a_reshape_not_a_rot_letter():
+    # A D4 change whose cells overlap the original is identity + occlusion/reshape (cost 0),
+    # never a Rot letter (cost log 7): the cheaper word wins under the Parry kernel.
+    F0 = _base()
+    F1 = F0.copy()
+    F1[30:33, 40:45] = 5; F1[30:35, 40:43] = 2
+    A0, A1 = algebra.build(F0), algebra.build(F1)
+    tr = match.decompose(A0, A1)
+    assert not [g for _, _, g in tr.moved if g.rotated]
+    assert any(A0.comps[i].color == 2 and A0.comps[i].bbox[0] == 30 for i, _ in tr.reshaped)
+    assert not tr.created and not tr.annihilated
 
 
 def test_null_transition():

@@ -212,6 +212,50 @@ def hn_strata(hist: np.ndarray) -> list[list[int]]:
     return strata
 
 
+def _make_component(cid: int, c: int, cells: np.ndarray, stratum: int) -> Component:
+    cells = np.sort(np.asarray(cells, dtype=np.int64))
+    ys, xs = np.divmod(cells, GRID)
+    y0, y1, x0, x1 = int(ys.min()), int(ys.max()), int(xs.min()), int(xs.max())
+    crop = np.zeros((y1 - y0 + 1, x1 - x0 + 1), dtype=bool)
+    crop[ys - y0, xs - x0] = True
+    key, g, _ = canonical_form(crop)
+    cy, cx = float(ys.mean()), float(xs.mean())
+    dy, dx = ys - cy, xs - cx
+    m2 = np.array([[np.mean(dy * dy), np.mean(dy * dx)], [np.mean(dy * dx), np.mean(dx * dx)]])
+    hull = 1 if len(cells) == 1 else (2 if np.linalg.matrix_rank(np.stack([dy, dx], 1), tol=1e-9) < 2 else 3)
+    return Component(cid, int(c), cells, int(len(cells)), (y0, x0, y1, x1), (cy, cx), key, g, stratum, m2, hull)
+
+
+def _finish(F: np.ndarray, hist: np.ndarray, strata: list[list[int]], stratum_of: dict[int, int], comps: list[Component]) -> "BaseAlgebra":
+    cell2comp = np.full((GRID, GRID), -1, dtype=np.int32)
+    for comp in comps:
+        cell2comp.ravel()[comp.cells] = comp.id
+    by_type: dict[tuple[int, bytes], list[int]] = {}
+    for comp in comps:
+        by_type.setdefault(comp.type, []).append(comp.id)
+    contact: set[tuple[int, int]] = set()
+    for a, b in ((cell2comp[:, :-1], cell2comp[:, 1:]), (cell2comp[:-1, :], cell2comp[1:, :])):
+        diff = (a != b) & (a >= 0) & (b >= 0)
+        if diff.any():
+            lo = np.minimum(a[diff], b[diff]).astype(np.int64)
+            hi = np.maximum(a[diff], b[diff]).astype(np.int64)
+            pairs = np.unique(lo * (GRID * GRID) + hi)
+            for p in pairs.tolist():
+                contact.add((p // (GRID * GRID), p % (GRID * GRID)))
+    return BaseAlgebra(F, hist, strata, stratum_of, comps, cell2comp, by_type, contact)
+
+
+def from_components(frame: np.ndarray, parts: list[tuple[int, np.ndarray]]) -> "BaseAlgebra":
+    """Base algebra with an explicit component partition (colour, cells) of the frame (split rules, Section 2.5)."""
+    F = np.asarray(frame, dtype=np.int8)
+    hist = np.bincount(F.ravel().astype(np.int64), minlength=NCOL)
+    strata = hn_strata(hist)
+    stratum_of = {c: k for k, group in enumerate(strata) for c in group}
+    order = sorted(range(len(parts)), key=lambda i: (stratum_of[int(parts[i][0])], int(np.min(parts[i][1]))))
+    comps = [_make_component(cid, int(parts[i][0]), parts[i][1], stratum_of[int(parts[i][0])]) for cid, i in enumerate(order)]
+    return _finish(F, hist, strata, stratum_of, comps)
+
+
 def build(frame: np.ndarray, max_components: int = 512) -> BaseAlgebra:
     """Construct the base algebra of a frame. Deterministic; no game knowledge."""
     F = np.asarray(frame, dtype=np.int8)
@@ -221,8 +265,6 @@ def build(frame: np.ndarray, max_components: int = 512) -> BaseAlgebra:
     strata = hn_strata(hist)
     stratum_of = {c: k for k, group in enumerate(strata) for c in group}
     comps: list[Component] = []
-    cell2comp = np.full((GRID, GRID), -1, dtype=np.int32)
-    ys_all, xs_all = np.indices((GRID, GRID))
     for group in strata:                      # HN order: top stratum first
         for c in group:
             lab, n = label4(F == c)
@@ -237,32 +279,8 @@ def build(frame: np.ndarray, max_components: int = 512) -> BaseAlgebra:
                 if len(comps) >= max_components:
                     break
                 cells = np.sort(order[starts[k]:ends[k]]).astype(np.int64)
-                ys, xs = np.divmod(cells, GRID)
-                y0, y1, x0, x1 = int(ys.min()), int(ys.max()), int(xs.min()), int(xs.max())
-                crop = np.zeros((y1 - y0 + 1, x1 - x0 + 1), dtype=bool)
-                crop[ys - y0, xs - x0] = True
-                key, g, _ = canonical_form(crop)
-                cy, cx = float(ys.mean()), float(xs.mean())
-                dy, dx = ys - cy, xs - cx
-                m2 = np.array([[np.mean(dy * dy), np.mean(dy * dx)], [np.mean(dy * dx), np.mean(dx * dx)]])
-                hull = 1 if len(cells) == 1 else (2 if np.linalg.matrix_rank(np.stack([dy, dx], 1), tol=1e-9) < 2 else 3)
-                cid = len(comps)
-                comps.append(Component(cid, int(c), cells, int(len(cells)), (y0, x0, y1, x1), (cy, cx),
-                                       key, g, stratum_of[int(c)], m2, hull))
-                cell2comp.ravel()[cells] = cid
-    by_type: dict[tuple[int, bytes], list[int]] = {}
-    for comp in comps:
-        by_type.setdefault(comp.type, []).append(comp.id)
-    contact: set[tuple[int, int]] = set()
-    for a, b in ((cell2comp[:, :-1], cell2comp[:, 1:]), (cell2comp[:-1, :], cell2comp[1:, :])):
-        diff = (a != b) & (a >= 0) & (b >= 0)
-        if diff.any():
-            lo = np.minimum(a[diff], b[diff]).astype(np.int64)
-            hi = np.maximum(a[diff], b[diff]).astype(np.int64)
-            pairs = np.unique(lo * (GRID * GRID) + hi)
-            for p in pairs.tolist():
-                contact.add((p // (GRID * GRID), p % (GRID * GRID)))
-    return BaseAlgebra(F, hist, strata, stratum_of, comps, cell2comp, by_type, contact)
+                comps.append(_make_component(len(comps), int(c), cells, stratum_of[int(c)]))
+    return _finish(F, hist, strata, stratum_of, comps)
 
 
 def render(comps: list[tuple[int, np.ndarray]], background: np.ndarray) -> np.ndarray:

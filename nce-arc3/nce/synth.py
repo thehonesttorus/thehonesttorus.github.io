@@ -15,15 +15,15 @@ from __future__ import annotations
 
 import itertools
 import time
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from typing import Optional
 
 import numpy as np
 
-from .algebra import BaseAlgebra, Component
+from .algebra import GRID, BaseAlgebra, Component
 from .library import Library
 from .store import Record, Store
-from .words import Clause, ClauseSet, Creation, Hypothesis, clause_set_log_weight, d4_relative, exact, predicted_frame, select, _pair_predicate
+from .words import REVEAL, VIRTUAL_ID, Clause, ClauseSet, Creation, Hypothesis, clause_set_log_weight, d4_relative, exact, gate_holds, grown_cells, predicted_frame, select, word_context, _pair_predicate
 
 K_MAX = 32
 MAX_STEP_WORD = 6          # Step^k beats Move for k <= 6 under the Parry order (Section 0, item 1)
@@ -43,12 +43,16 @@ class SynthResult:
     creation_failed: bool = False    # creations neither constant nor pointed-relative
     combos_tried: int = 0
     min_mismatch_cells: int = -1     # best combination's cell mismatch (0 when exact)
+    level_gated: bool = False
+    death_gated: bool = False
+    death_unexplained: bool = False  # terminal records exist but no gate separates them from the live ones
 
 
 # ------------------------------------------------------------------ behaviour classes
 
-def _signature(rec: Record, cid: int) -> Optional[tuple]:
-    """Outcome of component cid in record rec: None for identity/reshape, else a hashable signature."""
+def _signature(rec: Record, cid: int, use_rot: bool = False) -> Optional[tuple]:
+    """Outcome of component cid in record rec: None for identity/reshape, else a hashable signature.
+    With use_rot, a reshape that is also congruent under a D4 change reads as an in-place Rot."""
     tr = rec.tr
     for i, j, g in tr.moves:
         if i == cid:
@@ -56,12 +60,44 @@ def _signature(rec: Record, cid: int) -> Optional[tuple]:
                 return None
             h = d4_relative(g.g_before, g.g_after) if g.rotated else 0
             return ("move", g.dy, g.dx, h)
+    if use_rot:
+        for i, j, g in tr.inplace_rot:
+            if i == cid:
+                return ("move", 0, 0, d4_relative(g.g_before, g.g_after))
     for i, j in tr.recolours:
         if i == cid:
             return ("recolour", rec.A1.comps[j].color)
     if cid in tr.annihilated:
         return ("annihilate",)
+    for i, j in tr.reshaped:
+        if i == cid:
+            a, b = rec.A0.comps[i], rec.A1.comps[j]
+            if (a.stratum == 0 and len(rec.A0.strata) > 1) or b.n <= a.n or not np.all(np.isin(a.cells, b.cells, assume_unique=True)):
+                return None
+            new = np.setdiff1d(b.cells, a.cells, assume_unique=True)
+            cols = np.unique(rec.A0.frame.ravel()[new])
+            if cols.size != 1:
+                return None
+            c = int(cols[0])
+            for d in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                if np.array_equal(np.sort(grown_cells(a.cells, d, c, rec.A0.frame)), new):
+                    return ("grow", d, c)
+            return None
     return None
+
+
+def _cell_signature(rec: Record) -> Optional[tuple]:
+    """Outcome of the pointed cell when its parent component has no outcome of its own: a sub-component recolour."""
+    if not rec.data:
+        return None
+    x, y = int(rec.data["x"]), int(rec.data["y"])
+    cid = int(rec.A0.cell2comp[y, x])
+    if cid < 0 or _signature(rec, cid, True) is not None:
+        return None
+    c0, c1 = int(rec.A0.frame[y, x]), int(rec.A1.frame[y, x])
+    if c0 == c1:
+        return None
+    return ("cellrecolour", c1)
 
 
 def _body_for(sig: tuple) -> tuple[tuple, ...]:
@@ -77,31 +113,46 @@ def _body_for(sig: tuple) -> tuple[tuple, ...]:
             else:
                 body.append(("move", (dy, dx)))
         return tuple(body)
-    if sig[0] == "recolour":
+    if sig[0] in ("recolour", "cellrecolour"):
         return (("recolour", sig[1]),)
+    if sig[0] == "grow":
+        return (("grow", (sig[1], sig[2])),)
     return ()
 
 
-def _fill_colour(rec: Record, cids: list[int]) -> Optional[int]:
-    """Colour of the cells vacated by the components cids in rec (must be a single colour), None if inconsistent."""
+def _fill_admissible(rec: Record, cids: list[int]) -> Optional[set[int]]:
+    """Admissible Fill members for the cells vacated by components cids in rec: a constant palette colour
+    if the vacated cells show one colour; REVEAL if they show the remembered canvas wherever it is known
+    (an unknown canvas cannot falsify a reveal). None when nothing was vacated (unconstrained)."""
     A0, A1, tr = rec.A0, rec.A1, rec.tr
     new_cover = np.zeros(64 * 64, dtype=bool)
     for i, j, g in tr.moves:
         if not g.is_identity:
             new_cover[A1.comps[j].cells] = True
-    for i, j in tr.recolours:
+    for i, j, g in tr.inplace_rot:
         new_cover[A1.comps[j].cells] = True
-    for j in tr.created:
-        new_cover[A1.comps[j].cells] = True
-    colours = set()
+    vac_all = []
     for cid in cids:
         cells = A0.comps[cid].cells
         vac = cells[~new_cover[cells]]
         if vac.size:
-            colours.update(np.unique(A1.frame.ravel()[vac]).tolist())
-    if len(colours) > 1:
+            vac_all.append(vac)
+    if not vac_all:
         return None
-    return colours.pop() if colours else -1   # -1: nothing vacated (fill unconstrained)
+    vac = np.concatenate(vac_all)
+    shown = A1.frame.ravel()[vac].astype(np.int16)
+    adm: set[int] = set()
+    colours = np.unique(shown)
+    if colours.size == 1:
+        adm.add(int(colours[0]))
+    if rec.memory is None:
+        adm.add(REVEAL)
+    else:
+        mem = rec.memory.ravel()[vac]
+        known = mem >= 0
+        if np.array_equal(mem[known], shown[known]):
+            adm.add(REVEAL)
+    return adm
 
 
 # ------------------------------------------------------------------ selector fitting
@@ -112,6 +163,8 @@ def _selector_candidates(recs: list[Record]) -> list[tuple]:
     for r in recs:
         for c in r.A0.comps:
             colours.add(c.color); ranks.add(c.stratum); keys.add(c.key)
+    if any(r.data for r in recs):
+        cands.append(("pointedcell",))
     cands += [("colour", c) for c in sorted(colours)]
     cands += [("rank", k) for k in sorted(ranks)]
     cands += [("type", k) for k in sorted(keys)]
@@ -125,6 +178,7 @@ def _predicate_candidates(recs: list[Record]) -> list[tuple]:
         preds.append((kind, None))
         preds += [(kind, k) for k in keys]
     preds += [("samecolour", None), ("sameshape", None)]
+    preds += [("iscolour", c) for c in sorted({c.color for r in recs for c in r.A0.comps})]
     return preds
 
 
@@ -138,11 +192,11 @@ def _fits_exactly(selector: tuple, recs: list[Record], targets: list[set[int]]) 
 
 def _fits_with_gate(selector: tuple, pred: tuple, recs: list[Record], targets: list[set[int]]) -> bool:
     for r, B in zip(recs, targets):
-        sel = {c.id for c in select(selector, r.A0, r.data)}
-        if not B <= sel:
+        selected = select(selector, r.A0, r.data)
+        if not B <= {c.id for c in selected}:
             return False
-        for cid in sel:
-            if _pair_predicate(pred, r.A0.comps[cid], r.A0) != (cid in B):
+        for comp in selected:
+            if _pair_predicate(pred, comp, r.A0) != (comp.id in B):
                 return False
     return True
 
@@ -162,34 +216,145 @@ def synthesize(a: int, store: Store, lib: Library, budget_s: float = 0.25, k_max
         res.exhausted = True
         return res
 
-    # 1. behaviour classes across all non-terminal records
+    # 1. behaviour classes across all non-terminal records. Readings are tried in Parry order: first every
+    #    congruent in-place D4 change as an identity with a changed rendering (cost 0), then as a Rot (cost log 7).
+    readings = [False] + ([True] if any(r.tr.inplace_rot for r in recs) else [])
+    for use_rot in readings:
+        _synthesize_reading(a, recs, terminal, lib, t0, budget_s, k_max, res, use_rot)
+        if res.hypotheses:
+            break
+    # LevelGate (T9, T13): when no word covers every level, the current level's records alone, at the
+    # cost of a LevelGate letter (d = win_levels). Earlier levels are kept as data, never discarded.
+    if not res.hypotheses and len({r.level for r in recs}) > 1:
+        cur = max(r.level for r in recs)
+        recs = [r for r in recs if r.level == cur]
+        terminal = [r for r in terminal if r.level == cur]
+        for use_rot in readings:
+            _synthesize_reading(a, recs, terminal, lib, t0, budget_s, k_max, res, use_rot)
+            if res.hypotheses:
+                break
+        for h in res.hypotheses:
+            h.cs = replace(h.cs, level_gated=True)
+            h.logw = clause_set_log_weight(h.cs, lib)
+        res.level_gated = bool(res.hypotheses)
+    # death gate (Over . Gate . Bind . Sel): the action kills iff a selected component satisfies the gate
+    if res.hypotheses and terminal:
+        _fit_death_gate(recs, terminal, res, lib, t0, budget_s)
+    for h in res.hypotheses:
+        h.contexts = {word_context(h.cs, r.A0, r.data) for r in recs + terminal}
+    return res
+
+
+def _fit_death_gate(live: list[Record], terminal: list[Record], res: SynthResult, lib: Library, t0: float, budget_s: float) -> None:
+    allr = live + terminal
+    selectors = _selector_candidates(allr)
+    preds = _predicate_candidates(allr)
+    keys = sorted({c.key for r in allr for c in r.A0.comps})
+    bodies = sorted({cl.body for h in res.hypotheses for cl in h.cs.clauses if cl.body}, key=len)
+    gates: list[tuple[tuple, tuple]] = [(p, ()) for p in preds]
+    for b in bodies:
+        gates.append((("offgrid", None), b))
+        gates.append((("collide", None), b))
+        gates += [(("collide", k), b) for k in keys]
+    for sel in selectors:
+        for gate, body in gates:
+            if time.time() - t0 > budget_s:
+                return
+            if all(any(gate_holds(gate, body, c, r.A0) for c in select(sel, r.A0, r.data)) for r in terminal) and \
+               not any(any(gate_holds(gate, body, c, r.A0) for c in select(sel, r.A0, r.data)) for r in live):
+                for h in res.hypotheses:
+                    h.cs = replace(h.cs, over_gate=(sel, gate, body))
+                    h.logw = clause_set_log_weight(h.cs, lib)
+                res.death_gated = True
+                return
+    res.death_unexplained = True
+
+
+def _synthesize_reading(a: int, recs: list[Record], terminal: list[Record], lib: Library, t0: float, budget_s: float,
+                        k_max: int, res: SynthResult, use_rot: bool) -> None:
     classes: dict[tuple, list[set[int]]] = {}
     for ri, r in enumerate(recs):
         for c in r.A0.comps:
-            sig = _signature(r, c.id)
+            sig = _signature(r, c.id, use_rot)
             if sig is None:
                 continue
             classes.setdefault(sig, [set() for _ in recs])[ri].add(c.id)
+        sig = _cell_signature(r)
+        if sig is not None:
+            classes.setdefault(sig, [set() for _ in recs])[ri].add(VIRTUAL_ID)
     res.classes = len(classes)
+    res.unexplained_classes = 0
+    res.fill_inconsistent = 0
+    res.partials = []
     res.reshaped_records = sum(1 for r in recs if any(r.A0.comps[i].stratum > 0 for i, _ in r.tr.reshaped))
 
-    # creations: constant (Create[tau,g,t]) or relative to the pointed component (SelPointed . Copy . units)
+    # creations: constant (Create[tau,g,t]) or relative to the pointed component (SelPointed . Copy . units).
+    # A "created" component that lies entirely inside cells vacated this transition and shows the remembered
+    # canvas is not a creation: it is revealed by the fill (occlusion), and is excluded here.
+    def _unexplained_created(r: Record) -> list[int]:
+        out = []
+        vacated = np.zeros(64 * 64, dtype=bool)
+        for i, j, g in r.tr.moves:
+            if not g.is_identity:
+                vacated[r.A0.comps[i].cells] = True
+        for i in r.tr.annihilated:
+            vacated[r.A0.comps[i].cells] = True
+        for j in r.tr.created:
+            cells = r.A1.comps[j].cells
+            if r.memory is not None and np.all(vacated[cells]) and np.all(r.memory.ravel()[cells] == r.A1.frame.ravel()[cells]):
+                continue
+            out.append(j)
+        return out
     creations: list[Creation] = []
-    created_sets = [tuple(sorted((r.A1.comps[j].key, r.A1.comps[j].color, r.A1.comps[j].g, r.A1.comps[j].offset) for j in r.tr.created)) for r in recs]
+    created_lists = [_unexplained_created(r) for r in recs]
+    created_sets = [tuple(sorted((r.A1.comps[j].key, r.A1.comps[j].color, r.A1.comps[j].g, r.A1.comps[j].offset) for j in cl)) for r, cl in zip(recs, created_lists)]
     creation_ok = all(cs == created_sets[0] for cs in created_sets)
     if creation_ok:
         creations = [Creation(k, col, g, off) for (k, col, g, off) in created_sets[0]]
     elif all(r.data for r in recs):
         rel_sets = []
-        for r in recs:
+        for r, cl in zip(recs, created_lists):
             cid = int(r.A0.cell2comp[int(r.data["y"]), int(r.data["x"])])
             if cid < 0:
                 rel_sets = None; break
             base = r.A0.comps[cid].offset
-            rel_sets.append(tuple(sorted((r.A1.comps[j].key, r.A1.comps[j].color, r.A1.comps[j].g, (r.A1.comps[j].offset[0] - base[0], r.A1.comps[j].offset[1] - base[1])) for j in r.tr.created)))
+            rel_sets.append(tuple(sorted((r.A1.comps[j].key, r.A1.comps[j].color, r.A1.comps[j].g, (r.A1.comps[j].offset[0] - base[0], r.A1.comps[j].offset[1] - base[1])) for j in cl)))
         if rel_sets and all(cs == rel_sets[0] for cs in rel_sets):
             creation_ok = True
             creations = [Creation(k, col, g, off, relative=True) for (k, col, g, off) in rel_sets[0]]
+    if not creation_ok and any(created_lists):
+        # a copy left relative to each moved component's old place (SelX . Copy . units): one creation per mover
+        mover_sets = []
+        for r, cl in zip(recs, created_lists):
+            movers = [(i, r.A0.comps[i]) for i, j, g in r.tr.moved]
+            created = [r.A1.comps[j] for j in cl]
+            if not movers or len(created) != len(movers):
+                mover_sets = None; break
+            assigned = []
+            used = set()
+            for i, m in movers:
+                best = None
+                for cj in created:
+                    if cj.id in used:
+                        continue
+                    rel = (cj.offset[0] - m.offset[0], cj.offset[1] - m.offset[1])
+                    if best is None or abs(rel[0]) + abs(rel[1]) < abs(best[1][0]) + abs(best[1][1]):
+                        best = (cj, rel)
+                if best is None:
+                    mover_sets = None; break
+                used.add(best[0].id)
+                assigned.append((best[0].key, best[0].color, best[0].g, best[1], m.key, m.color))
+            if mover_sets is None:
+                break
+            mover_sets.append(tuple(sorted(assigned)))
+        if mover_sets and all(ms == mover_sets[0] for ms in mover_sets):
+            spec = {(k, col, g, rel) for (k, col, g, rel, mk, mc) in mover_sets[0]}
+            if len(spec) == 1:
+                k, col, g, rel = next(iter(spec))
+                mover_colours = {mc for (_, _, _, _, mk, mc) in mover_sets[0]}
+                anchor_sel = ("colour", next(iter(mover_colours))) if len(mover_colours) == 1 else ("all",)
+                creation_ok = True
+                creations = [Creation(k, col, g, rel, anchor=("mover", anchor_sel))]
 
     selectors = _selector_candidates(recs)
     predicates = _predicate_candidates(recs)
@@ -199,16 +364,26 @@ def synthesize(a: int, store: Store, lib: Library, budget_s: float = 0.25, k_max
     for sig, targets in classes.items():
         body = _body_for(sig)
         term = ("annihilate",) if sig[0] == "annihilate" else ("stay",)
-        vacates = sig[0] != "recolour"
-        fill: Optional[int] = None
+        vacates = sig[0] not in ("recolour", "cellrecolour", "grow")
+        fills_ok: list[int] = []
         if vacates:
-            fills = {_fill_colour(r, sorted(B)) for r, B in zip(recs, targets) if B}
-            fills.discard(-1)
-            if len(fills) > 1 or None in fills:
+            common: Optional[set[int]] = None
+            for r, B in zip(recs, targets):
+                if not B:
+                    continue
+                adm = _fill_admissible(r, sorted(B))
+                if adm is None:
+                    continue
+                common = adm if common is None else (common & adm)
+            if common is None:
+                fills_ok = [int(recs[0].A0.strata[0][0])]        # nothing vacated anywhere: fill never rendered
+            elif not common:
                 res.unexplained_classes += 1
                 res.fill_inconsistent += 1
                 continue
-            fill = fills.pop() if fills else int(recs[0].A0.strata[0][0])   # nothing vacated: fill never rendered
+            else:
+                fills_ok = sorted(common, key=lambda c: (c != REVEAL, c))   # reveal first: it is the canvas, not a guess
+        fill: Optional[int] = fills_ok[0] if vacates else None
         found: list[Clause] = []
         for selector in selectors:
             if time.time() - t0 > budget_s:
@@ -222,33 +397,39 @@ def synthesize(a: int, store: Store, lib: Library, budget_s: float = 0.25, k_max
                         break
                     if _fits_with_gate(selector, pred, recs, targets):
                         found.append(Clause(selector, pred, body, term, fill))
+        if found and vacates and len(fills_ok) > 1:
+            found = found + [Clause(cl.selector, cl.bind, cl.body, cl.term, f) for cl in found for f in fills_ok[1:]]
+        if found and sig[0] in ("move", "grow"):
+            # Layer family: the same clauses with the mover painted above every stratum (fitted by the exact test)
+            found = found + [Clause(cl.selector, cl.bind, cl.body, cl.term, cl.fill, top=True) for cl in found]
         if not found:
             res.unexplained_classes += 1
         else:
             found.sort(key=lambda cl: -lib.log_P(cl.letters()))
-            alternatives.append(found[:8])
+            alternatives.append(found[:16])
             res.partials.append(ClauseSet((found[0],)))
 
-    # 3. assemble clause sets (one clause per class) and verify exactly on every record
+    # 3. assemble clause sets (one clause per explainable class) and verify exactly on every record.
+    #    The exact test is the arbiter: an unexplained class may be a decomposition artifact (occlusion,
+    #    reveal) that identity rendering reproduces, so combinations are tried regardless.
     res.creation_failed = not creation_ok
-    if res.unexplained_classes == 0 and creation_ok:
+    if alternatives or creation_ok:
         combos = itertools.product(*alternatives) if alternatives else [()]
         for n, combo in enumerate(combos):
             if n >= MAX_COMBOS or time.time() - t0 > budget_s:
                 break
             cs = ClauseSet(tuple(combo), tuple(creations))
             res.combos_tried += 1
-            if all(exact(cs, r.A0, r.data, r.A1, r.flag1) for r in recs):
+            if all(exact(cs, r.A0, r.data, r.A1, r.flag1, r.memory) for r in recs):
                 res.hypotheses.append(Hypothesis(cs, clause_set_log_weight(cs, lib), len(recs)))
                 res.min_mismatch_cells = 0
             elif res.min_mismatch_cells != 0:
                 mm = 0
                 for r in recs:
-                    fr = predicted_frame(cs, r.A0, r.data)
+                    fr = predicted_frame(cs, r.A0, r.data, r.memory)
                     mm += 4096 if fr is None else int(np.count_nonzero(fr != r.A1.frame))
                 if res.min_mismatch_cells < 0 or mm < res.min_mismatch_cells:
                     res.min_mismatch_cells = mm
         res.hypotheses.sort(key=lambda h: -h.logw)
         del res.hypotheses[k_max:]
     res.exhausted = time.time() - t0 <= budget_s
-    return res
