@@ -58,7 +58,10 @@ def build(accelerator: str) -> dict:
         "    arc-agi python-dotenv"
     )
     unpack_cell = code_cell(dedent(f'''\
-        import base64, io, os, zipfile
+        import base64, io, os, time, zipfile
+        # A global deadline for every game (the notebook's 9-hour limit, minus a margin for submission writing):
+        # games may run in batches, so a per-game wall clock alone cannot guarantee the notebook finishes.
+        os.environ.setdefault("NCE_DEADLINE", str(time.time() + 8.25 * 3600))
         _B64 = """{pkg_b64}"""
         os.makedirs("/kaggle/working/nce_pkg", exist_ok=True)
         with zipfile.ZipFile(io.BytesIO(base64.b64decode(_B64))) as zf:

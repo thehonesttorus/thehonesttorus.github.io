@@ -42,6 +42,19 @@ def _relation(R: str, a: Component, b: Component, A: BaseAlgebra) -> bool:
     raise ValueError(R)
 
 
+def _index(A: BaseAlgebra) -> tuple[np.ndarray, dict]:
+    """Per-algebra index for goal evaluation: component counts per colour, components per shape key."""
+    idx = A.__dict__.get("_gidx")
+    if idx is None:
+        cc = np.bincount([c.color for c in A.comps], minlength=16) if A.comps else np.zeros(16, dtype=np.int64)
+        bk: dict = {}
+        for c in A.comps:
+            bk.setdefault(c.key, []).append(c)
+        idx = (cc, bk)
+        A.__dict__["_gidx"] = idx
+    return idx
+
+
 @dataclass(frozen=True)
 class GoalWord:
     family: str
@@ -51,17 +64,17 @@ class GoalWord:
         f, p = self.family, self.params
         if f == "Zero":
             return int(A.hist[p[0]]) == 0
+        cc, bk = _index(A)
         if f == "Eq":
-            c1 = sum(1 for c in A.comps if c.color == p[0]); c2 = sum(1 for c in A.comps if c.color == p[1])
-            return c1 == c2
+            return int(cc[p[0]]) == int(cc[p[1]])
         if f == "Exist":
-            return any(c.key == p[0] for c in A.comps)
+            return p[0] in bk
         if f == "Absent":
-            return not any(c.key == p[0] for c in A.comps)
+            return p[0] not in bk
         if f in ("Some", "All"):
             R, t1, t2 = p
-            xs = [c for c in A.comps if c.key == t1]
-            ys = [c for c in A.comps if c.key == t2]
+            xs = bk.get(t1, [])
+            ys = bk.get(t2, [])
             if not xs or not ys:
                 return False
             hits = [any(_relation(R, x, y, A) for y in ys if y.id != x.id) for x in xs]

@@ -24,6 +24,30 @@ def _mask_bytes(rec: "Record", c: int) -> tuple[bytes, bytes]:
     return cache[c]
 
 
+def _pointed_key(rec: "Record"):
+    if not rec.data:
+        return None
+    cid = int(rec.A0.cell2comp[int(rec.data["y"]), int(rec.data["x"])])
+    return rec.A0.comps[cid].key if cid >= 0 else None
+
+
+def _own_frame_change(rec: "Record", c: int) -> list[tuple]:
+    """The change of colour c in its own frame: lost and gained cells as offsets from the pre-mask's bbox corner,
+    read from the min corner and from the max corner (two descriptors)."""
+    m0 = rec.A0.frame == c
+    m1 = rec.A1.frame == c
+    ys, xs = np.nonzero(m0)
+    if ys.size == 0:
+        return []
+    lost = np.argwhere(m0 & ~m1)
+    gained = np.argwhere(m1 & ~m0)
+    lo = np.array([ys.min(), xs.min()])
+    hi = np.array([ys.max(), xs.max()])
+    def rel(pts, o):
+        return tuple(sorted(map(tuple, (pts - o).tolist())))
+    return [("min", rel(lost, lo), rel(gained, lo)), ("max", rel(lost, hi), rel(gained, hi))]
+
+
 def _change_descriptor(rec: "Record", c: int) -> tuple:
     """What happened to colour c, up to position: cells lost and gained, and the colours they went to / came from."""
     lost = (rec.A0.frame == c) & (rec.A1.frame != c)
@@ -71,10 +95,10 @@ class Store:
         table[k] = post
         return rec
 
-    def append_null(self, a: int, A0: BaseAlgebra, A1: BaseAlgebra, level: int) -> None:
-        """Animation sub-steps are kept as data (serial compositions of the null action, N7); their decomposition
-        is not needed by any rule yet, so it is not computed (tr = None)."""
-        self.null_records.setdefault(a, []).append(Record(A0, None, A1, "NOT_FINISHED", level, None))
+    def append_null(self, a: int, frame0: np.ndarray, frame1: np.ndarray, level: int) -> None:
+        """Animation sub-steps are kept as data (serial compositions of the null action, N7): the frame pairs. No rule
+        reads their decomposition yet, so it is neither perceived nor computed."""
+        self.null_records.setdefault(a, []).append((np.array(frame0, dtype=np.int8), np.array(frame1, dtype=np.int8), level))
 
     def transitions(self, a: int) -> list[Record]:
         return self.records.get(a, [])
@@ -115,19 +139,20 @@ class Store:
     # ---- the action-independent flow (T2, T12) -------------------------------------------------------------
     def clock_colours(self, min_records: int = 5) -> frozenset[int]:
         """Colours that evolve autonomously of the action (the level's modular flow sigma_t, T2/T12). Over the current
-        level's non-null, non-terminal records, a colour c is a clock colour iff
+        level's non-terminal records (null steps included), a colour c is a clock colour iff
           (a) its post-state is a function of its own pre-state (no pre-mask of c ever had two post-masks),
-          (b) it changes in every such record, under at least two distinct actions or data, at least `min_records`
-              times (a change that no action withholds), and
-          (c) it is not the canvas (the top stratum, whose cells only receive what others vacate; rendering convention).
+          (b) it changes in every such record, at least `min_records` times (a change no action withholds),
+          (c) it is not the canvas (the top stratum only receives what others vacate; rendering convention), and
+          (d) action-independence is witnessed: the same change in the colour's own frame (lost and gained cells
+              relative to its pre-bbox, from either corner) occurs under two different action contexts, a context
+              being the action id and the pointed component's shape type.
         Verification is then taken modulo its cells, and it is never a word of any action."""
         if self._clock_cache is not None and self._clock_cache[0] == len(self.order):
             return self._clock_cache[1]
         level = self.order[-1].level if self.order else 0
-        items = [(a, r) for a, recs in self.records.items() for r in recs
-                 if r.level == level and r.flag1 != "GAME_OVER" and r.tr.changed_cells > 0]
+        items = [(a, r) for a, recs in self.records.items() for r in recs if r.level == level and r.flag1 != "GAME_OVER"]
         out: set[int] = set()
-        if len(items) >= min_records and len({(a, None if not r.data else (int(r.data["x"]), int(r.data["y"]))) for a, r in items}) >= 2:
+        if len(items) >= min_records and all(r.tr.changed_cells > 0 for _, r in items):
             cands = None
             for _, r in items:
                 d = r.A0.frame != r.A1.frame
@@ -140,16 +165,17 @@ class Store:
                 if any(len(r.A0.strata) > 1 and c in r.A0.strata[0] for _, r in items):
                     continue
                 posts: dict[bytes, bytes] = {}
+                contexts: dict[tuple, set] = {}
                 ok = True
-                for _, r in items:
+                for a, r in items:
                     pre, post = _mask_bytes(r, c)
-                    if pre == post:
-                        ok = False          # some record left c unchanged: an action can withhold the change
+                    if pre == post or posts.setdefault(pre, post) != post:
+                        ok = False
                         break
-                    if posts.setdefault(pre, post) != post:
-                        ok = False          # the same state of c went two ways: the action matters
-                        break
-                if ok:
+                    ctx = (a, _pointed_key(r))
+                    for desc in _own_frame_change(r, c):
+                        contexts.setdefault(desc, set()).add(ctx)
+                if ok and any(len(v) >= 2 for v in contexts.values()):
                     out.add(c)
         res = frozenset(out)
         self._clock_cache = (len(self.order), res)

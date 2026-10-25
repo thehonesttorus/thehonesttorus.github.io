@@ -66,6 +66,8 @@ class MyAgent(Agent):
     MAX_ACTIONS = int(os.environ.get("NCE_MAX_ACTIONS", "100000"))
     # Wall-clock backstop per game, seconds (Kaggle runs all hidden games in threads).
     WALL_CLOCK_LIMIT = float(os.environ.get("NCE_WALL_CLOCK", str(4 * 3600)))
+    # Absolute epoch deadline shared by all games (set by the submission notebook); 0 disables it.
+    DEADLINE = float(os.environ.get("NCE_DEADLINE", "0"))
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
@@ -93,6 +95,8 @@ class MyAgent(Agent):
         if latest_frame.state is GameState.WIN:
             return True
         if time.time() - self._t0 > self.WALL_CLOCK_LIMIT:
+            return True
+        if self.DEADLINE and time.time() > self.DEADLINE:
             return True
         if self._engine is not None and hasattr(self._engine, "want_stop"):
             try:

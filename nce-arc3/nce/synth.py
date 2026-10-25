@@ -77,8 +77,13 @@ def _signature(rec: Record, cid: int, use_rot: bool = False) -> Optional[tuple]:
                 return None
             if b.n < a.n and np.all(np.isin(b.cells, a.cells, assume_unique=True)):
                 for d in ((1, 0), (-1, 0), (0, 1), (0, -1)):
-                    if np.array_equal(eroded_cells(a.cells, d), b.cells):
-                        return ("erode", d)
+                    cur = a.cells
+                    for k in range(1, MAX_STEP_WORD + 1):        # Erode^k: the k-th power, as Step^k for moves
+                        cur = eroded_cells(cur, d)
+                        if cur.size < b.n:
+                            break
+                        if np.array_equal(cur, b.cells):
+                            return ("erode", d, k)
                 return None
             if b.n <= a.n or not np.all(np.isin(a.cells, b.cells, assume_unique=True)):
                 return None
@@ -88,8 +93,14 @@ def _signature(rec: Record, cid: int, use_rot: bool = False) -> Optional[tuple]:
                 return None
             c = int(cols[0])
             for d in ((1, 0), (-1, 0), (0, 1), (0, -1)):
-                if np.array_equal(np.sort(grown_cells(a.cells, d, c, rec.A0.frame)), new):
-                    return ("grow", d, c)
+                cur = a.cells
+                for k in range(1, MAX_STEP_WORD + 1):            # Grow^k
+                    nxt = np.union1d(cur, grown_cells(cur, d, c, rec.A0.frame))
+                    if nxt.size == cur.size or nxt.size > b.n:
+                        break
+                    cur = nxt
+                    if np.array_equal(cur, b.cells):
+                        return ("grow", d, c, k)
             return None
     return None
 
@@ -124,9 +135,9 @@ def _body_for(sig: tuple) -> tuple[tuple, ...]:
     if sig[0] in ("recolour", "cellrecolour"):
         return (("recolour", sig[1]),)
     if sig[0] == "grow":
-        return (("grow", (sig[1], sig[2])),)
+        return (("grow", (sig[1], sig[2])),) * sig[3]
     if sig[0] == "erode":
-        return (("erode", sig[1]),)
+        return (("erode", sig[1]),) * sig[2]
     return ()
 
 
@@ -145,7 +156,10 @@ def _fill_admissible(rec: Record, cids: list[int], sig: Optional[tuple] = None) 
     for cid in cids:
         cells = A0.comps[cid].cells
         if sig is not None and sig[0] == "erode":
-            cells = np.setdiff1d(cells, eroded_cells(cells, sig[1]), assume_unique=True)
+            kept = cells
+            for _ in range(sig[2]):
+                kept = eroded_cells(kept, sig[1])
+            cells = np.setdiff1d(cells, kept, assume_unique=True)
         vac = cells[~new_cover[cells]]
         if vac.size:
             vac_all.append(vac)
@@ -193,6 +207,13 @@ def _predicate_candidates(recs: list[Record]) -> list[tuple]:
     preds += [("iscolour", c) for c in sorted({c.color for r in recs for c in r.A0.comps})]
     preds += [("istype", k) for k in keys]
     preds += [("isrank", s) for s in sorted({c.stratum for r in recs for c in r.A0.comps})]
+    if any(r.data for r in recs):
+        # the datum decides: unary tests on the pointed component (SelPointed composed into the gate)
+        pointed = [r.A0.comps[int(r.A0.cell2comp[int(r.data["y"]), int(r.data["x"])])] for r in recs
+                   if r.data and int(r.A0.cell2comp[int(r.data["y"]), int(r.data["x"])]) >= 0]
+        preds += [("ptr", ("iscolour", c)) for c in sorted({p.color for p in pointed})]
+        preds += [("ptr", ("istype", k)) for k in sorted({p.key for p in pointed})]
+        preds += [("ptr", ("isrank", s)) for s in sorted({p.stratum for p in pointed})]
     return preds
 
 
@@ -238,7 +259,7 @@ class _GateTable(dict):
     def __missing__(self, cid: int) -> bool:
         A = self.rec.A0
         comp = A.comps[cid] if cid >= 0 else pointed_cell(A, self.rec.data)
-        v = bool(gate_holds(self.pred, self.body, comp, A)) if comp is not None else False
+        v = bool(gate_holds(self.pred, self.body, comp, A, self.rec.data)) if comp is not None else False
         self[cid] = v
         return v
 
@@ -359,8 +380,8 @@ def _fit_death_gate(live: list[Record], terminal: list[Record], res: SynthResult
         for gate, body in gates:
             if time.time() - t0 > budget_s:
                 return
-            if all(any(gate_holds(gate, body, c, r.A0) for c in select(sel, r.A0, r.data)) for r in terminal) and \
-               not any(any(gate_holds(gate, body, c, r.A0) for c in select(sel, r.A0, r.data)) for r in live):
+            if all(any(gate_holds(gate, body, c, r.A0, r.data) for c in select(sel, r.A0, r.data)) for r in terminal) and \
+               not any(any(gate_holds(gate, body, c, r.A0, r.data) for c in select(sel, r.A0, r.data)) for r in live):
                 for h in res.hypotheses:
                     h.cs = replace(h.cs, over_gate=(sel, gate, body))
                     h.logw = clause_set_log_weight(h.cs, lib)

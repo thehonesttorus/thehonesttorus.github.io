@@ -87,7 +87,7 @@ class SplitRules:
         for c in A.comps:
             table = self.remainders.get(c.color)
             if not table or (c.stratum == 0 and len(A.strata) > 1):
-                parts.append((c.color, c.cells)); continue
+                parts.append(c); continue
             big = c.mask()
             done = False
             for key, canon in sorted(table.items(), key=lambda kv: -int(kv[1].sum())):
@@ -114,5 +114,5 @@ class SplitRules:
                 done = True
                 break
             if not done:
-                parts.append((c.color, c.cells))
+                parts.append(c)
         return from_components(A.frame, parts) if changed else A

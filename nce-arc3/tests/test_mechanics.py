@@ -312,12 +312,57 @@ def test_meter_gate_when_a_move_stops_with_a_colour_mass():
     for aid in script:
         o = env.step(aid, None)
         agent.observe(o, aid, None)
-    assert agent.store.clock_colours() == frozenset({12})
+    # the bar stops at one cell and later steps are null, so it is not a clock: every word carries it explicitly
+    assert not agent.store.clock_colours()
     hs = agent.H.get(2) or []
     assert hs, agent.diagnostics()
     assert any(cl.bind is not None and cl.bind[0] in ("massge", "massle") for cl in hs[0].cs.clauses), hs[0].cs.describe()
     A = agent.perceive(env.frame())
     fr, _ = predicted(hs[0].cs, A, None, agent.memory)
-    nxt = env.step(2, None)["frames"][0]
-    keep = (fr != 12) & (nxt != 12)
-    assert np.array_equal(fr[keep], nxt[keep])          # out of fuel: the predicted move does not happen
+    assert np.array_equal(fr, env.step(2, None)["frames"][0])     # out of fuel: the predicted move does not happen
+
+
+class Slider:
+    """Clicking the left marker moves one cell of a bar from colour 7 to colour 4 (the boundary advances by one);
+    clicking the right marker advances it by two. Nothing else changes."""
+
+    def __init__(self):
+        self.k = 6
+
+    def frame(self):
+        F = np.zeros((64, 64), dtype=np.int8)
+        F[30, 10:10 + self.k] = 4
+        F[30, 10 + self.k:40] = 7
+        F[50:52, 10:12] = 2          # left marker
+        F[50:52, 30:32] = 3          # right marker
+        return F
+
+    def reset_obs(self):
+        self.k = 6
+        return obs_of(self.frame(), avail=(6,), full_reset=True)
+
+    def step(self, aid, data):
+        if aid == 6 and data is not None:
+            c = int(self.frame()[int(data["y"]), int(data["x"])])
+            if c == 2:
+                self.k = min(self.k + 1, 29)
+            elif c == 3:
+                self.k = min(self.k + 2, 29)
+        return obs_of(self.frame(), avail=(6,))
+
+
+def test_boundary_power_words_gated_by_the_pointed_component():
+    env = Slider()
+    agent = NCEAgent("toy-slider", 1, [6])
+    o = env.reset_obs()
+    agent.act(o)
+    for (x, y) in [(10, 50), (30, 50), (11, 51), (31, 51), (10, 51), (30, 51), (5, 5)]:
+        o = env.step(6, {"x": x, "y": y})
+        agent.observe(o, 6, {"x": x, "y": y})
+    hs = agent.H.get(6) or []
+    assert hs, agent.diagnostics()
+    A = agent.perceive(env.frame())
+    for (x, y) in [(11, 50), (31, 50), (60, 60)]:
+        fr, _ = predicted(hs[0].cs, A, {"x": x, "y": y}, agent.memory)
+        e2 = Slider(); e2.k = env.k
+        assert np.array_equal(fr, e2.step(6, {"x": x, "y": y})["frames"][0]), ((x, y), hs[0].cs.describe())

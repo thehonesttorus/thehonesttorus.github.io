@@ -53,6 +53,7 @@ class NCEAgent:
         self.memory = np.full((64, 64), -1, dtype=np.int16)   # remembered canvas: last colour seen at a cell not covered by a mover type
         self.mover_types: set[tuple[int, bytes]] = set()      # types seen to move, vanish or appear
         self.clock: frozenset = frozenset()                   # the level's autonomous colours (Store.clock_colours)
+        self._pcache: dict = {}
         self.diag = dict(synth_calls=0, deaths=0, kato_steps=0, plan_steps=0, fallthrough=0, try_once=0,
                          step_time_max=0.0, step_time_sum=0.0, unexplained=0, goal_probes=0,
                          synth_reshaped=0, synth_fill_inconsistent=0, synth_creation_failed=0, synth_combo_fail=0,
@@ -96,8 +97,15 @@ class NCEAgent:
         return False
 
     def perceive(self, frame: np.ndarray) -> algebra.BaseAlgebra:
-        """Base algebra through the learned split rules (Section 2.5)."""
-        return self.split.apply(algebra.build_cached(frame))
+        """Base algebra through the learned split rules (Section 2.5), memoised per frame and rule set."""
+        key = (np.ascontiguousarray(frame, dtype=np.int8).tobytes(), self.split.learned)
+        A = self._pcache.get(key)
+        if A is None:
+            A = self.split.apply(algebra.build_cached(frame))
+            if len(self._pcache) >= 1024:
+                self._pcache.clear()
+            self._pcache[key] = A
+        return A
 
     def _reperceive_store(self) -> None:
         """Split rules changed: rebuild every stored demonstration's algebras and decompositions; words must re-verify."""
@@ -109,10 +117,6 @@ class NCEAgent:
                 r.tr = decompose(r.A0, r.A1)
                 for k in ("_gates", "_tr_short"):            # caches keyed by component ids are stale
                     r.__dict__.pop(k, None)
-        for recs in self.store.null_records.values():
-            for r in recs:
-                r.A0 = self.perceive(r.A0.frame)
-                r.A1 = self.perceive(r.A1.frame)
         self.store._clock_cache = None
         self.H = {}
         self.partials = {}
@@ -243,11 +247,10 @@ class NCEAgent:
         self.visited_level.add(A1.key())
         self.goals.negative(A1)                          # a non-winning post-state is a certified negative
         if len(frames) > 1:                              # animation sub-steps as serial compositions (stored, v1)
-            prev = A0
+            prev = A0.frame
             for f in frames:
-                Af = self.perceive(f)
-                self.store.append_null(aid, prev, Af, self.level)
-                prev = Af
+                self.store.append_null(aid, prev, f, self.level)
+                prev = f
         clock = self.store.clock_colours()
         if clock != self.clock:
             self.clock = clock

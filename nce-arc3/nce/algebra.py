@@ -28,7 +28,7 @@ Nothing here knows what a game is.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from typing import Optional
 
 import numpy as np
@@ -245,14 +245,27 @@ def _finish(F: np.ndarray, hist: np.ndarray, strata: list[list[int]], stratum_of
     return BaseAlgebra(F, hist, strata, stratum_of, comps, cell2comp, by_type, contact)
 
 
-def from_components(frame: np.ndarray, parts: list[tuple[int, np.ndarray]]) -> "BaseAlgebra":
-    """Base algebra with an explicit component partition (colour, cells) of the frame (split rules, Section 2.5)."""
+def from_components(frame: np.ndarray, parts: list) -> "BaseAlgebra":
+    """Base algebra with an explicit component partition of the frame (split rules, Section 2.5). Each part is
+    either (colour, cells) or an existing Component of the same frame, reused with a new id."""
     F = np.array(frame, dtype=np.int8, copy=True)     # never alias a caller's buffer (the engine mutates its grid in place)
     hist = np.bincount(F.ravel().astype(np.int64), minlength=NCOL)
     strata = hn_strata(hist)
     stratum_of = {c: k for k, group in enumerate(strata) for c in group}
-    order = sorted(range(len(parts)), key=lambda i: (stratum_of[int(parts[i][0])], int(np.min(parts[i][1]))))
-    comps = [_make_component(cid, int(parts[i][0]), parts[i][1], stratum_of[int(parts[i][0])]) for cid, i in enumerate(order)]
+
+    def colour(p) -> int:
+        return int(p.color) if isinstance(p, Component) else int(p[0])
+
+    def first(p) -> int:
+        return int(p.cells[0]) if isinstance(p, Component) else int(np.min(p[1]))
+    order = sorted(range(len(parts)), key=lambda i: (stratum_of[colour(parts[i])], first(parts[i])))
+    comps = []
+    for cid, i in enumerate(order):
+        p = parts[i]
+        if isinstance(p, Component):
+            comps.append(replace(p, id=cid, stratum=stratum_of[int(p.color)]))
+        else:
+            comps.append(_make_component(cid, int(p[0]), p[1], stratum_of[int(p[0])]))
     return _finish(F, hist, strata, stratum_of, comps)
 
 

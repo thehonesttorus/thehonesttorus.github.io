@@ -306,12 +306,19 @@ def _pair_predicate(bind: Letter, comp: Component, A: BaseAlgebra) -> bool:
     raise ValueError(kind)
 
 
-def gate_holds(gate: Letter, body: tuple, comp: Component, A: BaseAlgebra) -> bool:
-    """Death gates: a pair predicate on the pre-state, or a predicate on the transported component
-    ("collide" with a component of a type, or any non-top component when the type is None; "offgrid")."""
+def gate_holds(gate: Letter, body: tuple, comp: Component, A: BaseAlgebra, data: Optional[dict] = None) -> bool:
+    """Gates: a pair or unary predicate on the pre-state; a predicate on the transported component ("collide" with
+    a component of a type, or any non-top component when the type is None; "offgrid"; colour collisions); a meter
+    on a colour mass; or ("ptr", inner): the unary predicate `inner` applied to the pointed component (SelPointed
+    composed into the gate: the datum decides, not the clause's own component)."""
     kind, key = gate
+    if kind == "ptr":
+        if not data:
+            return False
+        cid = int(A.cell2comp[int(data["y"]), int(data["x"])])
+        return cid >= 0 and _pair_predicate(key, A.comps[cid], A)
     if kind in ("notcollide", "notoffgrid", "notcollidecolour", "notinside"):
-        return not gate_holds((kind[3:], key), body, comp, A)
+        return not gate_holds((kind[3:], key), body, comp, A, data)
     if kind not in ("collide", "offgrid", "collidecolour", "inside"):
         return _pair_predicate(gate, comp, A)
     g, (oy, ox) = comp.g, comp.offset
@@ -382,14 +389,14 @@ class Fate:
     top: bool = False
 
 
-def apply_clause(cl: Clause, comp: Component, A: BaseAlgebra) -> Optional[Fate]:
+def apply_clause(cl: Clause, comp: Component, A: BaseAlgebra, data: Optional[dict] = None) -> Optional[Fate]:
     """The clause's fate for a component it selects; None if the gate excludes the component."""
-    if cl.bind is not None and not gate_holds(cl.bind, cl.body, comp, A):
+    if cl.bind is not None and not gate_holds(cl.bind, cl.body, comp, A, data):
         return None
     g, (oy, ox), color = comp.g, comp.offset, comp.color
     moved = False
-    grow = None
-    erode = None
+    cur: Optional[np.ndarray] = None      # cells under boundary letters (Grow, Erode), applied in sequence
+    grew = eroded = False
     for kind, param in cl.body:
         if kind in ("step", "move"):
             oy, ox = oy + param[0], ox + param[1]
@@ -400,24 +407,25 @@ def apply_clause(cl: Clause, comp: Component, A: BaseAlgebra) -> Optional[Fate]:
         elif kind == "recolour":
             color = int(param)
         elif kind == "grow":
-            grow = param
+            # Grow[d, c]: P -> P v (T_d P ^ Q_c), the component advances one cell along d into cells of colour c
+            (dy, dx), c = param
+            base = comp.cells if cur is None else cur
+            cur = np.union1d(base, grown_cells(base, (dy, dx), c, A.frame))
+            grew = True
         elif kind == "erode":
-            erode = param
+            # Erode[d]: P -> P ^ T_d P, the component loses its trailing edge along d (the two-projection flow)
+            cur = eroded_cells(comp.cells if cur is None else cur, param)
+            eroded = True
         elif kind == "copy":
             pass  # handled as a creation at the clause-set level (not in v1)
     if cl.term[0] == "annihilate":
         return Fate(comp, "annihilate", None, color, cl.fill)
-    if grow is not None:
-        # Grow[d, c]: P -> P v (T_d P ^ Q_c), the component advances one cell along d into cells of colour c
-        (dy, dx), c = grow
-        cells = np.union1d(comp.cells, grown_cells(comp.cells, (dy, dx), c, A.frame))
-        return Fate(comp, "grow", cells, color, None, top=cl.top)
-    if erode is not None:
-        # Erode[d]: P -> P ^ T_d P, the component loses its trailing edge along d (the two-projection flow)
-        cells = eroded_cells(comp.cells, erode)
-        if cells.size == 0:
+    if cur is not None:
+        if cur.size == 0:
             return Fate(comp, "annihilate", None, color, cl.fill)
-        return Fate(comp, "move", cells, color, cl.fill, top=cl.top)
+        if eroded:
+            return Fate(comp, "move", cur, color, cl.fill, top=cl.top)
+        return Fate(comp, "grow", cur, color, None, top=cl.top)
     if moved:
         cells = transport_cells(comp, g, (oy, ox))
         if cells is None:
@@ -435,7 +443,7 @@ def predict(cs: ClauseSet, A: BaseAlgebra, data: Optional[dict]) -> tuple[list[F
         for comp in select(cl.selector, A, data):
             if comp.id in fates:
                 continue
-            f = apply_clause(cl, comp, A)
+            f = apply_clause(cl, comp, A, data)
             if f is not None:
                 fates[comp.id] = f
     for comp in A.comps:
@@ -444,7 +452,7 @@ def predict(cs: ClauseSet, A: BaseAlgebra, data: Optional[dict]) -> tuple[list[F
     dead = cs.over
     if not dead and cs.over_gate is not None:
         sel, gate, body = cs.over_gate
-        dead = any(gate_holds(gate, body, comp, A) for comp in select(sel, A, data))
+        dead = any(gate_holds(gate, body, comp, A, data) for comp in select(sel, A, data))
     flag = "GAME_OVER" if dead else "NOT_FINISHED"
     return [fates[c.id] for c in A.comps] + [f for k, f in fates.items() if k < 0], list(cs.creations), flag
 
@@ -542,10 +550,10 @@ def word_context(cs: ClauseSet, A: BaseAlgebra, data: Optional[dict]) -> tuple:
     out = []
     for cl in cs.clauses:
         sel = select(cl.selector, A, data)
-        out.append(tuple(sorted((c.type, True if cl.bind is None else gate_holds(cl.bind, cl.body, c, A)) for c in sel)))
+        out.append(tuple(sorted((c.type, True if cl.bind is None else gate_holds(cl.bind, cl.body, c, A, data)) for c in sel)))
     if cs.over_gate is not None:
         sel_, gate, body = cs.over_gate
-        out.append(tuple(sorted((c.type, gate_holds(gate, body, c, A)) for c in select(sel_, A, data))))
+        out.append(tuple(sorted((c.type, gate_holds(gate, body, c, A, data)) for c in select(sel_, A, data))))
     return tuple(out)
 
 
