@@ -146,10 +146,10 @@ class Creation:
     def letters(self) -> list[str]:
         if self.anchor is not None:
             return [SEL_NAME[self.anchor[1][0]], "Copy"]
-        base = ["SelPointed", "Copy"] if self.relative else ["Create"]
         if self.gate is not None:
-            base = ["SelPointed", "Bind", "Gate"] + base
-        return base
+            # typed paths: F -SelPointed-> C -Bind-> P -Gate-> C -Copy-> C, or F -Create-> C -Bind-> P -Gate-> C
+            return ["SelPointed", "Bind", "Gate", "Copy"] if self.relative else ["Create", "Bind", "Gate"]
+        return ["SelPointed", "Copy"] if self.relative else ["Create"]
 
     def lettered(self) -> list[tuple]:
         names = self.letters()

@@ -366,3 +366,29 @@ def test_boundary_power_words_gated_by_the_pointed_component():
         fr, _ = predicted(hs[0].cs, A, {"x": x, "y": y}, agent.memory)
         e2 = Slider(); e2.k = env.k
         assert np.array_equal(fr, e2.step(6, {"x": x, "y": y})["frames"][0]), ((x, y), hs[0].cs.describe())
+
+
+def test_every_constructible_letter_path_is_typed():
+    """Every path the word constructors emit must be a typed path of the library graph (log_P raises otherwise)."""
+    from nce.words import Clause, ClauseSet, Creation, clause_set_log_weight
+    lib = Library(win_levels=3)
+    key = algebra.canonical_form(np.ones((1, 1), dtype=bool))[0]
+    creations = [Creation(key, 3, 0, (1, 1)), Creation(key, 3, 0, (1, 1), relative=True),
+                 Creation(key, 3, 0, (1, 1), gate=("iscolour", 2)), Creation(key, 3, 0, (1, 1), relative=True, gate=("iscolour", 2)),
+                 Creation(key, 3, 0, (1, 1), anchor=("mover", ("colour", 3)))]
+    bodies = [(), (("step", (0, 1)),), (("move", (9, 9)),), (("rot", 1),), (("recolour", 4),), (("grow", ((0, 1), 0)),) * 2,
+              (("erode", (0, 1)),) * 3]
+    binds = [None, ("contact", None), ("iscolour", 2), ("ptr", ("iscolour", 2)), ("massge", (2, 5)), ("notcollide", None)]
+    sels = [("all",), ("pointed",), ("pointedcell",), ("colour", 1), ("rank", 1), ("type", key)]
+    for sel in sels:
+        for bind in binds:
+            for body in bodies:
+                for term, fill in ((("stay",), None), (("stay",), 0), (("annihilate",), 0)):
+                    for top in (False, True):
+                        cl = Clause(sel, bind, body, term, fill, top)
+                        for cr in creations:
+                            for over_gate in (None, (("all",), ("massle", (2, 3)), ())):
+                                for lg in (False, True):
+                                    cs = ClauseSet((cl,), (cr,), False, over_gate, lg)
+                                    clause_set_log_weight(cs, lib)     # raises on an untyped path
+    clause_set_log_weight(ClauseSet(over=True), lib)
