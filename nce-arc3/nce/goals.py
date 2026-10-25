@@ -55,6 +55,45 @@ def _index(A: BaseAlgebra) -> tuple[np.ndarray, dict]:
     return idx
 
 
+def _facts(A: BaseAlgebra) -> dict:
+    """Every goal word's truth value on A, as sets (cached per algebra): colours with mass 0, colour pairs with equal
+    component counts, shape types present, and for each relation R the type pairs (t1, t2) with some related pair and
+    with every t1 component related to some t2 component. Goal words evaluate by lookup, and a level's negatives
+    are summarised by unions of these sets, so no negative is ever dropped."""
+    f = A.__dict__.get("_gfacts")
+    if f is not None:
+        return f
+    cc, bk = _index(A)
+    zero = frozenset(c for c in range(16) if int(A.hist[c]) == 0)
+    eq = frozenset((c1, c2) for c1 in range(16) for c2 in range(c1 + 1, 16) if int(cc[c1]) == int(cc[c2]))
+    keys = frozenset(bk)
+    partners: dict[tuple, set] = {}
+    def rel(R: str, a: Component, b: Component) -> None:
+        partners.setdefault((R, a.key, b.key), set()).add(a.id)
+        partners.setdefault((R, b.key, a.key), set()).add(b.id)
+    for i, j in A.contact:
+        rel("contact", A.comps[i], A.comps[j])
+    by_pose: dict[tuple, list] = {}
+    for c in A.comps:
+        by_pose.setdefault((c.bbox, c.g), []).append(c)
+    for group in by_pose.values():
+        for x in range(len(group)):
+            for y in range(x + 1, len(group)):
+                rel("coincide", group[x], group[y])
+    by_corner: dict[tuple, list] = {}
+    for c in A.comps:
+        by_corner.setdefault((c.bbox[0], c.bbox[1], c.g), []).append(c)
+    for c in A.comps:
+        for dy, dx in ((1, 0), (0, 1)):
+            for o in by_corner.get((c.bbox[0] + dy, c.bbox[1] + dx, c.g), []):
+                rel("adjacent1", c, o)
+    some = frozenset(partners)
+    allr = frozenset(k for k, ids in partners.items() if len(ids) == len(bk.get(k[1], ())))
+    f = dict(zero=zero, eq=eq, keys=keys, some=some, all=allr)
+    A.__dict__["_gfacts"] = f
+    return f
+
+
 @dataclass(frozen=True)
 class GoalWord:
     family: str
@@ -72,13 +111,8 @@ class GoalWord:
         if f == "Absent":
             return p[0] not in bk
         if f in ("Some", "All"):
-            R, t1, t2 = p
-            xs = bk.get(t1, [])
-            ys = bk.get(t2, [])
-            if not xs or not ys:
-                return False
-            hits = [any(_relation(R, x, y, A) for y in ys if y.id != x.id) for x in xs]
-            return any(hits) if f == "Some" else all(hits)
+            facts = _facts(A)
+            return tuple(p) in (facts["some"] if f == "Some" else facts["all"])
         raise ValueError(f)
 
     def dim(self, xi0: int) -> float:
@@ -103,7 +137,10 @@ class GoalWord:
 class GoalSet:
     lib: Library
     G: dict[GoalWord, float] = field(default_factory=dict)      # goal -> log weight (prior)
-    negatives_level: list[BaseAlgebra] = field(default_factory=list)
+    negatives_level: list[BaseAlgebra] = field(default_factory=list)   # the latest few, for the alphabet only
+    neg_union: dict = field(default_factory=dict)                     # unions of goal facts over every negative
+    key_counts: dict = field(default_factory=dict)                    # shape-type frequencies over the level's negatives
+    colours_seen: set = field(default_factory=set)
     positives: list[BaseAlgebra] = field(default_factory=list)
     pending: list[tuple] = field(default_factory=list)            # (A_T, a_T, data_T)
     confirmed: int = 0
@@ -112,8 +149,8 @@ class GoalSet:
 
     # ---- vocabulary --------------------------------------------------------------
     def _alphabet(self, frames: Iterable[BaseAlgebra]) -> tuple[list[int], list[bytes]]:
-        colours, keys = set(), set()
-        counts: dict[bytes, int] = {}
+        colours, keys = set(self.colours_seen), set()
+        counts: dict[bytes, int] = dict(self.key_counts)
         for A in frames:
             colours.update(int(c) for c in np.nonzero(A.hist)[0].tolist())
             for c in A.frame_vectors():
@@ -128,7 +165,7 @@ class GoalSet:
         words += [GoalWord("Zero", (c,)) for c in colours]
         words += [GoalWord("Eq", (c1, c2)) for i, c1 in enumerate(colours) for c2 in colours[i + 1:]]
         words += [GoalWord("Exist", (k,)) for k in keys] + [GoalWord("Absent", (k,)) for k in keys]
-        pair_keys = keys[:12]
+        pair_keys = keys
         if pair_keys:
             for R in RELATIONS:
                 for t1 in pair_keys:
@@ -140,8 +177,17 @@ class GoalSet:
     # ---- evidence ----------------------------------------------------------------
     def negative(self, A: BaseAlgebra) -> None:
         self.negatives_level.append(A)
-        if len(self.negatives_level) > 400:
-            self.negatives_level = self.negatives_level[-400:]
+        if len(self.negatives_level) > 8:
+            self.negatives_level = self.negatives_level[-8:]
+        f = _facts(A)
+        u = self.neg_union
+        if not u:
+            u.update(zero=set(), eq=set(), keys_any=set(), keys_all=set(f["keys"]), some=set(), all=set())
+        u["zero"] |= f["zero"]; u["eq"] |= f["eq"]; u["keys_any"] |= f["keys"]; u["keys_all"] &= f["keys"]
+        u["some"] |= f["some"]; u["all"] |= f["all"]
+        for c in A.frame_vectors():
+            self.key_counts[c.key] = self.key_counts.get(c.key, 0) + 1
+        self.colours_seen.update(int(c) for c in np.nonzero(A.hist)[0].tolist())
         if self.G:
             dead = [g for g in self.G if g.eval(A)]
             for g in dead:
@@ -159,7 +205,7 @@ class GoalSet:
                 still.append((A_T, a_T, data_T)); continue
             frames = set()
             posts = []
-            for h in hyps[:4]:
+            for h in hyps:                         # the whole coherent set must agree (spec 6.2)
                 fr = predicted_frame_fn(h.cs, A_T, data_T)
                 if fr is None:
                     continue
@@ -178,12 +224,35 @@ class GoalSet:
 
     def new_level(self) -> None:
         self.negatives_level = []
+        self.neg_union = {}
+        self.key_counts = {}
+        self.colours_seen = set()
+
+    def _killed_by_negatives(self, g: "GoalWord") -> bool:
+        """True iff g is true on some negative of this level (read from the unions; exact for every family)."""
+        u = self.neg_union
+        if not u:
+            return False
+        f, p = g.family, g.params
+        if f == "Zero":
+            return p[0] in u["zero"]
+        if f == "Eq":
+            return tuple(sorted(p)) in u["eq"]
+        if f == "Exist":
+            return p[0] in u["keys_any"]
+        if f == "Absent":
+            return p[0] not in u["keys_all"]
+        if f == "Some":
+            return tuple(p) in u["some"]
+        if f == "All":
+            return tuple(p) in u["all"]
+        return False
 
     def ensure(self, A_now: BaseAlgebra) -> None:
         """Regenerate from the prior when empty: consistent with all positives and this level's negatives."""
         if self.G:
             return
-        frames = self.negatives_level[-50:] + self.positives + [A_now]
+        frames = self.negatives_level + self.positives + [A_now]
         prior = self._prior(frames)
         G = {}
         for g, w in prior.items():
@@ -191,7 +260,7 @@ class GoalSet:
                 continue
             if g.eval(A_now):
                 continue
-            if any(g.eval(N) for N in self.negatives_level[-200:]):
+            if self._killed_by_negatives(g):
                 continue
             G[g] = w
         self.G = G
