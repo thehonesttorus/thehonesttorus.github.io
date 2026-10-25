@@ -23,7 +23,7 @@ import numpy as np
 from .algebra import GRID, BaseAlgebra, Component
 from .library import Library
 from .store import Record, Store
-from .words import REVEAL, VIRTUAL_ID, Clause, ClauseSet, Creation, Hypothesis, clause_set_log_weight, d4_relative, exact, gate_holds, grown_cells, predicted_frame, select, word_context, _pair_predicate
+from .words import REVEAL, VIRTUAL_ID, Clause, ClauseSet, Creation, Hypothesis, clause_set_log_weight, d4_relative, eroded_cells, exact, gate_holds, grown_cells, predicted_frame, select, word_context, _pair_predicate
 
 K_MAX = 32
 MAX_STEP_WORD = 6          # Step^k beats Move for k <= 6 under the Parry order (Section 0, item 1)
@@ -72,7 +72,14 @@ def _signature(rec: Record, cid: int, use_rot: bool = False) -> Optional[tuple]:
     for i, j in tr.reshaped:
         if i == cid:
             a, b = rec.A0.comps[i], rec.A1.comps[j]
-            if (a.stratum == 0 and len(rec.A0.strata) > 1) or b.n <= a.n or not np.all(np.isin(a.cells, b.cells, assume_unique=True)):
+            if a.stratum == 0 and len(rec.A0.strata) > 1:
+                return None
+            if b.n < a.n and np.all(np.isin(b.cells, a.cells, assume_unique=True)):
+                for d in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                    if np.array_equal(eroded_cells(a.cells, d), b.cells):
+                        return ("erode", d)
+                return None
+            if b.n <= a.n or not np.all(np.isin(a.cells, b.cells, assume_unique=True)):
                 return None
             new = np.setdiff1d(b.cells, a.cells, assume_unique=True)
             cols = np.unique(rec.A0.frame.ravel()[new])
@@ -117,10 +124,12 @@ def _body_for(sig: tuple) -> tuple[tuple, ...]:
         return (("recolour", sig[1]),)
     if sig[0] == "grow":
         return (("grow", (sig[1], sig[2])),)
+    if sig[0] == "erode":
+        return (("erode", sig[1]),)
     return ()
 
 
-def _fill_admissible(rec: Record, cids: list[int]) -> Optional[set[int]]:
+def _fill_admissible(rec: Record, cids: list[int], sig: Optional[tuple] = None) -> Optional[set[int]]:
     """Admissible Fill members for the cells vacated by components cids in rec: a constant palette colour
     if the vacated cells show one colour; REVEAL if they show the remembered canvas wherever it is known
     (an unknown canvas cannot falsify a reveal). None when nothing was vacated (unconstrained)."""
@@ -134,6 +143,8 @@ def _fill_admissible(rec: Record, cids: list[int]) -> Optional[set[int]]:
     vac_all = []
     for cid in cids:
         cells = A0.comps[cid].cells
+        if sig is not None and sig[0] == "erode":
+            cells = np.setdiff1d(cells, eroded_cells(cells, sig[1]), assume_unique=True)
         vac = cells[~new_cover[cells]]
         if vac.size:
             vac_all.append(vac)
@@ -179,6 +190,8 @@ def _predicate_candidates(recs: list[Record]) -> list[tuple]:
         preds += [(kind, k) for k in keys]
     preds += [("samecolour", None), ("sameshape", None)]
     preds += [("iscolour", c) for c in sorted({c.color for r in recs for c in r.A0.comps})]
+    preds += [("istype", k) for k in keys]
+    preds += [("isrank", s) for s in sorted({c.stratum for r in recs for c in r.A0.comps})]
     return preds
 
 
@@ -371,7 +384,7 @@ def _synthesize_reading(a: int, recs: list[Record], terminal: list[Record], lib:
             for r, B in zip(recs, targets):
                 if not B:
                     continue
-                adm = _fill_admissible(r, sorted(B))
+                adm = _fill_admissible(r, sorted(B), sig)
                 if adm is None:
                     continue
                 common = adm if common is None else (common & adm)
@@ -399,7 +412,7 @@ def _synthesize_reading(a: int, recs: list[Record], terminal: list[Record], lib:
                         found.append(Clause(selector, pred, body, term, fill))
         if found and vacates and len(fills_ok) > 1:
             found = found + [Clause(cl.selector, cl.bind, cl.body, cl.term, f) for cl in found for f in fills_ok[1:]]
-        if found and sig[0] in ("move", "grow"):
+        if found and sig[0] in ("move", "grow", "erode"):
             # Layer family: the same clauses with the mover painted above every stratum (fitted by the exact test)
             found = found + [Clause(cl.selector, cl.bind, cl.body, cl.term, cl.fill, top=True) for cl in found]
         if not found:

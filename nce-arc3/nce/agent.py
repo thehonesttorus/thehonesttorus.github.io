@@ -172,6 +172,7 @@ class NCEAgent:
         start = self.total_actions % len(cands)
         order = cands[start:] + cands[:start]
         fallback = None
+        order = [(a, d) for (a, d) in order if self.store.seen_post(a, A, d) not in (A.key(), b"GAME_OVER")] or order
         for (a, data) in order:
             hyps = self.H.get(a) or []
             if not hyps:

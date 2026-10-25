@@ -108,25 +108,28 @@ def kato_select(A: BaseAlgebra, avail: list[int], H: dict[int, list[Hypothesis]]
         if not store.tried(a):
             return (a, representative_data(a, A))
     seen_cache: dict = {}
-    best, bestval = None, 0.0
+    best, bestval, besttie = None, 0.0, (0.0, 0)
     for (a, data) in candidates(A, avail):
         if restrict is not None and (a, None if data is None else (data["x"], data["y"])) not in restrict:
             continue
         if a in store.nondeterministic:
             continue
-        if store.seen_post(a, A, data) == b"GAME_OVER":
+        post = store.seen_post(a, A, data)
+        if post == b"GAME_OVER":
             continue          # a certified death in exactly this context teaches nothing (C8)
+        if post is not None and post == A.key():
+            continue          # a certified no-op in exactly this context teaches nothing (C8)
         hyps = H.get(a) or []
         from_partials = False
         if not hyps and partials.get(a):
             hyps = [Hypothesis(cs, 0.0) for cs in partials[a]]
             from_partials = True
-        if hyps:
+        if hyps and not from_partials:
             # newborn relative to the words: some member has never been verified on what it sees here
-            newborn = from_partials or any(word_context(h.cs, A, data) not in h.contexts for h in hyps)
+            newborn = any(word_context(h.cs, A, data) not in h.contexts for h in hyps)
         else:
             newborn = newborn_context(a, A, data, store, seen_cache)
-        if hyps:
+        if hyps and not from_partials:
             D = purity_deficit(hyps, A, data, memory)
             p_death = sum(np.exp(h.logw) for h in hyps if h.cs.over or predict(h.cs, A, data)[2] == "GAME_OVER") / max(sum(np.exp(h.logw) for h in hyps), 1e-300)
             if newborn:
@@ -139,6 +142,10 @@ def kato_select(A: BaseAlgebra, avail: list[int], H: dict[int, list[Hypothesis]]
             p_death = 0.0
         cost = 1.0 + p_death * max(actions_since_level, 1)
         val = D / cost
-        if val > bestval:
-            best, bestval = (a, data), val
+        # ties (equal commutator value) go to the least-demonstrated action: the ignorance table's emptiest row
+        if val <= 0.0:
+            continue
+        tie = (val, -len(store.transitions(a)))
+        if best is None or tie > besttie:
+            best, bestval, besttie = (a, data), val, tie
     return best

@@ -70,7 +70,7 @@ REVEAL = 16   # Fill family member: the remembered canvas content under the vaca
 
 
 SEL_NAME = {"all": "SelAll", "pointed": "SelPointed", "pointedcell": "SelPointed", "colour": "SelColour", "rank": "SelRank", "type": "SelType"}
-BODY_NAME = {"step": "Step", "move": "Move", "rot": "Rot", "recolour": "Recolour", "copy": "Copy", "grow": "Grow"}
+BODY_NAME = {"step": "Step", "move": "Move", "rot": "Rot", "recolour": "Recolour", "copy": "Copy", "grow": "Grow", "erode": "Erode"}
 
 
 @dataclass(frozen=True)
@@ -113,7 +113,7 @@ class Clause:
         return out
 
     def vacates(self) -> bool:
-        return self.term[0] == "annihilate" or any(k in ("step", "move", "rot") for k, _ in self.body)
+        return self.term[0] == "annihilate" or any(k in ("step", "move", "rot", "erode") for k, _ in self.body)
 
     def describe(self) -> str:
         s = f"{self.selector[0]}" + (f"[{self.selector[1]}]" if len(self.selector) > 1 and self.selector[1] is not None and self.selector[0] != 'type' else "")
@@ -269,6 +269,10 @@ def _pair_predicate(bind: Letter, comp: Component, A: BaseAlgebra) -> bool:
     kind, other_key = bind
     if kind == "iscolour":
         return comp.color == other_key
+    if kind == "istype":
+        return comp.key == other_key
+    if kind == "isrank":
+        return comp.stratum == other_key
     others = [o for o in A.comps if o.id != comp.id and (other_key is None or o.key == other_key)]
     if kind == "contact":
         if comp.id < 0:
@@ -326,6 +330,17 @@ def grown_cells(cells: np.ndarray, d: tuple[int, int], c: int, frame: np.ndarray
     return np.setdiff1d(sh, cells, assume_unique=False)
 
 
+def eroded_cells(cells: np.ndarray, d: tuple[int, int]) -> np.ndarray:
+    """P ^ T_d P: the cells of `cells` whose predecessor along d is also in `cells`."""
+    ys, xs = np.divmod(cells, GRID)
+    ys2, xs2 = ys - d[0], xs - d[1]
+    ok = (ys2 >= 0) & (ys2 < GRID) & (xs2 >= 0) & (xs2 < GRID)
+    prev = np.full(cells.shape, -1, dtype=np.int64)
+    prev[ok] = ys2[ok] * GRID + xs2[ok]
+    keep = np.isin(prev, cells)
+    return cells[keep]
+
+
 # ------------------------------------------------------------------------------ prediction
 
 @dataclass
@@ -346,6 +361,7 @@ def apply_clause(cl: Clause, comp: Component, A: BaseAlgebra) -> Optional[Fate]:
     g, (oy, ox), color = comp.g, comp.offset, comp.color
     moved = False
     grow = None
+    erode = None
     for kind, param in cl.body:
         if kind in ("step", "move"):
             oy, ox = oy + param[0], ox + param[1]
@@ -357,6 +373,8 @@ def apply_clause(cl: Clause, comp: Component, A: BaseAlgebra) -> Optional[Fate]:
             color = int(param)
         elif kind == "grow":
             grow = param
+        elif kind == "erode":
+            erode = param
         elif kind == "copy":
             pass  # handled as a creation at the clause-set level (not in v1)
     if cl.term[0] == "annihilate":
@@ -366,6 +384,12 @@ def apply_clause(cl: Clause, comp: Component, A: BaseAlgebra) -> Optional[Fate]:
         (dy, dx), c = grow
         cells = np.union1d(comp.cells, grown_cells(comp.cells, (dy, dx), c, A.frame))
         return Fate(comp, "grow", cells, color, None, top=cl.top)
+    if erode is not None:
+        # Erode[d]: P -> P ^ T_d P, the component loses its trailing edge along d (the two-projection flow)
+        cells = eroded_cells(comp.cells, erode)
+        if cells.size == 0:
+            return Fate(comp, "annihilate", None, color, cl.fill)
+        return Fate(comp, "move", cells, color, cl.fill, top=cl.top)
     if moved:
         cells = transport_cells(comp, g, (oy, ox))
         if cells is None:

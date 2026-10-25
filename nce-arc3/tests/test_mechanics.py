@@ -229,3 +229,34 @@ def test_promotion_is_exact_and_abbreviates_words():
     comp = tuple(lib2.composites[names[0]])
     d = kms.promotion_decision(lib.graph, [plain] * 12 + [["SelAll", "Recolour"]] * 5, comp, "Kx", d_new=1.0)
     assert d.promote and d.gain > 0
+
+
+class MoverWithCountdown(Mover):
+    """The mover of `Mover`, plus a 1-cell-thick bar of colour 12 that loses its rightmost cell on every action."""
+
+    def reset_obs(self):
+        self.bar = 20
+        return super().reset_obs()
+
+    def frame(self):
+        F = super().frame()
+        F[60, 5:5 + self.bar] = 12
+        return F
+
+    def step(self, aid, data):
+        if aid != 0:
+            self.bar = max(self.bar - 1, 1)
+        return super().step(aid, data)
+
+
+def test_action_independent_countdown_is_an_erode_clause_in_every_word():
+    env = MoverWithCountdown()
+    agent = NCEAgent("toy-countdown", 1, [1, 2, 3, 4])
+    drive(agent, env, 16)
+    d = agent.diagnostics()
+    assert all(d["H_sizes"].get(a, 0) > 0 for a in (2, 3, 4)), d
+    for a in (2, 3, 4):
+        assert any(k == "erode" for cl in agent.H[a][0].cs.clauses for k, _ in cl.body), agent.H[a][0].cs.describe()
+    A = agent.perceive(env.frame())
+    fr, _ = predicted(agent.H[3][0].cs, A, None, agent.memory)
+    assert np.array_equal(fr, env.step(3, None)["frames"][0])
