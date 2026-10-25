@@ -44,7 +44,7 @@ for _cand in (
     if _cand and os.path.isdir(os.path.join(_cand, "nce")) and _cand not in sys.path:
         sys.path.insert(0, _cand)
 
-from nce.engine import Engine  # noqa: E402
+from nce.proxy import EngineProxy as Engine  # noqa: E402  (process-per-game; NCE_USE_PROCESS=0 for in-process)
 
 
 def _obs_from_frame(frame: FrameData) -> dict[str, Any]:
@@ -81,6 +81,13 @@ class MyAgent(Agent):
         if self._engine is None:
             self._engine = Engine(self.game_id, obs["win_levels"], obs["available_actions"])
         return self._engine
+
+    def cleanup(self, scorecard=None) -> None:  # type: ignore[override]
+        try:
+            if self._engine is not None and hasattr(self._engine, "close"):
+                self._engine.close()
+        finally:
+            super().cleanup(scorecard)
 
     def is_done(self, frames: list[FrameData], latest_frame: FrameData) -> bool:
         if latest_frame.state is GameState.WIN:
