@@ -52,19 +52,33 @@ def candidates(A: BaseAlgebra, avail: list[int]) -> list[tuple[int, Optional[dic
 
 
 def context_key(A: BaseAlgebra, data: Optional[dict]) -> tuple:
+    """The context of an experiment before any word exists: the multiset of frame-vector types and, for a pointed
+    action, the pointed component's type and pose (its gauge element: bbox corner and D4 element). Two instances of
+    one type differ by a gauge element, and whether the outcome depends on it is exactly what is untested."""
     types = tuple(sorted((k, n) for k, n in A.type_counts_fv().items()))
     pointed = None
     if data is not None:
         cid = int(A.cell2comp[int(data["y"]), int(data["x"])])
-        pointed = A.comps[cid].key if cid >= 0 else None
+        if cid >= 0:
+            c = A.comps[cid]
+            pointed = (c.color, c.key, c.offset, c.g)
     return (types, pointed)
+
+
+def record_context(r) -> tuple:
+    """context_key of a stored demonstration (cached on the record; cleared on re-perception)."""
+    k = r.__dict__.get("_ctx")
+    if k is None:
+        k = context_key(r.A0, r.data)
+        r.__dict__["_ctx"] = k
+    return k
 
 
 def newborn_context(a: int, A: BaseAlgebra, data: Optional[dict], store: Store, seen_cache: dict) -> bool:
     key = context_key(A, data)
     seen = seen_cache.get(a)
     if seen is None:
-        seen = {context_key(r.A0, r.data) for r in store.transitions(a)}
+        seen = {record_context(r) for r in store.transitions(a)}
         seen_cache[a] = seen
     return key not in seen
 

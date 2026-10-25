@@ -141,6 +141,7 @@ class GoalSet:
     neg_union: dict = field(default_factory=dict)                     # unions of goal facts over every negative
     key_counts: dict = field(default_factory=dict)                    # shape-type frequencies over the level's negatives
     colours_seen: set = field(default_factory=set)
+    _align_cache: Optional[tuple] = None
     positives: list[BaseAlgebra] = field(default_factory=list)
     pending: list[tuple] = field(default_factory=list)            # (A_T, a_T, data_T)
     confirmed: int = 0
@@ -268,6 +269,9 @@ class GoalSet:
 
     # ---- ranking and splitting -----------------------------------------------------
     def alignment(self, store: Store) -> dict[GoalWord, float]:
+        n = len(store.order)
+        if self._align_cache is not None and self._align_cache[0] == n and self._align_cache[1] == len(self.G):
+            return self._align_cache[2]
         moved: set = set()
         for recs in store.records.values():
             for r in recs:
@@ -293,6 +297,7 @@ class GoalSet:
                 elif o in moved:
                     hit += 1
             out[g] = hit / max(len(obs), 1)
+        self._align_cache = (n, len(self.G), out)
         return out
 
     def weights(self, store: Optional[Store] = None) -> dict[GoalWord, float]:
@@ -304,7 +309,9 @@ class GoalSet:
         if self.positives or store is None:
             return W
         al = self.alignment(store)
-        return {g: W[g] * (0.5 + 0.5 * al[g]) for g in W}   # alignment ranks, it does not kill (6.3)
+        if not any(al.values()):
+            return W                       # nothing has moved any observable yet: the prior alone ranks
+        return {g: W[g] * al[g] for g in W}   # omega(g) A(g) (6.3): alignment ranks, it does not kill
 
     def split_target(self, reach: dict, store: Optional[Store] = None) -> Optional[list]:
         """Path to the reachable state maximizing (W(W_tot - W), W, -len)."""
@@ -312,11 +319,26 @@ class GoalSet:
         if not W:
             return None
         W_tot = sum(W.values())
+        # weight of the goal words true at a state, read from its fact sets (cost ~ facts present, not |G|)
+        idx: dict = {f: {} for f in ("Zero", "Eq", "Exist", "Absent", "Some", "All")}
+        for g, w in W.items():
+            key = g.params[0] if g.family in ("Zero", "Exist", "Absent") else tuple(g.params)
+            idx[g.family][key] = idx[g.family].get(key, 0.0) + w
+
+        def weight_true(A) -> float:
+            f = _facts(A)
+            t = sum(idx["Zero"].get(c, 0.0) for c in f["zero"])
+            t += sum(idx["Eq"].get(p, 0.0) for p in f["eq"])
+            t += sum(idx["Exist"].get(k, 0.0) for k in f["keys"])
+            t += sum(w for k, w in idx["Absent"].items() if k not in f["keys"])
+            t += sum(idx["Some"].get(p, 0.0) for p in f["some"])
+            t += sum(idx["All"].get(p, 0.0) for p in f["all"])
+            return t
         best = None
         for key, (path, A) in reach.items():
             if not path:
                 continue
-            Ws = sum(w for g, w in W.items() if g.eval(A))
+            Ws = weight_true(A)
             if Ws <= 0:
                 continue
             k = (Ws * (W_tot - Ws), Ws, -len(path))

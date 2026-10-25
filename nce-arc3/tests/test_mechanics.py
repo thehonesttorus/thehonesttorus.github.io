@@ -67,11 +67,20 @@ class Mover:
 def test_mover_learns_gauge_words_and_a_death_gate():
     env = Mover()
     agent = NCEAgent("toy-mover", 1, [1, 2, 3, 4])
-    drive(agent, env, 40)
+    o = drive(agent, env, 40)
     d = agent.diagnostics()
     assert all(d["H_sizes"].get(a, 0) > 0 for a in (2, 3, 4)), d
-    # action 1 (up) kills from the start row: its coherent set must carry a death gate (the toy starts at row 2)
-    assert d["deaths"] >= 1
+    # walk up into the wall (scripted, so the test does not depend on what exploration chooses), then once more
+    for _ in range(80):
+        if o["state"] == "GAME_OVER":
+            break
+        o = env.step(1, None)
+        agent.observe(o, 1, None)
+    assert o["state"] == "GAME_OVER"
+    o = env.step(0, None); agent.observe(o, 0, None)
+    for _ in range(3):
+        o = env.step(2, None); agent.observe(o, 2, None)
+    o = env.step(1, None); agent.observe(o, 1, None)
     hs = agent.H.get(1) or []
     assert hs and any(h.cs.over_gate is not None or h.cs.over for h in hs), [h.cs.describe() for h in hs]
     # the top word for "down" predicts the next frame exactly

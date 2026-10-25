@@ -145,7 +145,7 @@ class NCEAgent:
                 r.A0 = self.perceive(r.A0.frame)
                 r.A1 = self.perceive(r.A1.frame)
                 r.tr = decompose(r.A0, r.A1)
-                for k in ("_gates", "_tr_short"):            # caches keyed by component ids are stale
+                for k in ("_gates", "_tr_short", "_ctx"):    # caches keyed by component ids are stale
                     r.__dict__.pop(k, None)
         self.store._clock_cache = None
         self.H = {}
@@ -242,7 +242,15 @@ class NCEAgent:
             if fallback is None and key not in self.visited_level:
                 fallback = (a, data)
         if fallback is None:
-            fallback = min(cands, key=lambda c: len(self.store.transitions(c[0])))
+            # the least-demonstrated experiment context (Kato's newborn notion, counted over the store)
+            ctx_counts: dict = {}
+            for a_, recs in self.store.records.items():
+                for r in recs:
+                    if r.level == self.level:
+                        ck = (a_, kato.record_context(r))
+                        ctx_counts[ck] = ctx_counts.get(ck, 0) + 1
+            fallback = min(cands, key=lambda c: (ctx_counts.get((c[0], kato.context_key(A, c[1])), 0),
+                                                 len(self.store.transitions(c[0]))))
         self.last_reason = f"fallthrough a{fallback[0]}"
         return fallback
 

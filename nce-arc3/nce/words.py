@@ -320,6 +320,17 @@ def gate_holds(gate: Letter, body: tuple, comp: Component, A: BaseAlgebra, data:
     kind, key = gate
     if kind == "cofire":
         return True          # a clause-level condition, applied by predict(); every selected component passes here
+    cache = A.__dict__.setdefault("_gatec", {})
+    ck = (gate, body, comp.id if comp.id >= 0 else ("v", int(comp.cells[0])), _datum(data) if kind == "ptr" else None)
+    v = cache.get(ck)
+    if v is None:
+        v = _gate_holds(gate, body, comp, A, data)
+        cache[ck] = v
+    return v
+
+
+def _gate_holds(gate: Letter, body: tuple, comp: Component, A: BaseAlgebra, data: Optional[dict] = None) -> bool:
+    kind, key = gate
     if kind == "ptr":
         if not data:
             return False
