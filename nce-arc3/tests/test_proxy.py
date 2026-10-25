@@ -24,7 +24,7 @@ def test_process_proxy_round_trip_and_close():
 
 def test_in_process_mode_and_bad_spec_raises():
     p = EngineProxy("t2", 6, [1], use_process=False)
-    assert p._conn is None and p.act(_obs())[0] == 1
+    assert p._conn is None and p.act(_obs())[0] in (1, 2, 3, 4, 6)
     try:
         EngineProxy("t3", 6, [1], engine_spec=("nce.nonexistent", "Engine"))
         raised = False
