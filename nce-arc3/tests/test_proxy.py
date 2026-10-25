@@ -13,7 +13,7 @@ def test_process_proxy_round_trip_and_close():
     assert p._conn is not None
     for _ in range(20):
         aid, data = p.act(_obs())
-        assert aid in (1, 2, 3, 4, 6)
+        assert aid in (0, 1, 2, 3, 4, 6)      # 0: RESET, chosen once every action is a certified no-op
         assert (data is None) if aid != 6 else (0 <= data["x"] <= 63 and 0 <= data["y"] <= 63)
         p.observe(_obs(), aid, data)
     assert p.want_stop(_obs()) is False

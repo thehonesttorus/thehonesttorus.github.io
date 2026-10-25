@@ -142,6 +142,7 @@ class GoalSet:
     key_counts: dict = field(default_factory=dict)                    # shape-type frequencies over the level's negatives
     colours_seen: set = field(default_factory=set)
     _align_cache: Optional[tuple] = None
+    moved: set = field(default_factory=set)       # observables moved by some stored transition
     positives: list[BaseAlgebra] = field(default_factory=list)
     pending: list[tuple] = field(default_factory=list)            # (A_T, a_T, data_T)
     confirmed: int = 0
@@ -166,7 +167,8 @@ class GoalSet:
         words += [GoalWord("Zero", (c,)) for c in colours]
         words += [GoalWord("Eq", (c1, c2)) for i, c1 in enumerate(colours) for c2 in colours[i + 1:]]
         words += [GoalWord("Exist", (k,)) for k in keys] + [GoalWord("Absent", (k,)) for k in keys]
-        pair_keys = keys
+        changed = {o[1] for o in self.moved if isinstance(o, tuple) and o[0] == "type"}
+        pair_keys = [k for k in keys if k in changed] or keys[:1]
         if pair_keys:
             for R in RELATIONS:
                 for t1 in pair_keys:
@@ -189,32 +191,41 @@ class GoalSet:
         for c in A.frame_vectors():
             self.key_counts[c.key] = self.key_counts.get(c.key, 0) + 1
         self.colours_seen.update(int(c) for c in np.nonzero(A.hist)[0].tolist())
+        f = _facts(A)
         if self.G:
-            dead = [g for g in self.G if g.eval(A)]
+            # kill through the fact sets: cost ~ facts present plus the Absent words, not |G|
+            dead = [GoalWord("Zero", (c,)) for c in f["zero"]] + [GoalWord("Eq", p) for p in f["eq"]]
+            dead += [GoalWord("Exist", (k,)) for k in f["keys"]]
+            dead += [g for g in self._absent_words() if g.params[0] not in f["keys"]]
+            dead += [GoalWord("Some", p) for p in f["some"]] + [GoalWord("All", p) for p in f["all"]]
+            n = 0
             for g in dead:
-                del self.G[g]
-            self.killed += len(dead)
+                if self.G.pop(g, None) is not None:
+                    n += 1
+            self.killed += n
 
-    def positive(self, A_T: BaseAlgebra, a_T: int, data_T: Optional[dict]) -> None:
-        self.pending.append((A_T, a_T, data_T))
+    def positive(self, A_T: BaseAlgebra, a_T: int, data_T: Optional[dict], memory=None) -> None:
+        self.pending.append((A_T, a_T, data_T, memory))
 
     def resolve_pending(self, H: dict, predicted_frame_fn) -> None:
         still = []
-        for (A_T, a_T, data_T) in self.pending:
+        for item in self.pending:
+            A_T, a_T, data_T = item[0], item[1], item[2]
+            mem = item[3] if len(item) > 3 else None
             hyps = H.get(a_T) or []
             if not hyps:
-                still.append((A_T, a_T, data_T)); continue
+                still.append(item); continue
             frames = set()
             posts = []
             for h in hyps:                         # the whole coherent set must agree (spec 6.2)
-                fr = predicted_frame_fn(h.cs, A_T, data_T)
+                fr = predicted_frame_fn(h.cs, A_T, data_T, mem)
                 if fr is None:
                     continue
                 k = np.ascontiguousarray(fr, dtype=np.int8).tobytes()
                 if k not in frames:
                     frames.add(k); posts.append(fr)
             if len(posts) != 1:
-                still.append((A_T, a_T, data_T)); continue
+                still.append(item); continue
             from .algebra import build
             A_post = build(posts[0])
             self.positives.append(A_post)
@@ -224,10 +235,29 @@ class GoalSet:
         self.pending = still
 
     def new_level(self) -> None:
+        self.G = {}                 # regenerated from the new level's alphabet, consistent with every positive
         self.negatives_level = []
         self.neg_union = {}
         self.key_counts = {}
         self.colours_seen = set()
+
+    def _absent_words(self) -> list:
+        return [g for g in self.G if g.family == "Absent"]
+
+    def note_changed(self, rec) -> None:
+        """Observables a stored transition moved (Component 4 alignment), kept incrementally."""
+        tr = rec.tr
+        for i, j, g in tr.moved:
+            self.moved.add(("type", rec.A0.comps[i].key)); self.moved.add(("colour", rec.A0.comps[i].color))
+        for i, j in tr.recolours:
+            for c in (rec.A0.comps[i], rec.A1.comps[j]):
+                self.moved.add(("colour", c.color)); self.moved.add(("type", c.key))
+        for i in tr.annihilated:
+            self.moved.add(("type", rec.A0.comps[i].key)); self.moved.add(("colour", rec.A0.comps[i].color))
+        for j in tr.created:
+            self.moved.add(("type", rec.A1.comps[j].key)); self.moved.add(("colour", rec.A1.comps[j].color))
+        if rec.A0.contact != rec.A1.contact:
+            self.moved.add("contact")
 
     def _killed_by_negatives(self, g: "GoalWord") -> bool:
         """True iff g is true on some negative of this level (read from the unions; exact for every family)."""
@@ -269,23 +299,12 @@ class GoalSet:
 
     # ---- ranking and splitting -----------------------------------------------------
     def alignment(self, store: Store) -> dict[GoalWord, float]:
-        n = len(store.order)
-        if self._align_cache is not None and self._align_cache[0] == n and self._align_cache[1] == len(self.G):
-            return self._align_cache[2]
-        moved: set = set()
-        for recs in store.records.values():
-            for r in recs:
-                for i, j, g in r.tr.moved:
-                    moved.add(("type", r.A0.comps[i].key)); moved.add(("colour", r.A0.comps[i].color))
-                for i, j in r.tr.recolours:
-                    moved.add(("colour", r.A0.comps[i].color)); moved.add(("colour", r.A1.comps[j].color))
-                    moved.add(("type", r.A0.comps[i].key)); moved.add(("type", r.A1.comps[j].key))
-                for i in r.tr.annihilated:
-                    moved.add(("type", r.A0.comps[i].key)); moved.add(("colour", r.A0.comps[i].color))
-                for j in r.tr.created:
-                    moved.add(("type", r.A1.comps[j].key)); moved.add(("colour", r.A1.comps[j].color))
-                if r.A0.contact != r.A1.contact:
-                    moved.add("contact")
+        """A(g): the fraction of g's observables that some stored transition moved (Component 4), cached until the
+        moved set or the goal set changes."""
+        key = (len(self.moved), len(self.G))
+        if self._align_cache is not None and self._align_cache[0] == key:
+            return self._align_cache[1]
+        moved = self.moved
         out = {}
         for g in self.G:
             obs = g.observables()
@@ -297,7 +316,7 @@ class GoalSet:
                 elif o in moved:
                     hit += 1
             out[g] = hit / max(len(obs), 1)
-        self._align_cache = (n, len(self.G), out)
+        self._align_cache = (key, out)
         return out
 
     def weights(self, store: Optional[Store] = None) -> dict[GoalWord, float]:

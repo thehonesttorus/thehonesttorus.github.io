@@ -188,7 +188,7 @@ class NCEAgent:
                 return (a, kato.representative_data(a, A))
         # 2. goal-splitting over the consensus model (Section 6.4), with decision-relevant interleaving (T7)
         self.goals.ensure(A)
-        self.goals.resolve_pending(self.H, lambda cs, A, d: predicted_frame(cs, A, d, self.memory))
+        self.goals.resolve_pending(self.H, lambda cs, A, d, mem: predicted_frame(cs, A, d, mem))
         Hc = plan.consensus(self.H)
         restrict = None
         if Hc and self.goals.G:
@@ -207,7 +207,13 @@ class NCEAgent:
             self.diag["kato_steps"] += 1
             self.last_reason = f"kato a{choice[0]}"
             return choice
-        # 4. fallthrough (C5 third clause, v1: a predicted state not yet visited this level)
+        # 4. a dead end: every candidate is a certified no-op or a certified death in this very state. RESET is an
+        #    ordinary action whose outcome restarts the level; it is the only experiment left.
+        cands = kato.candidates(A, avail)
+        if cands and all(self.store.seen_post(a, A, d) in (A.key(), b"GAME_OVER") for a, d in cands):
+            self.last_reason = "dead-end reset"
+            return (0, None)
+        # 5. fallthrough (C5 third clause)
         self.diag["fallthrough"] += 1
         return self._fallthrough(A, avail)
 
@@ -225,14 +231,22 @@ class NCEAgent:
             return (avail[0], None)
         cands = [(a, d) for (a, d) in cands if self.store.seen_post(a, A, d) not in (A.key(), b"GAME_OVER")] or cands
         fallback = None
+        untried = None
         t0 = time.time()
         for (a, data) in cands:
             if time.time() - t0 > kato.KATO_BUDGET_S:
                 break
             hyps = self.H.get(a) or []
-            if not hyps:
-                continue
-            fr, flag = predicted(hyps[0].cs, A, data, self.memory)
+            if hyps:
+                fr, flag = predicted(hyps[0].cs, A, data, self.memory)
+            else:
+                # no word: the memorised successor of exactly this experiment (T12), if it was ever performed
+                post = self.store.seen_post(a, A, data)
+                if post is None:
+                    if untried is None:
+                        untried = (a, data)      # never performed in this state: its outcome is newborn (T2)
+                    continue
+                fr, flag = (None, "GAME_OVER") if post == b"GAME_OVER" else (np.frombuffer(post, dtype=np.int8).reshape(64, 64), "NOT_FINISHED")
             if fr is None or flag == "GAME_OVER":
                 continue
             key = np.ascontiguousarray(fr, dtype=np.int8).tobytes()
@@ -243,6 +257,8 @@ class NCEAgent:
                 return (a, data)
             if fallback is None and key not in self.visited_level:
                 fallback = (a, data)
+        if fallback is None and untried is not None:
+            fallback = untried
         if fallback is None:
             # the least-demonstrated experiment context (Kato's newborn notion, counted over the store)
             ctx_counts: dict = {}
@@ -272,7 +288,7 @@ class NCEAgent:
             return
         if obs["levels_completed"] > self.level:
             if A0 is not None:
-                self.goals.positive(A0, aid, data)      # the completing action: a demonstration of the win correspondence
+                self.goals.positive(A0, aid, data, self.memory.copy())   # the completing action (with its canvas memory)
             self._on_level_end(A1, obs["levels_completed"])
             self.prev = A1
             return
@@ -289,8 +305,8 @@ class NCEAgent:
             hyps = [h for h in self.H.get(aid, []) if synth.exact(h.cs, A0, data, A1, "GAME_OVER")]
             for h in hyps:
                 h.contexts.add(word_context(h.cs, A0, data))
-            if not hyps and self.H.get(aid):
-                self._synthesize(aid)             # the word must now carry a death gate
+            if not hyps:
+                self._synthesize(aid)             # the word must now carry a death gate (or be Over, if it only kills)
             else:
                 self.H[aid] = hyps
             self.prev = A1
@@ -301,6 +317,7 @@ class NCEAgent:
             self._reperceive_store()
             A0 = self.prev
         rec = self.store.append(aid, A0, data, A1, flag1, self.level, memory=self.memory)
+        self.goals.note_changed(rec)
         self._update_memory(rec)
         self.visited_level.add(A1.key())
         self.visited_obs.add(self._obs_signature(A1))

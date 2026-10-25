@@ -140,7 +140,7 @@ def kato_select(A: BaseAlgebra, avail: list[int], H: dict[int, list[Hypothesis]]
     import time as _time
     t_start = _time.time()
     for (a, data) in candidates(A, avail):
-        if best is not None and _time.time() - t_start > KATO_BUDGET_S:
+        if _time.time() - t_start > KATO_BUDGET_S:
             break
         if restrict is not None and (a, None if data is None else (data["x"], data["y"])) not in restrict:
             continue
@@ -163,7 +163,10 @@ def kato_select(A: BaseAlgebra, avail: list[int], H: dict[int, list[Hypothesis]]
             newborn = newborn_context(a, A, data, store, seen_cache)
         if hyps and not from_partials:
             D = purity_deficit(hyps, A, data, memory)
-            p_death = sum(np.exp(h.logw) for h in hyps if h.cs.over or predict(h.cs, A, data)[2] == "GAME_OVER") / max(sum(np.exp(h.logw) for h in hyps), 1e-300)
+            lw = np.array([h.logw for h in hyps])
+            ww = np.exp(lw - lw.max())          # normalised: an underflow must never price a lethal action as safe
+            dying = np.array([h.cs.over or predict(h.cs, A, data)[2] == "GAME_OVER" for h in hyps])
+            p_death = float(ww[dying].sum() / ww.sum())
             if newborn:
                 # the word has never been tested in this context: its unfixed branch is a direct sum (T7)
                 D = max(D, 0.5 * (1.0 - 1.0 / FAMILIES_APPLICABLE))
@@ -171,7 +174,8 @@ def kato_select(A: BaseAlgebra, avail: list[int], H: dict[int, list[Hypothesis]]
             if not newborn:
                 continue
             D = 0.5 * (1.0 - 1.0 / FAMILIES_APPLICABLE)
-            p_death = 0.0
+            recs_a = store.transitions(a)       # no word yet: the death rate of the action's own demonstrations
+            p_death = (sum(1 for r in recs_a if r.flag1 == "GAME_OVER") / len(recs_a)) if recs_a else 0.0
         cost = 1.0 + p_death * max(actions_since_level, 1)
         val = D / cost
         # ties (equal commutator value) go to the least-demonstrated action: the ignorance table's emptiest row
