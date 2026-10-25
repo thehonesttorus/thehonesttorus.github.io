@@ -46,6 +46,7 @@ class SynthResult:
     level_gated: bool = False
     death_gated: bool = False
     clock: frozenset = frozenset()   # colours verified modulo (the level's autonomous flow)
+    best_cs: Optional[ClauseSet] = None   # the combination with the fewest mismatching cells when none was exact
     death_unexplained: bool = False  # terminal records exist but no gate separates them from the live ones
 
 
@@ -654,6 +655,7 @@ def _synthesize_reading_inner(a: int, recs: list[Record], terminal: list[Record]
                         mm += int(np.count_nonzero(d))
                 if res.min_mismatch_cells < 0 or mm < res.min_mismatch_cells:
                     res.min_mismatch_cells = mm
+                    res.best_cs = cs
         res.hypotheses.sort(key=lambda h: -h.logw)
         del res.hypotheses[k_max:]
     res.exhausted = time.time() - t0 <= budget_s
