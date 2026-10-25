@@ -392,3 +392,79 @@ def test_every_constructible_letter_path_is_typed():
                                     cs = ClauseSet((cl,), (cr,), False, over_gate, lg)
                                     clause_set_log_weight(cs, lib)     # raises on an untyped path
     clause_set_log_weight(ClauseSet(over=True), lib)
+
+
+def test_rare_event_is_memorised_and_the_word_still_generalises():
+    """A mover steps right on action 1; once, at one position, a one-off flash appears. No exact word covers the flash,
+    so the word is admitted with that demonstration memorised (T12), because its code length is far shorter than
+    memorising every demonstration; it predicts the ordinary steps exactly and reproduces the flash from memory."""
+    class Flash(Mover):
+        def step(self, aid, data):
+            if aid == 0:
+                return self.reset_obs()
+            self.x += 1
+            F = self.frame()
+            if self.x == 35:
+                F[40:42, 40:43] = 6                  # the one-off event
+            return obs_of(F)
+    env = Flash()
+    env.y, env.x = 20, 30
+    agent = NCEAgent("toy-flash", 1, [1])
+    o = obs_of(env.frame(), avail=(1,), full_reset=True)
+    agent.act(o)
+    for _ in range(9):
+        o = env.step(1, None)
+        o["available_actions"] = [1]
+        agent.observe(o, 1, None)
+    hs = agent.H.get(1) or []
+    assert hs, agent.diagnostics()
+    assert hs[0].cs.exceptions and len(hs[0].cs.exceptions) == 1, hs[0].cs.describe()
+    A = agent.perceive(env.frame())
+    fr, _ = predicted(hs[0].cs, A, None, agent.memory)
+    env2 = Flash(); env2.y, env2.x = env.y, env.x
+    assert np.array_equal(fr, env2.step(1, None)["frames"][0])
+
+
+class Counter:
+    """Action 1 moves a 2x2 block right unless a wall is in the way; a colour-11 bar grows by one cell exactly when
+    the block actually moved. Action 2 moves it left (same coupling)."""
+
+    def __init__(self):
+        self.x, self.n = 30, 1
+
+    def frame(self):
+        F = np.zeros((64, 64), dtype=np.int8)
+        F[10:30, 40] = 5                      # wall
+        F[15:17, self.x:self.x + 2] = 3       # block
+        F[60, 2:2 + self.n] = 11              # counter
+        return F
+
+    def reset_obs(self):
+        self.x, self.n = 30, 1
+        return obs_of(self.frame(), avail=(1, 2), full_reset=True)
+
+    def step(self, aid, data):
+        if aid in (1, 2):
+            nx = self.x + (1 if aid == 1 else -1)
+            if nx + 1 < 40 and nx >= 1:
+                self.x = nx
+                self.n += 1
+        return obs_of(self.frame(), avail=(1, 2))
+
+
+def test_coupled_clause_fires_with_its_partner():
+    env = Counter()
+    agent = NCEAgent("toy-counter", 1, [1, 2])
+    o = env.reset_obs()
+    agent.act(o)
+    for aid in [1] * 10 + [2, 2, 1, 1, 1, 2, 1, 1]:
+        o = env.step(aid, None)
+        agent.observe(o, aid, None)
+    hs = agent.H.get(1) or []
+    assert hs, agent.diagnostics()
+    assert any(cl.bind is not None and cl.bind[0] == "cofire" for cl in hs[0].cs.clauses), hs[0].cs.describe()
+    for x in (30, 38):                         # free to move, and blocked by the wall
+        e = Counter(); e.x, e.n = x, 7
+        A = agent.perceive(e.frame())
+        fr, _ = predicted(hs[0].cs, A, None, agent.memory)
+        assert np.array_equal(fr, e.step(1, None)["frames"][0]), (x, hs[0].cs.describe())

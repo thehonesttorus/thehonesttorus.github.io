@@ -23,7 +23,7 @@ import numpy as np
 from .algebra import GRID, BaseAlgebra, Component
 from .library import Library
 from .store import Record, Store
-from .words import REVEAL, VIRTUAL_ID, Clause, ClauseSet, Creation, Hypothesis, clause_set_log_weight, d4_relative, eroded_cells, exact, gate_holds, grown_cells, pointed_cell, predicted_frame, select, word_context, _pair_predicate
+from .words import MEMO_CELL, REVEAL, VIRTUAL_ID, _datum, Clause, ClauseSet, Creation, Hypothesis, clause_set_log_weight, d4_relative, eroded_cells, exact, gate_holds, grown_cells, pointed_cell, predicted_frame, select, word_context, _pair_predicate
 
 K_MAX = 32
 MAX_STEP_WORD = 6          # Step^k beats Move for k <= 6 under the Parry order (Section 0, item 1)
@@ -47,6 +47,7 @@ class SynthResult:
     death_gated: bool = False
     clock: frozenset = frozenset()   # colours verified modulo (the level's autonomous flow)
     best_cs: Optional[ClauseSet] = None   # the combination with the fewest mismatching cells when none was exact
+    memorised: int = 0                    # demonstrations memorised by the best admitted word (T12)
     death_unexplained: bool = False  # terminal records exist but no gate separates them from the live ones
 
 
@@ -555,6 +556,7 @@ def _synthesize_reading_inner(a: int, recs: list[Record], terminal: list[Record]
 
     # 2. per class: clauses whose selector/gate separates exactly, with constant fill
     alternatives: list[list[Clause]] = []
+    positive_records = {sig: frozenset(ri for ri, B in enumerate(t) if B) for sig, t in classes.items()}
     for sig, targets in classes.items():
         body = _body_for(sig)
         term = ("annihilate",) if sig[0] == "annihilate" else ("stay",)
@@ -583,7 +585,7 @@ def _synthesize_reading_inner(a: int, recs: list[Record], terminal: list[Record]
             if time.time() - t0 > budget_s:
                 break
             if _fits_exactly(selector, recs, targets, memo):
-                found.append(Clause(selector, None, body, term, fill))
+                found.append(Clause(selector, None, body, term, fill, tag=sig))
         if not found:
             preds = predicates
             if body and any(k in ("step", "move", "rot") for k, _ in body):
@@ -610,17 +612,29 @@ def _synthesize_reading_inner(a: int, recs: list[Record], terminal: list[Record]
                 if pos and neg and not (set(map(id, pos)) & set(map(id, neg))):
                     for g_ in _mass_gate_candidates(pos, neg):
                         if _fits_with_gate(selector, g_, recs, targets, body, memo):
-                            found.append(Clause(selector, g_, body, term, fill))
+                            found.append(Clause(selector, g_, body, term, fill, tag=sig))
                 for pred in preds:
                     if time.time() - t0 > budget_s:
                         break
                     if _fits_with_gate(selector, pred, recs, targets, body, memo):
-                        found.append(Clause(selector, pred, body, term, fill))
+                        found.append(Clause(selector, pred, body, term, fill, tag=sig))
+        if not found:
+            # coupling (pair vertex P): the class acts in exactly the records where another class acts, and a selector
+            # picks exactly its components there; the clause fires iff the other class's clause fired
+            mine = positive_records[sig]
+            partners = [s2 for s2, p2 in positive_records.items() if s2 != sig and p2 == mine]
+            if partners:
+                for selector in selectors:
+                    if time.time() - t0 > budget_s:
+                        break
+                    if all({c.id for c in memo.get(selector, ri)} == targets[ri] for ri in mine):
+                        for s2 in partners:
+                            found.append(Clause(selector, ("cofire", s2), body, term, fill, tag=sig))
         if found and vacates and len(fills_ok) > 1:
-            found = found + [Clause(cl.selector, cl.bind, cl.body, cl.term, f) for cl in found for f in fills_ok[1:]]
+            found = found + [Clause(cl.selector, cl.bind, cl.body, cl.term, f, tag=sig) for cl in found for f in fills_ok[1:]]
         if found and sig[0] in ("move", "grow", "erode"):
             # Layer family: the same clauses with the mover painted above every stratum (fitted by the exact test)
-            found = found + [Clause(cl.selector, cl.bind, cl.body, cl.term, cl.fill, top=True) for cl in found]
+            found = found + [Clause(cl.selector, cl.bind, cl.body, cl.term, cl.fill, top=True, tag=sig) for cl in found]
         if not found:
             res.unexplained_classes += 1
         else:
@@ -633,29 +647,63 @@ def _synthesize_reading_inner(a: int, recs: list[Record], terminal: list[Record]
     #    reveal) that identity rendering reproduces, so combinations are tried regardless.
     res.creation_failed = not creation_ok
     if True:   # the exact test is the arbiter: even with unexplained classes or creations the identity combination may be exact in the quotient
+        def residual(cs: ClauseSet, r: Record) -> int:
+            fr = predicted_frame(cs, r.A0, r.data, r.memory)
+            if fr is None:
+                return GRID * GRID
+            d = fr != r.A1.frame
+            for c in res.clock:
+                d &= (fr != c) & (r.A1.frame != c)
+            return int(np.count_nonzero(d))
+
+        # memorising every demonstration under the identity word: the code length a word must beat (T12)
+        memo_unit = lib.beta_c * MEMO_CELL
+        def identity_residual(r: Record) -> int:
+            d = r.A0.frame != r.A1.frame
+            for c in res.clock:
+                d &= (r.A0.frame != c) & (r.A1.frame != c)
+            return int(np.count_nonzero(d))
+        baseline = memo_unit * float(sum(max(identity_residual(r), 0) for r in recs))
+        near: list[tuple[float, ClauseSet, list]] = []    # (code length, generalising part, failing records)
         combos = itertools.product(*alternatives) if alternatives else [()]
         for n, combo in enumerate(combos):
             if n >= MAX_COMBOS or time.time() - t0 > budget_s:
                 break
             cs = ClauseSet(tuple(combo), tuple(creations))
             res.combos_tried += 1
-            if all(exact(cs, r.A0, r.data, r.A1, r.flag1, r.memory, res.clock) for r in recs):
+            word_len = -clause_set_log_weight(cs, lib)
+            fails: list[tuple[Record, int]] = []
+            spent = word_len
+            hopeless = False
+            for r in recs:
+                if exact(cs, r.A0, r.data, r.A1, r.flag1, r.memory, res.clock):
+                    continue
+                cells = residual(cs, r)
+                fails.append((r, cells))
+                spent += memo_unit * max(cells, 1)
+                if spent >= baseline or (res.hypotheses and fails):
+                    hopeless = True             # cannot beat memorising everything, or an exact word exists already
+                    break
+            if not fails:
                 res.hypotheses.append(Hypothesis(cs, clause_set_log_weight(cs, lib), len(recs)))
                 res.min_mismatch_cells = 0
-            elif res.min_mismatch_cells != 0:
-                mm = 0
-                for r in recs:
-                    fr = predicted_frame(cs, r.A0, r.data, r.memory)
-                    if fr is None:
-                        mm += 4096
-                    else:
-                        d = fr != r.A1.frame
-                        for c in res.clock:
-                            d &= (fr != c) & (r.A1.frame != c)
-                        mm += int(np.count_nonzero(d))
-                if res.min_mismatch_cells < 0 or mm < res.min_mismatch_cells:
-                    res.min_mismatch_cells = mm
-                    res.best_cs = cs
+                continue
+            mm = sum(c for _, c in fails)
+            if res.min_mismatch_cells != 0 and (res.min_mismatch_cells < 0 or mm < res.min_mismatch_cells):
+                res.min_mismatch_cells = mm
+                res.best_cs = cs
+            if not hopeless:
+                near.append((spent, cs, fails))
+        if not res.hypotheses and near:
+            # T12: a generalising word plus a memorised part, admitted when its total code length (word letters plus
+            # beta_c log(16*4096) per memorised cell) is shorter than memorising every demonstration
+            near.sort(key=lambda t: t[0])
+            for spent, cs, fails in near[:k_max]:
+                exc = tuple((r.A0.key(), _datum(r.data), np.ascontiguousarray(r.A1.frame, dtype=np.int8).tobytes(), max(c, 1))
+                            for r, c in fails)
+                cs2 = replace(cs, exceptions=exc)
+                res.hypotheses.append(Hypothesis(cs2, clause_set_log_weight(cs2, lib), len(recs) - len(fails)))
+            res.memorised = sum(len(f) for _, _, f in near[:1])
         res.hypotheses.sort(key=lambda h: -h.logw)
         del res.hypotheses[k_max:]
     res.exhausted = time.time() - t0 <= budget_s

@@ -82,6 +82,7 @@ class Clause:
     term: Letter
     fill: Optional[int]
     top: bool = False      # Layer family (d = 2): paint the moved components above every stratum instead of in HN order
+    tag: Optional[tuple] = field(default=None, compare=False)   # the behaviour class this clause was fitted to
 
     def letters(self) -> list[str]:
         """Letter family names along the Bratteli path (for KMS weights)."""
@@ -196,6 +197,9 @@ class ClauseSet:
     over: bool = False
     over_gate: Optional[tuple] = None    # (selector, gate, body): the action kills iff a selected component satisfies the gate
     level_gated: bool = False            # LevelGate family: the word is asserted for the current level only
+    # The memorised part (T12): (pre-frame key, datum, post-frame bytes or b"GAME_OVER", residual cells) for the
+    # demonstrations the generalising part does not reproduce. Admitted only under the code-length test in synth.
+    exceptions: tuple = ()
 
     def letters(self) -> list[list[str]]:
         out = [c.letters() for c in self.clauses] + [c.letters() for c in self.creations]
@@ -228,6 +232,8 @@ class ClauseSet:
             parts.append(f"over if {self.over_gate[0][0]}:{self.over_gate[1][0]}")
         if self.level_gated:
             parts.append("levelgate")
+        if self.exceptions:
+            parts.append(f"+{len(self.exceptions)} memorised")
         return " ⊕ ".join(parts) if parts else "identity"
 
 
@@ -312,6 +318,8 @@ def gate_holds(gate: Letter, body: tuple, comp: Component, A: BaseAlgebra, data:
     on a colour mass; or ("ptr", inner): the unary predicate `inner` applied to the pointed component (SelPointed
     composed into the gate: the datum decides, not the clause's own component)."""
     kind, key = gate
+    if kind == "cofire":
+        return True          # a clause-level condition, applied by predict(); every selected component passes here
     if kind == "ptr":
         if not data:
             return False
@@ -437,9 +445,26 @@ def apply_clause(cl: Clause, comp: Component, A: BaseAlgebra, data: Optional[dic
 
 
 def predict(cs: ClauseSet, A: BaseAlgebra, data: Optional[dict]) -> tuple[list[Fate], list[Creation], str]:
-    """Apply the clause set to the base algebra. Components claimed by several clauses: the first wins."""
+    """Apply the clause set to the base algebra. Components claimed by several clauses: the first wins.
+    Coupled clauses (gate ("cofire", class)) run in a second pass and fire iff the clause fitted to that class
+    changed something in the first pass: a correspondence on a pair, through the library's pair vertex P."""
     fates: dict[int, Fate] = {}
+    fired: set = set()
+    coupled = [cl for cl in cs.clauses if cl.bind is not None and cl.bind[0] == "cofire"]
     for cl in cs.clauses:
+        if cl.bind is not None and cl.bind[0] == "cofire":
+            continue
+        for comp in select(cl.selector, A, data):
+            if comp.id in fates:
+                continue
+            f = apply_clause(cl, comp, A, data)
+            if f is not None:
+                fates[comp.id] = f
+                if f.kind != "identity" and cl.tag is not None:
+                    fired.add(cl.tag)
+    for cl in coupled:
+        if cl.bind[1] not in fired:
+            continue
         for comp in select(cl.selector, A, data):
             if comp.id in fates:
                 continue
@@ -453,6 +478,9 @@ def predict(cs: ClauseSet, A: BaseAlgebra, data: Optional[dict]) -> tuple[list[F
     if not dead and cs.over_gate is not None:
         sel, gate, body = cs.over_gate
         dead = any(gate_holds(gate, body, comp, A, data) for comp in select(sel, A, data))
+    memo = memorised(cs, A, data)
+    if memo is not None:
+        dead = memo == b"GAME_OVER"
     flag = "GAME_OVER" if dead else "NOT_FINISHED"
     return [fates[c.id] for c in A.comps] + [f for k, f in fates.items() if k < 0], list(cs.creations), flag
 
@@ -527,8 +555,31 @@ def concretize(pred: Optional[np.ndarray], A: BaseAlgebra) -> Optional[np.ndarra
     return pred.astype(np.int8)
 
 
+MEMO_CELL = float(np.log(16 * GRID * GRID))   # code length of one memorised cell: a colour and a lattice site
+
+
+def _datum(data: Optional[dict]) -> Optional[tuple]:
+    return (int(data["x"]), int(data["y"])) if data else None
+
+
+def memorised(cs: ClauseSet, A: BaseAlgebra, data: Optional[dict]) -> Optional[bytes]:
+    """The memorised post-state for exactly this (pre-frame, datum), if the clause set holds one."""
+    if not cs.exceptions:
+        return None
+    key, d = A.key(), _datum(data)
+    for k, dd, post, _ in cs.exceptions:
+        if k == key and dd == d:
+            return post
+    return None
+
+
 def exact(cs: ClauseSet, A0: BaseAlgebra, data: Optional[dict], A1: BaseAlgebra, flag1: str, memory: Optional[np.ndarray] = None,
           ignore: Optional[frozenset] = None) -> bool:
+    memo = memorised(cs, A0, data)
+    if memo is not None:
+        if memo == b"GAME_OVER" or flag1 == "GAME_OVER":
+            return (memo == b"GAME_OVER") == (flag1 == "GAME_OVER")
+        return memo == np.ascontiguousarray(A1.frame, dtype=np.int8).tobytes()
     fates, creations, flag = predict(cs, A0, data)
     if (flag == "GAME_OVER") != (flag1 == "GAME_OVER"):
         return False
@@ -539,6 +590,9 @@ def exact(cs: ClauseSet, A0: BaseAlgebra, data: Optional[dict], A1: BaseAlgebra,
 
 
 def predicted_frame(cs: ClauseSet, A: BaseAlgebra, data: Optional[dict], memory: Optional[np.ndarray] = None) -> Optional[np.ndarray]:
+    memo = memorised(cs, A, data)
+    if memo is not None:
+        return None if memo == b"GAME_OVER" else np.frombuffer(memo, dtype=np.int8).reshape(GRID, GRID).copy()
     fates, creations, _ = predict(cs, A, data)
     return concretize(render(A, fates, creations, data, memory), A)
 
@@ -559,6 +613,11 @@ def word_context(cs: ClauseSet, A: BaseAlgebra, data: Optional[dict]) -> tuple:
 
 def predicted(cs: ClauseSet, A: BaseAlgebra, data: Optional[dict], memory: Optional[np.ndarray] = None) -> tuple[Optional[np.ndarray], str]:
     """(predicted frame or None, predicted flag). A GAME_OVER prediction carries no frame."""
+    memo = memorised(cs, A, data)
+    if memo is not None:
+        if memo == b"GAME_OVER":
+            return None, "GAME_OVER"
+        return np.frombuffer(memo, dtype=np.int8).reshape(GRID, GRID).copy(), "NOT_FINISHED"
     fates, creations, flag = predict(cs, A, data)
     if flag == "GAME_OVER":
         return None, flag
@@ -572,4 +631,6 @@ def clause_set_log_weight(cs: ClauseSet, lib) -> float:
     total = 0.0
     for letters in cs.letters():
         total += lib.log_P(letters)
+    # the memorised part pays its code length in the same units: beta_c log(16 * 4096) per residual cell
+    total -= lib.beta_c * MEMO_CELL * float(sum(e[3] for e in cs.exceptions))
     return total

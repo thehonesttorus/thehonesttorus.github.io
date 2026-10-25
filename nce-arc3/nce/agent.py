@@ -170,7 +170,7 @@ class NCEAgent:
             synth_creation_failed=self.diag["synth_creation_failed"], synth_combo_fail=self.diag["synth_combo_fail"],
             synth_mismatch_hist=self.diag["synth_mismatch_hist"], splits=self.diag.get("splits", 0), split_rules=sum(len(v) for v in self.split.remainders.values()),
             promotions=self.diag["promotions"], library_letters=len(self.lib.dims), beta_c=round(self.lib.beta_c, 4),
-            clock_colours=len(self.store.clock_colours()),
+            clock_colours=len(self.store.clock_colours()), memorised_words=self.diag.get("memorised_words", 0),
             level_gated=self.diag["level_gated"], death_gated=self.diag["death_gated"], death_unexplained=self.diag["death_unexplained"],
         )
 
@@ -314,6 +314,7 @@ class NCEAgent:
         self.diag["level_gated"] += r.level_gated
         self.diag["death_gated"] += r.death_gated
         self.diag["death_unexplained"] += r.death_unexplained
+        self.diag["memorised_words"] = self.diag.get("memorised_words", 0) + (r.memorised > 0)
         if not r.hypotheses and r.combos_tried:
             self.diag["synth_combo_fail"] += 1
             b = "0" if r.min_mismatch_cells == 0 else ("1-4" if r.min_mismatch_cells <= 4 else ("5-32" if r.min_mismatch_cells <= 32 else ("33-256" if r.min_mismatch_cells <= 256 else ">256")))
