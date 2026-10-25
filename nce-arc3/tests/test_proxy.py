@@ -31,3 +31,20 @@ def test_in_process_mode_and_bad_spec_raises():
     except ModuleNotFoundError:
         raised = True
     assert raised
+
+
+def test_slow_worker_never_blocks_and_is_replaced():
+    import time
+    p = EngineProxy("slow", 6, [1, 2, 3, 4], engine_spec=("slow_engine", "SlowEngine"), timeout=0.3)
+    assert p._conn is not None
+    t0 = time.time()
+    outs = []
+    for _ in range(6):
+        outs.append(p.act(_obs())[0])
+        p.observe(_obs(), outs[-1], None)
+    assert time.time() - t0 < 6 * 0.3 + 2.0          # never waits behind an unanswered call
+    assert all(a == 1 for a in outs[:2])                # the floor action while the worker is busy
+    time.sleep(0.8)                                     # older than twice the timeout: the next call replaces it
+    p.act(_obs())
+    assert p.restarts >= 1
+    p.close()

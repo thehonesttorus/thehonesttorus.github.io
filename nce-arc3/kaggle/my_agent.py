@@ -76,6 +76,7 @@ class MyAgent(Agent):
         self._last_action: Optional[tuple[int, Optional[dict[str, Any]]]] = None
         self._last_reason = ""
         self._step_failed = False
+        self._uncertain = 0          # transitions whose pre-state is unknown after a lost response
         self._t0 = time.time()
 
     @property
@@ -85,7 +86,7 @@ class MyAgent(Agent):
     def _ensure_engine(self, obs: dict[str, Any]) -> Optional[Engine]:
         """Create the engine from the first real frame (never from the framework's placeholder, which carries
         win_levels = 0 and no available actions)."""
-        if self._engine is None and obs["state"] != "NOT_PLAYED" and obs["frames"] and obs["available_actions"]:
+        if self._engine is None and obs["state"] != "NOT_PLAYED" and obs["frames"]:
             self._engine = Engine(self.game_id, obs["win_levels"], obs["available_actions"])
         return self._engine
 
@@ -107,7 +108,31 @@ class MyAgent(Agent):
         except Exception as e:
             print(f"[nce] step failed on {self.game_id}: {e!r}", file=sys.stderr)
             self._step_failed = True
+            self._uncertain = 2      # the state may have advanced unseen: resync now and after the next action
             return None
+
+    def append_frame(self, frame: FrameData) -> None:  # type: ignore[override]
+        """Keep the frame without the framework's per-frame JSON recording (about 13 KB per action, which over a
+        nine-hour run could fill the working disk)."""
+        self.frames.append(frame)
+        if frame.guid:
+            self.guid = frame.guid
+
+    def _convert_raw_frame_data(self, raw):  # type: ignore[override]
+        """When the environment has no observation (its first reset failed), retry the reset with backoff and hand the
+        loop a NOT_PLAYED placeholder instead of raising, so the game thread survives."""
+        if raw is None and getattr(self, "arc_env", None) is not None:
+            for wait in (1, 2, 4, 8):
+                try:
+                    raw = self.arc_env.reset()
+                except Exception:
+                    raw = None
+                if raw is not None:
+                    break
+                time.sleep(wait)
+        if raw is None:
+            return FrameData(levels_completed=0)
+        return super()._convert_raw_frame_data(raw)
 
     def cleanup(self, scorecard=None) -> None:  # type: ignore[override]
         try:
@@ -141,12 +166,14 @@ class MyAgent(Agent):
         if engine is not None and self._last_action is not None:
             aid, data = self._last_action
             try:
-                if self._step_failed:
+                if self._uncertain > 0:
                     engine.resync(obs)
                 else:
                     engine.observe(obs, aid, data)
             except Exception:
                 pass
+        if self._uncertain > 0:
+            self._uncertain -= 1
         self._step_failed = False
 
         if engine is None or obs["state"] in ("NOT_PLAYED", "GAME_OVER"):

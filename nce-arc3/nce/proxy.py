@@ -20,6 +20,7 @@ from __future__ import annotations
 import multiprocessing as mp
 import os
 import sys
+import time
 import traceback
 from typing import Any, Optional
 
@@ -113,6 +114,8 @@ class EngineProxy:
         self._proc = None
         self._seq = 0
         self.restarts = 0
+        self._outstanding: Optional[tuple[int, float]] = None
+        self._skipped = False
         if use_process is None:
             use_process = os.environ.get("NCE_USE_PROCESS", "1") != "0"
         self._use_process = use_process
@@ -128,7 +131,7 @@ class EngineProxy:
             self._proc = ctx.Process(target=_worker, args=(child, self._spec, self._init), daemon=True)
             self._proc.start()
             self._conn = parent
-            startup = float(os.environ.get("NCE_PROCESS_STARTUP_TIMEOUT", "90"))
+            startup = float(os.environ.get("NCE_PROCESS_STARTUP_TIMEOUT", "240"))
             if not parent.poll(startup):
                 raise TimeoutError("engine worker did not start")
             _, kind, payload = parent.recv()
@@ -159,17 +162,49 @@ class EngineProxy:
         self._conn = None
         self._proc = None
 
-    def _call(self, kind: str, *args: Any) -> tuple[bool, Any]:
-        """(ok, payload). ok is False on error or timeout; the worker is kept unless it died."""
+    def _restart(self, why: str) -> None:
+        print(f"[nce] worker {why} on {self.game_id}; starting a fresh worker", file=sys.stderr)
+        self._shutdown()
+        self.restarts += 1
+        self._outstanding = None
+        self._skipped = False
+        if self._use_process:
+            self._start_worker()
+        if self._conn is None and self._local is None:
+            self._local = self._make_local()
+
+    def _call(self, kind: str, *args: Any, restart: bool = True) -> tuple[bool, Any]:
+        """(ok, payload). ok is False on error, timeout or while an earlier call is still outstanding. Never blocks
+        longer than the timeout and never queues a message behind an unanswered one (the pipe cannot fill)."""
         if self._conn is None:
             return False, None
-        self._seq += 1
-        seq = self._seq
         try:
+            if self._outstanding is not None:
+                oseq, t_sent = self._outstanding
+                while self._conn.poll(0):
+                    rseq, _, _ = self._conn.recv()
+                    if rseq == oseq:
+                        self._outstanding = None
+                        break
+                if self._outstanding is not None:
+                    if restart and time.time() - t_sent > 2 * self._timeout:
+                        self._restart("stuck")
+                        return False, None
+                    if kind in ("act", "observe", "resync"):
+                        self._skipped = True
+                    return False, None
+            if self._skipped and kind == "observe":
+                kind, args = "resync", args[:1]       # transitions were skipped: adopt the state, store nothing
+            self._skipped = False
+            self._seq += 1
+            seq = self._seq
             self._conn.send((seq, kind) + tuple(args))
             while True:
                 if not self._conn.poll(self._timeout):
                     print(f"[nce] worker timeout on {self.game_id} ({kind}); continuing with the floor action", file=sys.stderr)
+                    self._outstanding = (seq, time.time() - self._timeout)
+                    if kind in ("act", "observe", "resync"):
+                        self._skipped = True
                     return False, None
                 rseq, rkind, payload = self._conn.recv()
                 if rseq != seq:
@@ -179,13 +214,10 @@ class EngineProxy:
                     return False, None
                 return True, payload
         except (EOFError, OSError, BrokenPipeError) as e:
-            print(f"[nce] worker died on {self.game_id} ({e!r}); starting a fresh worker", file=sys.stderr)
-            self._shutdown()
-            self.restarts += 1
-            if self._use_process:
-                self._start_worker()
-            if self._conn is None and self._local is None:
-                self._local = self._make_local()
+            if restart:
+                self._restart(f"died ({e!r})")
+            else:
+                self._shutdown()
             return False, None
 
     @staticmethod
@@ -237,6 +269,7 @@ class EngineProxy:
     def close(self) -> None:
         if self._conn is not None:
             try:
-                self._call("close")
+                if self._outstanding is None:
+                    self._call("close", restart=False)
             finally:
                 self._shutdown()
