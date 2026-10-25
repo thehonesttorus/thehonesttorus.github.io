@@ -1,8 +1,11 @@
 __pycache__/
 *.pyc
+environment_files
 environment_files/
+recordings
 recordings/
 .venv/
+vendor
 vendor/
 notebooks/submission.ipynb
 .kaggle/
