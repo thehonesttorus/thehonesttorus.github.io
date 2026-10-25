@@ -88,7 +88,35 @@ class NCEAgent:
             self._observe(obs, int(aid), data)
         except Exception as e:
             print(f"[nce] observe error on {self.game_id}: {e!r}\n{traceback.format_exc()}", file=sys.stderr)
-            self.prev = self.perceive(obs["frames"][-1])
+            self.resync(obs)
+
+    def resync(self, obs: dict) -> None:
+        """Adopt the observed state without storing a demonstration (a lost response, or recovery after an error).
+        Never raises."""
+        try:
+            frames = obs.get("frames") or []
+            if not frames:
+                return
+            A = self.perceive(frames[-1])
+            lc = int(obs.get("levels_completed", self.level))
+            if lc > self.level:
+                self._on_level_end(A, lc)
+            elif lc < self.level:
+                self._level_restart(A, lc)
+            self.prev = A
+        except Exception as e:  # pragma: no cover
+            print(f"[nce] resync error on {self.game_id}: {e!r}", file=sys.stderr)
+            self.prev = None
+
+    def _level_restart(self, A: algebra.BaseAlgebra, level: int) -> None:
+        """The game went back to an earlier level (a full reset): the level's per-visit state restarts; demonstrations
+        keep their level labels, so earlier words stay available behind LevelGate."""
+        self.level = level
+        self.actions_since_level = 0
+        self.visited_level = set()
+        self.memory[:] = -1
+        self._seed_memory(A)
+        self.goals.new_level()
 
     def on_game_over(self, obs: dict) -> None:
         self.diag["deaths"] += 1
@@ -209,12 +237,18 @@ class NCEAgent:
 
     # ------------------------------------------------------------------ learning
     def _observe(self, obs: dict, aid: int, data: Optional[dict]) -> None:
-        frames = obs["frames"]
+        frames = obs.get("frames") or []
+        if not frames:
+            return
         A1 = self.perceive(frames[-1])
         flag1 = str(obs["state"])
         self.total_actions += 1
         self.actions_since_level += 1
         A0 = self.prev
+        if int(obs["levels_completed"]) < self.level:
+            self._level_restart(A1, int(obs["levels_completed"]))
+            self.prev = A1
+            return
         if obs["levels_completed"] > self.level:
             if A0 is not None:
                 self.goals.positive(A0, aid, data)      # the completing action: a demonstration of the win correspondence
@@ -225,7 +259,10 @@ class NCEAgent:
             self.prev = A1
             self.memory[:] = -1
             self._seed_memory(A1)
+            self.actions_since_level = 0
             return
+        if aid == 0:
+            self.actions_since_level = 0                 # back at the level's initial state: replay length restarts
         if flag1 == "GAME_OVER":
             self.store.append(aid, A0, data, A1, "GAME_OVER", self.level)
             hyps = [h for h in self.H.get(aid, []) if synth.exact(h.cs, A0, data, A1, "GAME_OVER")]

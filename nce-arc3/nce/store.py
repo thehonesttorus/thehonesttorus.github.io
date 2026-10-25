@@ -150,7 +150,8 @@ class Store:
         if self._clock_cache is not None and self._clock_cache[0] == len(self.order):
             return self._clock_cache[1]
         level = self.order[-1].level if self.order else 0
-        items = [(a, r) for a, recs in self.records.items() for r in recs if r.level == level and r.flag1 != "GAME_OVER"]
+        items = [(a, r) for a, recs in self.records.items() if a != 0 for r in recs
+                 if r.level == level and r.flag1 != "GAME_OVER"]     # RESET leaves the flow (it restarts the level)
         out: set[int] = set()
         if len(items) >= min_records and all(r.tr.changed_cells > 0 for _, r in items):
             cands = None
