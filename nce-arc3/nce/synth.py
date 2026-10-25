@@ -23,7 +23,7 @@ import numpy as np
 from .algebra import BaseAlgebra, Component
 from .library import Library
 from .store import Record, Store
-from .words import Clause, ClauseSet, Creation, Hypothesis, clause_set_log_weight, d4_relative, exact, select, _pair_predicate
+from .words import Clause, ClauseSet, Creation, Hypothesis, clause_set_log_weight, d4_relative, exact, predicted_frame, select, _pair_predicate
 
 K_MAX = 32
 MAX_STEP_WORD = 6          # Step^k beats Move for k <= 6 under the Parry order (Section 0, item 1)
@@ -37,6 +37,12 @@ class SynthResult:
     classes: int = 0
     unexplained_classes: int = 0
     exhausted: bool = False
+    # count-only diagnostics
+    reshaped_records: int = 0        # records with a reshaped frame vector (same colour, new key)
+    fill_inconsistent: int = 0       # classes killed by an inconsistent vacated-cell colour
+    creation_failed: bool = False    # creations neither constant nor pointed-relative
+    combos_tried: int = 0
+    min_mismatch_cells: int = -1     # best combination's cell mismatch (0 when exact)
 
 
 # ------------------------------------------------------------------ behaviour classes
@@ -165,13 +171,25 @@ def synthesize(a: int, store: Store, lib: Library, budget_s: float = 0.25, k_max
                 continue
             classes.setdefault(sig, [set() for _ in recs])[ri].add(c.id)
     res.classes = len(classes)
+    res.reshaped_records = sum(1 for r in recs if any(r.A0.comps[i].stratum > 0 for i, _ in r.tr.reshaped))
 
-    # creations must be constant across records (v1: constant creation clauses)
+    # creations: constant (Create[tau,g,t]) or relative to the pointed component (SelPointed . Copy . units)
     creations: list[Creation] = []
-    created_sets = [tuple(sorted((r.A1.comps[j].key, r.A1.comps[j].color, r.A1.comps[j].g, r.A1.comps[j].offset, tuple(r.A1.comps[j].cells.tolist())) for j in r.tr.created)) for r in recs]
+    created_sets = [tuple(sorted((r.A1.comps[j].key, r.A1.comps[j].color, r.A1.comps[j].g, r.A1.comps[j].offset) for j in r.tr.created)) for r in recs]
     creation_ok = all(cs == created_sets[0] for cs in created_sets)
     if creation_ok:
-        creations = [Creation(k, col, g, off, cells) for (k, col, g, off, cells) in created_sets[0]]
+        creations = [Creation(k, col, g, off) for (k, col, g, off) in created_sets[0]]
+    elif all(r.data for r in recs):
+        rel_sets = []
+        for r in recs:
+            cid = int(r.A0.cell2comp[int(r.data["y"]), int(r.data["x"])])
+            if cid < 0:
+                rel_sets = None; break
+            base = r.A0.comps[cid].offset
+            rel_sets.append(tuple(sorted((r.A1.comps[j].key, r.A1.comps[j].color, r.A1.comps[j].g, (r.A1.comps[j].offset[0] - base[0], r.A1.comps[j].offset[1] - base[1])) for j in r.tr.created)))
+        if rel_sets and all(cs == rel_sets[0] for cs in rel_sets):
+            creation_ok = True
+            creations = [Creation(k, col, g, off, relative=True) for (k, col, g, off) in rel_sets[0]]
 
     selectors = _selector_candidates(recs)
     predicates = _predicate_candidates(recs)
@@ -188,6 +206,7 @@ def synthesize(a: int, store: Store, lib: Library, budget_s: float = 0.25, k_max
             fills.discard(-1)
             if len(fills) > 1 or None in fills:
                 res.unexplained_classes += 1
+                res.fill_inconsistent += 1
                 continue
             fill = fills.pop() if fills else int(recs[0].A0.strata[0][0])   # nothing vacated: fill never rendered
         found: list[Clause] = []
@@ -211,14 +230,24 @@ def synthesize(a: int, store: Store, lib: Library, budget_s: float = 0.25, k_max
             res.partials.append(ClauseSet((found[0],)))
 
     # 3. assemble clause sets (one clause per class) and verify exactly on every record
+    res.creation_failed = not creation_ok
     if res.unexplained_classes == 0 and creation_ok:
         combos = itertools.product(*alternatives) if alternatives else [()]
         for n, combo in enumerate(combos):
             if n >= MAX_COMBOS or time.time() - t0 > budget_s:
                 break
             cs = ClauseSet(tuple(combo), tuple(creations))
+            res.combos_tried += 1
             if all(exact(cs, r.A0, r.data, r.A1, r.flag1) for r in recs):
                 res.hypotheses.append(Hypothesis(cs, clause_set_log_weight(cs, lib), len(recs)))
+                res.min_mismatch_cells = 0
+            elif res.min_mismatch_cells != 0:
+                mm = 0
+                for r in recs:
+                    fr = predicted_frame(cs, r.A0, r.data)
+                    mm += 4096 if fr is None else int(np.count_nonzero(fr != r.A1.frame))
+                if res.min_mismatch_cells < 0 or mm < res.min_mismatch_cells:
+                    res.min_mismatch_cells = mm
         res.hypotheses.sort(key=lambda h: -h.logw)
         del res.hypotheses[k_max:]
     res.exhausted = time.time() - t0 <= budget_s

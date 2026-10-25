@@ -108,11 +108,26 @@ class Creation:
     key: bytes            # canonical shape key (must be in the alphabet)
     color: int
     g: int
-    offset: tuple[int, int]
-    cells: tuple[int, ...]  # the concrete cells (constant creation), for rendering
+    offset: tuple[int, int]      # absolute bbox corner, or offset relative to the pointed component when relative
+    relative: bool = False       # Copy/placement relative to the pointed component (SelPointed . Copy . units)
 
     def letters(self) -> list[str]:
-        return ["Create"]
+        return ["SelPointed", "Copy"] if self.relative else ["Create"]
+
+    def cells(self, A: BaseAlgebra, data: Optional[dict]) -> Optional[np.ndarray]:
+        from .algebra import canonical_image_from_key, cells_from_canonical
+        canon = canonical_image_from_key(self.key)
+        if self.relative:
+            if not data:
+                return None
+            cid = int(A.cell2comp[int(data["y"]), int(data["x"])])
+            if cid < 0:
+                return None
+            base = A.comps[cid].offset
+            off = (base[0] + self.offset[0], base[1] + self.offset[1])
+        else:
+            off = self.offset
+        return cells_from_canonical(canon, self.g, off)
 
 
 @dataclass(frozen=True)
@@ -238,7 +253,7 @@ def predict(cs: ClauseSet, A: BaseAlgebra, data: Optional[dict]) -> tuple[list[F
     return [fates[c.id] for c in A.comps], list(cs.creations), flag
 
 
-def render(A: BaseAlgebra, fates: list[Fate], creations: list[Creation]) -> Optional[np.ndarray]:
+def render(A: BaseAlgebra, fates: list[Fate], creations: list[Creation], data: Optional[dict] = None) -> Optional[np.ndarray]:
     """Vacate, then paint survivors in HN flag order (largest mass first, rarest last). None if any move left the grid."""
     canvas = A.frame.copy().ravel()
     for f in fates:
@@ -249,7 +264,11 @@ def render(A: BaseAlgebra, fates: list[Fate], creations: list[Creation]) -> Opti
                 return None  # a vacating clause without a fitted fill cannot be rendered
             canvas[f.comp.cells] = f.fill
     survivors = [(A.hist[f.color] if f.color < 16 else 0, f.color, f.cells) for f in fates if f.kind != "annihilate" and f.cells is not None]
-    survivors += [(A.hist[c.color], c.color, np.asarray(c.cells, dtype=np.int64)) for c in creations]
+    for c in creations:
+        cells = c.cells(A, data)
+        if cells is None:
+            return None
+        survivors.append((A.hist[c.color], c.color, cells))
     survivors.sort(key=lambda t: -t[0])
     for _, color, cells in survivors:
         canvas[cells] = color
@@ -262,13 +281,13 @@ def exact(cs: ClauseSet, A0: BaseAlgebra, data: Optional[dict], A1: BaseAlgebra,
         return False
     if flag1 == "GAME_OVER" and cs.over:
         return True  # the terminal transition's frame is not predicted beyond the flag
-    out = render(A0, fates, creations)
+    out = render(A0, fates, creations, data)
     return out is not None and np.array_equal(out, A1.frame)
 
 
 def predicted_frame(cs: ClauseSet, A: BaseAlgebra, data: Optional[dict]) -> Optional[np.ndarray]:
     fates, creations, _ = predict(cs, A, data)
-    return render(A, fates, creations)
+    return render(A, fates, creations, data)
 
 
 # ------------------------------------------------------------------------------ KMS weight

@@ -110,6 +110,32 @@ def _assign(cost: np.ndarray) -> list[tuple[int, int]]:
     return pairs
 
 
+def _containment_shift(ma: np.ndarray, a: Component, b: Component) -> Optional[tuple[int, int]]:
+    """Translation v with transported(a) subset of b, via FFT cross-correlation of the masks (None if none)."""
+    mb = b.mask()
+    fa = np.fft.rfft2(ma.astype(np.float32))
+    fb = np.fft.rfft2(mb.astype(np.float32))
+    corr = np.fft.irfft2(fb * np.conj(fa), s=ma.shape)
+    # candidate shifts where the overlap equals |a| (full containment), tolerance for float error
+    cand = np.argwhere(corr > a.n - 0.5)
+    if cand.size == 0:
+        return None
+    best = None
+    for dy, dx in cand.tolist():
+        dy = dy - 64 if dy > 32 else dy
+        dx = dx - 64 if dx > 32 else dx
+        y0, x0 = a.bbox[0] + dy, a.bbox[1] + dx
+        if y0 < 0 or x0 < 0 or a.bbox[2] + dy >= GRID or a.bbox[3] + dx >= GRID:
+            continue
+        shifted = np.zeros_like(ma)
+        shifted[y0:a.bbox[2] + dy + 1, x0:a.bbox[3] + dx + 1] = ma[a.bbox[0]:a.bbox[2] + 1, a.bbox[1]:a.bbox[3] + 1]
+        if np.all(mb[shifted]):
+            l1 = abs(dy) + abs(dx)
+            if best is None or l1 < best[0]:
+                best = (l1, (dy, dx))
+    return best[1] if best else None
+
+
 def _gauge_between(a: Component, b: Component) -> Gauge:
     return Gauge(b.bbox[0] - a.bbox[0], b.bbox[1] - a.bbox[1], a.g, b.g)
 
@@ -155,6 +181,34 @@ def decompose(A0: BaseAlgebra, A1: BaseAlgebra, beta: float = 1.0, max_shift: in
             tr.recolours.append((a.id, best.id))
             matched0.add(a.id)
             matched1.add(best.id)
+
+    # 2b. containment moves: an unmatched component whose cells, transported by a translation v,
+    #     lie inside a same-colour component of A1 (it merged with a neighbour or was partly occluded).
+    #     v is read from the cross-correlation of the two masks (second-order statistics, C11), then
+    #     confirmed exactly by containment. D4 changes are not searched here.
+    left0 = [c for c in A0.comps if c.id not in matched0 and c.stratum > 0]
+    left1 = [c for c in A1.comps if c.id not in matched1]
+    if left0 and left1:
+        for a in left0:
+            best = None
+            ma = a.mask()
+            for b in left1:
+                if b.id in matched1 or b.color != a.color or b.n < a.n:
+                    continue
+                v = _containment_shift(ma, a, b)
+                if v is None:
+                    continue
+                gg = Gauge(v[0], v[1], a.g, a.g)
+                if gg.l1 == 0 or gg.l1 > max_shift:
+                    continue
+                c = move_cost(gg, beta)
+                if best is None or c < best[0]:
+                    best = (c, b, gg)
+            if best is not None:
+                tr.moves.append((a.id, best[1].id, best[2]))
+                matched0.add(a.id)
+                # the target component may absorb several movers; mark it matched only once all is painted
+                matched1.add(best[1].id) if best[1].n == a.n else None
 
     # 3. reshaped: same colour, overlapping cells, different canonical key (e.g. the top stratum,
     #    whose shape is the complement of everything else, or a component that grew or split).

@@ -38,7 +38,7 @@ def candidates(A: BaseAlgebra, avail: list[int]) -> list[tuple[int, Optional[dic
 
 
 def context_key(A: BaseAlgebra, data: Optional[dict]) -> tuple:
-    types = tuple(sorted((k, n) for k, n in A.type_counts().items()))
+    types = tuple(sorted((k, n) for k, n in A.type_counts_fv().items()))
     pointed = None
     if data is not None:
         cid = int(A.cell2comp[int(data["y"]), int(data["x"])])
@@ -117,11 +117,15 @@ def kato_select(A: BaseAlgebra, avail: list[int], H: dict[int, list[Hypothesis]]
         hyps = H.get(a) or []
         if not hyps and partials.get(a):
             hyps = [Hypothesis(cs, 0.0) for cs in partials[a]]
+        newborn = newborn_context(a, A, data, store, seen_cache)
         if hyps:
             D = purity_deficit(hyps, A, data)
             p_death = sum(np.exp(h.logw) for h in hyps if h.cs.over) / max(sum(np.exp(h.logw) for h in hyps), 1e-300)
+            if newborn:
+                # the word has never been tested in this context: its unfixed branch is a direct sum (T7)
+                D = max(D, 0.5 * (1.0 - 1.0 / FAMILIES_APPLICABLE))
         else:
-            if not newborn_context(a, A, data, store, seen_cache):
+            if not newborn:
                 continue
             D = 0.5 * (1.0 - 1.0 / FAMILIES_APPLICABLE)
             p_death = 0.0

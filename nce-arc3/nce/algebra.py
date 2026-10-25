@@ -167,6 +167,20 @@ class BaseAlgebra:
     def vacuum_colors(self) -> list[int]:
         return self.strata[0] if self.strata else []
 
+    def frame_vectors(self) -> list[Component]:
+        """Components of the non-maximal strata (the frame vectors, item 9). The top stratum's
+        shape is the complement of everything else and carries no independent type; when only
+        one stratum exists every component is a frame vector."""
+        if len(self.strata) <= 1:
+            return list(self.comps)
+        return [c for c in self.comps if c.stratum > 0]
+
+    def type_counts_fv(self) -> dict[tuple[int, bytes], int]:
+        out: dict[tuple[int, bytes], int] = {}
+        for c in self.frame_vectors():
+            out[c.type] = out.get(c.type, 0) + 1
+        return out
+
     def key(self) -> bytes:
         return np.ascontiguousarray(self.frame, dtype=np.int8).tobytes()
 
@@ -257,6 +271,38 @@ def render(comps: list[tuple[int, np.ndarray]], background: np.ndarray) -> np.nd
     for color, cells in comps:
         out[cells] = color
     return out.reshape(GRID, GRID)
+
+
+def canonical_image_from_key(key: bytes) -> np.ndarray:
+    h, w = key[0], key[1]
+    bits = np.unpackbits(np.frombuffer(key[2:], dtype=np.uint8))[: h * w]
+    return bits.reshape(h, w).astype(bool)
+
+
+def cells_from_canonical(canon: np.ndarray, g: int, offset: tuple[int, int]) -> Optional[np.ndarray]:
+    """Cells of a component whose canonical image is `canon`, placed at D4 element g and bbox corner offset."""
+    img = d4_apply(canon, d4_inverse(g))
+    ys, xs = np.nonzero(img)
+    ys = ys + offset[0]
+    xs = xs + offset[1]
+    if ys.size == 0 or ys.min() < 0 or xs.min() < 0 or ys.max() >= GRID or xs.max() >= GRID:
+        return None
+    return np.sort(ys * GRID + xs).astype(np.int64)
+
+
+_BUILD_CACHE: dict[bytes, "BaseAlgebra"] = {}
+_BUILD_CACHE_MAX = 6000
+
+
+def build_cached(frame: np.ndarray) -> "BaseAlgebra":
+    key = np.ascontiguousarray(frame, dtype=np.int8).tobytes()
+    A = _BUILD_CACHE.get(key)
+    if A is None:
+        A = build(frame)
+        if len(_BUILD_CACHE) >= _BUILD_CACHE_MAX:
+            _BUILD_CACHE.clear()
+        _BUILD_CACHE[key] = A
+    return A
 
 
 def transport_cells(comp: Component, g_new: int, offset_new: tuple[int, int]) -> Optional[np.ndarray]:
