@@ -25,7 +25,11 @@ sometimes failed with identical local surroundings).
 | A component's shape changed in place with a congruent D4 image overlapping its old cells | Two readings in Parry order: identity with a changed rendering (cost 0) before a Rot letter (cost log 7) | Readings in synthesis |
 | A move sometimes did not happen with identical colours at the destination | The gate is not local to the mover's surroundings; a history or hidden state | Collision gates (component, colour, inside) were added; the remaining cases are open |
 | Cached perceptions drifted (colour 0 became 15) | The engine mutates its grid in place; the perception cache aliased it | Frames are copied on construction |
-| Synthesis exhausted its budget on games with dozens of components | Gate fitting re-evaluated the same predicate on the same component thousands of times | Per-record gate tables, superset pre-filter, positives-first predicate filter |
+| Synthesis exhausted its budget on games with dozens of components | Gate fitting re-evaluated the same predicate on the same component thousands of times | Per-record gate tables (lazy), superset pre-filter, positives-first predicate filter, a transport cache per algebra |
+| A step took seconds on frames with two hundred components | The matcher built its cost matrix pair by pair in Python; animation sub-steps were perceived and decomposed though no rule reads them | Vectorised cost matrix; perception memoised per frame and rule set; animation sub-steps kept as raw frame pairs. Step time fell by roughly a factor of three |
+| Whether one action's move happened was separated exactly by the mass of one colour | A gate on an occupation number of the moment map (a frame-level observable) | Meter gates: a colour mass against a threshold read from the demonstrations, for move clauses and death gates (letter `Meter`, dimension 2·16·4097) |
+| A colour shrank by one or two cells per click, the count depending on the click | Powers of a boundary letter, gated by the datum | `Erode^k`, `Grow^k`; gates that test the pointed component (`ptr`) |
+| Two colours were taken for a clock although a null click left them unchanged | A clock is a change no action withholds, with a witness of action independence | Null steps count against a clock; the same own-frame change must be seen under two action contexts |
 
 ## Scoreboard
 
