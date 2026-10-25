@@ -72,7 +72,9 @@ class Store:
         return rec
 
     def append_null(self, a: int, A0: BaseAlgebra, A1: BaseAlgebra, level: int) -> None:
-        self.null_records.setdefault(a, []).append(Record(A0, None, A1, "NOT_FINISHED", level, decompose(A0, A1)))
+        """Animation sub-steps are kept as data (serial compositions of the null action, N7); their decomposition
+        is not needed by any rule yet, so it is not computed (tr = None)."""
+        self.null_records.setdefault(a, []).append(Record(A0, None, A1, "NOT_FINISHED", level, None))
 
     def transitions(self, a: int) -> list[Record]:
         return self.records.get(a, [])
@@ -112,41 +114,42 @@ class Store:
 
     # ---- the action-independent flow (T2, T12) -------------------------------------------------------------
     def clock_colours(self, min_records: int = 5) -> frozenset[int]:
-        """Colours that evolve autonomously of the action: over the current level's non-null records, the colour's
-        post-state is a function of its pre-state alone (no pre-state ever has two post-states), that function is
-        witnessed as action-independent (some pre-state recurs under two different actions or data with the same,
-        changed, post-state), and it changes in at least `min_records` records. Such a colour is the modular flow
-        sigma_t of the level, not a correspondence of any action; verification is taken modulo its cells."""
+        """Colours that evolve autonomously of the action (the level's modular flow sigma_t, T2/T12). Over the current
+        level's non-null, non-terminal records, a colour c is a clock colour iff
+          (a) its post-state is a function of its own pre-state (no pre-mask of c ever had two post-masks),
+          (b) it changes in every such record, under at least two distinct actions or data, at least `min_records`
+              times (a change that no action withholds), and
+          (c) it is not the canvas (the top stratum, whose cells only receive what others vacate; rendering convention).
+        Verification is then taken modulo its cells, and it is never a word of any action."""
         if self._clock_cache is not None and self._clock_cache[0] == len(self.order):
             return self._clock_cache[1]
         level = self.order[-1].level if self.order else 0
-        out: set[int] = set()
         items = [(a, r) for a, recs in self.records.items() for r in recs
                  if r.level == level and r.flag1 != "GAME_OVER" and r.tr.changed_cells > 0]
-        if len(items) >= min_records:
-            colours = set()
+        out: set[int] = set()
+        if len(items) >= min_records and len({(a, None if not r.data else (int(r.data["x"]), int(r.data["y"]))) for a, r in items}) >= 2:
+            cands = None
             for _, r in items:
-                colours.update(int(c) for c in np.unique(r.A0.frame[r.A0.frame != r.A1.frame]))
-                colours.update(int(c) for c in np.unique(r.A1.frame[r.A0.frame != r.A1.frame]))
-            for c in colours:
-                posts: dict[bytes, set[bytes]] = {}
-                witness: dict[tuple, set] = {}
-                changed = 0
-                consistent = True
-                for a, r in items:
-                    pre, post = _mask_bytes(r, c)
-                    posts.setdefault(pre, set()).add(post)
-                    if len(posts[pre]) > 1:
-                        consistent = False       # the same state of the colour went two ways: the action matters
-                        break
-                    if pre != post:
-                        changed += 1
-                        key = (a, None if not r.data else (int(r.data["x"]), int(r.data["y"])))
-                        witness.setdefault(_change_descriptor(r, c), set()).add(key)
-                if not consistent or changed < min_records:
+                d = r.A0.frame != r.A1.frame
+                ch = set(np.unique(r.A0.frame[d]).tolist()) | set(np.unique(r.A1.frame[d]).tolist())
+                cands = ch if cands is None else (cands & ch)
+                if not cands:
+                    break
+            for c in sorted(cands or ()):
+                c = int(c)
+                if any(len(r.A0.strata) > 1 and c in r.A0.strata[0] for _, r in items):
                     continue
-                # witnessed as action-independent: the same kind of change under two different actions or data
-                if any(len(ks) >= 2 for ks in witness.values()):
+                posts: dict[bytes, bytes] = {}
+                ok = True
+                for _, r in items:
+                    pre, post = _mask_bytes(r, c)
+                    if pre == post:
+                        ok = False          # some record left c unchanged: an action can withhold the change
+                        break
+                    if posts.setdefault(pre, post) != post:
+                        ok = False          # the same state of c went two ways: the action matters
+                        break
+                if ok:
                     out.add(c)
         res = frozenset(out)
         self._clock_cache = (len(self.order), res)

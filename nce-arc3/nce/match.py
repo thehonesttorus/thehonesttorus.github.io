@@ -154,31 +154,38 @@ def decompose(A0: BaseAlgebra, A1: BaseAlgebra, beta: float = 1.0, max_shift: in
         ids1 = A1.by_type.get(t)
         if not ids1:
             continue
-        cost = np.zeros((len(ids0), len(ids1)))
-        gauges: dict[tuple[int, int], Gauge] = {}
+        c0 = [A0.comps[i] for i in ids0]
+        c1 = [A1.comps[j] for j in ids1]
+        bb0 = np.array([c.bbox for c in c0], dtype=np.int64)
+        bb1 = np.array([c.bbox for c in c1], dtype=np.int64)
+        g0 = np.array([c.g for c in c0], dtype=np.int64)
+        g1 = np.array([c.g for c in c1], dtype=np.int64)
+        dy = bb1[None, :, 0] - bb0[:, None, 0]
+        dx = bb1[None, :, 1] - bb0[:, None, 1]
+        l1 = np.abs(dy) + np.abs(dx)
+        rot = g1[None, :] != g0[:, None]
+        # move_cost, vectorised: beta log(4 l) for a translation of l1-length l, beta log 7 for a D4 change
+        cost = np.where(l1 > 0, beta * np.log(4.0 * np.maximum(l1, 1)), 0.0) + np.where(rot, beta * np.log(7.0), 0.0)
+        cost[l1 > max_shift] = 1e9
         inplace: set[tuple[int, int]] = set()
-        for r, i in enumerate(ids0):
-            for c, j in enumerate(ids1):
-                gg = _gauge_between(A0.comps[i], A1.comps[j])
-                gauges[(r, c)] = gg
-                if gg.l1 > max_shift:
-                    cost[r, c] = 1e9
-                elif gg.rotated and np.intersect1d(A0.comps[i].cells, A1.comps[j].cells, assume_unique=True).size > 0:
-                    # a congruent component overlapping its old cells under a D4 change: the cheapest word is the
-                    # identity with a changed rendering (cost 0: occlusion, reveal, a trail), so it is paired here as
-                    # a reshape; the Rot reading (cost log 7) is kept in `inplace_rot` for synthesis to try next.
-                    cost[r, c] = 0.0
-                    inplace.add((r, c))
-                else:
-                    cost[r, c] = move_cost(gg, beta)
+        touch = rot & (l1 <= max_shift) & (bb0[:, None, 0] <= bb1[None, :, 2]) & (bb1[None, :, 0] <= bb0[:, None, 2]) \
+            & (bb0[:, None, 1] <= bb1[None, :, 3]) & (bb1[None, :, 1] <= bb0[:, None, 3])
+        for r, c in zip(*np.nonzero(touch)):
+            if np.intersect1d(c0[r].cells, c1[c].cells, assume_unique=True).size > 0:
+                # a congruent component overlapping its old cells under a D4 change: the cheapest word is the
+                # identity with a changed rendering (cost 0: occlusion, reveal, a trail), so it is paired here as
+                # a reshape; the Rot reading (cost log 7) is kept in `inplace_rot` for synthesis to try next.
+                cost[r, c] = 0.0
+                inplace.add((int(r), int(c)))
         for r, c in _assign(cost):
             if cost[r, c] >= 1e9:
                 continue
+            gg = Gauge(int(dy[r, c]), int(dx[r, c]), int(g0[r]), int(g1[c]))
             if (r, c) in inplace:
                 tr.reshaped.append((ids0[r], ids1[c]))
-                tr.inplace_rot.append((ids0[r], ids1[c], gauges[(r, c)]))
+                tr.inplace_rot.append((ids0[r], ids1[c], gg))
             else:
-                tr.moves.append((ids0[r], ids1[c], gauges[(r, c)]))
+                tr.moves.append((ids0[r], ids1[c], gg))
             matched0.add(ids0[r])
             matched1.add(ids1[c])
 

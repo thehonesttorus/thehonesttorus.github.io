@@ -52,6 +52,7 @@ def letter_specs(xi0: int, win_levels: int, promoted: Optional[list[LetterSpec]]
         LetterSpec("Annihilate", C, F, PALETTE),
         LetterSpec("Create", F, C, xi0 * D4_ORDER * GRID_CELLS),
         LetterSpec("Bind", C, P, 6 * (xi0 + 1) + PALETTE + xi0 + 8),   # pair predicates, and the unary colour/type/rank tests
+        LetterSpec("Meter", C, P, 2 * PALETTE * (GRID_CELLS + 1)),   # a colour mass compared with a threshold, either side
         LetterSpec("Gate", P, C, 2),
         LetterSpec("Const", F, F, 2),
         LetterSpec("LevelGate", F, F, max(2, int(win_levels))),

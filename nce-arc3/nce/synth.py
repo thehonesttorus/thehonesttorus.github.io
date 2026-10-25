@@ -228,21 +228,49 @@ def _is_superset(selector: tuple, recs: list[Record], targets: list[set[int]], m
     return True
 
 
-def _gate_table(rec: Record, pred: tuple, body: tuple) -> dict[int, bool]:
-    """gate_holds(pred, body, comp, A0) for every component of the record (and the pointed cell), cached on the
-    record for body-independent predicates (pair and unary tests), per body for the collision tests."""
+class _GateTable(dict):
+    """gate_holds(pred, body, comp, A0) per component id, computed on first access."""
+
+    def __init__(self, rec: Record, pred: tuple, body: tuple):
+        super().__init__()
+        self.rec, self.pred, self.body = rec, pred, body
+
+    def __missing__(self, cid: int) -> bool:
+        A = self.rec.A0
+        comp = A.comps[cid] if cid >= 0 else pointed_cell(A, self.rec.data)
+        v = bool(gate_holds(self.pred, self.body, comp, A)) if comp is not None else False
+        self[cid] = v
+        return v
+
+
+def _gate_table(rec: Record, pred: tuple, body: tuple) -> _GateTable:
+    """Lazy per-record table of a gate, shared across classes for body-independent predicates (pair, unary and
+    mass tests) and per body for the collision tests."""
     dep = pred[0] in ("collide", "offgrid", "collidecolour", "inside", "notcollide", "notoffgrid", "notcollidecolour", "notinside")
     key = (pred, body if dep else ())
     cache = rec.__dict__.setdefault("_gates", {})
     t = cache.get(key)
     if t is None:
-        t = {c.id: gate_holds(pred, body, c, rec.A0) for c in rec.A0.comps}
-        if rec.data:
-            pc = pointed_cell(rec.A0, rec.data)
-            if pc is not None:
-                t[pc.id] = gate_holds(pred, body, pc, rec.A0)
+        t = _GateTable(rec, pred, body)
         cache[key] = t
     return t
+
+
+def _mass_gate_candidates(pos: list[Record], neg: list[Record]) -> list[tuple]:
+    """Meter gates separating two sets of records exactly by one colour mass (an occupation number of the moment
+    map): mass_c >= t on every positive and < t on every negative, or the mirror. t is the positives' extreme
+    value, i.e. the gate claims nothing outside the masses it was demonstrated on (the support of the data)."""
+    out: list[tuple] = []
+    if not pos or not neg:
+        return out
+    for c in range(16):
+        p = [int(r.A0.hist[c]) for r in pos]
+        n = [int(r.A0.hist[c]) for r in neg]
+        if min(p) > max(n):
+            out.append(("massge", (c, min(p))))
+        elif max(p) < min(n):
+            out.append(("massle", (c, max(p))))
+    return out
 
 
 def _fits_with_gate(selector: tuple, pred: tuple, recs: list[Record], targets: list[set[int]], body: tuple = (),
@@ -322,6 +350,7 @@ def _fit_death_gate(live: list[Record], terminal: list[Record], res: SynthResult
     keys = sorted({c.key for r in allr for c in r.A0.comps})
     bodies = sorted({cl.body for h in res.hypotheses for cl in h.cs.clauses if cl.body}, key=len)
     gates: list[tuple[tuple, tuple]] = [(p, ()) for p in preds]
+    gates += [(g_, ()) for g_ in _mass_gate_candidates(terminal, live)]     # death when a colour mass crosses a value
     for b in bodies:
         gates.append((("offgrid", None), b))
         gates.append((("collide", None), b))
@@ -545,8 +574,21 @@ def _synthesize_reading_inner(a: int, recs: list[Record], terminal: list[Record]
                         + [("collidecolour", c) for c in cols] + [("notinside", c) for c in cols]
             supers = [s_ for s_ in selectors if _is_superset(s_, recs, targets, memo)]
             if supers:
-                preds = [p_ for p_ in preds if _holds_on_positives(p_, body, recs, targets)]   # a gate must admit every positive
+                kept = []
+                for p_ in preds:                      # a gate must admit every positive
+                    if time.time() - t0 > budget_s:
+                        break
+                    if _holds_on_positives(p_, body, recs, targets):
+                        kept.append(p_)
+                preds = kept
             for selector in supers:
+                # frame-level meter gates: records where the class acts versus records where a selected component does not
+                pos = [r for ri, r in enumerate(recs) if targets[ri]]
+                neg = [r for ri, r in enumerate(recs) if {c.id for c in memo.get(selector, ri)} - targets[ri]]
+                if pos and neg and not (set(map(id, pos)) & set(map(id, neg))):
+                    for g_ in _mass_gate_candidates(pos, neg):
+                        if _fits_with_gate(selector, g_, recs, targets, body, memo):
+                            found.append(Clause(selector, g_, body, term, fill))
                 for pred in preds:
                     if time.time() - t0 > budget_s:
                         break

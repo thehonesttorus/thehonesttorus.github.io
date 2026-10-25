@@ -288,3 +288,36 @@ def test_erode_is_a_word_when_only_one_action_erodes():
     assert not agent.store.clock_colours()
     hs = agent.H.get(1) or []
     assert hs and any(k == "erode" for cl in hs[0].cs.clauses for k, _ in cl.body), [h.cs.describe() for h in hs]
+
+
+def test_meter_gate_when_a_move_stops_with_a_colour_mass():
+    """The mover moves only while the shared countdown bar has more than 8 cells: the move clause carries a
+    frame-level meter gate on that colour's mass (the bar itself is the level clock)."""
+    class Fuel(MoverWithCountdown):
+        def step(self, aid, data):
+            if aid == 0:
+                return self.reset_obs()
+            fuel = self.bar
+            self.bar = max(self.bar - 1, 1)
+            if fuel <= 8:
+                return obs_of(self.frame())
+            dy, dx = self.DIRS[aid]
+            self.y, self.x = self.y + dy, self.x + dx
+            return obs_of(self.frame())
+    env = Fuel()
+    agent = NCEAgent("toy-fuel", 1, [1, 2, 3, 4])
+    o = env.reset_obs()
+    agent.act(o)
+    script = [2, 3, 4] * 10
+    for aid in script:
+        o = env.step(aid, None)
+        agent.observe(o, aid, None)
+    assert agent.store.clock_colours() == frozenset({12})
+    hs = agent.H.get(2) or []
+    assert hs, agent.diagnostics()
+    assert any(cl.bind is not None and cl.bind[0] in ("massge", "massle") for cl in hs[0].cs.clauses), hs[0].cs.describe()
+    A = agent.perceive(env.frame())
+    fr, _ = predicted(hs[0].cs, A, None, agent.memory)
+    nxt = env.step(2, None)["frames"][0]
+    keep = (fr != 12) & (nxt != 12)
+    assert np.array_equal(fr[keep], nxt[keep])          # out of fuel: the predicted move does not happen

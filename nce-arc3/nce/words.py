@@ -69,6 +69,7 @@ def d4_relative(g_before: int, g_after: int) -> int:
 REVEAL = 16   # Fill family member: the remembered canvas content under the vacated cells (d = 17 with the palette)
 
 
+MASS_GATES = ("massge", "massle")
 SEL_NAME = {"all": "SelAll", "pointed": "SelPointed", "pointedcell": "SelPointed", "colour": "SelColour", "rank": "SelRank", "type": "SelType"}
 BODY_NAME = {"step": "Step", "move": "Move", "rot": "Rot", "recolour": "Recolour", "copy": "Copy", "grow": "Grow", "erode": "Erode"}
 
@@ -86,7 +87,7 @@ class Clause:
         """Letter family names along the Bratteli path (for KMS weights)."""
         names = [SEL_NAME[self.selector[0]]]
         if self.bind is not None:
-            names += ["Bind", "Gate"]
+            names += ["Meter" if self.bind[0] in MASS_GATES else "Bind", "Gate"]
         for kind, _ in self.body:
             names.append(BODY_NAME[kind])
         if self.fill is not None:
@@ -101,7 +102,7 @@ class Clause:
         """The same path with each letter's fitted unit: (family name, parameter)."""
         out: list[tuple] = [(SEL_NAME[self.selector[0]], tuple(self.selector))]
         if self.bind is not None:
-            out += [("Bind", tuple(self.bind)), ("Gate", None)]
+            out += [("Meter" if self.bind[0] in MASS_GATES else "Bind", tuple(self.bind)), ("Gate", None)]
         for kind, p in self.body:
             out.append((BODY_NAME[kind], (kind, p)))
         if self.fill is not None:
@@ -201,7 +202,7 @@ class ClauseSet:
         if self.over:
             out.append(["Over"])
         if self.over_gate is not None:
-            out.append([SEL_NAME[self.over_gate[0][0]], "Bind", "Gate"])
+            out.append([SEL_NAME[self.over_gate[0][0]], "Meter" if self.over_gate[1][0] in MASS_GATES else "Bind", "Gate"])
             out.append(["Over"])
         if self.level_gated:
             out.append(["LevelGate"])
@@ -212,7 +213,8 @@ class ClauseSet:
         if self.over:
             out.append([("Over", None)])
         if self.over_gate is not None:
-            out.append([(SEL_NAME[self.over_gate[0][0]], tuple(self.over_gate[0])), ("Bind", tuple(self.over_gate[1])), ("Gate", None)])
+            out.append([(SEL_NAME[self.over_gate[0][0]], tuple(self.over_gate[0])),
+                        ("Meter" if self.over_gate[1][0] in MASS_GATES else "Bind", tuple(self.over_gate[1])), ("Gate", None)])
             out.append([("Over", None)])
         if self.level_gated:
             out.append([("LevelGate", None)])
@@ -277,6 +279,10 @@ def pointed_cell(A: BaseAlgebra, data: dict) -> Optional[Component]:
 
 def _pair_predicate(bind: Letter, comp: Component, A: BaseAlgebra) -> bool:
     kind, other_key = bind
+    if kind == "massge":                 # the moment map's colour mass (an occupation number), a frame-level test
+        return int(A.hist[other_key[0]]) >= other_key[1]
+    if kind == "massle":
+        return int(A.hist[other_key[0]]) <= other_key[1]
     if kind == "iscolour":
         return comp.color == other_key
     if kind == "istype":
@@ -314,7 +320,13 @@ def gate_holds(gate: Letter, body: tuple, comp: Component, A: BaseAlgebra) -> bo
             oy, ox = oy + param[0], ox + param[1]
         elif k == "rot":
             g = d4_compose(param, g)
-    cells = transport_cells(comp, g, (oy, ox))
+    cache = A.__dict__.setdefault("_transport", {})
+    tkey = (comp.id if comp.id >= 0 else ("v", int(comp.cells[0])), g, oy, ox)
+    if tkey in cache:
+        cells = cache[tkey]
+    else:
+        cells = transport_cells(comp, g, (oy, ox))
+        cache[tkey] = cells
     if cells is None:
         return kind == "offgrid"
     if kind == "offgrid":
