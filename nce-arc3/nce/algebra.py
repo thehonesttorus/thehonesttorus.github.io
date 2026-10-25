@@ -269,8 +269,9 @@ def from_components(frame: np.ndarray, parts: list) -> "BaseAlgebra":
     return _finish(F, hist, strata, stratum_of, comps)
 
 
-def build(frame: np.ndarray, max_components: int = 512) -> BaseAlgebra:
-    """Construct the base algebra of a frame. Deterministic; no game knowledge."""
+def build(frame: np.ndarray, max_components: Optional[int] = None) -> BaseAlgebra:
+    """Construct the base algebra of a frame. Deterministic; no game knowledge. Every component is kept (at most
+    4096, one per cell): a cap in HN order would make the rarest colours, often the ones that move, invisible."""
     F = np.array(frame, dtype=np.int8, copy=True)     # never alias a caller's buffer (the engine mutates its grid in place)
     if F.shape != (GRID, GRID):
         raise ValueError(f"frame must be {GRID}x{GRID}, got {F.shape}")
@@ -289,7 +290,7 @@ def build(frame: np.ndarray, max_components: int = 512) -> BaseAlgebra:
             starts = np.searchsorted(sorted_lab, np.arange(1, n + 1), side="left")
             ends = np.searchsorted(sorted_lab, np.arange(1, n + 1), side="right")
             for k in range(n):
-                if len(comps) >= max_components:
+                if max_components is not None and len(comps) >= max_components:
                     break
                 cells = np.sort(order[starts[k]:ends[k]]).astype(np.int64)
                 comps.append(_make_component(len(comps), int(c), cells, stratum_of[int(c)]))

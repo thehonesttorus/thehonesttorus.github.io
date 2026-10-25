@@ -20,18 +20,32 @@ import numpy as np
 
 from .algebra import BaseAlgebra
 from .store import Store
-from .words import ClauseSet, Hypothesis, predict, predicted_frame, word_context
+from .words import ClauseSet, Hypothesis, predict, predicted, predicted_frame, word_context
 
-CANDIDATE_CAP = 64
-FAMILIES_APPLICABLE = 6   # identity, Step/Move, Rot, Recolour, Annihilate, Create (Fill unfixed inside each)
+KATO_BUDGET_S = 0.25      # compute bound per decision (seconds); candidates are visited most diverse first
+def families_applicable(lib=None) -> int:
+    """m in the newborn deficit 1/2 (1 - 1/m): the letter families that can act on a selected component, i.e. the
+    library's edges leaving the component vertex C, plus the identity. Read from the library graph, not set by hand."""
+    if lib is None:
+        from .library import Library
+        lib = Library(win_levels=2)
+    return 1 + sum(1 for p in lib.graph.primitives.values() if p.source == "C")
+
+
+FAMILIES_APPLICABLE = families_applicable()
 
 
 def candidates(A: BaseAlgebra, avail: list[int]) -> list[tuple[int, Optional[dict]]]:
     out: list[tuple[int, Optional[dict]]] = [(a, None) for a in avail if a not in (0, 6)]
     if 6 in avail:
-        # one representative cell per component; HN order (top stratum first), capped
-        comps = sorted(A.comps, key=lambda c: (c.stratum, c.id))[:CANDIDATE_CAP]
+        # one representative cell per component, every component: first one per shape type (HN order), then the rest
+        comps = sorted(A.comps, key=lambda c: (c.stratum, c.id))
+        seen: set = set()
+        first, rest = [], []
         for c in comps:
+            (rest if c.type in seen else first).append(c)
+            seen.add(c.type)
+        for c in first + rest:
             x, y = c.representative_cell()
             out.append((6, {"x": x, "y": y}))
     return out
@@ -66,22 +80,22 @@ def representative_data(a: int, A: BaseAlgebra) -> Optional[dict]:
 
 
 def purity_deficit(hyps: list[Hypothesis], A: BaseAlgebra, data: Optional[dict], memory=None) -> float:
-    """1/2 (1 - Tr rho^2) over the classes of distinct predicted frames, weighted by KMS weights."""
+    """1/2 (1 - Tr rho^2) over the classes of distinct predicted frames, weighted by KMS weights; the overlap of two
+    classes is the flat one-hot metric, cos = (cells where the predicted frames agree) / 4096."""
     classes: dict[bytes, list] = {}
     logws = np.array([h.logw for h in hyps])
     w = np.exp(logws - logws.max())
     for h, wi in zip(hyps, w):
-        fr = predicted_frame(h.cs, A, data, memory)
+        fr, flag = predicted(h.cs, A, data, memory)
         if fr is None:
-            key = b"OFFGRID"
-            diff = None
+            key = b"GAME_OVER" if flag == "GAME_OVER" else b"OFFGRID"
         else:
-            diff = fr.ravel() != A.frame.ravel()
-            key = np.packbits(diff).tobytes()
+            fr = fr.ravel()
+            key = np.ascontiguousarray(fr, dtype=np.int8).tobytes()
         if key in classes:
             classes[key][0] += wi
         else:
-            classes[key] = [wi, diff]
+            classes[key] = [wi, fr]
     if len(classes) < 2:
         return 0.0
     items = list(classes.values())
@@ -89,11 +103,11 @@ def purity_deficit(hyps: list[Hypothesis], A: BaseAlgebra, data: Optional[dict],
     D = 0.0
     for i in range(len(items)):
         for j in range(i + 1, len(items)):
-            di, dj = items[i][1], items[j][1]
-            if di is None or dj is None:
+            fi, fj = items[i][1], items[j][1]
+            if fi is None or fj is None:
                 cos2 = 0.0
             else:
-                cos = 1.0 - float(np.count_nonzero(di != dj)) / (64 * 64)
+                cos = 1.0 - float(np.count_nonzero(fi != fj)) / (64 * 64)
                 cos2 = cos * cos
             D += (items[i][0] / Z) * (items[j][0] / Z) * (1.0 - cos2)
     return float(D)
@@ -109,7 +123,11 @@ def kato_select(A: BaseAlgebra, avail: list[int], H: dict[int, list[Hypothesis]]
             return (a, representative_data(a, A))
     seen_cache: dict = {}
     best, bestval, besttie = None, 0.0, (0.0, 0)
+    import time as _time
+    t_start = _time.time()
     for (a, data) in candidates(A, avail):
+        if best is not None and _time.time() - t_start > KATO_BUDGET_S:
+            break
         if restrict is not None and (a, None if data is None else (data["x"], data["y"])) not in restrict:
             continue
         if a in store.nondeterministic:

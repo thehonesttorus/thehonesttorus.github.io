@@ -80,3 +80,18 @@ def test_greedy_fallback_agrees_on_simple_case():
     finally:
         match._lsa = saved
     assert len(tr.moved) == 1 and (tr.moved[0][2].dy, tr.moved[0][2].dx) == (2, 0)
+
+
+def test_shared_translation_is_matched_as_one_gauge_element():
+    """Three identical blocks all shift right by 3: one clause explains all three, so the shared gauge element wins
+    over the per-pair reading (one block jumping 9, two staying)."""
+    F0 = np.zeros((64, 64), dtype=np.int8)
+    F1 = np.zeros((64, 64), dtype=np.int8)
+    for x in (10, 13, 16):
+        F0[20:22, x:x + 2] = 3
+        F1[20:22, x + 3:x + 5] = 3
+    A0, A1 = algebra.build(F0), algebra.build(F1)
+    tr = match.decompose(A0, A1)
+    shifts = sorted((g.dy, g.dx) for _, _, g in tr.moves if A0.comps[_].color == 3) if False else \
+        sorted((g.dy, g.dx) for i, j, g in tr.moves if A0.comps[i].color == 3)
+    assert shifts == [(0, 3)] * 3, shifts

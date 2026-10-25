@@ -88,8 +88,8 @@ def test_build_speed():
     rng = np.random.default_rng(0)
     F = rng.integers(0, 16, size=(64, 64), dtype=np.int8)      # worst case: ~thousands of tiny components
     t = time.time(); A = algebra.build(F); dt = time.time() - t
-    assert len(A.comps) == 512                                   # capped
-    assert dt < 2.0
+    assert sum(c.n for c in A.comps) == 64 * 64                  # uncapped: every cell belongs to a component
+    assert dt < 4.0
     F2 = _frame_with_shapes()
     t = time.time()
     for _ in range(20): algebra.build(F2)

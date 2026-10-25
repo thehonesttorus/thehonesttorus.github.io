@@ -54,17 +54,21 @@ class Gauge:
         return self.g_before != self.g_after
 
 
-def move_cost(gauge: Gauge, beta: float = 1.0) -> float:
-    """-log of the Parry weight of the move's family at inverse temperature beta.
+STEP_DIM, MOVE_DIM, ROT_DIM = 4.0, 127.0 * 127.0 - 1.0, 7.0   # library dimensions of Step, Move, Rot
 
-    Identity: cost 0 (not an edge). Translation of l1-length l: family of 4l members, cost
-    beta*log(4l). D4 change: family of 7, cost beta*log 7. Both: sum (serial composition).
-    """
-    c = 0.0
-    if gauge.l1 > 0:
-        c += beta * np.log(4.0 * gauge.l1)
+
+def translation_cost(l1, beta: float = 1.0):
+    """-log Parry weight of the cheapest word for a translation of l1-length l: Step^l (4^l summands) or Move (16128)."""
+    l1 = np.asarray(l1, dtype=np.float64)
+    return beta * np.where(l1 > 0, np.minimum(l1 * np.log(STEP_DIM), np.log(MOVE_DIM)), 0.0)
+
+
+def move_cost(gauge: Gauge, beta: float = 1.0) -> float:
+    """-log of the Parry weight of the word explaining the gauge element: identity 0; a translation by its cheapest
+    word (Step^l or Move); a D4 change beta log 7; both: the serial composition."""
+    c = float(translation_cost(gauge.l1, beta)) if gauge.l1 > 0 else 0.0
     if gauge.rotated:
-        c += beta * np.log(7.0)
+        c += beta * np.log(ROT_DIM)
     return float(c)
 
 
@@ -164,9 +168,36 @@ def decompose(A0: BaseAlgebra, A1: BaseAlgebra, beta: float = 1.0, max_shift: in
         dx = bb1[None, :, 1] - bb0[:, None, 1]
         l1 = np.abs(dy) + np.abs(dx)
         rot = g1[None, :] != g0[:, None]
-        # move_cost, vectorised: beta log(4 l) for a translation of l1-length l, beta log 7 for a D4 change
-        cost = np.where(l1 > 0, beta * np.log(4.0 * np.maximum(l1, 1)), 0.0) + np.where(rot, beta * np.log(7.0), 0.0)
+        # move_cost, vectorised: the cheapest translation word, plus beta log 7 for a D4 change
+        cost = translation_cost(l1, beta) + np.where(rot, beta * np.log(ROT_DIM), 0.0)
         cost[l1 > max_shift] = 1e9
+        # shared translations first: one clause SelType . body explains every pair displaced by the same gauge element,
+        # so its cost is paid once. Gauge elements shared by two or more pairs are taken in order of how many pairs
+        # they explain (ties: the cheaper word), and their pairs are fixed before the per-pair assignment.
+        fixed_r: set[int] = set()
+        fixed_c: set[int] = set()
+        if len(c0) > 1 and len(c1) > 1:
+            same = ~rot & (l1 <= max_shift)
+            rr, cc = np.nonzero(same)
+            if rr.size:
+                vs = {}
+                for r_, c_ in zip(rr.tolist(), cc.tolist()):
+                    vs.setdefault((int(dy[r_, c_]), int(dx[r_, c_])), []).append((r_, c_))
+                order_v = sorted((v for v, ps in vs.items() if len(ps) >= 2),
+                                 key=lambda v: (-len(vs[v]), float(translation_cost(abs(v[0]) + abs(v[1]), beta))))
+                for v in order_v:
+                    for r_, c_ in vs[v]:
+                        if r_ in fixed_r or c_ in fixed_c:
+                            continue
+                        fixed_r.add(r_)
+                        fixed_c.add(c_)
+                        gg = Gauge(v[0], v[1], int(g0[r_]), int(g1[c_]))
+                        tr.moves.append((ids0[r_], ids1[c_], gg))
+                        matched0.add(ids0[r_])
+                        matched1.add(ids1[c_])
+        if fixed_r:
+            cost[list(fixed_r), :] = 1e9
+            cost[:, list(fixed_c)] = 1e9
         inplace: set[tuple[int, int]] = set()
         touch = rot & (l1 <= max_shift) & (bb0[:, None, 0] <= bb1[None, :, 2]) & (bb1[None, :, 0] <= bb0[:, None, 2]) \
             & (bb0[:, None, 1] <= bb1[None, :, 3]) & (bb1[None, :, 1] <= bb0[:, None, 3])
@@ -178,7 +209,7 @@ def decompose(A0: BaseAlgebra, A1: BaseAlgebra, beta: float = 1.0, max_shift: in
                 cost[r, c] = 0.0
                 inplace.add((int(r), int(c)))
         for r, c in _assign(cost):
-            if cost[r, c] >= 1e9:
+            if cost[r, c] >= 1e9 or r in fixed_r or c in fixed_c:
                 continue
             gg = Gauge(int(dy[r, c]), int(dx[r, c]), int(g0[r]), int(g1[c]))
             if (r, c) in inplace:

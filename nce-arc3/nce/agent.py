@@ -49,6 +49,7 @@ class NCEAgent:
         self.total_actions = 0
         self.last_reason = ""
         self.visited_level: set[bytes] = set()
+        self.visited_obs: set[tuple] = set()
         self.plan_path: list = []
         self.memory = np.full((64, 64), -1, dtype=np.int16)   # remembered canvas: last colour seen at a cell not covered by a mover type
         self.mover_types: set[tuple[int, bytes]] = set()      # types seen to move, vanish or appear
@@ -114,6 +115,7 @@ class NCEAgent:
         self.level = level
         self.actions_since_level = 0
         self.visited_level = set()
+        self.visited_obs = set()
         self.memory[:] = -1
         self._seed_memory(A)
         self.goals.new_level()
@@ -207,15 +209,24 @@ class NCEAgent:
         self.diag["fallthrough"] += 1
         return self._fallthrough(A, avail)
 
+    @staticmethod
+    def _obs_signature(A: algebra.BaseAlgebra) -> tuple:
+        """The goal observables of a state (Section 6.5): colour masses and shape-type counts of the frame vectors."""
+        return (tuple(int(v) for v in A.hist), tuple(sorted(A.type_counts_fv().items())))
+
     def _fallthrough(self, A: algebra.BaseAlgebra, avail: list[int]) -> tuple[int, Optional[dict]]:
+        """C5, third clause (spec 6.5): when hypotheses agree and no goal splits, take the first candidate (HN order)
+        whose predicted post-state shows goal observables not yet seen on this level; else one whose predicted frame
+        was not visited; else the least-demonstrated action. Deterministic; no rotation, no randomness."""
         cands = kato.candidates(A, avail)
         if not cands:
             return (avail[0], None)
-        start = self.total_actions % len(cands)
-        order = cands[start:] + cands[:start]
+        cands = [(a, d) for (a, d) in cands if self.store.seen_post(a, A, d) not in (A.key(), b"GAME_OVER")] or cands
         fallback = None
-        order = [(a, d) for (a, d) in order if self.store.seen_post(a, A, d) not in (A.key(), b"GAME_OVER")] or order
-        for (a, data) in order:
+        t0 = time.time()
+        for (a, data) in cands:
+            if time.time() - t0 > kato.KATO_BUDGET_S:
+                break
             hyps = self.H.get(a) or []
             if not hyps:
                 continue
@@ -225,13 +236,13 @@ class NCEAgent:
             key = np.ascontiguousarray(fr, dtype=np.int8).tobytes()
             if key == A.key():
                 continue  # predicted no-op (C8)
-            if key not in self.visited_level:
-                self.last_reason = f"unvisited a{a}"
+            if self._obs_signature(self.perceive(fr)) not in self.visited_obs:
+                self.last_reason = f"new-observables a{a}"
                 return (a, data)
-            if fallback is None:
+            if fallback is None and key not in self.visited_level:
                 fallback = (a, data)
         if fallback is None:
-            fallback = order[0]
+            fallback = min(cands, key=lambda c: len(self.store.transitions(c[0])))
         self.last_reason = f"fallthrough a{fallback[0]}"
         return fallback
 
@@ -282,6 +293,7 @@ class NCEAgent:
         rec = self.store.append(aid, A0, data, A1, flag1, self.level, memory=self.memory)
         self._update_memory(rec)
         self.visited_level.add(A1.key())
+        self.visited_obs.add(self._obs_signature(A1))
         self.goals.negative(A1)                          # a non-winning post-state is a certified negative
         if len(frames) > 1:                              # animation sub-steps as serial compositions (stored, v1)
             prev = A0.frame
@@ -294,7 +306,8 @@ class NCEAgent:
             self.H = {}                            # the flow changed: every word is re-derived in the new quotient
             self.partials = {}
         hyps = self.H.get(aid, [])
-        survivors = [h for h in hyps if synth.exact(h.cs, rec.A0, rec.data, rec.A1, rec.flag1, rec.memory, clock)]
+        survivors = [h for h in hyps if synth.exact(h.cs, rec.A0, rec.data, rec.A1, rec.flag1, rec.memory,
+                                                     clock if rec.level == self.store.clock_level else None)]
         for h in survivors:
             h.n_verified += 1
             h.contexts.add(word_context(h.cs, rec.A0, rec.data))
@@ -356,6 +369,7 @@ class NCEAgent:
         self.level = new_level
         self.actions_since_level = 0
         self.visited_level = set()
+        self.visited_obs = set()
         self.memory[:] = -1
         self._seed_memory(A_new)
         self.goals.new_level()
@@ -366,9 +380,11 @@ class NCEAgent:
             self.lib = lib2
             self.goals.lib = lib2
             self.diag["promotions"] += len(names)
-            for hs in self.H.values():
-                for h in hs:
-                    h.logw = clause_set_log_weight(h.cs, lib2)
+        # every stored weight is re-read under the current library and each coherent set re-sorted (Parry order)
+        for a, hs in self.H.items():
+            for h in hs:
+                h.logw = clause_set_log_weight(h.cs, self.lib)
+            hs.sort(key=lambda h: -h.logw)
 
     def _n_types(self) -> int:
         keys = set()

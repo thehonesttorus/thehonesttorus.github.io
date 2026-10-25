@@ -81,6 +81,7 @@ class Store:
     nondeterministic: set[int] = field(default_factory=set)
     order: list[Record] = field(default_factory=list)                     # all records in time order
     _clock_cache: Optional[tuple[int, frozenset]] = None
+    clock_level: int = 0
 
     def append(self, a: int, A0: BaseAlgebra, data: Optional[dict], A1: BaseAlgebra, flag1: str, level: int,
                memory: Optional[np.ndarray] = None) -> Record:
@@ -165,6 +166,8 @@ class Store:
                 c = int(c)
                 if any(len(r.A0.strata) > 1 and c in r.A0.strata[0] for _, r in items):
                     continue
+                if any(r.A0.comps[i].color == c for _, r in items for i, j, g in r.tr.moved):
+                    continue        # a colour whose components undergo gauge moves carries the actions' words (T8)
                 posts: dict[bytes, bytes] = {}
                 contexts: dict[tuple, set] = {}
                 ok = True
@@ -180,6 +183,7 @@ class Store:
                     out.add(c)
         res = frozenset(out)
         self._clock_cache = (len(self.order), res)
+        self.clock_level = level
         return res
 
     def retire_level(self, a: int, level: int) -> None:

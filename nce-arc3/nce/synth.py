@@ -23,7 +23,7 @@ import numpy as np
 from .algebra import GRID, BaseAlgebra, Component
 from .library import Library
 from .store import Record, Store
-from .words import MEMO_CELL, REVEAL, VIRTUAL_ID, _datum, Clause, ClauseSet, Creation, Hypothesis, clause_set_log_weight, d4_relative, eroded_cells, exact, gate_holds, grown_cells, pointed_cell, predicted_frame, select, word_context, _pair_predicate
+from .words import MASS_GATES, MEMO_CELL, REVEAL, SEL_NAME, VIRTUAL_ID, _datum, Clause, ClauseSet, Creation, Hypothesis, clause_set_log_weight, d4_relative, eroded_cells, exact, gate_holds, grown_cells, pointed_cell, predicted_frame, select, word_context, _pair_predicate
 
 K_MAX = 32
 MAX_STEP_WORD = 6          # Step^k beats Move for k <= 6 under the Parry order (Section 0, item 1)
@@ -46,6 +46,7 @@ class SynthResult:
     level_gated: bool = False
     death_gated: bool = False
     clock: frozenset = frozenset()   # colours verified modulo (the level's autonomous flow)
+    clock_level: int = 0             # the level on which the clock was detected (the quotient applies there only)
     best_cs: Optional[ClauseSet] = None   # the combination with the fewest mismatching cells when none was exact
     memorised: int = 0                    # demonstrations memorised by the best admitted word (T12)
     death_unexplained: bool = False  # terminal records exist but no gate separates them from the live ones
@@ -153,6 +154,8 @@ def _fill_admissible(rec: Record, cids: list[int], sig: Optional[tuple] = None) 
         if not g.is_identity:
             new_cover[A1.comps[j].cells] = True
     for i, j, g in tr.inplace_rot:
+        new_cover[A1.comps[j].cells] = True
+    for j in tr.created:                     # a creation painted over vacated cells says nothing about the fill
         new_cover[A1.comps[j].cells] = True
     vac_all = []
     for cid in cids:
@@ -330,6 +333,7 @@ def synthesize(a: int, store: Store, lib: Library, budget_s: float = 0.25, k_max
     recs = [r for r in recs_all if r.flag1 != "GAME_OVER"]
     terminal = [r for r in recs_all if r.flag1 == "GAME_OVER"]
     res.clock = store.clock_colours()
+    res.clock_level = store.clock_level
     if not recs:
         if terminal:
             cs = ClauseSet(over=True)
@@ -347,7 +351,7 @@ def synthesize(a: int, store: Store, lib: Library, budget_s: float = 0.25, k_max
     # LevelGate (T9, T13): when no word covers every level, the current level's records alone, at the
     # cost of a LevelGate letter (d = win_levels). Earlier levels are kept as data, never discarded.
     if not res.hypotheses and len({r.level for r in recs}) > 1:
-        cur = max(r.level for r in recs)
+        cur = max(r.level for r in recs + terminal)
         recs = [r for r in recs if r.level == cur]
         terminal = [r for r in terminal if r.level == cur]
         for use_rot, short in readings:
@@ -358,15 +362,20 @@ def synthesize(a: int, store: Store, lib: Library, budget_s: float = 0.25, k_max
             h.cs = replace(h.cs, level_gated=True)
             h.logw = clause_set_log_weight(h.cs, lib)
         res.level_gated = bool(res.hypotheses)
-    # death gate (Over . Gate . Bind . Sel): the action kills iff a selected component satisfies the gate
+    # death gate (Over . Gate . Bind . Sel): the action kills iff a selected component satisfies the gate. It has its
+    # own budget (a death left unexplained would make every word claim the lethal action is safe).
     if res.hypotheses and terminal:
-        _fit_death_gate(recs, terminal, res, lib, t0, budget_s)
+        _fit_death_gate(recs, terminal, res, lib, time.time(), budget_s)
     for h in res.hypotheses:
         h.contexts = {word_context(h.cs, r.A0, r.data) for r in recs + terminal}
     return res
 
 
 def _fit_death_gate(live: list[Record], terminal: list[Record], res: SynthResult, lib: Library, t0: float, budget_s: float) -> None:
+    """Every (selector, gate, body) that separates the terminal records from the live ones, ranked by the Parry
+    weight of its path; each hypothesis takes the best few as variants (the coherent set keeps the alternatives).
+    When none separates within the budget, the terminal records are memorised (T12) so every word stays exact on
+    every demonstration, deaths included."""
     allr = live + terminal
     selectors = _selector_candidates(allr)
     preds = _predicate_candidates(allr)
@@ -378,24 +387,59 @@ def _fit_death_gate(live: list[Record], terminal: list[Record], res: SynthResult
         gates.append((("offgrid", None), b))
         gates.append((("collide", None), b))
         gates += [(("collide", k), b) for k in keys]
+        gates += [(("collidecolour", c), b) for c in sorted({c.color for r in allr for c in r.A0.comps})]
+    found: list[tuple[float, tuple]] = []
     for sel in selectors:
         for gate, body in gates:
             if time.time() - t0 > budget_s:
-                return
+                break
             if all(any(gate_holds(gate, body, c, r.A0, r.data) for c in select(sel, r.A0, r.data)) for r in terminal) and \
                not any(any(gate_holds(gate, body, c, r.A0, r.data) for c in select(sel, r.A0, r.data)) for r in live):
-                for h in res.hypotheses:
-                    h.cs = replace(h.cs, over_gate=(sel, gate, body))
-                    h.logw = clause_set_log_weight(h.cs, lib)
-                res.death_gated = True
-                return
+                path = [SEL_NAME[sel[0]], "Meter" if gate[0] in MASS_GATES else "Bind", "Gate"]
+                found.append((lib.log_P(path), (sel, gate, body)))
+    if found:
+        found.sort(key=lambda t: -t[0])
+        variants = [g for _, g in found[:3]]
+        out = []
+        for h in res.hypotheses:
+            for og in variants:
+                cs = replace(h.cs, over_gate=og)
+                out.append(Hypothesis(cs, clause_set_log_weight(cs, lib), h.n_verified))
+        res.hypotheses = sorted(out, key=lambda h: -h.logw)
+        res.death_gated = True
+        return
     res.death_unexplained = True
+    memo = tuple((r.A0.key(), _datum(r.data), b"GAME_OVER", 1) for r in terminal)
+    for h in res.hypotheses:
+        h.cs = replace(h.cs, exceptions=tuple(h.cs.exceptions) + memo)
+        h.logw = clause_set_log_weight(h.cs, lib)
+
+
+def _best_first(alternatives: list[list[Clause]], lib: Library):
+    """Combinations of one clause per class in increasing total code length (k-best enumeration of a product of
+    lists each sorted by -log P): the exact test meets the Parry order, so a budget cut drops only the heaviest."""
+    import heapq
+    costs = [[-lib.log_P(cl.letters()) for cl in alts] for alts in alternatives]
+    start = (0,) * len(alternatives)
+    heap = [(sum(c[0] for c in costs), start)]
+    seen = {start}
+    while heap:
+        total, idx = heapq.heappop(heap)
+        yield tuple(alternatives[k][i] for k, i in enumerate(idx))
+        for k in range(len(idx)):
+            if idx[k] + 1 < len(alternatives[k]):
+                nxt = idx[:k] + (idx[k] + 1,) + idx[k + 1:]
+                if nxt not in seen:
+                    seen.add(nxt)
+                    heapq.heappush(heap, (total - costs[k][idx[k]] + costs[k][idx[k] + 1], nxt))
 
 
 def _short_shift(lib: Library) -> int:
-    """The translation length beyond which the Parry order prefers annihilation plus a pointed copy to a move:
-    4 l > d_Annihilate * d_SelPointed * d_Copy (log weights), so l* = that product / 4 (no free constant)."""
-    return max(1, int(lib.dims["Annihilate"] * lib.dims["SelPointed"] * lib.dims["Copy"]) // 4)
+    """The translation length beyond which the Parry order prefers annihilation plus a pointed copy to a move: the
+    move's cheapest word costs min(l log d_Step, log d_Move), the alternative log(d_Annihilate d_SelPointed d_Copy),
+    so l* = floor(log(d_Annihilate d_SelPointed d_Copy) / log d_Step) (no free constant)."""
+    alt = np.log(lib.dims["Annihilate"] * lib.dims["SelPointed"] * lib.dims["Copy"])
+    return max(1, int(alt // np.log(lib.dims["Step"])))
 
 
 def _readings(recs: list[Record], lib: Library) -> list[tuple[bool, bool]]:
@@ -639,7 +683,7 @@ def _synthesize_reading_inner(a: int, recs: list[Record], terminal: list[Record]
             res.unexplained_classes += 1
         else:
             found.sort(key=lambda cl: -lib.log_P(cl.letters()))
-            alternatives.append(found[:16])
+            alternatives.append(found)
             res.partials.append(ClauseSet((found[0],)))
 
     # 3. assemble clause sets (one clause per explainable class) and verify exactly on every record.
@@ -652,20 +696,21 @@ def _synthesize_reading_inner(a: int, recs: list[Record], terminal: list[Record]
             if fr is None:
                 return GRID * GRID
             d = fr != r.A1.frame
-            for c in res.clock:
-                d &= (fr != c) & (r.A1.frame != c)
+            if r.level == res.clock_level:
+                for c in res.clock:
+                    d &= (fr != c) & (r.A1.frame != c)
             return int(np.count_nonzero(d))
 
         # memorising every demonstration under the identity word: the code length a word must beat (T12)
         memo_unit = lib.beta_c * MEMO_CELL
         def identity_residual(r: Record) -> int:
             d = r.A0.frame != r.A1.frame
-            for c in res.clock:
+            for c in (res.clock if r.level == res.clock_level else ()):
                 d &= (r.A0.frame != c) & (r.A1.frame != c)
             return int(np.count_nonzero(d))
         baseline = memo_unit * float(sum(max(identity_residual(r), 0) for r in recs))
         near: list[tuple[float, ClauseSet, list]] = []    # (code length, generalising part, failing records)
-        combos = itertools.product(*alternatives) if alternatives else [()]
+        combos = _best_first(alternatives, lib) if alternatives else iter([()])
         for n, combo in enumerate(combos):
             if n >= MAX_COMBOS or time.time() - t0 > budget_s:
                 break
@@ -676,7 +721,7 @@ def _synthesize_reading_inner(a: int, recs: list[Record], terminal: list[Record]
             spent = word_len
             hopeless = False
             for r in recs:
-                if exact(cs, r.A0, r.data, r.A1, r.flag1, r.memory, res.clock):
+                if exact(cs, r.A0, r.data, r.A1, r.flag1, r.memory, res.clock if r.level == res.clock_level else None):
                     continue
                 cells = residual(cs, r)
                 fails.append((r, cells))
