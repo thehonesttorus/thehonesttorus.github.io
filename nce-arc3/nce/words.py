@@ -455,6 +455,15 @@ def apply_clause(cl: Clause, comp: Component, A: BaseAlgebra, data: Optional[dic
     return Fate(comp, "identity", comp.cells, comp.color, None)
 
 
+def _changes(f: "Fate") -> bool:
+    """Whether a fate changes the frame (a Grow blocked everywhere, or an Erode of nothing, does not)."""
+    if f.kind == "identity":
+        return False
+    if f.kind in ("annihilate",) or f.off_grid or f.cells is None:
+        return True
+    return f.color != f.comp.color or f.cells.size != f.comp.cells.size or not np.array_equal(f.cells, f.comp.cells)
+
+
 def predict(cs: ClauseSet, A: BaseAlgebra, data: Optional[dict]) -> tuple[list[Fate], list[Creation], str]:
     """Apply the clause set to the base algebra. Components claimed by several clauses: the first wins.
     Coupled clauses (gate ("cofire", class)) run in a second pass and fire iff the clause fitted to that class
@@ -471,7 +480,7 @@ def predict(cs: ClauseSet, A: BaseAlgebra, data: Optional[dict]) -> tuple[list[F
             f = apply_clause(cl, comp, A, data)
             if f is not None:
                 fates[comp.id] = f
-                if f.kind != "identity" and cl.tag is not None:
+                if cl.tag is not None and _changes(f):
                     fired.add(cl.tag)
     for cl in coupled:
         if cl.bind[1] not in fired:

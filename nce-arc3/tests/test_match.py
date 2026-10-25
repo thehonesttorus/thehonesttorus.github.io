@@ -95,3 +95,29 @@ def test_shared_translation_is_matched_as_one_gauge_element():
     shifts = sorted((g.dy, g.dx) for _, _, g in tr.moves if A0.comps[_].color == 3) if False else \
         sorted((g.dy, g.dx) for i, j, g in tr.moves if A0.comps[i].color == 3)
     assert shifts == [(0, 3)] * 3, shifts
+
+
+def _blocks(positions, colour=3):
+    F = np.zeros((64, 64), dtype=np.int8)
+    for (y, x) in positions:
+        F[y:y + 2, x:x + 2] = colour
+    return F
+
+
+def test_history_resolves_a_jump_over_an_identical_block():
+    """A mover jumps 8 over a static twin at the midpoint. Alone, 'both moved 4' is the shorter description; with the
+    action's history (the mover has jumped 8 before) the identity plus the known jump costs nothing."""
+    A0, A1 = algebra.build(_blocks([(20, 10), (20, 14)])), algebra.build(_blocks([(20, 14), (20, 18)]))
+    key = A0.comps[[c.color for c in A0.comps].index(3)].type
+    tr = match.decompose(A0, A1, prefer=frozenset({(key, 0, 8)}))
+    shifts = sorted((g.dy, g.dx) for i, j, g in tr.moves if A0.comps[i].color == 3)
+    assert shifts == [(0, 0), (0, 8)], shifts
+
+
+def test_history_resolves_two_long_moves_that_would_cross():
+    A0 = algebra.build(_blocks([(5, 40), (2, 50)]))
+    A1 = algebra.build(_blocks([(5, 48), (11, 50)]))
+    key = A0.comps[[c.color for c in A0.comps].index(3)].type
+    tr = match.decompose(A0, A1, prefer=frozenset({(key, 0, 8), (key, 9, 0)}))
+    shifts = sorted((g.dy, g.dx) for i, j, g in tr.moves if A0.comps[i].color == 3)
+    assert shifts == [(0, 8), (9, 0)], shifts

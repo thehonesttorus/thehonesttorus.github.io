@@ -81,12 +81,14 @@ class Store:
     nondeterministic: set[int] = field(default_factory=set)
     order: list[Record] = field(default_factory=list)                     # all records in time order
     _clock_cache: Optional[tuple[int, frozenset]] = None
+    _prefer: dict = field(default_factory=dict)
     clock_level: int = 0
 
     def append(self, a: int, A0: BaseAlgebra, data: Optional[dict], A1: BaseAlgebra, flag1: str, level: int,
                memory: Optional[np.ndarray] = None) -> Record:
-        rec = Record(A0, data, A1, flag1, level, decompose(A0, A1), None if memory is None else memory.copy())
+        rec = Record(A0, data, A1, flag1, level, decompose(A0, A1, prefer=self.preferred(a)), None if memory is None else memory.copy())
         self.records.setdefault(a, []).append(rec)
+        self._note_moves(a, rec)
         self.order.append(rec)
         table = self.ignorance.setdefault(a, {})
         k = rec.key
@@ -100,6 +102,19 @@ class Store:
         """Animation sub-steps are kept as data (serial compositions of the null action, N7): the frame pairs. No rule
         reads their decomposition yet, so it is neither perceived nor computed."""
         self.null_records.setdefault(a, []).append((np.array(frame0, dtype=np.int8), np.array(frame1, dtype=np.int8), level))
+
+    def preferred(self, a: int) -> frozenset:
+        """(type, dy, dx) displacements already shown by action a: clauses its word already holds, so a new record's
+        decomposition pays nothing for them (cross-record consistency of the correspondence)."""
+        return frozenset(self._prefer.get(a, ()))
+
+    def _note_moves(self, a: int, rec: "Record") -> None:
+        if rec.flag1 == "GAME_OVER":
+            return
+        s = self._prefer.setdefault(a, set())
+        for i, j, g in rec.tr.moved:
+            if not g.rotated:
+                s.add((rec.A0.comps[i].type, g.dy, g.dx))
 
     def transitions(self, a: int) -> list[Record]:
         return self.records.get(a, [])

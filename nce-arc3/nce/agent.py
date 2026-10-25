@@ -140,11 +140,13 @@ class NCEAgent:
     def _reperceive_store(self) -> None:
         """Split rules changed: rebuild every stored demonstration's algebras and decompositions; words must re-verify."""
         from .match import decompose
-        for recs in self.store.records.values():
+        self.store._prefer = {}
+        for a_, recs in self.store.records.items():
             for r in recs:
                 r.A0 = self.perceive(r.A0.frame)
                 r.A1 = self.perceive(r.A1.frame)
-                r.tr = decompose(r.A0, r.A1)
+                r.tr = decompose(r.A0, r.A1, prefer=self.store.preferred(a_))
+                self.store._note_moves(a_, r)
                 for k in ("_gates", "_tr_short", "_ctx"):    # caches keyed by component ids are stale
                     r.__dict__.pop(k, None)
         self.store._clock_cache = None

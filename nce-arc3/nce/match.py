@@ -146,14 +146,19 @@ def _gauge_between(a: Component, b: Component) -> Gauge:
     return Gauge(b.bbox[0] - a.bbox[0], b.bbox[1] - a.bbox[1], a.g, b.g)
 
 
-def decompose(A0: BaseAlgebra, A1: BaseAlgebra, beta: float = 1.0, max_shift: int = GRID) -> Transition:
+def decompose(A0: BaseAlgebra, A1: BaseAlgebra, beta: float = 1.0, max_shift: int = GRID,
+              prefer: Optional[frozenset] = None) -> Transition:
     """Match components of A1 to components of A0 and classify the remainder."""
     charge = np.bincount([c.color for c in A1.comps], minlength=16) - np.bincount([c.color for c in A0.comps], minlength=16)
     tr = Transition(charge=charge.astype(np.int64), changed_cells=int(np.count_nonzero(A0.frame != A1.frame)))
     matched0: set[int] = set()
     matched1: set[int] = set()
 
-    # 1. same shape type (colour, canonical key): assignment by Parry cost of the gauge element
+    # 1. same shape type (colour, canonical key). Candidate matchings of each bucket are charged by the word that
+    #    explains them: each distinct gauge element once (one clause SelType . body covers every pair it displaces),
+    #    the identity and the displacements this action has already shown for the type (a clause already in its word)
+    #    free. Three candidates: the per-pair assignment, history-first, shared-first; the cheapest charge wins.
+    prefer = prefer or frozenset()
     for t, ids0 in A0.by_type.items():
         ids1 = A1.by_type.get(t)
         if not ids1:
@@ -168,36 +173,8 @@ def decompose(A0: BaseAlgebra, A1: BaseAlgebra, beta: float = 1.0, max_shift: in
         dx = bb1[None, :, 1] - bb0[:, None, 1]
         l1 = np.abs(dy) + np.abs(dx)
         rot = g1[None, :] != g0[:, None]
-        # move_cost, vectorised: the cheapest translation word, plus beta log 7 for a D4 change
-        cost = translation_cost(l1, beta) + np.where(rot, beta * np.log(ROT_DIM), 0.0)
+        cost = translation_cost(l1, beta) + np.where(rot, beta * np.log(ROT_DIM), 0.0) + 1e-6 * l1   # tie: the nearer
         cost[l1 > max_shift] = 1e9
-        # shared translations first: one clause SelType . body explains every pair displaced by the same gauge element,
-        # so its cost is paid once. Gauge elements shared by two or more pairs are taken in order of how many pairs
-        # they explain (ties: the cheaper word), and their pairs are fixed before the per-pair assignment.
-        fixed_r: set[int] = set()
-        fixed_c: set[int] = set()
-        if len(c0) > 1 and len(c1) > 1:
-            same = ~rot & (l1 <= max_shift)
-            rr, cc = np.nonzero(same)
-            if rr.size:
-                vs = {}
-                for r_, c_ in zip(rr.tolist(), cc.tolist()):
-                    vs.setdefault((int(dy[r_, c_]), int(dx[r_, c_])), []).append((r_, c_))
-                order_v = sorted((v for v, ps in vs.items() if len(ps) >= 2),
-                                 key=lambda v: (-len(vs[v]), float(translation_cost(abs(v[0]) + abs(v[1]), beta))))
-                for v in order_v:
-                    for r_, c_ in vs[v]:
-                        if r_ in fixed_r or c_ in fixed_c:
-                            continue
-                        fixed_r.add(r_)
-                        fixed_c.add(c_)
-                        gg = Gauge(v[0], v[1], int(g0[r_]), int(g1[c_]))
-                        tr.moves.append((ids0[r_], ids1[c_], gg))
-                        matched0.add(ids0[r_])
-                        matched1.add(ids1[c_])
-        if fixed_r:
-            cost[list(fixed_r), :] = 1e9
-            cost[:, list(fixed_c)] = 1e9
         inplace: set[tuple[int, int]] = set()
         touch = rot & (l1 <= max_shift) & (bb0[:, None, 0] <= bb1[None, :, 2]) & (bb1[None, :, 0] <= bb0[:, None, 2]) \
             & (bb0[:, None, 1] <= bb1[None, :, 3]) & (bb1[None, :, 1] <= bb0[:, None, 3])
@@ -208,9 +185,64 @@ def decompose(A0: BaseAlgebra, A1: BaseAlgebra, beta: float = 1.0, max_shift: in
                 # a reshape; the Rot reading (cost log 7) is kept in `inplace_rot` for synthesis to try next.
                 cost[r, c] = 0.0
                 inplace.add((int(r), int(c)))
-        for r, c in _assign(cost):
-            if cost[r, c] >= 1e9 or r in fixed_r or c in fixed_c:
-                continue
+        known = np.zeros_like(rot)
+        if prefer:
+            for r in range(len(c0)):
+                for c in range(len(c1)):
+                    if not rot[r, c] and (t, int(dy[r, c]), int(dx[r, c])) in prefer:
+                        known[r, c] = True
+        cost_k = np.where(known, 1e-6 * l1, cost)
+
+        def complete(fixed: list) -> list:
+            fr = {r for r, _ in fixed}
+            fc = {c for _, c in fixed}
+            cm = cost_k.copy()
+            if fr:
+                cm[list(fr), :] = 1e9
+                cm[:, list(fc)] = 1e9
+            out = list(fixed)
+            for r, c in _assign(cm):
+                if cm[r, c] < 1e9 and r not in fr and c not in fc:
+                    out.append((int(r), int(c)))
+            return out
+
+        def charge(pairs: list) -> float:
+            elems: dict = {}
+            for r, c in pairs:
+                if (r, c) in inplace or known[r, c] or (dy[r, c] == 0 and dx[r, c] == 0 and not rot[r, c]):
+                    continue
+                key = (int(dy[r, c]), int(dx[r, c]), bool(rot[r, c]))
+                elems[key] = float(cost[r, c])
+            return sum(elems.values()) + 1e-6 * float(sum(l1[r, c] for r, c in pairs))
+
+        def by_vector(mask) -> list:
+            rr, cc = np.nonzero(mask & ~rot & (l1 <= max_shift))
+            vs: dict = {}
+            for r_, c_ in zip(rr.tolist(), cc.tolist()):
+                vs.setdefault((int(dy[r_, c_]), int(dx[r_, c_])), []).append((r_, c_))
+            fixed, ur, uc = [], set(), set()
+            for v in sorted(vs, key=lambda v: (-len(vs[v]), float(translation_cost(abs(v[0]) + abs(v[1]), beta)))):
+                for r_, c_ in vs[v]:
+                    if r_ not in ur and c_ not in uc:
+                        fixed.append((r_, c_)); ur.add(r_); uc.add(c_)
+            return fixed
+
+        candidates = [complete([])]
+        if known.any():
+            candidates.append(complete(by_vector(known)))
+        if len(c0) > 1 and len(c1) > 1:
+            shared_mask = np.zeros_like(rot)
+            rr, cc = np.nonzero(~rot & (l1 <= max_shift))
+            counts: dict = {}
+            for r_, c_ in zip(rr.tolist(), cc.tolist()):
+                counts[(int(dy[r_, c_]), int(dx[r_, c_]))] = counts.get((int(dy[r_, c_]), int(dx[r_, c_])), 0) + 1
+            for r_, c_ in zip(rr.tolist(), cc.tolist()):
+                if counts[(int(dy[r_, c_]), int(dx[r_, c_]))] >= 2:
+                    shared_mask[r_, c_] = True
+            if shared_mask.any():
+                candidates.append(complete(by_vector(shared_mask)))
+        best_pairs = min(candidates, key=charge)
+        for r, c in best_pairs:
             gg = Gauge(int(dy[r, c]), int(dx[r, c]), int(g0[r]), int(g1[c]))
             if (r, c) in inplace:
                 tr.reshaped.append((ids0[r], ids1[c]))

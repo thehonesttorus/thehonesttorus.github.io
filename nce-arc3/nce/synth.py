@@ -344,30 +344,69 @@ def synthesize(a: int, store: Store, lib: Library, budget_s: float = 0.25, k_max
     # 1. behaviour classes across all non-terminal records. Readings are tried in Parry order: first every
     #    congruent in-place D4 change as an identity with a changed rendering (cost 0), then as a Rot (cost log 7).
     readings = _readings(recs, lib)
+    res.near_pool = []              # words with a memorised part, admitted only if no reading gives an exact word
+    res._gated = False
     for use_rot, short in readings:
         _synthesize_reading(a, recs, terminal, lib, t0, budget_s, k_max, res, use_rot, short)
         if res.hypotheses:
             break
-    # LevelGate (T9, T13): when no word covers every level, the current level's records alone, at the
-    # cost of a LevelGate letter (d = win_levels). Earlier levels are kept as data, never discarded.
+    # LevelGate (T9, T13): when no word covers every level, the newest level with live demonstrations alone, at
+    # the cost of a LevelGate letter (d = win_levels). Earlier levels are kept as data, never discarded.
     if not res.hypotheses and len({r.level for r in recs}) > 1:
-        cur = max(r.level for r in recs + terminal)
-        recs = [r for r in recs if r.level == cur]
-        terminal = [r for r in terminal if r.level == cur]
+        cur = max(r.level for r in recs)
+        live_cur = [r for r in recs if r.level == cur]
+        res._gated = True
         for use_rot, short in readings:
-            _synthesize_reading(a, recs, terminal, lib, t0, budget_s, k_max, res, use_rot, short)
+            _synthesize_reading(a, live_cur, [r for r in terminal if r.level == cur], lib, t0, budget_s, k_max, res, use_rot, short)
             if res.hypotheses:
                 break
         for h in res.hypotheses:
             h.cs = replace(h.cs, level_gated=True)
             h.logw = clause_set_log_weight(h.cs, lib)
         res.level_gated = bool(res.hypotheses)
-    # death gate (Over . Gate . Bind . Sel): the action kills iff a selected component satisfies the gate. It has its
-    # own budget (a death left unexplained would make every word claim the lethal action is safe).
+        if res.level_gated:
+            recs = live_cur
+            terminal = [r for r in terminal if r.level == cur]
+    # T12: only when no reading (and no level-gated retry) gives an exact word, the shortest words with a memorised
+    # part, across all of them; the generalising part must reproduce more demonstrations than it memorises
+    if not res.hypotheses and res.near_pool:
+        res.near_pool.sort(key=lambda t: t[0])
+        for spent, cs, fails, n_recs, gated in res.near_pool:
+            if len(fails) * 2 >= n_recs:
+                continue
+            exc = tuple((r.A0.key(), _datum(r.data), np.ascontiguousarray(r.A1.frame, dtype=np.int8).tobytes(), max(c, 1))
+                        for r, c in fails)
+            cs2 = replace(cs, exceptions=exc, level_gated=gated)
+            res.hypotheses.append(Hypothesis(cs2, clause_set_log_weight(cs2, lib), n_recs - len(fails)))
+            if len(res.hypotheses) >= k_max:
+                break
+        if res.hypotheses:
+            res.memorised = sum(1 for _ in res.hypotheses[0].cs.exceptions)
+            if res.hypotheses[0].cs.level_gated:
+                cur = max(r.level for r in recs)
+                recs = [r for r in recs if r.level == cur]
+                terminal = [r for r in terminal if r.level == cur]
+                res.level_gated = True
+        res.hypotheses.sort(key=lambda h: -h.logw)
+    # death gate (Over . Gate . Bind . Sel): the action kills iff a selected component satisfies the gate. It gets
+    # what remains of the budget, at least a quarter of it (a death left unexplained would make every word claim
+    # the lethal action is safe; it is then memorised instead).
     if res.hypotheses and terminal:
-        _fit_death_gate(recs, terminal, res, lib, time.time(), budget_s)
+        remaining = max(budget_s - (time.time() - t0), budget_s / 4)
+        _fit_death_gate(recs, terminal, res, lib, time.time(), remaining)
+        del res.hypotheses[k_max:]
+    # word contexts for the newborn rule, within a quarter of the budget (an unfinished set errs toward newborn)
+    tc = time.time()
+    distinct = {}
+    for r in recs + terminal:
+        distinct.setdefault((r.A0.key(), _datum(r.data)), r)
     for h in res.hypotheses:
-        h.contexts = {word_context(h.cs, r.A0, r.data) for r in recs + terminal}
+        h.contexts = set()
+    for r in distinct.values():
+        if time.time() - tc > budget_s / 4:
+            break
+        for h in res.hypotheses:
+            h.contexts.add(word_context(h.cs, r.A0, r.data))
     return res
 
 
@@ -405,11 +444,14 @@ def _fit_death_gate(live: list[Record], terminal: list[Record], res: SynthResult
             for og in variants:
                 cs = replace(h.cs, over_gate=og)
                 out.append(Hypothesis(cs, clause_set_log_weight(cs, lib), h.n_verified))
-        res.hypotheses = sorted(out, key=lambda h: -h.logw)
+        res.hypotheses = sorted(out, key=lambda h: -h.logw)[:K_MAX]
         res.death_gated = True
         return
     res.death_unexplained = True
-    memo = tuple((r.A0.key(), _datum(r.data), b"GAME_OVER", 1) for r in terminal)
+    live_keys = {(r.A0.key(), _datum(r.data)) for r in live}
+    # a death from a state that also has a live demonstration under the same datum is not memorisable (the frame does
+    # not determine the outcome: the store's ignorance table marks the action non-deterministic)
+    memo = tuple((r.A0.key(), _datum(r.data), b"GAME_OVER", 1) for r in terminal if (r.A0.key(), _datum(r.data)) not in live_keys)
     for h in res.hypotheses:
         h.cs = replace(h.cs, exceptions=tuple(h.cs.exceptions) + memo)
         h.logw = clause_set_log_weight(h.cs, lib)
@@ -527,6 +569,8 @@ def _synthesize_reading_inner(a: int, recs: list[Record], terminal: list[Record]
             out.append(j)
         return out
     creations: list[Creation] = []
+    if not recs:
+        return
     created_lists = [_unexplained_created(r) for r in recs]
     created_sets = [tuple(sorted((r.A1.comps[j].key, r.A1.comps[j].color, r.A1.comps[j].g, r.A1.comps[j].offset) for j in cl)) for r, cl in zip(recs, created_lists)]
     creation_ok = all(cs == created_sets[0] for cs in created_sets)
@@ -740,15 +784,13 @@ def _synthesize_reading_inner(a: int, recs: list[Record], terminal: list[Record]
             if not hopeless:
                 near.append((spent, cs, fails))
         if not res.hypotheses and near:
-            # T12: a generalising word plus a memorised part, admitted when its total code length (word letters plus
-            # beta_c log(16*4096) per memorised cell) is shorter than memorising every demonstration
-            near.sort(key=lambda t: t[0])
-            for spent, cs, fails in near[:k_max]:
-                exc = tuple((r.A0.key(), _datum(r.data), np.ascontiguousarray(r.A1.frame, dtype=np.int8).tobytes(), max(c, 1))
-                            for r, c in fails)
-                cs2 = replace(cs, exceptions=exc)
-                res.hypotheses.append(Hypothesis(cs2, clause_set_log_weight(cs2, lib), len(recs) - len(fails)))
-            res.memorised = sum(len(f) for _, _, f in near[:1])
+            # T12 candidates: a generalising word plus a memorised part whose total code length (word letters plus
+            # beta_c log(16*4096) per memorised cell) is shorter than memorising every demonstration. They are pooled
+            # and admitted by synthesize() only if no reading gives an exact word.
+            gated = bool(getattr(res, "_gated", False))
+            extra = -lib.log_P(["LevelGate"]) if gated else 0.0
+            for spent, cs, fails in near:
+                res.near_pool.append((spent + extra, cs, fails, len(recs), gated))
         res.hypotheses.sort(key=lambda h: -h.logw)
         del res.hypotheses[k_max:]
     res.exhausted = time.time() - t0 <= budget_s
