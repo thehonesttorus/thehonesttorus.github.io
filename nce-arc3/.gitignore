@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+environment_files/
+recordings/
+.venv/
+vendor/
+notebooks/submission.ipynb
+.kaggle/
+*.egg-info/
+.pytest_cache/
+runs/
