@@ -1,0 +1,69 @@
+import numpy as np
+
+from nce import algebra, match
+
+
+def _base():
+    F = np.full((64, 64), 5, dtype=np.int8)
+    F[10:13, 10:15] = 2          # rectangle A
+    F[30:33, 40:45] = 2          # rectangle B (same type as A)
+    F[50, 5] = 9                 # dot
+    F[20:23, 20:23] = 7          # block
+    return F
+
+
+def test_translation_is_matched_by_parry_cost_not_proximity_heuristic():
+    F0 = _base()
+    F1 = F0.copy()
+    F1[10:13, 10:15] = 5; F1[11:14, 12:17] = 2      # rectangle A moves by (1, 2)
+    A0, A1 = algebra.build(F0), algebra.build(F1)
+    tr = match.decompose(A0, A1)
+    moved = tr.moved
+    assert len(moved) == 1
+    i, j, g = moved[0]
+    assert (g.dy, g.dx) == (1, 2) and not g.rotated
+    assert A0.comps[i].color == 2 and A0.comps[i].bbox[0] == 10
+    assert not tr.created and not tr.annihilated and not tr.recolours
+    assert [A0.comps[i].color for i, _ in tr.reshaped] == [5]       # the top stratum's complement shape changed
+    assert tr.charge.sum() == 0
+
+
+def test_rotation_recolour_creation_annihilation():
+    F0 = _base()
+    F1 = F0.copy()
+    # dot annihilated
+    F1[50, 5] = 5
+    # block recoloured in place
+    F1[20:23, 20:23] = 12
+    # new component created
+    F1[60:62, 60:63] = 14
+    # rectangle B rotated 90 degrees about its bbox corner (3x5 -> 5x3)
+    F1[30:33, 40:45] = 5; F1[30:35, 40:43] = 2
+    A0, A1 = algebra.build(F0), algebra.build(F1)
+    tr = match.decompose(A0, A1)
+    assert any(A0.comps[i].color == 7 and A1.comps[j].color == 12 for i, j in tr.recolours)
+    assert [A0.comps[i].color for i in tr.annihilated] == [9]
+    assert [A1.comps[j].color for j in tr.created] == [14]
+    rot = [g for i, j, g in tr.moved if g.rotated]
+    assert len(rot) == 1 and rot[0].l1 == 0
+    assert tr.charge[9] == -1 and tr.charge[14] == 1 and tr.charge[7] == -1 and tr.charge[12] == 1
+
+
+def test_null_transition():
+    F0 = _base()
+    A0, A1 = algebra.build(F0), algebra.build(F0.copy())
+    tr = match.decompose(A0, A1)
+    assert tr.is_null and not tr.moved and not tr.created and not tr.annihilated
+    assert all(g.is_identity for _, _, g in tr.moves) and len(tr.moves) == len(A0.comps)
+
+
+def test_greedy_fallback_agrees_on_simple_case():
+    F0 = _base(); F1 = F0.copy(); F1[10:13, 10:15] = 5; F1[12:15, 10:15] = 2
+    A0, A1 = algebra.build(F0), algebra.build(F1)
+    saved = match._lsa
+    try:
+        match._lsa = None
+        tr = match.decompose(A0, A1)
+    finally:
+        match._lsa = saved
+    assert len(tr.moved) == 1 and (tr.moved[0][2].dy, tr.moved[0][2].dx) == (2, 0)
